@@ -442,6 +442,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     download VARCHAR,
                     type VARCHAR,
                     size INTEGER,
+                    disksize INTEGER,
                     md5 VARCHAR,
                     sha1 VARCHAR,
                     sha256 VARCHAR,
@@ -1782,10 +1783,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         def _do_insert():
             self._cursor().executemany("""
-            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?,?)
+            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?,?,?)
             """, [(package_id, edw['download'], edw['type'], edw['size'],
-                    edw['md5'], edw['sha1'], edw['sha256'], edw['sha512'],
-                    edw['gpg']) for edw in package_downloads_data])
+                    edw['disksize'], edw['md5'], edw['sha1'], edw['sha256'],
+                    edw['sha512'], edw['gpg']) for edw in \
+                        package_downloads_data])
 
         try:
             # be optimistic and delay if condition
@@ -2766,7 +2768,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             cur = self._cursor().execute("""
-            SELECT download, type, size, md5, sha1, sha256, sha512, gpg
+            SELECT download, type, size, disksize, md5, sha1,
+                sha256, sha512, gpg
             FROM packagedownloads WHERE idpackage = (?)
             """ + down_type_str, params)
         except OperationalError:
@@ -2775,12 +2778,13 @@ class EntropyRepository(EntropyRepositoryBase):
             return tuple()
 
         result = []
-        for download, d_type, size, md5, sha1, sha256, sha512, gpg in \
+        for download, d_type, size, d_size, md5, sha1, sha256, sha512, gpg in \
             cur.fetchall():
             result.append({
                 "download": download,
                 "type": d_type,
                 "size": size,
+                "disksize": d_size,
                 "md5": md5,
                 "sha1": sha1,
                 "sha256": sha256,
@@ -6081,6 +6085,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 download VARCHAR,
                 type VARCHAR,
                 size INTEGER,
+                disksize INTEGER,
                 md5 VARCHAR,
                 sha1 VARCHAR,
                 sha256 VARCHAR,

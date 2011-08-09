@@ -4564,6 +4564,7 @@ class Server(Client):
                 nonfree = False, restricted = False) + "/" + \
                     os.path.basename(path)
             size = entropy.tools.get_file_size(path)
+            disksize = entropy.tools.get_uncompressed_size(path)
             md5 = entropy.tools.md5sum(path)
             sha1 = entropy.tools.sha1(path)
             sha256 = entropy.tools.sha256(path)
@@ -4575,6 +4576,7 @@ class Server(Client):
                 'download': extra_url,
                 'type': down_type,
                 'size': size,
+                'disksize': disksize,
                 'md5': md5,
                 'sha1': sha1,
                 'sha256': sha256,

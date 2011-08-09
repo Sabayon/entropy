@@ -2265,8 +2265,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             Currently supported entry types are: "debug", "data".
         @type down_type: string
         @return: list (tuple) of dict containing "download", "type", "size",
-            "md5", "sha1","sha256", "sha512", "gpg" keys. "download" contains
-            the relative URL (like the one returned by retrieveDownloadURL())
+            "disksize, "md5", "sha1","sha256", "sha512", "gpg" keys. "download"
+            contains the relative URL (like the one returned by
+            retrieveDownloadURL())
         @rtype: tuple
         @raise AttributeError: if provided down_type value is invalid
         """
