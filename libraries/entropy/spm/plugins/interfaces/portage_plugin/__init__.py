@@ -1136,7 +1136,8 @@ class PortagePlugin(SpmPlugin):
         data['content_safety'] = self._extract_pkg_metadata_content_safety(
             data['content'], pkg_dir)
         data['disksize'] = entropy.tools.sum_file_sizes_hardlinks([
-                os.path.join(pkg_dir, x) for x in data['content']])
+                os.path.join(pkg_dir, x) for x, y in data['content'].items() \
+                    if y == "obj"])
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
             pkg_dir, data['content'])
 
