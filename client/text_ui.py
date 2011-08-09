@@ -437,15 +437,16 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
 
     equo_client_settings['collisionprotect'] = oldcollprotect
 
+    installed_repo = entropy_client.installed_repository()
     # verify that client database idpackage still exist,
     # validate here before passing removePackage() wrong info
-    remove = [x for x in remove if entropy_client.installed_repository().isPackageIdAvailable(x)]
+    remove = [x for x in remove if installed_repo.isPackageIdAvailable(x)]
     # Filter out packages installed from unavailable repositories, this is
     # mainly required to allow 3rd party packages installation without
     # erroneously inform user about unavailability.
     unavail_pkgs = [x for x in remove if \
-        entropy_client.installed_repository().getInstalledPackageRepository(x) \
-        not in entropy_client.repositories()]
+        installed_repo.getInstalledPackageRepository(x) \
+            not in entropy_client.repositories()]
     remove = [x for x in remove if x not in unavail_pkgs]
     # drop system packages for automatic removal, user has to do it manually.
     system_unavail_pkgs = [x for x in remove if \
@@ -501,7 +502,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
                 do_run = False
             elif rc == 3: # selective
                 new_remove = []
-                c_repo = entropy_client.installed_repository()
+                c_repo = installed_repo
                 for idpackage in remove:
                     c_atom = c_repo.retrieveAtom(idpackage)
                     if c_atom is None:
@@ -810,22 +811,25 @@ def _show_package_removal_info(entropy_client, package_identifiers, manual = Fal
     totalatoms = str(len(package_identifiers))
 
     atomscounter = 0
+    inst_repo = entropy_client.installed_repository()
     for idpackage in package_identifiers:
 
         atomscounter += 1
-        rematom = entropy_client.installed_repository().retrieveAtom(idpackage)
+        rematom = inst_repo.retrieveAtom(idpackage)
         if not rematom:
             continue
 
-        installedfrom = \
-            entropy_client.installed_repository().getInstalledPackageRepository(
-                idpackage)
+        installedfrom = inst_repo.getInstalledPackageRepository(idpackage)
         if installedfrom is None:
             installedfrom = _("Not available")
 
-        on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(
-            idpackage)
-        pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
+        on_disk_size = inst_repo.retrieveOnDiskSize(idpackage)
+        pkg_size = inst_repo.retrieveSize(idpackage)
+        extra_downloads = inst_repo.retrieveExtraDownload(idpackage)
+        for extra_download in extra_downloads:
+            pkg_size += extra_download['size']
+            on_disk_size += extra_download['disksize']
+
         disksize = entropy.tools.bytes_into_human(on_disk_size)
         repositoryInfo = bold("[") + brown(installedfrom) \
             + bold("]")
@@ -845,6 +849,8 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
         print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
         totalatoms = len(found_pkg_atoms)
         atomscounter = 0
+        installed_repo = entropy_client.installed_repository()
+
         for idpackage, reponame in found_pkg_atoms:
             atomscounter += 1
             # open database
@@ -867,19 +873,19 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
             installedTag = "NoTag"
             installedRev = "NoRev"
             installedRepo = _("Not available")
-            pkginstalled = entropy_client.installed_repository().atomMatch(
+            pkginstalled = installed_repo.atomMatch(
                 entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
                 # found
                 idx = pkginstalled[0]
-                installedVer = entropy_client.installed_repository().retrieveVersion(idx)
-                installedTag = entropy_client.installed_repository().retrieveTag(idx)
-                installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
+                installedVer = installed_repo.retrieveVersion(idx)
+                installedTag = installed_repo.retrieveTag(idx)
+                installedRepo = installed_repo.getInstalledPackageRepository(idx)
                 if installedRepo is None:
                     installedRepo = _("Not available")
                 if not installedTag:
                     installedTag = "NoTag"
-                installedRev = entropy_client.installed_repository().retrieveRevision(idx)
+                installedRev = installed_repo.retrieveRevision(idx)
 
             mytxt = "   # %s%s/%s%s [%s] %s" % (
                 red("("),
@@ -1241,6 +1247,7 @@ def install_packages(entropy_client,
     sys_set_client_plg_id = \
         etpConst['system_settings_plugins_ids']['client_plugin']
     equo_client_settings = entropy_client.Settings()[sys_set_client_plg_id]['misc']
+    splitdebug = equo_client_settings['splitdebug']
 
     if check_critical_updates and equo_client_settings.get('forcedupdates'):
         crit_atoms, crit_matches = entropy_client.calculate_critical_updates()
@@ -1296,6 +1303,7 @@ def install_packages(entropy_client,
         pkgsToReinstall = 0
         pkgsToDowngrade = 0
         pkgsToRemove = len(removal_queue)
+        installed_repo = entropy_client.installed_repository()
 
         if run_queue:
 
@@ -1319,6 +1327,13 @@ def install_packages(entropy_client,
                 onDiskUsedSize += dbconn.retrieveOnDiskSize(idpackage)
 
                 pkgsize = dbconn.retrieveSize(idpackage)
+                extra_downloads = dbconn.retrieveExtraDownload(idpackage)
+                for extra_download in extra_downloads:
+                    if not splitdebug and (extra_download['type'] == "debug"):
+                        continue
+                    pkgsize += extra_download['size']
+                    onDiskUsedSize += extra_download['disksize']
+
                 unpackSize += int(pkgsize)*2
 
                 fetch_path = ClientPkg.get_standard_fetch_disk_path(pkgfile)
@@ -1336,18 +1351,22 @@ def install_packages(entropy_client,
                 installedTag = ''
                 installedRev = 0
                 installedRepo = None
-                pkginstalled = entropy_client.installed_repository().atomMatch(
+                pkginstalled = installed_repo.atomMatch(
                     entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if pkginstalled[1] == 0:
                     # found an installed package
                     idx = pkginstalled[0]
-                    installedVer = entropy_client.installed_repository().retrieveVersion(idx)
-                    installedTag = entropy_client.installed_repository().retrieveTag(idx)
-                    installedRev = entropy_client.installed_repository().retrieveRevision(idx)
-                    installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
+                    installedVer = installed_repo.retrieveVersion(idx)
+                    installedTag = installed_repo.retrieveTag(idx)
+                    installedRev = installed_repo.retrieveRevision(idx)
+                    installedRepo = installed_repo.getInstalledPackageRepository(idx)
                     if installedRepo is None:
                         installedRepo = _("Not available")
-                    onDiskFreedSize += entropy_client.installed_repository().retrieveOnDiskSize(idx)
+                    onDiskFreedSize += installed_repo.retrieveOnDiskSize(idx)
+                    extra_downloads = installed_repo.retrieveExtraDownload(idx)
+                    for extra_download in extra_downloads:
+                        onDiskFreedSize += extra_download['disksize']
+
 
                 if etpUi['quiet']:
                     continue
@@ -1419,11 +1438,16 @@ def install_packages(entropy_client,
                 print_info(red(" @@ ")+mytxt)
 
                 for idpackage in removal_queue:
-                    pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
+                    pkgatom = installed_repo.retrieveAtom(idpackage)
                     if not pkgatom:
                         continue
-                    onDiskFreedSize += entropy_client.installed_repository().retrieveOnDiskSize(idpackage)
-                    installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(idpackage)
+                    onDiskFreedSize += installed_repo.retrieveOnDiskSize(idpackage)
+                    extra_downloads = installed_repo.retrieveExtraDownload(
+                        idpackage)
+                    for extra_download in extra_downloads:
+                        onDiskFreedSize += extra_download['disksize']
+
+                    installedfrom = installed_repo.getInstalledPackageRepository(idpackage)
                     if installedfrom is None:
                         installedfrom = _("Not available")
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
@@ -1641,7 +1665,7 @@ def install_packages(entropy_client,
                 elif choice == 2:
                     break
                 elif choice == 3:
-                    entropy_client.installed_repository().acceptLicense(key)
+                    installed_repo.acceptLicense(key)
                     break
 
     ugc_th = None
@@ -1819,9 +1843,10 @@ def _configure_packages(entropy_client, packages):
 
     found_pkg_atoms = []
     packages = entropy_client.packages_expand(packages)
+    installed_repo = entropy_client.installed_repository()
 
     for package in packages:
-        idpackage, result = entropy_client.installed_repository().atomMatch(package)
+        idpackage, result = installed_repo.atomMatch(package)
         if idpackage == -1:
             mytxt = "!!! %s: %s %s." % (
                 purple(_("Warning")),
@@ -1848,12 +1873,11 @@ def _configure_packages(entropy_client, packages):
         atomscounter += 1
 
         # get needed info
-        pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
+        pkgatom = installed_repo.retrieveAtom(idpackage)
         if not pkgatom:
             continue
 
-        installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(
-            idpackage)
+        installedfrom = installed_repo.getInstalledPackageRepository(idpackage)
         if installedfrom is None:
             installedfrom = _("Not available")
         mytxt = " | %s: " % (_("Installed from"),)
@@ -1980,6 +2004,10 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                 installedfrom = _("Not available")
             on_disk_size = installed_repo.retrieveOnDiskSize(idpackage)
             pkg_size = installed_repo.retrieveSize(idpackage)
+            extra_downloads = installed_repo.retrieveExtraDownload(idpackage)
+            for extra_download in extra_downloads:
+                pkg_size += extra_download['size']
+                on_disk_size += extra_download['disksize']
             disksize = entropy.tools.bytes_into_human(on_disk_size)
             disksizeinfo = " [%s]" % (bold(str(disksize)),)
 
@@ -2021,8 +2049,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                     empty = empty, system_packages = system_packages_check)
             except DependenciesNotRemovable as err:
                 non_rm_pkg_ids = sorted([x[0] for x in err.value],
-                    key = lambda x: \
-                    entropy_client.installed_repository().retrieveAtom(x))
+                    key = lambda x: installed_repo.retrieveAtom(x))
                 # otherwise we need to deny the request
                 print_error("")
                 print_error("  %s, %s:" % (
@@ -2031,7 +2058,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                     )
                 )
                 for pkg_in in non_rm_pkg_ids:
-                    pkg_name = entropy_client.installed_repository().retrieveAtom(pkg_in)
+                    pkg_name = installed_repo.retrieveAtom(pkg_in)
                     print_error("    %s %s" % (purple("#"), teal(pkg_name),))
                 print_error("")
                 return 128, -1
@@ -2063,11 +2090,20 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
         for idpackage in set(removal_queue):
             on_disk_size = installed_repo.retrieveOnDiskSize(idpackage)
+            if on_disk_size is None:
+                on_disk_size = 0
+
             pkg_size = installed_repo.retrieveSize(idpackage)
-            if on_disk_size is not None:
-                total_removal_size += on_disk_size
-            if pkg_size is not None:
-                total_pkg_size += pkg_size
+            if pkg_size is None:
+                pkg_size = 0
+
+            extra_downloads = installed_repo.retrieveExtraDownload(idpackage)
+            for extra_download in extra_downloads:
+                pkg_size += extra_download['size']
+                on_disk_size += extra_download['disksize']
+
+            total_removal_size += on_disk_size
+            total_pkg_size += pkg_size
 
         human_removal_size = entropy.tools.bytes_into_human(total_removal_size)
         human_pkg_size = entropy.tools.bytes_into_human(total_pkg_size)
@@ -2188,13 +2224,13 @@ def _unused_packages_test(entropy_client, do_size_sort = False):
         print_info(red(" @@ ")+blue("%s ..." % (
             _("Running unused packages test, pay attention, there are false positives"),) ))
 
+    installed_repo = entropy_client.installed_repository()
     def unused_packages_test():
-        inst_repo = entropy_client.installed_repository()
-        return [x for x in inst_repo.retrieveUnusedPackageIds() if \
+        return [x for x in installed_repo.retrieveUnusedPackageIds() if \
             entropy_client.validate_package_removal(x)]
 
-    data = [(entropy_client.installed_repository().retrieveOnDiskSize(x), x, \
-        entropy_client.installed_repository().retrieveAtom(x),) for x in \
+    data = [(installed_repo.retrieveOnDiskSize(x), x, \
+        installed_repo.retrieveAtom(x),) for x in \
             unused_packages_test()]
 
     if do_size_sort:
