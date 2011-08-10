@@ -1,3 +1,27 @@
+commit 118ac09282e222d87fc2f4db90658eb4588246fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 10 10:28:57 2011 +0200
+
+    Release Entropy 1.0_rc36
+
+commit 1c2739e8d1e787a6b1a4c95af14ecbb966054e82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 10 10:25:04 2011 +0200
+
+    [entropy.spm] PortagePlugin.generate_package: change debug package file name
+
+commit 3d8e110c2ddad3e57f97812a5270775b8da1e546
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 10 10:23:05 2011 +0200
+
+    [entropy.spm] PortagePlugin.generate_package: do not return debug package file path if it's empty
+
+commit da2e5aed2153a0135e9f97723eec3915137ae35c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 22:18:06 2011 +0200
+
+    Tagging Entropy version 1.0_rc35
+
 commit b27592bc8c0fa1ee8173e043bac45493dd6a635e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 9 22:17:54 2011 +0200
