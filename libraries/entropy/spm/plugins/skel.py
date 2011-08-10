@@ -357,7 +357,7 @@ class SpmPlugin(Singleton):
 
     def generate_package(self, package, file_save_path, builtin_debug = False):
         """
-        Generate a package tarball file for given package, from running system.
+        Generate package tarball files for given package, from running system.
         All the information is recomposed from system.
 
         @param package: package name
@@ -369,7 +369,8 @@ class SpmPlugin(Singleton):
             file. If False, another package file is generated and appended to
             the return list.
         @type builtin_debug: bool
-        @return: list of package file paths, the first is the main one
+        @return: list of package file paths, the first is the main one, the
+            second in list, if available, is the debug package.
         @rtype: list
         @raise entropy.exception.SPMError: if unable to satisfy the request
         """

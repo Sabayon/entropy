@@ -809,6 +809,7 @@ class PortagePlugin(SpmPlugin):
                     return True
             return False
 
+        debug_empty = True
         for path in paths:
             try:
                 exist = os.lstat(path)
@@ -827,6 +828,8 @@ class PortagePlugin(SpmPlugin):
             if debug_tar is not None:
                 if _is_debug_path(path):
                     tar_obj = debug_tar
+                    if not tarinfo.isdir():
+                        debug_empty = False
             if tar_obj is None:
                 tar_obj = tar
 
@@ -850,9 +853,12 @@ class PortagePlugin(SpmPlugin):
         generated_package_files.append(file_save_path)
 
         if debug_tar is not None:
-            const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o644)
-            os.rename(debug_tmp_file, debug_file_save_path)
-            generated_package_files.append(debug_file_save_path)
+            if debug_empty:
+                os.remove(debug_tmp_file)
+            else:
+                const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o644)
+                os.rename(debug_tmp_file, debug_file_save_path)
+                generated_package_files.append(debug_file_save_path)
 
         for package_file in generated_package_files:
             if not (os.path.isfile(package_file) and \
