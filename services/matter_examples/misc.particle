@@ -39,7 +39,7 @@ new-useflags: yes
 # Default is: no
 removed-useflags: yes
 
-# Package pre execution script hook
+# Package pre execution script hook, executed for each package
 # Valid value is path to executable file
 # Env vars:
 # MATTER_PACKAGE_NAME       = name of the package that would be built
