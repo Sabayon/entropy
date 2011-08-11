@@ -470,13 +470,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             resolved_needed = repo.resolveNeeded(library,
                 elfclass = elfclass)
+            if resolved_needed:
+                return True
 
             if not resolved_needed and not multi_repo:
-                # sorry, can't find it
+                # sorry, can't find it, this is the base repo already
                 return _resolve_needed_content_fallback(repo, pkg_id, library)
-            elif resolved_needed and not multi_repo:
-                # no need go to through other repos, done!
-                return True
 
             for repo_id in entropy_client.repositories():
                 if repo_id == repo.repository_id():
