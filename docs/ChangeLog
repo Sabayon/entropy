@@ -1,3 +1,27 @@
+commit 2a4c8a8abfe62c7a14e2773314687d26827fc9cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 16:52:26 2011 +0200
+
+    Release Entropy 1.0_rc38
+
+commit 8af8a126457f22a380668d8c7c163e4d46cfe947
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 16:51:50 2011 +0200
+
+    [entropy.spm] fix set() usage
+
+commit 8fe39be3a47b7797afc31f3777479238ac57f18e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Aug 11 16:31:23 2011 +0200
+
+    [matter] clarify a bit var. documentation in example .particle files
+
+commit 8342c796fa391374126d7d38f13da4f74c3d947a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:26:05 2011 +0200
+
+    Tagging Entropy version 1.0_rc37
+
 commit 1a779bb2efca1d2de8281407b6c23f8905e4f5d7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 11 07:25:52 2011 +0200
