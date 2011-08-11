@@ -1,3 +1,39 @@
+commit 1a779bb2efca1d2de8281407b6c23f8905e4f5d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:25:52 2011 +0200
+
+    Release Entropy 1.0_rc37
+
+commit 0da68cf44f967235b03f6b595e3a91ce4bb23d09
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:25:07 2011 +0200
+
+    [matter] update example files
+
+commit dbff4ecc32891b7fbabb4dbbe49ca6347729055b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:24:17 2011 +0200
+
+    [todo] update TODO
+
+commit b86232a900576b388962338a07faa90037c203dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:23:35 2011 +0200
+
+    [entropy.server] fixup docstring wording
+
+commit 46cc32b7800d37d26881a345ec06daba6c39ead0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 07:16:44 2011 +0200
+
+    [entropy.qa] fix needed library resolution logic in _resolve_needed()
+
+commit 1f0da8ed260fee40dd7928e2b3b9ff307def40c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 10 10:29:06 2011 +0200
+
+    Tagging Entropy version 1.0_rc36
+
 commit 118ac09282e222d87fc2f4db90658eb4588246fb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 10 10:28:57 2011 +0200
