@@ -2,9 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - splitdebug: use separate files?
-        bump packagekit
-
     - ditch reagent and activator in favour of eit (make it usable with equo community tools too, ditch stuff from there)
         - use argparse
         - add "eit notice"
