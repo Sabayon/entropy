@@ -5248,7 +5248,7 @@ class Server(Client):
         ask = True):
         """
         Add package files to given repository. packages_data contains a list
-        of tuples composed by (path to package file, execute_injection boolean).
+        of tuples composed by (path to package files, execute_injection boolean).
         Injection is a way to avoid a package being removed from the repository
         automatically when an updated package is added.
 
