@@ -2387,7 +2387,7 @@ class PortagePlugin(SpmPlugin):
         """
         Executes packages regeneration for given atoms.
         """
-        package_paths = set()
+        package_paths = []
         runatoms = set()
         for myatom in atoms:
             mymatch = repo_db.atomMatch(myatom)
@@ -2435,7 +2435,7 @@ class PortagePlugin(SpmPlugin):
                     header = darkred(" * ")
                 )
                 continue
-            package_paths.add(pkg_list)
+            package_paths.append(pkg_list)
         packages_data = [(pkg_list, False,) for pkg_list in package_paths]
         idpackages = entropy_server.add_packages_to_repository(repo,
             packages_data, ask = etpUi['interactive'])
