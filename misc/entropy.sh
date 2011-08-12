@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #    Entropy Bash-based trigger interpreter
 #
 #
