@@ -995,7 +995,8 @@ class CalculatorsMixin:
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
         deep_deps = False, unsatisfied_deps_cache = None,
-        elements_cache = None, recursive = True, selected_matches = None):
+        elements_cache = None, post_deps_cache = None, recursive = True,
+        selected_matches = None):
 
         pkg_id, pkg_repo = matched_atom
         if (pkg_id == -1) or (pkg_repo == 1):
@@ -1007,6 +1008,9 @@ class CalculatorsMixin:
             elements_cache = set()
         if unsatisfied_deps_cache is None:
             unsatisfied_deps_cache = {}
+        if post_deps_cache is None:
+            post_deps_cache = {}
+
         if selected_matches is None:
             selected_matches = []
         deps_not_found = set()
@@ -1087,6 +1091,10 @@ class CalculatorsMixin:
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
                     build_deps, deep_deps, empty_deps, recursive,
                     selected_matches, elements_cache)
+
+            if post_dep_matches:
+                obj = post_deps_cache.setdefault(pkg_match, set())
+                obj.update(post_dep_matches)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1471,6 +1479,69 @@ class CalculatorsMixin:
 
         return client_matches
 
+    DISABLE_ASAP_SCHEDULING = os.getenv("ETP_DISABLE_ASAP_SCHEDULING")
+
+    def __get_required_packages_asap_scheduling(self, deptree, adj_map,
+        post_deps_cache):
+        """
+        Rewrite dependency tree generate by Graph in order to have
+        post-dependencies scheduled as soon as possible.
+        """
+        def _shift_deptree():
+            for lvl in sorted(deptree.keys(), reverse = True):
+                deptree[lvl+1] = deptree[lvl]
+            min_lvl = min(deptree.keys())
+            deptree[min_lvl] = tuple()
+
+        def _make_room(xlevel):
+            for lvl in sorted(deptree.keys(), reverse = True):
+                if lvl >= xlevel:
+                    deptree[lvl+1] = deptree[lvl]
+                else:
+                    break
+            deptree[xlevel] = tuple()
+
+        def _find_first_requiring(dep_match, start_level):
+            # find the closest
+            for lvl in sorted(deptree.keys(), reverse = True):
+                if lvl >= start_level:
+                    continue
+                deps = deptree[lvl]
+                for dep in deps:
+                    if dep_match in adj_map[dep]:
+                        # found !
+                        return dep
+
+        levels = {}
+        def _setup_levels():
+            for lvl, deps in deptree.items():
+                for dep in deps:
+                    levels[dep] = lvl
+        _setup_levels()
+
+        for pkg_match, post_deps in post_deps_cache.items():
+            for post_dep in post_deps:
+                level = levels[post_dep]
+                first_requiring = _find_first_requiring(post_dep, level)
+                # NOTE: this herustic only works if nothing is requiring
+                # post dependency
+                if first_requiring is None:
+                    # add it right after
+                    stick_level = levels[pkg_match] - 1
+                    if stick_level == 0:
+                        _shift_deptree()
+                        _setup_levels()
+                        stick_level = levels[pkg_match] - 1
+                        level = levels[post_dep]
+
+                    # NOTE: this can leave holes in the tree
+                    # rewrite
+                    deptree[level] = tuple((x for x in deptree[level] \
+                        if x != post_dep))
+                    if deptree[level]:
+                        _make_room(stick_level)
+                    deptree[stick_level] = (post_dep,)
+
     def _get_required_packages(self, package_matches, empty_deps = False,
         deep_deps = False, relaxed_deps = False, build_deps = False,
         quiet = False, recursive = True):
@@ -1517,6 +1588,7 @@ class CalculatorsMixin:
         sort_dep_text = _("Sorting dependencies")
         unsat_deps_cache = {}
         elements_cache = set()
+        post_deps_cache = {}
         matchfilter = set()
         for matched_atom in package_matches:
 
@@ -1548,6 +1620,7 @@ class CalculatorsMixin:
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                     build_deps = build_deps, elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
+                    post_deps_cache = post_deps_cache,
                     recursive = recursive, selected_matches = package_matches
                 )
             except DependenciesNotFound as err:
@@ -1561,6 +1634,9 @@ class CalculatorsMixin:
             del graph
             raise DependenciesNotFound(deps_not_found)
 
+        # get adjacency map before it gets destroyed by solve()
+        adj_map = dict((x.item(), set(k.item() for k in y)) \
+            for x, y in graph.get_adjacency_map().items())
         # solve depgraph and append conflicts
         deptree = graph.solve()
         if 0 in deptree:
@@ -1583,15 +1659,26 @@ class CalculatorsMixin:
             del graph
             raise DependenciesCollision(_colliding_deps)
 
+        # now use the ASAP herustic to anticipate post-dependencies
+        # as much as possible
+        if self.DISABLE_ASAP_SCHEDULING is None:
+            # NOTE: this method can leave holes in deptree
+            # they are removed right below
+            self.__get_required_packages_asap_scheduling(deptree,
+                adj_map, post_deps_cache)
+
         # reverse ketys in deptree, this allows correct order (not inverse)
         level_count = 0
         reverse_tree = {}
         for key in sorted(deptree, reverse = True):
             level_count += 1
+            # fixup possible holes
+            if not deptree[key]:
+                continue
             reverse_tree[level_count] = deptree[key]
 
         graph.destroy()
-        del deptree, graph
+        del graph
         reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
