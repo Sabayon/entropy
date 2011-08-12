@@ -229,7 +229,13 @@ class UrlFetcher(TextInterface):
             except IOError:
                 return
 
-        pid, fd = pty.fork()
+        try:
+            pid, fd = pty.fork()
+        except OSError as err:
+            const_debug_write(__name__,
+                "__fork_cmd(%s): status: %s" % (args, err,))
+            # out of pty devices
+            return 1
 
         if pid == 0:
             proc = subprocess.Popen(args, env = environ)
