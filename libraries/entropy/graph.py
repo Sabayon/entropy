@@ -412,6 +412,7 @@ class Graph(object):
                 for obj in self.__graph_map_cache.values():
                     obj._clear()
                 self.__graph_map_cache.clear()
+                self.__graph_map_cache = None
         except (NameError, AttributeError):
             pass
 
