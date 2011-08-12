@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #    Entropy Bash-based trigger interpreter
 #
 #
@@ -18,22 +18,22 @@
 
 # Pre-declared public functions
 
-function pkg_preinst() {
+pkg_preinst() {
     return 0
 }
 
-function pkg_postinst() {
+pkg_postinst() {
     return 0
 }
 
-function pkg_prerm() {
+pkg_prerm() {
     return 0
 }
 
-function pkg_postrm() {
+pkg_postrm() {
     return 0
 }
 
 # that's it, for now
-source $1
+. $1
 sandbox $2
