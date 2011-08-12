@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Entropy Hardware hash generator
 
 [[ -x "/sbin/ifconfig" ]] || exit 1
