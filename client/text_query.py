@@ -1553,6 +1553,8 @@ def print_package_info(package_id, entropy_client, entropy_repository,
             repoinfo = "[%s] " % (entropy_repository.repository_id(),)
         if show_desc_if_quiet:
             desc = ' %s' % (entropy_repository.retrieveDescription(package_id),)
+        if not extended:
+            pkgatom = entropy.dep.dep_getkey(pkgatom)
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
         return
 
