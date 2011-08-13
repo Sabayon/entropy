@@ -897,7 +897,7 @@ class PackageBuilder(object):
                 not_merged_queue.put(merge_atom)
 
         for pkg in package_queue:
-            cpv = p.cpv
+            cpv = pkg.cpv
             if cpv not in not_merged:
                 # add to build queue
                 print_info("package: %s, successfully built" % (cpv,))
