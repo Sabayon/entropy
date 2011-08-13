@@ -5498,8 +5498,9 @@ class Server(Client):
         gpg_sign_path = repo_sec.sign_file(repo, pkg_path)
         # read file content and add to 'gpg' signature
         with open(gpg_sign_path, "rb") as gpg_f:
-            return gpg_f.read()
+            gpg_signature = gpg_f.read()
         os.remove(gpg_sign_path)
+        return gpg_signature
 
     def _check_config_file_updates(self):
         self.output(
