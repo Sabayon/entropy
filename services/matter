@@ -1197,7 +1197,8 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                             built_packages,))
                         # make some room
                         print_info("")
-                        local_completed.extend(built_packages)
+                        local_completed.extend([x for x in built_packages \
+                            if x not in local_completed])
                         tainted_repositories.add(spec["repository"])
                     elif rc < 0:
                         # ignore warning and go ahead
