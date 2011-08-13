@@ -1738,6 +1738,8 @@ class CalculatorsMixin:
             return True
         return False
 
+    DISABLE_NEEDED_SCANNING = os.getenv("ETP_DISABLE_ELF_NEEDED_SCANNING")
+
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
         recursive = True, empty = False, system_packages = True,
         elf_needed_scanning = True):
@@ -1749,7 +1751,7 @@ class CalculatorsMixin:
 
         # experimental feature, make possible to override it
         # please remove in future.
-        if os.getenv("ETP_DISABLE_ELF_NEEDED_SCANNING"):
+        if self.DISABLE_NEEDED_SCANNING:
             elf_needed_scanning = False
 
         if const_debug_enabled():
