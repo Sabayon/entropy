@@ -1,3 +1,111 @@
+commit da68170b6f0759c97cc7e31d52827d98b598ed0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:51:00 2011 +0200
+
+    Release Entropy 1.0_rc39
+
+commit 2053f69223beff9b6ddb6c2cb3d6187ed857da41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:47:48 2011 +0200
+
+    [entropy.client] move os.getenv() to static region
+
+commit 8fcb3e1162beebef7ea3ec8c852ae47cb27538c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:42:49 2011 +0200
+
+    [matter] remove debug output
+
+commit eb2d47a7c441305d4af6733ac9fa0cb99cbe0c8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:42:42 2011 +0200
+
+    [matter] update example files
+
+commit 8fd355d2a464fa4f4636c7478adb8bb1ffdd1145
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:40:42 2011 +0200
+
+    [matter] implement "spm-repository-change" statement support, move default statements values to parser
+
+commit ea6797455709db856223edfc3c6bf7695176c98c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:14:10 2011 +0200
+
+    [entropy.server] also account for .asc files, if available (this is for backward compatibility)
+
+commit 4434cac6bb76cc8b0738e7143b6f8d055e901ef8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:13:41 2011 +0200
+
+    [entropy.server] _get_gpg_signature: remove stale file before returning
+
+commit e73ccf24cc96797b4608ce97e12a73b65f31267a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 10:59:20 2011 +0200
+
+    [matter] do not account built packages more than once
+
+commit 928c94ad24412b8a96ac589a4d550aa91f4d6c99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 10:59:06 2011 +0200
+
+    [matter] fix typo in for loop
+
+commit 37f6ad16b33ad239fff37efc7d55ecd6cecdd07d
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 13 00:30:06 2011 +0200
+
+    [misc] don't use non-POSIX command/keyword
+
+commit 5a67de3e30e4e9d9a989918652df330a65c0bba5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 23:36:41 2011 +0200
+
+    [entropy.fetchers] handle "out of pty devices" error, fix Sabayon bug 2620
+
+commit 8f4be276ebb3869e0915e5950ad3c88e82b6f4f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 19:29:17 2011 +0200
+
+    [entropy.client.interfaces.dep] add support for ASAP scheduling of post-dependencies
+    
+    This is a hack. As hack, it is hopefully going away soon.
+    This is a hack. It just hides broken dependencies (like libreoffice
+    vs jdom vs jdom-jaxen).
+    This is a hack. But Portage does ugly things.
+    This is a hack. But my hope is that it's going to be no longer required soon.
+
+commit e2a5c31986e4f953ff0473bdea9d6e50152529b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 19:28:37 2011 +0200
+
+    [entropy.graph] make sure cache object becomes None again
+
+commit 2b612a2b89a1268bfe9575441d15b319c16abd4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 14:29:57 2011 +0200
+
+    [misc] entropy_hwgen.sh: be POSIX
+
+commit 49d689e54ba8739bf156fb3a2e2d01478871f6c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 14:29:21 2011 +0200
+
+    [misc] entropy.sh: be POSIX
+
+commit e5b671d5f03f3d275ecd88b34e259cd0edaeadcc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 12 11:07:47 2011 +0200
+
+    [misc] fix shebang, use bash, thanks to mgorny@gentoo.org
+
+commit a37f32409ab0c13cb8b406ea9cca93176fc46914
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 11 16:52:29 2011 +0200
+
+    Tagging Entropy version 1.0_rc38
+
 commit 2a4c8a8abfe62c7a14e2773314687d26827fc9cd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 11 16:52:26 2011 +0200
