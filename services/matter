@@ -1382,7 +1382,6 @@ Matter Resources Lock file you can use to detect if matter is running:
     try:
         nsargs = parser.parse_args(sys.argv[1:])
     except IOError as err:
-        print dir(err)
         if err.errno == errno.ENOENT:
             print_error(err.strerror + ": " + err.filename)
             raise SystemExit(1)
