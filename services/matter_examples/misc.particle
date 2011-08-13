@@ -9,6 +9,11 @@ packages: sys-libs/zlib, asd-foo/foo, x11-drivers/ati-drivers, app-office/libreo
 # Mandatory, cannot be empty
 repository: community0
 
+# Allow Source Package Manager (Portage) repository change?
+# Valid values are either "yes" or "no"
+# Default is: no
+spm-repository-change: yes
+
 # Allow dependencies to be pulled in?
 # Valid values are either "yes" or "no"
 # Default is: no
