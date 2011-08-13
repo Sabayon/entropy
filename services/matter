@@ -284,34 +284,47 @@ class MatterSpec(GenericSpecFunctions):
             'dependencies': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
             },
             'downgrade': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
             },
             'keep-going': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
             },
             'new-useflags': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
             },
             'removed-useflags': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
             },
             'rebuild': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
+                'default': "no",
+            },
+            'spm-repository-change': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+                'default': "no",
             },
             'pkgpre': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
+                'default': None,
             },
             'pkgpost': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
+                'default': None,
             },
             'packages': {
                 'cb': self.always_valid,
@@ -434,7 +447,7 @@ class SpecParser:
 
         self.__plugin = MatterSpec()
         self.vital_parameters = self.__plugin.vital_parameters()
-        self.parser_data_path = self.__plugin.parser_data_path()
+        self._parser_data_path = self.__plugin.parser_data_path()
 
     def _parse_line_statement(self, line_stmt):
         try:
@@ -453,7 +466,7 @@ class SpecParser:
             key = None
             value = None
             v_key, v_value = self._parse_line_statement(line)
-            check_dict = self.parser_data_path.get(v_key)
+            check_dict = self._parser_data_path.get(v_key)
             if check_dict is not None:
                 key, value = v_key, v_value
                 old_key = key
@@ -463,7 +476,7 @@ class SpecParser:
                 if not value:
                     continue
             # gather again... key is changed
-            check_dict = self.parser_data_path.get(key)
+            check_dict = self._parser_data_path.get(key)
             if not isinstance(check_dict, dict):
                 continue
             value = check_dict['ve'](value)
@@ -478,10 +491,20 @@ class SpecParser:
                     continue
             else:
                 mydict[key] = value
-        self.validate_parse(mydict)
+        self._validate_parse(mydict)
+        self._extend_parse(mydict)
         return mydict.copy()
 
-    def validate_parse(self, mydata):
+    def _extend_parse(self, mydata):
+        """
+        Extend parsed data with default values for statements with
+        default option available.
+        """
+        for statement, opts in self._parser_data_path.items():
+            if "default" in opts and (statement not in mydata):
+                mydata[statement] = opts['default']
+
+    def _validate_parse(self, mydata):
         for param in self.vital_parameters:
             if param not in mydata:
                 raise ValueError(
@@ -618,7 +641,7 @@ class PackageBuilder(object):
         print_info("MATTER_PACKAGE_NAME = %s" % (self._package,))
 
         # run pkgpre, if any
-        pkgpre = self._params.get("pkgpre")
+        pkgpre = self._params["pkgpre"]
         if pkgpre is not None:
             print_info(
                 "spawning --pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
@@ -697,7 +720,7 @@ class PackageBuilder(object):
             queue.close()
 
         # run pkgpre, if any
-        pkgpost = self._params.get("pkgpost")
+        pkgpost = self._params["pkgpost"]
         if pkgpost is not None:
             print_info(
                 "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
@@ -775,8 +798,8 @@ class PackageBuilder(object):
             portage.versions.pkgsplit(best_installed),
             portage.versions.pkgsplit(best_visible))
 
-        allow_rebuild = self._params.get("rebuild", "no") == "yes"
-        allow_downgrade = self._params.get("downgrade", "no") == "yes"
+        allow_rebuild = self._params['rebuild'] == "yes"
+        allow_downgrade = self._params['downgrade'] == "yes"
         is_rebuild = cmp_res == 0
 
         if (cmp_res == 1) and (not allow_downgrade):
@@ -835,7 +858,7 @@ class PackageBuilder(object):
 
         # calculate dependencies, if --dependencies is not enabled
         # because we have to validate it
-        if (self._params.get("dependencies", "no") == "no") \
+        if (self._params['dependencies'] == "no") \
                 and (len(package_queue) > 1):
             # package is pulling in dependencies, but --dependencies is not
             # enabled. need to give up
@@ -846,9 +869,9 @@ class PackageBuilder(object):
             return 0
 
         # inspect use flags changes
-        allow_new_useflags = self._params.get("new-useflags", "no") == "yes"
+        allow_new_useflags = self._params['new-useflags'] == "yes"
         allow_removed_useflags = \
-            self._params.get("removed-useflags", "no") == "yes"
+            self._params['removed-useflags'] == "yes"
 
         use_flags_give_up = False
         if (not allow_new_useflags) or (not allow_removed_useflags):
@@ -877,6 +900,28 @@ class PackageBuilder(object):
 
         if use_flags_give_up:
             print_warning("cannot continue due to unmet USE flags constraint")
+            return 0
+
+        changing_repo_pkgs = []
+        for pkg in package_queue:
+            wanted_repo = pkg.repo
+            inst_atom = portage.best(vardb.match(pkg.slot_atom))
+            current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
+            if current_repo != wanted_repo:
+                changing_repo_pkgs.append(pkg.cpv+"::"+wanted_repo)
+
+        if changing_repo_pkgs:
+            print_warning("")
+            print_warning(
+                "Attention, packages are moving across SPM repositories:")
+            for pkg_atom in changing_repo_pkgs:
+                print_warning("  " + pkg_atom)
+            print_warning("")
+
+        allow_spm_repo_change = self._params['spm-repository-change'] == "yes"
+        if changing_repo_pkgs and (not allow_spm_repo_change):
+            print_warning(
+                "cannot continue due to unmet SPM repository change constraint")
             return 0
 
         print_info("USE flags constraints are met for all the queued packages")
@@ -1165,12 +1210,12 @@ def matter_main(entropy_server, nsargs, cwd, specs):
             for spec in specs:
 
                 spec_count += 1
-                keep_going = spec.get("keep-going", "no") == "yes"
+                keep_going = spec["keep-going"] == "yes"
                 local_completed = []
 
                 pkg_count = 0
-                tot_pkgs = len(spec["packages"])
-                for package in spec["packages"]:
+                tot_pkgs = len(spec['packages'])
+                for package in spec['packages']:
                     pkg_count += 1
                     builder = PackageBuilder(entropy_server, package,
                         spec, spec_count, tot_spec, pkg_count,
@@ -1199,7 +1244,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                         print_info("")
                         local_completed.extend([x for x in built_packages \
                             if x not in local_completed])
-                        tainted_repositories.add(spec["repository"])
+                        tainted_repositories.add(spec['repository'])
                     elif rc < 0:
                         # ignore warning and go ahead
                         print_info("")
@@ -1220,7 +1265,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
 
                 if local_completed and nsargs.commit:
                     rc = PackageBuilder.commit(entropy_server,
-                        spec["repository"], local_completed)
+                        spec['repository'], local_completed)
                     if exit_st == 0 and rc != 0:
                         exit_st = rc
                         if not keep_going:
