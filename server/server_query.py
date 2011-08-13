@@ -45,7 +45,8 @@ def query(myopts):
                             entropy_server,
                             repo_db,
                             installed_search = True,
-                            extended = True
+                            extended = True,
+                            quiet = etpUi['quiet']
                         )
 
                 if (not count) and (not etpUi['quiet']):
@@ -68,7 +69,8 @@ def query(myopts):
                         entropy_server,
                         repo_db,
                         installed_search = True,
-                        extended = True
+                        extended = True,
+                        quiet = etpUi['quiet']
                     )
 
                 if (not count) and (not etpUi['quiet']):
@@ -164,7 +166,8 @@ def search_tagged_packages(tags, entropy, dbconn):
             if etpUi['quiet']:
                 print_generic(dbconn.retrieveAtom(result[1]))
             else:
-                text_query.print_package_info(result[1], entropy, dbconn)
+                text_query.print_package_info(result[1], entropy, dbconn,
+                    quiet = False)
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
             print_info(blue(" %s:   " % (_("Found"),) ) + \

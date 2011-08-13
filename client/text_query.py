@@ -229,7 +229,8 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
 
         for pkg_id in sorted(pkg_ids, key = key_sorter):
             print_package_info(pkg_id, entropy_client, entropy_repository,
-                installed_search = True, extended = etpUi['verbose'])
+                installed_search = True, extended = etpUi['verbose'],
+                quiet = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
@@ -591,7 +592,7 @@ def search_belongs(files, entropy_client, entropy_repository):
                 else:
                     print_package_info(pkg_id, entropy_client,
                         entropy_repository, installed_search = True,
-                        extended = etpUi['verbose'])
+                        extended = etpUi['verbose'], quiet = etpUi['quiet'])
             if not etpUi['quiet']:
                 toc = []
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(xfile)))
@@ -691,7 +692,7 @@ def search_reverse_dependencies(atoms, entropy_client, entropy_repository):
             for pkg_id in sorted(search_results, key = key_sorter):
                 print_package_info(pkg_id, entropy_client, repo,
                     installed_search = True, strict_output = etpUi['quiet'],
-                    extended = etpUi['verbose'])
+                    extended = etpUi['verbose'], quiet = etpUi['quiet'])
 
             # print info
             if not etpUi['quiet']:
@@ -772,7 +773,7 @@ def search_required_libraries(libraries, entropy_client, entropy_repository):
 
             print_package_info(pkg_id, entropy_client, entropy_repository,
                 installed_search = True, strict_output = True,
-                extended = etpUi['verbose'])
+                extended = etpUi['verbose'], quiet = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
@@ -1164,7 +1165,8 @@ def search_package(packages, entropy_client, get_results = False,
         dbconn = entropy_client.open_repository(pkg_repo)
         from_client = pkg_repo == etpConst['clientdbid']
         print_package_info(pkg_id, entropy_client, dbconn,
-            extended = etpUi['verbose'], installed_search = from_client)
+            extended = etpUi['verbose'], installed_search = from_client,
+            quiet = etpUi['quiet'])
 
     if not etpUi['quiet']:
         toc = []
@@ -1209,7 +1211,7 @@ def search_mimetype(mimetypes, entropy_client, installed = False,
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = entropy_client.open_repository(pkg_repo)
             print_package_info(pkg_id, entropy_client, repo,
-                extended = etpUi['verbose'])
+                extended = etpUi['verbose'], quiet = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
@@ -1272,7 +1274,8 @@ def match_package(packages, entropy_client, multi_match = False,
                     print_package_info(pkg_id, entropy_client, dbconn,
                         show_repo_if_quiet = show_repo,
                             show_desc_if_quiet = show_desc,
-                                extended = etpUi['verbose'])
+                                extended = etpUi['verbose'],
+                                quiet = etpUi['quiet'])
                 found = True
 
             if not etpUi['quiet'] and not get_results:
@@ -1314,7 +1317,8 @@ def search_slotted_packages(slots, entropy_client):
             for pkg_id in sorted(results, key = key_sorter):
                 found = True
                 print_package_info(pkg_id, entropy_client, repo,
-                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
+                    extended = etpUi['verbose'], strict_output = etpUi['quiet'],
+                    quiet = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1393,7 +1397,8 @@ def search_tagged_packages(tags, entropy_client):
             found = True
             for result in sorted(results, key = key_sorter):
                 print_package_info(result[1], entropy_client, repo,
-                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
+                    extended = etpUi['verbose'],
+                    strict_output = etpUi['quiet'], quiet = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1423,7 +1428,7 @@ def search_rev_packages(revisions, entropy_client):
         for pkg_id in sorted(results, key = key_sorter):
             print_package_info(pkg_id, entropy_client, repo,
                 extended = etpUi['verbose'], strict_output = etpUi['quiet'],
-                installed_search = True)
+                installed_search = True, quiet = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
@@ -1466,7 +1471,8 @@ def search_licenses(licenses, entropy_client):
             found = True
             for pkg_id in sorted(results, key = key_sorter):
                 print_package_info(pkg_id, entropy_client, repo,
-                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
+                    extended = etpUi['verbose'],
+                    strict_output = etpUi['quiet'], quiet = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1521,7 +1527,8 @@ def search_descriptions(descriptions, entropy_client, entropy_repository):
                 print_generic(entropy_repository.retrieveAtom(pkg_id))
             else:
                 print_package_info(pkg_id, entropy_client, entropy_repository,
-                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
+                    extended = etpUi['verbose'], strict_output = False,
+                    quiet = False)
 
         if not etpUi['quiet']:
             toc = []
@@ -1534,12 +1541,12 @@ def search_descriptions(descriptions, entropy_client, entropy_repository):
 
 def print_package_info(package_id, entropy_client, entropy_repository,
     installed_search = False, strict_output = False, extended = False,
-    show_repo_if_quiet = False, show_desc_if_quiet = False):
+    quiet = False, show_repo_if_quiet = False, show_desc_if_quiet = False):
 
     # now fetch essential info
     corrupted_str = _("CORRUPTED")
     pkgatom = entropy_repository.retrieveAtom(package_id) or corrupted_str
-    if etpUi['quiet']:
+    if quiet:
         repoinfo = ''
         desc = ''
         if show_repo_if_quiet:
