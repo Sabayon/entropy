@@ -907,15 +907,18 @@ class PackageBuilder(object):
             wanted_repo = pkg.repo
             inst_atom = portage.best(vardb.match(pkg.slot_atom))
             current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
-            if current_repo != wanted_repo:
-                changing_repo_pkgs.append(pkg.cpv+"::"+wanted_repo)
+            if current_repo:
+                if current_repo != wanted_repo:
+                    changing_repo_pkgs.append(
+                        (pkg.cpv, current_repo, wanted_repo))
 
         if changing_repo_pkgs:
             print_warning("")
             print_warning(
                 "Attention, packages are moving across SPM repositories:")
-            for pkg_atom in changing_repo_pkgs:
-                print_warning("  " + pkg_atom)
+            for pkg_atom, current_repo, wanted_repo in changing_repo_pkgs:
+                print_warning("  %s [%s->%s]" % (pkg_atom,
+                    current_repo, wanted_repo,))
             print_warning("")
 
         allow_spm_repo_change = self._params['spm-repository-change'] == "yes"
