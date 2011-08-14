@@ -1239,7 +1239,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                     if rc == 0:
                         built_packages = builder.get_built_packages()
                         print_info("built packages, in queue: %s" % (
-                            built_packages,))
+                            " ".join(built_packages),))
                         # make some room
                         print_info("")
                         local_completed.extend([x for x in built_packages \
