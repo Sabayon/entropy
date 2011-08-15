@@ -1960,6 +1960,80 @@ def spawn_function(f, *args, **kwds):
         f.close()
         os._exit(0)
 
+def _fix_uid_gid(tarinfo, epath):
+    # workaround for buggy tar files
+    uname = tarinfo.uname
+    gname = tarinfo.gname
+    ugdata_valid = False
+    # the bug was caused by Portage bad quickpkg code that
+    # added gname and uname values as string representation of
+    # gid and uid respectively. So, since there are no groups and users
+    # being full numbers, if we are able to convert them to int() it means
+    # that tar metadata is fucked up.
+    try:
+        int(gname)
+        int(uname)
+    except ValueError:
+        ugdata_valid = True
+    try:
+        if ugdata_valid: # NOTE: backward compat. remove after 2012
+            # get uid/gid
+            # if not found, returns -1 that won't change anything
+            uid, gid = get_uid_from_user(uname), \
+                get_gid_from_group(gname)
+            if tarinfo.issym() and hasattr(os, "lchown"):
+                os.lchown(epath, uid, gid)
+            else:
+                os.chown(epath, uid, gid)
+    except OSError:
+        pass
+
+def apply_tarball_ownership(filepath, prefix_path):
+    """
+    Given an already extracted tarball available at prefix_path, and the
+    original tarball file path at filepath, apply files and directories
+    ownership to belonged files in prefix_path looking at tar metadata.
+    This is required because users and groups referenced in tarballs are
+    created at package setup phase during install.
+    """
+
+    tar = None
+    try:
+        try:
+            tar = tarfile.open(filepath, "r")
+        except tarfile.ReadError:
+            return
+        except EOFError:
+            return
+
+        encoded_path = prefix_path
+        if sys.hexversion < 0x3000000:
+            encoded_path = encoded_path.encode('utf-8')
+        entries = []
+
+        deleter_counter = 3
+        for tarinfo in tar:
+            epath = os.path.join(encoded_path, tarinfo.name)
+
+            tar.chown(tarinfo, epath)
+            _fix_uid_gid(tarinfo, epath)
+            if not os.path.islink(epath):
+                # make sure we keep the same permissions
+                tar.chmod(tarinfo, epath)
+
+            deleter_counter -= 1
+            if deleter_counter == 0:
+                del tar.members[:]
+                deleter_counter = 3
+
+        del tar.members[:]
+
+    finally:
+        if tar is not None:
+            del tar.members[:]
+            tar.close()
+
+
 def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     """
     Unpack tarball file (supported compression algorithm is given by tarfile
@@ -1979,26 +2053,6 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         extract_path = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
-
-    def fix_uid_gid(tarinfo, epath):
-        # workaround for buggy tar files
-        uname = tarinfo.uname
-        gname = tarinfo.gname
-        ugdata_valid = False
-        try:
-            int(gname)
-            int(uname)
-        except ValueError:
-            ugdata_valid = True
-        try:
-            if ugdata_valid: # NOTE: backward compat. remove after 2012
-                # get uid/gid
-                # if not found, returns -1 that won't change anything
-                uid, gid = get_uid_from_user(uname), \
-                    get_gid_from_group(gname)
-                os.lchown(epath, uid, gid)
-        except OSError:
-            pass
 
     tar = None
     extracted_something = False
@@ -2021,6 +2075,8 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         deleter_counter = 3
         for tarinfo in tar:
             epath = os.path.join(encoded_path, tarinfo.name)
+            entries.append((tarinfo, epath,))
+
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
@@ -2028,8 +2084,6 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                     os.makedirs(epath, 0o777)
                 except EnvironmentError:
                     pass
-                entries.append((tarinfo, epath,))
-
 
             tar.extract(tarinfo, encoded_path)
             extracted_something = True
@@ -2037,7 +2091,6 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
             if deleter_counter == 0:
                 del tar.members[:]
                 deleter_counter = 3
-            entries.append((tarinfo, epath,))
 
         del tar.members[:]
 
@@ -2046,7 +2099,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         for tarinfo, epath in entries:
             try:
                 tar.chown(tarinfo, epath)
-                fix_uid_gid(tarinfo, epath)
+                _fix_uid_gid(tarinfo, epath)
                 # mode = tarinfo.mode
                 # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
                 # which is setuid. Symlinks don't need chmod. PERIOD!
