@@ -18,6 +18,10 @@
 
 # Pre-declared public functions
 
+pkg_setup() {
+    return 0
+}
+
 pkg_preinst() {
     return 0
 }
