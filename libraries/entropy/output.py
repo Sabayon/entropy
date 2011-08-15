@@ -213,7 +213,7 @@ def xterm_title_reset():
                 os.getenv('LOGNAME', ''),
                 os.getenv('HOSTNAME', '').split('.', 1)[0],
                 pwd)
-    xterm_title(default_xterm_title)
+    xterm_title(default_xterm_title, raw = True)
 
 def notitles():
     """
