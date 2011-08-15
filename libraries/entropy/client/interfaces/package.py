@@ -3216,6 +3216,19 @@ class Package:
         del pkgdata
         return 0
 
+    def _setup_step(self):
+        pkgdata = self.pkgmeta['triggers'].get('install')
+        action_data = self.pkgmeta['triggers'].get('install')
+        if pkgdata:
+            trigger = self._entropy.Triggers(self._action, 'setup',
+                pkgdata, action_data)
+            do = trigger.prepare()
+            if do:
+                trigger.run()
+            trigger.kill()
+        del pkgdata
+        return 0
+
     def _pre_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
         action_data = self.pkgmeta['triggers'].get('install')
@@ -3505,6 +3518,14 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._post_install_step()
 
+        def do_setup():
+            self._xterm_title += ' %s: %s' % (
+                _("Setup"),
+                self.pkgmeta['atom'],
+            )
+            self._entropy.set_title(self._xterm_title)
+            return self._setup_step()
+
         def do_preinstall():
             self._xterm_title += ' %s: %s' % (
                 _("Preinstall"),
@@ -3557,6 +3578,7 @@ class Package:
             "remove": do_remove,
             "cleanup": do_cleanup,
             "postinstall": do_postinstall,
+            "setup": do_setup,
             "preinstall": do_preinstall,
             "postremove": do_postremove,
             "postremove_install": do_postremove_install,
@@ -3948,6 +3970,7 @@ class Package:
         self.pkgmeta['steps'].append("unpack")
         # preinstall placed before preremove in order
         # to respect Spm order
+        self.pkgmeta['steps'].append("setup")
         self.pkgmeta['steps'].append("preinstall")
         self.pkgmeta['steps'].append("install")
         if self.pkgmeta['removeidpackage'] != -1:

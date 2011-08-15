@@ -28,11 +28,12 @@ class Trigger:
     """
     Entropy Client Package installation phases trigger functions.
     The place where Source Package Manager (SPM) is called in order to
-    work out installation, removal phases (post-install, pre-install,
+    work out installation, removal phases (setup, pre-install, post-install,
     post-remove, etc).
     """
 
-    VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
+    VALID_PHASES = ("setup", "preinstall", "postinstall", "preremove",
+        "postremove",)
 
     def __init__(self, entropy_client, action, phase, package_metadata,
         action_metadata):
@@ -139,6 +140,27 @@ class Trigger:
             functions.append(self._trigger_call_ext_postinstall)
         return functions
 
+    def _setup(self):
+        """
+        The setup phase generator.
+        """
+        functions = []
+        if self._spm is not None:
+            spm_class = self._entropy.Spm_class()
+            phases_map = spm_class.package_phases_map()
+            append_setup = False
+            if self._pkgdata['spm_phases'] != None:
+                if "setup" in self._pkgdata['spm_phases']:
+                    append_setup = True
+            else:
+                append_setup = True
+            if append_setup:
+                functions.append(self._trigger_spm_setup)
+
+        if self._pkgdata['trigger']:
+            functions.append(self._trigger_call_ext_setup)
+        return functions
+
     def _preinstall(self):
         """
         The preinstall phases generator.
@@ -147,28 +169,13 @@ class Trigger:
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
-            found_preinstall = False
             while True:
                 if self._pkgdata['spm_phases'] != None:
                     if phases_map.get('preinstall') not \
                         in self._pkgdata['spm_phases']:
                         break
                 functions.append(self._trigger_spm_preinstall)
-                found_preinstall = True
                 break
-            # if found_preinstall is False, we have to call setup, if
-            # available. Otherwise, the spm package setup phase is never
-            # called.
-            append_setup = False
-            if not found_preinstall:
-                if self._pkgdata['spm_phases'] != None:
-                    if "setup" in self._pkgdata['spm_phases']:
-                        append_setup = True
-                else:
-                    append_setup = True
-            if append_setup:
-                functions.append(self._trigger_spm_setup)
-
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_preinstall)
@@ -226,6 +233,8 @@ class Trigger:
 
         return functions
 
+    def _trigger_call_ext_setup(self):
+        return self._trigger_call_ext_generic()
 
     def _trigger_call_ext_preinstall(self):
         return self._trigger_call_ext_generic()
@@ -398,6 +407,7 @@ class Trigger:
 
         def __get_sh_stage(self, stage):
             mydict = {
+                "setup": "pkg_setup",
                 "preinstall": "pkg_preinst",
                 "postinstall": "pkg_postinst",
                 "preremove": "pkg_prerm",
