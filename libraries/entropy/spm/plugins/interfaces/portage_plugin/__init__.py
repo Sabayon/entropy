@@ -2100,6 +2100,7 @@ class PortagePlugin(SpmPlugin):
             package, "temp/environment")
 
         if os.path.isfile(env_file):
+            # setup phase already called
             return 0
 
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
