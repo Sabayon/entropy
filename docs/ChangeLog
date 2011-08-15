@@ -1,3 +1,79 @@
+commit 5bed18a983b2312001f9178f131a3f77c9df468f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:37:39 2011 +0200
+
+    Release Entropy 1.0_rc40
+
+commit 957679109e9270bb8865fde89b0b9800cecabffe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:36:14 2011 +0200
+
+    [entropy.client.interfaces.package] re-apply ownership to files after setup phase
+    
+    The setup phase of SPM is where users and groups get added.
+    Having the package already unpacked causes tar to not apply correct
+    ownership to files and directories. This commit fixes it.
+
+commit 04f00f8e94ce089648e0e581837f461349f8bcdd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:35:47 2011 +0200
+
+    [misc] add pkg_setup phase support
+
+commit 8465cb7bc1e4e1be749330d931d22471d52ab78c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:35:13 2011 +0200
+
+    [entropy.client.triggers] expose setup phase directly (and not hide it inside preinstall)
+
+commit 4a3748dbfdca72258a7a6c3ae49ee37511c46b68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:34:07 2011 +0200
+
+    [entropy.spm] PortagePlugin: add comment
+
+commit b6b4c0c959c3aeace567099b2e542522bb2575bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 16:33:48 2011 +0200
+
+    [entropy.tools] add apply_tarball_ownership
+
+commit 714fe7f8007e1765c4e0fafbe5d0345aff450b74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 15 10:43:52 2011 +0200
+
+    [entropy.output] xterm_title_reset: call xterm_title using raw=True
+
+commit db0a4143edc90ca69491f900a0e202bc016eace0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 14 12:50:28 2011 +0200
+
+    [matter] be more explicit when printing about packages moving across SPM repos
+
+commit 398ebb2a6edc8196cc51fa355a86e740a3fced2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 14 11:38:17 2011 +0200
+
+    [matter] fine tune output
+
+commit 82cdf227e2a78edb84cc46b3fc84d0a8c67aebdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 15:29:59 2011 +0200
+
+    [equo] when using "equo search --quiet" only print package keys (use --verbose for full atoms)
+
+commit fb4eb3eb0a1e2131edb6daa0341850349658c494
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 15:29:30 2011 +0200
+
+    [client] print_package_info: add keyword arg "quiet"
+
+commit 783cae8302c22f95c781ccb1db051f12889fc5bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 13 11:51:07 2011 +0200
+
+    Tagging Entropy version 1.0_rc39
+
 commit da68170b6f0759c97cc7e31d52827d98b598ed0f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 13 11:51:00 2011 +0200
