@@ -3227,6 +3227,13 @@ class Package:
                 trigger.run()
             trigger.kill()
         del pkgdata
+
+        # NOTE: fixup permissions in the image directory
+        # the setup phase could have created additional users and groups
+        package_path = self.pkgmeta['pkgpath']
+        prefix_dir = self.pkgmeta['imagedir']
+        entropy.tools.apply_tarball_ownership(package_path, prefix_dir)
+
         return 0
 
     def _pre_remove_step(self):
