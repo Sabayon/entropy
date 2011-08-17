@@ -111,10 +111,14 @@ def query(myopts):
                     rc = 1
         elif cmd == "revdeps":
             rc = 0
-            for repository_id in entropy_server.repositories():
-                repo_db = entropy_server.open_repository(repository_id)
-                if text_query.search_reverse_dependencies(myopts, entropy_server, repo_db) != 0:
-                    rc = 1
+            for dependency in myopts:
+                for repository_id in entropy_server.repositories():
+                    repo_db = entropy_server.open_repository(repository_id)
+                    pkg_id, pkg_rc = repo_db.atomMatch(dependency)
+                    if pkg_id != -1:
+                        if text_query.search_reverse_dependencies([dependency],
+                                entropy_server, repo_db) != 0:
+                            rc = 1
         elif cmd == "list":
             rc = 0
             for repository_id in entropy_server.repositories():
