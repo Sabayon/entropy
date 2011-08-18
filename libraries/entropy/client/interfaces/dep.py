@@ -1538,7 +1538,7 @@ class CalculatorsMixin:
                     # rewrite
                     deptree[level] = tuple((x for x in deptree[level] \
                         if x != post_dep))
-                    if deptree[level]:
+                    if deptree[stick_level]:
                         _make_room(stick_level)
                     deptree[stick_level] = (post_dep,)
 
