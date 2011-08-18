@@ -2369,7 +2369,15 @@ def _libraries_test(entropy_client, listfiles = False, dump = False):
 
     atomsdata = set()
     if not etpUi['quiet']:
-        print_info(darkgreen(" @@ ")+purple("%s:" % (_("Libraries/Executables statistics"),) ))
+
+        if not (brokenlibs or pkgs_matched):
+            print_info(red(" @@ ")+blue("%s." % (_("System is healthy"),) ))
+            restore_qstats()
+            return 0, 0
+
+        print_info(darkgreen(" @@ ") + purple("%s:" % (
+            _("Libraries/Executables statistics"),) ))
+
         if brokenlibs:
             print_info(brown(" ## ")+teal("%s:" % (_("Not matched"),) ))
             brokenlibs = sorted(brokenlibs)
