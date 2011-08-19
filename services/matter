@@ -951,14 +951,8 @@ class PackageBuilder(object):
                 print_info("package: %s, successfully built" % (cpv,))
                 pkg_queue.put(cpv)
 
-        # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
-        # sys.exit() at the end.
-        # Fixed in Portage >=2.2_alpha50
-        sys_exit = sys.exit
-        sys.exit = lambda x: None
         post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
             emerge_trees, mtimedb, retval)
-        sys.exit = sys_exit
 
         subprocess.call(["env-update"])
         print_info("portage spawned, return value: %d" % (retval,))
