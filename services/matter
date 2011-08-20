@@ -25,7 +25,7 @@ from entropy.exceptions import PermissionDenied
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
     const_get_stringtype
 from entropy.output import print_info, print_error, print_warning, \
-    purple, darkgreen
+    purple, darkgreen, is_stdout_a_tty
 from entropy.exceptions import InvalidAtom, SPMError
 from entropy.server.interfaces import Server
 
@@ -837,9 +837,14 @@ class PackageBuilder(object):
         if "--ask" in myopts:
             print_warning("cannot use --ask emerge argument, you idiot")
             del myopts["--ask"]
-        spinner = None
-        if ("--quiet" not in myopts) or ("--nospinner" not in myopts):
-            spinner = stdout_spinner()
+        spinner = stdout_spinner()
+        if "--quiet" in myopts:
+            spinner.update = spinner.update_basic
+        elif "--nospinner" in myopts:
+            spinner.update = spinner.update_basic
+        if emerge_settings.get("TERM") == "dumb" or not is_stdout_a_tty():
+            spinner.update = spinner.update_basic
+
         params = create_depgraph_params(myopts, myaction)
         success, graph, favorites = backtrack_depgraph(emerge_settings,
             emerge_trees, myopts, params, myaction, myfiles, spinner)
