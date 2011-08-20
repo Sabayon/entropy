@@ -148,7 +148,8 @@ Fabio Erculiani <lxnay@sabayon.org>
 
 =head1 SEE ALSO
 
-reagent(1), activator(1)};
+reagent(1), activator(1)
+};
 }
 
 sub conv {

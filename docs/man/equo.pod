@@ -47,7 +47,7 @@ print version
 
 disable colorized output
 
-=item B<--color>
+=item [1] B<--color>
 
 force colorized output
 

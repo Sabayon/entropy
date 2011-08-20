@@ -20,6 +20,7 @@ my @strs;
 
 # command line arg:
 # -p	generate pod file
+# -w	generate in MediaWiki format
 
 # pass to stdin equo --help (English),
 # you may use: LANG=en_US.UTF-8 equo | perl <this script>
@@ -31,8 +32,16 @@ if (@ARGV and $ARGV[0] eq "-p") {
 	my $conv = Pod->new(\@strs);
 	$conv->generate;
 }
+elsif (@ARGV and $ARGV[0] eq "-w") {
+	require Wiki;
+	@strs = parse_input();
+	
+	my $conv = Wiki->new(\@strs);
+	$conv->generate;
+}
 else {
-	print "bad command, use -p\n";
+	say "usage: equo --help | perl $0 <option>";
+	say "available options: -p (POD), -w (Wiki)";
 	exit 1;
 }
 
@@ -73,27 +82,6 @@ sub parse_input {
 			$cmd = "";
 			$desc = $line;
 		}
-		## hop <branch>	upgrade your distribution to a new release (branch)
-		#if ($line =~ /^(\S+ <.+>)\s*(.*)/) {
-			#$cmd = $1;
-			#$desc = $2;
-		#}
-		## notice [repos]	repository notice board reader
-		#elsif ($line =~ /^(\S+ \[.+\])\s*(.*)/) {
-			#$cmd = $1;
-			#$desc = $2;
-		#}
-		## search		search packages in repositories
-		#elsif ($line =~ /^(\S+)\s*(.*)/) {
-			#$cmd = $1;
-			#$desc = $2;
-		#}
-		#else {
-			## ?
-			#$level = 0;
-			#$cmd = "";
-			#$desc = $line;
-		#}
 		
 		push @strs, { indent => $level, command => $cmd, desc => $desc };
 	}
