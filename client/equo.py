@@ -288,7 +288,7 @@ help_opts_extended = [
             (3, 'repo-download-unlock', 1, _('unlock the current repository database (client-side)')),
             (3, 'repo-lock-status', 1, _('show current lock status')),
             (3, 'tidy', 3, _('remove binary packages not in repositories and expired')),
-            (3, 'vacuum', 3, _('clean unavaiable packages from mirrors (similar to tidy, but more nazi)')),
+            (3, 'vacuum', 3, _('clean unavailable packages from mirrors (similar to tidy, but more nazi)')),
                 (4, '--days=<days>', 2, _('expiration days [default is: 0, dangerous!]')),
 
         None,

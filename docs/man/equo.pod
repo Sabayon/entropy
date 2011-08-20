@@ -1059,7 +1059,7 @@ remove binary packages not in repositories and expired
 
 =item [3] B<vacuum>
 
-clean unavaiable packages from mirrors (similar to tidy, but more nazi)
+clean unavailable packages from mirrors (similar to tidy, but more nazi)
 
 
 =over

@@ -137,7 +137,7 @@ same as sync, but put repository database ONLY into a dummy repository
 
 =item B<vacuum>
 
-clean unavaiable packages from mirrors (similar to tidy, but more nazi)
+clean unavailable packages from mirrors (similar to tidy, but more nazi)
 
 =over
 
