@@ -1,3 +1,51 @@
+commit 81faac522bb4d6ac94118c0e3b47a1c21b6d03ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 14:01:23 2011 +0200
+
+    Release Entropy 1.0_rc42
+
+commit ff23cadda8f67da6c482891a49852798daa7cd1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 13:44:03 2011 +0200
+
+    [matter-scheduler] do not use "source" but rather "."
+
+commit 15e11cc4efe7a9cb7c8d09c4122f314825f4c113
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 13:43:30 2011 +0200
+
+    [matter-scheduler] also do env-update && source /etc/profile
+
+commit 02fc5a565629443fafb051c51381a0d56d0c4f7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 13:42:57 2011 +0200
+
+    [matter] make Entropy colorized output settings affect Portage as well
+
+commit ac83742c98f6908cafa1b6f0742b253199ced572
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 13:27:31 2011 +0200
+
+    [matter] fixup emerge spinner setup
+
+commit c64a0d19a0717808ffab2de12e53bf96e0de4460
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 19 21:52:22 2011 +0200
+
+    [matter] drop workaround for broken sys-apps/portage's post_emerge(), not needed anymore
+
+commit 9f62fc847435914c72714a2ee1aefd5627348d78
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 18 20:08:28 2011 +0200
+
+    [equo] improve "libtest" output
+
+commit c17d51e208717786567f905047df3c92e971f82c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 18 17:53:54 2011 +0200
+
+    Tagging Entropy version 1.0_rc41
+
 commit a70b02610c0c15a9940bad58b72e85dc96648037
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 18 17:53:44 2011 +0200
