@@ -1459,10 +1459,14 @@ class Server(object):
             remote_dir = self._entropy.complete_remote_package_relative_path(
                 rel_path, repository_id)
 
+            handlers_data = {
+                'branch': branch,
+                'download': rel_path,
+            }
             uploader = self.TransceiverServerHandler(self._entropy, [uri],
                 myqueue, critical_files = myqueue,
-                txc_basedir = remote_dir,
-                handlers_data = {'branch': branch }, repo = repository_id)
+                txc_basedir = remote_dir, copy_herustic_support = True,
+                handlers_data = handlers_data, repo = repository_id)
 
             xerrors, xm_fine_uris, xm_broken_uris = uploader.go()
             if xerrors:
@@ -1526,11 +1530,15 @@ class Server(object):
             if not os.path.isdir(local_basedir):
                 self._entropy._ensure_dir_path(local_basedir)
 
+            handlers_data = {
+                'branch': branch,
+                'download': rel_path,
+            }
             downloader = self.TransceiverServerHandler(
                 self._entropy, [uri], myqueue,
                 critical_files = myqueue,
                 txc_basedir = remote_dir, local_basedir = local_basedir,
-                handlers_data = {'branch': branch }, download = True,
+                handlers_data = handlers_data, download = True,
                 repo = repository_id)
 
             xerrors, xm_fine_uris, xm_broken_uris = downloader.go()

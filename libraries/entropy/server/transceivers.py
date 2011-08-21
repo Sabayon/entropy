@@ -17,14 +17,14 @@ from entropy.transceivers.exceptions import TransceiverConnectionError
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.transceivers import EntropyTransceiver
-from entropy.tools import print_traceback, is_valid_md5, compare_md5
+from entropy.tools import print_traceback, is_valid_md5, compare_md5, md5sum
 
 class TransceiverServerHandler:
 
     def __init__(self, entropy_interface, uris, files_to_upload,
         download = False, remove = False, txc_basedir = None,
         local_basedir = None, critical_files = None,
-        handlers_data = None, repo = None):
+        handlers_data = None, repo = None, copy_herustic_support = False):
 
         if critical_files is None:
             critical_files = []
@@ -57,6 +57,10 @@ class TransceiverServerHandler:
             self.repo = self._entropy.repository()
         if self.remove:
             self.download = False
+        self._copy_herustic = copy_herustic_support
+        if self._copy_herustic and (self.download or self.remove):
+            raise AttributeError(
+                "copy_herustic_support can be enabled only for uploads")
 
         if not txc_basedir:
             raise AttributeError("invalid txc_basedir passed")
@@ -157,9 +161,9 @@ class TransceiverServerHandler:
         broken = set()
         fail = False
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        action = 'upload'
+        action = 'push'
         if self.download:
-            action = 'download'
+            action = 'pull'
         elif self.remove:
             action = 'remove'
 
@@ -202,6 +206,23 @@ class TransceiverServerHandler:
                     syncer = handler.delete
                     myargs = (remote_path,)
 
+                fallback_syncer, fallback_args = None, None
+                # upload -> remote copy herustic support
+                # if a package file might have been already uploaded
+                # to remote mirror, try to look in other repositories'
+                # package directories if a file, with the same md5 and name
+                # is already available. In this case, use remote copy instead
+                # of upload to save bandwidth.
+                if self._copy_herustic and (syncer == handler.upload):
+                    # copy herustic support enabled
+                    # we are uploading
+                    new_syncer, new_args = self._copy_herustic_support(
+                        handler, mypath, base_dir, remote_path)
+                    if new_syncer is not None:
+                        fallback_syncer, fallback_args = syncer, myargs
+                        syncer, myargs = new_syncer, new_args
+                        action = "copy"
+
                 counter += 1
                 tries = 0
                 done = False
@@ -215,7 +236,7 @@ class TransceiverServerHandler:
                             darkgreen(str(tries)),
                             blue(str(counter)),
                             bold(str(maxcount)),
-                            blue(action+"ing"),
+                            blue(action),
                             red(os.path.basename(mypath)),
                         ),
                         importance = 0,
@@ -223,6 +244,11 @@ class TransceiverServerHandler:
                         header = red(" @@ ")
                     )
                     rc = syncer(*myargs)
+                    if (not rc) and (fallback_syncer is not None):
+                        # if we have a fallback syncer, try it first
+                        # before giving up.
+                        rc = fallback_syncer(*myargs)
+
                     if rc and not (self.download or self.remove):
                         remote_md5 = handler.get_md5(remote_path)
                         rc = self.handler_verify_upload(mypath, uri,
@@ -304,15 +330,77 @@ class TransceiverServerHandler:
 
         return fail, fine, broken
 
+    def _copy_herustic_support(self, handler, local_path,
+            txc_basedir, remote_path):
+        """
+        Determine if it's possible to remote copy the package from other
+        configured repositories to save bandwidth.
+        This herustic only works with package files, not repository db files.
+        Thus, it should be only enabled for these kind of uploads.
+        """
+        pkg_download = self.handlers_data.get('download')
+        if pkg_download is None:
+            # unsupported, we need at least package "download" metadatum
+            # to be able to reconstruct a valid remote URI
+            return None, None
+
+        current_repository_id = self.repo
+        available_repositories = self._entropy.available_repositories()
+        test_repositories = []
+        for repository_id, repo_meta in available_repositories.items():
+            if current_repository_id == repository_id:
+                # not me
+                continue
+            if repository_id == etpConst['clientserverrepoid']:
+                # __system__ repository doesn't have anything remotely
+                # it's a fake repo, skip
+                continue
+            # In order to take advantage of remote copy, it is also required
+            # that current working uri (handler.get_uri()) is also a packages
+            # mirror of the other repository.
+            if handler.get_uri() not in repo_meta['pkg_mirrors']:
+                # no way
+                continue
+            test_repositories.append(repository_id)
+
+        if not test_repositories:
+            # sorry!
+            return None, None
+
+        test_repositories.sort()
+
+        local_path_filename = os.path.basename(local_path)
+        local_md5 = None
+        for repository_id in test_repositories:
+            repo_txc_basedir = \
+                self._entropy.complete_remote_package_relative_path(
+                    pkg_download, repository_id)
+            test_remote_path = repo_txc_basedir + "/" + local_path_filename
+            if not handler.is_file(test_remote_path):
+                # not found on this packages mirror
+                continue
+            # then check md5 and compare
+            remote_md5 = handler.get_md5(test_remote_path)
+            if not const_isstring(remote_md5):
+                # transceiver or remote server doesn't support md5sum()
+                # so cannot verify the integrity
+                continue
+            if local_md5 is None:
+                local_md5 = md5sum(local_path)
+            if local_md5 == remote_md5:
+                # yay! we can copy over!
+                return handler.copy, (test_remote_path, remote_path)
+
+        return None, None
 
     def go(self):
 
         broken_uris = set()
         fine_uris = set()
         errors = False
-        action = 'upload'
+        action = 'push'
         if self.download:
-            action = 'download'
+            action = 'pull'
         elif self.remove:
             action = 'remove'
 
