@@ -1,3 +1,85 @@
+commit 9366621d90e600874cfa3c1a284be72503cecd11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:23:02 2011 +0200
+
+    Release Entropy 1.0_rc43
+
+commit 13c3b7513d5c2664230e5effe8be8522635d7652
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:17:48 2011 +0200
+
+    [entropy.server.mirrors] implement herustic able to use remote file copy when possible
+    
+    When dealing with multiple repositories, it is possible that a package file
+    gets uploaded multiple times when moved from a repository to another.
+    In this scenario, there is a waste of upload bandwidth. This commit
+    implements a simple herustic that is able to determine if it's possible
+    to copy the file remotely instead of uploading it, if and only if:
+    
+    - package file with the same name is already available on another
+      tracked repository sharing the same mirror URI
+    - local package and remote package have the same md5 hash
+
+commit a61f6b99cc567b3aec8a9db36f8e454e6e34cd47
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:16:23 2011 +0200
+
+    [entropy.transceivers] EntropyFtpUriHandler: fix undefined reference
+
+commit 1446115d33eae2e1d9f644d211596e30fcfdbe94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:13:56 2011 +0200
+
+    [entropy.transceivers] implement remote copy method for all transceivers (similar to rename())
+
+commit 9c55829d00cfe6abe3e61002751432e01cf1671f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:11:22 2011 +0200
+
+    [entropy.transceivers] EntropyFileUriHandler.rename: fix typo
+
+commit 9bb680ea67ea9432ca9636675c3aabd609f24726
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:02:38 2011 +0200
+
+    [activator] tweak commit message file name
+
+commit 0210ee7b97a86dcd513c06fe288a4ba138007e7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 11:13:45 2011 +0200
+
+    [entropy.server.transceivers] code style update
+
+commit 247e6fcc102d89158fe36aaefc9bb07cf2d7177a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 10:53:33 2011 +0200
+
+    [services] call env-update with full path
+
+commit d490a84b8429e7d712e8d395cf0ec8284e150894
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 20 21:17:36 2011 +0200
+
+    [po] update Polish translation
+
+commit bc4e780274f6383678849de19e7022a30a04abac
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 20 21:15:09 2011 +0200
+
+    [misc] fix some typos in equo and manual pages
+
+commit a4bda31855caa62adeac8650e27f93677e4e61c2
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sat Aug 20 18:14:13 2011 +0200
+
+    [man] small correction in manual page, update POD (etc.) generator
+
+commit 97f4a3d6f9a1ce832829c9310f6d49e30340a96a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 20 14:01:31 2011 +0200
+
+    Tagging Entropy version 1.0_rc42
+
 commit 81faac522bb4d6ac94118c0e3b47a1c21b6d03ec
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 20 14:01:23 2011 +0200
