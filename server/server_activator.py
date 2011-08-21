@@ -129,7 +129,7 @@ def _sync(entropy_server, options, just_tidy, as_repository_id):
 
                 if (not do_noask) and rss_enabled:
                     tmp_fd, tmp_commit_path = tempfile.mkstemp(
-                        prefix="activator._sync")
+                        prefix="activator._sync", suffix=".COMMIT_MSG")
                     with os.fdopen(tmp_fd, "w") as tmp_f:
                         tmp_f.write(DEFAULT_REPO_COMMIT_MSG)
                         if successfull_mirrors:
