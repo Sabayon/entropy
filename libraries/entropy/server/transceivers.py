@@ -31,7 +31,7 @@ class TransceiverServerHandler:
         if handlers_data is None:
             handlers_data = {}
 
-        self.Entropy = entropy_interface
+        self._entropy = entropy_interface
         if not isinstance(uris, list):
             raise AttributeError("uris must be a list instance")
         if not isinstance(files_to_upload, (list, dict)):
@@ -54,7 +54,7 @@ class TransceiverServerHandler:
         self.remove = remove
         self.repo = repo
         if self.repo == None:
-            self.repo = self.Entropy.repository()
+            self.repo = self._entropy.repository()
         if self.remove:
             self.download = False
 
@@ -65,7 +65,7 @@ class TransceiverServerHandler:
         if not local_basedir:
             # default to database directory
             self.local_basedir = os.path.dirname(
-                self.Entropy._get_local_repository_file(self.repo))
+                self._entropy._get_local_repository_file(self.repo))
         else:
             self.local_basedir = local_basedir
 
@@ -77,7 +77,7 @@ class TransceiverServerHandler:
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-        self.Entropy.output(
+        self._entropy.output(
             "[%s|#%s|(%s/%s)] %s: %s" % (
                 blue(crippled_uri),
                 darkgreen(str(tries)),
@@ -100,7 +100,7 @@ class TransceiverServerHandler:
             if valid_md5: # seems valid
                 ckres = compare_md5(local_filepath, remote_md5)
             if ckres:
-                self.Entropy.output(
+                self._entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -118,7 +118,7 @@ class TransceiverServerHandler:
             # ouch!
             elif not valid_md5:
                 # mmmh... malformed md5, try with handlers
-                self.Entropy.output(
+                self._entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -133,7 +133,7 @@ class TransceiverServerHandler:
                     header = brown(" @@ ")
                 )
             else: # it's really bad!
-                self.Entropy.output(
+                self._entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -167,7 +167,7 @@ class TransceiverServerHandler:
             txc = EntropyTransceiver(uri)
             if const_isnumber(self.speed_limit):
                 txc.set_speed_limit(self.speed_limit)
-            txc.set_output_interface(self.Entropy)
+            txc.set_output_interface(self._entropy)
         except TransceiverConnectionError:
             print_traceback()
             return True, fine, broken # issues
@@ -209,7 +209,7 @@ class TransceiverServerHandler:
 
                 while tries < 5:
                     tries += 1
-                    self.Entropy.output(
+                    self._entropy.output(
                         "[%s|#%s|(%s/%s)] %s: %s" % (
                             blue(crippled_uri),
                             darkgreen(str(tries)),
@@ -228,7 +228,7 @@ class TransceiverServerHandler:
                         rc = self.handler_verify_upload(mypath, uri,
                             counter, maxcount, tries, remote_md5 = remote_md5)
                     if rc:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                         blue(crippled_uri),
                                         darkgreen(str(tries)),
@@ -246,7 +246,7 @@ class TransceiverServerHandler:
                         fine.add(uri)
                         break
                     else:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                         blue(crippled_uri),
                                         darkgreen(str(tries)),
@@ -265,7 +265,7 @@ class TransceiverServerHandler:
 
                 if not done:
 
-                    self.Entropy.output(
+                    self._entropy.output(
                         "[%s|(%s/%s)] %s %s: %s - %s: %s" % (
                                 blue(crippled_uri),
                                 blue(str(counter)),
@@ -282,7 +282,7 @@ class TransceiverServerHandler:
                     )
 
                     if mypath not in self.critical_files:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "[%s|(%s/%s)] %s: %s, %s..." % (
                                 blue(crippled_uri),
                                 blue(str(counter)),
@@ -319,7 +319,7 @@ class TransceiverServerHandler:
         for uri in self.uris:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            self.Entropy.output(
+            self._entropy.output(
                 "[%s|%s] %s..." % (
                     blue(crippled_uri),
                     brown(action),
@@ -330,7 +330,7 @@ class TransceiverServerHandler:
                 header = blue(" @@ ")
             )
 
-            self.Entropy.output(
+            self._entropy.output(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),
                     brown(action),
