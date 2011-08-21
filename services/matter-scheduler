@@ -17,7 +17,7 @@ cd "${PARTICLES_DIR}" || exit 1
 git pull || exit 1
 particles=$(find "${PARTICLES_DIR}" -name "*.particle" | xargs)
 if [ -n "${particles}" ]; then
-    env-update
+    /usr/sbin/env-update
     . /etc/profile
     matter ${MATTER_ARGS} ${particles}
     exit ${?}
