@@ -160,7 +160,7 @@ class EntropyFileUriHandler(EntropyUriHandler):
 
     def rename(self, remote_path_old, remote_path_new):
         remote_ptr_old = self._setup_remote_path(remote_path_old)
-        remote_ptr_new = self._setup_remote_path(remote_path_old)
+        remote_ptr_new = self._setup_remote_path(remote_path_new)
         try:
             os.rename(remote_ptr_old, remote_ptr_new)
         except OSError:
