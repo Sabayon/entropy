@@ -91,7 +91,7 @@ class EntropyFileUriHandler(EntropyUriHandler):
     EntropyUriHandler based FILE (local) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 2
+    PLUGIN_API_VERSION = 3
 
     @staticmethod
     def approve_uri(uri):
@@ -169,6 +169,22 @@ class EntropyFileUriHandler(EntropyUriHandler):
             shutil.move(remote_ptr_old, tmp_remote_ptr_new)
             os.rename(tmp_remote_ptr_new, remote_ptr_new)
         return True
+
+    def copy(self, remote_path_old, remote_path_new):
+        tmp_remote_path_new = remote_path_new + \
+            EntropyUriHandler.TMP_TXC_FILE_EXT
+        remote_ptr_old = self._setup_remote_path(remote_path_old)
+        remote_ptr_new = self._setup_remote_path(tmp_remote_path_new)
+        try:
+            shutil.copy2(remote_ptr_old, remote_ptr_new)
+        except (OSError, IOError):
+            self.delete(tmp_remote_path_new)
+            return False
+        # atomic rename
+        done = self.rename(tmp_remote_path_new, remote_path_new)
+        if not done:
+            self.delete(tmp_remote_path_new)
+        return done
 
     def delete(self, remote_path):
         remote_str = self._setup_remote_path(remote_path)

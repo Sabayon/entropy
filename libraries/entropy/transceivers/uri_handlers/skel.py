@@ -23,7 +23,7 @@ class EntropyUriHandler(TextInterface):
     "add_uri_handler" is a EntropyTransceiver static method.
     """
 
-    BASE_PLUGIN_API_VERSION = 2
+    BASE_PLUGIN_API_VERSION = 3
 
     TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
 
@@ -226,6 +226,20 @@ class EntropyUriHandler(TextInterface):
     def rename(self, remote_path_old, remote_path_new):
         """
         Rename URI old to URI new.
+
+        @param remote_path_old: remote path to handle
+        @type remote_path_old: string
+        @param remote_path_new: remote path to create
+        @type remote_path_new: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise TransceiverConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
+    def copy(self, remote_path_old, remote_path_new):
+        """
+        Copy URI old to URI new.
 
         @param remote_path_old: remote path to handle
         @type remote_path_old: string

@@ -27,7 +27,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     EntropyUriHandler based FTP transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 2
+    PLUGIN_API_VERSION = 3
 
     _DEFAULT_TIMEOUT = 60
 
@@ -487,6 +487,42 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             rc = self.__ftpconn.rename(old, new)
 
         done = rc.find("250") != -1
+        return done
+
+    def __ftp_copy(self, fromname, toname):
+        """
+        FTP copy is not officially part of FTP RFCs.
+        But for example, proftpd with mod_copy does support it.
+        http://www.castaglia.org/proftpd/modules/mod_copy.html
+        So it's worth a try.
+        """
+        resp = self.__ftpconn.sendcmd('CPFR ' + fromname)
+        if resp[0] != '3':
+            raise ftplib.error_reply, resp
+        return self.__ftpconn.voidcmd('CPTO ' + toname)
+
+    def copy(self, remote_path_old, remote_path_new):
+
+        self.__connect_if_not()
+
+        tmp_suffix = EntropyUriHandler.TMP_TXC_FILE_EXT
+        old = os.path.join(self.__ftpdir, remote_path_old)
+        new = os.path.join(self.__ftpdir, remote_path_new)
+        try:
+            rc = self.__ftp_copy(old, new + tmp_suffix)
+        except self.ftplib.Error as err:
+            # FTP server doesn't support non-standard copy command
+            return False
+
+        done = rc.find("250") != -1
+        if not done:
+            return False
+
+        # then rename to final name
+        done = self.rename(remote_path_new + tmp_suffix, remote_path_new)
+        if not done:
+            # delete temp file, try at least
+            self.delete(remote_path_new + tmp_suffix)
         return done
 
     def delete(self, remote_path):

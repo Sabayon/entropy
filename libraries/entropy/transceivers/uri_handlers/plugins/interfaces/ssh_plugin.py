@@ -27,7 +27,7 @@ class EntropySshUriHandler(EntropyUriHandler):
     EntropyUriHandler based SSH (with pubkey) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 2
+    PLUGIN_API_VERSION = 3
 
     _DEFAULT_TIMEOUT = 60
     _DEFAULT_PORT = 22
@@ -356,6 +356,22 @@ class EntropySshUriHandler(EntropyUriHandler):
         remote_ptr_new = os.path.join(self.__dir, remote_path_new)
         args += [remote_str, "mv", remote_ptr_old, remote_ptr_new]
         return self._exec_cmd(args)[0] == 0
+
+    def copy(self, remote_path_old, remote_path_new):
+        args, remote_str = self._setup_fs_args()
+        tmp_remote_path_new = remote_path_new + \
+            EntropyUriHandler.TMP_TXC_FILE_EXT
+        remote_ptr_old = os.path.join(self.__dir, remote_path_old)
+        remote_ptr_new = os.path.join(self.__dir, tmp_remote_path_new)
+        args += [remote_str, "cp", "-p", remote_ptr_old, remote_ptr_new]
+        if self._exec_cmd(args)[0] != 0:
+            self.delete(tmp_remote_path_new)
+            return False
+        # atomic rename
+        done = self.rename(tmp_remote_path_new, remote_path_new)
+        if not done:
+            self.delete(tmp_remote_path_new)
+        return done
 
     def delete(self, remote_path):
         args, remote_str = self._setup_fs_args()
