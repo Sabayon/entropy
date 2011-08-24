@@ -5,6 +5,7 @@ import os
 import shlex
 import signal
 import argparse
+import shutil
 import tempfile
 import subprocess
 import errno
@@ -331,6 +332,11 @@ class MatterSpec(GenericSpecFunctions):
                 've': self.ve_string_open_file_read,
                 'default': None,
             },
+            'buildfail': {
+                'cb': self.not_none,
+                've': self.ve_string_open_file_read,
+                'default': None,
+            },
             'packages': {
                 'cb': self.always_valid,
                 've': self.valid_comma_sep_list,
@@ -649,7 +655,7 @@ class PackageBuilder(object):
         pkgpre = self._params["pkgpre"]
         if pkgpre is not None:
             print_info(
-                "spawning --pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
+                "spawning pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
             tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(pkgpre.read())
@@ -666,6 +672,7 @@ class PackageBuilder(object):
         not_found_queue = Queue()
         not_installed_queue = Queue()
         not_merged_queue = Queue()
+        dirs_cleanup_queue = Queue()
 
         # execute the update code
         pid = os.fork()
@@ -673,7 +680,7 @@ class PackageBuilder(object):
             try:
                 rc = self._run_builder(std_env, pkg_queue,
                     not_found_queue, not_installed_queue,
-                    not_merged_queue)
+                    not_merged_queue, dirs_cleanup_queue)
             except KeyboardInterrupt:
                 os._exit(1)
             except Exception as exc:
@@ -709,12 +716,14 @@ class PackageBuilder(object):
                 exit_st = 1
 
         print_info("builder terminated, exit status: %d" % (exit_st,))
+        dirs_cleanup = []
 
         queues = [(pkg_queue, self._built_packages, "queue"),
             (not_found_queue, self._not_found_packags, "not_found"),
             (not_installed_queue, self._not_installed_packages,
                 "not_installed"),
-            (not_merged_queue, self._not_merged_packages, "not_merged")]
+            (not_merged_queue, self._not_merged_packages, "not_merged"),
+            (dirs_cleanup_queue, dirs_cleanup, "dirs_cleanup")]
 
         for queue, lst, queue_name in queues:
             while True:
@@ -723,6 +732,10 @@ class PackageBuilder(object):
                 except EmptyQueue:
                     break
             queue.close()
+
+        # cleanup temporary directories registered on the queue
+        for tmp_dir in dirs_cleanup:
+            self.__cleanup_dir(tmp_dir)
 
         # run pkgpre, if any
         pkgpost = self._params["pkgpost"]
@@ -743,8 +756,13 @@ class PackageBuilder(object):
 
         return exit_st
 
+    def __cleanup_dir(self, tmp_dir):
+        if os.path.isdir(tmp_dir) \
+            and (not os.path.islink(tmp_dir)):
+            shutil.rmtree(tmp_dir, True)
+
     def _run_builder(self, env, pkg_queue, not_found_queue,
-            not_installed_queue, not_merged_queue):
+            not_installed_queue, not_merged_queue, dirs_cleanup_queue):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
@@ -753,6 +771,13 @@ class PackageBuilder(object):
         os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
         os.environ['FEATURES'] = "split-log"
         os.environ['CMAKE_NO_COLOR'] = "yes"
+        log_dir = tempfile.mkdtemp(prefix="matter_build.",
+            suffix="." + self._package.replace("/", "_").lstrip("<>=~"))
+        dirs_cleanup_queue.put(log_dir)
+        # no more dirs to clean
+        dirs_cleanup_queue.close()
+        dirs_cleanup_queue.join_thread()
+        os.environ["PORT_LOGDIR"] = log_dir
 
         from _emerge.depgraph import backtrack_depgraph
         from _emerge.actions import load_emerge_config, action_build
@@ -833,8 +858,6 @@ class PackageBuilder(object):
         # at this point we can go ahead building self._package
         print_info("starting to build: %s, to %s" % (self._package,
             best_visible,))
-
-        print_info("portage modules loaded with success")
 
         emerge_settings, emerge_trees, mtimedb = \
             load_emerge_config(trees=portage.db)
@@ -962,9 +985,18 @@ class PackageBuilder(object):
             myopts, myaction, myfiles, spinner)
 
         not_merged = []
+        package_queue_map = dict((pkg.cpv, pkg) for pkg in package_queue)
+        failed_package = None
         if retval != 0:
             merge_list = mtimedb.get("resume", {}).get("mergelist")
             for merge_type, merge_root, merge_atom, merge_act in merge_list:
+                if failed_package is None:
+                    # we consider the first encountered package the one
+                    # that failed. It makes sense since packages are built
+                    # serially as of today.
+                    # Also, the package object must be available in our
+                    # package queue, so grab it from there.
+                    failed_package = package_queue_map.get(merge_atom)
                 not_merged.append(merge_atom)
                 not_merged_queue.put(merge_atom)
 
@@ -979,8 +1011,39 @@ class PackageBuilder(object):
             emerge_trees, mtimedb, retval)
 
         subprocess.call(["env-update"])
-        print_info("portage spawned, return value: %d" % (retval,))
 
+        if failed_package is not None:
+            print_warning("failed package: %s::%s" % (failed_package.cpv,
+                failed_package.repo,))
+
+        if self._params['buildfail'] and (failed_package is not None):
+
+            std_env = PackageBuilder._build_standard_environment(
+                repository=self._params["repository"])
+            std_env["MATTER_PACKAGE_NAME"] = self._package
+            std_env["MATTER_PORTAGE_FAILED_PACKAGE_NAME"] = failed_package.cpv
+            std_env["MATTER_PORTAGE_REPOSITORY"] = failed_package.repo
+            # call pkgfail hook if defined
+            std_env["MATTER_PORTAGE_BUILD_LOG_DIR"] = os.path.join(log_dir,
+                "build")
+
+            buildfail = self._params['buildfail']
+            print_info(
+                "spawning buildfail: %s, name: %s" % (buildfail,
+                    buildfail.name))
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                tmp_f.write(buildfail.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                exit_st = exec_cmd([tmp_path], env = std_env)
+                if exit_st != 0:
+                    return exit_st
+            finally:
+                os.remove(tmp_path)
+
+        print_info("portage spawned, return value: %d" % (retval,))
         return retval
 
     @staticmethod
@@ -1338,9 +1401,6 @@ Environment variables passed to --post executables:
 %s        = exit status from previous execution phases, useful for detecting
                              execution errors.
 
-Environment variables passed to --pkgpre/--pkgpost executables:
-%s       = name of the package that would be built
-
 Matter Resources Lock file you can use to detect if matter is running:
 %s (--blocking switch makes it acquire in blocking mode)
 """ % (
@@ -1352,7 +1412,6 @@ Matter Resources Lock file you can use to detect if matter is running:
         purple("MATTER_PORTAGE_BUILD_ARGS"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_BUILD_ARGS),
         purple("MATTER_EXIT_STATUS"),
-        purple("MATTER_PACKAGE_NAME"),
         darkgreen(MatterResourceLock.LOCK_FILE_PATH),)
 
     parser = argparse.ArgumentParser(

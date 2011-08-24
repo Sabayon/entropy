@@ -1,3 +1,3 @@
 #!/bin/sh
-echo "this is the --pkgpre hook, printing environment:"
-env
+echo "this is the pkgpre hook, printing Matter environment:"
+env | grep ^MATTER_
