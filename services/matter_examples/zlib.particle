@@ -14,6 +14,11 @@ repository: community0
 # Default is: no
 spm-repository-change: yes
 
+# Allow compiling package even if it's not actually installed on system?
+# Valid values are either "yes" or "no"
+# Default is: no
+not-installed: no
+
 # Allow dependencies to be pulled in?
 # Valid values are either "yes" or "no"
 # Default is: no

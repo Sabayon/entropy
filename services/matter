@@ -316,6 +316,11 @@ class MatterSpec(GenericSpecFunctions):
                 've': self.ve_string_stripper,
                 'default': "no",
             },
+            'not-installed': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+                'default': "no",
+            },
             'pkgpre': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
@@ -780,26 +785,32 @@ class PackageBuilder(object):
             pkg_queue.join_thread()
             return 1
 
+        allow_not_installed = self._params['not-installed'] == "yes"
         print_info("matched: %s for %s" % (best_visible, self._package,))
         # now determine what's the installed version.
         best_installed = portage.best(vardb.match(self._package))
-        if not best_installed:
-            # package not installed, behaviour not supported atm
+        if (not best_installed) and (not allow_not_installed):
+            # package not installed
             print_error("package not installed: %s, aborting" % (
                 self._package,))
             not_installed_queue.put(self._package)
             return 1
+        if (not best_installed) and (allow_not_installed):
+            print_warning(
+                "package not installed: %s, but not-installed: yes provided" % (
+                    self._package,))
 
-        print_info("found installed: %s for %s" % (best_installed,
-            self._package,))
-
-        # now compare
-        # -1 if best_installed is older than best_visible
-        # 1 if best_installed is newer than best_visible
-        # 0 if they are equal
-        cmp_res = portage.versions.pkgcmp(
-            portage.versions.pkgsplit(best_installed),
-            portage.versions.pkgsplit(best_visible))
+        cmp_res = -1
+        if best_installed:
+            print_info("found installed: %s for %s" % (best_installed,
+                self._package,))
+            # now compare
+            # -1 if best_installed is older than best_visible
+            # 1 if best_installed is newer than best_visible
+            # 0 if they are equal
+            cmp_res = portage.versions.pkgcmp(
+                portage.versions.pkgsplit(best_installed),
+                portage.versions.pkgsplit(best_visible))
 
         allow_rebuild = self._params['rebuild'] == "yes"
         allow_downgrade = self._params['downgrade'] == "yes"
