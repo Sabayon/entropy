@@ -76,7 +76,7 @@ removed-useflags: yes
 # comes from
 # MATTER_PORTAGE_BUILD_LOG_DIR = directory containing all the build logs of
 # the failed package
-buildfail: /home/fabio/repos/entropy/services/matter_examples/buildfail.sh
+buildfail: /home/fabio/repos/entropy/services/matter_examples/buildfail-tinderbox.sh
 
 # For more info regarding exported environment variables, please see:
 # matter --help
