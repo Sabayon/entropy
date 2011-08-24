@@ -25,7 +25,12 @@ if [ "${?}" != "0" ]; then
         exit ${?}
 fi
 chmod 640 "${tmp_path}"
-scp "${tmp_path}" entropy@tinderbox.sabayon.org:"${REMOTE_DIR}"/ || exit 1
+scp "${tmp_path}" entropy@tinderbox.sabayon.org:"${REMOTE_DIR}"/
+if [ "${?}" != "0" ]; then
+	rm "${tmp_path}"
+	exit 1
+fi
+rm "${tmp_path}"
 scp "${BUILD_LOG}" entropy@tinderbox.sabayon.org:"${REMOTE_DIR}"/ || exit 1
 
 exit 0
