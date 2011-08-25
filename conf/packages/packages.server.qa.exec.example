@@ -24,6 +24,7 @@
 # PKG_LICENSE = package license
 # PKG_BRANCH = package license
 # PKG_DOWNLOAD = package relative download URL
+# PKG_KEYWORDS = package keywords, space separated
 # PKG_MD5 = package file md5 hash
 # PKG_SLOT = package slot
 # PKG_ETPAPI = package Entropy API
@@ -58,6 +59,7 @@ echo "PKG_HOMEPAGE = ${PKG_HOMEPAGE}"
 echo "PKG_LICENSE = ${PKG_LICENSE}"
 echo "PKG_BRANCH = ${PKG_BRANCH}"
 echo "PKG_DOWNLOAD = ${PKG_DOWNLOAD}"
+echo "PKG_KEYWORDS = ${PKG_KEYWORDS}"
 echo "PKG_MD5 = ${PKG_MD5}"
 echo "PKG_SLOT = ${PKG_SLOT}"
 echo "PKG_ETPAPI = ${PKG_ETPAPI}"

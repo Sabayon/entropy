@@ -5101,6 +5101,7 @@ class Server(Client):
             pkg_deps = repo_db.retrieveDependenciesList(package_id)
             pkg_needed = repo_db.retrieveNeeded(package_id, extended = True)
             pkg_provided_libs = repo_db.retrieveProvidedLibraries(package_id)
+            pkg_keywords = repo_db.retrieveKeywords(package_id)
 
             self.output(
                 "[%s] %s: %s" % (
@@ -5129,6 +5130,7 @@ class Server(Client):
             env['PKG_HOMEPAGE'] = const_convert_to_rawstring(pkg_homepage)
             env['PKG_LICENSE'] = str(pkg_license)
             env['PKG_BRANCH'] = str(pkg_branch)
+            env['PKG_KEYWORDS'] = str(" ".join(pkg_keywords))
             env['PKG_DOWNLOAD'] = str(pkg_uri)
             env['PKG_MD5'] = str(pkg_md5)
             env['PKG_SLOT'] = str(pkg_slot)
