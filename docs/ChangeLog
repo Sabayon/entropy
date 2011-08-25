@@ -1,3 +1,81 @@
+commit 266fc224abe3f00312bcab4a878a01a391bd41c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 19:36:52 2011 +0200
+
+    Release Entropy 1.0_rc44
+
+commit 6059629452d2898b4f66b5a632f3d7834fe05d10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 19:36:00 2011 +0200
+
+    [entropy.spm] PortagePlugin.add_installed_package: chmod vardb entry to 755 as Portage does
+
+commit 949f2ab3f3ed1c844a02670fe11b65fb6a284031
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 18:39:04 2011 +0200
+
+    [entropy.server] add PKG_KEYWORDS variable to those exposed to metadata qa check hook
+
+commit b0a2bbf4fe6d453a63b35be3b17104a8121ccefd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 09:52:42 2011 +0200
+
+    [entropy.server.mirrors] do not handle .asc files anymore in tidy_mirrors()
+
+commit 7ead04fa0180e0d79a66804ecd6c162876a72183
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 09:52:17 2011 +0200
+
+    [kernel-switcher] catch KeyboardInterrupt and don't throw traceback to user
+
+commit 1d29a15e056947066157571d8e4d7f37c0415279
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 13:45:11 2011 +0200
+
+    [matter] remove temp file in buildfail-tinderbox.sh
+
+commit 2fca78342580aa3897b7b217f9ae5572f2d8ecf2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 13:43:35 2011 +0200
+
+    [matter] add simple buildfail example script
+
+commit 7b5d009149aa65aa92d2351f9e6f65fa09d6ad10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 12:32:35 2011 +0200
+
+    [matter] add bugzilla submit buildfail hook
+
+commit 3a9cbb6341e55ab803c86523770241861a16e5dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 09:57:58 2011 +0200
+
+    [matter] add "buildfail" directive support
+
+commit 9b22ff56136593fed1e3e5d687c2ac157c44140f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 08:48:29 2011 +0200
+
+    [matter] add support for "not-installed" directive
+
+commit 32c6dc7a011d3c258a2d8586d41e35ec061c3abe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 24 08:25:43 2011 +0200
+
+    [matter] add FEATURES="split-log" and CMAKE_NO_COLOR="yes" to builder env
+
+commit ca3fa9daba03760cfedee54ce8b3cb2955605124
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:34:23 2011 +0200
+
+    [entropy] add .gitattributes file, exclude test suite from archive for now (takes too much space)
+
+commit 698129ba8460e7d27d6662c6889387404ee66c25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 21 14:23:04 2011 +0200
+
+    Tagging Entropy version 1.0_rc43
+
 commit 9366621d90e600874cfa3c1a284be72503cecd11
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Aug 21 14:23:02 2011 +0200
