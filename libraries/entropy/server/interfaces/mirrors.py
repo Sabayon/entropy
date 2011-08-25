@@ -2158,7 +2158,6 @@ class Server(object):
             obj = removal_map.setdefault(rel_dir, [])
             base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
-            obj.append(base_pkg+etpConst['etpgpgextension'])
             package_id = dbconn.getPackageIdFromDownload(package_rel)
             if package_id == -1:
                 # wtf?
@@ -2174,7 +2173,6 @@ class Server(object):
                 obj = removal_map.setdefault(rel_dir, [])
                 base_pkg = os.path.basename(extra_rel)
                 obj.append(base_pkg)
-                obj.append(base_pkg+etpConst['etpgpgextension'])
 
         removal.extend(extra_removal)
 
