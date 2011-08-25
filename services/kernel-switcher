@@ -257,5 +257,8 @@ if not argv:
 
 cmd, args = argv[0], argv[1:]
 func = args_map.get(cmd, args_map.get("__fallback__"))
-rc = func(args)
+try:
+    rc = func(args)
+except KeyboardInterrupt:
+    raise SystemExit(1)
 raise SystemExit(rc)
