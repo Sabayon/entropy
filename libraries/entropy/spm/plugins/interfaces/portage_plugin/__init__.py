@@ -2942,6 +2942,7 @@ class PortagePlugin(SpmPlugin):
                     # this should not really exist here
                     if os.path.isdir(pkg_dir):
                         shutil.rmtree(pkg_dir)
+                    os.chmod(tmp_dir, 0o755)
                     os.rename(tmp_dir, pkg_dir)
                 except (IOError, OSError) as err:
                     mytxt = "%s: %s: %s: %s" % (red(_("QA")),
