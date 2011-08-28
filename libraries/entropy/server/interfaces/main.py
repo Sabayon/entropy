@@ -4558,7 +4558,7 @@ class Server(Client):
         mydata = self.Spm().extract_package_metadata(package_file,
             license_callback = _package_injector_check_license,
             restricted_callback = _package_injector_check_restricted)
-        is_licensed_ugly = _package_injector_check_license(mydata)
+        is_licensed_ugly = not _package_injector_check_license(mydata)
         is_restricted = _package_injector_check_restricted(mydata)
 
         try:
