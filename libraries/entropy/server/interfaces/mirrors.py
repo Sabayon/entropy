@@ -1968,6 +1968,27 @@ class Server(object):
             if os.path.isfile(dest_expiration):
                 os.remove(dest_expiration)
 
+            # also move extra download files
+            package_id = dbconn.getPackageIdFromDownload(pkg_rel)
+            extra_pkgs = []
+            if package_id != -1:
+                extra_downloads = dbconn.retrieveExtraDownload(package_id)
+                for extra_download in extra_downloads:
+                    extra_rel = extra_download['download']
+                    extra_src = \
+                        self._entropy.complete_local_upload_package_path(
+                            extra_rel, repository_id)
+                    extra_dest = self._entropy.complete_local_package_path(
+                        extra_rel, repository_id)
+                    extra_pkgs.append((extra_src, extra_dest))
+            for extra_src, extra_dest in extra_pkgs:
+                try:
+                    os.rename(extra_src, extra_dest)
+                except OSError as err: # on different hard drives?
+                    if err.errno != errno.EXDEV:
+                        raise
+                    shutil.move(extra_src, extra_dest)
+
     def _is_package_expired(self, repository_id, package_rel, days):
 
         pkg_path = self._entropy.complete_local_package_path(package_rel,
