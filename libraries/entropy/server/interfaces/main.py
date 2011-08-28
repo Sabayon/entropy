@@ -4558,6 +4558,8 @@ class Server(Client):
         mydata = self.Spm().extract_package_metadata(package_file,
             license_callback = _package_injector_check_license,
             restricted_callback = _package_injector_check_restricted)
+        is_licensed_ugly = _package_injector_check_license(mydata)
+        is_restricted = _package_injector_check_restricted(mydata)
 
         try:
             repo_sec = RepositorySecurity()
@@ -4567,8 +4569,8 @@ class Server(Client):
 
         def _generate_extra_download(path, down_type):
             extra_url = entropy.tools.create_package_dirpath(mydata['branch'],
-                nonfree = False, restricted = False) + "/" + \
-                    os.path.basename(path)
+                nonfree = is_licensed_ugly, restricted = is_restricted) + \
+                    "/" + os.path.basename(path)
             size = entropy.tools.get_file_size(path)
             disksize = entropy.tools.get_uncompressed_size(path)
             md5 = entropy.tools.md5sum(path)
