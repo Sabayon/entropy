@@ -1969,6 +1969,7 @@ class Server(object):
                 os.remove(dest_expiration)
 
             # also move extra download files
+            dbconn = self._entropy.open_repository(repository_id)
             package_id = dbconn.getPackageIdFromDownload(pkg_rel)
             extra_pkgs = []
             if package_id != -1:
