@@ -1,3 +1,33 @@
+commit b2e5bc01174a2633d3e2bc11d93a79ad4f8011b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 20:17:39 2011 +0200
+
+    Release Entropy 1.0_rc45
+
+commit 942bcc5e39a4e895fe8f96a59ef337c4fb1305ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 20:16:59 2011 +0200
+
+    [entropy.server.mirrors] when moving package files from upload to local store, also consider "extra downloads" ones
+
+commit cbeed45b975a4e87f84ae3459e7d484f7b3d8262
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 20:03:36 2011 +0200
+
+    [entropy.server] _package_injector: fix license check evaluation
+
+commit ffc722c0ea1e815beaeec1f60059a17898b11be0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 20:00:06 2011 +0200
+
+    [entropy.server] _package_injector: move extra_download file in the same packages dir as parent package
+
+commit 641a08f2eddbc0f80e75d8093b854b390311436c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 25 19:37:04 2011 +0200
+
+    Tagging Entropy version 1.0_rc44
+
 commit 266fc224abe3f00312bcab4a878a01a391bd41c9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 25 19:36:52 2011 +0200
