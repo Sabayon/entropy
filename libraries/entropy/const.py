@@ -431,7 +431,9 @@ def const_default_settings(rootdir):
         'userpackagesetsid': "__user__",
         'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
-        'packagesdebugext': ".debug.tar.bz2",
+        # extra download package file extension (mandatory)
+        'packagesextraext': ".tar.bz2",
+        'packagesdebugext': ".debug.tar.bz2", # .tar.bz2
         'packagesext_webinstall': ".etp",
         # entropy package files binary delta extension
         'packagesdeltaext': ".edelta",

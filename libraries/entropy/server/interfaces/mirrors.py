@@ -899,7 +899,7 @@ class Server(object):
 
         branch = self._settings['repositories']['branch']
         upload_pkgs = self._entropy._get_basedir_pkg_listing(upload_dir,
-            branch = branch)
+            etpConst['packagesext'], branch = branch)
 
         pkg_ext = etpConst['packagesext']
         for package in upload_pkgs:
@@ -921,7 +921,7 @@ class Server(object):
 
         branch = self._settings['repositories']['branch']
         pkg_files = self._entropy._get_basedir_pkg_listing(base_dir,
-            branch = branch)
+            etpConst['packagesext'], branch = branch)
 
         pkg_ext = etpConst['packagesext']
         for package in pkg_files:
@@ -1938,8 +1938,8 @@ class Server(object):
 
         upload_dir = self._entropy._get_local_upload_directory(repository_id)
         basedir_list = []
-        entropy.tools.recursive_directory_relative_listing(
-            basedir_list, base_dir)
+        entropy.tools.recursive_directory_relative_listing(basedir_list,
+            upload_dir)
 
         for pkg_rel in basedir_list:
 
@@ -1992,23 +1992,24 @@ class Server(object):
 
     def _collect_expiring_packages(self, repository_id, branch):
 
-        dbconn = self._entropy.open_server_repository(repository_id,
-            just_reading = True)
+        dbconn = self._entropy.open_repository(repository_id)
 
         database_bins = set(dbconn.listAllDownloads(do_sort = False,
             full_path = True))
+        extra_database_bins = set(dbconn.listAllExtraDownloads(do_sort = False))
 
         repo_basedir = self._entropy._get_local_repository_base_directory(
             repository_id)
 
-        repo_bins = self._entropy._get_basedir_pkg_listing(repo_basedir,
-            branch = branch)
+        repo_bins = set(self._entropy._get_basedir_pkg_listing(repo_basedir,
+            etpConst['packagesext'], branch = branch))
+        extra_repo_bins = set(self._entropy._get_basedir_pkg_listing(
+            repo_basedir, etpConst['packagesextraext'], branch = branch))
 
         # convert to set, so that we can do fast thingszzsd
-        repo_bins = set(repo_bins)
         repo_bins -= database_bins
-        return repo_bins
-
+        extra_repo_bins -= extra_database_bins
+        return repo_bins, extra_repo_bins
 
     def tidy_mirrors(self, repository_id, ask = True, pretend = False,
         expiration_days = None):
@@ -2067,8 +2068,8 @@ class Server(object):
         )
 
         # collect removed packages
-        expiring_packages = self._collect_expiring_packages(repository_id,
-            branch)
+        expiring_packages, extra_expiring_packages = \
+            self._collect_expiring_packages(repository_id, branch)
         if expiring_packages:
 
             # filter expired packages used by other branches
@@ -2080,12 +2081,30 @@ class Server(object):
                 repository_id, etpConst['etpdatabasepkglist'],
                 excluded_branches = [branch])
             # format data
-            for key, val in branch_pkglist_data.items():
+            for key, val in list(branch_pkglist_data.items()):
                 branch_pkglist_data[key] = val.split("\n")
 
             for other_branch in branch_pkglist_data:
                 branch_pkglist = set(branch_pkglist_data[other_branch])
                 expiring_packages -= branch_pkglist
+
+        if extra_expiring_packages:
+
+            # filter expired packages used by other branches
+            # this is done for the sake of consistency
+            # --- read packages.db.extra_pkglist, make sure your repository
+            # has been ported to latest Entropy
+
+            branch_extra_pkglist_data = self._read_remote_file_in_branches(
+                repository_id, etpConst['etpdatabaseextrapkglist'],
+                excluded_branches = [branch])
+            # format data
+            for key, val in list(branch_extra_pkglist_data.items()):
+                branch_extra_pkglist_data[key] = val.split("\n")
+
+            for other_branch in branch_extra_pkglist_data:
+                branch_pkglist = set(branch_extra_pkglist_data[other_branch])
+                extra_expiring_packages -= branch_pkglist
 
         removal = []
         for package_rel in expiring_packages:
@@ -2095,6 +2114,15 @@ class Server(object):
                 removal.append(package_rel)
             else:
                 self._create_expiration_file(repository_id, package_rel,
+                    gentle = True)
+
+        for extra_package_rel in extra_expiring_packages:
+            expired = self._is_package_expired(repository_id, extra_package_rel,
+                expiration_days)
+            if expired:
+                removal.append(extra_package_rel)
+            else:
+                self._create_expiration_file(repository_id, extra_package_rel,
                     gentle = True)
 
         if not removal:
@@ -2143,32 +2171,13 @@ class Server(object):
         removal_map = {}
         dbconn = self._entropy.open_server_repository(repository_id,
             just_reading = True)
-        extra_removal = []
         for package_rel in removal:
-
             rel_path = self._entropy.complete_remote_package_relative_path(
                 package_rel, repository_id)
             rel_dir = os.path.dirname(rel_path)
             obj = removal_map.setdefault(rel_dir, [])
             base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
-            package_id = dbconn.getPackageIdFromDownload(package_rel)
-            if package_id == -1:
-                # wtf?
-                continue
-
-            extra_downloads = dbconn.retrieveExtraDownload(package_id)
-            for extra_download in extra_downloads:
-                extra_rel = extra_download['download']
-                extra_removal.append(extra_rel)
-                rel_path = self._entropy.complete_remote_package_relative_path(
-                    extra_rel, repository_id)
-                rel_dir = os.path.dirname(rel_path)
-                obj = removal_map.setdefault(rel_dir, [])
-                base_pkg = os.path.basename(extra_rel)
-                obj.append(base_pkg)
-
-        removal.extend(extra_removal)
 
         for uri in self._entropy.remote_packages_mirrors(repository_id):
 

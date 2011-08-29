@@ -370,7 +370,9 @@ class SpmPlugin(Singleton):
             the return list.
         @type builtin_debug: bool
         @return: list of package file paths, the first is the main one, the
-            second in list, if available, is the debug package.
+            second in list, if available, is the debug package. All these
+            extra package files must end with etpConst['packagesextraext']
+            extension.
         @rtype: list
         @raise entropy.exception.SPMError: if unable to satisfy the request
         """

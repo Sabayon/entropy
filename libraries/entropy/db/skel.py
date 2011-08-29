@@ -2258,6 +2258,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         Retrieve a list of extra package file URLs for package identifier.
         These URLs usually contain extra files that can be optionally installed
         by Entropy Client, for example: debug files.
+        All the extra download file names must end with etpConst['packagesextraext']
+        extension.
 
         @param package_id: package indentifier
         @type package_id: int
@@ -3508,6 +3510,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def listAllExtraDownloads(self, do_sort = True):
         """
         List all package extra download URLs stored in repository.
+        All the extra download file names must end with etpConst['packagesextraext']
+        extension.
 
         @keyword do_sort: sort by name
         @type do_sort: bool
