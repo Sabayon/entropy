@@ -3505,6 +3505,19 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def listAllExtraDownloads(self, do_sort = True):
+        """
+        List all package extra download URLs stored in repository.
+
+        @keyword do_sort: sort by name
+        @type do_sort: bool
+        @keyword full_path: return full URL (not just package file name)
+        @type full_path: bool
+        @return: tuple (or set if do_sort is True) of package download URLs
+        @rtype: tuple or frozenset
+        """
+        raise NotImplementedError()
+
     def listAllFiles(self, clean = False, count = False):
         """
         List all file paths owned by packaged stored in repository.

@@ -4703,6 +4703,28 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return results
 
+    def listAllExtraDownloads(self, do_sort = True):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        order_string = ''
+        if do_sort:
+            order_string = ' ORDER BY download'
+        try:
+            cur = self._cursor().execute("""
+            SELECT download FROM packagedownloads
+            """ + order_string)
+        except OperationalError:
+            if self._doesTableExist("packagedownloads"):
+                raise
+            return tuple()
+
+        if do_sort:
+            results = self._cur2tuple(cur)
+        else:
+            results = self._cur2frozenset(cur)
+        return results
+
     def listAllFiles(self, clean = False, count = False):
         """
         Reimplemented from EntropyRepositoryBase.
