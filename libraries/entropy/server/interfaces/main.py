@@ -1329,6 +1329,10 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['etpdatabasepkglist'])
 
+    def _get_local_extra_pkglist_file(self, repository_id, branch = None):
+        return os.path.join(self._get_local_repository_dir(repository_id,
+            branch = branch), etpConst['etpdatabaseextrapkglist'])
+
     def _get_local_database_sets_dir(self, repository_id, branch = None):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['confsetsdirname'])

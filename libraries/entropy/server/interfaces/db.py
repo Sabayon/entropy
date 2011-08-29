@@ -500,6 +500,11 @@ class ServerPackagesRepositoryUpdater(object):
         data['pkglist_file'] = pkglist_file
         if not download:
             critical.append(data['pkglist_file'])
+        extra_pkglist_file = self._entropy._get_local_extra_pkglist_file(
+            self._repository_id)
+        data['extra_pkglist_file'] = extra_pkglist_file
+        if not download:
+            critical.append(data['extra_pkglist_file'])
 
         critical_updates_file = self._entropy._get_local_critical_updates_file(
             self._repository_id)
@@ -993,18 +998,27 @@ Name:    %s
         """
         pkglist_file = self._entropy._get_local_pkglist_file(
             self._repository_id)
+        extra_pkglist_file = self._entropy._get_local_extra_pkglist_file(
+            self._repository_id)
 
         tmp_pkglist_file = pkglist_file + ".tmp"
+        tmp_extra_pkglist_file = extra_pkglist_file + ".tmp"
         dbconn = self._entropy.open_server_repository(
             self._repository_id, just_reading = True, do_treeupdates = False)
         pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
+        extra_pkglist = dbconn.listAllExtraDownloads(do_sort = True)
 
         with open(tmp_pkglist_file, "w") as pkg_f:
             for pkg in pkglist:
                 pkg_f.write(pkg + "\n")
             pkg_f.flush()
-
         os.rename(tmp_pkglist_file, pkglist_file)
+
+        with open(tmp_extra_pkglist_file, "w") as pkg_f:
+            for pkg in extra_pkglist:
+                pkg_f.write(pkg + "\n")
+            pkg_f.flush()
+        os.rename(tmp_extra_pkglist_file, extra_pkglist_file)
 
     def _rewrite_treeupdates(self, entropy_repository):
         """
