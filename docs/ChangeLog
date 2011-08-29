@@ -1,3 +1,45 @@
+commit bd996b63f65d0292fe4afff37a2287d9a40da27a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 06:56:00 2011 +0200
+
+    Release Entropy 1.0_rc46
+
+commit d9dfe06b0aa29a30bfaac8c34ec88c7574eae185
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 06:35:40 2011 +0200
+
+    [entropy.server] make possible to properly handle expiration of extra package files. Enforce file name constraints on them.
+
+commit 294b1a25e4f2c6e52a4271338e58480e62c01e92
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 06:12:22 2011 +0200
+
+    [entropy.server] generate an "extra download" list file in order to ease mirrors cleanup when packages expire
+
+commit 8f9b4e2391cc8294f4841dd256253f05fa1d430f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 06:07:03 2011 +0200
+
+    [entropy.db] implement support for listAllExtraDownloads()
+
+commit 15d9dfed58c28418c310b298c948ef2b7c3df0e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 05:50:46 2011 +0200
+
+    [entropy.server.mirrors] simplify _move_files_over_from_upload, make it move all the files inside upload dir
+
+commit 19d8753fbff1ae985a4898797ad9915f598db2b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 23:52:28 2011 +0200
+
+    [entropy.server.mirrors] fix typo in _move_files_over_from_upload()
+
+commit ef7a00c24388ed80bc58ff5df6840c932608e7e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 28 20:17:51 2011 +0200
+
+    Tagging Entropy version 1.0_rc45
+
 commit b2e5bc01174a2633d3e2bc11d93a79ad4f8011b0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Aug 28 20:17:39 2011 +0200
