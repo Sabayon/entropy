@@ -1937,7 +1937,9 @@ class Server(object):
     def _move_files_over_from_upload(self, repository_id):
 
         upload_dir = self._entropy._get_local_upload_directory(repository_id)
-        basedir_list = self._entropy._get_basedir_pkg_listing(upload_dir)
+        basedir_list = []
+        entropy.tools.recursive_directory_relative_listing(
+            basedir_list, base_dir)
 
         for pkg_rel in basedir_list:
 
@@ -1945,50 +1947,20 @@ class Server(object):
                 pkg_rel, repository_id)
             dest_pkg = self._entropy.complete_local_package_path(pkg_rel,
                 repository_id)
-            dest_pkg_dir = os.path.dirname(dest_pkg)
-            self._entropy._ensure_dir_path(dest_pkg_dir)
-
-            source_pkgs = [source_pkg]
-            gpg_file = source_pkg + etpConst['etpgpgextension']
-            if os.path.isfile(gpg_file):
-                source_pkgs.append(gpg_file)
-
-            for pkg_path in source_pkgs:
-                dest_pkg_path = os.path.join(dest_pkg_dir,
-                    os.path.basename(pkg_path))
-                try:
-                    os.rename(pkg_path, dest_pkg_path)
-                except OSError as err: # on different hard drives?
-                    if err.errno != errno.EXDEV:
-                        raise
-                    shutil.move(pkg_path, dest_pkg_path)
 
             # clear expiration file
             dest_expiration = dest_pkg + etpConst['packagesexpirationfileext']
             if os.path.isfile(dest_expiration):
                 os.remove(dest_expiration)
 
-            # also move extra download files
-            dbconn = self._entropy.open_repository(repository_id)
-            package_id = dbconn.getPackageIdFromDownload(pkg_rel)
-            extra_pkgs = []
-            if package_id != -1:
-                extra_downloads = dbconn.retrieveExtraDownload(package_id)
-                for extra_download in extra_downloads:
-                    extra_rel = extra_download['download']
-                    extra_src = \
-                        self._entropy.complete_local_upload_package_path(
-                            extra_rel, repository_id)
-                    extra_dest = self._entropy.complete_local_package_path(
-                        extra_rel, repository_id)
-                    extra_pkgs.append((extra_src, extra_dest))
-            for extra_src, extra_dest in extra_pkgs:
-                try:
-                    os.rename(extra_src, extra_dest)
-                except OSError as err: # on different hard drives?
-                    if err.errno != errno.EXDEV:
-                        raise
-                    shutil.move(extra_src, extra_dest)
+            self._entropy._ensure_dir_path(os.path.dirname(dest_pkg))
+
+            try:
+                os.rename(source_pkg, dest_pkg)
+            except OSError as err: # on different hard drives?
+                if err.errno != errno.EXDEV:
+                    raise
+                shutil.move(source_pkg, dest_pkg)
 
     def _is_package_expired(self, repository_id, package_rel, days):
 
