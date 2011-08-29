@@ -4778,6 +4778,35 @@ class Server(Client):
     def __user_filter_out_missing_deps(self, pkg_repo, entropy_repository,
         missing_map, ask):
 
+        def _show_missing_deps(missing_deps):
+            self.output(
+                "[%s] %s:" % (
+                    darkgreen(pkg_repo),
+                    teal(_("these are the missing dependencies")),
+                ),
+                importance = 1,
+                level = "info",
+                header = purple(" @@ ")
+            )
+            for pkg_match, deps in missing_deps.items():
+                pkg_id, repo = pkg_match
+                atom = entropy_repository.retrieveAtom(pkg_id)
+                slot = entropy_repository.retrieveSlot(pkg_id)
+                self.output(
+                    "%s:%s" % (
+                        teal(atom),
+                        purple(slot),
+                    ),
+                    level = "info",
+                    header = " :: "
+                )
+                for dep in sorted(deps):
+                    self.output(
+                        brown(dep),
+                        level = "info",
+                        header = red("    # ")
+                    )
+
         missing_deps = {}
         if not ask:
             # not interactive, add everything
@@ -4787,6 +4816,8 @@ class Server(Client):
                 obj = missing_deps.setdefault(pkg_match, set())
                 for dep_list in missing_extended.values():
                     obj.update(dep_list)
+
+            _show_missing_deps(missing_deps)
             return missing_deps
 
         header_txt = """\
@@ -4914,33 +4945,7 @@ class Server(Client):
                     header = red(" @@ ")
                 )
             else:
-                self.output(
-                    "[%s] %s:" % (
-                        darkgreen(pkg_repo),
-                        teal(_("these are the missing dependencies")),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = purple(" @@ ")
-                )
-                for pkg_match, deps in missing_deps.items():
-                    pkg_id, repo = pkg_match
-                    atom = entropy_repository.retrieveAtom(pkg_id)
-                    slot = entropy_repository.retrieveSlot(pkg_id)
-                    self.output(
-                        "%s:%s" % (
-                            teal(atom),
-                            purple(slot),
-                        ),
-                        level = "info",
-                        header = " :: "
-                    )
-                    for dep in sorted(deps):
-                        self.output(
-                            brown(dep),
-                            level = "info",
-                            header = red("    # ")
-                        )
+                _show_missing_deps(missing_deps)
 
             # ask confirmation
             while True:
