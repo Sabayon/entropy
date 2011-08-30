@@ -949,6 +949,30 @@ class PackageBuilder(object):
             print_warning("cannot continue due to unmet USE flags constraint")
             return 0
 
+        # check the whole queue against downgrade directive
+        if not allow_downgrade:
+            allow_downgrade_give_ups = []
+            for pkg in package_queue:
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                cmp_res = -1
+                if inst_atom:
+                    # -1 if inst_atom is older than pkg.cpv
+                    # 1 if inst_atom is newer than pkg.cpv
+                    # 0 if they are equal
+                    cmp_res = portage.versions.pkgcmp(
+                        portage.versions.pkgsplit(inst_atom),
+                        portage.versions.pkgsplit(pkg.cpv))
+                if cmp_res > 0:
+                    allow_downgrade_give_ups.append((inst_atom, pkg.cpv))
+
+            if allow_downgrade_give_ups:
+                print_warning(
+                    "cannot continue due to package downgrade not allowed for:")
+                for inst_atom, avail_atom in allow_downgrade_give_ups:
+                    print_warning("  installed: %s | available: %s" % (
+                        inst_atom, avail_atom,))
+                return 0
+
         changing_repo_pkgs = []
         for pkg in package_queue:
             wanted_repo = pkg.repo
