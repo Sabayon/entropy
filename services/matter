@@ -969,7 +969,7 @@ class PackageBuilder(object):
                 print_warning(
                     "cannot continue due to package downgrade not allowed for:")
                 for inst_atom, avail_atom in allow_downgrade_give_ups:
-                    print_warning("  installed: %s | available: %s" % (
+                    print_warning("  installed: %s | wanted: %s" % (
                         inst_atom, avail_atom,))
                 return 0
 
