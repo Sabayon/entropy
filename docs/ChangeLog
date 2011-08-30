@@ -1,3 +1,33 @@
+commit 87b679d2e4212503ce18ea20dd8b11874791ccd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 11:39:18 2011 +0200
+
+    Release Entropy 1.0_rc47
+
+commit 313c2ccfa7be7249a302108ba71374e15c8280be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 10:41:46 2011 +0200
+
+    [matter] correct wording about "downgrade" warning messages
+
+commit a1e5714490cef54ce991a9fdaeba60ff62ba229a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 10:36:10 2011 +0200
+
+    [matter] make "downgrade" directive affect the whole merge queue
+
+commit 184232f0ccf0301dc668b693edab21597633fbe0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 23:44:08 2011 +0200
+
+    [entropy.server] when adding missing dependencies, always show the committed changes
+
+commit 1c0fcdb8be0b6840970c53c544076c911a6210dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 29 06:56:06 2011 +0200
+
+    Tagging Entropy version 1.0_rc46
+
 commit bd996b63f65d0292fe4afff37a2287d9a40da27a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Aug 29 06:56:00 2011 +0200
