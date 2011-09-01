@@ -267,7 +267,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @rtype: dict
         """
 
-        if not isinstance(black_list, set):
+        if black_list is None:
             black_list = set()
 
         scan_msg = blue(_("Searching for missing Runtime dependencies"))
