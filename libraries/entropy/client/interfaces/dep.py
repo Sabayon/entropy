@@ -1577,13 +1577,17 @@ class CalculatorsMixin:
         # check if there are repositories needing some mandatory packages
         forced_matches = self._lookup_system_mask_repository_deps()
         if forced_matches:
-            if isinstance(package_matches, list):
+            # XXX: can cause conflicting packages to be listed together.
+            # should verify if each package_match points to the same match?
+            # we can have conflicting pkgs in repo or even across repos.
+            if isinstance(package_matches, (tuple, list)):
                 package_matches = forced_matches + [x for x in package_matches \
                     if x not in forced_matches]
-
             elif isinstance(package_matches, set):
                 # we cannot do anything about the order here
                 package_matches |= set(forced_matches)
+            else:
+                raise AttributeError("unsupported package_matches type")
 
         sort_dep_text = _("Sorting dependencies")
         unsat_deps_cache = {}
