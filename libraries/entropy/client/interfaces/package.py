@@ -3826,6 +3826,7 @@ class Package:
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         edelta_support = self._settings[cl_id]['misc']['edelta_support']
         self.pkgmeta['edelta_support'] = edelta_support
+        is_package_repo = repository.endswith(etpConst['packagesext'])
 
         # fetch abort function
         self.pkgmeta['fetch_abort_function'] = \
@@ -3849,11 +3850,14 @@ class Package:
         self.pkgmeta['versiontag'] = tag
         self.pkgmeta['revision'] = rev
 
-        extra_download = dbconn.retrieveExtraDownload(idpackage)
-        if not self.pkgmeta['splitdebug']:
-            extra_download = [x for x in extra_download if \
-                x['type'] != "debug"]
-        self.pkgmeta['extra_download'] = extra_download
+        self.pkgmeta['extra_download'] = []
+        if not is_package_repo:
+            extra_download = dbconn.retrieveExtraDownload(idpackage)
+            if not self.pkgmeta['splitdebug']:
+                extra_download = [x for x in extra_download if \
+                    x['type'] != "debug"]
+            self.pkgmeta['extra_download'] += extra_download
+
         self.pkgmeta['category'] = dbconn.retrieveCategory(idpackage)
         self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
@@ -3906,7 +3910,7 @@ class Package:
         # smartpackage ?
         self.pkgmeta['smartpackage'] = False
         # set unpack dir and image dir
-        if self.pkgmeta['repository'].endswith(etpConst['packagesext']):
+        if is_package_repo:
 
             try:
                 compiled_arch = dbconn.getSetting("arch")
