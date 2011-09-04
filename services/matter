@@ -33,6 +33,16 @@ from entropy.server.interfaces import Server
 import entropy.tools
 import entropy.dep
 
+# Portage imports
+from _emerge.depgraph import backtrack_depgraph
+from _emerge.actions import load_emerge_config, action_build
+from _emerge.create_depgraph_params import create_depgraph_params
+from _emerge.main import parse_opts, post_emerge, \
+    validate_ebuild_environment
+from _emerge.stdout_spinner import stdout_spinner
+import portage.versions
+import portage
+
 
 def get_entropy_server(community_mode):
     """
@@ -554,9 +564,10 @@ class PackageBuilder(object):
     PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
         DEFAULT_PORTAGE_BUILD_ARGS).split()
 
-    def __init__(self, entropy_server, package, params, spec_number, tot_spec,
-        pkg_number, tot_pkgs):
+    def __init__(self, entropy_server, emerge_config, package, params,
+        spec_number, tot_spec, pkg_number, tot_pkgs):
         self._entropy = entropy_server
+        self._emerge_config = emerge_config
         self._package = package
         self._params = params
         self._spec_number = spec_number
@@ -564,7 +575,7 @@ class PackageBuilder(object):
         self._pkg_number = pkg_number
         self._tot_pkgs = tot_pkgs
         self._built_packages = []
-        self._not_found_packags = []
+        self._not_found_packages = []
         self._not_installed_packages = []
         self._not_merged_packages = []
 
@@ -624,7 +635,7 @@ class PackageBuilder(object):
         """
         Return the list of packages that haven't been found in Portage.
         """
-        return self._not_found_packags
+        return self._not_found_packages
 
     def get_not_installed_packages(self):
         """
@@ -668,70 +679,10 @@ class PackageBuilder(object):
             finally:
                 os.remove(tmp_path)
 
-        pkg_queue = Queue()
-        not_found_queue = Queue()
-        not_installed_queue = Queue()
-        not_merged_queue = Queue()
-        dirs_cleanup_queue = Queue()
-
-        # execute the update code
-        pid = os.fork()
-        if pid == 0:
-            try:
-                rc = self._run_builder(std_env, pkg_queue,
-                    not_found_queue, not_installed_queue,
-                    not_merged_queue, dirs_cleanup_queue)
-            except KeyboardInterrupt:
-                os._exit(1)
-            except Exception as exc:
-                entropy.tools.print_traceback()
-                sys.stderr.write(repr(exc) + "\n")
-                os._exit(1)
-            finally:
-                pkg_queue.close()
-                pkg_queue.join_thread()
-                not_found_queue.close()
-                not_found_queue.join_thread()
-                not_installed_queue.close()
-                not_installed_queue.join_thread()
-                not_merged_queue.close()
-                not_merged_queue.join_thread()
-            os._exit(rc)
-        else:
-            try:
-                rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
-            except KeyboardInterrupt:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except OSError as err:
-                    if err.errno != errno.ESRCH:
-                        raise
-                exit_st = 1
-            except Exception as exc:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except OSError as err:
-                    if err.errno != errno.ESRCH:
-                        raise
-                exit_st = 1
+        dirs_cleanup = []
+        exit_st = self._run_builder(std_env, dirs_cleanup)
 
         print_info("builder terminated, exit status: %d" % (exit_st,))
-        dirs_cleanup = []
-
-        queues = [(pkg_queue, self._built_packages, "queue"),
-            (not_found_queue, self._not_found_packags, "not_found"),
-            (not_installed_queue, self._not_installed_packages,
-                "not_installed"),
-            (not_merged_queue, self._not_merged_packages, "not_merged"),
-            (dirs_cleanup_queue, dirs_cleanup, "dirs_cleanup")]
-
-        for queue, lst, queue_name in queues:
-            while True:
-                try:
-                    lst.append(queue.get(False))
-                except EmptyQueue:
-                    break
-            queue.close()
 
         # cleanup temporary directories registered on the queue
         for tmp_dir in dirs_cleanup:
@@ -748,7 +699,8 @@ class PackageBuilder(object):
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
-                post_exit_st = exec_cmd([tmp_path, str(exit_st)], env = std_env)
+                post_exit_st = exec_cmd([tmp_path, str(exit_st)],
+                    env = std_env)
                 if post_exit_st != 0:
                     return post_exit_st
             finally:
@@ -761,8 +713,7 @@ class PackageBuilder(object):
             and (not os.path.islink(tmp_dir)):
             shutil.rmtree(tmp_dir, True)
 
-    def _run_builder(self, env, pkg_queue, not_found_queue,
-            not_installed_queue, not_merged_queue, dirs_cleanup_queue):
+    def _run_builder(self, env, dirs_cleanup_queue):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
@@ -773,26 +724,17 @@ class PackageBuilder(object):
         os.environ['CMAKE_NO_COLOR'] = "yes"
         log_dir = tempfile.mkdtemp(prefix="matter_build.",
             suffix="." + self._package.replace("/", "_").lstrip("<>=~"))
-        dirs_cleanup_queue.put(log_dir)
-        # no more dirs to clean
-        dirs_cleanup_queue.close()
-        dirs_cleanup_queue.join_thread()
+        dirs_cleanup_queue.append(log_dir)
         os.environ["PORT_LOGDIR"] = log_dir
 
-        from _emerge.depgraph import backtrack_depgraph
-        from _emerge.actions import load_emerge_config, action_build
-        from _emerge.create_depgraph_params import create_depgraph_params
-        from _emerge.main import parse_opts, post_emerge, \
-            validate_ebuild_environment
-        from _emerge.stdout_spinner import stdout_spinner
-        import portage.versions
-        import portage
+        emerge_settings, emerge_trees, mtimedb = self._emerge_config
+        settings = portage.config(clone=emerge_settings)
 
-        portdb = portage.portdb
-        portdb.freeze()
-        settings = portage.config(clone=portage.settings)
-        vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
-        fakedb = portage.fakedbapi(settings=portage.settings)
+        portdb = emerge_trees[settings["ROOT"]]["porttree"].dbapi
+        if not portdb.frozen:
+            portdb.freeze()
+        vardb = emerge_trees[settings["ROOT"]]["vartree"].dbapi
+        fakedb = portage.fakedbapi(settings=settings)
 
         # Load the most current variables from /etc/profile.env, which
         # has been re-generated by the env-update call in _run()
@@ -805,7 +747,7 @@ class PackageBuilder(object):
         if not best_visible:
             # package not found, return error
             print_error("cannot match: %s, aborting" % (self._package,))
-            not_found_queue.put(self._package)
+            self._not_found_packages.append(self._package)
             return 1
 
         allow_not_installed = self._params['not-installed'] == "yes"
@@ -816,7 +758,7 @@ class PackageBuilder(object):
             # package not installed
             print_error("package not installed: %s, aborting" % (
                 self._package,))
-            not_installed_queue.put(self._package)
+            self._not_installed_packages.append(self._package)
             return 1
         if (not best_installed) and (allow_not_installed):
             print_warning(
@@ -856,9 +798,6 @@ class PackageBuilder(object):
         # at this point we can go ahead building self._package
         print_info("starting to build: %s, to %s" % (self._package,
             best_visible,))
-
-        emerge_settings, emerge_trees, mtimedb = \
-            load_emerge_config(trees=portage.db)
 
         if not getcolor():
             portage.output.nocolor()
@@ -1020,14 +959,14 @@ class PackageBuilder(object):
                     # package queue, so grab it from there.
                     failed_package = package_queue_map.get(merge_atom)
                 not_merged.append(merge_atom)
-                not_merged_queue.put(merge_atom)
+                self._not_merged_packages.append(merge_atom)
 
         for pkg in package_queue:
             cpv = pkg.cpv
             if cpv not in not_merged:
                 # add to build queue
                 print_info("package: %s, successfully built" % (cpv,))
-                pkg_queue.put(cpv)
+                self._built_packages.append(cpv)
 
         post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
             emerge_trees, mtimedb, retval)
@@ -1084,42 +1023,22 @@ class PackageBuilder(object):
         return exec_cmd(overlay_cmd, env = std_env)
 
     @staticmethod
-    def check_preserved_libraries():
+    def check_preserved_libraries(emerge_config):
         """
         Ask portage whether there are preserved libraries on the system.
         This usually indicates that Entropy packages should not be really
         committed.
 
+        @param emerge_config: tuple returned by load_emerge_config(),
+            -> (emerge_settings, emerge_trees, mtimedb)
+        @type emerge_config: tuple
         @return: True, if preserved libraries are found
         @rtype: bool
         """
-        pid = os.fork()
-        if pid == 0:
-            try:
-                import portage
-                settings = portage.config(clone=portage.settings)
-                vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
-                vardb._plib_registry.load()
-                if vardb._plib_registry.hasEntries():
-                    os._exit(1)
-                os._exit(0)
-            except KeyboardInterrupt:
-                os._exit(1)
-            except Exception as exc:
-                sys.stderr.write(repr(exc) + "\n")
-                os._exit(1)
-        else:
-            try:
-                rcpid, rc = os.waitpid(pid, os.P_WAIT)
-            except KeyboardInterrupt:
-                os.kill(pid, signal.SIGTERM)
-                rc = 1
-            except Exception as exc:
-                os.kill(pid, signal.SIGTERM)
-                rc = 1
-            if rc == 0:
-                return False
-            return True
+        emerge_settings, emerge_trees, mtimedb = emerge_config
+        vardb = emerge_trees[emerge_settings["ROOT"]]["vartree"].dbapi
+        vardb._plib_registry.load()
+        return vardb._plib_registry.hasEntries()
 
     @staticmethod
     def commit(entropy_server, repository, packages):
@@ -1263,7 +1182,9 @@ def matter_main(entropy_server, nsargs, cwd, specs):
     """
     exit_st = 0
 
-    preserved_libs = PackageBuilder.check_preserved_libraries()
+    emerge_config = load_emerge_config()
+    preserved_libs = PackageBuilder.check_preserved_libraries(
+        emerge_config)
     if preserved_libs:
         print_error(
             "preserved libraries are found on system, aborting.")
@@ -1323,8 +1244,8 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                 tot_pkgs = len(spec['packages'])
                 for package in spec['packages']:
                     pkg_count += 1
-                    builder = PackageBuilder(entropy_server, package,
-                        spec, spec_count, tot_spec, pkg_count,
+                    builder = PackageBuilder(entropy_server, emerge_config,
+                        package, spec, spec_count, tot_spec, pkg_count,
                         tot_pkgs)
                     rc = builder.run()
                     not_found.extend(builder.get_not_found_packages())
@@ -1333,7 +1254,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                     not_merged.extend(
                         builder.get_not_merged_packages())
                     preserved_libs = \
-                        PackageBuilder.check_preserved_libraries()
+                        PackageBuilder.check_preserved_libraries(emerge_config)
                     if preserved_libs:
                         # abort, library breakages detected
                         exit_st = 1
