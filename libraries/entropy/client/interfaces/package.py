@@ -3123,11 +3123,18 @@ class Package:
                 header = red("   ## ")
             )
         if self.pkgmeta['splitdebug']:
-            mytxt = "[%s]" % (teal(_("<3 debug files installation enabled <3")),)
+            if self.pkgmeta.get('splitdebug_pkgfile'):
+                mytxt = "[%s]" % (
+                    teal(_("unsupported splitdebug usage (package files)")),)
+                level = "warning"
+            else:
+                mytxt = "[%s]" % (
+                    teal(_("<3 debug files installation enabled <3")),)
+                level = "info"
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                level = "info",
+                level = level,
                 header = red("   ## ")
             )
 
@@ -3851,7 +3858,9 @@ class Package:
         self.pkgmeta['revision'] = rev
 
         self.pkgmeta['extra_download'] = []
+        self.pkgmeta['splitdebug_pkgfile'] = True
         if not is_package_repo:
+            self.pkgmeta['splitdebug_pkgfile'] = False
             extra_download = dbconn.retrieveExtraDownload(idpackage)
             if not self.pkgmeta['splitdebug']:
                 extra_download = [x for x in extra_download if \
