@@ -1,3 +1,71 @@
+commit 8ed49f0fbf21f3da94903f57edb4aee756e9f165
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 23:26:43 2011 +0200
+
+    Release Entropy 1.0_rc48
+
+commit f1098717ec4209faaa4e0c7180a045d0230fe087
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 23:21:56 2011 +0200
+
+    [matter] cleanup code, fix PORT_LOGDIR usage regression
+
+commit cf2894a62baea5b90178c8fa5a5eab40b91e78d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 22:48:59 2011 +0200
+
+    [matter] rewrite Portage usage, avoid using fork(), fix portage/emerge object usage, thanks to zmedico@gentoo.org
+
+commit ac77c49e65b1bccfa62d2cf14478b4972c10008e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 21:22:58 2011 +0200
+
+    [matter] drop calls to queue inside _run_builder(), not needed
+
+commit eb2b068176a203b5e1b09fd4c912bd7441c21664
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 10:49:59 2011 +0200
+
+    [entropy.client] clean_downloaded_packages: catch exception if branch_dir is not a dir
+    
+    At the same time, also improve fault tolerance of get_removable_packages()
+
+commit c7c207dda0c3b6edd4ad15c7e364c84a4edbfebd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 10:34:42 2011 +0200
+
+    [entropy.client] inform about splitdebug feature being unsupported for direct pkg install, see Sabayon bug #2666
+
+commit e9f76d96aa3c7fb334f81117cf6549ab6f83f8ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 10:26:52 2011 +0200
+
+    [entropy.client] don't use "extra download" metadata when installing package files directly, see Sabayon bug #2666
+
+commit 966b35311ef352644634b99eb5cfe69d7e0d2dec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 10:19:26 2011 +0200
+
+    [matter] add handy bugzilla bug generator tool (sendfail)
+
+commit 5df92bad4af78a79f82f6a5acde9a2b77cd3a76f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 1 11:32:22 2011 +0200
+
+    [entropy.qa] trivial code update
+
+commit 24836e11502d4cea6f6dc62ebd75b7929b29e4bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 1 11:25:28 2011 +0200
+
+    [entropy.client.interfaces.dep] _get_required_packages: improve constraints on forced_matches
+
+commit 69cdd1ce442d4b5571ed7aacbc835980a94f3fdd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 30 11:39:25 2011 +0200
+
+    Tagging Entropy version 1.0_rc47
+
 commit 87b679d2e4212503ce18ea20dd8b11874791ccd8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 30 11:39:18 2011 +0200
