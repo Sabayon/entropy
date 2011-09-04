@@ -1203,12 +1203,23 @@ class RepositoryMixin:
         def get_removable_packages():
             removable_pkgs = set()
             for pkg_dir in repo_pkgs_dirs:
-                if not os.path.isdir(pkg_dir):
+                try:
+                    pkg_dir_list = os.listdir(pkg_dir)
+                except OSError as err:
+                    if err.errno not in (errno.ENOTDIR, errno.ENOENT):
+                        raise
+                    # pkg_dir is not a dir or doesn't exist
                     continue
-                for branch in os.listdir(pkg_dir):
+                for branch in pkg_dir_list:
                     branch_dir = os.path.join(pkg_dir, branch)
-                    dir_repo_pkgs = set((os.path.join(branch_dir, x) \
-                        for x in os.listdir(branch_dir)))
+                    try:
+                        dir_repo_pkgs = set((os.path.join(branch_dir, x) \
+                            for x in os.listdir(branch_dir)))
+                    except OSError as err:
+                        if err.errno not in (errno.ENOTDIR, errno.ENOENT):
+                            raise
+                        # branch_dir is not a dir or doesn't exist
+                        continue
                     # filter out hostile paths
                     dir_repo_pkgs = set((x for x in dir_repo_pkgs \
                         if os.path.realpath(x).startswith(branch_dir) \
