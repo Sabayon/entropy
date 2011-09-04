@@ -806,8 +806,6 @@ class PackageBuilder(object):
             # package not found, return error
             print_error("cannot match: %s, aborting" % (self._package,))
             not_found_queue.put(self._package)
-            pkg_queue.close()
-            pkg_queue.join_thread()
             return 1
 
         allow_not_installed = self._params['not-installed'] == "yes"
