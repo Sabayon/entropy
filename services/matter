@@ -34,6 +34,10 @@ import entropy.tools
 import entropy.dep
 
 # Portage imports
+os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
+os.environ['FEATURES'] = "split-log"
+os.environ['CMAKE_NO_COLOR'] = "yes"
+
 from _emerge.depgraph import backtrack_depgraph
 from _emerge.actions import load_emerge_config, action_build
 from _emerge.create_depgraph_params import create_depgraph_params
@@ -719,13 +723,9 @@ class PackageBuilder(object):
         logic, including constraints validation given by argv parameters.
         NOTE: negative errors indicate warnings that can be skipped.
         """
-        os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
-        os.environ['FEATURES'] = "split-log"
-        os.environ['CMAKE_NO_COLOR'] = "yes"
         log_dir = tempfile.mkdtemp(prefix="matter_build.",
             suffix="." + self._package.replace("/", "_").lstrip("<>=~"))
         dirs_cleanup_queue.append(log_dir)
-        os.environ["PORT_LOGDIR"] = log_dir
 
         emerge_settings, emerge_trees, mtimedb = self._emerge_config
         settings = portage.config(clone=emerge_settings)
@@ -734,6 +734,11 @@ class PackageBuilder(object):
         if not portdb.frozen:
             portdb.freeze()
         vardb = emerge_trees[settings["ROOT"]]["vartree"].dbapi
+        vardb.settings.unlock()
+        vardb.settings["PORT_LOGDIR"] = log_dir
+        vardb.settings.backup_changes("PORT_LOGDIR")
+        vardb.settings.lock()
+
         fakedb = portage.fakedbapi(settings=settings)
 
         # Load the most current variables from /etc/profile.env, which
@@ -819,13 +824,13 @@ class PackageBuilder(object):
             spinner.update = spinner.update_basic
         elif "--nospinner" in myopts:
             spinner.update = spinner.update_basic
-        if emerge_settings.get("TERM") == "dumb" or not is_stdout_a_tty():
+        if settings.get("TERM") == "dumb" or not is_stdout_a_tty():
             spinner.update = spinner.update_basic
 
         print_info("emerge args: %s" % (" ".join(sorted(myopts.keys())),))
 
         params = create_depgraph_params(myopts, myaction)
-        success, graph, favorites = backtrack_depgraph(emerge_settings,
+        success, graph, favorites = backtrack_depgraph(settings,
             emerge_trees, myopts, params, myaction, myfiles, spinner)
 
         if not success:
@@ -942,7 +947,7 @@ class PackageBuilder(object):
 
         # re-calling action_build(), deps are re-calculated though
         validate_ebuild_environment(emerge_trees)
-        retval = action_build(emerge_settings, emerge_trees, mtimedb,
+        retval = action_build(settings, emerge_trees, mtimedb,
             myopts, myaction, myfiles, spinner)
 
         not_merged = []
@@ -968,7 +973,7 @@ class PackageBuilder(object):
                 print_info("package: %s, successfully built" % (cpv,))
                 self._built_packages.append(cpv)
 
-        post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
+        post_emerge(myaction, myopts, myfiles, settings["ROOT"],
             emerge_trees, mtimedb, retval)
 
         subprocess.call(["env-update"])
