@@ -1,0 +1,130 @@
+#!/bin/bash
+
+if [ -z "${7}" ]; then
+	echo "<report for: sabayon|gentoo> <bugzilla username> <bugzilla password> <package name> <maintainer> <build log url> <emerge info url>" >&2
+	exit 1
+fi
+
+DISTRO="${1}"
+BUGZILLA_USER="${2}"
+BUGZILLA_PASSWORD="${3}"
+PACKAGE_NAME="${4}"
+MAINTAINER="${5}" # TODO
+BUILD_LOG_URL="${6}"
+EMERGE_INFO_URL="${7}"
+
+if [ "${DISTRO}" = "gentoo" ]; then
+	BUGZILLA_URL="https://bugs.gentoo.org"
+	BUGZILLA_KEYWORDS=""
+	BUGZILLA_PRODUCT="Gentoo Linux"
+	BUGZILLA_COMPONENT="Ebuilds"
+	BUGZILLA_PRIORITY="Low"
+	BUGZILLA_SEVERITY="QA"
+elif [ "${DISTRO}" = "sabayon" ]; then
+	BUGZILLA_URL="https://bugs.sabayon.org"
+	BUGZILLA_KEYWORDS="TINDERBOX"
+	BUGZILLA_PRODUCT="Entropy"
+	BUGZILLA_COMPONENT="Package"
+	BUGZILLA_PRIORITY="Low"
+	BUGZILLA_SEVERITY="normal"
+else
+	# don't file a bug then
+	echo "invalid 'report for' parameter" >&2
+	exit 1
+fi
+
+if [ ! -x "/usr/bin/bugz" ]; then
+	echo "ouch, pybugz not installed" >&2
+	exit 1
+fi
+
+BUG_TEXT="Hello,
+Package in subject has shown build or install failures on Sabayon Tinderbox.
+Please find emerge --info =${PACKAGE_NAME} below and build.log attached"
+
+tmp_dir=$(mktemp -d)
+if [ ! -d "${tmp_dir}" ]; then
+	echo "failed to create temporary directory" >&2
+	exit 1
+fi
+
+# Fetch build log URL
+BUILD_LOG="${tmp_dir}/build.log"
+wget "${BUILD_LOG_URL}" -O- --quiet > "${BUILD_LOG}"
+if [ "${?}" != "0" ]; then
+	echo "cannot wget build log url" >&2
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+if [ ! -f "${BUILD_LOG}" ]; then
+	echo "cannot find build log file" >&2
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+
+EMERGE_INFO="${tmp_dir}/emerge.info"
+wget "${EMERGE_INFO_URL}" -O- --quiet > "${EMERGE_INFO}"
+if [ "${?}" != "0" ]; then
+	echo "cannot wget emerge info url" >&2
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+if [ ! -f "${BUILD_LOG}" ]; then
+	echo "cannot find emerge info file" >&2
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+BUG_TEXT+="
+
+$ emerge --info =${PACKAGE_NAME}
+"
+BUG_TEXT+=$(cat "${EMERGE_INFO}")
+
+TINDERBOX_ID="$(date +%s)-${RANDOM}"
+echo "Submitting bug with tinderbox_id: ${TINDERBOX_ID}"
+
+_keywords=""
+if [ -n "${BUGZILLA_KEYWORDS}" ]; then
+	_keywords="--keywords ${BUGZILLA_KEYWORDS}"
+fi
+/usr/bin/bugz -u "${BUGZILLA_USER}" -p "${BUGZILLA_PASSWORD}" --forget -b "${BUGZILLA_URL}" post \
+	-t "${PACKAGE_NAME} build failure [tinderbox_id:${TINDERBOX_ID}]" -d "${BUG_TEXT}" \
+	--product "${BUGZILLA_PRODUCT}" --component "${BUGZILLA_COMPONENT}" \
+	--assigned-to "${MAINTAINER}" \
+	--priority "${BUGZILLA_PRIORITY}" --severity "${BUGZILLA_SEVERITY}" \
+	${_keywords} --batch --default-confirm Y
+if [ "${?}" != "0" ]; then
+	echo "ouch, cannot report bug"
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+
+# workaround the fact that pybugz doesn't return the newly created bug id in a reliable way
+# use tinderbox_id
+tmp_file=$(mktemp)
+/usr/bin/bugz -q -u "${BUGZILLA_USER}" -p "${BUGZILLA_PASSWORD}" --forget -b "${BUGZILLA_URL}" search "tinderbox_id:${TINDERBOX_ID}" | \
+	cut -d" " -f 1 | sed -r "s/\x1b\[\?1034h//" > "${tmp_file}"
+if [ "${?}" != "0" ]; then
+	echo "cannot execute search and retrieve submitted bug id"
+	rm "${tmp_file}"
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+submitted_bug_id=$(cat "${tmp_file}" | cut -d" " -f 1)
+rm "${tmp_file}"
+echo "Realized bug id: ${submitted_bug_id}"
+if [ -z "${submitted_bug_id}" ]; then
+	echo "cannot find submitted bug id, cannot attach build log"
+	rm -rf "${tmp_dir}"
+	exit 1
+fi
+
+echo "Submitted bug to ${BUGZILLA_URL}, bug id: ${submitted_bug_id}"
+
+# now attach the build log
+cd "$(dirname "${BUILD_LOG}")"
+/usr/bin/bugz -u "${BUGZILLA_USER}" -p "${BUGZILLA_PASSWORD}" --forget -b "${BUGZILLA_URL}" \
+	attach "${submitted_bug_id}" "$(basename "${BUILD_LOG}")" -d "build log"
+exit_st=${?}
+rm -rf "${tmp_dir}"
+exit ${exit_st}
