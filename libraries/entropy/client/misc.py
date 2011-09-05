@@ -95,7 +95,7 @@ class FileUpdates:
                 _mask = repo.listConfigProtectEntries(mask = True)
             else:
                 _mask = repo.listConfigProtectEntries()
-            config_protect |= set(_protect)
+            config_protect |= set(_mask)
 
         config_protect = [etpConst['systemroot']+x for x in config_protect]
         return sorted(config_protect)
