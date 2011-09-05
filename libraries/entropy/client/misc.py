@@ -27,14 +27,14 @@ class FileUpdates:
 
     CACHE_ID = "conf/scanfs"
 
-    def __init__(self, entropy_client, entropy_repository = None):
-        if not isinstance(entropy_client, Client):
-            mytxt = "A valid Client instance or subclass is needed"
-            raise AttributeError(mytxt)
+    def __init__(self, entropy_client, repository_ids = None):
         self._entropy = entropy_client
-        if entropy_repository is None:
-            entropy_repository = self._entropy.installed_repository()
-        self._repo = entropy_repository
+        if repository_ids is None:
+            repository_ids = []
+            inst_repo = self._entropy.installed_repository()
+            if inst_repo is not None:
+                repository_ids.append(inst_repo.repository_id())
+        self._repository_ids = repository_ids
         self._settings = SystemSettings()
         self._cacher = EntropyCacher()
         self._scandata = None
@@ -80,21 +80,24 @@ class FileUpdates:
 
     def _get_system_config_protect(self, mask = False):
 
-        if self._repo is None:
-            return []
-
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[cl_id]['misc']
+        config_protect = set()
+
         if mask:
-            _pmask = self._repo.listConfigProtectEntries(mask = True)
-            config_protect = set(_pmask)
             config_protect |= set(misc_data['configprotectmask'])
         else:
-            _protect = self._repo.listConfigProtectEntries()
-            config_protect = set(_protect)
             config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
 
+        for repository_id in self._repository_ids:
+            repo = self._entropy.open_repository(repository_id)
+            if mask:
+                _mask = repo.listConfigProtectEntries(mask = True)
+            else:
+                _mask = repo.listConfigProtectEntries()
+            config_protect |= set(_protect)
+
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
         return sorted(config_protect)
 
     def scan(self, dcache = True, quiet = False):
