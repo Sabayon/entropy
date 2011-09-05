@@ -1,3 +1,99 @@
+commit cc6ad786fb636c32fca856346a85f7e9a6822128
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 18:09:40 2011 +0200
+
+    Release Entropy 1.0_rc49
+
+commit 5a74ee403b5287898c98aa8058c3e6256b193ff6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:57:14 2011 +0200
+
+    [entropy.client.misc] when collecting CONFIG_PROTECT* elements, also ask the Source Package Manager about it, closes bug 2480
+
+commit d70ba281886447921a7a93288577bddac471a85a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:49:11 2011 +0200
+
+    [entropy.client.misc] fix undefined reference
+
+commit c536966e0a9d95dd530bceebc82c9e3515b912dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:46:24 2011 +0200
+
+    [entropy.server] _check_config_file_updates: provide a list of repository identifiers to PackageFileUpdates loader
+    
+    Using CONFIG_PROTECT* information across all the repositories makes
+    possible to detect config files changes to be merged even if the
+    currently working repository (which was available through
+    entropy.installed_repository() used by entropy.client.misc by
+    default) is actually empty.
+
+commit 80b6849c06467e9f007aaed1752a48f048b1f1be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:44:28 2011 +0200
+
+    [entropy.client.misc] FileUpdates: make possible to look for CONFIG_PROTECT directories across multiple repositories
+
+commit f2b49cae588b98361e9fc05196fc167245680de3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:35:31 2011 +0200
+
+    [entropy.client.loaders] add entropy_repository keyword arg to PackageFileUpdates
+
+commit f2ed1b6c6417e35f06c709c8eb06b4434b543593
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 17:32:20 2011 +0200
+
+    [entropy.client.misc] FileUpdates: make possible to provide arbitrary EntropyRepositoryBase objects
+
+commit e850a8d8b717263c99705f6b74118c7c62ab800f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 13:25:40 2011 +0200
+
+    [todo] update TODO
+
+commit ce0844f816911ff29a999de555cc1c5ca568facd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 13:25:07 2011 +0200
+
+    [entropy.server] make use of Entropy SPM "execute_system_qa_tests" method during repository push
+
+commit 13603bdce8ffb76043996f2283fbc77140f5e165
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 13:24:07 2011 +0200
+
+    [entropy.spm] add new method "execute_system_qa_tests" for hooking SPM related, system-wide QA tests
+
+commit b80e1c7cf0453383e705c415f4f65886592941c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 12:37:37 2011 +0200
+
+    [conf] add packages.db.missing_deps_blacklist example file
+
+commit bf8918a6f3fdf342ee2dca4c35e8ea3faf2deba8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 12:31:05 2011 +0200
+
+    [eit] add vacuum tool
+
+commit f2ac8dfc72b55c9b8ce6275b190f420059e14386
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 12:27:18 2011 +0200
+
+    [eit] do not use tuple() with _exec_args()
+
+commit 55770c41722db833e2ff5a9c2068319987d5c61f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 08:52:14 2011 +0200
+
+    [matter] make sure etc-update is always called
+
+commit dab40ddf5995234fc640db9a8cc190c01d24f6fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 4 23:26:55 2011 +0200
+
+    Tagging Entropy version 1.0_rc48
+
 commit 8ed49f0fbf21f3da94903f57edb4aee756e9f165
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 4 23:26:43 2011 +0200
