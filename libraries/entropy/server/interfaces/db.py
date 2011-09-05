@@ -1689,6 +1689,23 @@ Name:    %s
                 )
                 return 3, set(), set()
 
+            # ask Spm to scan system
+            spm_class = self._entropy.Spm_class()
+            exit_st, err_msg = spm_class.execute_system_qa_tests(self._entropy)
+            if exit_st != 0:
+                self._entropy.output(
+                    "[repo:%s|%s] %s: %s" % (
+                        brown(self._repository_id),
+                        red(_("sync")),
+                        blue(_("repository sync forbidden")),
+                        red(err_msg),
+                    ),
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" !!! ")
+                )
+                return 4, set(), set()
+
             # scan and report package changes
             _ignore_added, to_be_removed, _ignore_injected = \
                 self._entropy.scan_package_changes()
