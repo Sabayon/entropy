@@ -191,14 +191,14 @@ elif main_cmd == "bump":
 
 elif (main_cmd == "checkout") and options and len(options) < 2:
     repository_id = options.pop(0)
-    _exec_args((REAGENT_EXEC, "repo", "default", repository_id))
+    _exec_args([REAGENT_EXEC, "repo", "default", repository_id])
 
 elif main_cmd == "cleanup":
     if options:
         avail_repos = _get_available_repositories()
         if options[0] in avail_repos:
             os.environ['ETP_REPO'] = options.pop(0)
-    _exec_args((ACTIVATOR_EXEC, "tidy"))
+    _exec_args([ACTIVATOR_EXEC, "tidy"])
 
 elif main_cmd == "commit":
     if options:
@@ -233,7 +233,7 @@ elif (main_cmd == "init") and options and len(options) < 2:
     avail_repos = _get_available_repositories()
     if repository_id in avail_repos:
         os.environ['ETP_REPO'] = repository_id
-        _exec_args((REAGENT_EXEC, "repo", "init"))
+        _exec_args([REAGENT_EXEC, "repo", "init"])
 
 elif main_cmd == "libtest":
     lt_options = []
