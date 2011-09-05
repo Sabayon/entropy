@@ -5527,7 +5527,8 @@ class Server(Client):
             back = True
         )
         # scanning for config files not updated
-        file_updates = self.PackageFileUpdates()
+        file_updates = self.PackageFileUpdates(
+            repository_ids = self.repositories())
         scandata = file_updates.scan(dcache = False)
         if scandata:
             self.output(
