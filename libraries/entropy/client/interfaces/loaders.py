@@ -147,15 +147,19 @@ class LoadersMixin:
         """
         return self.__package_loader(self)
 
-    def PackageFileUpdates(self):
+    def PackageFileUpdates(self, entropy_repository = None):
         """
         Load Entropy Package Files instance object. Through this interface,
         you can scan for package files updates (usually configuration files)
         and let user merge, remove them interactively.
 
+        @keyword entropy_repository: EntropyRepositoryBase object used to
+            retrieve the list of protected directories and files
+        @type entropy_repository: EntropyRepositoryBase
         @rtype: entropy.client.misc.FileUpdates
         """
-        return self.__package_files_loader(self)
+        return self.__package_files_loader(self,
+            entropy_repository = entropy_repository)
 
     def Settings(self):
         """
