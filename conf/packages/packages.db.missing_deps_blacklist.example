@@ -1,0 +1,14 @@
+# Server side packages.db.missing_deps_blacklist file (this has to stay
+# in server-side repository directory, usually
+# /var/lib/entropy/server/<repoid>/database/<arch>/<branch>
+#
+# Through this file, it's possible to filter out missing dependencies detected
+# by Entropy Server automagic runtime dependencies QA tool. In other words,
+# this is useful for listing false positives.
+#
+# Just list, one per line, dependencies returned by the above QA tool you
+# want to filter out, in form of <package key>:<slot>.
+#
+# For example:
+# dev-lang/gnat-gcc:4.2
+
