@@ -6,6 +6,10 @@ Backlog (raw)
         - use argparse
         - add "eit notice"
         - add "eit sets"
+        - ceit (community repos eit)
+        - add "eit revdeps"
+        - add "eit fitin"
+        - add man page
 
     - graph improvements:
         - graph with or dependencies support
