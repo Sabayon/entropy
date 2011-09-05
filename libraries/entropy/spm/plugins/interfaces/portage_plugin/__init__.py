@@ -28,8 +28,8 @@ from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_setup_file
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
-from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
-    bold, blue, getcolor, decolorize
+from entropy.output import darkred, darkgreen, brown, darkblue, teal, purple, \
+    red, bold, blue, getcolor, decolorize
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
@@ -351,7 +351,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 7
+    PLUGIN_API_VERSION = 8
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -3157,6 +3157,62 @@ class PortagePlugin(SpmPlugin):
                 os.rename(world_file_tmp, world_file)
 
         return 0
+
+    @staticmethod
+    def _qa_check_preserved_libraries(entropy_output, portage):
+        """
+        Ask portage whether there are preserved libraries on the system.
+        This usually indicates that Entropy packages should not be really
+        pushed.
+        """
+        root = etpConst['systemroot'] + os.path.sep
+        mytree = portage.vartree(root=root)
+        vardb = mytree.dbapi
+        vardb._plib_registry.load()
+        if vardb._plib_registry.hasEntries():
+            # just warn for now
+            entropy_output.output("", importance = 0, level = "warning")
+            txt = "%s: %s:" % (
+                teal(_("Attention")),
+                purple(_("preserved libraries have been found on system")),
+            )
+            entropy_output.output(txt,
+                importance = 1,
+                level = "warning",
+                header = brown(_(" !!! ")),
+            )
+            preserved_libs = vardb._plib_registry.getPreservedLibs()
+            for cpv, path_list in preserved_libs.items():
+                if path_list:
+                    entropy_output.output(
+                        darkblue(cpv),
+                        importance = 0,
+                        level = "warning",
+                        header = teal(_(" @@ ")),
+                    )
+                for path in path_list:
+                    entropy_output.output(
+                        path,
+                        importance = 0,
+                        level = "warning",
+                        header = purple(_("    # ")),
+                    )
+            entropy_output.output("", importance = 0, level = "warning")
+        return 0, None
+
+    @staticmethod
+    def execute_system_qa_tests(entropy_output):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        import portage
+        methods = (PortagePlugin._qa_check_preserved_libraries,)
+        for method in methods:
+            exit_st, msg = method(entropy_output, portage)
+            if exit_st != 0:
+                return exit_st, msg
+
+        return 0, ""
 
     @staticmethod
     def execute_qa_tests(package_path):

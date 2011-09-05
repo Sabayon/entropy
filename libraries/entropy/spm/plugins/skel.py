@@ -22,7 +22,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 7
+    BASE_PLUGIN_API_VERSION = 8
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -694,6 +694,24 @@ class SpmPlugin(Singleton):
 
         @param package_path: path to Entropy package
         @type package_path: string
+        @return: tuple composed by error status and error message (if any).
+            Error status is an int with != 0 values if error occured.
+        @rtype: tuple
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def execute_system_qa_tests(entropy_output):
+        """
+        Execute Source Package Manager based QA tests on the whole system.
+        This method can be used to make sure that at the time of pushing
+        a new Entropy repository, the system is in consistent state.
+        It is called by Entropy Server, during pre-repository upload QA
+        checks. This method must return a tuple composed by exit status and
+        error message. Error message is considered only if exit status != 0.
+
+        @param entropy_output: a valid text output interface
+        @type entropy_output: TextInterface object
         @return: tuple composed by error status and error message (if any).
             Error status is an int with != 0 values if error occured.
         @rtype: tuple
