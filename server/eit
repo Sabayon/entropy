@@ -69,6 +69,7 @@ help_opts = [
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
     (1, 'status [<repository>]', 2, _('show current repositories status')),
+    (1, 'vacuum [<repository>]', 2, _('clean unavailable packages from a repository')),
     None,
 ]
 
@@ -199,6 +200,13 @@ elif main_cmd == "cleanup":
         if options[0] in avail_repos:
             os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([ACTIVATOR_EXEC, "tidy"])
+
+elif main_cmd == "vacuum":
+    if options:
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([ACTIVATOR_EXEC, "repo", "vacuum"])
 
 elif main_cmd == "commit":
     if options:
