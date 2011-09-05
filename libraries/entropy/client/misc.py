@@ -83,12 +83,19 @@ class FileUpdates:
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[cl_id]['misc']
         config_protect = set()
+        # also ask to Source Package Manager
+        spm = self._entropy.Spm()
 
         if mask:
             config_protect |= set(misc_data['configprotectmask'])
+            # also read info from environment and merge here
+            config_protect |= set(spm.get_merge_protected_paths_mask())
         else:
             config_protect |= set(misc_data['configprotect'])
+            # also read info from environment and merge here
+            config_protect |= set(spm.get_merge_protected_paths())
 
+        # get from our repositories
         for repository_id in self._repository_ids:
             repo = self._entropy.open_repository(repository_id)
             if mask:
