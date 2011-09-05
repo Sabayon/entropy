@@ -1108,10 +1108,9 @@ class PackageBuilder(object):
         # if --gentle was specified, the uncommitted stuff here belongs
         # to our packages.
         # if --gentle was NOT specified, we just don't give a shit
-        uncommitted = entropy_server._check_config_file_updates()
-        if uncommitted:
-            subprocess.call("echo -5 | etc-update", shell = True)
-        # test again
+        # Due to bug #2480 -- sometimes (app-misc/tracker)
+        # _check_config_file_updates() doesn't return all the files
+        subprocess.call("echo -5 | etc-update", shell = True)
         uncommitted = entropy_server._check_config_file_updates()
         if uncommitted:
             # ouch, wtf? better aborting
