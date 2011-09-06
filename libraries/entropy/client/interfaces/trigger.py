@@ -444,7 +444,7 @@ class Trigger:
         entropy_sh = const_convert_to_rawstring(entropy_sh)
         tmp_fd, tmp_path = tempfile.mkstemp()
         with os.fdopen(tmp_fd, "ab+") as tr_f:
-            tr_f.write(self._pkgdata['trigger'])
+            tr_f.write(const_convert_to_rawstring(self._pkgdata['trigger']))
             tr_f.flush()
             tr_f.seek(0)
             interpreter = tr_f.read(128)

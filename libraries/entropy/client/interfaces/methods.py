@@ -162,7 +162,7 @@ class RepositoryMixin:
         @type mask_clear: bool
         """
         repo_cache = getattr(self, "_repodb_cache", {})
-        for item, val in repo_cache.items():
+        for item, val in list(repo_cache.items()): # list() -> python3 support
             repository_id, root = item
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
