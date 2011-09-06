@@ -1313,24 +1313,6 @@ class PortagePlugin(SpmPlugin):
 
         return data
 
-    def enable_package_compile_options(self, package, options):
-        """
-        Reimplemented from SpmPlugin class.
-        """
-        result = self._unset_package_useflags(package, options)
-        if not result:
-            return False
-        return self._handle_new_useflags(package, options, "")
-
-    def disable_package_compile_options(self, package, options):
-        """
-        Reimplemented from SpmPlugin class.
-        """
-        result = self._unset_package_useflags(package, options)
-        if not result:
-            return False
-        return self._handle_new_useflags(package, options, "-")
-
     def get_installed_package_content(self, package, root = None):
         """
         Reimplemented from SpmPlugin class.

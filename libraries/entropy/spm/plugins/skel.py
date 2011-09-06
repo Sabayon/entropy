@@ -401,38 +401,6 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def enable_package_compile_options(self, package, options):
-        """
-        WARNING: this is an Entropy Server functionality.
-        Enable compile options (also known as USE flags) for package.
-        Compile options are intended to be features that package can
-        expose to other packages or directly to user.
-
-        @param package: package name
-        @type package: string
-        @param options: list of compile options to enable
-        @type options: string
-        @return: enable status, True if enabled, False if not
-        @rtype: bool
-        """
-        raise NotImplementedError()
-
-    def disable_package_compile_options(self, package, options):
-        """
-        WARNING: this is an Entropy Server functionality.
-        Disable compile options (also known as USE flags) for package.
-        Compile options are intended to be features that package can
-        expose to other packages or directly to user.
-
-        @param package: package name
-        @type package: string
-        @param options: list of compile options to disable
-        @type options: string
-        @return: enable status, True if disabled, False if not
-        @rtype: bool
-        """
-        raise NotImplementedError()
-
     def get_installed_package_content(self, package, root = None):
         """
         Return list of files/directories owned by package.
