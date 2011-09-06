@@ -498,7 +498,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         """
         resp = self.__ftpconn.sendcmd('CPFR ' + fromname)
         if resp[0] != '3':
-            raise self.ftplib.error_reply, resp
+            raise self.ftplib.error_reply(resp)
         return self.__ftpconn.voidcmd('CPTO ' + toname)
 
     def copy(self, remote_path_old, remote_path_new):
