@@ -2087,10 +2087,15 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
 
             tar.extract(tarinfo, encoded_path)
             extracted_something = True
-            deleter_counter -= 1
-            if deleter_counter == 0:
-                del tar.members[:]
-                deleter_counter = 3
+
+            if sys.hexversion < 0x3000000:
+                # this does work only with Python 2.x
+                # doing that in Python 3.x will result in
+                # partial extraction
+                deleter_counter -= 1
+                if deleter_counter == 0:
+                    del tar.members[:]
+                    deleter_counter = 3
 
         del tar.members[:]
 
