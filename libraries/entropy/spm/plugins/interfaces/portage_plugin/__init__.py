@@ -1410,42 +1410,6 @@ class PortagePlugin(SpmPlugin):
             pid_write_func(proc.pid)
         return proc.wait()
 
-    def remove_packages(self, packages, stdin = None, stdout = None,
-        stderr = None, environ = None, pid_write_func = None,
-        pretend = False, verbose = False, no_dependencies = False, ask = False,
-        coloured_output = False):
-
-        cmd = [PortagePlugin._cmd_map['exec_cmd'],
-            PortagePlugin._cmd_map['remove_cmd']]
-        if pretend:
-            cmd.append(PortagePlugin._cmd_map['pretend_cmd'])
-        if verbose:
-            cmd.append(PortagePlugin._cmd_map['verbose_cmd'])
-        if ask:
-            cmd.append(PortagePlugin._cmd_map['ask_cmd'])
-        if not coloured_output:
-            cmd.append(PortagePlugin._cmd_map['nocolor_cmd'])
-        if no_dependencies:
-            cmd.append(PortagePlugin._cmd_map['nodeps_cmd'])
-
-        cmd.extend(packages)
-        cmd_string = """\
-        %s && %s && %s
-        """ % (PortagePlugin._cmd_map['env_update_cmd'],
-            PortagePlugin._cmd_map['source_profile_cmd'],
-            ' '.join(cmd)
-        )
-
-        env = os.environ.copy()
-        if environ is not None:
-            env.update(environ)
-
-        proc = subprocess.Popen(cmd_string, stdout = stdout, stderr = stderr,
-            stdin = stdin, env = env, shell = True)
-        if pid_write_func is not None:
-            pid_write_func(proc.pid)
-        return proc.wait()
-
     def environment_update(self):
         args = (PortagePlugin._cmd_map['env_update_cmd'],)
         try:

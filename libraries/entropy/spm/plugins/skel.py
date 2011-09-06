@@ -481,45 +481,6 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def remove_packages(self, packages, stdin = None, stdout = None,
-        stderr = None, environ = None, pid_write_func = None,
-        pretend = False, verbose = False, no_dependencies = False, ask = False,
-        coloured_output = False):
-        """
-        Compile given packages using given compile options. Extra compiler
-        options can be set via environmental variables (CFLAGS, LDFLAGS, etc).
-        By default, this function writes to stdout and can potentially interact
-        with user via stdin/stdout/stderr.
-        By default, when build_only=False, compiled packages are installed onto
-        the running system.
-
-        @param packages: list of Source Package Manager package names
-        @type packages: list
-        @keyword stdin: custom standard input
-        @type stdin: file object or valid file descriptor number
-        @keyword stdout: custom standard output
-        @type stdout: file object or valid file descriptor number
-        @keyword stderr: custom standard error
-        @type stderr: file object or valid file descriptor number
-        @keyword environ: dict
-        @type environ: map of environmental variables
-        @keyword pid_write_func: function to call with execution pid number
-        @type pid_write_func: callable function, signature func(int_pid_number)
-        @keyword pretend: just show what would be done
-        @type pretend: bool
-        @keyword verbose: execute compilation in verbose mode
-        @type verbose: bool
-        @keyword no_dependencies: ignore possible build time dependencies
-        @type no_dependencies: bool
-        @keyword ask: ask user via stdin before executing the required tasks
-        @type ask: bool
-        @keyword coloured_output: allow coloured output
-        @type coloured_output: bool
-        @return: execution status
-        @rtype: int
-        """
-        raise NotImplementedError()
-
     def print_build_environment_info(self, stdin = None, stdout = None,
         stderr = None, environ = None, pid_write_func = None,
         coloured_output = False):
