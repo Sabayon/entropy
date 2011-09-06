@@ -326,8 +326,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         srv_updates['light'][rss_atom]['homepage'] = \
             package_data['homepage']
         srv_updates['light'][rss_atom]['package_id'] = package_id
+        date_raw_str = const_convert_to_rawstring(package_data['datecreation'])
         srv_updates['light'][rss_atom]['time_hash'] = \
-            hashlib.sha256(package_data['datecreation']).hexdigest()
+            hashlib.sha256(date_raw_str).hexdigest()
 
         # save to disk
         self.__save_rss(srv_repo, rss_name, srv_updates)
