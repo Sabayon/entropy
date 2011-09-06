@@ -51,16 +51,16 @@ class EntropyWebServicesTest(unittest.TestCase):
     def test_get_package_ids(self):
         webserv = self._factory.new(self._repository_id)
         package_ids = webserv.get_package_ids()
-        self.assert_(package_ids)
-        self.assert_(isinstance(package_ids, list))
-        self.assert_(isinstance(package_ids[0], int))
+        self.assertTrue(package_ids)
+        self.assertTrue(isinstance(package_ids, list))
+        self.assertTrue(isinstance(package_ids[0], int))
         return package_ids
 
     def test_get_revision(self):
         webserv = self._factory.new(self._repository_id)
         revision = webserv.get_revision()
-        self.assert_(revision)
-        self.assert_(isinstance(revision, const_get_stringtype()))
+        self.assertTrue(revision)
+        self.assertTrue(isinstance(revision, const_get_stringtype()))
 
     def test_service_available(self):
         webserv = self._factory.new(self._repository_id)
@@ -69,33 +69,33 @@ class EntropyWebServicesTest(unittest.TestCase):
     def test_get_repository_metadata(self):
         webserv = self._factory.new(self._repository_id)
         repo_meta = webserv.get_repository_metadata()
-        self.assert_(isinstance(repo_meta, dict))
-        self.assert_("sets" in repo_meta)
-        self.assert_(isinstance(repo_meta['sets'], dict))
-        self.assert_(isinstance(repo_meta['treeupdates_actions'], list))
-        self.assert_("treeupdates_actions" in repo_meta)
-        self.assert_(isinstance(repo_meta['treeupdates_actions'], list))
-        self.assert_("treeupdates_digest" in repo_meta)
-        self.assert_(isinstance(repo_meta['treeupdates_digest'], 
+        self.assertTrue(isinstance(repo_meta, dict))
+        self.assertTrue("sets" in repo_meta)
+        self.assertTrue(isinstance(repo_meta['sets'], dict))
+        self.assertTrue(isinstance(repo_meta['treeupdates_actions'], list))
+        self.assertTrue("treeupdates_actions" in repo_meta)
+        self.assertTrue(isinstance(repo_meta['treeupdates_actions'], list))
+        self.assertTrue("treeupdates_digest" in repo_meta)
+        self.assertTrue(isinstance(repo_meta['treeupdates_digest'], 
             const_get_stringtype()))
-        self.assert_("revision" in repo_meta)
-        self.assert_(isinstance(repo_meta['revision'], const_get_stringtype()))
-        self.assert_("checksum" in repo_meta)
-        self.assert_(isinstance(repo_meta['checksum'], const_get_stringtype()))
+        self.assertTrue("revision" in repo_meta)
+        self.assertTrue(isinstance(repo_meta['revision'], const_get_stringtype()))
+        self.assertTrue("checksum" in repo_meta)
+        self.assertTrue(isinstance(repo_meta['checksum'], const_get_stringtype()))
 
     def test_get_packages_metadata(self):
         package_ids = self.test_get_package_ids()
-        self.assert_(package_ids)
-        self.assert_(isinstance(package_ids, list))
-        self.assert_(isinstance(package_ids[0], int))
+        self.assertTrue(package_ids)
+        self.assertTrue(isinstance(package_ids, list))
+        self.assertTrue(isinstance(package_ids[0], int))
         # get a reasonable chunk
         pkg_chunks = package_ids[:5]
         webserv = self._factory.new(self._repository_id)
         pkg_meta = webserv.get_packages_metadata(pkg_chunks)
-        self.assert_(pkg_meta)
-        self.assert_(isinstance(pkg_meta, dict))
+        self.assertTrue(pkg_meta)
+        self.assertTrue(isinstance(pkg_meta, dict))
         for pkg_id in pkg_meta.keys():
-            self.assert_(isinstance(pkg_meta[pkg_id], dict))
+            self.assertTrue(isinstance(pkg_meta[pkg_id], dict))
 
         def _convert_t(obj):
             if isinstance(obj, (tuple, list, set, frozenset)):

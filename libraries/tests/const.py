@@ -25,25 +25,25 @@ class ConstTest(unittest.TestCase):
 
     def test_privileges(self):
 
-        self.assert_(os.getuid() == 0)
-        self.assert_(os.getgid() == 0)
+        self.assertTrue(os.getuid() == 0)
+        self.assertTrue(os.getgid() == 0)
         const_drop_privileges()
-        self.assert_(os.getuid() != 0)
-        self.assert_(os.getgid() != 0)
+        self.assertTrue(os.getuid() != 0)
+        self.assertTrue(os.getgid() != 0)
 
         const_regain_privileges()
-        self.assert_(os.getuid() == 0)
-        self.assert_(os.getgid() == 0)
+        self.assertTrue(os.getuid() == 0)
+        self.assertTrue(os.getgid() == 0)
 
         const_drop_privileges()
-        self.assert_(os.getuid() != 0)
-        self.assert_(os.getgid() != 0)
+        self.assertTrue(os.getuid() != 0)
+        self.assertTrue(os.getgid() != 0)
         const_drop_privileges()
-        self.assert_(os.getuid() != 0)
-        self.assert_(os.getgid() != 0)
+        self.assertTrue(os.getuid() != 0)
+        self.assertTrue(os.getgid() != 0)
         const_regain_privileges()
-        self.assert_(os.getuid() == 0)
-        self.assert_(os.getgid() == 0)
+        self.assertTrue(os.getuid() == 0)
+        self.assertTrue(os.getgid() == 0)
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

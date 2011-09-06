@@ -85,7 +85,7 @@ class MiscTest(unittest.TestCase):
         t.start()
         t.kill()
         t.join()
-        self.assert_(self.t_sched_run)
+        self.assertTrue(self.t_sched_run)
     """
 
     def test_parallel_task(self):
@@ -102,7 +102,7 @@ class MiscTest(unittest.TestCase):
         #print "joining"
         t.join()
         #print "joined"
-        self.assert_(self.t_sched_run)
+        self.assertTrue(self.t_sched_run)
 
     def test_email_sender(self):
 
@@ -114,7 +114,7 @@ class MiscTest(unittest.TestCase):
         def def_send(sender, dest, message):
             self.assertEqual(mail_sender, sender)
             self.assertEqual(mail_recipients, dest)
-            self.assert_(message.endswith(mail_msg))
+            self.assertTrue(message.endswith(mail_msg))
 
         sender = EmailSender()
         sender.default_sender = def_send

@@ -62,11 +62,11 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
 
         for test_pkg in self.test_pkgs:
-            self.assert_(et.is_entropy_package_file(test_pkg))
+            self.assertTrue(et.is_entropy_package_file(test_pkg))
             ext_rc = et.remove_entropy_metadata(test_pkg, tmp_path)
             self.assertNotEqual(ext_rc, False)
-            self.assert_(os.path.isfile(tmp_path))
-            self.assert_(not et.is_entropy_package_file(tmp_path))
+            self.assertTrue(os.path.isfile(tmp_path))
+            self.assertTrue(not et.is_entropy_package_file(tmp_path))
 
         os.remove(tmp_path)
 
@@ -77,7 +77,7 @@ class ToolsTest(unittest.TestCase):
             raise ValueError()
         except ValueError:
             tb = et.get_traceback()
-        self.assert_(tb)
+        self.assertTrue(tb)
 
     def test_get_remote_data(self):
 
@@ -98,36 +98,36 @@ class ToolsTest(unittest.TestCase):
         # create gif
         os.write(fd, const_convert_to_rawstring("GIF89xxx"))
         os.fsync(fd)
-        self.assert_(et.is_supported_image_file(tmp_path))
-        self.assert_(et._is_gif_file(tmp_path))
+        self.assertTrue(et.is_supported_image_file(tmp_path))
+        self.assertTrue(et._is_gif_file(tmp_path))
 
         os.close(fd)
         os.remove(tmp_path)
 
         png_file = _misc.get_png()
-        self.assert_(et.is_supported_image_file(png_file))
-        self.assert_(et._is_png_file(png_file))
+        self.assertTrue(et.is_supported_image_file(png_file))
+        self.assertTrue(et._is_png_file(png_file))
 
     def test_valid_ascii(self):
         valid = "ciao"
         non_valid = "òèàò"
-        self.assert_(et.is_valid_ascii(valid))
-        self.assert_(not et.is_valid_ascii(non_valid))
+        self.assertTrue(et.is_valid_ascii(valid))
+        self.assertTrue(not et.is_valid_ascii(non_valid))
 
     def test_is_valid_unicode(self):
         valid = "ciao"
         valid2 = const_convert_to_unicode("òèàò", 'utf-8')
-        self.assert_(et.is_valid_unicode(valid))
-        self.assert_(et.is_valid_unicode(valid2))
+        self.assertTrue(et.is_valid_unicode(valid))
+        self.assertTrue(et.is_valid_unicode(valid2))
 
     def test_is_valid_email(self):
         valid = "entropy@entropy.it"
         non_valid = "entropy.entropy.it"
-        self.assert_(et.is_valid_email(valid))
-        self.assert_(not et.is_valid_email(non_valid))
+        self.assertTrue(et.is_valid_email(valid))
+        self.assertTrue(not et.is_valid_email(non_valid))
 
     def test_islive(self):
-        self.assert_(not et.islive())
+        self.assertTrue(not et.islive())
 
     def test_get_file_size(self):
         fd, tmp_path = tempfile.mkstemp()
@@ -151,7 +151,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path2)
 
     def test_check_required_space(self):
-        self.assert_(et.check_required_space("/", 10), True)
+        self.assertTrue(et.check_required_space("/", 10), True)
 
     def test_getstatusoutput(self):
         cmd = "echo hello"
@@ -165,8 +165,8 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
 
         dest_path = tmp_path + "foo"
-        self.assert_(et.movefile(tmp_path, dest_path))
-        self.assert_(os.stat(dest_path))
+        self.assertTrue(et.movefile(tmp_path, dest_path))
+        self.assertTrue(os.stat(dest_path))
 
         os.remove(dest_path)
 
@@ -175,8 +175,8 @@ class ToolsTest(unittest.TestCase):
         dst_link = tmp_path + "foo2"
         dst_final_link = dst_link + "foo3"
         os.symlink(tmp_path, dst_link)
-        self.assert_(et.movefile(dst_link, dst_final_link))
-        self.assert_(os.stat(dst_final_link))
+        self.assertTrue(et.movefile(dst_link, dst_final_link))
+        self.assertTrue(os.stat(dst_final_link))
 
         os.close(fd)
         os.remove(dst_final_link)
@@ -184,8 +184,8 @@ class ToolsTest(unittest.TestCase):
     def test_get_random_number(self):
         rand1 = et.get_random_number()
         rand2 = et.get_random_number()
-        self.assert_(isinstance(rand1, int))
-        self.assert_(rand1 != rand2)
+        self.assertTrue(isinstance(rand1, int))
+        self.assertTrue(rand1 != rand2)
 
     def test_split_indexable_into_chunks(self):
 
@@ -193,8 +193,8 @@ class ToolsTest(unittest.TestCase):
         result = ['asd', 'Xas', 'dXa', 'sdX', 'asd', 'Xas', 'dXa', 'sdX',
             'asd', 'Xas', 'dXa', 'sd']
         out = et.split_indexable_into_chunks(indexable, 3)
-        self.assert_(out)
-        self.assert_(out == result)
+        self.assertTrue(out)
+        self.assertTrue(out == result)
 
     def test_shaXXX(self):
 
@@ -264,7 +264,7 @@ class ToolsTest(unittest.TestCase):
         gz_f.close()
 
         new_path = et.unpack_gzip(tmp_path)
-        self.assert_(os.stat(new_path))
+        self.assertTrue(os.stat(new_path))
         orig_md5 = "b40d18c97e6461678f264c4524f6cc7c"
         self.assertEqual(orig_md5, et.md5sum(new_path))
 
@@ -281,7 +281,7 @@ class ToolsTest(unittest.TestCase):
         gz_f.close()
 
         new_path = et.unpack_bzip2(tmp_path)
-        self.assert_(os.stat(new_path))
+        self.assertTrue(os.stat(new_path))
         orig_md5 = "b40d18c97e6461678f264c4524f6cc7c"
         self.assertEqual(orig_md5, et.md5sum(new_path))
 
@@ -295,7 +295,7 @@ class ToolsTest(unittest.TestCase):
 
         ext_rc = et.remove_entropy_metadata(
             _misc.get_test_entropy_package4(), tmp_path)
-        self.assert_(ext_rc)
+        self.assertTrue(ext_rc)
         orig_md5 = "ab1f147202838c6ee9c6fc3511537279"
         self.assertEqual(orig_md5, et.md5sum(tmp_path))
 
@@ -316,7 +316,7 @@ class ToolsTest(unittest.TestCase):
                 os.path.basename(tmp_path) + "\n",
             'utf-8')
         self.assertEqual(orig_cont, md5_f.read())
-        self.assert_(et.compare_md5(tmp_path, cksum))
+        self.assertTrue(et.compare_md5(tmp_path, cksum))
 
         md5_f.close()
         os.close(fd)
@@ -338,7 +338,7 @@ class ToolsTest(unittest.TestCase):
                 os.path.basename(tmp_path) + "\n",
             'utf-8')
         self.assertEqual(orig_cont, sha_f.read())
-        self.assert_(et.compare_sha1(tmp_path, cksum))
+        self.assertTrue(et.compare_sha1(tmp_path, cksum))
 
         sha_f.close()
         os.close(fd)
@@ -360,7 +360,7 @@ class ToolsTest(unittest.TestCase):
                 os.path.basename(tmp_path) + "\n",
             'utf-8')
         self.assertEqual(orig_cont, sha_f.read())
-        self.assert_(et.compare_sha256(tmp_path, cksum))
+        self.assertTrue(et.compare_sha256(tmp_path, cksum))
 
         sha_f.close()
         os.close(fd)
@@ -382,7 +382,7 @@ class ToolsTest(unittest.TestCase):
                 os.path.basename(tmp_path) + "\n",
             'utf-8')
         self.assertEqual(orig_cont, sha_f.read())
-        self.assert_(et.compare_sha512(tmp_path, cksum))
+        self.assertTrue(et.compare_sha512(tmp_path, cksum))
 
         sha_f.close()
         os.close(fd)
@@ -399,7 +399,7 @@ class ToolsTest(unittest.TestCase):
 
         os.write(fd, const_convert_to_rawstring("this is new"))
         os.fsync(fd)
-        self.assert_(et.istextfile(tmp_path))
+        self.assertTrue(et.istextfile(tmp_path))
         os.close(fd)
         os.remove(tmp_path)
 
@@ -430,7 +430,7 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(et.bytes_into_human(begin), end)
 
     def test_get_random_temp_file(self):
-        self.assert_(et.get_random_temp_file())
+        self.assertTrue(et.get_random_temp_file())
 
     """
     def test_convert_unix_time_to_human_time(self):
@@ -448,14 +448,14 @@ class ToolsTest(unittest.TestCase):
     def test_is_valid_string(self):
         valid = "ciasdoad"
         non_valid = "òèàòè"
-        self.assert_(et.is_valid_string(valid))
-        self.assert_(not et.is_valid_string(non_valid))
+        self.assertTrue(et.is_valid_string(valid))
+        self.assertTrue(not et.is_valid_string(non_valid))
 
     def test_is_valid_md5(self):
         valid = "5d41402abc4b2a76b9719d911017c592"
         non_valid = "asdasdasdasdasdasdaszzzzzzza"
-        self.assert_(et.is_valid_md5(valid))
-        self.assert_(not et.is_valid_md5(non_valid))
+        self.assertTrue(et.is_valid_md5(valid))
+        self.assertTrue(not et.is_valid_md5(non_valid))
 
     def test_entropy_delta(self):
         pkg_path_a = _misc.get_test_entropy_package()
@@ -477,7 +477,7 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(et.read_elf_class(elf_obj), elf_class)
 
     def test_is_elf_file(self):
-        self.assert_(et.is_elf_file(_misc.get_dl_so_amd()))
+        self.assertTrue(et.is_elf_file(_misc.get_dl_so_amd()))
 
     def test_read_elf_dyn_libs(self):
         elf_obj = _misc.get_dl_so_amd_2()
@@ -539,7 +539,7 @@ class ToolsTest(unittest.TestCase):
         args = ["tar", "xjfp", pkg_path, "-C", tmp_dir]
         proc = subprocess.Popen(args, stdout = fd, stderr = fd)
         rc = proc.wait()
-        self.assert_(not rc)
+        self.assertTrue(not rc)
         os.close(fd)
 
         for currentdir, subdirs, files in os.walk(tmp_dir):
@@ -550,14 +550,14 @@ class ToolsTest(unittest.TestCase):
                 uid, gid = fstat.st_uid, fstat.st_gid
                 path_perms[path] = (mode, uid, gid,)
 
-        self.assert_(path_perms)
+        self.assertTrue(path_perms)
 
         shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
 
         # now try with our function
         rc = et.uncompress_tarball(pkg_path, extract_path = tmp_dir)
-        self.assert_(not rc)
+        self.assertTrue(not rc)
 
         new_path_perms = {}
 
@@ -571,7 +571,6 @@ class ToolsTest(unittest.TestCase):
                 new_path_perms[path] = (mode, uid, gid,)
 
         self.assertEqual(path_perms, new_path_perms)
-        shutil.rmtree(tmp_dir)
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

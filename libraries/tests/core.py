@@ -42,8 +42,8 @@ class CoreTest(unittest.TestCase):
     def test_plugin_updatable_config_files(self):
         sys_set = SystemSettings()
         files = sys_set.get_updatable_configuration_files(None)
-        self.assert_(isinstance(files, set))
-        self.assert_(files) # not empty
+        self.assertTrue(isinstance(files, set))
+        self.assertTrue(files) # not empty
 
     def test_core_singleton(self):
         class myself(Singleton):
@@ -52,7 +52,7 @@ class CoreTest(unittest.TestCase):
 
         obj = myself()
         obj2 = myself()
-        self.assert_(obj is obj2)
+        self.assertTrue(obj is obj2)
 
 
 if __name__ == '__main__':

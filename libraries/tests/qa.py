@@ -31,7 +31,7 @@ class QATest(unittest.TestCase):
             _misc.get_test_entropy_package()
         ]
         for pkg in pkgs:
-            self.assert_(self.QA.entropy_package_checks(pkg))
+            self.assertTrue(self.QA.entropy_package_checks(pkg))
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

@@ -98,7 +98,7 @@ class SecurityTest(unittest.TestCase):
 
         # key created ?
         self.assertNotEqual(self._repository.get_keys(), {})
-        self.assert_(self._repository.is_pubkey_available("foo.org"))
+        self.assertTrue(self._repository.is_pubkey_available("foo.org"))
 
         # sign file
         rand_file = _misc.get_random_file()

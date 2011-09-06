@@ -59,18 +59,18 @@ class EntropyWebServicesTest(unittest.TestCase):
         webserv.add_credentials("lxnay", "test")
         self.assertEqual(webserv.get_credentials(), "lxnay")
         self.assertEqual(webserv.credentials_available(), True)
-        self.assert_(webserv.remove_credentials())
+        self.assertTrue(webserv.remove_credentials())
         self.assertEqual(webserv.credentials_available(), False)
 
     def test_credentials_utf8(self):
         user = const_convert_to_unicode("lxnày")
         password = const_convert_to_unicode("pààààss")
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         webserv.add_credentials(user, password)
         self.assertEqual(webserv.get_credentials(), user)
         self.assertEqual(webserv.credentials_available(), True)
-        self.assert_(webserv.remove_credentials())
+        self.assertTrue(webserv.remove_credentials())
         self.assertEqual(webserv.credentials_available(), False)
 
     def test_validate_credentials(self):
@@ -78,7 +78,7 @@ class EntropyWebServicesTest(unittest.TestCase):
         webserv.remove_credentials()
         webserv.add_credentials(self._fake_user, self._fake_pass)
         try:
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
@@ -92,7 +92,7 @@ class EntropyWebServicesTest(unittest.TestCase):
         password = const_convert_to_unicode("paasssdsss")
         webserv.add_credentials(user, password)
         try:
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), user)
             # credentials must be INVALID
             self.assertRaises(WebService.AuthenticationFailed,
@@ -106,7 +106,7 @@ class EntropyWebServicesTest(unittest.TestCase):
         webserv.add_credentials(self._fake_unicode_user,
             self._fake_unicode_pass)
         try:
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_unicode_user)
             # credentials must be valid
             webserv.validate_credentials()
@@ -123,46 +123,46 @@ class EntropyWebServicesTest(unittest.TestCase):
         webserv = self._factory.new(self._repository_id)
         # this must return valid data
         vote_data = webserv.get_votes([self._fake_package_name], cache = False)
-        self.assert_(isinstance(vote_data, dict))
-        self.assert_(self._fake_package_name in vote_data)
+        self.assertTrue(isinstance(vote_data, dict))
+        self.assertTrue(self._fake_package_name in vote_data)
         if vote_data[self._fake_package_name] is not None:
-            self.assert_(isinstance(vote_data[self._fake_package_name], float))
+            self.assertTrue(isinstance(vote_data[self._fake_package_name], float))
         else:
-            self.assert_(vote_data[self._fake_package_name] is None)
+            self.assertTrue(vote_data[self._fake_package_name] is None)
 
     def test_get_available_votes(self):
         webserv = self._factory.new(self._repository_id)
         # this must return valid data
         vote_data = webserv.get_available_votes(cache = False)
-        self.assert_(isinstance(vote_data, dict))
-        self.assert_(self._real_package_name in vote_data)
-        self.assert_(isinstance(vote_data[self._real_package_name], float))
+        self.assertTrue(isinstance(vote_data, dict))
+        self.assertTrue(self._real_package_name in vote_data)
+        self.assertTrue(isinstance(vote_data[self._real_package_name], float))
         for key, val in vote_data.items():
-            self.assert_(entropy.tools.validate_package_name(key))
-            self.assert_(isinstance(val, float))
-            self.assert_(int(val) in ClientWebService.VALID_VOTES)
+            self.assertTrue(entropy.tools.validate_package_name(key))
+            self.assertTrue(isinstance(val, float))
+            self.assertTrue(int(val) in ClientWebService.VALID_VOTES)
 
     def test_get_votes_cannot_exists(self):
         webserv = self._factory.new(self._repository_id)
         key = "app-doesntexistforsure/asdweasfoo"
         # this must return valid data
         vote_data = webserv.get_votes([key], cache = False)
-        self.assert_(isinstance(vote_data, dict))
-        self.assert_(key in vote_data)
-        self.assert_(vote_data[key] is None)
+        self.assertTrue(isinstance(vote_data, dict))
+        self.assertTrue(key in vote_data)
+        self.assertTrue(vote_data[key] is None)
 
     def test_add_vote(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         # try with success
         webserv.remove_credentials()
         try:
             webserv.add_vote(self._fake_package_name, 4)
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
@@ -178,20 +178,20 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_vote_failure(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         # try with success
         webserv.remove_credentials()
         invalid_package_name = self._fake_package_name + "'''"
         try:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             webserv.add_vote(invalid_package_name, 4)
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.MethodResponseError:
-            self.assert_(True) # valid
+            self.assertTrue(True) # valid
         finally:
             webserv.remove_credentials()
 
@@ -199,25 +199,25 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             vote = webserv.get_votes(
                 [invalid_package_name])[invalid_package_name]
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.MethodResponseError:
-            self.assert_(True) # valid
+            self.assertTrue(True) # valid
 
     def test_get_available_downloads(self):
         webserv = self._factory.new(self._repository_id)
         # this must return valid data
         down_data = webserv.get_available_downloads(cache = False)
-        self.assert_(isinstance(down_data, dict))
-        self.assert_(self._real_package_name in down_data)
-        self.assert_(isinstance(down_data[self._real_package_name], int))
+        self.assertTrue(isinstance(down_data, dict))
+        self.assertTrue(self._real_package_name in down_data)
+        self.assertTrue(isinstance(down_data[self._real_package_name], int))
         for key, val in down_data.items():
-            self.assert_(entropy.tools.validate_package_name(key))
-            self.assert_(isinstance(val, int))
-            self.assert_(val >= 0)
+            self.assertTrue(entropy.tools.validate_package_name(key))
+            self.assertTrue(isinstance(val, int))
+            self.assertTrue(val >= 0)
 
     def test_add_downloads(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         pk = self._fake_package_name
         pkg_list = [pk]
         cur_downloads = webserv.get_downloads(pkg_list, cache = False)[pk]
@@ -227,7 +227,7 @@ class EntropyWebServicesTest(unittest.TestCase):
         # can be False if the test is run repeatedly, due to the anti-flood
         # protection
         added = webserv.add_downloads([self._fake_package_name])
-        self.assert_(isinstance(added, bool))
+        self.assertTrue(isinstance(added, bool))
 
         # expect (cur_downloads + 1) now, use cache, so to check if cache
         # is cleared correctly
@@ -239,7 +239,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_icon(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -256,10 +256,10 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
@@ -273,12 +273,12 @@ class EntropyWebServicesTest(unittest.TestCase):
         doc_id = new_doc[Document.DOCUMENT_DOCUMENT_ID]
         remote_doc = webserv.get_documents_by_id([doc_id],
             cache = False)[doc_id]
-        self.assert_(new_doc.is_icon())
-        self.assert_(remote_doc.is_icon())
-        self.assert_(not remote_doc.is_comment())
-        self.assert_(not remote_doc.is_image())
-        self.assert_(not remote_doc.is_video())
-        self.assert_(not remote_doc.is_file())
+        self.assertTrue(new_doc.is_icon())
+        self.assertTrue(remote_doc.is_icon())
+        self.assertTrue(not remote_doc.is_comment())
+        self.assertTrue(not remote_doc.is_image())
+        self.assertTrue(not remote_doc.is_video())
+        self.assertTrue(not remote_doc.is_file())
         self.assertEqual(new_doc.repository_id(), self._repository_id)
         self.assertEqual(new_doc.document_type(), remote_doc.document_type())
         self.assertEqual(new_doc.document_id(), remote_doc.document_id())
@@ -306,15 +306,15 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.remove_document(remote_doc[Document.DOCUMENT_DOCUMENT_ID])
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            self.assert_(
+            self.assertTrue(
                 webserv.remove_document(
                     remote_doc[Document.DOCUMENT_DOCUMENT_ID]))
             # got the new document back, which is the same plus document_id
@@ -323,7 +323,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_icon_fail(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -341,10 +341,10 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
@@ -357,7 +357,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_image_fail(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -375,10 +375,10 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
@@ -391,7 +391,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_image(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -408,10 +408,10 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
@@ -425,12 +425,12 @@ class EntropyWebServicesTest(unittest.TestCase):
         doc_id = new_doc[Document.DOCUMENT_DOCUMENT_ID]
         remote_doc = webserv.get_documents_by_id([doc_id],
             cache = False)[doc_id]
-        self.assert_(new_doc.is_image())
-        self.assert_(remote_doc.is_image())
-        self.assert_(not remote_doc.is_comment())
-        self.assert_(not remote_doc.is_icon())
-        self.assert_(not remote_doc.is_video())
-        self.assert_(not remote_doc.is_file())
+        self.assertTrue(new_doc.is_image())
+        self.assertTrue(remote_doc.is_image())
+        self.assertTrue(not remote_doc.is_comment())
+        self.assertTrue(not remote_doc.is_icon())
+        self.assertTrue(not remote_doc.is_video())
+        self.assertTrue(not remote_doc.is_file())
         self.assertEqual(new_doc.document_type(), remote_doc.document_type())
         self.assertEqual(new_doc.document_id(), remote_doc.document_id())
         self.assertEqual(new_doc.repository_id(), self._repository_id)
@@ -458,15 +458,15 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.remove_document(remote_doc[Document.DOCUMENT_DOCUMENT_ID])
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            self.assert_(
+            self.assertTrue(
                 webserv.remove_document(
                     remote_doc[Document.DOCUMENT_DOCUMENT_ID]))
             # got the new document back, which is the same plus document_id
@@ -475,7 +475,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_comment(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         comment = const_convert_to_unicode("comment hellò")
@@ -486,16 +486,16 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.add_document(self._fake_package_name, doc)
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
             new_doc = webserv.add_document(self._fake_package_name, doc)
-            self.assert_(new_doc is not None)
+            self.assertTrue(new_doc is not None)
             # got the new document back, which is the same plus document_id
         finally:
             webserv.remove_credentials()
@@ -504,13 +504,13 @@ class EntropyWebServicesTest(unittest.TestCase):
         doc_id = new_doc[Document.DOCUMENT_DOCUMENT_ID]
         remote_doc = webserv.get_documents_by_id([doc_id],
             cache = False)[doc_id]
-        self.assert_(remote_doc is not None)
-        self.assert_(new_doc.is_comment())
-        self.assert_(remote_doc.is_comment())
-        self.assert_(not remote_doc.is_image())
-        self.assert_(not remote_doc.is_icon())
-        self.assert_(not remote_doc.is_video())
-        self.assert_(not remote_doc.is_file())
+        self.assertTrue(remote_doc is not None)
+        self.assertTrue(new_doc.is_comment())
+        self.assertTrue(remote_doc.is_comment())
+        self.assertTrue(not remote_doc.is_image())
+        self.assertTrue(not remote_doc.is_icon())
+        self.assertTrue(not remote_doc.is_video())
+        self.assertTrue(not remote_doc.is_file())
         self.assertEqual(new_doc.repository_id(), self._repository_id)
         self.assertEqual(new_doc.document_type(), remote_doc.document_type())
         self.assertEqual(new_doc.document_id(), remote_doc.document_id())
@@ -535,15 +535,15 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.remove_document(remote_doc[Document.DOCUMENT_DOCUMENT_ID])
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            self.assert_(
+            self.assertTrue(
                 webserv.remove_document(
                     remote_doc[Document.DOCUMENT_DOCUMENT_ID]))
             # got the new document back, which is the same plus document_id
@@ -552,7 +552,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_file(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available())
+        self.assertTrue(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -569,16 +569,16 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
                 # now it should not crash
                 new_doc = webserv.add_document(self._fake_package_name, doc)
-                self.assert_(new_doc is not None)
+                self.assertTrue(new_doc is not None)
                 # got the new document back, which is the same plus document_id
             finally:
                 webserv.remove_credentials()
@@ -587,12 +587,12 @@ class EntropyWebServicesTest(unittest.TestCase):
         doc_id = new_doc[Document.DOCUMENT_DOCUMENT_ID]
         remote_doc = webserv.get_documents_by_id([doc_id],
             cache = False)[doc_id]
-        self.assert_(new_doc.is_file())
-        self.assert_(remote_doc.is_file())
-        self.assert_(not remote_doc.is_comment())
-        self.assert_(not remote_doc.is_icon())
-        self.assert_(not remote_doc.is_video())
-        self.assert_(not remote_doc.is_image())
+        self.assertTrue(new_doc.is_file())
+        self.assertTrue(remote_doc.is_file())
+        self.assertTrue(not remote_doc.is_comment())
+        self.assertTrue(not remote_doc.is_icon())
+        self.assertTrue(not remote_doc.is_video())
+        self.assertTrue(not remote_doc.is_image())
         self.assertEqual(new_doc.document_type(), remote_doc.document_type())
         self.assertEqual(new_doc.document_id(), remote_doc.document_id())
         self.assertEqual(new_doc.repository_id(), self._repository_id)
@@ -620,15 +620,15 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.remove_document(remote_doc[Document.DOCUMENT_DOCUMENT_ID])
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            self.assert_(
+            self.assertTrue(
                 webserv.remove_document(
                     remote_doc[Document.DOCUMENT_DOCUMENT_ID]))
             # got the new document back, which is the same plus document_id
@@ -637,7 +637,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_add_video(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available())
+        self.assertTrue(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         description = const_convert_to_unicode("descrìption")
@@ -653,16 +653,16 @@ class EntropyWebServicesTest(unittest.TestCase):
             try:
                 webserv.add_document(self._fake_package_name, doc)
                 # webserv.AuthenticationRequired should be raised
-                self.assert_(False)
+                self.assertTrue(False)
             except webserv.AuthenticationRequired:
                 webserv.add_credentials(self._fake_user, self._fake_pass)
-                self.assert_(webserv.credentials_available())
+                self.assertTrue(webserv.credentials_available())
                 self.assertEqual(webserv.get_credentials(), self._fake_user)
                 # credentials must be valid
                 webserv.validate_credentials()
                 # now it should not crash
                 new_doc = webserv.add_document(self._fake_package_name, doc)
-                self.assert_(new_doc is not None)
+                self.assertTrue(new_doc is not None)
                 # got the new document back, which is the same plus document_id
             finally:
                 webserv.remove_credentials()
@@ -671,12 +671,12 @@ class EntropyWebServicesTest(unittest.TestCase):
         doc_id = new_doc[Document.DOCUMENT_DOCUMENT_ID]
         remote_doc = webserv.get_documents_by_id([doc_id],
             cache = False)[doc_id]
-        self.assert_(new_doc.is_video())
-        self.assert_(remote_doc.is_video())
-        self.assert_(not remote_doc.is_comment())
-        self.assert_(not remote_doc.is_icon())
-        self.assert_(not remote_doc.is_file())
-        self.assert_(not remote_doc.is_image())
+        self.assertTrue(new_doc.is_video())
+        self.assertTrue(remote_doc.is_video())
+        self.assertTrue(not remote_doc.is_comment())
+        self.assertTrue(not remote_doc.is_icon())
+        self.assertTrue(not remote_doc.is_file())
+        self.assertTrue(not remote_doc.is_image())
         self.assertEqual(new_doc.document_type(), remote_doc.document_type())
         self.assertEqual(new_doc.document_id(), remote_doc.document_id())
         self.assertEqual(new_doc.repository_id(), self._repository_id)
@@ -704,15 +704,15 @@ class EntropyWebServicesTest(unittest.TestCase):
         try:
             webserv.remove_document(remote_doc[Document.DOCUMENT_DOCUMENT_ID])
             # webserv.AuthenticationRequired should be raised
-            self.assert_(False)
+            self.assertTrue(False)
         except webserv.AuthenticationRequired:
             webserv.add_credentials(self._fake_user, self._fake_pass)
-            self.assert_(webserv.credentials_available())
+            self.assertTrue(webserv.credentials_available())
             self.assertEqual(webserv.get_credentials(), self._fake_user)
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            self.assert_(
+            self.assertTrue(
                 webserv.remove_document(
                     remote_doc[Document.DOCUMENT_DOCUMENT_ID]))
             # got the new document back, which is the same plus document_id
@@ -721,34 +721,34 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_get_documents(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         pk = self._real_package_name
         return self._test_get_documents(pk, webserv.get_documents)
 
     def test_get_documents_comments(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         pk = self._real_package_name
         return self._test_get_documents(pk, webserv.get_comments)
 
     def test_get_documents_icons(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         pk = self._real_package_name
         return self._test_get_documents(pk, webserv.get_icons)
 
     def _test_get_documents(self, pk, webserv_func):
         docs = webserv_func([pk], cache = False)
-        self.assert_(pk in docs)
-        self.assert_(isinstance(docs[pk], DocumentList))
+        self.assertTrue(pk in docs)
+        self.assertTrue(isinstance(docs[pk], DocumentList))
         for vals in docs.values():
-            self.assert_(isinstance(vals, DocumentList))
+            self.assertTrue(isinstance(vals, DocumentList))
             self.assertEqual(vals.package_name(), pk)
-            self.assert_(isinstance(vals.total(), int))
-            self.assert_(isinstance(vals.has_more(), int))
+            self.assertTrue(isinstance(vals.total(), int))
+            self.assertTrue(isinstance(vals.has_more(), int))
             self.assertEqual(vals.offset(), 0)
             for val in vals:
-                self.assert_(isinstance(val, Document))
+                self.assertTrue(isinstance(val, Document))
                 self.assertEqual(val.repository_id(), self._repository_id)
                 # TODO: use constants instead of strings
                 self.assertEqual(sorted(val.keys()),
@@ -762,54 +762,54 @@ class EntropyWebServicesTest(unittest.TestCase):
                         Document.DOCUMENT_KEYWORDS_ID,
                         Document.DOCUMENT_DATA_ID,
                         Document.DOCUMENT_DOCUMENT_ID]))
-                self.assert_(isinstance(
+                self.assertTrue(isinstance(
                     val[DocumentFactory.DOCUMENT_USERNAME_ID],
                         const_get_stringtype()))
-                self.assert_(isinstance(val[Document.DOCUMENT_REPOSITORY_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_REPOSITORY_ID],
                     const_get_stringtype()))
-                self.assert_(isinstance(val[Document.DOCUMENT_TITLE_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_TITLE_ID],
                     const_get_stringtype()))
-                self.assert_(isinstance(val[Document.DOCUMENT_DESCRIPTION_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_DESCRIPTION_ID],
                     const_get_stringtype()))
-                self.assert_(isinstance(val[Document.DOCUMENT_TIMESTAMP_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_TIMESTAMP_ID],
                     float))
-                self.assert_(isinstance(val[Document.DOCUMENT_DOCUMENT_TYPE_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_DOCUMENT_TYPE_ID],
                     int))
-                self.assert_(isinstance(val[Document.DOCUMENT_DOCUMENT_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_DOCUMENT_ID],
                     int))
-                self.assert_(isinstance(val[Document.DOCUMENT_DATA_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_DATA_ID],
                     const_get_stringtype()))
-                self.assert_(isinstance(val[Document.DOCUMENT_KEYWORDS_ID],
+                self.assertTrue(isinstance(val[Document.DOCUMENT_KEYWORDS_ID],
                     const_get_stringtype()))
                 if val[Document.DOCUMENT_URL_ID]:
-                    self.assert_(isinstance(val[Document.DOCUMENT_URL_ID], 
+                    self.assertTrue(isinstance(val[Document.DOCUMENT_URL_ID], 
                         const_get_stringtype()))
                 else:
-                    self.assert_(val[Document.DOCUMENT_URL_ID] is None)
+                    self.assertTrue(val[Document.DOCUMENT_URL_ID] is None)
 
     def test_get_icons(self):
         pk = self._real_package_name
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         docs = webserv.get_icons([pk], cache = False)
-        self.assert_(pk in docs)
-        self.assert_(isinstance(docs[pk], DocumentList))
+        self.assertTrue(pk in docs)
+        self.assertTrue(isinstance(docs[pk], DocumentList))
         for vals in docs.values():
             for val in vals:
-                self.assert_(isinstance(val, Document))
-                self.assert_(val.is_icon())
-                self.assert_(not val.is_image())
+                self.assertTrue(isinstance(val, Document))
+                self.assertTrue(val.is_icon())
+                self.assertTrue(not val.is_image())
 
     def test_get_comments(self):
         pk = self._real_package_name
         webserv = self._factory.new(self._repository_id)
         docs = webserv.get_comments([pk], cache = False)
-        self.assert_(pk in docs)
-        self.assert_(docs[pk])
+        self.assertTrue(pk in docs)
+        self.assertTrue(docs[pk])
         for vals in docs.values():
             for val in vals:
-                self.assert_(isinstance(val, Document))
-                self.assert_(val.is_comment())
+                self.assertTrue(isinstance(val, Document))
+                self.assertTrue(val.is_comment())
 
     def test_report_error(self):
         params = {}
@@ -841,15 +841,15 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_factory_comment(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
         doc = doc_factory.comment("username", "comment", "title", keywords)
-        self.assert_(doc.is_comment())
-        self.assert_(not doc.is_image())
-        self.assert_(not doc.is_icon())
-        self.assert_(not doc.is_file())
-        self.assert_(not doc.is_video())
+        self.assertTrue(doc.is_comment())
+        self.assertTrue(not doc.is_image())
+        self.assertTrue(not doc.is_icon())
+        self.assertTrue(not doc.is_file())
+        self.assertTrue(not doc.is_video())
         self.assertEqual(doc.document_id(), None) # it's new!
         self.assertEqual(doc.repository_id(), self._repository_id)
         self.assertEqual(doc.document_type(), Document.COMMENT_TYPE_ID)
@@ -860,7 +860,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_factory_image(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
 
@@ -869,11 +869,11 @@ class EntropyWebServicesTest(unittest.TestCase):
             with open(tmp_path, "ab+") as tmp_f:
                 doc = doc_factory.image("username", tmp_f, "title",
                     "description", keywords)
-                self.assert_(not doc.is_comment())
-                self.assert_(doc.is_image())
-                self.assert_(not doc.is_icon())
-                self.assert_(not doc.is_file())
-                self.assert_(not doc.is_video())
+                self.assertTrue(not doc.is_comment())
+                self.assertTrue(doc.is_image())
+                self.assertTrue(not doc.is_icon())
+                self.assertTrue(not doc.is_file())
+                self.assertTrue(not doc.is_video())
                 self.assertEqual(doc.document_id(), None) # it's new!
                 self.assertEqual(doc.repository_id(), self._repository_id)
                 self.assertEqual(doc.document_type(), Document.IMAGE_TYPE_ID)
@@ -890,7 +890,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_factory_icon(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
 
@@ -899,11 +899,11 @@ class EntropyWebServicesTest(unittest.TestCase):
             with open(tmp_path, "ab+") as tmp_f:
                 doc = doc_factory.icon("username", tmp_f, "title",
                     "description", keywords)
-                self.assert_(not doc.is_comment())
-                self.assert_(not doc.is_image())
-                self.assert_(doc.is_icon())
-                self.assert_(not doc.is_file())
-                self.assert_(not doc.is_video())
+                self.assertTrue(not doc.is_comment())
+                self.assertTrue(not doc.is_image())
+                self.assertTrue(doc.is_icon())
+                self.assertTrue(not doc.is_file())
+                self.assertTrue(not doc.is_video())
                 self.assertEqual(doc.document_id(), None) # it's new!
                 self.assertEqual(doc.repository_id(), self._repository_id)
                 self.assertEqual(doc.document_type(), Document.ICON_TYPE_ID)
@@ -921,7 +921,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_factory_file(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
 
@@ -930,11 +930,11 @@ class EntropyWebServicesTest(unittest.TestCase):
             with open(tmp_path, "ab+") as tmp_f:
                 doc = doc_factory.file("username", tmp_f, "title",
                     "description", keywords)
-                self.assert_(not doc.is_comment())
-                self.assert_(not doc.is_image())
-                self.assert_(not doc.is_icon())
-                self.assert_(doc.is_file())
-                self.assert_(not doc.is_video())
+                self.assertTrue(not doc.is_comment())
+                self.assertTrue(not doc.is_image())
+                self.assertTrue(not doc.is_icon())
+                self.assertTrue(doc.is_file())
+                self.assertTrue(not doc.is_video())
                 self.assertEqual(doc.document_id(), None) # it's new!
                 self.assertEqual(doc.repository_id(), self._repository_id)
                 self.assertEqual(doc.document_type(), Document.FILE_TYPE_ID)
@@ -952,7 +952,7 @@ class EntropyWebServicesTest(unittest.TestCase):
 
     def test_factory_video(self):
         webserv = self._factory.new(self._repository_id)
-        self.assert_(webserv.service_available(cache = False))
+        self.assertTrue(webserv.service_available(cache = False))
         doc_factory = webserv.document_factory()
         keywords = "keyword1 keyword2"
 
@@ -961,11 +961,11 @@ class EntropyWebServicesTest(unittest.TestCase):
             with open(tmp_path, "ab+") as tmp_f:
                 doc = doc_factory.video("username", tmp_f, "title",
                     "description", keywords)
-                self.assert_(not doc.is_comment())
-                self.assert_(not doc.is_image())
-                self.assert_(not doc.is_icon())
-                self.assert_(not doc.is_file())
-                self.assert_(doc.is_video())
+                self.assertTrue(not doc.is_comment())
+                self.assertTrue(not doc.is_image())
+                self.assertTrue(not doc.is_icon())
+                self.assertTrue(not doc.is_file())
+                self.assertTrue(doc.is_video())
                 self.assertEqual(doc.document_id(), None) # it's new!
                 self.assertEqual(doc.repository_id(), self._repository_id)
                 self.assertEqual(doc.document_type(), Document.VIDEO_TYPE_ID)

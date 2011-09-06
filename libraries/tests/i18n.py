@@ -73,7 +73,7 @@ class MiscTest(unittest.TestCase):
     def _assert_word(self, untranslated, translated):
         lang = os.environ.get("LANGUAGE")
         amap = self._assert_map.get(lang)
-        self.assert_(amap is not None)
+        self.assertTrue(amap is not None)
         recorded_value = amap.get(untranslated, untranslated)
         self.assertEqual(recorded_value, translated)
 

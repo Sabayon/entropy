@@ -63,15 +63,15 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_singleton(self):
         myclient = Client(installed_repo = -1)
-        self.assert_(myclient is self.Client)
+        self.assertTrue(myclient is self.Client)
         myclient.shutdown()
-        self.assert_(myclient.is_destroyed())
-        self.assert_(self.Client.is_destroyed())
+        self.assertTrue(myclient.is_destroyed())
+        self.assertTrue(self.Client.is_destroyed())
         myclient2 = Client(installed_repo = -1, indexing = False,
             xcache = False, repo_validation = False)
-        self.assert_(myclient is not myclient2)
+        self.assertTrue(myclient is not myclient2)
         myclient2.shutdown()
-        self.assert_(myclient2.is_destroyed())
+        self.assertTrue(myclient2.is_destroyed())
 
     def test_syssetting_backup(self):
         key1 = 'foo_foo_foo2'
@@ -103,9 +103,9 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_entropy_cacher(self):
         self.Client._cacher.start()
-        self.assert_(self.Client._cacher.is_started())
+        self.assertTrue(self.Client._cacher.is_started())
         self.Client._cacher.stop()
-        self.assert_(not self.Client._cacher.is_started())
+        self.assertTrue(not self.Client._cacher.is_started())
 
     def test_cacher_lock_usage(self):
         cacher = self.Client._cacher
@@ -113,7 +113,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         cacher.start()
         try:
             with cacher:
-                self.assert_(cacher._EntropyCacher__enter_context_lock._is_owned())
+                self.assertTrue(cacher._EntropyCacher__enter_context_lock._is_owned())
                 cacher.discard()
                 # even if cacher is paused, this must be saved
                 cacher.save("foo", "bar", cache_dir = tmp_dir)
@@ -128,11 +128,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         cacher.start()
         try:
             with cacher:
-                self.assert_(cacher._EntropyCacher__enter_context_lock._is_owned())
+                self.assertTrue(cacher._EntropyCacher__enter_context_lock._is_owned())
                 cacher.discard()
                 cacher.push("bar", "foo", cache_dir = tmp_dir)
-                self.assert_(cacher._EntropyCacher__cache_buffer)
-                self.assert_(cacher._EntropyCacher__stashing_cache)
+                self.assertTrue(cacher._EntropyCacher__cache_buffer)
+                self.assertTrue(cacher._EntropyCacher__stashing_cache)
             cacher.sync()
             self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), "foo")
         finally:
@@ -314,11 +314,11 @@ else:
         inst_dir = tempfile.mkdtemp()
 
         rc = text_smart.inflate_handler(self.Client, [pkg_path], pkg_dir)
-        self.assert_(rc == 0)
-        self.assert_(os.listdir(pkg_dir))
+        self.assertTrue(rc == 0)
+        self.assertTrue(os.listdir(pkg_dir))
 
         etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
-        self.assert_(os.path.isfile(etp_pkg))
+        self.assertTrue(os.path.isfile(etp_pkg))
 
         matches = []
         try:
@@ -335,7 +335,7 @@ else:
                 # unit testing metadata setting, of course, undocumented
                 my_p.pkgmeta['unittest_root'] = fake_root
                 rc = my_p.run()
-                self.assert_(rc == 0)
+                self.assertTrue(rc == 0)
 
         # remove pkg
         idpackages = self.Client.installed_repository().listAllPackageIds()
@@ -343,7 +343,7 @@ else:
             my_p = self.Client.Package()
             my_p.prepare((idpackage,), "remove", {})
             rc = my_p.run()
-            self.assert_(rc == 0)
+            self.assertTrue(rc == 0)
 
         # done installing
         shutil.rmtree(pkg_dir, True)

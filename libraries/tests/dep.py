@@ -33,13 +33,13 @@ class DepTest(unittest.TestCase):
     def test_valid_package_tag(self):
         valid = "ciao"
         invalids = ["òpl", "hello,hello", "#hello"]
-        self.assert_(et.is_valid_package_tag(valid))
+        self.assertTrue(et.is_valid_package_tag(valid))
         for invalid in invalids:
-            self.assert_(not et.is_valid_package_tag(invalid))
+            self.assertTrue(not et.is_valid_package_tag(invalid))
 
     def test_isjustname(self):
-        self.assert_(not et.isjustname("app-foo/foo-1.2.3"))
-        self.assert_(et.isjustname("app-foo/foo"))
+        self.assertTrue(not et.isjustname("app-foo/foo-1.2.3"))
+        self.assertTrue(et.isjustname("app-foo/foo"))
 
     def test_catpkgsplit(self):
         data = {

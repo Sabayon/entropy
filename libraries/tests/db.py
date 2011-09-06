@@ -77,7 +77,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         for file_path in files:
             updated_files = self.test_db._runConfigurationFilesUpdate(actions,
                 [file_path])
-            self.assert_(len(updated_files) == 1)
+            self.assertTrue(len(updated_files) == 1)
             updated_file = list(updated_files)[0]
             md5sum = entropy.tools.md5sum(updated_file)
             os.remove(updated_file)
@@ -160,11 +160,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         del db_data['extra_download']
         self.assertEqual(data, db_data)
         useflags = self.test_db.retrieveUseflags(idpackage)
-        self.assert_("gtk" not in useflags)
-        self.assert_("-gtk" in useflags)
-        self.assert_("-kde" in useflags)
-        self.assert_("-debug" in useflags)
-        self.assert_("-examples" in useflags)
+        self.assertTrue("gtk" not in useflags)
+        self.assertTrue("-gtk" in useflags)
+        self.assertTrue("-kde" in useflags)
+        self.assertTrue("-debug" in useflags)
+        self.assertTrue("-examples" in useflags)
 
     def test_content(self):
         test_pkg = _misc.get_test_package3()
@@ -214,10 +214,10 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(content, orig_content)
 
     def test_db_creation(self):
-        self.assert_(isinstance(self.test_db, EntropyRepository))
+        self.assertTrue(isinstance(self.test_db, EntropyRepository))
         self.assertEqual(self.test_db_name, self.test_db.repository_id())
-        self.assert_(self.test_db._doesTableExist('baseinfo'))
-        self.assert_(self.test_db._doesTableExist('extrainfo'))
+        self.assertTrue(self.test_db._doesTableExist('baseinfo'))
+        self.assertTrue(self.test_db._doesTableExist('extrainfo'))
 
     def test_db_metadata_handling(self):
 
@@ -245,7 +245,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         for key in test_entry:
             try:
-                self.assert_(key not in cont_diff)
+                self.assertTrue(key not in cont_diff)
             except AssertionError:
                 print(key)
                 raise
@@ -328,7 +328,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         cached = self.test_db._EntropyRepositoryBase__atomMatchFetchCache(
             key, True, False, False, None, None, False, False, True)
-        self.assert_(cached is None)
+        self.assertTrue(cached is None)
 
         # now store
         self.test_db._EntropyRepositoryBase__atomMatchStoreCache(
@@ -385,13 +385,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage = self.test_db.addPackage(db_data)
         results, rc = self.test_db.atomMatch(pkg_name, multiMatch = True)
         self.assertEqual(2, len(results))
-        self.assert_(isinstance(results, set))
-        self.assert_(rc == 0)
+        self.assertTrue(isinstance(results, set))
+        self.assertTrue(rc == 0)
 
         results, rc = self.test_db.atomMatch(pkg_name+"foo", multiMatch = True)
         self.assertEqual(0, len(results))
-        self.assert_(isinstance(results, set))
-        self.assert_(rc == 1)
+        self.assertTrue(isinstance(results, set))
+        self.assertTrue(rc == 1)
 
     def test_db_insert_compare_match_utf(self):
 
@@ -578,7 +578,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         t4.join()
 
         cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
-        self.assert_(len(cur_cache) > 0)
+        self.assertTrue(len(cur_cache) > 0)
         self.test_db._cleanup_stale_cur_conn(kill_all = True)
         cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
         self.assertEqual(len(cur_cache), 0)
@@ -610,8 +610,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         rev_deps = self.test_db.retrieveReverseDependencies(idpackage)
         rev_deps2 = self.test_db.retrieveReverseDependencies(idpackage2)
 
-        self.assert_(idpackage in rev_deps2)
-        self.assert_(idpackage2 in rev_deps)
+        self.assertTrue(idpackage in rev_deps2)
+        self.assertTrue(idpackage2 in rev_deps)
         rev_deps_t = self.test_db.retrieveReverseDependencies(idpackage,
             key_slot = True)
         self.assertEqual(rev_deps_t, (('app-dicts/aspell-es', '0'),))
@@ -823,7 +823,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         new_base_data = test_db.getBaseData(idpackage)
         new_cats = test_db.listAllCategories()
 
-        self.assert_(test_db._isBaseinfoExtrainfo2010())
+        self.assertTrue(test_db._isBaseinfoExtrainfo2010())
         self.assertEqual(old_data, new_data)
         self.assertEqual(old_base_data, new_base_data)
         self.assertEqual(old_cats, new_cats)

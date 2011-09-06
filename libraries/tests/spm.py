@@ -38,38 +38,38 @@ class SpmTest(unittest.TestCase):
     def test_init(self):
         spm = self.Client.Spm()
         spm2 = self.Client.Spm()
-        self.assert_(spm is spm2)
+        self.assertTrue(spm is spm2)
         spm_class = self.Client.Spm_class()
         spm_class2 = self.Client.Spm_class()
-        self.assert_(spm_class is spm_class2)
+        self.assertTrue(spm_class is spm_class2)
 
     def test_basic_methods(self):
         spm = self.Client.Spm()
         spm_class = self.Client.Spm_class()
 
         path = spm.get_user_installed_packages_file()
-        self.assert_(path)
+        self.assertTrue(path)
 
         groups = spm_class.get_package_groups()
-        self.assert_(isinstance(groups, dict))
+        self.assertTrue(isinstance(groups, dict))
 
         keys = spm.package_metadata_keys()
-        self.assert_(isinstance(keys, list))
+        self.assertTrue(isinstance(keys, list))
 
         cache_dir = spm.get_cache_directory()
-        self.assert_(cache_dir)
+        self.assertTrue(cache_dir)
 
         sys_pkgs = spm.get_system_packages()
-        self.assert_(sys_pkgs)
-        self.assert_(isinstance(sys_pkgs, list))
+        self.assertTrue(sys_pkgs)
+        self.assertTrue(isinstance(sys_pkgs, list))
 
         path1 = spm.get_merge_protected_paths_mask()
         path2 = spm.get_merge_protected_paths()
-        self.assert_(isinstance(path1, list))
-        self.assert_(isinstance(path2, list))
+        self.assertTrue(isinstance(path1, list))
+        self.assertTrue(isinstance(path2, list))
 
         pkg = spm.convert_from_entropy_package_name("app-foo/foo")
-        self.assert_(pkg)
+        self.assertTrue(pkg)
 
     def test_portage_xpak(self):
 
@@ -123,7 +123,7 @@ class SpmTest(unittest.TestCase):
         for test_pkg in self.test_pkgs:
             out_path = xpaktools.extract_xpak(test_pkg, tmp_path)
             self.assertNotEqual(out_path, None)
-            self.assert_(os.listdir(out_path))
+            self.assertTrue(os.listdir(out_path))
 
         shutil.rmtree(tmp_path, True)
 
@@ -140,7 +140,7 @@ class SpmTest(unittest.TestCase):
         out_path = xpaktools.extract_xpak(pkg_path, tmp_path)
 
         self.assertNotEqual(out_path, None)
-        self.assert_(os.listdir(out_path))
+        self.assertTrue(os.listdir(out_path))
 
         shutil.rmtree(tmp_path, True)
 
