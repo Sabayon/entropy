@@ -31,7 +31,6 @@ class ToolsTest(unittest.TestCase):
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
 
-
     def test_dump_entropy_metadata(self):
 
         client = Client(installed_repo = -1, indexing = False, xcache = False,
@@ -57,7 +56,6 @@ class ToolsTest(unittest.TestCase):
         client.destroy()
         client.shutdown()
 
-
     def test_remove_entropy_metadata(self):
 
         fd, tmp_path = tempfile.mkstemp()
@@ -72,7 +70,6 @@ class ToolsTest(unittest.TestCase):
 
         os.remove(tmp_path)
 
-
     def test_tb(self):
         # traceback test
         tb = None
@@ -81,7 +78,6 @@ class ToolsTest(unittest.TestCase):
         except ValueError:
             tb = et.get_traceback()
         self.assert_(tb)
-
 
     def test_get_remote_data(self):
 
@@ -95,7 +91,6 @@ class ToolsTest(unittest.TestCase):
 
         os.close(fd)
         os.remove(tmp_path)
-
 
     def test_supported_img_file(self):
         fd, tmp_path = tempfile.mkstemp()
@@ -113,7 +108,6 @@ class ToolsTest(unittest.TestCase):
         self.assert_(et.is_supported_image_file(png_file))
         self.assert_(et._is_png_file(png_file))
 
-
     def test_valid_ascii(self):
         valid = "ciao"
         non_valid = "òèàò"
@@ -126,17 +120,14 @@ class ToolsTest(unittest.TestCase):
         self.assert_(et.is_valid_unicode(valid))
         self.assert_(et.is_valid_unicode(valid2))
 
-
     def test_is_valid_email(self):
         valid = "entropy@entropy.it"
         non_valid = "entropy.entropy.it"
         self.assert_(et.is_valid_email(valid))
         self.assert_(not et.is_valid_email(non_valid))
 
-
     def test_islive(self):
         self.assert_(not et.islive())
-
 
     def test_get_file_size(self):
         fd, tmp_path = tempfile.mkstemp()
@@ -145,7 +136,6 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(et.get_file_size(tmp_path), 4)
         os.close(fd)
         os.remove(tmp_path)
-
 
     def test_sum_file_sizes(self):
         fd, tmp_path = tempfile.mkstemp()
