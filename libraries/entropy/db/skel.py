@@ -1571,11 +1571,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 continue
             tmp_fd, tmp_path = None, None
             try:
-                with open(file_path, "rb") as source_f:
+                with open(file_path, "r") as source_f:
                     tmp_fd, tmp_path = tempfile.mkstemp(
                         prefix="entropy.db._runConfigurationFilesUpdate",
                         dir=os.path.dirname(file_path))
-                    with os.fdopen(tmp_fd, "wb") as dest_f:
+                    with os.fdopen(tmp_fd, "w") as dest_f:
                         line = source_f.readline()
                         while line:
                             dest_f.write(_workout_line(line))
