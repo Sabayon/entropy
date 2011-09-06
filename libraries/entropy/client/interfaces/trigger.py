@@ -291,11 +291,11 @@ class Trigger:
             pn = const_convert_to_rawstring(pn,
                 from_enctype = "utf-8")
 
-            pv = pkgdata.get('version')
-            pv = const_convert_to_rawstring(pv,
+            pv_utf = pkgdata.get('version')
+            pv = const_convert_to_rawstring(pv_utf,
                 from_enctype = "utf-8")
 
-            pr = entropy.dep.dep_get_spm_revision(pv)
+            pr = entropy.dep.dep_get_spm_revision(pv_utf)
             pvr = pv
             if pr == "r0":
                 pvr += "-%s" % (pr,)
@@ -353,15 +353,11 @@ class Trigger:
             # Not mandatory variables
 
             unpackdir = pkgdata.get('unpackdir', '')
-            unpackdir = const_convert_to_rawstring(unpackdir,
-                from_enctype = "utf-8")
-
             imagedir = pkgdata.get('imagedir', '')
-            imagedir = const_convert_to_rawstring(imagedir,
-                from_enctype = "utf-8")
 
             sb_dirs = [unpackdir, imagedir]
-            sb_write = ':'.join(sb_dirs)
+            sb_write = const_convert_to_rawstring(':'.join(sb_dirs),
+                from_enctype = "utf-8")
             etp_mute = "0"
             if etpUi['mute']:
                 etp_mute = "1"
