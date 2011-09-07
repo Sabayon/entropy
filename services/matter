@@ -27,7 +27,7 @@ from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
     const_get_stringtype
 from entropy.output import print_info, print_error, print_warning, \
     purple, darkgreen, is_stdout_a_tty, getcolor
-from entropy.exceptions import InvalidAtom, SPMError
+from entropy.exceptions import SPMError
 from entropy.server.interfaces import Server
 
 import entropy.tools
@@ -1063,7 +1063,7 @@ class PackageBuilder(object):
             try:
                 spm_atom = spm.match_installed_package(package)
                 spm_atoms.add(spm_atom)
-            except InvalidAtom:
+            except KeyError:
                 exit_st = 1
                 print_warning(
                     "cannot find installed package: %s" % (
