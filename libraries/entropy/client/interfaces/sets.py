@@ -189,8 +189,8 @@ class Sets:
                     mydata = dbconn.retrievePackageSet(package_set)
                     if mydata:
                         set_data.append((repoid, package_set, mydata,))
-                    if not multi_match:
-                        break
+                        if not multi_match:
+                            break
 
             break
 
