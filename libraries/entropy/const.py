@@ -759,7 +759,6 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     locked = False
     flags = fcntl.LOCK_EX # blocking mode, always
 
-
     # PID creation
     pid = os.getpid()
     pid_file = etpConst['pidfile']
@@ -772,6 +771,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                 pid_f = open(pid_file, "a+")
                 # always running in blocking mode, no need to check
                 fcntl.flock(pid_f.fileno(), flags)
+                pid_f.seek(0)
                 found_pid = str(pid_f.readline().strip())
             except IOError as err:
                 if err.errno not in (errno.EROFS, errno.EACCES):
