@@ -5699,8 +5699,11 @@ class Server(Client):
                     try:
                         key, slot = dbconn.retrieveKeySlot(idpackage)
                         slot = slot.split(",")[0]
-                        trashed = self.Spm().match_installed_package(
-                            key+":"+slot)
+                        try:
+                            trashed = self.Spm().match_installed_package(
+                                key+":"+slot)
+                        except KeyError:
+                            trashed = True
                     except TypeError: # referred to retrieveKeySlot
                         trashed = True
                 if not trashed:
