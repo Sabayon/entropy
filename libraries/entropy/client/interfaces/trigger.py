@@ -426,13 +426,15 @@ class Trigger:
             self._entropy = Entropy
 
         def run(self, stage, pkgdata, trigger_file):
-            my_ext_status = 1
+            globalz = globals()
+            local = locals()
             if os.path.isfile(trigger_file):
                 with open(trigger_file) as trig_f:
-                    exec(compile(trig_f.read(), trigger_file, 'exec'))
+                    exec(compile(trig_f.read(), trigger_file, 'exec'),
+                        globalz, local)
             if os.path.isfile(trigger_file):
                 os.remove(trigger_file)
-            return my_ext_status
+            return local.get("my_ext_status", 1)
 
     def _do_trigger_call_ext_generic(self):
 
