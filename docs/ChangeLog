@@ -1,3 +1,111 @@
+commit 29736231a0f1d732156ec96a0a29effff70b6ad0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 15:19:33 2011 +0200
+
+    Release Entropy 1.0_rc50
+
+commit e38de9e06fc9f9116efdb445aea2fe18264de0cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 14:48:17 2011 +0200
+
+    [entropy.client.sets] fix typo in Sets.match(), don't quit the loop before having analyzed all the repos
+
+commit a429a32668ad9b44c01e07e61f4e73b4ed64c436
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 12:29:34 2011 +0200
+
+    [entropy.tools] uncompress_tarball: improve python3 support, still broken due to Python bug #12926
+
+commit c14373c24f01e4b9e170257d1c834fa5bafc6ceb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 08:51:36 2011 +0200
+
+    [entropy.client.interfaces.trigger] fix _EntropyPySandbox.run() with Python3
+
+commit 6c11081a21941f25c0c9283f7eaed599fca48294
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 08:34:38 2011 +0200
+
+    [entropy.spm] PortagePlugin.xpak: properly use open() in ab+ mode
+
+commit 22ab952aa1fda81935c120ec0511843c0e517a60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 08:29:52 2011 +0200
+
+    [entropy.const] const_setup_entropy_pid: fix pid file read when using a+ mode
+
+commit f648ffd6c699c46f917dc8e4300df9733c9c0102
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 00:02:04 2011 +0200
+
+    [entropy.client.interfaces.trigger] _EntropyShSandbox: make it work with Python3
+
+commit 9b26426e80428a110a867d6d228dfb569c7ff834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 00:01:29 2011 +0200
+
+    [entropy.db] _runConfigurationFilesUpdate: make it work with Python3
+
+commit fbce5354f7585f32047230ee3c2239af80e3703c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 00:01:07 2011 +0200
+
+    [entropy.tools] uncompress_tarball: make it work with Python3
+
+commit 5a11057173aee83008a18e1e2f3245f8312d038d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:47:28 2011 +0200
+
+    [tests] use assertTrue() instead of assert_(), fix Python3 warning
+
+commit 02b10fd09c1e42bdf87f59ce13d34bd085654ec8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:26:21 2011 +0200
+
+    [tests] trivial code style update
+
+commit 70bc63ebf9bd599861feaba312b71b4a99ff8c71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:26:08 2011 +0200
+
+    [entropy.client] python 3.x fixes
+
+commit a54437ff134da9b260eeb731ddeb7c584a994c3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:25:44 2011 +0200
+
+    [entropy.server] python 3.x fixes
+
+commit aafd4790edc6b3c495d48fd724a63f1ead323aa3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:24:55 2011 +0200
+
+    [entropy.spm] PortagePlugin: drop unused methods
+
+commit 4fc49d3dd97a5894709803f728b6c4c0788a895d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:22:00 2011 +0200
+
+    [entropy.spm] drop unused method: remove_packages()
+
+commit 8364852edfe3f191aafaa057d8eff400b700bbfb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 23:18:44 2011 +0200
+
+    [entropy.spm] drop unused methods: disable_package_compile_options, enable_package_compile_options
+
+commit e2d5665843e9cbd8f2dd8d68be118a73af1eebcc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 6 22:49:01 2011 +0200
+
+    [entropy.transceivers] ftp_plugin: update "raise" syntax
+
+commit 172850e75a345e8be0d5188aad7a53249fa88292
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 5 18:09:56 2011 +0200
+
+    Tagging Entropy version 1.0_rc49
+
 commit cc6ad786fb636c32fca856346a85f7e9a6822128
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Sep 5 18:09:40 2011 +0200
