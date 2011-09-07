@@ -15,7 +15,6 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
     green, print_info, print_warning, print_error, print_generic, teal
 from text_tools import print_table
-from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
 from entropy.i18n import _
@@ -918,7 +917,7 @@ def _update(entropy_server, options):
                     continue
                 try:
                     inst_myatom = entropy_server.Spm().match_installed_package(myatom)
-                except InvalidAtom:
+                except KeyError:
                     print_warning(darkred("  !!! ")+red(_("Invalid atom"))+" "+bold(myatom))
                     continue
                 if inst_myatom in tba:
@@ -1330,8 +1329,15 @@ def _spm_compile_pkgset(entropy_server, pkgsets, do_rebuild = False,
         set_atoms = [x for x in set_atoms if x]
 
         if not do_rebuild:
-            set_atoms = [x for x in set_atoms if not \
-                spm.match_installed_package(x)]
+            new_set_atoms = []
+            for set_atom in set_atoms:
+                try:
+                    if not spm.match_installed_package(set_atom):
+                        new_set_atoms.append(set_atom)
+                except KeyError:
+                    continue
+            set_atoms = new_set_atoms
+
         set_atoms = ["="+x for x in set_atoms]
         if not set_atoms:
             continue
