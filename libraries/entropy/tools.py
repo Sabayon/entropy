@@ -2054,6 +2054,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
 
+    is_python_3 = sys.hexversion >= 0x3000000
     tar = None
     extracted_something = False
     try:
@@ -2068,7 +2069,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
             return -1
 
         encoded_path = extract_path
-        if sys.hexversion < 0x3000000:
+        if not is_python_3:
             encoded_path = encoded_path.encode('utf-8')
         entries = []
 
@@ -2085,10 +2086,14 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                 except EnvironmentError:
                     pass
 
-            tar.extract(tarinfo, encoded_path)
+            if is_python_3:
+                tar.extract(tarinfo, encoded_path,
+                    set_attrs=not tarinfo.isdir())
+            else:
+                tar.extract(tarinfo, encoded_path)
             extracted_something = True
 
-            if sys.hexversion < 0x3000000:
+            if not is_python_3:
                 # this does work only with Python 2.x
                 # doing that in Python 3.x will result in
                 # partial extraction
@@ -2097,19 +2102,18 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                     del tar.members[:]
                     deleter_counter = 3
 
-        del tar.members[:]
+        if not is_python_3:
+            del tar.members[:]
 
-        entries.sort(key = lambda x: x[0].name, reverse = True)
-        # Set correct owner, mtime and filemode on directories.
+        entries.sort(key = lambda x: x[0].name)
+        entries.reverse()
+        # set correct owner, mtime and filemode on files
+        # we need to check both files and directories because
+        #  we have to fix uid and gid from broken archives
         for tarinfo, epath in entries:
             try:
                 tar.chown(tarinfo, epath)
                 _fix_uid_gid(tarinfo, epath)
-                # mode = tarinfo.mode
-                # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
-                # which is setuid. Symlinks don't need chmod. PERIOD!
-                if not os.path.islink(epath):
-                    tar.chmod(tarinfo, epath)
 
                 # no longer touch utime using Tarinfo, behaviour seems
                 # buggy and introduces an unwanted delay on some conditions.
@@ -2119,6 +2123,13 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                 # a new bug. Issue is, packages are prepared on PC A, and
                 # mtime is checked on PC B.
                 # tar.utime(tarinfo, epath)
+
+                # mode = tarinfo.mode
+                # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
+                # which is setuid. Symlinks don't need chmod. PERIOD!
+                if not os.path.islink(epath):
+                    tar.chmod(tarinfo, epath)
+
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
@@ -2127,8 +2138,8 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         return -1
     finally:
         if tar is not None:
-            del tar.members[:]
             tar.close()
+            del tar.members[:]
 
     if extracted_something:
         return 0
