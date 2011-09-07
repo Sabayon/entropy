@@ -280,15 +280,13 @@ class tbz2:
             self.cleanup(datadir)
 
     def recompose_mem(self, xpdata):
-        self.scan() # Don't care about condition... We'll rewrite the data anyway.
-        myfile = open(self.file, "ab+")
-        if not myfile:
-            raise IOError("file not found")
-        myfile.seek(-self.xpaksize, os.SEEK_END) # 0,2 or -0,2 just mean EOF.
-        myfile.truncate()
-        myfile.write(xpdata+encodeint(len(xpdata))+STOP)
-        myfile.flush()
-        myfile.close()
+        self.scan()
+        with open(self.file, "ab+") as myfile:
+            myfile.seek(-self.xpaksize, os.SEEK_END)
+            myfile.truncate()
+            myfile.write(xpdata+encodeint(len(xpdata))+STOP)
+            myfile.flush()
+            myfile.close()
         return 1
 
     def cleanup(self, datadir):
