@@ -742,11 +742,18 @@ class PortagePlugin(SpmPlugin):
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
 
+        # Portage >=2.2_alpha50 returns AmbiguousPackageName
+        # if the package dependency passed is too ambiguous
+        # By contract, we have to raise KeyError.
+        ambiguous_pkg_name_exception = getattr(self._portage.exception,
+            "AmbiguousPackageName", self._portage.exception.PortageException)
         vartree = self._get_portage_vartree(root = root)
         try:
             matches = vartree.dep_match(package) or []
         except self._portage.exception.InvalidAtom as err:
-            raise InvalidAtom(str(err))
+            raise KeyError(err)
+        except ambiguous_pkg_name_exception as err:
+            raise KeyError(err)
 
         if match_all:
             return matches
