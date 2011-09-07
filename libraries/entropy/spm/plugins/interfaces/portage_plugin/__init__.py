@@ -2354,7 +2354,11 @@ class PortagePlugin(SpmPlugin):
         for myatom in runatoms:
 
             # check if atom is available
-            if not self.match_installed_package(myatom):
+            try:
+                inst_match = self.match_installed_package(myatom)
+            except KeyError:
+                inst_match = None
+            if not inst_match:
                 self.__output.output(
                     red("%s: " % (_("package not available on system"),) ) + \
                         blue(myatom),
@@ -3019,8 +3023,11 @@ class PortagePlugin(SpmPlugin):
 
         with self._PortageVdbLocker(self):
 
-            others_installed = self.match_installed_package(key,
-                match_all = True)
+            try:
+                others_installed = self.match_installed_package(key,
+                    match_all = True)
+            except KeyError:
+                others_installed = []
 
             # Support for tagged packages
             slot = package_metadata['slot']
@@ -3889,13 +3896,21 @@ class PortagePlugin(SpmPlugin):
             for item in dep_list:
                 if isinstance(item, const_get_stringtype()):
                     # match in currently running system
-                    if self.match_installed_package(item):
+                    try:
+                        item_match = self.match_installed_package(item)
+                    except KeyError:
+                        item_match = None
+                    if item_match:
                         return [item]
                 else:
                     # and deps, all have to match
                     all_matched = True
                     for dep in item:
-                        if not self.match_installed_package(dep):
+                        try:
+                            item_match = self.match_installed_package(dep)
+                        except KeyError:
+                            item_match = None
+                        if not item_match:
                             all_matched = False
                             break
                     if all_matched:
