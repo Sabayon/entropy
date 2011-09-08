@@ -1027,6 +1027,7 @@ class PackageBuilder(object):
         """
         Execute Portage post-build tasks.
         """
+        print_info("executing post-build operations, please wait...")
         emerge_settings, emerge_trees, mtimedb = emerge_config
         builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
         myaction, myopts, myfiles = parse_opts(
