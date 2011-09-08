@@ -39,11 +39,15 @@ os.environ['FEATURES'] = "split-log"
 os.environ['CMAKE_NO_COLOR'] = "yes"
 
 from _emerge.depgraph import backtrack_depgraph
-from _emerge.actions import load_emerge_config, action_build
+from _emerge.actions import load_emerge_config
 from _emerge.create_depgraph_params import create_depgraph_params
 from _emerge.main import parse_opts, post_emerge, \
     validate_ebuild_environment
 from _emerge.stdout_spinner import stdout_spinner
+from _emerge.Scheduler import Scheduler
+from _emerge.clear_caches import clear_caches
+from _emerge.unmerge import unmerge
+
 import portage.versions
 import portage
 
@@ -568,6 +572,8 @@ class PackageBuilder(object):
     PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
         DEFAULT_PORTAGE_BUILD_ARGS).split()
 
+    PORTAGE_BUILTIN_ARGS = ["--accept-properties=-interactive"]
+
     def __init__(self, entropy_server, emerge_config, package, params,
         spec_number, tot_spec, pkg_number, tot_pkgs):
         self._entropy = entropy_server
@@ -809,7 +815,7 @@ class PackageBuilder(object):
 
         # non interactive properties, this is not really required
         # accept-properties just sets os.environ...
-        builtin_args = ["--accept-properties=-interactive"]
+        builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
         myaction, myopts, myfiles = parse_opts(
             PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args + \
                 ["="+best_visible])
@@ -947,18 +953,12 @@ class PackageBuilder(object):
 
         # re-calling action_build(), deps are re-calculated though
         validate_ebuild_environment(emerge_trees)
-
-        # this hopefully will avoid calling backtrack_depgraph() again
-        # by action_build, provide resume information, hax0r mtimedb
-        myopts['--resume'] = True
-        mtimedb['resume'] = {
-            "favorites": [str(x) for x in favorites],
-            "myopts": myopts,
-            "mergelist": [[w, x, y, z] for w, x, y, z in package_queue],
-        }
-        mtimedb.commit()
-        retval = action_build(settings, emerge_trees, mtimedb,
-            myopts, myaction, myfiles, spinner)
+        mergetask = Scheduler(settings, emerge_trees, mtimedb,
+            myopts, spinner, favorites=favorites,
+            graph_config=graph.schedulerGraph())
+        del graph
+        clear_caches(emerge_trees)
+        retval = mergetask.merge()
 
         not_merged = []
         package_queue_map = dict((pkg.cpv, pkg) for pkg in package_queue)
@@ -1021,6 +1021,19 @@ class PackageBuilder(object):
 
         print_info("portage spawned, return value: %d" % (retval,))
         return retval
+
+    @staticmethod
+    def post_build(emerge_config):
+        """
+        Execute Portage post-build tasks.
+        """
+        emerge_settings, emerge_trees, mtimedb = emerge_config
+        builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
+        myaction, myopts, myfiles = parse_opts(
+            PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args)
+
+        unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
+            myopts, "clean", [], mtimedb["ldpath"], autoclean=1)
 
     @staticmethod
     def sync():
@@ -1295,6 +1308,10 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                         exit_st = rc
                         if not keep_going:
                             break
+
+                # call post-build cleanup operations,
+                # run it unconditionally
+                PackageBuilder.post_build(emerge_config)
 
                 if preserved_libs_error:
                     # completely abort
