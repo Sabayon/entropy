@@ -947,6 +947,16 @@ class PackageBuilder(object):
 
         # re-calling action_build(), deps are re-calculated though
         validate_ebuild_environment(emerge_trees)
+
+        # this hopefully will avoid calling backtrack_depgraph() again
+        # by action_build, provide resume information, hax0r mtimedb
+        myopts['--resume'] = True
+        mtimedb['resume'] = {
+            "favorites": [str(x) for x in favorites],
+            "myopts": myopts,
+            "mergelist": [[w, x, y, z] for w, x, y, z in package_queue],
+        }
+        mtimedb.commit()
         retval = action_build(settings, emerge_trees, mtimedb,
             myopts, myaction, myfiles, spinner)
 
