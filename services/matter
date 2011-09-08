@@ -1029,7 +1029,7 @@ class PackageBuilder(object):
         """
         emerge_settings, emerge_trees, mtimedb = emerge_config
         if "yes" == emerge_settings.get("AUTOCLEAN"):
-                print_info("executing post-build operations, please wait...")
+            print_info("executing post-build operations, please wait...")
             builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
             myaction, myopts, myfiles = parse_opts(
                 PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args)
