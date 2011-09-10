@@ -1017,7 +1017,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
             found_edb = entropy.tools.dump_entropy_metadata(package_path, tmp_f)
             if not found_edb:
                 return False
-            dbc = self._server._open_temp_repository("test", temp_file = tmp_f)
+            dbc = self._server._open_temp_repository("test", temp_file = tmp_f,
+                initialize = False)
             for package_id in dbc.listAllPackageIds():
                 # test content
                 dbc.retrieveContent(package_id, extended = True,
@@ -4252,7 +4253,7 @@ class Server(Client):
         dbc.add_plugin(srv_plug)
         return dbc
 
-    def _open_temp_repository(self, repo, temp_file = None):
+    def _open_temp_repository(self, repo, temp_file = None, initialize = True):
         """
         Open temporary ServerPackagesRepository interface.
 
@@ -4274,7 +4275,8 @@ class Server(Client):
             skipChecks = True,
             temporary = True
         )
-        conn.initializeRepository()
+        if initialize:
+            conn.initializeRepository()
         return conn
 
     @staticmethod
