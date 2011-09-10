@@ -5176,7 +5176,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: list
         """
         cur = self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = "table"
+        SELECT name FROM SQLITE_MASTER
+        WHERE type = "table" AND NOT name LIKE "sqlite_%"
         """)
         return self._cur2tuple(cur)
 
