@@ -1622,6 +1622,7 @@ class Server(object):
 
             qa_sts_map['sem'].acquire()
             th = ParallelTask(_qa_check, upload_package)
+            th.daemon = True
             threads.append(th)
             th.start()
 
