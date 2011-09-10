@@ -1020,9 +1020,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
             dbc = self._server._open_temp_repository("test", temp_file = tmp_f,
                 initialize = False)
             for package_id in dbc.listAllPackageIds():
-                # test content
-                dbc.retrieveContent(package_id, extended = True,
-                    formatted = True, insert_formatted = True)
+                # NOTE: content is tested in entropy.qa builtin package test
                 # test content safety
                 dbc.retrieveContentSafety(package_id)
                 # test keywords
