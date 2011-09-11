@@ -1,3 +1,105 @@
+commit a3e77b9aaae2e0915cf981549f5a8b8f30066209
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 11 17:09:12 2011 +0200
+
+    Release Entropy 1.0_rc51
+
+commit 21ec99b70d33e7ff9973e132b978d3d3fccc302e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 11 09:57:03 2011 +0200
+
+    [equo] fix trivial output issue
+
+commit 6135d75ce6704049b29c76799bb330cba1d1c96f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 10 14:27:25 2011 +0200
+
+    [entropy.server.mirrors] _run_package_files_qa_checks: use daemon threads
+
+commit 9250a66409b2f20a7c8a50860997efede55ffae6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 10 14:17:26 2011 +0200
+
+    [entropy.server] drop superfluous QA check, retrieveContent() is tested in entropy.qa builtin tests already
+
+commit 6adb70660447693163b3a93dc6575d7e6546931b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 10 14:14:38 2011 +0200
+
+    [entropy.db] EntropyRepository: _listAllTable() must filter out sqlite builtin tables
+
+commit 0f2cd457e9b0ee946e9bac649628e8a27fe51b43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 10 14:13:09 2011 +0200
+
+    [entropy.server] _open_temp_repository: method must work with already initialized repositories as well
+
+commit cbefc7004219ffd22b5f7974bd50d5782b0d236e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 8 13:22:20 2011 +0200
+
+    [matter] fix indentation
+
+commit f7de86a6ccb90b6b58c3084947f46747fd0ef104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 8 13:20:05 2011 +0200
+
+    [matter] respect Portage AUTOCLEAN setting before spawning unmerge()
+
+commit c042ab8627f1944f7266c9c8230f980c6835176b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 8 13:05:13 2011 +0200
+
+    [matter] inform about post-build operations execution
+
+commit f678dcb888a6c1897cba604ba5c78feb627fe0de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 8 13:02:29 2011 +0200
+
+    [matter] use Portage Scheduler directly, improve speed
+
+commit 6269a771d240979d77e2d45b4f0daef8a322da1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 8 12:12:37 2011 +0200
+
+    [matter] use Portage --resume feature to resume dependency calculation
+
+commit ec8a67f9e543221cc9ecbe3ef2eaf2c9c9085029
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 21:59:24 2011 +0200
+
+    [entropy.spm] PortagePlugin: catch KeyError when needed for match_installed_package()
+
+commit abd985eef2f2a805b6099e24228bca9007bfff09
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 21:55:59 2011 +0200
+
+    [entropy.server] catch KeyError on match_installed_package()
+
+commit fcee11c19b8b554606afe56538a7fe72dfb02ea3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 21:55:45 2011 +0200
+
+    [matter] catch KeyError on match_installed_package()
+
+commit 7dd0d12412df6b8ca9a1acc486da43c565b7a6b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 21:55:35 2011 +0200
+
+    [reagent] catch KeyError on match_installed_package
+
+commit bb351a92681eaa94b98088d52b098c808691c716
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 21:51:34 2011 +0200
+
+    [entropy.spm] PortagePlugin.match_installed_package: always raise KeyError, catch new exception AmbiguousPackageName
+
+commit fd450306ae7a158f642857633250fcf18f5616d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 7 15:19:54 2011 +0200
+
+    Tagging Entropy version 1.0_rc50
+
 commit 29736231a0f1d732156ec96a0a29effff70b6ad0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 7 15:19:33 2011 +0200
