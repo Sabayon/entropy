@@ -938,6 +938,7 @@ def search_orphaned_files(entropy_client):
 
     orpanedfiles = len(file_data)
 
+    fname = "/tmp/entropy-orphans.txt"
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (
             _("Intersection completed. Showing statistics"),) ))
@@ -951,7 +952,6 @@ def search_orphaned_files(entropy_client):
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
-    fname = "/tmp/entropy-orphans.txt"
     sizecount = 0
     file_data = list(file_data)
     file_data.sort(reverse = True)
