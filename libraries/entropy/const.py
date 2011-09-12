@@ -75,14 +75,18 @@ ETP_ARCH_MAP = {
     ("i386", "i486", "i586", "i686",): "x86",
     ("x86_64",): "amd64",
     ("mips", "mips64",): "mips",
-    ("sun4u",): None,
-    ("ppc",): None,
 }
 _uname_m = os.uname()[4]
-ETP_ARCH_CONST = 'UNKNOWN'
+ETP_ARCH_CONST = None
 for arches, arch in ETP_ARCH_MAP.items():
     if _uname_m in arches:
         ETP_ARCH_CONST = arch
+        break
+if ETP_ARCH_CONST is None:
+    if _uname_m.startswith("arm"):
+        ETP_ARCH_CONST = "arm"
+    else:
+        ETP_ARCH_CONST = "UNKNOWN"
 
 etpSys = {
     'archs': ['alpha', 'amd64', 'amd64-fbsd', 'arm', 'hppa', 'ia64', 'm68k',
