@@ -1589,6 +1589,8 @@ class Server(object):
         qa_count = 0
 
         max_threads = const_get_cpus()
+        if max_threads > 2:
+            max_threads = 2
         qa_some_faulty = []
         threads = []
         qa_sts_map = {
