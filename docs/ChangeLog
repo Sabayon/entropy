@@ -1,3 +1,33 @@
+commit 4ca7fdaa4e43b1d14a8a14bf9e89749d9aace405
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 17 17:53:53 2011 +0200
+
+    Release Entropy 1.0_rc52
+
+commit 67e2a72538fe2ba5e395857a61219158983236f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 13 12:55:16 2011 +0200
+
+    [entropy.server.mirrors] _run_package_files_qa_checks: use at most two threads
+
+commit 302d1a85886547b3d7f995e0350c0ff53c4b8c9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 12 19:05:09 2011 +0200
+
+    [conf] update fsn.hu rsync link, close bug 2694
+
+commit 5642b26adb58e43bc99826a4dcddf50ad3037dbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 12 16:55:00 2011 +0200
+
+    [entropy.const] improve ARM arch detection through uname
+
+commit 5d1b240bcdd5d570e3c32de8580e44b378990f58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 11 17:09:31 2011 +0200
+
+    Tagging Entropy version 1.0_rc51
+
 commit a3e77b9aaae2e0915cf981549f5a8b8f30066209
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 11 17:09:12 2011 +0200
