@@ -24,7 +24,7 @@ sys.path.insert(0,'../client')
 # Entropy imports
 from entropy.exceptions import PermissionDenied
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
-    const_get_stringtype
+    const_get_stringtype, const_setup_perms
 from entropy.output import print_info, print_error, print_warning, \
     purple, darkgreen, is_stdout_a_tty, getcolor
 from entropy.exceptions import SPMError
@@ -80,6 +80,22 @@ def exec_cmd(args, env = None):
             os.kill(pid, signal.SIGTERM)
         return rc
 
+def mkstemp():
+    """
+    Create temporary file into matter temporary directory.
+    This is a tempfile.mkstemp() wrapper
+    """
+    tmp_dir = "/var/tmp/matter"
+    if not os.path.isdir(tmp_dir):
+        try:
+            os.makedirs(tmp_dir)
+        except OSError as err:
+            # race condition
+            if err.errno != errno.EEXIST:
+                raise
+        const_setup_perms(tmp_dir, etpConst['entropygid'],
+            recursion = False)
+    return tempfile.mkstemp(prefix="matter", dir=tmp_dir)
 
 class EntropyResourceLock(object):
     """
@@ -677,7 +693,7 @@ class PackageBuilder(object):
         if pkgpre is not None:
             print_info(
                 "spawning pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(pkgpre.read())
             try:
@@ -703,7 +719,7 @@ class PackageBuilder(object):
         if pkgpost is not None:
             print_info(
                 "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(pkgpost.read())
             try:
@@ -1007,7 +1023,7 @@ class PackageBuilder(object):
             print_info(
                 "spawning buildfail: %s, name: %s" % (buildfail,
                     buildfail.name))
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(buildfail.read())
             try:
