@@ -1488,7 +1488,7 @@ class PortagePlugin(SpmPlugin):
                 # filter out Portage-generated sets object, those not being
                 # an instance of portage._sets.files.StaticFileSet
                 for key, obj in tuple(mysets.items()):
-                    if not isinstance(obj, files):
+                    if not isinstance(obj, static_file_class):
                         mysets.pop(key)
 
         set_data = {}
