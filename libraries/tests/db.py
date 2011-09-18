@@ -510,9 +510,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         pkg_name = _misc.get_test_package_name4()
         self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_name, maskFilter=False))
+            self.test_db.atomMatch(pkg_name))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+            self.test_db.atomMatch(pkg_atom))
 
         # test package masking
         plug_id = self.client_sysset_plugin_id
@@ -523,14 +523,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1), self.test_db.atomMatch(
-            pkg_atom, maskFilter=False))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom,
-            maskFilter=False))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
     def test_db_insert_compare_match_tag(self):
 
@@ -548,12 +546,9 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         for atom, pkg_id, branch in self.test_db.listAllPackages():
             pkg_key = entropy.dep.dep_getkey(atom)
-            self.assertEqual(f_match, self.test_db.atomMatch(pkg_key,
-                maskFilter=False))
-            self.assertEqual(f_match, self.test_db.atomMatch(atom,
-                maskFilter=False))
-            self.assertEqual(f_match, self.test_db.atomMatch("~"+atom,
-                maskFilter=False))
+            self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
+            self.assertEqual(f_match, self.test_db.atomMatch(atom))
+            self.assertEqual(f_match, self.test_db.atomMatch("~"+atom))
 
     def test_db_multithread(self):
 
