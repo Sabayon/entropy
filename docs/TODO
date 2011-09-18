@@ -11,11 +11,21 @@ Backlog (raw)
         - add "eit fitin"
         - add man page
 
+    - entropy client refactoring:
+        - get_install_queue():
+            use exceptions, write new method, deprecate old
+        - rest:
+            drop exit status in favour of exceptions
+
     - graph improvements:
         - graph with or dependencies support
         - graph with weighted edges (nvidia-userspace:0 must not collide with something
           already pulled in)
 
+  1.1:
+
+    - python 3.x support -> more tests
+    - sulfur: rewrite using pygtk3
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
