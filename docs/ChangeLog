@@ -1,3 +1,45 @@
+commit 9f06b4acac4461f109522925225a1426f1a180e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:27:40 2011 +0200
+
+    Release Entropy 1.0_rc53
+
+commit 339e89f713dfdc1f36f3432c0a3c5cff11f71f39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:27:12 2011 +0200
+
+    [po] update translations
+
+commit 9515b265355f415be4bbf8e37305f22aaae2a883
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:26:32 2011 +0200
+
+    [todo] update TODO
+
+commit 097c6dd6cad5ced23f672e734674dad8f6a5611d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:25:58 2011 +0200
+
+    [entropy.tools] grow _locate_edb() give up threshold from 30Mb to 60, due to app-doc/php-docs edb size
+
+commit a48db3fc36a5d784256d8f465aea702f1e239826
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:25:22 2011 +0200
+
+    [entropy.db] EntropyRepository.dropAllIndexes: exclude sqlite_ builtin indexes
+
+commit c087c5c09611162909a3264ad4ef88e4b17811da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 11:38:08 2011 +0200
+
+    [matter] wrap tempfile.mkstemp(), write to /var/tmp/matter, avoid issues with /tmp mounted with noexec
+
+commit 3278c717819f96b2ddb74465d7c6e8af85f85b69
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 17 17:54:11 2011 +0200
+
+    Tagging Entropy version 1.0_rc52
+
 commit 4ca7fdaa4e43b1d14a8a14bf9e89749d9aace405
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 17 17:53:53 2011 +0200
