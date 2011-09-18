@@ -20,6 +20,12 @@ import entropy.tools
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
+        # since package files have been produced on amd64, add the same
+        # arch to etpConst['keywords'] to avoid atomMatch failures on x86
+        # and arm/other arches.
+        self._original_keywords = etpConst['keywords'].copy()
+        etpConst['keywords'].add("~amd64")
+        etpConst['keywords'].add("amd64")
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
         self.Client = Client(installed_repo = -1, indexing = False,
@@ -50,6 +56,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # right before terminating the process
         self.Client.destroy()
         self.Client.shutdown()
+        etpConst['keywords'] = self._original_keywords.copy()
 
     def __open_test_db(self, tmp_path):
         return self.Client.open_temp_repository(name = self.test_db_name,
