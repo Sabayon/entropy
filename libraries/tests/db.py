@@ -359,12 +359,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         f_match = (1, 0)
         pkg_atom = _misc.get_test_package_atom()
         pkg_name = _misc.get_test_package_name()
-        self.assertEqual(nf_match, self.test_db.atomMatch(
-            "slib", maskFilter=False))
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_name, maskFilter=False))
+            self.test_db.atomMatch(pkg_name))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+            self.test_db.atomMatch(pkg_atom))
 
         # test package masking
         plug_id = self.client_sysset_plugin_id
@@ -375,25 +374,21 @@ class EntropyRepositoryTest(unittest.TestCase):
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1),
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1),
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         # now test multimatch
         idpackage = self.test_db.addPackage(db_data)
-        results, rc = self.test_db.atomMatch(pkg_name,
-            multiMatch = True, maskFilter=False)
+        results, rc = self.test_db.atomMatch(pkg_name, multiMatch = True)
         self.assertEqual(2, len(results))
         self.assertTrue(isinstance(results, set))
         self.assertTrue(rc == 0)
 
-        results, rc = self.test_db.atomMatch(pkg_name+"foo", multiMatch = True,
-            maskFilter=False)
+        results, rc = self.test_db.atomMatch(pkg_name+"foo", multiMatch = True)
         self.assertEqual(0, len(results))
         self.assertTrue(isinstance(results, set))
         self.assertTrue(rc == 1)
@@ -428,12 +423,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         f_match = (1, 0)
         pkg_atom = _misc.get_test_package_atom2()
         pkg_name = _misc.get_test_package_name2()
-        self.assertEqual(nf_match, self.test_db.atomMatch(
-            "slib", maskFilter=False))
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_name, maskFilter=False))
+            self.test_db.atomMatch(pkg_name))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+            self.test_db.atomMatch(pkg_atom))
 
         # test package masking
         plug_id = self.client_sysset_plugin_id
@@ -444,14 +438,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1), self.test_db.atomMatch(
-            pkg_atom, maskFilter=False))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1), self.test_db.atomMatch(
-            pkg_atom, maskFilter=False))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
     def test_db_insert_compare_match_utf2(self):
 
@@ -469,12 +461,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         f_match = (1, 0)
         pkg_atom = _misc.get_test_package_atom3()
         pkg_name = _misc.get_test_package_name3()
-        self.assertEqual(nf_match, self.test_db.atomMatch(
-            "slib", maskFilter=False))
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_name, maskFilter=False))
+            self.test_db.atomMatch(pkg_name))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+            self.test_db.atomMatch(pkg_atom))
 
         # test package masking
         plug_id = self.client_sysset_plugin_id
@@ -485,14 +476,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1),
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1),
-            self.test_db.atomMatch(pkg_atom, maskFilter=False))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
     def test_db_insert_compare_match_mime(self):
 
@@ -519,8 +508,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         f_match = (1, 0)
         pkg_atom = _misc.get_test_package_atom4()
         pkg_name = _misc.get_test_package_name4()
-        self.assertEqual(nf_match, self.test_db.atomMatch("slib",
-            maskFilter=False))
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
             self.test_db.atomMatch(pkg_name, maskFilter=False))
         self.assertEqual(f_match,
@@ -791,11 +779,9 @@ class EntropyRepositoryTest(unittest.TestCase):
             "%s[-%s(-)]" % (key, "kernel_linux"),
         ]
         for dep in valid_test_deps:
-            self.assertEqual((1, 0), self.test_db.atomMatch(dep,
-                maskFilter=False))
+            self.assertEqual((1, 0), self.test_db.atomMatch(dep))
         for dep in invalid_test_deps:
-            self.assertEqual((-1, 1), self.test_db.atomMatch(dep,
-                maskFilter=False))
+            self.assertEqual((-1, 1), self.test_db.atomMatch(dep))
 
     def test_db_package_sets(self):
 
