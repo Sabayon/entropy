@@ -622,11 +622,18 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         fake_instance = self._helper.fake_default_repo
 
-        if not os.access(etpConst['serverconf'], os.R_OK):
-            return data
-
-        with open(etpConst['serverconf'], "r") as server_f:
-            serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
+        try:
+            with open(etpConst['serverconf'], "r") as server_f:
+                serverconf = [x.strip() for x in server_f.readlines() if \
+                    x.strip()]
+        except IOError as err:
+            if err.errno != errno.ENOENT:
+                raise
+            # if file doesn't exist, provide empty
+            # serverconf list. In this way, we make sure that
+            # any additional metadata gets added.
+            # see the for loop iterating through the repository identifiers
+            serverconf = []
 
         default_repo_changed = False
 
