@@ -1481,14 +1481,15 @@ class PortagePlugin(SpmPlugin):
 
         mysets = config.getSets()
         if not builtin_sets:
-            sets_obj = self._get_portage_sets_object()
             # attention, this is sensible to Portage API changes
-            static_file_class = sets_obj.files.StaticFileSet
-            # filter out Portage-generated sets object, those not being
-            # an instance of portage._sets.files.StaticFileSet
-            for key, obj in tuple(mysets.items()):
-                if not isinstance(obj, static_file_class):
-                    mysets.pop(key)
+            files = self._get_portage_sets_files_object()
+            if files is not None:
+                static_file_class = files.StaticFileSet
+                # filter out Portage-generated sets object, those not being
+                # an instance of portage._sets.files.StaticFileSet
+                for key, obj in tuple(mysets.items()):
+                    if not isinstance(obj, files):
+                        mysets.pop(key)
 
         set_data = {}
         for k, obj in mysets.items():
@@ -2762,6 +2763,17 @@ class PortagePlugin(SpmPlugin):
             except ImportError:
                 sets = None
         return sets
+
+    def _get_portage_sets_files_object(self):
+        try:
+            import portage._sets.files as files
+        except ImportError:
+            try:
+                # older portage, <= 2.2_rc67
+                import portage.sets.files as files
+            except ImportError:
+                files = None
+        return files
 
     def _get_world_set_object(self):
         try:
