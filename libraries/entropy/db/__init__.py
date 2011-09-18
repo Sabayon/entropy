@@ -5530,6 +5530,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "index"
+        AND name NOT LIKE "sqlite_%"
         """)
         for index in self._cur2frozenset(cur):
             try:
