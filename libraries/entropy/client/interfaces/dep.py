@@ -2818,7 +2818,7 @@ class CalculatorsMixin:
         return [x for x, y in queue]
 
     def get_reverse_queue(self, package_matches, deep = False,
-        recursive = False, empty = False, system_packages = True):
+        recursive = True, empty = False, system_packages = True):
         """
         Return a list of reverse dependecies for given package matches.
         This method works for every repository, not just the installed packages
