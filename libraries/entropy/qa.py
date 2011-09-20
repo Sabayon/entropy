@@ -1246,7 +1246,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     key, slot = pkg_dbconn.retrieveKeySlot(pkg_id)
                     if (key, slot) in scope_cache:
                         continue
-                    if pkg_dbconn.isSystemPackage(pkg_id):
+                    system_pkg = not entropy_client.validate_package_removal(
+                        pkg_id, repo_id = pkg_repo)
+                    if system_pkg:
                         # ignore system package missing dep if this is a
                         # system package, it means that further missing
                         # deps detection will be anyway wrong.
