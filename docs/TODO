@@ -12,6 +12,7 @@ Backlog (raw)
         - add man page
 
     - pkgcore spm plugin
+        PF CATEGORY CFLAGS CXXFLAGS NEEDED FEATURES INHERITED are missing
 
     - entropy client refactoring:
         - get_install_queue():
