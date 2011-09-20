@@ -11,6 +11,8 @@ Backlog (raw)
         - add "eit fitin"
         - add man page
 
+    - pkgcore spm plugin
+
     - entropy client refactoring:
         - get_install_queue():
             use exceptions, write new method, deprecate old
