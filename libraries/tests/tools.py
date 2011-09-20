@@ -463,6 +463,7 @@ class ToolsTest(unittest.TestCase):
         hash_tag = et.md5sum(pkg_path_a) + et.md5sum(pkg_path_b)
         delta_path = et.generate_entropy_delta(pkg_path_a, pkg_path_b,
             hash_tag, pkg_compression = "bz2")
+        self.assertNotEqual(None, delta_path) # missing bsdiff?
         tmp_fd, tmp_path = tempfile.mkstemp()
         os.close(tmp_fd)
         try:
