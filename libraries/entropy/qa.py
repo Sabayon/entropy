@@ -1202,6 +1202,26 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     return True
             return False
 
+        def is_system_pkg(pkg_id, repo_db):
+            if repo_db.isSystemPackage(pkg_id):
+                return True
+            visited = set()
+            reverse_deps = repo_db.retrieveReverseDependencies(pkg_id,
+                key_slot = True)
+            # with virtual packages, it can happen that system packages
+            # are not directly marked as such. so, check direct inverse deps
+            # and see if we find one
+            for rev_pkg_key, rev_pkg_slot in reverse_deps:
+                rev_pkg_id, rev_repo_id = entropy_client.atom_match(rev_pkg_key,
+                    match_slot = rev_pkg_slot)
+                if rev_pkg_id == -1:
+                    # can't find
+                    continue
+                rev_repo_db = entropy_client.open_repository(rev_repo_id)
+                if rev_repo_db.isSystemPackage(rev_pkg_id):
+                    return True
+            return False
+
         for dependency in dependencies:
             pkg_id, repo_id = entropy_client.atom_match(dependency)
             if pkg_id != -1:
@@ -1246,14 +1266,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     key, slot = pkg_dbconn.retrieveKeySlot(pkg_id)
                     if (key, slot) in scope_cache:
                         continue
-                    system_pkg = not entropy_client.validate_package_removal(
-                        pkg_id, repo_id = pkg_repo)
+                    system_pkg = is_system_pkg(pkg_id, pkg_dbconn)
                     if system_pkg:
                         # ignore system package missing dep if this is a
                         # system package, it means that further missing
                         # deps detection will be anyway wrong.
                         # !!! this fixes improper libgcc_s.so binding with
                         # gnat-gcc on amd64.
+                        # but in general, system packages are implicit deps
                         break
 
                     map_key = (needed, elfclass)
