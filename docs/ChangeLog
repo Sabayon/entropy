@@ -1,3 +1,112 @@
+commit 0f4fe41de6f8a07c3bacb8a18180e0c0a6299830
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 21 19:30:22 2011 +0200
+
+    Release Entropy 1.0_rc54
+
+commit 6a38926bd93b28aabdf4e9c4d77fa4bec963d3fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 21 19:27:38 2011 +0200
+
+    [entropy.qa] filter out system packages from runtime missing dependencies list, also consider direct reverse deps to catch virtual pkgs
+
+commit fa69baa3265b9bc7bc5e08138837bc91369f2c04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 20 22:29:12 2011 +0200
+
+    [entropy.client.interfaces.dep] get_reverse_queue: default recursive to True (False was actually a mistake)
+
+commit 758f65e7b8d4a48ad255d2273357161b12d1f945
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 20 22:19:41 2011 +0200
+
+    [entropy.qa] use entropy_client.validate_package_removal() instead of direct db method isSystemPackage()
+    
+    This fixes the issue with sys-libs/glibc not being an actual system
+    package due to virtual/libc wrapping it
+
+commit 02ee95ffa131b4af8a7edbd47a66a63acc2e1bc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 20 12:44:47 2011 +0200
+
+    [todo] update TODO
+
+commit 606e5775be653b229f596e0cd7e45564f38594d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 20 12:18:05 2011 +0200
+
+    [tests] tools: make sure that function returns non-None values
+
+commit c10cda3cc8af43cc37f784c6e3a2917b6972e185
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 20 12:17:45 2011 +0200
+
+    [todo] update TODO
+
+commit bf15bd4baa1f0d949fa7fa824e231e312d0785f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 23:14:10 2011 +0200
+
+    [entropy.server] better deal with unavailable server.conf, make sure all the metadata is prepared anyway
+
+commit 895d6d7c9690d098b50709ddebe54293c9b7e33f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 23:05:05 2011 +0200
+
+    [tests] db: move etpConst['keywords'] setup at the end of setUp method
+
+commit bd81b92c6cfb86201ed00bf41986b78f7462bc3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:57:41 2011 +0200
+
+    [tests] db: make package files generated on amd64 work on other arches as well
+
+commit 15d922ff573231602480ed47de70e27e942b6203
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:54:45 2011 +0200
+
+    Revert "[tests] db: do not fail on atomMatch() due to different arch (fixes tests on ARM)"
+    
+    This reverts commit 0feacbf90dff6d868e8eca1a94558a5da78759e1.
+
+commit 6f48c86ab2161e1eb9d097a4adff5ea20c2ae852
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:54:29 2011 +0200
+
+    Revert "[tests] db: always use maskFilter=False with atomMatch()"
+    
+    This reverts commit 2de803f3147a21cdef0819433b6920bca13fbd52.
+
+commit 2de803f3147a21cdef0819433b6920bca13fbd52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:48:44 2011 +0200
+
+    [tests] db: always use maskFilter=False with atomMatch()
+
+commit 0feacbf90dff6d868e8eca1a94558a5da78759e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:42:47 2011 +0200
+
+    [tests] db: do not fail on atomMatch() due to different arch (fixes tests on ARM)
+
+commit a089127bd532ba55c2bc0f243695f70e85b7996b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:18:49 2011 +0200
+
+    [entropy.spm] PortagePlugin: get_package_sets(), fix typo
+
+commit baf46a8e6dc35c8f92eef8cc4c5a5b2717aab1ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 22:17:05 2011 +0200
+
+    [entropy.spm] PortagePlugin: fix get_package_sets() with Python 2.1
+
+commit fd1d15c6161d6d3e3103fb3dfecf6655dec2fb1c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 18 12:27:56 2011 +0200
+
+    Tagging Entropy version 1.0_rc53
+
 commit 9f06b4acac4461f109522925225a1426f1a180e8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 18 12:27:40 2011 +0200
