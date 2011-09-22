@@ -4081,6 +4081,12 @@ class Package:
             self.pkgmeta['extra_download'] = extra_download
             self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
 
+        # export main package download path to metadata
+        # this is actually used by PackageKit backend in order
+        # to signal downloaded package files
+        self.pkgmeta['pkgpath'] = self.__get_fetch_disk_path(
+            self.pkgmeta['download'])
+
         if not self.pkgmeta['download']:
             self.pkgmeta['fetch_not_available'] = True
             return 0
