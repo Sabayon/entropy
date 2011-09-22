@@ -2748,8 +2748,28 @@ class CalculatorsMixin:
                     return True
                 return False # sorry!
 
+        def is_system_pkg():
+            if dbconn.isSystemPackage(package_id):
+                return True
+            visited = set()
+            reverse_deps = dbconn.retrieveReverseDependencies(package_id,
+                key_slot = True)
+            # with virtual packages, it can happen that system packages
+            # are not directly marked as such. so, check direct inverse deps
+            # and see if we find one
+            for rev_pkg_key, rev_pkg_slot in reverse_deps:
+                rev_pkg_id, rev_repo_id = self.atom_match(rev_pkg_key,
+                    match_slot = rev_pkg_slot)
+                if rev_pkg_id == -1:
+                    # can't find
+                    continue
+                rev_repo_db = self.open_repository(rev_repo_id)
+                if rev_repo_db.isSystemPackage(rev_pkg_id):
+                    return True
+            return False
+
         # did we store the bastard in the db?
-        system_pkg = dbconn.isSystemPackage(package_id)
+        system_pkg = is_system_pkg()
         if not system_pkg:
             return True
         # check if the package is slotted and exist more
