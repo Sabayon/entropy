@@ -1,3 +1,31 @@
+commit 40afb5484d90cae46107e4db87eee93cef6eecc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 22 17:00:36 2011 +0200
+
+    Release Entropy 1.0_rc55
+
+commit 15e47853bb1f5cc8d1b9ffae3641b68e41b681f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 22 16:58:01 2011 +0200
+
+    [entropy.client.interfaces] export "pkgpath" metadatum for PackageKit consumption (was removed), close bug 2720
+
+commit a49e5ef4b9fbf103678cf1c6f0861d39a5002c86
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 22 16:47:32 2011 +0200
+
+    [entropy.client.interfaces.dep] when determining if a package is part of the system set, also verify inverse deps
+    
+    This fixes the detection of sys-libs/glibc as system package.
+    Actually, virtual/libc is marked as system but not sys-libs/glibc
+    directly.
+
+commit 9d05d6ce40b014c2c2d0044e25762537ee6449ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 21 19:30:37 2011 +0200
+
+    Tagging Entropy version 1.0_rc54
+
 commit 0f4fe41de6f8a07c3bacb8a18180e0c0a6299830
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 21 19:30:22 2011 +0200
