@@ -2664,14 +2664,14 @@ class Server(Client):
                         treeupdates_actions = treeupdates_actions,
                         initialized_repository_path = tmp_repo_file)
                 finally:
-                    if tmp_repo_file is not None:
-                        os.remove(tmp_repo_file)
                     if tmp_fd is not None:
                         try:
                             os.close(tmp_fd)
                         except OSError as err:
                             if err.errno != errno.EBADF:
                                 raise
+                    if tmp_repo_file is not None:
+                        os.remove(tmp_repo_file)
 
                 # GPG-sign package if GPG signature is set
                 gpg_sign = None
