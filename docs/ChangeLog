@@ -1,3 +1,45 @@
+commit 81c34ef18d272d3a0f4aa0f3b6d66127f499d8ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 12:27:23 2011 +0200
+
+    Release Entropy 1.0_rc56
+
+commit f0ade6f50ec33d9d90938675019880ac4ceda7f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 11:02:13 2011 +0200
+
+    [matter] rework ve_string_open_file_read parser method to return file path instead of handle
+
+commit ff6263f86f5fb527c427f146950f5c5f525ffdd4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 10:44:15 2011 +0200
+
+    [entropy.server.interfaces] trivial code update
+
+commit c0868cf6e2e742b939e3d5842419718b85814096
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 10:40:43 2011 +0200
+
+    [matter] fix usage of buildfail, pkgpre and pkgpost file data
+
+commit 0297cdd83e44d598d3d298791f35851e309995df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 08:53:26 2011 +0200
+
+    [entropy.qa] improve atomicity of __analyze_package_edb
+
+commit 7d5ac068794110f37a3605f40ae026cdfcdd49df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 08:53:00 2011 +0200
+
+    [entropy.spm] PortagePlugin: do not use /tmp as temporary dir but rather /var/tmp/entropy
+
+commit 89d7b29290671ec14be5e6b9597acc5180536225
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 22 17:00:50 2011 +0200
+
+    Tagging Entropy version 1.0_rc55
+
 commit 40afb5484d90cae46107e4db87eee93cef6eecc4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Sep 22 17:00:36 2011 +0200
