@@ -245,7 +245,7 @@ class GenericSpecFunctions(object):
 
     def ve_string_open_file_read(self, x):
         try:
-            return open(x, "r")
+            return open(x, "rb").read()
         except (IOError, OSError):
             return None
 
@@ -695,7 +695,7 @@ class PackageBuilder(object):
                 "spawning pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(pkgpre.read())
+                tmp_f.write(pkgpre)
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
@@ -714,14 +714,14 @@ class PackageBuilder(object):
         for tmp_dir in dirs_cleanup:
             self.__cleanup_dir(tmp_dir)
 
-        # run pkgpre, if any
+        # run pkgpost, if any
         pkgpost = self._params["pkgpost"]
         if pkgpost is not None:
             print_info(
                 "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(pkgpost.read())
+                tmp_f.write(pkgpost)
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
@@ -1025,7 +1025,7 @@ class PackageBuilder(object):
                     buildfail.name))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(buildfail.read())
+                tmp_f.write(buildfail)
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
