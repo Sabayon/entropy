@@ -1438,10 +1438,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
         """
         from entropy.db import EntropyRepository
         from entropy.db.exceptions import Error
-        fd, tmp_path = tempfile.mkstemp(
-            prefix="entropy.qa.__analyze_package_edb")
+
+        fd, tmp_path = None, None
         dbc = None
         try:
+            fd, tmp_path = tempfile.mkstemp(
+                prefix="entropy.qa.__analyze_package_edb")
             dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
             if not dump_rc:
                 return False # error!
@@ -1484,8 +1486,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
         finally:
             if dbc is not None:
                 dbc.close()
-            os.close(fd)
-            os.remove(tmp_path)
+            if fd is not None:
+                os.close(fd)
+            if tmp_path is not None:
+                os.remove(tmp_path)
 
         return valid
 
