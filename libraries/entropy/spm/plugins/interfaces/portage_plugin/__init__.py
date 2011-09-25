@@ -1031,7 +1031,8 @@ class PortagePlugin(SpmPlugin):
         data['datecreation'] = str(os.path.getmtime(package_file))
         data['size'] = str(entropy.tools.get_file_size(package_file))
 
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = tempfile.mkdtemp(prefix="entropy.spm._extract",
+            dir=etpConst['entropyunpackdir'])
         meta_dir = os.path.join(tmp_dir, "portage")
         pkg_dir = os.path.join(tmp_dir, "pkg")
         os.mkdir(meta_dir)
