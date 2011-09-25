@@ -245,7 +245,8 @@ class GenericSpecFunctions(object):
 
     def ve_string_open_file_read(self, x):
         try:
-            return open(x, "rb").read()
+            open(x, "rb").close()
+            return x
         except (IOError, OSError):
             return None
 
@@ -691,11 +692,11 @@ class PackageBuilder(object):
         # run pkgpre, if any
         pkgpre = self._params["pkgpre"]
         if pkgpre is not None:
-            print_info(
-                "spawning pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
+            print_info("spawning --pkgpre: %s" % (pkgpre,))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(pkgpre)
+                with open(pkgpre, "rb") as pkgpre_f:
+                    tmp_f.write(pkgpre_f.read())
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
@@ -717,11 +718,11 @@ class PackageBuilder(object):
         # run pkgpost, if any
         pkgpost = self._params["pkgpost"]
         if pkgpost is not None:
-            print_info(
-                "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
+            print_info("spawning --pkgpost: %s" % (pkgpost,))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(pkgpost)
+                with open(pkgpost, "rb") as pkgpost_f:
+                    tmp_f.write(pkgpost_f.read())
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
@@ -1020,12 +1021,11 @@ class PackageBuilder(object):
                 "build")
 
             buildfail = self._params['buildfail']
-            print_info(
-                "spawning buildfail: %s, name: %s" % (buildfail,
-                    buildfail.name))
+            print_info("spawning buildfail: %s" % (buildfail,))
             tmp_fd, tmp_path = mkstemp()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
-                tmp_f.write(buildfail)
+                with open(buildfail, "rb") as buildfail_f:
+                    tmp_f.write(buildfail_f.read())
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
