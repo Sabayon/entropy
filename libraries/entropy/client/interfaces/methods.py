@@ -1716,7 +1716,7 @@ class MiscMixin:
                 return True # gave up
             lock_count += 1
             self.output(
-                blue(_("Resources locked, throttling...")),
+                blue(_("Resources locked, sleeping...")),
                 importance = 1,
                 level = "warning",
                 header = darkred(" @@ "),
