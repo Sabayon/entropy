@@ -983,6 +983,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Insert content metadata for package. "content" can either be a dict()
         or a list of triples (tuples of length 3, (package_id, path, type,)).
+        This method expects Unicode strings. Passing 8-bit raw strings will
+        cause unpredictable results.
 
         @param package_id: package indentifier
         @type package_id: int
@@ -1005,6 +1007,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         md5 hash.
         This features allows entropy.client to "auto-merge" or "auto-remove"
         configuration files never touched by user.
+        This method expects Unicode strings. Passing 8-bit raw strings will
+        cause unpredictable results.
 
         @param package_id: package indentifier
         @type package_id: int
