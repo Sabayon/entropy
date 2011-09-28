@@ -2316,8 +2316,8 @@ class Package:
                         # ---
                         # we should really use unicode
                         # strings for items_not_installed
-                        unicode_rootdir = const_convert_to_unicode(rootdir)
-                        self.pkgmeta['items_not_installed'].add(unicode_rootdir)
+                        unicode_tofile = const_convert_to_unicode(tofile)
+                        self.pkgmeta['items_not_installed'].add(unicode_tofile)
                         return 0
 
             if col_protect > 1:
