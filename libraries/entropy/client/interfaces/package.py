@@ -1529,8 +1529,10 @@ class Package:
             if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
+                # utf-8 instead of raw_unicode_escape because this comes
+                # from db
                 protected_item_test = const_convert_to_rawstring(
-                    protected_item_test)
+                    protected_item_test, from_enctype = "utf-8")
 
                 in_mask, protected, x, do_continue = \
                     self._handle_config_protect(
@@ -2138,7 +2140,10 @@ class Package:
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
         if sys.hexversion < 0x3000000:
-            image_dir = const_convert_to_rawstring(image_dir)
+            # image_dir comes from unpackdir, which comes from download
+            # metadatum, which is utf-8
+            image_dir = const_convert_to_rawstring(image_dir,
+                from_enctype = "utf-8")
         movefile = entropy.tools.movefile
 
         def workout_subdir(currentdir, subdir):
@@ -3073,7 +3078,9 @@ class Package:
 
         unpack_dir = self.pkgmeta['unpackdir']
         if sys.hexversion < 0x3000000:
-            unpack_dir = const_convert_to_rawstring(unpack_dir)
+            # unpackdir comes from download metadatum, which is utf-8
+            unpack_dir = const_convert_to_rawstring(unpack_dir,
+                from_enctype = "utf-8")
 
         if os.path.isdir(unpack_dir):
             # this, if Python 2.x, must be fed with rawstrings
