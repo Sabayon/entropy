@@ -3064,9 +3064,11 @@ class Package:
     def _unpack_step(self):
 
         unpack_dir = self.pkgmeta['unpackdir']
-        unpack_dir_raw = unpack_dir.encode('raw_unicode_escape')
+        if sys.hexversion < 0x3000000:
+            unpack_dir = unpack_dir.encode('utf-8')
 
         if os.path.isdir(unpack_dir):
+            # this, if Python 2.x, must be fed with rawstrings
             shutil.rmtree(unpack_dir)
         elif os.path.isfile(unpack_dir):
             os.remove(unpack_dir)
