@@ -1,3 +1,21 @@
+commit a88e1782a155c138509b3c40864cc8461d8b423a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 23:19:43 2011 +0200
+
+    Release Entropy 1.0_rc59
+
+commit 79b14edb000ff2b86de82b4db6548ad64b6d4416
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 23:19:13 2011 +0200
+
+    [entropy.client.interfaces.package] fix undefined reference
+
+commit 8a526f6c2d9688cf9078daafc0625938df88a404
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 14:08:08 2011 +0200
+
+    Tagging Entropy version 1.0_rc58
+
 commit e96f101bfa384361d357e4c2598c9b1f5c1cf949
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 28 14:08:05 2011 +0200
