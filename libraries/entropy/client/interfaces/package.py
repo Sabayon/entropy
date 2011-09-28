@@ -18,7 +18,8 @@ import tempfile
 import time
 
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_isunicode, const_convert_to_unicode, const_debug_write
+    const_isunicode, const_convert_to_unicode, const_debug_write, \
+    const_convert_to_rawstring
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
 from entropy.output import brown, blue, bold, darkgreen, \
@@ -1528,8 +1529,8 @@ class Package:
             if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
-                if const_isunicode(protected_item_test):
-                    protected_item_test = protected_item_test.encode('utf-8')
+                protected_item_test = const_convert_to_rawstring(
+                    protected_item_test)
 
                 in_mask, protected, x, do_continue = \
                     self._handle_config_protect(
@@ -1713,7 +1714,7 @@ class Package:
     def _cleanup_package(self, unpack_dir):
         # shutil.rmtree wants raw strings... otherwise it will explode
         if const_isunicode(unpack_dir):
-            unpack_dir = unpack_dir.encode('raw_unicode_escape')
+            unpack_dir = const_convert_to_rawstring(unpack_dir)
 
         # remove unpack dir
         try:
@@ -2035,8 +2036,8 @@ class Package:
             encoded_path = path
             path = os.path.join(merge_from, encoded_path[1:])
             topath = os.path.join(image_dir, encoded_path[1:])
-            path = path.encode('raw_unicode_escape')
-            topath = topath.encode('raw_unicode_escape')
+            path = const_convert_to_rawstring(path)
+            topath = const_convert_to_rawstring(topath)
 
             try:
                 exist = os.lstat(path)
@@ -2137,7 +2138,7 @@ class Package:
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
         if sys.hexversion < 0x3000000:
-            image_dir = image_dir.encode('utf-8')
+            image_dir = const_convert_to_rawstring(image_dir)
         movefile = entropy.tools.movefile
 
         def workout_subdir(currentdir, subdir):
@@ -2154,7 +2155,11 @@ class Package:
                         # also drop item from content metadata. In this way
                         # SPM has in sync information on what the package
                         # content really is.
-                        self.pkgmeta['items_not_installed'].add(rootdir)
+                        # ---
+                        # we should really use unicode
+                        # strings for items_not_installed
+                        unicode_rootdir = const_convert_to_unicode(rootdir)
+                        self.pkgmeta['items_not_installed'].add(unicode_rootdir)
                         return
 
             # handle broken symlinks
@@ -2303,7 +2308,11 @@ class Package:
                         # also drop item from content metadata. In this way
                         # SPM has in sync information on what the package
                         # content really is.
-                        self.pkgmeta['items_not_installed'].add(tofile)
+                        # ---
+                        # we should really use unicode
+                        # strings for items_not_installed
+                        unicode_rootdir = const_convert_to_unicode(rootdir)
+                        self.pkgmeta['items_not_installed'].add(unicode_rootdir)
                         return 0
 
             if col_protect > 1:
@@ -2319,8 +2328,7 @@ class Package:
             # revert back to unicode (we previously called encode on
             # image_dir (which is passed to os.walk, which generates
             # raw strings)
-            if sys.hexversion < 0x3000000:
-                prot_old_tofile = prot_old_tofile.decode("utf-8")
+            prot_old_tofile = const_convert_to_unicode(prot_old_tofile)
 
             pre_tofile = tofile[:]
             in_mask, protected, tofile, do_return = \
@@ -2596,7 +2604,7 @@ class Package:
         protected = False
         do_continue = False
         in_mask = False
-        encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
+        encoded_protect = [const_convert_to_rawstring(x) for x in protect]
 
         if tofile in encoded_protect:
             protected = True
@@ -2618,7 +2626,7 @@ class Package:
                 tofile_testdir = os.path.dirname(tofile_testdir)
 
         if protected: # check if perhaps, file is masked, so unprotected
-            newmask = [x.encode('raw_unicode_escape') for x in mask]
+            newmask = [const_convert_to_rawstring(x) for x in mask]
 
             if tofile in newmask:
                 protected = False
@@ -3065,7 +3073,7 @@ class Package:
 
         unpack_dir = self.pkgmeta['unpackdir']
         if sys.hexversion < 0x3000000:
-            unpack_dir = unpack_dir.encode('utf-8')
+            unpack_dir = const_convert_to_rawstring(unpack_dir)
 
         if os.path.isdir(unpack_dir):
             # this, if Python 2.x, must be fed with rawstrings
