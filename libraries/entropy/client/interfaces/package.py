@@ -2314,6 +2314,14 @@ class Package:
                     return 0
 
             prot_old_tofile = tofile[len(sys_root):]
+            # configprotect_data is passed to insertAutomergefiles()
+            # which always expects unicode data.
+            # revert back to unicode (we previously called encode on
+            # image_dir (which is passed to os.walk, which generates
+            # raw strings)
+            if sys.hexversion < 0x3000000:
+                prot_old_tofile = prot_old_tofile.decode("utf-8")
+
             pre_tofile = tofile[:]
             in_mask, protected, tofile, do_return = \
                 self._handle_config_protect(protect, mask, fromfile, tofile)
@@ -2323,14 +2331,8 @@ class Package:
                 try:
                     prot_md5 = const_convert_to_unicode(
                         entropy.tools.md5sum(fromfile))
-                    automerge_prot_old_tofile = prot_old_tofile
-                    if sys.hexversion < 0x3000000:
-                        automerge_prot_old_tofile = \
-                            automerge_prot_old_tofile.decode("utf-8")
-                    # configprotect_data is passed to insertAutomergefiles()
-                    # which always expects unicode data
                     self.pkgmeta['configprotect_data'].append(
-                        (automerge_prot_old_tofile, prot_md5,))
+                        (prot_old_tofile, prot_md5,))
                 except (IOError,) as err:
                     self._entropy.logger.log(
                         "[Package]",
@@ -2345,6 +2347,7 @@ class Package:
             if protected:
 
                 # second task
+                # prot_old_tofile is always unicode, it must be, see above
                 oldprot_md5 = self.pkgmeta['already_protected_config_files'].get(
                     prot_old_tofile)
 
