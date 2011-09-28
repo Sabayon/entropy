@@ -2648,7 +2648,7 @@ class Package:
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Failed to handle file protection for: " \
                     "%s, broken symlink in package" % (
-                        fromfile,
+                        tofile,
                     )
                 )
                 msg = _("Cannot protect broken symlink")
@@ -2662,7 +2662,7 @@ class Package:
                     header = brown("   ## ")
                 )
                 self._entropy.output(
-                    fromfile,
+                    tofile,
                     level = "warning",
                     header = brown("   ## ")
                 )
