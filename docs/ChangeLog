@@ -1,3 +1,69 @@
+commit c12e1d36559089af8c06fc0509905cf6c654bd8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 11:52:46 2011 +0200
+
+    Release Entropy 1.0_rc57
+
+commit 8a509e0ec78b22026f545da411064aff8190799d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 11:42:58 2011 +0200
+
+    [entropy.client.interfaces.package] always use const_convert_* for unicode<->rawstring conversion
+
+commit 30dd81182076ed65adae5a2cdfc6045b314887f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 11:36:16 2011 +0200
+
+    [entropy.client.interfaces.package] _unpack_step: use raw string types if Python 2.x
+
+commit 995e69657767bf01a7803031a387d1792c951958
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 10:58:47 2011 +0200
+
+    [entropy.client.interfaces.package] properly handle automerge data in unicode
+
+commit 2b82f1936e716f77d9a96ee0da549bb965bfa3c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 10:49:54 2011 +0200
+
+    [entropy.client.interfaces.package] always pass unicode data to insertAutomergefile()
+
+commit d5b52b292b1b2ecd7d6d28afcce1e4fad9a04ac6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 10:49:11 2011 +0200
+
+    [entropy.client.interfaces.package] tweak error output, print live filesystem path
+
+commit 4b50c5c4c2af566d1968229b4429452fa8d2d2bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 10:48:33 2011 +0200
+
+    [entropy.db.skel] insertContent, insertAutomergefiles: explicitly require unicode data
+
+commit 480467505f83b7b1f364cd8d4c879b10eccc132d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 27 20:41:48 2011 +0200
+
+    [po] update translations
+
+commit c029f93da94f14d8691cb86d209bf208da8d130e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 27 20:41:05 2011 +0200
+
+    [entropy.client] correct wording, replace "throttling" with "sleeping"
+
+commit 984f2ddd96aaa11169fcf0ed37d264cbaf9df300
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 27 20:40:03 2011 +0200
+
+    [entropy.tools] _locate_edb: raise threshold to 90mb for safety
+
+commit e755e8ec39c6261e5faa349d243f075550cf4d29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 25 12:27:44 2011 +0200
+
+    Tagging Entropy version 1.0_rc56
+
 commit 81c34ef18d272d3a0f4aa0f3b6d66127f499d8ef
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 25 12:27:23 2011 +0200
