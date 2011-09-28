@@ -2321,9 +2321,16 @@ class Package:
             # collect new config automerge data
             if in_mask and os.path.exists(fromfile):
                 try:
-                    prot_md5 = entropy.tools.md5sum(fromfile)
+                    prot_md5 = const_convert_to_unicode(
+                        entropy.tools.md5sum(fromfile))
+                    automerge_prot_old_tofile = prot_old_tofile
+                    if sys.hexversion < 0x3000000:
+                        automerge_prot_old_tofile = \
+                            automerge_prot_old_tofile.decode("utf-8")
+                    # configprotect_data is passed to insertAutomergefiles()
+                    # which always expects unicode data
                     self.pkgmeta['configprotect_data'].append(
-                        (prot_old_tofile, prot_md5,))
+                        (automerge_prot_old_tofile, prot_md5,))
                 except (IOError,) as err:
                     self._entropy.logger.log(
                         "[Package]",
