@@ -726,8 +726,15 @@ class WebService(object):
         Save a cache item to disk.
         """
         with self._cache_dir_lock:
-            return self._cacher.save(cache_key, data,
-                cache_dir = WebService.CACHE_DIR)
+            try:
+                return self._cacher.save(cache_key, data,
+                    cache_dir = WebService.CACHE_DIR)
+            except IOError as err:
+                # IOError is raised when cache cannot be written to disk
+                if const_debug_enabled():
+                    const_debug_write(__name__,
+                        "WebService.%s(%s) = cache store error: %s" % (
+                            cache_key, repr(err),))
 
     def _drop_cached(self, method):
         """
