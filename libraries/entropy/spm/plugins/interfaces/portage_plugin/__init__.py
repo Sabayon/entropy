@@ -2955,6 +2955,7 @@ class PortagePlugin(SpmPlugin):
                 if not vdb_failed:
                     # from this point, every vardb change has to be committed
                     self._bump_vartree_mtime(spm_package)
+                if os.path.isdir(pkg_dir):
                     # We also need to bump vdb mtime now, otherwise Portage
                     # will potentially pick up wrong cache data
                     os.utime(pkg_dir, None)
