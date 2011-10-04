@@ -1575,20 +1575,19 @@ class MiscMixin:
 
         f_obj = MiscMixin.RESOURCES_LOCK_F_REF
         if f_obj is not None:
-            fcntl.flock(f_obj.fileno(), fcntl.LOCK_UN)
-
-            if f_obj is not None:
-                f_obj.close()
-            MiscMixin.RESOURCES_LOCK_F_REF = None
-
-        lock_file = etpConst['locks']['using_resources']
-        try:
-            os.remove(lock_file)
-        except OSError as err:
-            # cope with possible race conditions
-            # and read-only filesystem
-            if err.errno not in (errno.ENOENT, errno.EROFS):
-                raise
+            lock_file = f_obj.name
+            try:
+                os.remove(lock_file)
+            except OSError as err:
+                # cope with possible race conditions
+                # and read-only filesystem
+                if err.errno not in (errno.ENOENT, errno.EROFS):
+                    raise
+            finally:
+                fcntl.flock(f_obj.fileno(), fcntl.LOCK_UN)
+                if f_obj is not None:
+                    f_obj.close()
+                    MiscMixin.RESOURCES_LOCK_F_REF = None
 
     def resources_locked(self):
         """
@@ -1600,23 +1599,40 @@ class MiscMixin:
         return self._check_pid_file_lock(etpConst['locks']['using_resources'])
 
     def _check_pid_file_lock(self, pidfile):
-        if not os.path.isfile(pidfile):
-            return False # not locked
 
-        f = open(pidfile, "r")
-        s_pid = f.readline().strip()
-        f.close()
+        pid_f = None
+        flags = fcntl.LOCK_EX | fcntl.LOCK_NB
+        pid = os.getpid()
+
         try:
-            s_pid = int(s_pid)
-        except ValueError:
-            return False # not locked
-        # is it our pid?
-
-        mypid = os.getpid()
-        if (s_pid != mypid) and const_pid_exists(s_pid):
-            # is it running
-            return True # locked
-        return False
+            pid_f = open(pidfile, "r")
+            fcntl.flock(pid_f.fileno(), flags)
+            # unlock now, file is not locked
+            fcntl.flock(pid_f.fileno(), fcntl.LOCK_UN)
+            return False
+        except IOError as err:
+            if err.errno == errno.ENOENT:
+                # file doesn't exist, not locked
+                return False
+            elif err.errno in (errno.EACCES, errno.EAGAIN):
+                # locked? our pid?
+                if pid_f is None:
+                    # wtf? not locked for me
+                    return False
+                # check if same pid
+                s_pid = pid_f.read(128).strip()
+                try:
+                    s_pid = int(s_pid)
+                except ValueError:
+                    return True # locked anyway
+                # locked?
+                return s_pid != pid
+            else:
+                # ouch, wtf?
+                raise
+        finally:
+            if pid_f is not None:
+                pid_f.close()
 
     def _create_pid_file_lock(self, pidfile, blocking = False):
 
@@ -1641,6 +1657,7 @@ class MiscMixin:
         except IOError as err:
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
+                pid_f.close()
                 raise
             # lock already acquired, but might come from the same pid
             stored_pid = pid_f.read(128).strip()
@@ -1695,9 +1712,6 @@ class MiscMixin:
                         level = "info",
                         header = darkred(" @@ ")
                     )
-                    # wait for other process to exit
-                    # 5 seconds should be enough
-                    time.sleep(5)
                     # cannot consider any cache valid, better clearing
                     # everything
                     self.clear_cache()
