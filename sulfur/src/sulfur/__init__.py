@@ -38,6 +38,7 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
+
 from entropy.exceptions import OnlineMirrorError, PermissionDenied
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
@@ -92,7 +93,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if resources_locked:
             locked = True
         else:
-            locked = not entropy.tools.acquire_entropy_locks(self._entropy)
+            locked = not entropy.tools.acquire_entropy_locks(self._entropy,
+                max_tries = 5)
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()
