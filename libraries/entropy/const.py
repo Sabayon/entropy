@@ -732,7 +732,7 @@ def const_pid_exists(pid):
     except OSError as err:
         return err.errno == errno.EPERM
 
-_ENTROPY_PID_F = None
+_ENTROPY_PID_F_MAP = {}
 _ENTROPY_PID_MUTEX = threading.Lock()
 def const_setup_entropy_pid(just_read = False, force_handling = False):
     """
@@ -754,8 +754,6 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     @return: tuple composed by two bools, (if pid lock file has been acquired,
         locked resources)
     """
-    global _ENTROPY_PID_F
-
     with _ENTROPY_PID_MUTEX:
 
         no_pid_handling = ("--no-pid-handling" in sys.argv) or \
@@ -764,7 +762,9 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
         if (no_pid_handling and not force_handling) and not just_read:
             return False, False
 
-        if _ENTROPY_PID_F is not None:
+        pid = os.getpid()
+        _entropy_pid_f = _ENTROPY_PID_F_MAP.get(pid)
+        if _entropy_pid_f is not None:
             # we have already acquired the lock, we're safe
             return False, False
 
@@ -780,7 +780,6 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
         # PID creation
         pid_file = etpConst['pidfile']
         pid_f = None
-        pid = os.getpid()
 
         locked = True
         try:
@@ -793,8 +792,10 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
             elif err.errno not in (errno.EROFS, errno.EACCES):
                 # readonly filesystem or permission denied
                 raise
-            # in any other case, the lock is not acquired, so locked is False
-            locked = False
+            else:
+                # in any other case, the lock is not acquired,
+                # so locked is False
+                locked = False
 
         if (not just_read) and (pid_f is not None) and (not locked):
             # write my pid in it then, not that it matters...
@@ -822,7 +823,8 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
             # we'll retry the whole procedure.
             pid_f.close()
             pid_f = None
-        _ENTROPY_PID_F = pid_f
+        if pid_f is not None:
+            _ENTROPY_PID_F_MAP[pid] = pid_f
         return setup_done, locked
 
 def const_unsetup_entropy_pid():
@@ -830,13 +832,14 @@ def const_unsetup_entropy_pid():
     Drop Entropy Pid Lock if acquired. Return True if dropped,
     False otherwise.
     """
-    global _ENTROPY_PID_F
 
     with _ENTROPY_PID_MUTEX:
-        if _ENTROPY_PID_F is not None:
-            fcntl.flock(_ENTROPY_PID_F.fileno(), fcntl.LOCK_UN)
-            _ENTROPY_PID_F.close()
-            _ENTROPY_PID_F = None
+        pid = os.getpid()
+        _entropy_pid_f = _ENTROPY_PID_F_MAP.get(pid)
+        if _entropy_pid_f is not None:
+            fcntl.flock(_entropy_pid_f.fileno(), fcntl.LOCK_UN)
+            _entropy_pid_f.close()
+            del _ENTROPY_PID_F_MAP[pid]
             return True
         return False
 
