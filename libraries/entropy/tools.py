@@ -3027,7 +3027,8 @@ def release_lock(lock_file, lock_map):
         if err.errno != errno.ENOENT:
             raise
 
-def acquire_entropy_locks(entropy_client, blocking = False):
+def acquire_entropy_locks(entropy_client, blocking = False,
+    max_tries = 300):
     """
     Acquire Entropy Client/Server file locks.
 
@@ -3035,14 +3036,17 @@ def acquire_entropy_locks(entropy_client, blocking = False):
     @type entropy_client: entropy.client.interfaces.Client
     @keyword blocking: acquire locks in blocking mode?
     @type blocking: bool
+    @keyword max_tries: number of tries for wait_resources()
+    @type max_tries: int
     """
     locked = entropy_client.another_entropy_running()
     if locked:
         return False
     return acquire_entropy_resources_locks(entropy_client,
-        blocking = blocking)
+        blocking = blocking, max_tries = max_tries)
 
-def acquire_entropy_resources_locks(entropy_client, blocking = False):
+def acquire_entropy_resources_locks(entropy_client, blocking = False,
+    max_tries = 300):
     """
     Acquire Entropy Resources General Lock.
     This lock is controlling write access to entropy package metadata and
@@ -3053,9 +3057,11 @@ def acquire_entropy_resources_locks(entropy_client, blocking = False):
     @type entropy_client: entropy.client.interfaces.Client
     @keyword blocking: acquire locks in blocking mode?
     @type blocking: bool
+    @keyword max_tries: number of tries for wait_resources()
+    @type max_tries: int
     """
     if not blocking:
-        gave_up = entropy_client.wait_resources()
+        gave_up = entropy_client.wait_resources(max_lock_count = max_tries)
         if gave_up:
             return False
 
