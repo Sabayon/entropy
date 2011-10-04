@@ -732,8 +732,9 @@ def const_pid_exists(pid):
     except OSError as err:
         return err.errno == errno.EPERM
 
+_ENTROPY_PID_F = None
+_ENTROPY_PID_MUTEX = threading.Lock()
 def const_setup_entropy_pid(just_read = False, force_handling = False):
-
     """
     Setup Entropy pid file, if possible and if UID = 0 (root).
     If the application is run with --no-pid-handling argument
@@ -753,85 +754,60 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     @return: tuple composed by two bools, (if pid lock file has been acquired,
         locked resources)
     """
-    no_pid_handling = ("--no-pid-handling" in sys.argv) or \
-        os.getenv("ETP_NO_PID_HANDLING")
+    global _ENTROPY_PID_F
 
-    if (no_pid_handling and not force_handling) and not just_read:
-        return False, False
+    with _ENTROPY_PID_MUTEX:
 
-    setup_done = False
-    locked = False
-    flags = fcntl.LOCK_EX # blocking mode, always
+        no_pid_handling = ("--no-pid-handling" in sys.argv) or \
+            os.getenv("ETP_NO_PID_HANDLING")
 
-    # PID creation
-    pid = os.getpid()
-    pid_file = etpConst['pidfile']
-    if os.path.isfile(pid_file) and os.access(pid_file, os.R_OK):
+        if (no_pid_handling and not force_handling) and not just_read:
+            return False, False
 
+        if _ENTROPY_PID_F is not None:
+            # we have already acquired the lock, we're safe
+            return False, False
+
+        setup_done = False
+        locked = False
+        # acquire the pid file exclusively, in non-blocking mode
+        # if the acquisition fails, it means that another process
+        # is holding it. No matter what is the pid written inside,
+        # which itself is unreliable since pids can be reused
+        # quite easily.
+        flags = fcntl.LOCK_EX | fcntl.LOCK_NB
+
+        # PID creation
+        pid_file = etpConst['pidfile']
         pid_f = None
-        try:
+        pid = os.getpid()
 
+        locked = True
+        try:
+            pid_f = open(pid_file, "a+")
+            fcntl.flock(pid_f.fileno(), flags)
+            locked = False
+        except IOError as err:
+            if err.errno == errno.EWOULDBLOCK:
+                locked = True
+            elif err.errno not in (errno.EROFS, errno.EACCES):
+                # readonly filesystem or permission denied
+                raise
+            # in any other case, the lock is not acquired, so locked is False
+            locked = False
+
+        if (not just_read) and (pid_f is not None) and (not locked):
+            # write my pid in it then, not that it matters...
             try:
-                pid_f = open(pid_file, "a+")
-                # always running in blocking mode, no need to check
-                fcntl.flock(pid_f.fileno(), flags)
                 pid_f.seek(0)
-                found_pid = str(pid_f.readline().strip())
+                pid_f.truncate()
+                pid_f.write(str(pid))
+                pid_f.flush()
             except IOError as err:
                 if err.errno not in (errno.EROFS, errno.EACCES):
                     # readonly filesystem or permission denied
                     raise
-                found_pid = "0000"
-            except (OSError, UnicodeEncodeError, UnicodeDecodeError,):
-                found_pid = "0000"
-
-            try:
-                found_pid = int(found_pid)
-            except ValueError:
-                found_pid = 0
-
-            if found_pid != pid:
-                # is found_pid still running ?
-                if (found_pid != 0) and const_pid_exists(found_pid):
-                    locked = True
-                elif (not just_read) and (pid_f is not None):
-                    try:
-                        pid_f.seek(0)
-                        pid_f.truncate()
-                        pid_f.write(str(pid))
-                        pid_f.flush()
-                    except IOError as err:
-                        if err.errno != errno.EROFS: # readonly filesystem
-                            raise
-                    try:
-                        const_chmod_entropy_pid()
-                    except OSError:
-                        pass
-                    setup_done = True
-
-        finally:
-            if pid_f != None:
-                pid_f.close()
-
-    elif not just_read:
-
-        #if etpConst['uid'] == 0:
-        if os.access(os.path.dirname(pid_file), os.W_OK):
-
-            if os.path.exists(pid_file):
-                if os.path.islink(pid_file):
-                    os.remove(pid_file)
-                elif os.path.isdir(pid_file):
-                    import shutil
-                    shutil.rmtree(pid_file)
-
-            with open(pid_file, "a+") as pid_fw:
-                # always running in blocking mode
-                fcntl.flock(pid_fw.fileno(), flags)
-                pid_fw.seek(0)
-                pid_fw.truncate()
-                pid_fw.write(str(pid))
-                pid_fw.flush()
+                # who cares otherwise...
 
             try:
                 const_chmod_entropy_pid()
@@ -839,48 +815,30 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                 pass
             setup_done = True
 
-    return setup_done, locked
+        if (pid_f is not None) and locked:
+            # the lock file is acquired by another process
+            # and we were not able to get it. So, close pid_f
+            # and set it to None. So that next time we get here
+            # we'll retry the whole procedure.
+            pid_f.close()
+            pid_f = None
+        _ENTROPY_PID_F = pid_f
+        return setup_done, locked
 
-def const_remove_entropy_pid():
+def const_unsetup_entropy_pid():
     """
-    Remove Entropy pid if function calling pid matches the one stored.
+    Drop Entropy Pid Lock if acquired. Return True if dropped,
+    False otherwise.
     """
-    pid = os.getpid()
-    pid_file = etpConst['pidfile']
-    if not os.path.lexists(pid_file):
-        return True # not found, so removed
+    global _ENTROPY_PID_F
 
-    # open file
-    try:
-        with open(pid_file, "r") as pid_f:
-            found_pid = str(pid_f.readline().strip())
-    except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
-        found_pid = "0000" # which is always invalid
-
-    try:
-        found_pid = int(found_pid)
-    except ValueError:
-        found_pid = 0
-
-    if (pid != found_pid) and (found_pid != 0):
-        # cannot remove, i'm not the owner
+    with _ENTROPY_PID_MUTEX:
+        if _ENTROPY_PID_F is not None:
+            fcntl.flock(_ENTROPY_PID_F.fileno(), fcntl.LOCK_UN)
+            _ENTROPY_PID_F.close()
+            _ENTROPY_PID_F = None
+            return True
         return False
-
-    removed = False
-    try:
-        # using os.remove for atomicity
-        os.remove(pid_file)
-        removed = True
-    except OSError as err:
-        if err.errno not in (errno.ENOENT, errno.EACCES,):
-            raise
-
-        if err.errno == errno.EACCES:
-            removed = False
-        else:
-            removed = True
-
-    return removed
 
 def const_secure_config_file(config_file):
     """

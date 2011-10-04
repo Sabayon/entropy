@@ -47,7 +47,7 @@ import entropy.tools as entropy_tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.const import etpConst, const_setup_entropy_pid, \
-    const_remove_entropy_pid, const_convert_to_rawstring, \
+    const_unsetup_entropy_pid, const_convert_to_rawstring, \
     const_drop_privileges, const_regain_privileges
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.misc import ParallelTask
@@ -484,7 +484,7 @@ class UpdatesDaemon(dbus.service.Object):
         entropy.unlock_resources()
         if pid_lock:
             # remove application lock
-            const_remove_entropy_pid()
+            const_unsetup_entropy_pid()
 
     def __run_fetcher(self, update_repos = True):
 
