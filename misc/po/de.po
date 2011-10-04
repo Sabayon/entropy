@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-09-27 20:41+0200\n"
 "PO-Revision-Date: 2011-02-02 14:36+0100\n"
-"Last-Translator: Karl Kochs <bluetsauger@gmail.com>\n"
+"Last-Translator: Tobias Rosenberger <TRosenberger@gmx.de>\n"
 "Language-Team:  <bluetsauger@gmail.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -62,11 +62,11 @@ msgstr "SPM Fehler aufgetreten"
 
 #: ../../libraries/entropy/db/__init__.py:5821
 msgid "Spm Unique Identifier not found for"
-msgstr "einzigartiger SPM Identifizierer nicht gefunden für"
+msgstr "einzigartiger SPM Bezeichner nicht gefunden für"
 
 #: ../../libraries/entropy/db/__init__.py:5976
 msgid "updating repository metadata layout, please wait!"
-msgstr "frische Repositoriums Metadaten-Anordnung auf, bitte uwarten!"
+msgstr "aktualisiere Repositoriums Metadaten-Anordnung, bitte warten!"
 
 #: ../../libraries/entropy/db/__init__.py:6082
 msgid "generating provided_libs metadata, please wait!"
@@ -124,12 +124,12 @@ msgid "to"
 msgstr "nach"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:51
-msgid "Accessibility"
+msgid "Barrierefreiheit"
 msgstr "Zugreifbarkeit"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:53
 msgid "Accessibility applications"
-msgstr "Barrierefreiheits Anwendungen"
+msgstr "Barrierefreiheits-Anwendungen"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:57
 msgid "Office"
@@ -328,7 +328,7 @@ msgstr "manuell ausführen"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2407
 msgid "package files rebuild did not run properly"
-msgstr "Paketdatei Neubau funktionierte nicht einwandfrei"
+msgstr "Paketdatei-Neubau funktionierte nicht einwandfrei"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2408
 msgid "Please update packages manually"
@@ -386,15 +386,15 @@ msgstr "Veränderte Dateien wurden gefunden"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3155
 msgid " !!! "
-msgstr ""
+msgstr " !!! "
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3164
 msgid " @@ "
-msgstr ""
+msgstr " @@ "
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3171
 msgid "    # "
-msgstr ""
+msgstr "    # "
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3284
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3436
@@ -405,7 +405,7 @@ msgstr "existiert nicht"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3284
 msgid "Overwriting"
-msgstr "Überschreiben"
+msgstr "Überschreibe"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3332
 msgid "variable differs"
@@ -470,7 +470,7 @@ msgstr "so weit, so gut!"
 
 #: ../../libraries/entropy/server/transceivers.py:133
 msgid "malformed md5 provided to function"
-msgstr "missgestaltetes md5 von Funktion vorausgesetzt"
+msgstr "missgestaltetes md5 an Funktion übergeben"
 
 #: ../../libraries/entropy/server/transceivers.py:148
 msgid "remote md5 is invalid"
@@ -514,7 +514,7 @@ msgstr "herunterladen"
 
 #: ../../libraries/entropy/server/interfaces/db.py:684
 msgid "preparing to download repository from mirror"
-msgstr "bereite Herunterladen des Repositoriums von Spiegelserver vor"
+msgstr "bereite Herunterladen des Repositoriums vom Spiegelserver vor"
 
 #: ../../libraries/entropy/server/interfaces/db.py:693
 msgid "download path"
@@ -542,11 +542,11 @@ msgstr "Grund"
 #: ../../libraries/entropy/server/interfaces/db.py:791
 #, fuzzy
 msgid "failed to unpack"
-msgstr "Entpacken nicht möglich"
+msgstr "Entpacken fehlgeschlagen"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1059
 msgid "Troubles with treeupdates"
-msgstr "Ärger mit treeupdates"
+msgstr "Probleme mit treeupdates"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1062
 msgid "Bumping old data back"
@@ -554,11 +554,11 @@ msgstr "Weise veraltete Daten zurück"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1076
 msgid "configured package sets"
-msgstr "konfigurierte Paketsets"
+msgstr "Paketsets konfiguriert"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1086
 msgid "None configured"
-msgstr "Nicht konfiguriert"
+msgstr "Keine konfiguriert"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1126
 msgid "creating compressed repository dump + checksum"
@@ -593,7 +593,7 @@ msgstr "komprimiere Repositoriums-Pfad"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1197
 msgid "repository checksum"
-msgstr "Repositoriums Prüfsumme"
+msgstr "Repositoriums-Prüfsumme"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1206
 msgid "compressed checksum"
@@ -647,7 +647,7 @@ msgstr "synchronisieren"
 #. something short please
 #: ../../libraries/entropy/server/interfaces/db.py:1589
 msgid "repository already in sync"
-msgstr "Repositorium wird bereits synchronisiert"
+msgstr "Repositorium ist bereits synchronisiert"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1607
 #: ../../libraries/entropy/server/interfaces/db.py:1745
@@ -676,7 +676,7 @@ msgstr "dependencies_test() hat Fehler gemeldet"
 #: ../../libraries/entropy/server/interfaces/db.py:1719
 #, fuzzy
 msgid "these packages haven't been removed yet"
-msgstr "Dies sind die Pakete, welche entfernt werden würden"
+msgstr "Diese Pakete wurden noch nicht entfernt"
 
 #: ../../libraries/entropy/server/interfaces/db.py:1746
 msgid "upload issues"
@@ -719,7 +719,7 @@ msgstr "Paket hat kein Schlüsselwort gesetzt, es wird maskiert werden!"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1075
 msgid "Entropy Server interface must be run as root"
-msgstr "Entropy Server-Schnittstelle muss als root laufen gelassen werden"
+msgstr "Entropy Server-Schnittstelle muss als root ausgeführt werden"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1136
 #: ../../libraries/entropy/server/interfaces/main.py:3963
@@ -769,7 +769,7 @@ msgstr "Initialisiere Entropy-Repositorium"
 #: ../../libraries/entropy/server/interfaces/main.py:1743
 #, fuzzy
 msgid "do you really want to initialize this repository ?"
-msgstr "Willst du dein Standard-Repositorium initialisieren ?"
+msgstr "Willst du dieses Repositorium wirklich initialisieren ?"
 
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/main.py:1746
@@ -950,8 +950,7 @@ msgstr "Speise Entropy-Metadaten in die erstellten Pakete ein"
 #: ../../libraries/entropy/server/interfaces/main.py:2599
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr ""
-"Nur zu deiner Information, das Laden der GPG Infrastruktur wurdeaufgrund von "
-"Fehlern nicht durchgeführt"
+"Nur zu deiner Information, das Laden der GPG ist fehlgeschlagen"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2653
 msgid "injecting entropy metadata"
@@ -982,7 +981,7 @@ msgstr "Alle Pakete im Repositorium werden überprüft."
 
 #: ../../libraries/entropy/server/interfaces/main.py:2775
 msgid "This is the list of the packages that would be checked"
-msgstr "Dies ist die Liste der Pakete, die überprüft werden"
+msgstr "Dies ist die Liste der Pakete, die überprüft würden"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2809
 msgid "Working on mirror"
@@ -1036,7 +1035,7 @@ msgstr "Zahl der gesunden Pakete"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2941
 msgid "Number of broken packages"
-msgstr "Zahl der zerbrochenen Pakete"
+msgstr "Zahl der fehlerhaften Pakete"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2955
 #: ../../libraries/entropy/server/interfaces/main.py:3112
@@ -1063,7 +1062,7 @@ msgstr "gesunde Pakete"
 #: ../../libraries/entropy/server/interfaces/main.py:3071
 #: ../../libraries/entropy/server/interfaces/main.py:3253
 msgid "broken packages"
-msgstr "zerbrochene Pakete"
+msgstr "fehlerhafte Pakete"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3081
 #: ../../libraries/entropy/server/interfaces/main.py:3263
@@ -1086,19 +1085,19 @@ msgstr "Alle im Repositorium fehlenden Pakete werden heruntergeladen."
 #: ../../libraries/entropy/server/interfaces/main.py:3141
 #: ../../server/server_key.py:69
 msgid "GnuPG not available"
-msgstr "uGnuPG nicht verfügbar"
+msgstr "GnuPG nicht verfügbar"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3167
 msgid "Keys not available for"
-msgstr "uSchlüssel nicht verfügbar für"
+msgstr "Schlüssel nicht verfügbar für"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3198
 msgid "signing package"
-msgstr "usigniere Paket"
+msgstr "signiere Paket"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3213
 msgid "Unknown error signing package"
-msgstr "uUnbekannter Fehler beim Signieren des Pakets"
+msgstr "Unbekannter Fehler beim Signieren des Pakets"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3243
 msgid "signed packages"
@@ -1118,7 +1117,7 @@ msgstr "Starte Herunterladen fehlender Dateien"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3360
 msgid "Searching missing/broken files on another mirror"
-msgstr "uSuche fehlende/zerbrochene Dateien auf anderem Spiegelserver"
+msgstr "Suche fehlende/fehlerhafte Dateien auf anderem Spiegelserver"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3381
 msgid "Binary packages downloaded successfully."
@@ -1142,7 +1141,7 @@ msgstr "und versuche erneut"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3432
 msgid "Copying repository (if not exists)"
-msgstr "uKopiere Repositorium (falls nicht existent)"
+msgstr "Kopiere Repositorium (falls nicht existent)"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3465
 msgid "Switching packages"
@@ -1158,7 +1157,7 @@ msgstr "bereits im Zweig"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3536
 msgid "migration loop completed"
-msgstr "Migrierungsschleife vollständig"
+msgstr "Migrationsschleife vollständig"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3554
 msgid "Running orphaned SPM packages test"
@@ -1170,7 +1169,7 @@ msgstr "Durchsuche Pakete"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3596
 msgid "not found anymore"
-msgstr "unicht mehr gefunden"
+msgstr "nicht mehr gefunden"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3608
 #: ../../libraries/entropy/server/interfaces/main.py:3883
@@ -1205,7 +1204,7 @@ msgstr "Alle Abhängigkeiten sind erfüllt. Alles ist gut."
 
 #: ../../libraries/entropy/server/interfaces/main.py:3797
 msgid "Broken and matched packages list"
-msgstr "Zerbrochene und passende Pakete aufgelistet"
+msgstr "Fehlerhafte und passende Pakete aufgelistet"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3799
 #: ../../libraries/entropy/qa.py:642
@@ -1594,7 +1593,7 @@ msgstr "Prüfsumme stimmt nicht überein. Erneuter Download..."
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:653
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr "scheint zerbrochen. Überdenke es erneut zu verpacken. Gebe auf!"
+msgstr "scheint fehlerhaft zu sein. Ziehe in Erwägung, es neu zu bauen. Ich gebe auf!"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:714
 msgid "mirror hasn't valid repository revision file"
@@ -3043,11 +3042,11 @@ msgstr "Elementnummer zum Entfernen (-1 zum zurückgehen):"
 #: ../../libraries/entropy/qa.py:160
 #, fuzzy
 msgid "Searching for broken reverse dependencies"
-msgstr "Suche jetzt nach zerbrochenen rückwärtigen Abhängigkeiten"
+msgstr "Suche jetzt nach defekten umgekehrten Abhängigkeiten"
 
 #: ../../libraries/entropy/qa.py:177
 msgid "scanning for broken reverse dependencies"
-msgstr "Durchscuhe nach zerbrochenen rückwärtigen Abhängigkeiten"
+msgstr "Durchsuche nach defekten umgekehrten Abhängigkeiten"
 
 #: ../../libraries/entropy/qa.py:218
 msgid "broken libraries detected"
@@ -3060,7 +3059,7 @@ msgstr "benötigt"
 #: ../../libraries/entropy/qa.py:273
 #, fuzzy
 msgid "Searching for missing Runtime dependencies"
-msgstr "Suche jetzt nach zerbrochenen rückwärtigen Abhängigkeiten"
+msgstr "Suche jetzt nach fehlenden Laufzeitabhängigkeiten"
 
 #: ../../libraries/entropy/qa.py:280
 #, fuzzy
@@ -3110,7 +3109,7 @@ msgstr "Paketliste zerbrochener Symbole"
 
 #: ../../libraries/entropy/qa.py:640
 msgid "Broken executables list"
-msgstr "Liste zerbrochener ausführbarer Dateien"
+msgstr "Liste fehlerhafter ausführbarer Dateien"
 
 #: ../../libraries/entropy/qa.py:669
 msgid "Cannot find "
@@ -3131,7 +3130,7 @@ msgstr "Suche nach beschädigten ausführbaren Dateien"
 #: ../../libraries/entropy/qa.py:798
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
-"Programmbibliotheken die nur hier aufscheinen (und später nicht mehr) können "
+"Programmbibliotheken die nur hier erscheinen (und später nicht mehr) können "
 "ignoriert werden."
 
 #: ../../libraries/entropy/qa.py:817
@@ -3160,7 +3159,7 @@ msgstr "Installiere GPG-Schlüssel für URL"
 
 #: ../../libraries/entropy/security.py:385
 msgid "Successfully installed GPG key for URL"
-msgstr "Erfolgreich installierter GPG-Schlüssel für URL"
+msgstr "GPG-Schlüssel für URL erfolgreich installiert"
 
 #: ../../libraries/entropy/security.py:439
 #: ../../libraries/entropy/security.py:1011
@@ -7794,7 +7793,7 @@ msgstr "Entropy läuft im Sicherheitsmodus"
 
 #: ../../sulfur/src/sulfur/__init__.py:135
 msgid "performance could get severely compromised"
-msgstr ""
+msgstr "die Performance könnte stark beeinträchtigt werden"
 
 #: ../../sulfur/src/sulfur/__init__.py:220
 msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
@@ -8038,7 +8037,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1734
 msgid "All the broken packages are going to be added to the queue"
-msgstr "Alle zerbrochenen Pakete werden der Warteschlange hinzugefügt"
+msgstr "Alle fehlerhaften Pakete werden der Warteschlange hinzugefügt"
 
 #: ../../sulfur/src/sulfur/__init__.py:1840
 msgid "These packages are no longer available"
@@ -8359,7 +8358,7 @@ msgstr "Einmal bestätigt, werden diese Pakete als maskiert betrachtet."
 
 #: ../../sulfur/src/sulfur/views.py:1398
 msgid "Package Set has broken dependencies, Sets not found"
-msgstr "Paketsets haben zerbrochene Abhängigkeiten, Sets nicht gefunden"
+msgstr "Paketset hat defekte Abhängigkeiten, Sets nicht gefunden"
 
 #: ../../sulfur/src/sulfur/views.py:1408
 msgid "There are incomplete package sets, continue at your own risk"
@@ -8646,36 +8645,36 @@ msgstr "Bitte stelle deinen Zweig ein auf"
 #: ../../services/kernel-switcher:107
 #, fuzzy
 msgid "No kernel packages given"
-msgstr "zerbrochene Pakete"
+msgstr "Keine Kernelpakete angegeben"
 
 #: ../../services/kernel-switcher:110
 msgid "More than one kernel package given"
-msgstr ""
+msgstr "Mehr als ein Kernelpaket angegeben"
 
 #: ../../services/kernel-switcher:125
 #, fuzzy
 msgid "Package does not exist"
-msgstr "existiert nicht"
+msgstr "Paket existiert nicht"
 
 #: ../../services/kernel-switcher:132
 #, fuzzy
 msgid "Not a kernel"
-msgstr "Nicht fertig"
+msgstr "Kein Kernel"
 
 #: ../../services/kernel-switcher:201
 #, fuzzy
 msgid "No kernel packages found"
-msgstr "Keine Pakete gefunden"
+msgstr "Keine Kernelpakete gefunden"
 
 #: ../../services/kernel-switcher:221
 #, fuzzy
 msgid "Sabayon Linux Kernel Switcher BETA"
-msgstr "Sabayon _Linux Webseite"
+msgstr "Sabayon Linux Kernelumschalter BETA"
 
 #: ../../services/kernel-switcher:222
 #, fuzzy
 msgid "switch kernel"
-msgstr "Wechsle Repository"
+msgstr "Wechsle kernel"
 
 #: ../../services/kernel-switcher:224
 msgid "list kernels"
@@ -8717,7 +8716,7 @@ msgstr "Füge USE hinzu"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Add USE flags on atoms"
-msgstr "Füge USE Flags zu atoms hinzu"
+msgstr "Füge USE Flags zu Atoms hinzu"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Add/Edit Repository"
@@ -8750,8 +8749,8 @@ msgid ""
 "Applications can alter your system configuration, merge requested changes "
 "manually"
 msgstr ""
-"Anwendungen könnten deine Systemkonfiguration verändern, die gewünschte "
-"vermischung muß manuell erfolgen"
+"Anwendungen könnten deine Systemkonfiguration verändern, die gewünschten"
+"Änderungen müssen von Hand zusammengeführt werden"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:19
 msgid "Background error message"
