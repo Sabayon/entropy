@@ -14,12 +14,6 @@ Backlog (raw)
     - pkgcore spm plugin
         PF CATEGORY CFLAGS CXXFLAGS NEEDED FEATURES INHERITED are missing
 
-    - entropy client refactoring:
-        - get_install_queue():
-            use exceptions, write new method, deprecate old
-        - rest:
-            drop exit status in favour of exceptions
-
     - fine grained locking support (acquire entropy resources lock only when really needed)
       kill the Big Entropy Lock :-)
 
