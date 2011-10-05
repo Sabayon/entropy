@@ -20,7 +20,7 @@ import shutil
 import tempfile
 
 from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable, \
-    EntropyPackageException
+    EntropyPackageException, DependenciesCollision, DependenciesNotFound
 from entropy.misc import ParallelTask
 from entropy.db.exceptions import OperationalError
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
@@ -988,24 +988,27 @@ def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
     if deps:
         print_info(red(" @@ ")+blue("%s ...") % (
             _("Calculating dependencies"),) )
-        run_queue, removal_queue, status = entropy_client.get_install_queue(
-            found_pkg_atoms, emptydeps, deepdeps, relaxed = relaxeddeps,
-            build = builddeps, recursive = recursive)
-        if status == -2:
+        try:
+            run_queue, removal_queue = entropy_client.get_install_queue(
+                found_pkg_atoms, emptydeps, deepdeps, relaxed = relaxeddeps,
+                build = builddeps, recursive = recursive)
+        except DependenciesNotFound as exc:
+            run_deps = exc.value
             # dependencies not found
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Cannot find needed dependencies"),) ))
-            for package in run_queue:
+            for package in run_deps:
                 _show_masked_pkg_info(entropy_client, package,
                     from_user = False)
             return True, (125, -1), []
-        elif status == -3:
+        except DependenciesCollision as exc:
+            col_deps = exc.value
             # colliding dependencies
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Conflicting packages were pulled in"),) ))
             # run_queue is a list of sets
             print_warning("")
-            for pkg_matches in run_queue:
+            for pkg_matches in col_deps:
                 for pkg_id, pkg_repo in pkg_matches:
                     repo_db = entropy_client.open_repository(pkg_repo)
                     print_warning(
@@ -1573,7 +1576,8 @@ def install_packages(entropy_client,
                 deepdeps = resume_cache['deepdeps']
                 recursive = resume_cache['recursive']
                 relaxed_deps = resume_cache['relaxed_deps']
-                print_warning(red("%s..." % (_("Resuming previous operations"),) ))
+                print_warning(red("%s..." % (
+                    _("Resuming previous operations"),) ))
             except (KeyError, TypeError, AttributeError,):
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
@@ -1583,18 +1587,22 @@ def install_packages(entropy_client,
                 return 128, -1
 
             if skipfirst and run_queue:
-                run_queue, x, status = entropy_client.get_install_queue(run_queue[1:],
-                    emptydeps, deepdeps, relaxed = relaxed_deps,
-                    build = build_deps)
-                if status != 0:
+                try:
+                    run_queue, x = entropy_client.get_install_queue(
+                        run_queue[1:],
+                        emptydeps, deepdeps, relaxed = relaxed_deps,
+                        build = build_deps)
+                except (DependenciesCollision, DependenciesNotFound):
                     # wtf! do not save anything
-                    print_error(red("%s." % (_("Resume cache no longer valid"),) ))
+                    print_error(red("%s." % (
+                        _("Resume cache no longer valid"),) ))
                     return 128, -1
                 del x # was removal_queue
                 # save new queues
                 resume_cache['run_queue'] = run_queue
                 try:
-                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'],
+                        resume_cache)
                 except (IOError, OSError):
                     pass
 

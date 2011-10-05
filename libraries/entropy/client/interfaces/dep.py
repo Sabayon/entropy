@@ -2896,12 +2896,22 @@ class CalculatorsMixin:
         @keyword recursive: scan dependencies recursively (usually, this is
             the wanted behaviour)
         @type recursive: bool
+        @return: tuple composed by a list of package matches to install and
+            a list of package matches to remove (informational)
+        @raise DependenciesCollision: packages pulled in conflicting depedencies
+            perhaps sharing the same key and slot (but different version).
+            In this case, user should mask one or the other by hand.
+            The value encapsulated .value object attribute contains the list of
+            colliding package (list of lists).
+        @raise DependenciesNotFound: one or more dependencies required are not
+            found. The encapsulated .value object attribute contains a list of
+            not found dependencies.
         """
         install = []
         removal = []
         try:
             deptree = self._get_required_packages(package_matches,
-                empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed, 
+                empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed,
                 build_deps = build, quiet = quiet, recursive = recursive)
         except DependenciesCollision as exc:
             # Packages pulled in conflicting dependencies, these sharing the
@@ -2909,11 +2919,11 @@ class CalculatorsMixin:
             # packages with key "www-servers/apache" and slot "2" and
             # user is requiring packages that require both. In this case,
             # user should mask one or the other by hand
-            return copy.copy(exc.value), removal, -3
+            raise
         except DependenciesNotFound as exc:
             # One or more dependencies pulled in by packages are not
             # found in repositories
-            return copy.copy(exc.value), removal, -2
+            raise
 
         # format
         removal = deptree.pop(0, set())
@@ -2924,7 +2934,8 @@ class CalculatorsMixin:
         if install and removal:
             myremmatch = {}
             for rm_idpackage in removal:
-                keyslot = self._installed_repository.retrieveKeySlot(rm_idpackage)
+                keyslot = self._installed_repository.retrieveKeySlot(
+                    rm_idpackage)
                 # check if users removed idpackage while this
                 # whole instance is running
                 if keyslot is None:
@@ -2936,4 +2947,4 @@ class CalculatorsMixin:
                 testtuple = dbconn.retrieveKeySlot(pkg_id)
                 removal.discard(myremmatch.get(testtuple))
 
-        return install, sorted(removal), 0
+        return install, sorted(removal)

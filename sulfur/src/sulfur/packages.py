@@ -169,10 +169,11 @@ class Queue:
             [mynew.update(d[x]) for x in d]
             return mynew
 
-        install, remove, rc = self.Entropy.get_install_queue(proposed_matches,
-            False, False)
-        if rc != 0:
-            return proposed_matches, False # wtf?
+        try:
+            install, remove = self.Entropy.get_install_queue(
+                proposed_matches, False, False)
+        except (DependenciesNotFound, DependenciesCollision):
+            return proposed_matches, False
 
         crying_items = [x for x in matches_to_be_removed if x in install]
         if not crying_items:
@@ -183,9 +184,10 @@ class Queue:
 
         for package_match in proposed_matches:
 
-            install, remove, rc = self.Entropy.get_install_queue(
-                [package_match], False, False)
-            if rc != 0:
+            try:
+                install, remove = self.Entropy.get_install_queue(
+                    [package_match], False, False)
+            except (DependenciesNotFound, DependenciesCollision):
                 return proposed_matches, False # wtf?
 
             if [x for x in matches_to_be_removed if x in install]:
@@ -418,12 +420,15 @@ class Queue:
         if status != 0:
             return status
 
-        runQueue, removalQueue, status = self.Entropy.get_install_queue(
-            xlist, False, deep_deps, relaxed = (SulfurConf.relaxed_deps == 1),
-            quiet = True)
-        if status == -2: # dependencies not found
-            confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
-                runQueue,
+        try:
+            runQueue, removalQueue = self.Entropy.get_install_queue(
+                xlist, False, deep_deps,
+                relaxed = (SulfurConf.relaxed_deps == 1), quiet = True)
+        except DependenciesNotFound as exc:
+            run_deps = sorted(exc.value)
+            confirmDialog = self.dialogs.ConfirmationDialog(
+                self.ui.main,
+                run_deps,
                 top_text = _("Attention"),
                 sub_text = _("Some dependencies couldn't be found. It can either be because they are masked or because they aren't in any active repository."),
                 bottom_text = "",
@@ -433,16 +438,18 @@ class Queue:
             confirmDialog.run()
             confirmDialog.destroy()
             return -10
-        elif status == -3:
+        except DependenciesCollision as exc:
+            col_deps = exc.value
             pkgs_list = []
-            for pkg_matches in runQueue:
+            for pkg_matches in col_deps:
                 for pkg_id, pkg_repo in pkg_matches:
                     repo_db = self.Entropy.open_repository(pkg_repo)
                     pkg_atom = repo_db.retrieveAtom(pkg_id)
                     keyslot = repo_db.retrieveKeySlotAggregated(pkg_id)
                     pkg_string = "%s (%s)" % (pkg_atom, keyslot)
                     pkgs_list.append(pkg_string)
-            confirmDialog = self.dialogs.ConfirmationDialog(self.ui.main,
+            confirmDialog = self.dialogs.ConfirmationDialog(
+                self.ui.main,
                 pkgs_list,
                 top_text = _("Attention"),
                 sub_text = _("Conflicting packages were pulled in, in the same key and slot"),
@@ -453,105 +460,105 @@ class Queue:
             confirmDialog.run()
             confirmDialog.destroy()
             return -10
-        elif status == 0:
-            # runQueue
-            remove_todo = []
-            install_todo = []
-            if runQueue:
-                icache = set([x.matched_atom for x in \
-                    self.packages[actions[0]] + self.packages[actions[1]] + \
-                    self.packages[actions[2]]])
-                my_icache = set()
 
-                # load packages in cache
-                self.etpbase.get_raw_groups('installed')
-                self.etpbase.get_raw_groups('available')
-                self.etpbase.get_raw_groups('reinstallable')
-                self.etpbase.get_raw_groups('updates')
-                self.etpbase.get_raw_groups('unfiltered_updates')
-                self.etpbase.get_raw_groups('masked')
-                self.etpbase.get_raw_groups('downgrade')
+        # runQueue
+        remove_todo = []
+        install_todo = []
+        if runQueue:
+            icache = set([x.matched_atom for x in \
+                self.packages[actions[0]] + self.packages[actions[1]] + \
+                self.packages[actions[2]]])
+            my_icache = set()
 
-                for matched_atom in runQueue:
-                    if matched_atom in my_icache:
-                        continue
-                    my_icache.add(matched_atom)
-                    if matched_atom in icache:
-                        continue
-                    dep_pkg, new = self.etpbase.get_package_item(matched_atom)
-                    if not dep_pkg:
-                        continue
-                    install_todo.append(dep_pkg)
+            # load packages in cache
+            self.etpbase.get_raw_groups('installed')
+            self.etpbase.get_raw_groups('available')
+            self.etpbase.get_raw_groups('reinstallable')
+            self.etpbase.get_raw_groups('updates')
+            self.etpbase.get_raw_groups('unfiltered_updates')
+            self.etpbase.get_raw_groups('masked')
+            self.etpbase.get_raw_groups('downgrade')
 
-            if removalQueue:
-                my_rcache = set()
-                rcache = set([x.matched_atom[0] for x in self.packages['r']])
-                for idpackage in removalQueue:
-                    if idpackage in my_rcache:
-                        continue
-                    my_rcache.add(idpackage)
-                    if idpackage in rcache:
-                        continue
-                    mymatch = (idpackage, 0)
-                    rem_pkg, new = self.etpbase.get_package_item(mymatch)
-                    if not rem_pkg:
-                        continue
-                    remove_todo.append(rem_pkg)
+            for matched_atom in runQueue:
+                if matched_atom in my_icache:
+                    continue
+                my_icache.add(matched_atom)
+                if matched_atom in icache:
+                    continue
+                dep_pkg, new = self.etpbase.get_package_item(matched_atom)
+                if not dep_pkg:
+                    continue
+                install_todo.append(dep_pkg)
 
-            if install_todo or remove_todo:
-                ok = True
+        if removalQueue:
+            my_rcache = set()
+            rcache = set([x.matched_atom[0] for x in self.packages['r']])
+            for idpackage in removalQueue:
+                if idpackage in my_rcache:
+                    continue
+                my_rcache.add(idpackage)
+                if idpackage in rcache:
+                    continue
+                mymatch = (idpackage, 0)
+                rem_pkg, new = self.etpbase.get_package_item(mymatch)
+                if not rem_pkg:
+                    continue
+                remove_todo.append(rem_pkg)
 
-                mybefore = [x.matched_atom for x in self.before]
-                items_before = [x for x in install_todo+remove_todo if \
-                    x.matched_atom not in mybefore]
+        if install_todo or remove_todo:
+            ok = True
 
-                if ((len(items_before) > 1) and (not accept)) or (always_ask):
+            mybefore = [x.matched_atom for x in self.before]
+            items_before = [x for x in install_todo+remove_todo if \
+                x.matched_atom not in mybefore]
 
-                    ok = False
-                    size = 0
-                    for x in install_todo:
-                        size += self.__get_disksize(x, False)
-                    for x in remove_todo:
-                        size -= self.__get_disksize(x, False)
-                    if size > 0:
-                        bottom_text = _("Needed disk space")
-                    else:
-                        size = abs(size)
-                        bottom_text = _("Freed disk space")
-                    size = entropy.tools.bytes_into_human(size)
-                    confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
-                        install_todo+remove_todo,
-                        top_text = _("These are the packages that would be installed/updated"),
-                        bottom_text = bottom_text,
-                        bottom_data = size
-                    )
-                    result = confirmDialog.run()
-                    if result == -5: # ok
-                        ok = True
-                    confirmDialog.destroy()
+            if ((len(items_before) > 1) and (not accept)) or (always_ask):
 
-                if ok:
-
-                    mycache = {
-                        'r': [x.matched_atom for x in self.packages['r']],
-                        'u': [x.matched_atom for x in self.packages['u']],
-                        'rr': [x.matched_atom for x in self.packages['rr']],
-                        'i': [x.matched_atom for x in self.packages['i']],
-                        'd': [x.matched_atom for x in self.packages['d']],
-                    }
-
-                    for rem_pkg in remove_todo:
-                        rem_pkg.queued = rem_pkg.action
-                        if rem_pkg.matched_atom not in mycache['r']:
-                            self.packages['r'].append(rem_pkg)
-                    for dep_pkg in install_todo:
-                        dep_pkg.queued = dep_pkg.action
-                        if dep_pkg.matched_atom not in mycache[dep_pkg.action]:
-                            self.packages[dep_pkg.action].append(dep_pkg)
+                ok = False
+                size = 0
+                for x in install_todo:
+                    size += self.__get_disksize(x, False)
+                for x in remove_todo:
+                    size -= self.__get_disksize(x, False)
+                if size > 0:
+                    bottom_text = _("Needed disk space")
                 else:
-                    return -10
+                    size = abs(size)
+                    bottom_text = _("Freed disk space")
+                size = entropy.tools.bytes_into_human(size)
+                confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
+                    install_todo+remove_todo,
+                    top_text = _("These are the packages that would be installed/updated"),
+                    bottom_text = bottom_text,
+                    bottom_data = size
+                )
+                result = confirmDialog.run()
+                if result == -5: # ok
+                    ok = True
+                confirmDialog.destroy()
 
-        return status
+            if ok:
+
+                mycache = {
+                    'r': [x.matched_atom for x in self.packages['r']],
+                    'u': [x.matched_atom for x in self.packages['u']],
+                    'rr': [x.matched_atom for x in self.packages['rr']],
+                    'i': [x.matched_atom for x in self.packages['i']],
+                    'd': [x.matched_atom for x in self.packages['d']],
+                }
+
+                for rem_pkg in remove_todo:
+                    rem_pkg.queued = rem_pkg.action
+                    if rem_pkg.matched_atom not in mycache['r']:
+                        self.packages['r'].append(rem_pkg)
+                for dep_pkg in install_todo:
+                    dep_pkg.queued = dep_pkg.action
+                    if dep_pkg.matched_atom not in mycache[dep_pkg.action]:
+                        self.packages[dep_pkg.action].append(dep_pkg)
+            else:
+                return -10
+
+        return 0
 
     def _show_dependencies_not_removable_err(self, err):
         c_repo = self.Entropy.installed_repository()

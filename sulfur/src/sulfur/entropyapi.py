@@ -36,7 +36,8 @@ from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.client.mirrors import StatusInterface
-from entropy.exceptions import RepositoryError
+from entropy.exceptions import RepositoryError, DependenciesCollision, \
+    DependenciesNotFound
 from entropy.db.exceptions import OperationalError, IntegrityError
 from entropy.services.client import WebService
 
@@ -110,20 +111,16 @@ class QueueExecutor:
         runQueue = install_queue
         conflicts_queue = []
         if (not fetch_only) and (not download_sources):
-            runQueue, conflicts_queue, status = self._entropy.get_install_queue(
-                install_queue, False, False,
-                relaxed = (SulfurConf.relaxed_deps == 1)
-            )
-            if status != 0:
-                # wtf!?
-                status_msg = _("Unknown error")
-                if status == -2:
-                    status_msg = _("dependencies not found")
-                elif status == -3:
-                    status_msg = _("conflicting dependencies were pulled in")
-                self.ok_dialog("%s: %s" % (
-                    _("Calculated dependencies data no longer valid"),
-                    status_msg))
+            try:
+                runQueue, conflicts_queue = self._entropy.get_install_queue(
+                    install_queue, False, False,
+                    relaxed = (SulfurConf.relaxed_deps == 1))
+            except DependenciesNotFound as exc:
+                self.ok_dialog("%s: %s" % (_("dependencies not found"),
+                    ", ".join(sorted(exc.value)),))
+                return 4
+            except DependenciesCollision as exc:
+                self.ok_dialog(_("dependency collisions found"))
                 return 4
         if removal_queue:
             removalQueue += [(x, False) for x in removal_queue if x \
