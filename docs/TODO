@@ -20,6 +20,9 @@ Backlog (raw)
         - rest:
             drop exit status in favour of exceptions
 
+    - fine grained locking support (acquire entropy resources lock only when really needed)
+      kill the Big Entropy Lock :-)
+
     - graph improvements:
         - graph with or dependencies support
         - graph with weighted edges (nvidia-userspace:0 must not collide with something
