@@ -93,8 +93,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if resources_locked:
             locked = True
         else:
-            locked = not entropy.tools.acquire_entropy_locks(self._entropy,
-                max_tries = 5)
+            # we don't want to interleave equo or entropy services with
+            # sulfur. People just cannot deal with it.
+            locked = self._entropy.another_entropy_running()
+            if not locked:
+                locked = not entropy.tools.acquire_entropy_locks(self._entropy,
+                    max_tries = 5)
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()

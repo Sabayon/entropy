@@ -3640,10 +3640,6 @@ class Package:
     def run(self, xterm_header = None):
         self._error_on_not_prepared()
 
-        gave_up = self._entropy.wait_resources()
-        if gave_up:
-            return 20
-
         locked = self._entropy.another_entropy_running()
         if locked:
             self._entropy.output(
@@ -3654,16 +3650,11 @@ class Package:
             )
             return 21
 
-        # lock
-        acquired = self._entropy.lock_resources()
-        if not acquired:
-            self._entropy.output(
-                blue(_("Cannot acquire Entropy resources lock.")),
-                importance = 2,
-                level = "error",
-                header = darkred("   ## ")
-            )
-            return 4 # app locked during lock acquire
+        gave_up = self._entropy.wait_resources()
+        if gave_up:
+            return 20
+        # resources acquired
+
         try:
             rc = self._stepper(xterm_header)
         finally:

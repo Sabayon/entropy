@@ -1589,51 +1589,6 @@ class MiscMixin:
                     f_obj.close()
                     MiscMixin.RESOURCES_LOCK_F_REF = None
 
-    def resources_locked(self):
-        """
-        Determine whether Entropy resources are locked (in use).
-
-        @return: True, if resources are locked
-        @rtype: bool
-        """
-        return self._check_pid_file_lock(etpConst['locks']['using_resources'])
-
-    def _check_pid_file_lock(self, pidfile):
-
-        pid_f = None
-        flags = fcntl.LOCK_EX | fcntl.LOCK_NB
-        pid = os.getpid()
-
-        try:
-            pid_f = open(pidfile, "r")
-            fcntl.flock(pid_f.fileno(), flags)
-            # unlock now, file is not locked
-            fcntl.flock(pid_f.fileno(), fcntl.LOCK_UN)
-            return False
-        except IOError as err:
-            if err.errno == errno.ENOENT:
-                # file doesn't exist, not locked
-                return False
-            elif err.errno in (errno.EACCES, errno.EAGAIN):
-                # locked? our pid?
-                if pid_f is None:
-                    # wtf? not locked for me
-                    return False
-                # check if same pid
-                s_pid = pid_f.read(128).strip()
-                try:
-                    s_pid = int(s_pid)
-                except ValueError:
-                    return True # locked anyway
-                # locked?
-                return s_pid != pid
-            else:
-                # ouch, wtf?
-                raise
-        finally:
-            if pid_f is not None:
-                pid_f.close()
-
     def _create_pid_file_lock(self, pidfile, blocking = False):
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
@@ -1703,8 +1658,8 @@ class MiscMixin:
         lock_count = 0
         # check lock file
         while True:
-            locked = self.resources_locked()
-            if not locked:
+            acquired = self.lock_resources(blocking=False)
+            if acquired:
                 if lock_count > 0:
                     self.output(
                         blue(_("Resources unlocked, let's go!")),

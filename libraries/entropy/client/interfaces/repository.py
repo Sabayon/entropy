@@ -278,20 +278,7 @@ class Repository:
         if gave_up:
             return 3
 
-        locked = self._entropy.another_entropy_running()
-        if locked:
-            self._entropy.output(
-                red(_("Another Entropy is currently running.")),
-                importance = 1,
-                level = "error",
-                header = darkred(" @@ ")
-            )
-            return 4
-
-        # lock
-        acquired = self._entropy.lock_resources()
-        if not acquired:
-            return 4 # app locked during lock acquire
+        # locked
         try:
             rc = self._run_sync()
             if rc:

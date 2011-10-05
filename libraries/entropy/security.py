@@ -1031,10 +1031,6 @@ class System:
             header = red(" @@ ")
         )
 
-        gave_up = self._entropy.wait_resources()
-        if gave_up:
-            return 7
-
         locked = self._entropy.another_entropy_running()
         if locked:
             self._entropy.output(
@@ -1045,11 +1041,11 @@ class System:
             )
             return 4
 
-        # lock
-        acquired = self._entropy.lock_resources()
-        if not acquired:
-            return 4 # app locked during lock acquire
+        gave_up = self._entropy.wait_resources()
+        if gave_up:
+            return 7
 
+        # acquired
         try:
             rc_lock = self.__run_fetch(force = force)
             if rc_lock != 0:

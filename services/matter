@@ -120,7 +120,7 @@ class EntropyResourceLock(object):
         self.__inside_with_stmt = 0
 
     def acquire(self):
-        acquired = entropy.tools.acquire_entropy_resources_locks(self._entropy,
+        acquired = entropy.tools.acquire_entropy_locks(self._entropy,
             blocking = self._blocking)
         if not acquired:
             raise EntropyResourceLock.NotAcquired("unable to acquire lock")

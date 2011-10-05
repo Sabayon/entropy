@@ -466,11 +466,6 @@ def _database_spmsync(entropy_client):
         print_info(red(" %s." % (_("Entropy locked, giving up"),)))
         return 2
 
-    acquired = entropy_client.lock_resources()
-    if not acquired:
-        print_info(red(" %s." % (_("Entropy locked during lock acquire"),)))
-        return 2
-
     if to_be_removed:
         mytxt = blue("%s. %s:") % (
             _("Someone removed these packages"),

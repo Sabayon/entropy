@@ -3030,24 +3030,6 @@ def release_lock(lock_file, lock_map):
 def acquire_entropy_locks(entropy_client, blocking = False,
     max_tries = 300):
     """
-    Acquire Entropy Client/Server file locks.
-
-    @param entropy_client: any Entropy Client based instance
-    @type entropy_client: entropy.client.interfaces.Client
-    @keyword blocking: acquire locks in blocking mode?
-    @type blocking: bool
-    @keyword max_tries: number of tries for wait_resources()
-    @type max_tries: int
-    """
-    locked = entropy_client.another_entropy_running()
-    if locked:
-        return False
-    return acquire_entropy_resources_locks(entropy_client,
-        blocking = blocking, max_tries = max_tries)
-
-def acquire_entropy_resources_locks(entropy_client, blocking = False,
-    max_tries = 300):
-    """
     Acquire Entropy Resources General Lock.
     This lock is controlling write access to entropy package metadata and
     other writeable destinations.
@@ -3064,12 +3046,13 @@ def acquire_entropy_resources_locks(entropy_client, blocking = False,
         gave_up = entropy_client.wait_resources(max_lock_count = max_tries)
         if gave_up:
             return False
+        # acquired
+        return True
 
-    # acquire resources lock
-    acquired = entropy_client.lock_resources(blocking = blocking)
+    # acquire resources lock in blocking mode
+    acquired = entropy_client.lock_resources(blocking = True)
     if not acquired:
         return False
-
     return True
 
 def release_entropy_locks(entropy_client):
