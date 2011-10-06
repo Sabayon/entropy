@@ -4408,7 +4408,10 @@ class Server(Client):
             # sometimes, when filling a new server db
             # we need to avoid tree updates
             if valid:
-                if do_treeupdates:
+                if do_treeupdates and not conn.readonly():
+                    # readonly() always returns the effective
+                    # write access to repository (despire what is
+                    # really set during instantiation)
                     self._repository_packages_spm_sync(repository_id, conn,
                         branch = use_branch)
             elif warnings and not is_new:
