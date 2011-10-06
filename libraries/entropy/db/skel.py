@@ -410,6 +410,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def readonly(self):
         """
         Return whether the repository is read-only.
+        This method shall always check real access
+        permissions.
 
         @return: True, if repository is read-only
         @rtype: bool
