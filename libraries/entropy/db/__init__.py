@@ -573,6 +573,17 @@ class EntropyRepository(EntropyRepositoryBase):
         if self.__structure_update:
             self._databaseStructureUpdates()
 
+    def readonly(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        if (not self._readonly) and (self._db_path != ":memory:"):
+            # make sure that user can write to file
+            # before returning False, override actual
+            # readonly status
+            return not os.access(self._db_path, os.W_OK)
+        return self._readonly
+
     def setIndexing(self, indexing):
         """
         Enable or disable metadata indexing.
