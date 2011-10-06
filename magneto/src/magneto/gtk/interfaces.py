@@ -146,7 +146,7 @@ class Magneto(MagnetoCore):
         def do_show():
             if ((title, text) == self.last_alert) and not force:
                 return False
-            pynotify.init("XY")
+            pynotify.init(_("System Updates"))
             n = pynotify.Notification(title, text)
             if urgency == 'critical':
                 n.set_urgency(pynotify.URGENCY_CRITICAL)
