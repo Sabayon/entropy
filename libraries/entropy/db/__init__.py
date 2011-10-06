@@ -578,10 +578,11 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         if (not self._readonly) and (self._db_path != ":memory:"):
-            # make sure that user can write to file
-            # before returning False, override actual
-            # readonly status
-            return not os.access(self._db_path, os.W_OK)
+            if os.getuid() != 0:
+                # make sure that user can write to file
+                # before returning False, override actual
+                # readonly status
+                return not os.access(self._db_path, os.W_OK)
         return self._readonly
 
     def setIndexing(self, indexing):
