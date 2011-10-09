@@ -16,8 +16,8 @@ import argparse
 from entropy.const import etpConst
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied
-from entropy.output import print_info, print_warning, print_error, \
-    darkgreen, teal, brown, darkred, bold, purple, blue, red, green
+from entropy.output import print_error, darkgreen, teal, brown, \
+    darkred, bold, purple, blue, red, green
 
 from text_tools import print_table
 
@@ -65,7 +65,6 @@ class EitCommit(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            print_error("error: %s" % (err.strerror,))
             return parser.print_help, []
 
         self._interactive = nsargs.interactive
@@ -120,8 +119,11 @@ class EitCommit(EitCommand):
             for item in self._repackage:
                 match = dbconn.atomMatch(item)
                 if match[0] == -1:
-                    print_warning(darkred("  !!! ") + \
-                        red(_("Cannot match"))+" "+bold(item))
+                    entropy_server.output(
+                        red(_("Cannot match"))+" "+bold(item),
+                        header=darkred("  !!! "),
+                        importance=1,
+                        level="warning")
                 else:
                     cat = dbconn.retrieveCategory(match[0])
                     name = dbconn.retrieveName(match[0])
@@ -137,12 +139,16 @@ class EitCommit(EitCommand):
             if packages:
                 to_be_added |= set(packages)
             else:
-                print_info(brown(" * ") + \
-                    red(_("No valid packages to repackage.")))
+                entropy_server.output(
+                    red(_("No valid packages to repackage.")),
+                    header=brown(" * "),
+                    importance=1)
 
         # normal scanning
-        print_info(brown(" * ") + \
-            red("%s..." % (_("Scanning database for differences"),) ))
+        entropy_server.output(
+            red("%s..." % (_("Scanning database for differences"),) ),
+            header=brown(" * "),
+            importance=1)
         try:
             myadded, to_be_removed, to_be_injected = \
                 entropy_server.scan_package_changes()
@@ -163,29 +169,35 @@ class EitCommit(EitCommand):
                     inst_myatom = entropy_server.Spm(
                         ).match_installed_package(myatom)
                 except KeyError:
-                    print_warning(darkred("  !!! ") + \
-                        red(_("Invalid package")) + " " + bold(myatom))
+                    entropy_server.output(
+                        red(_("Invalid package"))+" "+bold(myatom),
+                        header=darkred("  !!! "),
+                        importance=1,
+                        level="warning")
                     continue
                 if inst_myatom in tba:
                     tb_added_new.add(tba.get(inst_myatom))
             to_be_added = tb_added_new
 
         if not (len(to_be_removed)+len(to_be_added)+len(to_be_injected)):
-            print_info(brown(" * ") + \
-                red("%s." % (_("Zarro thinggz totoo"),)))
+            entropy_server.output(
+                red(_("Zarro thinggz to do")),
+                header=brown(" * "),
+                importance=1)
             return 0
 
         if to_be_injected:
-            print_info(brown(" @@ ") + \
-                blue("%s:" % (
-                    _("These would be marked as injected"),) ))
+            entropy_server.output(
+                blue(_("These would be marked as injected")),
+                header=brown(" @@ "))
             for idpackage, repoid in sorted(to_be_injected,
                                             key = key_sorter):
                 dbconn = entropy_server.open_server_repository(repoid,
                     read_only = True, no_upload = True)
                 atom = dbconn.retrieveAtom(idpackage)
-                print_info(brown("    # ") + "["+blue(repoid) + "] " + \
-                               red(atom))
+                entropy_server.output("["+blue(repoid) + "] " + red(atom),
+                    header=brown("    # "))
+
             if self._ask:
                 rc = entropy_server.ask_question(
                     ">>   %s" % (_("Do it now ?"),))
@@ -198,12 +210,14 @@ class EitCommit(EitCommand):
                     dbconn = entropy_server.open_server_repository(repoid,
                         read_only = True, no_upload = True)
                     atom = dbconn.retrieveAtom(idpackage)
-                    print_info(brown("   <> ") + \
-                        blue("%s: " % (_("Transforming"),) )+red(atom))
+                    entropy_server.output(
+                        "%s: %s" % (blue(_("Transforming")),
+                                    red(atom)),
+                        header=brown("   <> "))
                     entropy_server._transform_package_into_injected(
                         idpackage, repoid)
-                print_info(brown(" @@ ") + \
-                    blue("%s." % (_("Transform complete"),) ))
+                entropy_server.output(blue(_("Action completed")),
+                    header=brown(" @@ "))
 
         def show_rm(idpackage, repoid):
             dbconn = entropy_server.open_server_repository(repoid,
@@ -214,12 +228,14 @@ class EitCommit(EitCommand):
                 (idpackage, repoid,))
             if pkg_expired:
                 exp_string = "|%s" % (purple(_("expired")),)
-            print_info(brown("    # ") + "["+blue(repoid) + \
-                           exp_string + "] " + red(atom))
+            entropy_server.output(
+                "["+blue(repoid) + exp_string + "] " + red(atom),
+                header=brown("    # "))
 
         if self._interactive and to_be_removed:
-            print_info(brown(" @@ ") + \
-                blue(_("What packages do you want to remove ?")))
+            entropy_server.output(
+                blue(_("Select packages for removal")),
+                header=brown(" @@ "))
             new_to_be_removed = set()
             for idpackage, repoid in sorted(to_be_removed,
                                             key = key_sorter):
@@ -231,9 +247,9 @@ class EitCommit(EitCommand):
             to_be_removed = new_to_be_removed
 
         if to_be_removed:
-
-            print_info(brown(" @@ ") + blue("%s:" % (
-                _("These would be removed from repository"),) ))
+            entropy_server.output(
+                blue(_("These would be removed from repository")),
+                header=brown(" @@ "))
             for idpackage, repoid in sorted(to_be_removed,
                                             key = key_sorter):
                 show_rm(idpackage, repoid)
@@ -256,12 +272,14 @@ class EitCommit(EitCommand):
                                                    remdata[repoid])
 
         if self._interactive and to_be_added:
-            print_info(brown(" @@ ") + \
-                           blue(_("What packages do you want to add ?")))
+            entropy_server.output(
+                blue(_("Select packages to add")),
+                header=brown(" @@ "))
             new_to_be_added = set()
             for tb_atom, tb_counter in sorted(to_be_added,
                                               key = lambda x: x[0]):
-                print_info(brown("    # ") + red(tb_atom))
+                entropy_server.output(red(tb_atom),
+                    header=brown("    # "))
                 rc = entropy_server.ask_question(
                     ">>   %s" % (_("Add this package?"),))
                 if rc == _("Yes"):
@@ -270,9 +288,9 @@ class EitCommit(EitCommand):
 
         if to_be_added:
 
-            print_info(brown(" @@ ") + \
-                blue("%s:" % (
-                    _("These would be added or updated"),) ))
+            entropy_server.output(
+                blue(_("These would be added or updated")),
+                header=brown(" @@ "))
             items = sorted([x[0] for x in to_be_added])
             for item in items:
                 item_txt = purple(item)
@@ -307,7 +325,7 @@ class EitCommit(EitCommand):
                                 bold(_("warning")),
                                 darkgreen(etp_repo), blue(spm_repo),)
 
-                print_info(brown("  # ") + item_txt)
+                entropy_server.output(item_txt, header=brown("  # "))
 
             if self._ask:
                 rc = entropy_server.ask_question(">>   %s (%s %s)" % (
@@ -324,24 +342,30 @@ class EitCommit(EitCommand):
                 return 1
 
         # package them
-        print_info(brown(" @@ ") + \
-                       blue("%s..." % (_("Compressing packages"),) ))
+        entropy_server.output(
+            blue(_("Compressing packages")),
+            header=brown(" @@ "))
         store_dir = entropy_server._get_local_store_directory(
             repository_id)
         for x in sorted(to_be_added):
-            print_info(brown("    # ") + teal(x[0]))
+            entropy_server.output(teal(x[0]),
+                                  header=brown("    # "))
             try:
                 pkg_list = entropy_server.Spm().generate_package(x[0],
                     store_dir)
                 generated_packages.append(pkg_list)
             except OSError:
                 entropy.tools.print_traceback()
-                print_info(brown("    !!! ")+bold("%s..." % (
-                    _("Ignoring broken Spm entry, please recompile it"),) )
-                )
+                entropy_server.output(
+                    bold(_("Ignoring broken Spm entry, please recompile it")),
+                    header=brown("    !!! "),
+                    importance=1,
+                    level="warning")
 
         if not generated_packages:
-            print_info(brown(" * ")+red(_("Nothing to do, check later.")))
+            entropy_server.output(
+                red(_("Nothing to do, check later.")),
+                header=brown(" * "))
             # then exit gracefully
             return 0
 
@@ -354,9 +378,10 @@ class EitCommit(EitCommand):
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
         entropy_server.close_repositories()
-        print_info(green(" * ") + red("%s: " % (_("Statistics"),) ) + \
+        entropy_server.output(red("%s: " % (_("Statistics"),) ) + \
             blue("%s: " % (_("Entries handled"),) ) + \
-                       bold(str(len(idpackages))))
+                bold(str(len(idpackages))),
+            header=darkgreen(" * "))
         return 0
 
 
