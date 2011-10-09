@@ -2,3 +2,4 @@
 *.pyo
 misc/po/*.mo
 *.directory
+#*#
