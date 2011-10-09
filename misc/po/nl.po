@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-06 08:38+0200\n"
+"POT-Creation-Date: 2011-10-09 17:09+0200\n"
 "PO-Revision-Date: 2011-05-23 14:30+0100\n"
 "Last-Translator: Andre Parhan <dyingmuppet@sabayon.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -20,36 +20,36 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../../libraries/entropy/db/__init__.py:5012
+#: ../../libraries/entropy/db/__init__.py:5024
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
 
-#: ../../libraries/entropy/db/__init__.py:5013
+#: ../../libraries/entropy/db/__init__.py:5025
 #: ../../libraries/entropy/client/interfaces/db.py:287
 msgid "please wait"
 msgstr "een moment geduld A.U.B."
 
-#: ../../libraries/entropy/db/__init__.py:5028
+#: ../../libraries/entropy/db/__init__.py:5040
 msgid "Removing entry"
 msgstr "Verwijderen van ingang"
 
-#: ../../libraries/entropy/db/__init__.py:5047
+#: ../../libraries/entropy/db/__init__.py:5059
 msgid "Adding entry"
 msgstr "Toevoegen van ingang"
 
-#: ../../libraries/entropy/db/__init__.py:5124
+#: ../../libraries/entropy/db/__init__.py:5136
 msgid "Exporting database table"
 msgstr "Database tabel exporteren"
 
-#: ../../libraries/entropy/db/__init__.py:5164
+#: ../../libraries/entropy/db/__init__.py:5176
 msgid "Database Export complete."
 msgstr "Database export voltooid."
 
-#: ../../libraries/entropy/db/__init__.py:5807
-#: ../../libraries/entropy/db/__init__.py:5820
-#: ../../libraries/entropy/db/__init__.py:5974
-#: ../../libraries/entropy/db/__init__.py:6081
-#: ../../libraries/entropy/db/__init__.py:6094
+#: ../../libraries/entropy/db/__init__.py:5819
+#: ../../libraries/entropy/db/__init__.py:5832
+#: ../../libraries/entropy/db/__init__.py:5986
+#: ../../libraries/entropy/db/__init__.py:6093
+#: ../../libraries/entropy/db/__init__.py:6106
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2406
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2545
 #: ../../libraries/entropy/client/interfaces/client.py:856
@@ -58,68 +58,68 @@ msgstr "Database export voltooid."
 msgid "ATTENTION"
 msgstr "ATTENTIE"
 
-#: ../../libraries/entropy/db/__init__.py:5808
+#: ../../libraries/entropy/db/__init__.py:5820
 msgid "Spm error occured"
 msgstr "SPM fout"
 
-#: ../../libraries/entropy/db/__init__.py:5821
+#: ../../libraries/entropy/db/__init__.py:5833
 msgid "Spm Unique Identifier not found for"
 msgstr "Spm Unieke Herkenning niet gevonden voor"
 
-#: ../../libraries/entropy/db/__init__.py:5976
+#: ../../libraries/entropy/db/__init__.py:5988
 msgid "updating repository metadata layout, please wait!"
 msgstr "updaten van repositorie metadata overzicht, even geduld!"
 
-#: ../../libraries/entropy/db/__init__.py:6082
+#: ../../libraries/entropy/db/__init__.py:6094
 msgid "generating provided_libs metadata, please wait!"
 msgstr "genereren van provided_libs metadata, even geduld!"
 
-#: ../../libraries/entropy/db/skel.py:1630
-#: ../../libraries/entropy/db/skel.py:1977
+#: ../../libraries/entropy/db/skel.py:1632
+#: ../../libraries/entropy/db/skel.py:1979
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy/db/skel.py:1631
+#: ../../libraries/entropy/db/skel.py:1633
 msgid "Running packages metadata update"
 msgstr "Draaien van pakketten metadata update"
 
-#: ../../libraries/entropy/db/skel.py:1632
+#: ../../libraries/entropy/db/skel.py:1634
 msgid "it could take a while"
 msgstr "Het kan even duren"
 
-#: ../../libraries/entropy/db/skel.py:1652
-#: ../../libraries/entropy/db/skel.py:1677
-#: ../../libraries/entropy/db/skel.py:1700
+#: ../../libraries/entropy/db/skel.py:1654
+#: ../../libraries/entropy/db/skel.py:1679
+#: ../../libraries/entropy/db/skel.py:1702
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy/db/skel.py:1653
+#: ../../libraries/entropy/db/skel.py:1655
 msgid "action"
 msgstr "actie"
 
-#: ../../libraries/entropy/db/skel.py:1678
+#: ../../libraries/entropy/db/skel.py:1680
 msgid "package move actions complete"
 msgstr "pakket verplaats acties zijn voltooid"
 
-#: ../../libraries/entropy/db/skel.py:1692
+#: ../../libraries/entropy/db/skel.py:1694
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2386
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2582
 msgid "WARNING"
 msgstr "WAARSCHUWING"
 
-#: ../../libraries/entropy/db/skel.py:1693
+#: ../../libraries/entropy/db/skel.py:1695
 msgid "Cannot run SPM cleanup, error"
 msgstr "Kan SPM opruiming niet starten, fout"
 
-#: ../../libraries/entropy/db/skel.py:1701
+#: ../../libraries/entropy/db/skel.py:1703
 msgid "package moves completed successfully"
 msgstr "pakket verplaatsen succesvol voltooid"
 
-#: ../../libraries/entropy/db/skel.py:1978
+#: ../../libraries/entropy/db/skel.py:1980
 msgid "Moving old entry"
 msgstr "Verplaatsen van oude ingang"
 
-#: ../../libraries/entropy/db/skel.py:1980
+#: ../../libraries/entropy/db/skel.py:1982
 #: ../../client/text_configuration.py:122
 msgid "to"
 msgstr "naar"
@@ -364,7 +364,7 @@ msgid "Cannot update SPM installed pkgs file"
 msgstr "Kan SPM geinstalleerde pkgs bestand niet updaten"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3150
-#: ../../libraries/entropy/server/interfaces/main.py:1632
+#: ../../libraries/entropy/server/interfaces/main.py:1628
 #: ../../libraries/entropy/client/interfaces/db.py:403
 #: ../../libraries/entropy/client/interfaces/db.py:452
 #: ../../libraries/entropy/client/interfaces/db.py:506
@@ -438,7 +438,7 @@ msgid "Error calculating dependencies"
 msgstr "Fout tijdens het calculeren van afhankelijkheden"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4133
-#: ../../libraries/entropy/server/interfaces/main.py:2853
+#: ../../libraries/entropy/server/interfaces/main.py:2849
 msgid "not supported"
 msgstr "niet ondersteund"
 
@@ -591,8 +591,8 @@ msgstr "pakket wordt gedownload"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:619
 #: ../../libraries/entropy/server/interfaces/mirrors.py:634
 #: ../../libraries/entropy/server/interfaces/mirrors.py:651
-#: ../../libraries/entropy/server/interfaces/main.py:2869
-#: ../../libraries/entropy/server/interfaces/main.py:3012
+#: ../../libraries/entropy/server/interfaces/main.py:2865
+#: ../../libraries/entropy/server/interfaces/main.py:3008
 msgid "package"
 msgstr "pakket"
 
@@ -662,8 +662,8 @@ msgstr "upload"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:994
 #: ../../libraries/entropy/server/interfaces/db.py:683
-#: ../../libraries/entropy/server/interfaces/main.py:3325
-#: ../../libraries/entropy/server/interfaces/main.py:4201
+#: ../../libraries/entropy/server/interfaces/main.py:3321
+#: ../../libraries/entropy/server/interfaces/main.py:4197
 msgid "download"
 msgstr "download"
 
@@ -673,9 +673,10 @@ msgstr "kopie"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1022
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2156
-#: ../../libraries/entropy/server/interfaces/main.py:2266
+#: ../../libraries/entropy/server/interfaces/main.py:2262
 #: ../../libraries/entropy/client/interfaces/package.py:1581
 #: ../../client/text_ui.py:2203 ../../server/server_reagent.py:1176
+#: ../../server/eit/commands/status.py:161
 msgid "remove"
 msgstr "verwijder"
 
@@ -747,7 +748,7 @@ msgid "sync"
 msgstr "sync"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1405
-#: ../../libraries/entropy/server/interfaces/main.py:2741
+#: ../../libraries/entropy/server/interfaces/main.py:2737
 msgid "removal complete"
 msgstr "verwijderen compleet"
 
@@ -764,7 +765,7 @@ msgstr "upload fouten"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2233
 #: ../../libraries/entropy/server/interfaces/db.py:737
 #: ../../libraries/entropy/server/interfaces/db.py:1532
-#: ../../libraries/entropy/server/interfaces/main.py:2007
+#: ../../libraries/entropy/server/interfaces/main.py:2003
 msgid "reason"
 msgstr "reden"
 
@@ -773,12 +774,12 @@ msgid "upload completed successfully"
 msgstr "upload met succes voltooid"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1560
-#: ../../libraries/entropy/server/interfaces/main.py:2006
+#: ../../libraries/entropy/server/interfaces/main.py:2002
 msgid "download errors"
 msgstr "download fouten"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1576
-#: ../../libraries/entropy/server/interfaces/main.py:2024
+#: ../../libraries/entropy/server/interfaces/main.py:2020
 msgid "download completed successfully"
 msgstr "download met succes voltooid"
 
@@ -826,12 +827,12 @@ msgstr "Wilt u de gegeven stappen volgen ?"
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1804
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2170
-#: ../../libraries/entropy/server/interfaces/main.py:1746
-#: ../../libraries/entropy/server/interfaces/main.py:1916
-#: ../../libraries/entropy/server/interfaces/main.py:2324
-#: ../../libraries/entropy/server/interfaces/main.py:2796
-#: ../../libraries/entropy/server/interfaces/main.py:3337
-#: ../../libraries/entropy/server/interfaces/main.py:4004
+#: ../../libraries/entropy/server/interfaces/main.py:1742
+#: ../../libraries/entropy/server/interfaces/main.py:1912
+#: ../../libraries/entropy/server/interfaces/main.py:2320
+#: ../../libraries/entropy/server/interfaces/main.py:2792
+#: ../../libraries/entropy/server/interfaces/main.py:3333
+#: ../../libraries/entropy/server/interfaces/main.py:4000
 #: ../../libraries/entropy/output.py:740 ../../client/text_smart.py:144
 #: ../../client/text_smart.py:323 ../../client/text_smart.py:475
 #: ../../client/text_configuration.py:117
@@ -848,7 +849,8 @@ msgstr "Wilt u de gegeven stappen volgen ?"
 #: ../../server/server_key.py:224 ../../server/server_key.py:311
 #: ../../server/server_reagent.py:313 ../../server/server_reagent.py:471
 #: ../../server/server_reagent.py:519 ../../server/server_reagent.py:557
-#: ../../server/server_reagent.py:1042 ../../sulfur/src/sulfur/dialogs.py:1210
+#: ../../server/server_reagent.py:1042 ../../server/eit/commands/commit.py:319
+#: ../../sulfur/src/sulfur/dialogs.py:1210
 #: ../../sulfur/src/sulfur/entropyapi.py:395
 msgid "No"
 msgstr "Nee"
@@ -891,10 +893,10 @@ msgstr "dit zijn de verlopen pakketten"
 
 #. ask to continue
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2169
-#: ../../libraries/entropy/server/interfaces/main.py:1915
-#: ../../libraries/entropy/server/interfaces/main.py:2323
-#: ../../libraries/entropy/server/interfaces/main.py:2795
-#: ../../libraries/entropy/server/interfaces/main.py:3336
+#: ../../libraries/entropy/server/interfaces/main.py:1911
+#: ../../libraries/entropy/server/interfaces/main.py:2319
+#: ../../libraries/entropy/server/interfaces/main.py:2791
+#: ../../libraries/entropy/server/interfaces/main.py:3332
 #: ../../client/text_ui.py:948 ../../server/server_reagent.py:470
 #: ../../server/server_reagent.py:518 ../../server/server_reagent.py:556
 msgid "Would you like to continue ?"
@@ -914,8 +916,8 @@ msgstr "verwijderen van lokale pakketten"
 
 #. this means that user is asking to remove dep_pattern
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2277
-#: ../../libraries/entropy/server/interfaces/main.py:5850
-#: ../../libraries/entropy/server/interfaces/main.py:5952
+#: ../../libraries/entropy/server/interfaces/main.py:5849
+#: ../../libraries/entropy/server/interfaces/main.py:5951
 msgid "removed"
 msgstr "verwijderd"
 
@@ -952,7 +954,7 @@ msgid "notice board upload success"
 msgstr "notitie bord upload succesvol"
 
 #: ../../libraries/entropy/server/interfaces/db.py:329
-#: ../../libraries/entropy/server/interfaces/main.py:3159
+#: ../../libraries/entropy/server/interfaces/main.py:3155
 msgid "Keys for repository are expired"
 msgstr "Sleutels voor repositorie verlopen"
 
@@ -1118,30 +1120,26 @@ msgstr "Repositorie alsnog geupdate"
 msgid "package has no keyword set, it will be masked !"
 msgstr "Pakket heeft geen sleutelwoord, het wordt gemaskeerd!"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1075
-msgid "Entropy Server interface must be run as root"
-msgstr "Entropy Server omgeving moet gestart worden als root"
-
-#: ../../libraries/entropy/server/interfaces/main.py:1136
-#: ../../libraries/entropy/server/interfaces/main.py:3963
+#: ../../libraries/entropy/server/interfaces/main.py:1132
+#: ../../libraries/entropy/server/interfaces/main.py:3959
 msgid "repository not configured"
 msgstr "repositorie niet geconfigureerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1142
+#: ../../libraries/entropy/server/interfaces/main.py:1138
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "beveiligde repositorie ID, kan deze niet gebruiken, sorry gast..."
 
-#: ../../libraries/entropy/server/interfaces/main.py:1492
+#: ../../libraries/entropy/server/interfaces/main.py:1488
 msgid "invalid repository revision"
 msgstr "ongeldige repositorie herziening"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1494
+#: ../../libraries/entropy/server/interfaces/main.py:1490
 msgid "defaulting to 0"
 msgstr "terugzetten naar 0"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1587
-#: ../../libraries/entropy/server/interfaces/main.py:4199
-#: ../../libraries/entropy/server/interfaces/main.py:4428
+#: ../../libraries/entropy/server/interfaces/main.py:1583
+#: ../../libraries/entropy/server/interfaces/main.py:4195
+#: ../../libraries/entropy/server/interfaces/main.py:4427
 #: ../../client/text_ugc.py:111 ../../server/server_reagent.py:85
 #: ../../server/server_reagent.py:90 ../../server/server_reagent.py:103
 #: ../../server/server_reagent.py:107 ../../server/server_reagent.py:144
@@ -1154,84 +1152,84 @@ msgstr "terugzetten naar 0"
 msgid "repository"
 msgstr "repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1588
+#: ../../libraries/entropy/server/interfaces/main.py:1584
 msgid "syncing package sets"
 msgstr "synchroniseren van pakketten sets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1633
+#: ../../libraries/entropy/server/interfaces/main.py:1629
 msgid "cannot match"
 msgstr "Kan niet overeenkomen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1733
+#: ../../libraries/entropy/server/interfaces/main.py:1729
 msgid "initializing repository"
 msgstr "Initialiseren van repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1743
+#: ../../libraries/entropy/server/interfaces/main.py:1739
 msgid "do you really want to initialize this repository ?"
 msgstr "Wilt u de deze repositorie initialiseren ?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1784
+#: ../../libraries/entropy/server/interfaces/main.py:1780
 msgid "Invalid tag specified"
 msgstr "Geen geldige tag opgegeven"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1830
+#: ../../libraries/entropy/server/interfaces/main.py:1826
 msgid "flushing back selected packages from branches"
 msgstr "terug spoelen van geselecteerde pakketten van branches"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1856
+#: ../../libraries/entropy/server/interfaces/main.py:1852
 msgid "nothing to do"
 msgstr "niets te doen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1880
+#: ../../libraries/entropy/server/interfaces/main.py:1876
 msgid "these are the packages that will be flushed"
 msgstr "Dit zijn de pakketten die worden doorgespoeld"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1965
+#: ../../libraries/entropy/server/interfaces/main.py:1961
 msgid "checking package hash"
 msgstr "Nagaan van pakket hash"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1984
+#: ../../libraries/entropy/server/interfaces/main.py:1980
 msgid "hash does not match for"
 msgstr "hash komt niet overeen voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1994
+#: ../../libraries/entropy/server/interfaces/main.py:1990
 msgid "wrong md5"
 msgstr "verkeerde md5"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2038
+#: ../../libraries/entropy/server/interfaces/main.py:2034
 msgid "error downloading packages from mirrors"
 msgstr "fout tijdens het downloaden van pakketten van spiegels"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2053
+#: ../../libraries/entropy/server/interfaces/main.py:2049
 msgid "working on branch"
 msgstr "werkend op branche"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2069
+#: ../../libraries/entropy/server/interfaces/main.py:2065
 msgid "updating package"
 msgstr "updaten van pakket"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2106
+#: ../../libraries/entropy/server/interfaces/main.py:2102
 msgid "package flushed"
 msgstr "pakket doorgespoeld"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2186
+#: ../../libraries/entropy/server/interfaces/main.py:2182
 msgid "Cannot touch system repository"
 msgstr "Kan de systeem repositorie niet raken"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2201
+#: ../../libraries/entropy/server/interfaces/main.py:2197
 msgid "Preparing to move selected packages to"
 msgstr "Voorbereiden van verplaatsen van geselecteerde pakketten naar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2203
+#: ../../libraries/entropy/server/interfaces/main.py:2199
 msgid "Preparing to copy selected packages to"
 msgstr "Voorbereiden van kopieren van geselecteerde pakketten naar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2215
+#: ../../libraries/entropy/server/interfaces/main.py:2211
 #: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Note"
 msgstr "Notitie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2216
+#: ../../libraries/entropy/server/interfaces/main.py:2212
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
@@ -1239,412 +1237,412 @@ msgstr ""
 "alle oude pakketten met conflicterende scope zullen worden verwijderd van de "
 "bestemming repo tenzij geinjecteerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2226
+#: ../../libraries/entropy/server/interfaces/main.py:2222
 msgid "new tag"
 msgstr "Nieuwe tag"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2298
+#: ../../libraries/entropy/server/interfaces/main.py:2294
 msgid "reverse dependency"
 msgstr "Tegengestelde afhankelijkheden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2309
+#: ../../libraries/entropy/server/interfaces/main.py:2305
 msgid "dependency"
 msgstr "Afhankelijkheid"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2341
+#: ../../libraries/entropy/server/interfaces/main.py:2337
 msgid "switching"
 msgstr "Veranderen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2361
+#: ../../libraries/entropy/server/interfaces/main.py:2357
 msgid "cannot switch, package not found, skipping"
 msgstr "Kan niet wisselen, pakket niet gevonden, overslaan"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2447
+#: ../../libraries/entropy/server/interfaces/main.py:2443
 msgid "moving file"
 msgstr "Bestand verplaatsen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2463
+#: ../../libraries/entropy/server/interfaces/main.py:2459
 msgid "loading data from source repository"
 msgstr "laden van data vanaf source repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2493
+#: ../../libraries/entropy/server/interfaces/main.py:2489
 msgid "GPG key was available in"
 msgstr "GPG sleutel was niet beschikbaar in"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2518
+#: ../../libraries/entropy/server/interfaces/main.py:2514
 msgid "injecting data to destination repository"
 msgstr "injecteren van data naar de repositorie locatie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2538
+#: ../../libraries/entropy/server/interfaces/main.py:2534
 msgid "removing entry from source repository"
 msgstr "verwijderen van invoer uit de source repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2556
+#: ../../libraries/entropy/server/interfaces/main.py:2552
 msgid "successfully handled atom"
 msgstr "succesvol behandeld atoom"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2583
+#: ../../libraries/entropy/server/interfaces/main.py:2579
 msgid "Injecting entropy metadata into built packages"
 msgstr "Injecteren van entropy metadata in de gebouwde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2599
+#: ../../libraries/entropy/server/interfaces/main.py:2595
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr "Voor de duidelijkheid, GPG infrastructuur laden is mislukt"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2653
+#: ../../libraries/entropy/server/interfaces/main.py:2649
 msgid "injecting entropy metadata"
 msgstr "injecteren van Entropy metadata"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2701
+#: ../../libraries/entropy/server/interfaces/main.py:2697
 msgid "injection complete"
 msgstr "invoeren compleet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2728
+#: ../../libraries/entropy/server/interfaces/main.py:2724
 msgid "removing package"
 msgstr "Pakket verwijderen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2753
-#: ../../libraries/entropy/server/interfaces/main.py:2956
+#: ../../libraries/entropy/server/interfaces/main.py:2749
+#: ../../libraries/entropy/server/interfaces/main.py:2952
 msgid "Integrity verification of the selected packages"
 msgstr "Integriteit verificatie van de geselecteerde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2768
-#: ../../libraries/entropy/server/interfaces/main.py:2967
+#: ../../libraries/entropy/server/interfaces/main.py:2764
+#: ../../libraries/entropy/server/interfaces/main.py:2963
 msgid "All the packages in repository will be checked."
 msgstr "Alle pakketten in de repositorie zullen worden gecheckt."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2775
+#: ../../libraries/entropy/server/interfaces/main.py:2771
 msgid "This is the list of the packages that would be checked"
 msgstr "De volgende pakketten zullen worden gecheckt."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2809
+#: ../../libraries/entropy/server/interfaces/main.py:2805
 msgid "Working on mirror"
 msgstr "Werken op spiegel"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2836
+#: ../../libraries/entropy/server/interfaces/main.py:2832
 msgid "checking hash"
 msgstr "checken van hash"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2851
+#: ../../libraries/entropy/server/interfaces/main.py:2847
 msgid "digest verification of"
 msgstr "'digest' controle voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2871
+#: ../../libraries/entropy/server/interfaces/main.py:2867
 msgid "NOT healthy"
 msgstr "NIET gezond"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2884
-#: ../../libraries/entropy/server/interfaces/main.py:3024
+#: ../../libraries/entropy/server/interfaces/main.py:2880
+#: ../../libraries/entropy/server/interfaces/main.py:3020
 msgid "This is the list of broken packages"
 msgstr "Dit is de lijst met gebroken pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2893
+#: ../../libraries/entropy/server/interfaces/main.py:2889
 #: ../../libraries/entropy/client/interfaces/package.py:297
 #: ../../libraries/entropy/client/interfaces/package.py:939
 msgid "Mirror"
 msgstr "Spiegel"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2912
-#: ../../server/server_reagent.py:1076
+#: ../../libraries/entropy/server/interfaces/main.py:2908
+#: ../../server/server_reagent.py:1076 ../../server/eit/commands/commit.py:357
 msgid "Statistics"
 msgstr "Statistieken"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2921
+#: ../../libraries/entropy/server/interfaces/main.py:2917
 msgid "Number of checked packages"
 msgstr "Aantal gecheckte pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2931
+#: ../../libraries/entropy/server/interfaces/main.py:2927
 msgid "Number of healthy packages"
 msgstr "Aantal gezonde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2941
+#: ../../libraries/entropy/server/interfaces/main.py:2937
 msgid "Number of broken packages"
 msgstr "Aantal beschadigde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2955
-#: ../../libraries/entropy/server/interfaces/main.py:3112
+#: ../../libraries/entropy/server/interfaces/main.py:2951
+#: ../../libraries/entropy/server/interfaces/main.py:3108
 #: ../../libraries/entropy/client/interfaces/db.py:1718
 msgid "local"
 msgstr "lokaal"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2992
+#: ../../libraries/entropy/server/interfaces/main.py:2988
 msgid "checking status of"
 msgstr "checken status van"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3014
+#: ../../libraries/entropy/server/interfaces/main.py:3010
 msgid "is corrupted, stored checksum"
 msgstr "is corrupt, controlesom opgeslagen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3051
+#: ../../libraries/entropy/server/interfaces/main.py:3047
 msgid "checked packages"
 msgstr "Gecontroleerde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3061
+#: ../../libraries/entropy/server/interfaces/main.py:3057
 msgid "healthy packages"
 msgstr "gezonde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3071
-#: ../../libraries/entropy/server/interfaces/main.py:3253
+#: ../../libraries/entropy/server/interfaces/main.py:3067
+#: ../../libraries/entropy/server/interfaces/main.py:3249
 msgid "broken packages"
 msgstr "beschadigde pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3081
-#: ../../libraries/entropy/server/interfaces/main.py:3263
+#: ../../libraries/entropy/server/interfaces/main.py:3077
+#: ../../libraries/entropy/server/interfaces/main.py:3259
 msgid "downloaded packages"
 msgstr "gedownloade pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3091
-#: ../../libraries/entropy/server/interfaces/main.py:3273
+#: ../../libraries/entropy/server/interfaces/main.py:3087
+#: ../../libraries/entropy/server/interfaces/main.py:3269
 msgid "failed downloads"
 msgstr "gefaalde downloads"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3113
+#: ../../libraries/entropy/server/interfaces/main.py:3109
 msgid "GPG signing packages for repository"
 msgstr "GPG ondertekend pakketten voor de repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3125
+#: ../../libraries/entropy/server/interfaces/main.py:3121
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Alle missende pakketten in de repositorie worden gedownload."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3141
+#: ../../libraries/entropy/server/interfaces/main.py:3137
 #: ../../server/server_key.py:69
 msgid "GnuPG not available"
 msgstr "GnuPG niet beschikbaar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3167
+#: ../../libraries/entropy/server/interfaces/main.py:3163
 msgid "Keys not available for"
 msgstr "Sleutels niet beschikbaar voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3198
+#: ../../libraries/entropy/server/interfaces/main.py:3194
 msgid "signing package"
 msgstr "pakket ondertekenen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3213
+#: ../../libraries/entropy/server/interfaces/main.py:3209
 msgid "Unknown error signing package"
 msgstr "Onbekende fout tijdens ondertekenen van pakket"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3243
+#: ../../libraries/entropy/server/interfaces/main.py:3239
 msgid "signed packages"
 msgstr "ondertekende pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3302
+#: ../../libraries/entropy/server/interfaces/main.py:3298
 msgid "available"
 msgstr "Beschikbaar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3314
+#: ../../libraries/entropy/server/interfaces/main.py:3310
 msgid "upload/ignored"
 msgstr "upload/genegeerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3349
+#: ../../libraries/entropy/server/interfaces/main.py:3345
 msgid "Starting to download missing files"
 msgstr "Start downloaden van missende bestanden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3360
+#: ../../libraries/entropy/server/interfaces/main.py:3356
 msgid "Searching missing/broken files on another mirror"
 msgstr "Aan het zoeken naar missend of beschadigde bestanden op andere spiegel"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3381
+#: ../../libraries/entropy/server/interfaces/main.py:3377
 msgid "Binary packages downloaded successfully."
 msgstr "Binaire pakketten zijn succesvol gedownload."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3390
+#: ../../libraries/entropy/server/interfaces/main.py:3386
 msgid "These are the packages that cannot be found online"
 msgstr "De volgende pakketten kunnen niet online worden gevonden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3406
+#: ../../libraries/entropy/server/interfaces/main.py:3402
 msgid "They won't be checked"
 msgstr "Ze zullen niet worden gechecked"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3420
+#: ../../libraries/entropy/server/interfaces/main.py:3416
 msgid "Please setup your branch to"
 msgstr "Zet a.u.b. uw branche naar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3422
+#: ../../libraries/entropy/server/interfaces/main.py:3418
 msgid "and retry"
 msgstr "en herhaal"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3432
+#: ../../libraries/entropy/server/interfaces/main.py:3428
 msgid "Copying repository (if not exists)"
 msgstr "Kopieren van database (als deze niet bestaat)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3465
+#: ../../libraries/entropy/server/interfaces/main.py:3461
 msgid "Switching packages"
 msgstr "Wisselen van pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3500
+#: ../../libraries/entropy/server/interfaces/main.py:3496
 msgid "Ignoring"
 msgstr "negeren"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3502
+#: ../../libraries/entropy/server/interfaces/main.py:3498
 msgid "already in branch"
 msgstr "Al reeds in branche"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3536
+#: ../../libraries/entropy/server/interfaces/main.py:3532
 msgid "migration loop completed"
 msgstr "migratie loop compleet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3554
+#: ../../libraries/entropy/server/interfaces/main.py:3550
 msgid "Running orphaned SPM packages test"
 msgstr "Uitvoeren van wees SPM pakketten test"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3570
+#: ../../libraries/entropy/server/interfaces/main.py:3566
 msgid "Scanning package"
 msgstr "Pakket scannen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3596
+#: ../../libraries/entropy/server/interfaces/main.py:3592
 msgid "not found anymore"
 msgstr "niet meer gevonden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3608
-#: ../../libraries/entropy/server/interfaces/main.py:3883
+#: ../../libraries/entropy/server/interfaces/main.py:3604
+#: ../../libraries/entropy/server/interfaces/main.py:3879
 msgid "Packages string"
 msgstr "Pakketten string"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3639
+#: ../../libraries/entropy/server/interfaces/main.py:3635
 msgid "Checking"
 msgstr "Controleren"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3704
+#: ../../libraries/entropy/server/interfaces/main.py:3700
 msgid "Running dependencies test"
 msgstr "Uitvoeren van afhankelijkheden test"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3736
+#: ../../libraries/entropy/server/interfaces/main.py:3732
 #: ../../client/text_ui.py:2302
 msgid "These are the dependencies not found"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3743
+#: ../../libraries/entropy/server/interfaces/main.py:3739
 #: ../../client/text_ui.py:2306
 msgid "Needed by"
 msgstr "Nodig voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3761
+#: ../../libraries/entropy/server/interfaces/main.py:3757
 msgid "by repo"
 msgstr "bij repo"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3771
+#: ../../libraries/entropy/server/interfaces/main.py:3767
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Alle afhankelijkheden zijn voldaan. Alles zit goed."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3797
+#: ../../libraries/entropy/server/interfaces/main.py:3793
 msgid "Broken and matched packages list"
 msgstr "Beschadigde en overeenkomende pakketten lijst"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3799
+#: ../../libraries/entropy/server/interfaces/main.py:3795
 #: ../../libraries/entropy/qa.py:642
 msgid "Dumping results into these files"
 msgstr "Resultaten worden gedumpt in deze bestanden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3825
+#: ../../libraries/entropy/server/interfaces/main.py:3821
 #: ../../client/text_ui.py:2358 ../../client/text_ui.py:2382
 msgid "System is healthy"
 msgstr "Systeem is gezond"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3834
+#: ../../libraries/entropy/server/interfaces/main.py:3830
 msgid "Matching libraries with Spm, please wait"
 msgstr "Vergelijken van bibliotheken met Spm, even geduld"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3848
+#: ../../libraries/entropy/server/interfaces/main.py:3844
 msgid "These are the matched packages"
 msgstr "Dit zijn de overeenkomende pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3892
+#: ../../libraries/entropy/server/interfaces/main.py:3888
 msgid "No matched packages"
 msgstr "Geen overeenkomende pakketten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3991
+#: ../../libraries/entropy/server/interfaces/main.py:3987
 msgid "Your default repository is not initialized"
 msgstr "Je standaard repositorie is niet geinstalleerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4003
+#: ../../libraries/entropy/server/interfaces/main.py:3999
 msgid "Do you want to initialize your default repository ?"
 msgstr "Wilt u de standaard repositorie initialiseren ?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4006
+#: ../../libraries/entropy/server/interfaces/main.py:4002
 msgid "Continuing with an uninitialized repository"
 msgstr "Doorgaan met een niet geinitialiseerde repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4158
+#: ../../libraries/entropy/server/interfaces/main.py:4154
 msgid "Entropy repository is already locked by you :-)"
 msgstr "Entropy repositorie is reeds geblokkeerd door jouw :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy/server/interfaces/main.py:4165
+#: ../../libraries/entropy/server/interfaces/main.py:4161
 msgid "Locking and Syncing Entropy repository"
 msgstr "Blokkeren en Synchroniseren van Entropy repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4179
+#: ../../libraries/entropy/server/interfaces/main.py:4175
 #: ../../server/server_activator.py:508
 msgid "Mirrors status table"
 msgstr "spiegels status tabel"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4188
-#: ../../libraries/entropy/server/interfaces/main.py:4191
+#: ../../libraries/entropy/server/interfaces/main.py:4184
+#: ../../libraries/entropy/server/interfaces/main.py:4187
 #: ../../server/server_activator.py:514 ../../server/server_activator.py:518
 msgid "Unlocked"
 msgstr "Vrijgemaakt"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4190
-#: ../../libraries/entropy/server/interfaces/main.py:4193
+#: ../../libraries/entropy/server/interfaces/main.py:4186
+#: ../../libraries/entropy/server/interfaces/main.py:4189
 #: ../../server/server_activator.py:512 ../../server/server_activator.py:516
 msgid "Locked"
 msgstr "geblokkeerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4210
+#: ../../libraries/entropy/server/interfaces/main.py:4206
 msgid "cannot lock mirror"
 msgstr "kan spiegel niet blokkeren"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4415
+#: ../../libraries/entropy/server/interfaces/main.py:4414
 msgid "Repository is corrupted!"
 msgstr "Repositorie is corrupt!"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4429
+#: ../../libraries/entropy/server/interfaces/main.py:4428
 msgid "indexing repository"
 msgstr "indexeren van repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4465
+#: ../../libraries/entropy/server/interfaces/main.py:4464
 msgid "Initializing an empty repository"
 msgstr "Initialiseren van een lege repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4478
+#: ../../libraries/entropy/server/interfaces/main.py:4477
 msgid "Entropy repository file"
 msgstr "Entropy repositorie bestand"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4480
+#: ../../libraries/entropy/server/interfaces/main.py:4479
 msgid "successfully initialized"
 msgstr "succesvol geinstalleerd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4562
-#: ../../libraries/entropy/server/interfaces/main.py:5311
+#: ../../libraries/entropy/server/interfaces/main.py:4561
+#: ../../libraries/entropy/server/interfaces/main.py:5310
 msgid "adding package"
 msgstr "pakket toevoegen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4696
+#: ../../libraries/entropy/server/interfaces/main.py:4695
 msgid "added package"
 msgstr "toegevoegd pakket"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4698
+#: ../../libraries/entropy/server/interfaces/main.py:4697
 msgid "rev"
 msgstr "rev"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4712
+#: ../../libraries/entropy/server/interfaces/main.py:4711
 msgid "manual dependencies for"
 msgstr "handmatige afhankelijkheden voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4793
+#: ../../libraries/entropy/server/interfaces/main.py:4792
 msgid "these are the missing dependencies"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4949
+#: ../../libraries/entropy/server/interfaces/main.py:4948
 msgid "no missing dependencies !"
 msgstr "geen missende afhankelijkheden!"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4964
+#: ../../libraries/entropy/server/interfaces/main.py:4963
 msgid "Do you agree?"
 msgstr "Weet u het zeker?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4966
-#: ../../libraries/entropy/server/interfaces/main.py:4972
+#: ../../libraries/entropy/server/interfaces/main.py:4965
+#: ../../libraries/entropy/server/interfaces/main.py:4971
 #: ../../libraries/entropy/output.py:740 ../../libraries/entropy/output.py:985
 #: ../../client/text_ugc.py:308 ../../client/text_ugc.py:542
 #: ../../client/text_ugc.py:641 ../../client/text_ugc.py:663
@@ -1654,6 +1652,12 @@ msgstr "Weet u het zeker?"
 #: ../../server/server_reagent.py:940 ../../server/server_reagent.py:941
 #: ../../server/server_reagent.py:965 ../../server/server_reagent.py:978
 #: ../../server/server_reagent.py:979 ../../server/server_reagent.py:994
+#: ../../server/eit/commands/commit.py:193
+#: ../../server/eit/commands/commit.py:195
+#: ../../server/eit/commands/commit.py:229
+#: ../../server/eit/commands/commit.py:246
+#: ../../server/eit/commands/commit.py:248
+#: ../../server/eit/commands/commit.py:267
 #: ../../sulfur/src/sulfur/dialogs.py:1214
 #: ../../sulfur/src/sulfur/dialogs.py:2082
 #: ../../sulfur/src/sulfur/events.py:304 ../../sulfur/src/sulfur/events.py:743
@@ -1661,143 +1665,143 @@ msgstr "Weet u het zeker?"
 msgid "Yes"
 msgstr "Ja"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4966
+#: ../../libraries/entropy/server/interfaces/main.py:4965
 msgid "Repeat"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5086
+#: ../../libraries/entropy/server/interfaces/main.py:5085
 msgid "metadata QA hook"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5088
+#: ../../libraries/entropy/server/interfaces/main.py:5087
 msgid "not owned by uid and gid = 0"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5101
+#: ../../libraries/entropy/server/interfaces/main.py:5100
 #, fuzzy
 msgid "using metadata QA hook"
 msgstr "Oplossen van metadata"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5128
+#: ../../libraries/entropy/server/interfaces/main.py:5127
 msgid "metadata QA check for"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5177
+#: ../../libraries/entropy/server/interfaces/main.py:5176
 msgid "cannot execute metadata QA hook for"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5203
+#: ../../libraries/entropy/server/interfaces/main.py:5202
 msgid "attention, QA hook returned a warning"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5225
+#: ../../libraries/entropy/server/interfaces/main.py:5224
 msgid "attention, QA hook returned an error"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5242
+#: ../../libraries/entropy/server/interfaces/main.py:5241
 #, fuzzy
 msgid "metadata QA check complete"
 msgstr "Databases blokkeren compleet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5325
+#: ../../libraries/entropy/server/interfaces/main.py:5324
 msgid "injected package, no separate debug package"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5343
+#: ../../libraries/entropy/server/interfaces/main.py:5342
 msgid "Exception caught, closing tasks"
 msgstr "Uitzondering Opgetreden, opdrachten worden afgesloten"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5435
+#: ../../libraries/entropy/server/interfaces/main.py:5434
 msgid "server-side repository"
 msgstr "server-zijde repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5437
+#: ../../libraries/entropy/server/interfaces/main.py:5436
 msgid "community repository"
 msgstr "communiteit repositorie"
 
 #. ..on repository: <repository_name>
-#: ../../libraries/entropy/server/interfaces/main.py:5439
+#: ../../libraries/entropy/server/interfaces/main.py:5438
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Entropy Server Omgeving Instantie op de repositorie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5450
+#: ../../libraries/entropy/server/interfaces/main.py:5449
 msgid "current branch"
 msgstr "huidige branche"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5452
+#: ../../libraries/entropy/server/interfaces/main.py:5451
 #: ../../server/server_reagent.py:241
 msgid "type"
 msgstr "type"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5461
+#: ../../libraries/entropy/server/interfaces/main.py:5460
 msgid "Currently configured repositories"
 msgstr "Huidig geconfigureerde repositories"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5497
+#: ../../libraries/entropy/server/interfaces/main.py:5496
 msgid "GPG key expired"
 msgstr "GPG sleutel verlopen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5499
+#: ../../libraries/entropy/server/interfaces/main.py:5498
 msgid "please frigging fix"
 msgstr "repareer a.u.b."
 
-#: ../../libraries/entropy/server/interfaces/main.py:5510
+#: ../../libraries/entropy/server/interfaces/main.py:5509
 msgid "GPG got unexpected error"
 msgstr "GPG heeft een overwachte fout"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5512
+#: ../../libraries/entropy/server/interfaces/main.py:5511
 msgid "skipping"
 msgstr "overslaan"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5529
-#: ../../libraries/entropy/server/interfaces/main.py:5544
+#: ../../libraries/entropy/server/interfaces/main.py:5528
+#: ../../libraries/entropy/server/interfaces/main.py:5543
 msgid "config files"
 msgstr "Config bestanden"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:5530
+#: ../../libraries/entropy/server/interfaces/main.py:5529
 msgid "checking system"
 msgstr "checken van systeem"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:5545
+#: ../../libraries/entropy/server/interfaces/main.py:5544
 msgid "there are configuration files not updated yet"
 msgstr "er zijn nog nieuwe configuratie bestanden niet geupdate"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5835
+#: ../../libraries/entropy/server/interfaces/main.py:5834
 msgid "found available dep_rewrites for this package"
 msgstr "beschikbare dep_rewrites gevonden voor dit pakket"
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
-#: ../../libraries/entropy/server/interfaces/main.py:5847
+#: ../../libraries/entropy/server/interfaces/main.py:5846
 msgid "added"
 msgstr "toegevoegd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5941
+#: ../../libraries/entropy/server/interfaces/main.py:5940
 msgid "replaced"
 msgstr "vervangen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5963
-#: ../../libraries/entropy/server/interfaces/main.py:5977
+#: ../../libraries/entropy/server/interfaces/main.py:5962
+#: ../../libraries/entropy/server/interfaces/main.py:5976
 msgid "No dependency rewrite made for"
 msgstr "Geen afhankelijkheden herschrijving gedaan voor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6049
-#: ../../libraries/entropy/server/interfaces/main.py:6069
-#: ../../libraries/entropy/server/interfaces/main.py:6081
+#: ../../libraries/entropy/server/interfaces/main.py:6048
+#: ../../libraries/entropy/server/interfaces/main.py:6068
+#: ../../libraries/entropy/server/interfaces/main.py:6080
 msgid "sets"
 msgstr "sets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6050
+#: ../../libraries/entropy/server/interfaces/main.py:6049
 msgid "updating package sets"
 msgstr "updaten van pakket sets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6070
+#: ../../libraries/entropy/server/interfaces/main.py:6069
 msgid "adding package set"
 msgstr "pakket set toevoegen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6082
+#: ../../libraries/entropy/server/interfaces/main.py:6081
 msgid "removing package set"
 msgstr "Pakket set verwijderen"
 
@@ -2330,7 +2334,8 @@ msgstr "Configureren"
 #: ../../server/server_activator.py:256 ../../server/server_activator.py:429
 #: ../../server/server_reagent.py:41 ../../server/server_reagent.py:629
 #: ../../server/server_reagent.py:809 ../../server/server_reagent.py:1087
-#: ../../server/server_reagent.py:1195 ../../services/kernel-switcher:120
+#: ../../server/server_reagent.py:1195 ../../server/eit/commands/status.py:71
+#: ../../server/eit/commands/commit.py:92 ../../services/kernel-switcher:120
 #: ../../services/kernel-switcher:197
 msgid "Another Entropy is currently running."
 msgstr "Een ander Entropy proces draait nog."
@@ -6405,6 +6410,7 @@ msgid "Would you like to calculate dependencies ?"
 msgstr "Wilt u de afhankelijkheden berekenen ?"
 
 #: ../../client/text_ui.py:2045 ../../server/server_reagent.py:976
+#: ../../server/eit/commands/commit.py:244
 msgid "Would you like to remove them now ?"
 msgstr "Wilt u ze nu verwijderen ?"
 
@@ -6806,20 +6812,6 @@ msgstr "Aanmaakdatum"
 msgid "Expires on"
 msgstr "Verloopt op"
 
-#: ../../server/eit.py:91
-msgid "Entropy Infrastructure Toolkit"
-msgstr ""
-
-#: ../../server/eit.py:123
-#, fuzzy
-msgid "show repository status"
-msgstr "geef repositories status weer"
-
-#: ../../server/eit.py:141
-#, fuzzy
-msgid "commit unstaged changes to repository"
-msgstr "Geinstalleerde Pakketten repositorie"
-
 #: ../../server/server_reagent.py:64
 msgid "no package specified."
 msgstr "Geen pakket opgegeven."
@@ -6862,7 +6854,7 @@ msgstr "Geen juiste repositorie opgegeven."
 
 #: ../../server/server_reagent.py:142 ../../server/server_reagent.py:177
 #: ../../server/server_reagent.py:213 ../../server/server_reagent.py:410
-#: ../../server/server_reagent.py:880
+#: ../../server/server_reagent.py:880 ../../server/eit/commands/commit.py:124
 msgid "Cannot match"
 msgstr "Komt niet overeen"
 
@@ -6974,12 +6966,12 @@ msgstr "Kan niet overschrijven, bestand bestaat reeds"
 msgid "Bumping Repository database"
 msgstr "Bijwerken Repositorie database"
 
-#: ../../server/server_reagent.py:896
+#: ../../server/server_reagent.py:896 ../../server/eit/commands/commit.py:141
 msgid "No valid packages to repackage."
 msgstr "Er zijn geen geldige pakketten om opnieuw te verpakken."
 
 #. normal scanning
-#: ../../server/server_reagent.py:901
+#: ../../server/server_reagent.py:901 ../../server/eit/commands/commit.py:145
 msgid "Scanning database for differences"
 msgstr "Scannen van database op verschillen"
 
@@ -6987,7 +6979,7 @@ msgstr "Scannen van database op verschillen"
 msgid "Invalid atom"
 msgstr "Ongeldig atoom"
 
-#: ../../server/server_reagent.py:928
+#: ../../server/server_reagent.py:928 ../../server/eit/commands/commit.py:175
 msgid "Zarro thinggz totoo"
 msgstr "Niks te doen"
 
@@ -7008,7 +7000,7 @@ msgstr "Transformeren van database"
 msgid "Database transform complete"
 msgstr "Database transformatie compleet"
 
-#: ../../server/server_reagent.py:956
+#: ../../server/server_reagent.py:956 ../../server/eit/commands/commit.py:216
 msgid "expired"
 msgstr "verlopen"
 
@@ -7016,7 +7008,7 @@ msgstr "verlopen"
 msgid "So sweetheart, what packages do you want to remove ?"
 msgstr "Kies welke Pakket Set je wilt verwijderen"
 
-#: ../../server/server_reagent.py:964
+#: ../../server/server_reagent.py:964 ../../server/eit/commands/commit.py:228
 msgid "Remove this package?"
 msgstr "Dit pakket verwijderen?"
 
@@ -7024,7 +7016,7 @@ msgstr "Dit pakket verwijderen?"
 msgid "So sweetheart, what packages do you want to add ?"
 msgstr "Kies welke Pakket Set je wilt toevoegen"
 
-#: ../../server/server_reagent.py:993
+#: ../../server/server_reagent.py:993 ../../server/eit/commands/commit.py:266
 msgid "Add this package?"
 msgstr "Dit pakket toevoegen?"
 
@@ -7032,58 +7024,58 @@ msgstr "Dit pakket toevoegen?"
 msgid "These are the packages that would be added/updated"
 msgstr "Volgende pakketten zullen worden geinstalleerd/geupdate"
 
-#: ../../server/server_reagent.py:1030
+#: ../../server/server_reagent.py:1030 ../../server/eit/commands/commit.py:307
 msgid "warning"
 msgstr "Waarschuwing"
 
-#: ../../server/server_reagent.py:1037
+#: ../../server/server_reagent.py:1037 ../../server/eit/commands/commit.py:314
 msgid "Would you like to package them now ?"
 msgstr "Wil je ze nu inpakken ?"
 
-#: ../../server/server_reagent.py:1038
+#: ../../server/server_reagent.py:1038 ../../server/eit/commands/commit.py:315
 msgid "inside"
 msgstr "binnenin"
 
 #. package them
-#: ../../server/server_reagent.py:1050
+#: ../../server/server_reagent.py:1050 ../../server/eit/commands/commit.py:328
 msgid "Compressing packages"
 msgstr "Pakketten comprimeren"
 
-#: ../../server/server_reagent.py:1061
+#: ../../server/server_reagent.py:1061 ../../server/eit/commands/commit.py:340
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr "Negeren van gebroken Spm ingang, hercompileer a.u.b."
 
-#: ../../server/server_reagent.py:1064
+#: ../../server/server_reagent.py:1064 ../../server/eit/commands/commit.py:344
 msgid "Nothing to do, check later."
 msgstr "Niets te doen, controleer later."
 
-#: ../../server/server_reagent.py:1077
+#: ../../server/server_reagent.py:1077 ../../server/eit/commands/commit.py:358
 msgid "Entries handled"
 msgstr "Invoer behandeld"
 
-#: ../../server/server_reagent.py:1122
+#: ../../server/server_reagent.py:1122 ../../server/eit/commands/status.py:105
 msgid "local revision"
 msgstr "Herziening"
 
-#: ../../server/server_reagent.py:1129
+#: ../../server/server_reagent.py:1129 ../../server/eit/commands/status.py:112
 msgid "stored packages"
 msgstr "opgeslagen pakketten"
 
-#: ../../server/server_reagent.py:1134
+#: ../../server/server_reagent.py:1134 ../../server/eit/commands/status.py:117
 msgid "upload packages"
 msgstr "upload pakketten"
 
-#: ../../server/server_reagent.py:1140
+#: ../../server/server_reagent.py:1140 ../../server/eit/commands/status.py:124
 #, fuzzy
 msgid "unstaged packages"
 msgstr "ondertekende pakketten"
 
-#: ../../server/server_reagent.py:1171
+#: ../../server/server_reagent.py:1171 ../../server/eit/commands/status.py:156
 #, fuzzy
 msgid "add"
 msgstr "toegevoegd"
 
-#: ../../server/server_reagent.py:1181
+#: ../../server/server_reagent.py:1181 ../../server/eit/commands/status.py:168
 #, fuzzy
 msgid "switch injected"
 msgstr "Veranderen"
@@ -7106,6 +7098,81 @@ msgstr "pakket set niet gevonden"
 #: ../../sulfur/src/sulfur/packages.py:1135
 msgid "Nothing found"
 msgstr "Niets gevonden"
+
+#: ../../server/eit/main.py:80
+msgid "superuser access required"
+msgstr ""
+
+#: ../../server/eit/commands/status.py:178
+#, fuzzy
+msgid "show repository status"
+msgstr "geef repositories status weer"
+
+#: ../../server/eit/commands/help.py:34
+msgid "Entropy Infrastructure Toolkit"
+msgstr ""
+
+#: ../../server/eit/commands/help.py:54 ../../services/kernel-switcher:226
+msgid "this help"
+msgstr "deze hulp"
+
+#: ../../server/eit/commands/commit.py:60
+#, fuzzy
+msgid "selectively pick changes"
+msgstr "Verwijderen van geselecteerde pakketten"
+
+#: ../../server/eit/commands/commit.py:63
+msgid "no stupid questions"
+msgstr ""
+
+#: ../../server/eit/commands/commit.py:167
+#, fuzzy
+msgid "Invalid package"
+msgstr "Ongeldig backend-type"
+
+#: ../../server/eit/commands/commit.py:181
+#, fuzzy
+msgid "These would be marked as injected"
+msgstr "is geinjecteerd"
+
+#: ../../server/eit/commands/commit.py:191
+msgid "Do it now ?"
+msgstr ""
+
+#: ../../server/eit/commands/commit.py:202
+#, fuzzy
+msgid "Transforming"
+msgstr "Transformeren van database"
+
+#: ../../server/eit/commands/commit.py:206
+#, fuzzy
+msgid "Transform complete"
+msgstr "Database transformatie compleet"
+
+#: ../../server/eit/commands/commit.py:222
+#, fuzzy
+msgid "What packages do you want to remove ?"
+msgstr "Kies welke Pakket Set je wilt verwijderen"
+
+#: ../../server/eit/commands/commit.py:236
+#, fuzzy
+msgid "These would be removed from repository"
+msgstr "Overeenkomende voor verwijdering van de repositorie database"
+
+#: ../../server/eit/commands/commit.py:260
+#, fuzzy
+msgid "What packages do you want to add ?"
+msgstr "Kies welke Pakket Set je wilt toevoegen"
+
+#: ../../server/eit/commands/commit.py:275
+#, fuzzy
+msgid "These would be added or updated"
+msgstr "Deze worden toegevoegd aan de systeem database"
+
+#: ../../server/eit/commands/commit.py:367
+#, fuzzy
+msgid "commit changes to repository"
+msgstr "Geinstalleerde Pakketten repositorie"
 
 #: ../../sulfur/src/sulfur/views.py:92 ../../sulfur/src/sulfur/views.py:152
 #: ../../sulfur/src/sulfur/views.py:2801
@@ -8591,15 +8658,6 @@ msgstr "Wissel kernel"
 msgid "list kernels"
 msgstr "toon kernels"
 
-#: ../../services/kernel-switcher:226
-msgid "this help"
-msgstr "deze hulp"
-
-#: ../../server/eit:355
-#, fuzzy
-msgid "reset error"
-msgstr "socket fout"
-
 #: ../../sulfur/src/sulfur/sulfur.glade.h:1
 msgid "0 = no limit; 100 = 100kB/sec"
 msgstr "0 = geen limiet; 100 = 100kB/sec"
@@ -9743,6 +9801,13 @@ msgstr "Magneto Software update kennisgever"
 msgid "_Load Package Manager"
 msgstr "_Start Pakketten Beheerder"
 
+#~ msgid "Entropy Server interface must be run as root"
+#~ msgstr "Entropy Server omgeving moet gestart worden als root"
+
+#, fuzzy
+#~ msgid "reset error"
+#~ msgstr "socket fout"
+
 #~ msgid "Cannot acquire Entropy resources lock."
 #~ msgstr "Kan Entropy bestanden niet vergrendelen"
 
@@ -10371,9 +10436,6 @@ msgstr "_Start Pakketten Beheerder"
 
 #~ msgid "Matches to add from Spm"
 #~ msgstr "Overeenkomende voor toevoeging vanaf Spm"
-
-#~ msgid "Matches to remove from repository database"
-#~ msgstr "Overeenkomende voor verwijdering van de repositorie database"
 
 #~ msgid "Matches to inject on repository database"
 #~ msgstr "Overeenkomende voor injecteren in de repositorie database"
@@ -11564,9 +11626,6 @@ msgstr "_Start Pakketten Beheerder"
 
 #~ msgid "Show Queued Packages"
 #~ msgstr "Toon in Wachtrij geplaatste pakketten"
-
-#~ msgid "Invalid backend"
-#~ msgstr "Ongeldig backend-type"
 
 #~ msgid ""
 #~ "Would you like to look for packages that can be removed along with the "

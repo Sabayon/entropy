@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-06 08:38+0200\n"
+"POT-Creation-Date: 2011-10-09 17:09+0200\n"
 "PO-Revision-Date: 2011-02-27 20:35+0100\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
@@ -18,36 +18,36 @@ msgstr ""
 "X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: ../../libraries/entropy/db/__init__.py:5012
+#: ../../libraries/entropy/db/__init__.py:5024
 msgid "Syncing current database"
 msgstr "S'està sincronitzant la base de dades actual"
 
-#: ../../libraries/entropy/db/__init__.py:5013
+#: ../../libraries/entropy/db/__init__.py:5025
 #: ../../libraries/entropy/client/interfaces/db.py:287
 msgid "please wait"
 msgstr "espereu"
 
-#: ../../libraries/entropy/db/__init__.py:5028
+#: ../../libraries/entropy/db/__init__.py:5040
 msgid "Removing entry"
 msgstr "S'està eliminant l'entrada"
 
-#: ../../libraries/entropy/db/__init__.py:5047
+#: ../../libraries/entropy/db/__init__.py:5059
 msgid "Adding entry"
 msgstr "S'està afegint l'entrada"
 
-#: ../../libraries/entropy/db/__init__.py:5124
+#: ../../libraries/entropy/db/__init__.py:5136
 msgid "Exporting database table"
 msgstr "S'està exportant la taula de la base de dades"
 
-#: ../../libraries/entropy/db/__init__.py:5164
+#: ../../libraries/entropy/db/__init__.py:5176
 msgid "Database Export complete."
 msgstr "L'exportació de la base de dades ha acabat."
 
-#: ../../libraries/entropy/db/__init__.py:5807
-#: ../../libraries/entropy/db/__init__.py:5820
-#: ../../libraries/entropy/db/__init__.py:5974
-#: ../../libraries/entropy/db/__init__.py:6081
-#: ../../libraries/entropy/db/__init__.py:6094
+#: ../../libraries/entropy/db/__init__.py:5819
+#: ../../libraries/entropy/db/__init__.py:5832
+#: ../../libraries/entropy/db/__init__.py:5986
+#: ../../libraries/entropy/db/__init__.py:6093
+#: ../../libraries/entropy/db/__init__.py:6106
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2406
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2545
 #: ../../libraries/entropy/client/interfaces/client.py:856
@@ -56,70 +56,70 @@ msgstr "L'exportació de la base de dades ha acabat."
 msgid "ATTENTION"
 msgstr "ATENCIÓ"
 
-#: ../../libraries/entropy/db/__init__.py:5808
+#: ../../libraries/entropy/db/__init__.py:5820
 msgid "Spm error occured"
 msgstr "Hi ha hagut un error Spm"
 
-#: ../../libraries/entropy/db/__init__.py:5821
+#: ../../libraries/entropy/db/__init__.py:5833
 msgid "Spm Unique Identifier not found for"
 msgstr "No s'ha trobat un Identificador Únic Spm per a "
 
-#: ../../libraries/entropy/db/__init__.py:5976
+#: ../../libraries/entropy/db/__init__.py:5988
 msgid "updating repository metadata layout, please wait!"
 msgstr ""
 "s'està actualitzant la disposició de metadades del repositori, espereu!"
 
-#: ../../libraries/entropy/db/__init__.py:6082
+#: ../../libraries/entropy/db/__init__.py:6094
 msgid "generating provided_libs metadata, please wait!"
 msgstr "s'estan generant les metadades de provided_libs, espereu!"
 
-#: ../../libraries/entropy/db/skel.py:1630
-#: ../../libraries/entropy/db/skel.py:1977
+#: ../../libraries/entropy/db/skel.py:1632
+#: ../../libraries/entropy/db/skel.py:1979
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy/db/skel.py:1631
+#: ../../libraries/entropy/db/skel.py:1633
 #, fuzzy
 msgid "Running packages metadata update"
 msgstr "s'està forçant l'actualització de les metadades dels paquets"
 
-#: ../../libraries/entropy/db/skel.py:1632
+#: ../../libraries/entropy/db/skel.py:1634
 msgid "it could take a while"
 msgstr "pot trigar una estona"
 
-#: ../../libraries/entropy/db/skel.py:1652
-#: ../../libraries/entropy/db/skel.py:1677
-#: ../../libraries/entropy/db/skel.py:1700
+#: ../../libraries/entropy/db/skel.py:1654
+#: ../../libraries/entropy/db/skel.py:1679
+#: ../../libraries/entropy/db/skel.py:1702
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy/db/skel.py:1653
+#: ../../libraries/entropy/db/skel.py:1655
 msgid "action"
 msgstr "acció"
 
-#: ../../libraries/entropy/db/skel.py:1678
+#: ../../libraries/entropy/db/skel.py:1680
 msgid "package move actions complete"
 msgstr "s'ha desplaçat el paquet"
 
-#: ../../libraries/entropy/db/skel.py:1692
+#: ../../libraries/entropy/db/skel.py:1694
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2386
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2582
 msgid "WARNING"
 msgstr "AVÍS"
 
-#: ../../libraries/entropy/db/skel.py:1693
+#: ../../libraries/entropy/db/skel.py:1695
 msgid "Cannot run SPM cleanup, error"
 msgstr "No es pot executar la neteja SPM, error"
 
-#: ../../libraries/entropy/db/skel.py:1701
+#: ../../libraries/entropy/db/skel.py:1703
 msgid "package moves completed successfully"
 msgstr "s'han desplaçat els paquets correctament"
 
-#: ../../libraries/entropy/db/skel.py:1978
+#: ../../libraries/entropy/db/skel.py:1980
 msgid "Moving old entry"
 msgstr "S'està movent una entrada antiga"
 
-#: ../../libraries/entropy/db/skel.py:1980
+#: ../../libraries/entropy/db/skel.py:1982
 #: ../../client/text_configuration.py:122
 msgid "to"
 msgstr "a"
@@ -364,7 +364,7 @@ msgid "Cannot update SPM installed pkgs file"
 msgstr "No es pot actualitzar el fitxer SPM de paquets instal·lats"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3150
-#: ../../libraries/entropy/server/interfaces/main.py:1632
+#: ../../libraries/entropy/server/interfaces/main.py:1628
 #: ../../libraries/entropy/client/interfaces/db.py:403
 #: ../../libraries/entropy/client/interfaces/db.py:452
 #: ../../libraries/entropy/client/interfaces/db.py:506
@@ -439,7 +439,7 @@ msgid "Error calculating dependencies"
 msgstr "Error en calcular les dependències"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4133
-#: ../../libraries/entropy/server/interfaces/main.py:2853
+#: ../../libraries/entropy/server/interfaces/main.py:2849
 msgid "not supported"
 msgstr "no està implementada"
 
@@ -592,8 +592,8 @@ msgstr "s'està baixant el paquet"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:619
 #: ../../libraries/entropy/server/interfaces/mirrors.py:634
 #: ../../libraries/entropy/server/interfaces/mirrors.py:651
-#: ../../libraries/entropy/server/interfaces/main.py:2869
-#: ../../libraries/entropy/server/interfaces/main.py:3012
+#: ../../libraries/entropy/server/interfaces/main.py:2865
+#: ../../libraries/entropy/server/interfaces/main.py:3008
 msgid "package"
 msgstr "paquet"
 
@@ -662,8 +662,8 @@ msgstr "càrrega"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:994
 #: ../../libraries/entropy/server/interfaces/db.py:683
-#: ../../libraries/entropy/server/interfaces/main.py:3325
-#: ../../libraries/entropy/server/interfaces/main.py:4201
+#: ../../libraries/entropy/server/interfaces/main.py:3321
+#: ../../libraries/entropy/server/interfaces/main.py:4197
 msgid "download"
 msgstr "baixada"
 
@@ -673,9 +673,10 @@ msgstr "copia"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1022
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2156
-#: ../../libraries/entropy/server/interfaces/main.py:2266
+#: ../../libraries/entropy/server/interfaces/main.py:2262
 #: ../../libraries/entropy/client/interfaces/package.py:1581
 #: ../../client/text_ui.py:2203 ../../server/server_reagent.py:1176
+#: ../../server/eit/commands/status.py:161
 msgid "remove"
 msgstr "elimina"
 
@@ -747,7 +748,7 @@ msgid "sync"
 msgstr "sincronitza"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1405
-#: ../../libraries/entropy/server/interfaces/main.py:2741
+#: ../../libraries/entropy/server/interfaces/main.py:2737
 msgid "removal complete"
 msgstr "l'eliminació ha acabat"
 
@@ -764,7 +765,7 @@ msgstr "errors de càrrega"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2233
 #: ../../libraries/entropy/server/interfaces/db.py:737
 #: ../../libraries/entropy/server/interfaces/db.py:1532
-#: ../../libraries/entropy/server/interfaces/main.py:2007
+#: ../../libraries/entropy/server/interfaces/main.py:2003
 msgid "reason"
 msgstr "raó"
 
@@ -773,12 +774,12 @@ msgid "upload completed successfully"
 msgstr "s'ha penjat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1560
-#: ../../libraries/entropy/server/interfaces/main.py:2006
+#: ../../libraries/entropy/server/interfaces/main.py:2002
 msgid "download errors"
 msgstr "errors de baixada"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1576
-#: ../../libraries/entropy/server/interfaces/main.py:2024
+#: ../../libraries/entropy/server/interfaces/main.py:2020
 msgid "download completed successfully"
 msgstr "la baixada s'ha acabat correctament"
 
@@ -826,12 +827,12 @@ msgstr "Voleu executar els passos descrits més amunt?"
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1804
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2170
-#: ../../libraries/entropy/server/interfaces/main.py:1746
-#: ../../libraries/entropy/server/interfaces/main.py:1916
-#: ../../libraries/entropy/server/interfaces/main.py:2324
-#: ../../libraries/entropy/server/interfaces/main.py:2796
-#: ../../libraries/entropy/server/interfaces/main.py:3337
-#: ../../libraries/entropy/server/interfaces/main.py:4004
+#: ../../libraries/entropy/server/interfaces/main.py:1742
+#: ../../libraries/entropy/server/interfaces/main.py:1912
+#: ../../libraries/entropy/server/interfaces/main.py:2320
+#: ../../libraries/entropy/server/interfaces/main.py:2792
+#: ../../libraries/entropy/server/interfaces/main.py:3333
+#: ../../libraries/entropy/server/interfaces/main.py:4000
 #: ../../libraries/entropy/output.py:740 ../../client/text_smart.py:144
 #: ../../client/text_smart.py:323 ../../client/text_smart.py:475
 #: ../../client/text_configuration.py:117
@@ -848,7 +849,8 @@ msgstr "Voleu executar els passos descrits més amunt?"
 #: ../../server/server_key.py:224 ../../server/server_key.py:311
 #: ../../server/server_reagent.py:313 ../../server/server_reagent.py:471
 #: ../../server/server_reagent.py:519 ../../server/server_reagent.py:557
-#: ../../server/server_reagent.py:1042 ../../sulfur/src/sulfur/dialogs.py:1210
+#: ../../server/server_reagent.py:1042 ../../server/eit/commands/commit.py:319
+#: ../../sulfur/src/sulfur/dialogs.py:1210
 #: ../../sulfur/src/sulfur/entropyapi.py:395
 msgid "No"
 msgstr "No"
@@ -891,10 +893,10 @@ msgstr "aquests són els paquets que han vençut"
 
 #. ask to continue
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2169
-#: ../../libraries/entropy/server/interfaces/main.py:1915
-#: ../../libraries/entropy/server/interfaces/main.py:2323
-#: ../../libraries/entropy/server/interfaces/main.py:2795
-#: ../../libraries/entropy/server/interfaces/main.py:3336
+#: ../../libraries/entropy/server/interfaces/main.py:1911
+#: ../../libraries/entropy/server/interfaces/main.py:2319
+#: ../../libraries/entropy/server/interfaces/main.py:2791
+#: ../../libraries/entropy/server/interfaces/main.py:3332
 #: ../../client/text_ui.py:948 ../../server/server_reagent.py:470
 #: ../../server/server_reagent.py:518 ../../server/server_reagent.py:556
 msgid "Would you like to continue ?"
@@ -914,8 +916,8 @@ msgstr "s'estan eliminat els paquets localment"
 
 #. this means that user is asking to remove dep_pattern
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2277
-#: ../../libraries/entropy/server/interfaces/main.py:5850
-#: ../../libraries/entropy/server/interfaces/main.py:5952
+#: ../../libraries/entropy/server/interfaces/main.py:5849
+#: ../../libraries/entropy/server/interfaces/main.py:5951
 msgid "removed"
 msgstr "eliminat"
 
@@ -952,7 +954,7 @@ msgid "notice board upload success"
 msgstr "el tauler de notícies s'ha carregat"
 
 #: ../../libraries/entropy/server/interfaces/db.py:329
-#: ../../libraries/entropy/server/interfaces/main.py:3159
+#: ../../libraries/entropy/server/interfaces/main.py:3155
 msgid "Keys for repository are expired"
 msgstr "Les claus del repositori han vençut"
 
@@ -1120,30 +1122,26 @@ msgstr "El repositori s'ha actualitzat igualment"
 msgid "package has no keyword set, it will be masked !"
 msgstr "el paquet no té assignada keyword, s'emmascararà !"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1075
-msgid "Entropy Server interface must be run as root"
-msgstr "Heu d'executar la Interfície del Servidor d'Entropy com a root"
-
-#: ../../libraries/entropy/server/interfaces/main.py:1136
-#: ../../libraries/entropy/server/interfaces/main.py:3963
+#: ../../libraries/entropy/server/interfaces/main.py:1132
+#: ../../libraries/entropy/server/interfaces/main.py:3959
 msgid "repository not configured"
 msgstr "el repositori no està configurat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1142
+#: ../../libraries/entropy/server/interfaces/main.py:1138
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "la id del repositori està protegida, no podeu usar-la..."
 
-#: ../../libraries/entropy/server/interfaces/main.py:1492
+#: ../../libraries/entropy/server/interfaces/main.py:1488
 msgid "invalid repository revision"
 msgstr "la revisió del repositori no és vàlida"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1494
+#: ../../libraries/entropy/server/interfaces/main.py:1490
 msgid "defaulting to 0"
 msgstr "s'estableix per defecte a 0"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1587
-#: ../../libraries/entropy/server/interfaces/main.py:4199
-#: ../../libraries/entropy/server/interfaces/main.py:4428
+#: ../../libraries/entropy/server/interfaces/main.py:1583
+#: ../../libraries/entropy/server/interfaces/main.py:4195
+#: ../../libraries/entropy/server/interfaces/main.py:4427
 #: ../../client/text_ugc.py:111 ../../server/server_reagent.py:85
 #: ../../server/server_reagent.py:90 ../../server/server_reagent.py:103
 #: ../../server/server_reagent.py:107 ../../server/server_reagent.py:144
@@ -1156,84 +1154,84 @@ msgstr "s'estableix per defecte a 0"
 msgid "repository"
 msgstr "repositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1588
+#: ../../libraries/entropy/server/interfaces/main.py:1584
 msgid "syncing package sets"
 msgstr "s'estan sincronitzant els conjunts de paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1633
+#: ../../libraries/entropy/server/interfaces/main.py:1629
 msgid "cannot match"
 msgstr "no pot coincidir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1733
+#: ../../libraries/entropy/server/interfaces/main.py:1729
 msgid "initializing repository"
 msgstr "S'està inicialitzant el repositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1743
+#: ../../libraries/entropy/server/interfaces/main.py:1739
 msgid "do you really want to initialize this repository ?"
 msgstr "segur que voleu inicialitzar aquest respositori?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1784
+#: ../../libraries/entropy/server/interfaces/main.py:1780
 msgid "Invalid tag specified"
 msgstr "L'etiqueta especificada no és vàlida"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1830
+#: ../../libraries/entropy/server/interfaces/main.py:1826
 msgid "flushing back selected packages from branches"
 msgstr "s'estan eliminant els paquets seleccionats de les branques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1856
+#: ../../libraries/entropy/server/interfaces/main.py:1852
 msgid "nothing to do"
 msgstr "no hi ha res per fer"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1880
+#: ../../libraries/entropy/server/interfaces/main.py:1876
 msgid "these are the packages that will be flushed"
 msgstr "aquests són els paquets que s'eliminaran"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1965
+#: ../../libraries/entropy/server/interfaces/main.py:1961
 msgid "checking package hash"
 msgstr "s'està comprovant l'empremta electrònica del paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1984
+#: ../../libraries/entropy/server/interfaces/main.py:1980
 msgid "hash does not match for"
 msgstr "l'empremta no coincideix per"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1994
+#: ../../libraries/entropy/server/interfaces/main.py:1990
 msgid "wrong md5"
 msgstr "md5 és incorrecte"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2038
+#: ../../libraries/entropy/server/interfaces/main.py:2034
 msgid "error downloading packages from mirrors"
 msgstr "error en baixar els paquets de les rèpliques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2053
+#: ../../libraries/entropy/server/interfaces/main.py:2049
 msgid "working on branch"
 msgstr "s'està treballant en la branca"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2069
+#: ../../libraries/entropy/server/interfaces/main.py:2065
 msgid "updating package"
 msgstr "s'està actualitzant un paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2106
+#: ../../libraries/entropy/server/interfaces/main.py:2102
 msgid "package flushed"
 msgstr "paquet eliminat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2186
+#: ../../libraries/entropy/server/interfaces/main.py:2182
 msgid "Cannot touch system repository"
 msgstr "No es pot accedir al repositori del sistema"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2201
+#: ../../libraries/entropy/server/interfaces/main.py:2197
 msgid "Preparing to move selected packages to"
 msgstr "S'està preparant per desplaçar els paquets seleccionats a"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2203
+#: ../../libraries/entropy/server/interfaces/main.py:2199
 msgid "Preparing to copy selected packages to"
 msgstr "S'està preparant per copiar els paquets seleccionats a"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2215
+#: ../../libraries/entropy/server/interfaces/main.py:2211
 #: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Note"
 msgstr "Nota"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2216
+#: ../../libraries/entropy/server/interfaces/main.py:2212
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
@@ -1241,415 +1239,415 @@ msgstr ""
 "tots els paquets antics amb scope en conflicte s'eliminaran del repositori "
 "destí, a menys que s'injectin"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2226
+#: ../../libraries/entropy/server/interfaces/main.py:2222
 msgid "new tag"
 msgstr "nova etiqueta"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2298
+#: ../../libraries/entropy/server/interfaces/main.py:2294
 msgid "reverse dependency"
 msgstr "dependències inverses"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2309
+#: ../../libraries/entropy/server/interfaces/main.py:2305
 msgid "dependency"
 msgstr "dependències"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2341
+#: ../../libraries/entropy/server/interfaces/main.py:2337
 msgid "switching"
 msgstr "s'està commutant"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2361
+#: ../../libraries/entropy/server/interfaces/main.py:2357
 msgid "cannot switch, package not found, skipping"
 msgstr "no es pot commutar, el paquet no s'ha trobat, s'omet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2447
+#: ../../libraries/entropy/server/interfaces/main.py:2443
 msgid "moving file"
 msgstr "S'està desplaçant el fitxer"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2463
+#: ../../libraries/entropy/server/interfaces/main.py:2459
 msgid "loading data from source repository"
 msgstr "s'estan carregant dades del respositori d'origen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2493
+#: ../../libraries/entropy/server/interfaces/main.py:2489
 msgid "GPG key was available in"
 msgstr "la clau GPG estava disponible en"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2518
+#: ../../libraries/entropy/server/interfaces/main.py:2514
 msgid "injecting data to destination repository"
 msgstr "s'estan injectant dades al respositori destinació"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2538
+#: ../../libraries/entropy/server/interfaces/main.py:2534
 msgid "removing entry from source repository"
 msgstr "s'està eliminant l'entrada del respositori origen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2556
+#: ../../libraries/entropy/server/interfaces/main.py:2552
 msgid "successfully handled atom"
 msgstr "l'àtom s'ha tractat correctament"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2583
+#: ../../libraries/entropy/server/interfaces/main.py:2579
 msgid "Injecting entropy metadata into built packages"
 msgstr "S'estan injectant metadades d'Entropy als paquets construïts"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2599
+#: ../../libraries/entropy/server/interfaces/main.py:2595
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr "No s'ha pogut carregar la infraestructura JFYI, GPG"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2653
+#: ../../libraries/entropy/server/interfaces/main.py:2649
 msgid "injecting entropy metadata"
 msgstr "s'estan injectant metadades d'Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2701
+#: ../../libraries/entropy/server/interfaces/main.py:2697
 msgid "injection complete"
 msgstr "la injecció ha acabat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2728
+#: ../../libraries/entropy/server/interfaces/main.py:2724
 msgid "removing package"
 msgstr "s'està eliminant el paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2753
-#: ../../libraries/entropy/server/interfaces/main.py:2956
+#: ../../libraries/entropy/server/interfaces/main.py:2749
+#: ../../libraries/entropy/server/interfaces/main.py:2952
 msgid "Integrity verification of the selected packages"
 msgstr "Verificació d'integritat dels paquets seleccionats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2768
-#: ../../libraries/entropy/server/interfaces/main.py:2967
+#: ../../libraries/entropy/server/interfaces/main.py:2764
+#: ../../libraries/entropy/server/interfaces/main.py:2963
 msgid "All the packages in repository will be checked."
 msgstr "Es comprovaran tots els paquets del repositori."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2775
+#: ../../libraries/entropy/server/interfaces/main.py:2771
 msgid "This is the list of the packages that would be checked"
 msgstr "Aquesta és la llista de paquets que es comprovaran"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2809
+#: ../../libraries/entropy/server/interfaces/main.py:2805
 msgid "Working on mirror"
 msgstr "S'està treballant en la rèplica"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2836
+#: ../../libraries/entropy/server/interfaces/main.py:2832
 msgid "checking hash"
 msgstr "s'està comprovant l'empremta electrònica"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2851
+#: ../../libraries/entropy/server/interfaces/main.py:2847
 msgid "digest verification of"
 msgstr "verificació de l'empremta electrònica de"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2871
+#: ../../libraries/entropy/server/interfaces/main.py:2867
 msgid "NOT healthy"
 msgstr "NO és sa"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2884
-#: ../../libraries/entropy/server/interfaces/main.py:3024
+#: ../../libraries/entropy/server/interfaces/main.py:2880
+#: ../../libraries/entropy/server/interfaces/main.py:3020
 msgid "This is the list of broken packages"
 msgstr "Aquesta és la llista de paquets trencats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2893
+#: ../../libraries/entropy/server/interfaces/main.py:2889
 #: ../../libraries/entropy/client/interfaces/package.py:297
 #: ../../libraries/entropy/client/interfaces/package.py:939
 msgid "Mirror"
 msgstr "Rèplica"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2912
-#: ../../server/server_reagent.py:1076
+#: ../../libraries/entropy/server/interfaces/main.py:2908
+#: ../../server/server_reagent.py:1076 ../../server/eit/commands/commit.py:357
 msgid "Statistics"
 msgstr "Estadístiques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2921
+#: ../../libraries/entropy/server/interfaces/main.py:2917
 msgid "Number of checked packages"
 msgstr "Número de paquets comprovats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2931
+#: ../../libraries/entropy/server/interfaces/main.py:2927
 msgid "Number of healthy packages"
 msgstr "Número de paquets sans"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2941
+#: ../../libraries/entropy/server/interfaces/main.py:2937
 msgid "Number of broken packages"
 msgstr "Número de paquets trencats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2955
-#: ../../libraries/entropy/server/interfaces/main.py:3112
+#: ../../libraries/entropy/server/interfaces/main.py:2951
+#: ../../libraries/entropy/server/interfaces/main.py:3108
 #: ../../libraries/entropy/client/interfaces/db.py:1718
 msgid "local"
 msgstr "local"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2992
+#: ../../libraries/entropy/server/interfaces/main.py:2988
 msgid "checking status of"
 msgstr "s'està comprovant l'estat de"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3014
+#: ../../libraries/entropy/server/interfaces/main.py:3010
 msgid "is corrupted, stored checksum"
 msgstr "està malmès, s'ha desat la suma de verificació"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3051
+#: ../../libraries/entropy/server/interfaces/main.py:3047
 msgid "checked packages"
 msgstr "paquets comprovats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3061
+#: ../../libraries/entropy/server/interfaces/main.py:3057
 msgid "healthy packages"
 msgstr "paquets sans"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3071
-#: ../../libraries/entropy/server/interfaces/main.py:3253
+#: ../../libraries/entropy/server/interfaces/main.py:3067
+#: ../../libraries/entropy/server/interfaces/main.py:3249
 msgid "broken packages"
 msgstr "paquets trencats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3081
-#: ../../libraries/entropy/server/interfaces/main.py:3263
+#: ../../libraries/entropy/server/interfaces/main.py:3077
+#: ../../libraries/entropy/server/interfaces/main.py:3259
 msgid "downloaded packages"
 msgstr "paquets baixats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3091
-#: ../../libraries/entropy/server/interfaces/main.py:3273
+#: ../../libraries/entropy/server/interfaces/main.py:3087
+#: ../../libraries/entropy/server/interfaces/main.py:3269
 msgid "failed downloads"
 msgstr "baixades fallides"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3113
+#: ../../libraries/entropy/server/interfaces/main.py:3109
 msgid "GPG signing packages for repository"
 msgstr "GPG està signant paquets del repositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3125
+#: ../../libraries/entropy/server/interfaces/main.py:3121
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Tots els paquets perduts del repositori es baixaran."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3141
+#: ../../libraries/entropy/server/interfaces/main.py:3137
 #: ../../server/server_key.py:69
 msgid "GnuPG not available"
 msgstr "GnuPG no està disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3167
+#: ../../libraries/entropy/server/interfaces/main.py:3163
 msgid "Keys not available for"
 msgstr "No hi ha claus disponibles per a"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3198
+#: ../../libraries/entropy/server/interfaces/main.py:3194
 msgid "signing package"
 msgstr "s'està signant el paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3213
+#: ../../libraries/entropy/server/interfaces/main.py:3209
 msgid "Unknown error signing package"
 msgstr "Error desconegut en signar el paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3243
+#: ../../libraries/entropy/server/interfaces/main.py:3239
 msgid "signed packages"
 msgstr "paquets signats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3302
+#: ../../libraries/entropy/server/interfaces/main.py:3298
 msgid "available"
 msgstr "disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3314
+#: ../../libraries/entropy/server/interfaces/main.py:3310
 msgid "upload/ignored"
 msgstr "pujat/ignorat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3349
+#: ../../libraries/entropy/server/interfaces/main.py:3345
 msgid "Starting to download missing files"
 msgstr "S'estan començant a baixar els fitxers necessaris"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3360
+#: ../../libraries/entropy/server/interfaces/main.py:3356
 msgid "Searching missing/broken files on another mirror"
 msgstr "S'estan cercant fitxers necessaris o trencats en una altra rèplica"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3381
+#: ../../libraries/entropy/server/interfaces/main.py:3377
 msgid "Binary packages downloaded successfully."
 msgstr "Els paquets binaris s'han baixat correctament."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3390
+#: ../../libraries/entropy/server/interfaces/main.py:3386
 msgid "These are the packages that cannot be found online"
 msgstr "Aquests paquets no es troben en línia"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3406
+#: ../../libraries/entropy/server/interfaces/main.py:3402
 msgid "They won't be checked"
 msgstr "No es comprovaran"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3420
+#: ../../libraries/entropy/server/interfaces/main.py:3416
 msgid "Please setup your branch to"
 msgstr "Configureu la branca a"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3422
+#: ../../libraries/entropy/server/interfaces/main.py:3418
 msgid "and retry"
 msgstr "i torneu a intentar-ho"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3432
+#: ../../libraries/entropy/server/interfaces/main.py:3428
 msgid "Copying repository (if not exists)"
 msgstr "S'està copiant el repositori (si no existeix)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3465
+#: ../../libraries/entropy/server/interfaces/main.py:3461
 msgid "Switching packages"
 msgstr "S'estan commutant paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3500
+#: ../../libraries/entropy/server/interfaces/main.py:3496
 msgid "Ignoring"
 msgstr "S'està ignorant"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3502
+#: ../../libraries/entropy/server/interfaces/main.py:3498
 msgid "already in branch"
 msgstr "ja a la branca"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3536
+#: ../../libraries/entropy/server/interfaces/main.py:3532
 msgid "migration loop completed"
 msgstr "s'ha acabat el bucle de migració"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3554
+#: ../../libraries/entropy/server/interfaces/main.py:3550
 msgid "Running orphaned SPM packages test"
 msgstr "S'està executant la verificació de paquets orfes SPM"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3570
+#: ../../libraries/entropy/server/interfaces/main.py:3566
 msgid "Scanning package"
 msgstr "S'està escanejant el paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3596
+#: ../../libraries/entropy/server/interfaces/main.py:3592
 msgid "not found anymore"
 msgstr "no se n'ha trobat cap més"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3608
-#: ../../libraries/entropy/server/interfaces/main.py:3883
+#: ../../libraries/entropy/server/interfaces/main.py:3604
+#: ../../libraries/entropy/server/interfaces/main.py:3879
 msgid "Packages string"
 msgstr "Cadena de paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3639
+#: ../../libraries/entropy/server/interfaces/main.py:3635
 msgid "Checking"
 msgstr "S'està comprovant"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3704
+#: ../../libraries/entropy/server/interfaces/main.py:3700
 msgid "Running dependencies test"
 msgstr "S'està executant la verificació de dependències"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3736
+#: ../../libraries/entropy/server/interfaces/main.py:3732
 #: ../../client/text_ui.py:2302
 msgid "These are the dependencies not found"
 msgstr "Aquestes són les dependències que no s'han trobat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3743
+#: ../../libraries/entropy/server/interfaces/main.py:3739
 #: ../../client/text_ui.py:2306
 msgid "Needed by"
 msgstr "Necessàries per"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3761
+#: ../../libraries/entropy/server/interfaces/main.py:3757
 msgid "by repo"
 msgstr "pel repositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3771
+#: ../../libraries/entropy/server/interfaces/main.py:3767
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "S'han satisfet totes les dependències. Tot és correcte."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3797
+#: ../../libraries/entropy/server/interfaces/main.py:3793
 msgid "Broken and matched packages list"
 msgstr "Llista de paquets trencats i coincidents"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3799
+#: ../../libraries/entropy/server/interfaces/main.py:3795
 #: ../../libraries/entropy/qa.py:642
 msgid "Dumping results into these files"
 msgstr "S'estan abocant els resultats en aquests fitxers"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3825
+#: ../../libraries/entropy/server/interfaces/main.py:3821
 #: ../../client/text_ui.py:2358 ../../client/text_ui.py:2382
 msgid "System is healthy"
 msgstr "Es sistema està sa"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3834
+#: ../../libraries/entropy/server/interfaces/main.py:3830
 msgid "Matching libraries with Spm, please wait"
 msgstr "S'estan cercant llibreries coincidents amb Spm, espereu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3848
+#: ../../libraries/entropy/server/interfaces/main.py:3844
 msgid "These are the matched packages"
 msgstr "Aquests són els paquets coincidents"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3892
+#: ../../libraries/entropy/server/interfaces/main.py:3888
 msgid "No matched packages"
 msgstr "No hi ha paquets coincidents"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3991
+#: ../../libraries/entropy/server/interfaces/main.py:3987
 msgid "Your default repository is not initialized"
 msgstr "El repositori predeterminat no està inicialitzat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4003
+#: ../../libraries/entropy/server/interfaces/main.py:3999
 msgid "Do you want to initialize your default repository ?"
 msgstr "Voleu inicialitzar el repositori predeterminat?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4006
+#: ../../libraries/entropy/server/interfaces/main.py:4002
 msgid "Continuing with an uninitialized repository"
 msgstr "Es continua amb un repositori no inicialitzat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4158
+#: ../../libraries/entropy/server/interfaces/main.py:4154
 msgid "Entropy repository is already locked by you :-)"
 msgstr "Ja teníeu bloquejat el repositori d'Entropy :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy/server/interfaces/main.py:4165
+#: ../../libraries/entropy/server/interfaces/main.py:4161
 msgid "Locking and Syncing Entropy repository"
 msgstr "S'està bloquejant i sincronitzant el repositori d'Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4179
+#: ../../libraries/entropy/server/interfaces/main.py:4175
 #: ../../server/server_activator.py:508
 msgid "Mirrors status table"
 msgstr "Taula d'estat de les rèpliques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4188
-#: ../../libraries/entropy/server/interfaces/main.py:4191
+#: ../../libraries/entropy/server/interfaces/main.py:4184
+#: ../../libraries/entropy/server/interfaces/main.py:4187
 #: ../../server/server_activator.py:514 ../../server/server_activator.py:518
 msgid "Unlocked"
 msgstr "Desbloquejat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4190
-#: ../../libraries/entropy/server/interfaces/main.py:4193
+#: ../../libraries/entropy/server/interfaces/main.py:4186
+#: ../../libraries/entropy/server/interfaces/main.py:4189
 #: ../../server/server_activator.py:512 ../../server/server_activator.py:516
 msgid "Locked"
 msgstr "Bloquejat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4210
+#: ../../libraries/entropy/server/interfaces/main.py:4206
 msgid "cannot lock mirror"
 msgstr "no es pot bloquejar la rèplica"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4415
+#: ../../libraries/entropy/server/interfaces/main.py:4414
 msgid "Repository is corrupted!"
 msgstr "El repositori està malmès!"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4429
+#: ../../libraries/entropy/server/interfaces/main.py:4428
 msgid "indexing repository"
 msgstr "s'està indexant el respositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4465
+#: ../../libraries/entropy/server/interfaces/main.py:4464
 msgid "Initializing an empty repository"
 msgstr "s'està inicialitzant un repositori buit"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4478
+#: ../../libraries/entropy/server/interfaces/main.py:4477
 msgid "Entropy repository file"
 msgstr "Fitxer de repositori Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4480
+#: ../../libraries/entropy/server/interfaces/main.py:4479
 msgid "successfully initialized"
 msgstr "s'ha inicialitzat correctament"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4562
-#: ../../libraries/entropy/server/interfaces/main.py:5311
+#: ../../libraries/entropy/server/interfaces/main.py:4561
+#: ../../libraries/entropy/server/interfaces/main.py:5310
 msgid "adding package"
 msgstr "s'està afegint un paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4696
+#: ../../libraries/entropy/server/interfaces/main.py:4695
 msgid "added package"
 msgstr "s'ha afegit un paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4698
+#: ../../libraries/entropy/server/interfaces/main.py:4697
 msgid "rev"
 msgstr "revisió"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4712
+#: ../../libraries/entropy/server/interfaces/main.py:4711
 msgid "manual dependencies for"
 msgstr "dependències manuals per a"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4793
+#: ../../libraries/entropy/server/interfaces/main.py:4792
 #, fuzzy
 msgid "these are the missing dependencies"
 msgstr "Aquestes són les dependències que no s'han trobat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4949
+#: ../../libraries/entropy/server/interfaces/main.py:4948
 #, fuzzy
 msgid "no missing dependencies !"
 msgstr "No s'han trobat dependències perdudes."
 
-#: ../../libraries/entropy/server/interfaces/main.py:4964
+#: ../../libraries/entropy/server/interfaces/main.py:4963
 #, fuzzy
 msgid "Do you agree?"
 msgstr "N'esteu segur?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4966
-#: ../../libraries/entropy/server/interfaces/main.py:4972
+#: ../../libraries/entropy/server/interfaces/main.py:4965
+#: ../../libraries/entropy/server/interfaces/main.py:4971
 #: ../../libraries/entropy/output.py:740 ../../libraries/entropy/output.py:985
 #: ../../client/text_ugc.py:308 ../../client/text_ugc.py:542
 #: ../../client/text_ugc.py:641 ../../client/text_ugc.py:663
@@ -1659,6 +1657,12 @@ msgstr "N'esteu segur?"
 #: ../../server/server_reagent.py:940 ../../server/server_reagent.py:941
 #: ../../server/server_reagent.py:965 ../../server/server_reagent.py:978
 #: ../../server/server_reagent.py:979 ../../server/server_reagent.py:994
+#: ../../server/eit/commands/commit.py:193
+#: ../../server/eit/commands/commit.py:195
+#: ../../server/eit/commands/commit.py:229
+#: ../../server/eit/commands/commit.py:246
+#: ../../server/eit/commands/commit.py:248
+#: ../../server/eit/commands/commit.py:267
 #: ../../sulfur/src/sulfur/dialogs.py:1214
 #: ../../sulfur/src/sulfur/dialogs.py:2082
 #: ../../sulfur/src/sulfur/events.py:304 ../../sulfur/src/sulfur/events.py:743
@@ -1666,141 +1670,141 @@ msgstr "N'esteu segur?"
 msgid "Yes"
 msgstr "Sí"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4966
+#: ../../libraries/entropy/server/interfaces/main.py:4965
 msgid "Repeat"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5086
+#: ../../libraries/entropy/server/interfaces/main.py:5085
 msgid "metadata QA hook"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5088
+#: ../../libraries/entropy/server/interfaces/main.py:5087
 msgid "not owned by uid and gid = 0"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5101
+#: ../../libraries/entropy/server/interfaces/main.py:5100
 msgid "using metadata QA hook"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5128
+#: ../../libraries/entropy/server/interfaces/main.py:5127
 msgid "metadata QA check for"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5177
+#: ../../libraries/entropy/server/interfaces/main.py:5176
 msgid "cannot execute metadata QA hook for"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5203
+#: ../../libraries/entropy/server/interfaces/main.py:5202
 msgid "attention, QA hook returned a warning"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5225
+#: ../../libraries/entropy/server/interfaces/main.py:5224
 msgid "attention, QA hook returned an error"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5242
+#: ../../libraries/entropy/server/interfaces/main.py:5241
 msgid "metadata QA check complete"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5325
+#: ../../libraries/entropy/server/interfaces/main.py:5324
 msgid "injected package, no separate debug package"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5343
+#: ../../libraries/entropy/server/interfaces/main.py:5342
 msgid "Exception caught, closing tasks"
 msgstr "S'ha produït una excepció, es tanquen les tasques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5435
+#: ../../libraries/entropy/server/interfaces/main.py:5434
 msgid "server-side repository"
 msgstr "repositori del servidor"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5437
+#: ../../libraries/entropy/server/interfaces/main.py:5436
 msgid "community repository"
 msgstr "repositori de la comunitat"
 
 #. ..on repository: <repository_name>
-#: ../../libraries/entropy/server/interfaces/main.py:5439
+#: ../../libraries/entropy/server/interfaces/main.py:5438
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Interfície d'Instàncies del Servidor d'Entropy del repositori"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5450
+#: ../../libraries/entropy/server/interfaces/main.py:5449
 msgid "current branch"
 msgstr "branca actual"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5452
+#: ../../libraries/entropy/server/interfaces/main.py:5451
 #: ../../server/server_reagent.py:241
 msgid "type"
 msgstr "tipus"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5461
+#: ../../libraries/entropy/server/interfaces/main.py:5460
 msgid "Currently configured repositories"
 msgstr "Repositoris configurats"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5497
+#: ../../libraries/entropy/server/interfaces/main.py:5496
 msgid "GPG key expired"
 msgstr "la clau GPG ha vençut"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5499
+#: ../../libraries/entropy/server/interfaces/main.py:5498
 msgid "please frigging fix"
 msgstr "arregleu-ho sisplau"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5510
+#: ../../libraries/entropy/server/interfaces/main.py:5509
 msgid "GPG got unexpected error"
 msgstr "S'ha produït un error GPG inesperat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5512
+#: ../../libraries/entropy/server/interfaces/main.py:5511
 msgid "skipping"
 msgstr "s'omet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5529
-#: ../../libraries/entropy/server/interfaces/main.py:5544
+#: ../../libraries/entropy/server/interfaces/main.py:5528
+#: ../../libraries/entropy/server/interfaces/main.py:5543
 msgid "config files"
 msgstr "fitxers de configuració"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:5530
+#: ../../libraries/entropy/server/interfaces/main.py:5529
 msgid "checking system"
 msgstr "s'està comprovant el sistema"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:5545
+#: ../../libraries/entropy/server/interfaces/main.py:5544
 msgid "there are configuration files not updated yet"
 msgstr "hi ha fitxers de configuració pendents d'actualitzar"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5835
+#: ../../libraries/entropy/server/interfaces/main.py:5834
 msgid "found available dep_rewrites for this package"
 msgstr "hi ha dep_rewrites per aquest paquet"
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
-#: ../../libraries/entropy/server/interfaces/main.py:5847
+#: ../../libraries/entropy/server/interfaces/main.py:5846
 msgid "added"
 msgstr "afegit"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5941
+#: ../../libraries/entropy/server/interfaces/main.py:5940
 msgid "replaced"
 msgstr "reemplaçat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5963
-#: ../../libraries/entropy/server/interfaces/main.py:5977
+#: ../../libraries/entropy/server/interfaces/main.py:5962
+#: ../../libraries/entropy/server/interfaces/main.py:5976
 msgid "No dependency rewrite made for"
 msgstr "No s'han reescrit dependències per"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6049
-#: ../../libraries/entropy/server/interfaces/main.py:6069
-#: ../../libraries/entropy/server/interfaces/main.py:6081
+#: ../../libraries/entropy/server/interfaces/main.py:6048
+#: ../../libraries/entropy/server/interfaces/main.py:6068
+#: ../../libraries/entropy/server/interfaces/main.py:6080
 msgid "sets"
 msgstr "conjunts"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6050
+#: ../../libraries/entropy/server/interfaces/main.py:6049
 msgid "updating package sets"
 msgstr "s'estan actualitzant conjunts de paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6070
+#: ../../libraries/entropy/server/interfaces/main.py:6069
 msgid "adding package set"
 msgstr "s'està afegint un conjunt de paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:6082
+#: ../../libraries/entropy/server/interfaces/main.py:6081
 msgid "removing package set"
 msgstr "s'està eliminant el conjunt de paquets"
 
@@ -2338,7 +2342,8 @@ msgstr "S'està configurant"
 #: ../../server/server_activator.py:256 ../../server/server_activator.py:429
 #: ../../server/server_reagent.py:41 ../../server/server_reagent.py:629
 #: ../../server/server_reagent.py:809 ../../server/server_reagent.py:1087
-#: ../../server/server_reagent.py:1195 ../../services/kernel-switcher:120
+#: ../../server/server_reagent.py:1195 ../../server/eit/commands/status.py:71
+#: ../../server/eit/commands/commit.py:92 ../../services/kernel-switcher:120
 #: ../../services/kernel-switcher:197
 msgid "Another Entropy is currently running."
 msgstr "S'està executant una altra instància d'Entropy."
@@ -6454,6 +6459,7 @@ msgid "Would you like to calculate dependencies ?"
 msgstr "Voleu calcular les dependències?"
 
 #: ../../client/text_ui.py:2045 ../../server/server_reagent.py:976
+#: ../../server/eit/commands/commit.py:244
 msgid "Would you like to remove them now ?"
 msgstr "Els voleu eliminar ara?"
 
@@ -6861,20 +6867,6 @@ msgstr "Data de creació"
 msgid "Expires on"
 msgstr "Expira el"
 
-#: ../../server/eit.py:91
-msgid "Entropy Infrastructure Toolkit"
-msgstr ""
-
-#: ../../server/eit.py:123
-#, fuzzy
-msgid "show repository status"
-msgstr "mostra l'estat dels repositoris"
-
-#: ../../server/eit.py:141
-#, fuzzy
-msgid "commit unstaged changes to repository"
-msgstr "repositori de paquets instal·lats"
-
 #: ../../server/server_reagent.py:64
 msgid "no package specified."
 msgstr "no s'ha especificat cap paquet."
@@ -6917,7 +6909,7 @@ msgstr "No s'ha especificat cap repositori vàlid"
 
 #: ../../server/server_reagent.py:142 ../../server/server_reagent.py:177
 #: ../../server/server_reagent.py:213 ../../server/server_reagent.py:410
-#: ../../server/server_reagent.py:880
+#: ../../server/server_reagent.py:880 ../../server/eit/commands/commit.py:124
 msgid "Cannot match"
 msgstr "No hi ha coincidents"
 
@@ -7029,12 +7021,12 @@ msgstr "No es pot sobreescriure un fitxer que ja existeix"
 msgid "Bumping Repository database"
 msgstr "S'està identificant la base de dades del repositori"
 
-#: ../../server/server_reagent.py:896
+#: ../../server/server_reagent.py:896 ../../server/eit/commands/commit.py:141
 msgid "No valid packages to repackage."
 msgstr "No hi ha paquets vàlids per empaquetar de nou."
 
 #. normal scanning
-#: ../../server/server_reagent.py:901
+#: ../../server/server_reagent.py:901 ../../server/eit/commands/commit.py:145
 msgid "Scanning database for differences"
 msgstr "S'estan cercant diferències a la base de dades"
 
@@ -7042,7 +7034,7 @@ msgstr "S'estan cercant diferències a la base de dades"
 msgid "Invalid atom"
 msgstr "Àtom no vàlid"
 
-#: ../../server/server_reagent.py:928
+#: ../../server/server_reagent.py:928 ../../server/eit/commands/commit.py:175
 msgid "Zarro thinggz totoo"
 msgstr "No hi ha tasques pendents"
 
@@ -7062,7 +7054,7 @@ msgstr "S'està transformant des de la base de dades"
 msgid "Database transform complete"
 msgstr "La transformació de base de dades ha acabat"
 
-#: ../../server/server_reagent.py:956
+#: ../../server/server_reagent.py:956 ../../server/eit/commands/commit.py:216
 msgid "expired"
 msgstr "vençut"
 
@@ -7070,7 +7062,7 @@ msgstr "vençut"
 msgid "So sweetheart, what packages do you want to remove ?"
 msgstr "Quins paquets voleu eliminar?"
 
-#: ../../server/server_reagent.py:964
+#: ../../server/server_reagent.py:964 ../../server/eit/commands/commit.py:228
 msgid "Remove this package?"
 msgstr "Elimina aquest paquet?"
 
@@ -7078,7 +7070,7 @@ msgstr "Elimina aquest paquet?"
 msgid "So sweetheart, what packages do you want to add ?"
 msgstr "Quins paquets voleu afegir?"
 
-#: ../../server/server_reagent.py:993
+#: ../../server/server_reagent.py:993 ../../server/eit/commands/commit.py:266
 msgid "Add this package?"
 msgstr "Afegeix aquest paquet?"
 
@@ -7086,58 +7078,58 @@ msgstr "Afegeix aquest paquet?"
 msgid "These are the packages that would be added/updated"
 msgstr "Aquests són els paquets que s'instal·laran/s'actualitzaran "
 
-#: ../../server/server_reagent.py:1030
+#: ../../server/server_reagent.py:1030 ../../server/eit/commands/commit.py:307
 msgid "warning"
 msgstr "avís"
 
-#: ../../server/server_reagent.py:1037
+#: ../../server/server_reagent.py:1037 ../../server/eit/commands/commit.py:314
 msgid "Would you like to package them now ?"
 msgstr "Els voleu empaquetar ara?"
 
-#: ../../server/server_reagent.py:1038
+#: ../../server/server_reagent.py:1038 ../../server/eit/commands/commit.py:315
 msgid "inside"
 msgstr "a dins"
 
 #. package them
-#: ../../server/server_reagent.py:1050
+#: ../../server/server_reagent.py:1050 ../../server/eit/commands/commit.py:328
 msgid "Compressing packages"
 msgstr "S'estan comprimint paquets"
 
-#: ../../server/server_reagent.py:1061
+#: ../../server/server_reagent.py:1061 ../../server/eit/commands/commit.py:340
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr "S'ignora l'entrada trencada Spm, si us plau recompileu-la"
 
-#: ../../server/server_reagent.py:1064
+#: ../../server/server_reagent.py:1064 ../../server/eit/commands/commit.py:344
 msgid "Nothing to do, check later."
 msgstr "No hi ha res per fer, comproveu-ho després."
 
-#: ../../server/server_reagent.py:1077
+#: ../../server/server_reagent.py:1077 ../../server/eit/commands/commit.py:358
 msgid "Entries handled"
 msgstr "Entrades gestionades"
 
-#: ../../server/server_reagent.py:1122
+#: ../../server/server_reagent.py:1122 ../../server/eit/commands/status.py:105
 msgid "local revision"
 msgstr "revisió local"
 
-#: ../../server/server_reagent.py:1129
+#: ../../server/server_reagent.py:1129 ../../server/eit/commands/status.py:112
 msgid "stored packages"
 msgstr "paquets desats"
 
-#: ../../server/server_reagent.py:1134
+#: ../../server/server_reagent.py:1134 ../../server/eit/commands/status.py:117
 msgid "upload packages"
 msgstr "paquets pujats"
 
-#: ../../server/server_reagent.py:1140
+#: ../../server/server_reagent.py:1140 ../../server/eit/commands/status.py:124
 #, fuzzy
 msgid "unstaged packages"
 msgstr "paquets signats"
 
-#: ../../server/server_reagent.py:1171
+#: ../../server/server_reagent.py:1171 ../../server/eit/commands/status.py:156
 #, fuzzy
 msgid "add"
 msgstr "afegit"
 
-#: ../../server/server_reagent.py:1181
+#: ../../server/server_reagent.py:1181 ../../server/eit/commands/status.py:168
 #, fuzzy
 msgid "switch injected"
 msgstr "s'està commutant"
@@ -7161,6 +7153,81 @@ msgstr "no s'ha trobat el conjunt de paquets"
 #: ../../sulfur/src/sulfur/packages.py:1135
 msgid "Nothing found"
 msgstr "No s'ha trobat res"
+
+#: ../../server/eit/main.py:80
+msgid "superuser access required"
+msgstr ""
+
+#: ../../server/eit/commands/status.py:178
+#, fuzzy
+msgid "show repository status"
+msgstr "mostra l'estat dels repositoris"
+
+#: ../../server/eit/commands/help.py:34
+msgid "Entropy Infrastructure Toolkit"
+msgstr ""
+
+#: ../../server/eit/commands/help.py:54 ../../services/kernel-switcher:226
+msgid "this help"
+msgstr "aquesta ajuda"
+
+#: ../../server/eit/commands/commit.py:60
+#, fuzzy
+msgid "selectively pick changes"
+msgstr "S'estan eliminat els paquets seleccionats"
+
+#: ../../server/eit/commands/commit.py:63
+msgid "no stupid questions"
+msgstr ""
+
+#: ../../server/eit/commands/commit.py:167
+#, fuzzy
+msgid "Invalid package"
+msgstr "S'està instal·lant el paquet"
+
+#: ../../server/eit/commands/commit.py:181
+#, fuzzy
+msgid "These would be marked as injected"
+msgstr "s'ha injectat"
+
+#: ../../server/eit/commands/commit.py:191
+msgid "Do it now ?"
+msgstr ""
+
+#: ../../server/eit/commands/commit.py:202
+#, fuzzy
+msgid "Transforming"
+msgstr "S'està transformant des de la base de dades"
+
+#: ../../server/eit/commands/commit.py:206
+#, fuzzy
+msgid "Transform complete"
+msgstr "La transformació de base de dades ha acabat"
+
+#: ../../server/eit/commands/commit.py:222
+#, fuzzy
+msgid "What packages do you want to remove ?"
+msgstr "Quins paquets voleu eliminar?"
+
+#: ../../server/eit/commands/commit.py:236
+#, fuzzy
+msgid "These would be removed from repository"
+msgstr "S'eliminaran de la base de dades del sistema"
+
+#: ../../server/eit/commands/commit.py:260
+#, fuzzy
+msgid "What packages do you want to add ?"
+msgstr "Quins paquets voleu afegir?"
+
+#: ../../server/eit/commands/commit.py:275
+#, fuzzy
+msgid "These would be added or updated"
+msgstr "S'afegiran a la base de dades del sistema"
+
+#: ../../server/eit/commands/commit.py:367
+#, fuzzy
+msgid "commit changes to repository"
+msgstr "repositori de paquets instal·lats"
 
 #: ../../sulfur/src/sulfur/views.py:92 ../../sulfur/src/sulfur/views.py:152
 #: ../../sulfur/src/sulfur/views.py:2801
@@ -8652,15 +8719,6 @@ msgstr "commuta el nucli"
 msgid "list kernels"
 msgstr "llista els nuclis"
 
-#: ../../services/kernel-switcher:226
-msgid "this help"
-msgstr "aquesta ajuda"
-
-#: ../../server/eit:355
-#, fuzzy
-msgid "reset error"
-msgstr "error en el sòcol"
-
 #: ../../sulfur/src/sulfur/sulfur.glade.h:1
 msgid "0 = no limit; 100 = 100kB/sec"
 msgstr "0 = sense límit; 100 = 100kB/s"
@@ -9813,6 +9871,13 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
+
+#~ msgid "Entropy Server interface must be run as root"
+#~ msgstr "Heu d'executar la Interfície del Servidor d'Entropy com a root"
+
+#, fuzzy
+#~ msgid "reset error"
+#~ msgstr "error en el sòcol"
 
 #~ msgid "Cannot acquire Entropy resources lock."
 #~ msgstr "No es pot accedir al bloqueig de recursos d'Entropy."
