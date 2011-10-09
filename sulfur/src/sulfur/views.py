@@ -1964,29 +1964,24 @@ class EntropyPackageView:
         if not pkg:
             return
 
-        last_pkg = getattr(self, "_last_get_stars_rating", None)
-        if last_pkg is pkg:
-            return
+        self.set_line_status(pkg, cell)
+        try:
+            voted = pkg.voted
+        except:
+            voted = False
 
         try:
-            self.set_line_status(pkg, cell)
-            try:
-                voted = pkg.voted
-            except:
-                return
-            try:
-                # vote_delayed loads the vote in parallel and until
-                # it's not ready returns None
-                mydata = pkg.vote_delayed
-            except:
-                return
-            if mydata is None:
-                mydata = 0.0 # wtf!
+            # vote_delayed loads the vote in parallel and until
+            # it's not ready returns None
+            mydata = pkg.vote_delayed
+        except:
+            mydata = None
 
-            cell.value = float(mydata)
-            cell.value_voted = float(voted)
-        finally:
-            self._last_get_stars_rating = pkg
+        if mydata is None:
+            mydata = 0.0 # wtf!
+
+        cell.value = float(mydata)
+        cell.value_voted = float(voted)
 
     def spawn_vote_submit(self, obj):
 
