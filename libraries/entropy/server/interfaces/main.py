@@ -1071,10 +1071,6 @@ class Server(Client):
             fake_default_repo_desc = 'this is a fake repository'):
 
         self.__instance_destroyed = False
-        if etpConst['uid'] != 0:
-            mytxt = _("Entropy Server interface must be run as root")
-            import warnings
-            warnings.warn(mytxt)
 
         self._cacher = EntropyCacher()
         # settings
