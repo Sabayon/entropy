@@ -82,6 +82,14 @@
 ../server/eit.py
 ../server/server_reagent.py
 ../server/server_query.py
+../server/eit/__init__.py
+../server/eit/main.py
+../server/eit/commands/status.py
+../server/eit/commands/command.py
+../server/eit/commands/help.py
+../server/eit/commands/__init__.py
+../server/eit/commands/commit.py
+../server/eit/commands/descriptor.py
 ../sulfur/src/sulfur_client.py
 ../sulfur/src/sulfur/views.py
 ../sulfur/src/sulfur/packages.py
@@ -106,6 +114,5 @@
 ../magneto/src/magneto/core/__init__.py
 ../magneto/src/magneto/core/config.py
 ../services/kernel-switcher
-../server/eit
 ../sulfur/src/sulfur/sulfur.glade
 ../magneto/src/magneto/gtk/magneto.glade
