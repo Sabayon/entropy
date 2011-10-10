@@ -9,3 +9,7 @@
     B{Entropy Infrastructure Toolkit}.
 
 """
+from eit.commands.help import EitHelp
+from eit.commands.status import EitStatus
+from eit.commands.commit import EitCommit
+from eit.commands.add import EitAdd

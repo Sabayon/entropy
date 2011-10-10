@@ -33,6 +33,7 @@ class EitAdd(EitCommit):
     """
 
     NAME = "add"
+    ALIASES = []
 
     def parse(self):
         """ Overridden from EitCommit """
