@@ -33,6 +33,7 @@ class EitStatus(EitCommand):
     """
 
     NAME = "status"
+    ALIASES = ["st"]
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(

@@ -17,10 +17,7 @@ from entropy.i18n import _
 from entropy.output import print_error
 import entropy.tools
 
-from eit.commands.status import EitStatus
-from eit.commands.help import EitHelp
-from eit.commands.commit import EitCommit
-from eit.commands.add import EitAdd
+from eit.commands.descriptor import EitCommandDescriptor
 
 
 def handle_exception(exc_class, exc_instance, exc_tb):
@@ -47,14 +44,16 @@ def main():
 
     install_exception_handler()
 
-    args_map = {
-        EitHelp.NAME: EitHelp,
-        "-h": EitHelp,
-        "--help": EitHelp,
-        EitStatus.NAME: EitStatus,
-        EitCommit.NAME: EitCommit,
-        EitAdd.NAME: EitAdd,
-    }
+    descriptors = EitCommandDescriptor.obtain()
+    args_map = {}
+    catch_all = None
+    for descriptor in descriptors:
+        klass = descriptor.get_class()
+        if klass.CATCH_ALL:
+            catch_all = descriptor
+        args_map[klass.NAME] = klass
+        for alias in klass.ALIASES:
+            args_map[alias] = klass
 
     args = sys.argv[1:]
     cmd = None
@@ -64,13 +63,13 @@ def main():
     cmd_class = args_map.get(cmd)
 
     if cmd_class is None:
-        cmd_class = args_map.get(EitHelp.NAME)
+        cmd_class = catch_all
 
     # non-root users not allowed
     allowed = True
     if os.getuid() != 0 and \
-            cmd_class is not EitHelp:
-        cmd_class = EitHelp
+            cmd_class is not catch_all:
+        cmd_class = catch_all
         allowed = False
 
     cmd_obj = cmd_class(args)

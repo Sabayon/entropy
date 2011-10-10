@@ -22,6 +22,8 @@ class EitHelp(EitCommand):
     """
 
     NAME = "help"
+    ALIASES = ["-h", "--help"]
+    CATCH_ALL = True
 
     def parse(self):
         """
@@ -39,7 +41,11 @@ class EitHelp(EitCommand):
         descriptors.sort(key = lambda x: x.get_name())
         group = parser.add_argument_group("command", "available commands")
         for descriptor in descriptors:
-            group.add_argument(descriptor.get_name(),
+            aliases_str = ", ".join(descriptor.get_class().ALIASES)
+            if aliases_str:
+                aliases_str = " [%s]" % (aliases_str,)
+            name = "%s%s" % (descriptor.get_name(), aliases_str)
+            group.add_argument(name,
                                help=descriptor.get_description(),
                                action="store_true")
         parser.print_help()

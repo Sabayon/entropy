@@ -22,6 +22,10 @@ class EitCommand(object):
     # gets triggered (for eit help, "help" is the NAME
     # that should be set).
     NAME = None
+    # Set this to a list of aliases for NAME
+    ALIASES = []
+    # Set this to True if command is a catch-all (fallback)
+    CATCH_ALL = False
 
     def __init__(self, args):
         self._args = args
