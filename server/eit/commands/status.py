@@ -16,7 +16,7 @@ import argparse
 from entropy.const import etpConst
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied
-from entropy.output import print_info, print_error, darkgreen, \
+from entropy.output import print_error, darkgreen, \
     teal, brown, darkred, bold, purple, blue
 
 from text_tools import print_table
@@ -48,7 +48,6 @@ class EitStatus(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            print_error("error: %s" % (err.strerror,))
             return parser.print_help, []
 
         return self._status, [nsargs.repo]
@@ -67,8 +66,9 @@ class EitStatus(EitCommand):
                 return 1
             acquired = entropy.tools.acquire_entropy_locks(server)
             if not acquired:
-                print_error(
-                    darkgreen(_("Another Entropy is currently running."))
+                entropy_server.output(
+                    darkgreen(_("Another Entropy is currently running.")),
+                    level="error", importance=1
                 )
                 return 1
             return self.__status(server)
@@ -126,7 +126,7 @@ class EitStatus(EitCommand):
 
          print_table(toc)
          del toc[:]
-         print_info("")
+         entropy_server.output("")
 
          def _get_spm_slot_repo(pkg_atom):
              try:
