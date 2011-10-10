@@ -87,8 +87,9 @@ class EitCommit(EitCommand):
                 return 1
             acquired = entropy.tools.acquire_entropy_locks(server)
             if not acquired:
-                print_error(
-                    darkgreen(_("Another Entropy is currently running."))
+                entropy_server.output(
+                    darkgreen(_("Another Entropy is currently running.")),
+                    level="error", importance=1
                 )
                 return 1
             return self.__commit(server)
