@@ -43,7 +43,7 @@ class EitStatus(EitCommand):
             prog="%s %s" % (sys.argv[0], EitStatus.NAME))
 
         parser.add_argument("repo", nargs='?', default=None,
-                            metavar="<repo>", help="repository id")
+                            metavar="<repo>", help=_("repository"))
 
         try:
             nsargs = parser.parse_args(self._args)
