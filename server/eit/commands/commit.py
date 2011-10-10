@@ -43,7 +43,7 @@ class EitCommit(EitCommand):
         # list of package dependencies to re-package, if any
         self._repackage = []
         # execute actions only for given atoms, if any
-        self._atoms = []
+        self._packages = []
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -54,7 +54,7 @@ class EitCommit(EitCommand):
             prog="%s %s" % (sys.argv[0], EitCommit.NAME))
 
         parser.add_argument("repo", nargs='?', default=None,
-                            metavar="<repo>", help="repository id")
+                            metavar="<repo>", help=_("repository"))
         parser.add_argument("--interactive", action="store_true",
                             default=False,
                             help=_("selectively pick changes"))
@@ -157,12 +157,12 @@ class EitCommit(EitCommand):
             return 1
         to_be_added |= myadded
 
-        if self._atoms:
+        if self._packages:
             to_be_removed.clear()
             to_be_injected.clear()
             tba = dict(((x[0], x,) for x in to_be_added))
             tb_added_new = set()
-            for myatom in self._atoms:
+            for myatom in self._packages:
                 if myatom in tba:
                     tb_added_new.add(tba.get(myatom))
                     continue

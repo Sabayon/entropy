@@ -20,6 +20,7 @@ import entropy.tools
 from eit.commands.status import EitStatus
 from eit.commands.help import EitHelp
 from eit.commands.commit import EitCommit
+from eit.commands.add import EitAdd
 
 
 def handle_exception(exc_class, exc_instance, exc_tb):
@@ -52,6 +53,7 @@ def main():
         "--help": EitHelp,
         EitStatus.NAME: EitStatus,
         EitCommit.NAME: EitCommit,
+        EitAdd.NAME: EitAdd,
     }
 
     args = sys.argv[1:]
