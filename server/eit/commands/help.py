@@ -12,7 +12,9 @@
 import argparse
 
 from entropy.i18n import _
+from entropy.output import purple, teal, darkgreen, decolorize
 
+from eit.colorful import ColorfulFormatter, ColorfulStr
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
 
@@ -35,19 +37,23 @@ class EitHelp(EitCommand):
         parser = argparse.ArgumentParser(
             description=_("Entropy Infrastructure Toolkit"),
             epilog="http://www.sabayon.org",
-            formatter_class=argparse.RawDescriptionHelpFormatter)
+            formatter_class=ColorfulFormatter)
 
         descriptors = EitCommandDescriptor.obtain()
         descriptors.sort(key = lambda x: x.get_name())
         group = parser.add_argument_group("command", "available commands")
         for descriptor in descriptors:
-            aliases_str = ", ".join(descriptor.get_class().ALIASES)
+            aliases = descriptor.get_class().ALIASES
+            aliases_str = ", ".join(
+                [teal(x) for x in aliases])
             if aliases_str:
                 aliases_str = " [%s]" % (aliases_str,)
-            name = "%s%s" % (descriptor.get_name(), aliases_str)
-            group.add_argument(name,
-                               help=descriptor.get_description(),
-                               action="store_true")
+            name = u"%s%s" % (purple(descriptor.get_name()),
+                aliases_str)
+            desc = darkgreen(descriptor.get_description())
+            group.add_argument(ColorfulStr(name),
+                help=ColorfulStr(desc),
+                action="store_true")
         parser.print_help()
         if not self._args:
             return 1
