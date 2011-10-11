@@ -9,7 +9,9 @@
     B{Entropy Infrastructure Toolkit}.
 
 """
+# TODO: use automatic loader
 from eit.commands.help import EitHelp
 from eit.commands.status import EitStatus
 from eit.commands.commit import EitCommit
 from eit.commands.add import EitAdd
+from eit.commands.repack import EitRepack
