@@ -10,8 +10,11 @@
 
 """
 from entropy.const import etpConst
+from entropy.output import darkgreen, print_error
 from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
+
+import entropy.tools
 
 class EitCommand(object):
     """
@@ -49,6 +52,34 @@ class EitCommand(object):
         if "community_repo" not in kwargs:
             kwargs["community_repo"] = etpConst['community']['mode']
         return Server(*args, **kwargs)
+
+    def _call_locked(self, func, repo):
+        """
+        Execute the given function at func after acquiring Entropy
+        Resources Lock, for given repository at repo.
+        The signature of func is: int func(entropy_server).
+        """
+        server = None
+        acquired = False
+        try:
+            try:
+                server = self._entropy(default_repository=repo)
+            except PermissionDenied as err:
+                print_error(err.value)
+                return 1
+            acquired = entropy.tools.acquire_entropy_locks(server)
+            if not acquired:
+                server.output(
+                    darkgreen(_("Another Entropy is currently running.")),
+                    level="error", importance=1
+                )
+                return 1
+            return func(server)
+        finally:
+            if server is not None:
+                if acquired:
+                    entropy.tools.release_entropy_locks(server)
+                server.shutdown()
 
     def _settings(self):
         """
