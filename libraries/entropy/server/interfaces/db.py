@@ -779,8 +779,12 @@ class ServerPackagesRepositoryUpdater(object):
                     uncompressed_changelog, bz2.BZ2File)
 
             # unpack metafiles file
+            metafiles_path_name = os.path.basename(
+                download_data['metafiles_path'])
+            metafiles_path = os.path.join(mytmpdir,
+                metafiles_path_name)
             metafiles_unpack_done = entropy.tools.universal_uncompress(
-                download_data['metafiles_path'], mytmpdir,
+                metafiles_path, mytmpdir,
                     catch_empty = True)
             if not metafiles_unpack_done:
                 self._entropy.output(
@@ -789,7 +793,7 @@ class ServerPackagesRepositoryUpdater(object):
                         darkgreen(crippled_uri),
                         red(_("errors")),
                         blue(_("failed to unpack")),
-                        os.path.basename(download_data['metafiles_path']),
+                        os.path.basename(metafiles_path_name),
                     ),
                     importance = 0,
                     level = "error",
