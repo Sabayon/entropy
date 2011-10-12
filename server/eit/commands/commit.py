@@ -72,35 +72,9 @@ class EitCommit(EitCommand):
         if not self._interactive:
             self._ask = not nsargs.quick
 
-        return self._commit, [nsargs.repo]
+        return self._call_locked, [self._commit, nsargs.repo]
 
-    def _commit(self, repo):
-        """
-        Commit command body.
-        """
-        server = None
-        acquired = False
-        try:
-            try:
-                server = self._entropy(default_repository=repo)
-            except PermissionDenied as err:
-                print_error(err.value)
-                return 1
-            acquired = entropy.tools.acquire_entropy_locks(server)
-            if not acquired:
-                entropy_server.output(
-                    darkgreen(_("Another Entropy is currently running.")),
-                    level="error", importance=1
-                )
-                return 1
-            return self.__commit(server)
-        finally:
-            if server is not None:
-                if acquired:
-                    entropy.tools.release_entropy_locks(server)
-                server.shutdown()
-
-    def __commit(self, entropy_server):
+    def _commit(self, entropy_server):
         to_be_added = set()
         to_be_removed = set()
         to_be_injected = set()

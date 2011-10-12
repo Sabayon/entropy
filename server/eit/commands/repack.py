@@ -58,7 +58,7 @@ class EitRepack(EitCommit):
         # setup atoms variable before spawning commit
         self._packages = nsargs.packages[:]
         self._repackage = self._packages
-        return self._commit, [nsargs.into]
+        return self._call_locked, [self._commit, nsargs.into]
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
