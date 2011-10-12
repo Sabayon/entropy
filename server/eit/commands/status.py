@@ -15,13 +15,10 @@ import argparse
 
 from entropy.const import etpConst
 from entropy.i18n import _
-from entropy.exceptions import PermissionDenied
-from entropy.output import print_error, darkgreen, \
-    teal, brown, darkred, bold, purple, blue
+from entropy.output import darkgreen, teal, brown, darkred, \
+    bold, purple, blue
 
 from text_tools import print_table
-
-import entropy.tools
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand

@@ -13,13 +13,9 @@ import sys
 import os
 import argparse
 
-from entropy.const import etpConst
 from entropy.i18n import _
-from entropy.exceptions import PermissionDenied
-from entropy.output import print_error, darkgreen, teal, brown, \
-    darkred, bold, purple, blue, red, green
-
-from text_tools import print_table
+from entropy.output import darkgreen, teal, brown, \
+    darkred, bold, purple, blue, red
 
 import entropy.tools
 
