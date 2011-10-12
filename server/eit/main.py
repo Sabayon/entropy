@@ -50,7 +50,7 @@ def main():
     for descriptor in descriptors:
         klass = descriptor.get_class()
         if klass.CATCH_ALL:
-            catch_all = descriptor
+            catch_all = klass
         args_map[klass.NAME] = klass
         for alias in klass.ALIASES:
             args_map[alias] = klass
