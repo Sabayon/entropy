@@ -51,35 +51,9 @@ class EitStatus(EitCommand):
         except IOError as err:
             return parser.print_help, []
 
-        return self._status, [nsargs.repo]
+        return self._call_locked, [self._status, nsargs.repo]
 
-    def _status(self, repo):
-        """
-        Status command body.
-        """
-        server = None
-        acquired = False
-        try:
-            try:
-                server = self._entropy(default_repository=repo)
-            except PermissionDenied as err:
-                print_error(err.value)
-                return 1
-            acquired = entropy.tools.acquire_entropy_locks(server)
-            if not acquired:
-                entropy_server.output(
-                    darkgreen(_("Another Entropy is currently running.")),
-                    level="error", importance=1
-                )
-                return 1
-            return self.__status(server)
-        finally:
-            if server is not None:
-                if acquired:
-                    entropy.tools.release_entropy_locks(server)
-                server.shutdown()
-
-    def __status(self, entropy_server):
+    def _status(self, entropy_server):
          plugin_id = etpConst['system_settings_plugins_ids']['server_plugin']
          repos_data = self._settings()[plugin_id]['server']['repositories']
          repo_id = entropy_server.repository()

@@ -57,7 +57,7 @@ class EitAdd(EitCommit):
 
         # setup atoms variable before spawning commit
         self._packages = nsargs.packages[:]
-        return self._commit, [nsargs.to]
+        return self._call_locked, [self._commit, nsargs.to]
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
