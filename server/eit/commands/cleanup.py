@@ -26,7 +26,7 @@ class EitCleanup(EitCommand):
     """
 
     NAME = "cleanup"
-    ALIASES = ["cn"]
+    ALIASES = ["cn", "clean"]
 
     def parse(self):
         """ Overridden from EitCommand """
