@@ -55,15 +55,17 @@ class EitPush(EitCommand):
             formatter_class=argparse.RawDescriptionHelpFormatter,
             prog="%s %s" % (sys.argv[0], EitPush.NAME))
 
-        parser.add_argument("repo", nargs='*', default=None,
+        parser.add_argument("repo", nargs='?', default=None,
                             metavar="<repo>", help=_("repository"))
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
-        parser.add_argument("--all", action="store_true",
+
+        group = parser.add_mutually_exclusive_group()
+        group.add_argument("--all", action="store_true",
                             default=False,
                             help=_("push all the repositories"))
-        parser.add_argument("--as", metavar="<repo>", default=None,
+        group.add_argument("--as", metavar="<repo>", default=None,
             help=_("push as fake repository"), dest="asrepo")
 
         try:
@@ -73,7 +75,8 @@ class EitPush(EitCommand):
 
         self._ask = not nsargs.quick
         self._all = nsargs.all
-        self._repositories += nsargs.repo
+        if nsargs.repo is not None:
+            self._repositories.append(nsargs.repo)
         self._as_repository_id = nsargs.asrepo
 
         return self._call_locked, [self._push, None]
@@ -87,15 +90,6 @@ class EitPush(EitCommand):
             self._repositories.append(entropy_server.repository())
         if not self._repositories and self._all:
             self._repositories.extend(entropy_server.repositories())
-
-        if self._as_repository_id is not None and \
-                len(self._repositories) > 1:
-            # cannot push as fake repository when
-            # more than one repository is specified
-            entropy_server.output(
-                _("multiple repositories and --as ain't friends"),
-                importance=1, level="error")
-            return 1
 
         for repository_id in self._repositories:
             # avoid __default__
@@ -257,5 +251,5 @@ EitCommandDescriptor.register(
     EitCommandDescriptor(
         EitPush,
         EitPush.NAME,
-        _('reset repository to remote status'))
+        _('push (or pull) repository packages and metadata'))
     )
