@@ -16,7 +16,8 @@ import tempfile
 
 from entropy.const import etpConst
 from entropy.i18n import _
-from entropy.output import darkgreen, teal, red, darkred, brown, blue, bold
+from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
+    bold, purple
 from entropy.transceivers import EntropyTransceiver
 from entropy.server.interfaces import ServerSystemSettingsPlugin
 from entropy.server.interfaces.rss import ServerRssMetadata
@@ -79,7 +80,7 @@ class EitPush(EitCommand):
             self._repositories.append(nsargs.repo)
         self._as_repository_id = nsargs.asrepo
 
-        return self._call_locked, [self._push, None]
+        return self._call_locked, [self._push, nsargs.repo]
 
     def _push(self, entropy_server):
         """
