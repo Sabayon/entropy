@@ -9,6 +9,7 @@
     B{Entropy Infrastructure Toolkit}.
 
 """
+from entropy.i18n import _
 from entropy.const import etpConst
 from entropy.output import darkgreen, print_error
 from entropy.exceptions import PermissionDenied
