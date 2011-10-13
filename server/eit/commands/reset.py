@@ -25,8 +25,6 @@ class EitReset(EitPush):
     Main Eit reset command.
     """
 
-    # TODO: incomplete, needs eit push implemented first
-
     NAME = "reset"
     ALIASES = []
 
