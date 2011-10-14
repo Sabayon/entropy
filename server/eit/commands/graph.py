@@ -35,6 +35,7 @@ class EitGraph(EitCommand):
         from text_query import graph_packages
         self._graph_func = graph_packages
         self._quiet = False
+        self._repository_id = None
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -46,6 +47,9 @@ class EitGraph(EitCommand):
 
         parser.add_argument("packages", nargs='+', metavar="<package>",
                             help=_("package name"))
+        parser.add_argument("--in", metavar="<repository>",
+                            help=_("search packages in given repository"),
+                            dest="inrepo", default=None)
         parser.add_argument("--complete", action="store_true",
            default=self._complete,
            help=_('show system packages, build deps, circular deps'))
@@ -63,16 +67,21 @@ class EitGraph(EitCommand):
         etpUi['quiet'] = self._quiet
         self._packages += nsargs.packages
         self._complete = nsargs.complete
-        return self._call_unlocked, [self._graph, None]
+        self._repository_id = nsargs.inrepo
+        return self._call_unlocked, [self._graph, self._repository_id]
 
     def _graph(self, entropy_server):
         """
         Actual Eit graph code.
         """
+        if self._repository_id is None:
+            repository_ids = entropy_server.repositories()
+        else:
+            repository_ids = [self._repository_id]
         return self._graph_func(
             self._packages, entropy_server,
             complete = self._complete,
-            repository_ids = entropy_server.repositories())
+            repository_ids = repository_ids)
 
 
 EitCommandDescriptor.register(
