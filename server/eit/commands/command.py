@@ -31,6 +31,8 @@ class EitCommand(object):
     ALIASES = []
     # Set this to True if command is a catch-all (fallback)
     CATCH_ALL = False
+    # Allow unprivileged access ?
+    ALLOW_UNPRIVILEGED = False
 
     def __init__(self, args):
         self._args = args
