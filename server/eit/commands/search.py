@@ -102,5 +102,5 @@ EitCommandDescriptor.register(
     EitCommandDescriptor(
         EitSearch,
         EitSearch.NAME,
-        _('show reverse dependency graph for packages'))
+        _('search packages in repositories'))
     )
