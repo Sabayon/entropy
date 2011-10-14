@@ -27,6 +27,7 @@ class EitLog(EitCommand):
 
     NAME = "log"
     ALIASES = []
+    ALLOW_UNPRIVILEGED = True
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(

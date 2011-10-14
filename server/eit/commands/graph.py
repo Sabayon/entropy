@@ -26,6 +26,7 @@ class EitGraph(EitCommand):
 
     NAME = "graph"
     ALIASES = []
+    ALLOW_UNPRIVILEGED = True
 
     def __init__(self, args):
         EitCommand.__init__(self, args)

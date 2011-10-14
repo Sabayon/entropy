@@ -27,6 +27,7 @@ class EitRepo(EitCommand):
 
     NAME = "repo"
     ALIASES = []
+    ALLOW_UNPRIVILEGED = True
 
     def parse(self):
         """ Overridden from EitRepo """
