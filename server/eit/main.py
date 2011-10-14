@@ -69,8 +69,9 @@ def main():
     allowed = True
     if os.getuid() != 0 and \
             cmd_class is not catch_all:
-        cmd_class = catch_all
-        allowed = False
+        if not cmd_class.ALLOW_UNPRIVILEGED:
+            cmd_class = catch_all
+            allowed = False
 
     cmd_obj = cmd_class(args)
     func, func_args = cmd_obj.parse()
