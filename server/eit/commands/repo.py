@@ -33,6 +33,9 @@ class EitRepo(EitCommand):
         return self._call_locked, [self._void, None]
 
     def _void(self, entropy_server):
+        entropy_server._show_interface_status()
+        entropy_server.Mirrors._show_interface_status(
+            entropy_server.repository())
         return 0
 
 EitCommandDescriptor.register(
