@@ -681,7 +681,7 @@ class TextInterface(object):
             0, 1, 2, 3
         @type importance: int
         @keyword level: message type (default valid values: "info", "warning",
-            "error")
+            "error", "generic")
         @type level: string
         @keyword count: tuple of lengh 2, containing count information to make
             function print something like "(10/100) doing stuff". In this case
@@ -705,6 +705,8 @@ class TextInterface(object):
             myfunc = print_warning
         elif level == "error":
             myfunc = print_error
+        elif level == "generic":
+            myfunc = print_generic
 
         count_str = ""
         if count:
