@@ -3906,6 +3906,16 @@ class Server(Client):
         if mask_clear:
             self._settings.clear()
 
+    def commit_repositories(self):
+        """
+        Execute commit on all the open (in rw) repositories.
+        """
+        srv_dbcache = self._server_dbcache
+        if srv_dbcache is not None:
+            for repo in srv_dbcache.values():
+                # commit on readonly repos has no effect
+                repo.commit()
+
     def close_repository(self, entropy_repository):
         """
         Close single EntropyRepositoryBase instance, given its class object.
