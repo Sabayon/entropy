@@ -54,6 +54,8 @@ class EitCheckout(EitCommand):
         repository_id = entropy_server.repository()
         entropy_server.switch_default_repository(repository_id,
             save = True)
+        # show interface info
+        entropy_server._show_interface_status()
         return 0
 
 EitCommandDescriptor.register(
