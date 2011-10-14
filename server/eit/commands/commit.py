@@ -56,7 +56,7 @@ class EitCommit(EitCommand):
                             default=False,
                             help=_("selectively pick changes"))
         parser.add_argument("--quick", action="store_true",
-                            default=False,
+                            default=not self._ask,
                             help=_("no stupid questions"))
 
         try:
@@ -349,7 +349,7 @@ class EitCommit(EitCommand):
         if idpackages:
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
-        entropy_server.close_repositories()
+        entropy_server.commit_repositories()
         entropy_server.output(red("%s: " % (_("Statistics"),) ) + \
             blue("%s: " % (_("Entries handled"),) ) + \
                 bold(str(len(idpackages))),
