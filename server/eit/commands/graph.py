@@ -13,6 +13,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
+from entropy.const import etpUi
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -33,6 +34,7 @@ class EitGraph(EitCommand):
         # Import text_query from equo libraries
         from text_query import graph_packages
         self._graph_func = graph_packages
+        self._quiet = False
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -47,12 +49,18 @@ class EitGraph(EitCommand):
         parser.add_argument("--complete", action="store_true",
            default=self._complete,
            help=_('show system packages, build deps, circular deps'))
+        parser.add_argument("--quiet", action="store_true",
+           default=self._quiet,
+           help=_('quiet output, for scripting purposes'))
 
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
             return parser.print_help, []
 
+        self._quiet = nsargs.quiet
+        # support for code using etpUi (text_query)
+        etpUi['quiet'] = self._quiet
         self._packages += nsargs.packages
         self._complete = nsargs.complete
         return self._call_unlocked, [self._graph, None]
