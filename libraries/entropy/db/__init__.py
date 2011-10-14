@@ -684,8 +684,9 @@ class EntropyRepository(EntropyRepositoryBase):
     def __show_info(self):
         first_part = "<EntropyRepository instance at %s, %s" % (
             hex(id(self)), self._db_path,)
-        second_part = ", ro: %s, caching: %s, indexing: %s" % (
-            self._readonly, self.caching(), self.__indexing,)
+        second_part = ", ro: %s|%s, caching: %s, indexing: %s" % (
+            self._readonly, self.readonly(), self.caching(),
+            self.__indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
             self.name, self.__skip_checks, self.__structure_update,)
         fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (
@@ -795,7 +796,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        if force or (not self._readonly):
+        if force or (not self.readonly()):
             # NOTE: the actual commit MUST be executed before calling
             # the superclass method (that is going to call EntropyRepositoryBase
             # plugins). This to avoid that other connection to the same exact
