@@ -41,6 +41,9 @@ class EitAdd(EitCommit):
         parser.add_argument("--to", metavar="<repository>",
                             help=_("add to given repository"),
                             default=None)
+        parser.add_argument("--quick", action="store_true",
+                            default=not self._ask,
+                            help=_("no stupid questions"))
 
         try:
             nsargs = parser.parse_args(self._args)
@@ -48,6 +51,7 @@ class EitAdd(EitCommit):
             return parser.print_help, []
 
         # setup atoms variable before spawning commit
+        self._ask = not nsargs.quick
         self._packages = nsargs.packages[:]
         return self._call_locked, [self._commit, nsargs.to]
 
