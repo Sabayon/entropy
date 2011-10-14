@@ -51,97 +51,103 @@ class EitStatus(EitCommand):
         return self._call_locked, [self._status, nsargs.repo]
 
     def _status(self, entropy_server):
-         plugin_id = etpConst['system_settings_plugins_ids']['server_plugin']
-         repos_data = self._settings()[plugin_id]['server']['repositories']
-         repo_id = entropy_server.repository()
 
-         repo_data = repos_data[repo_id]
-         repo_rev = entropy_server.local_repository_revision(repo_id)
-         store_dir = entropy_server._get_local_store_directory(repo_id)
-         upload_basedir = entropy_server._get_local_upload_directory(repo_id)
-         upload_files, upload_packages = \
-             entropy_server.Mirrors._calculate_local_upload_files(repo_id)
-         key_sorter = lambda x: \
-             entropy_server.open_repository(x[1]).retrieveAtom(x[0])
+        repo_id = entropy_server.repository()
+        # show interface info
+        entropy_server._show_interface_status()
+        entropy_server.Mirrors._show_interface_status(
+            repo_id)
 
-         to_be_added, to_be_removed, to_be_injected = \
-                 entropy_server.scan_package_changes()
+        plugin_id = etpConst['system_settings_plugins_ids']['server_plugin']
+        repos_data = self._settings()[plugin_id]['server']['repositories']
 
-         to_be_added = [x[0] for x in to_be_added]
-         to_be_added.sort()
+        repo_data = repos_data[repo_id]
+        repo_rev = entropy_server.local_repository_revision(repo_id)
+        store_dir = entropy_server._get_local_store_directory(repo_id)
+        upload_basedir = entropy_server._get_local_upload_directory(repo_id)
+        upload_files, upload_packages = \
+            entropy_server.Mirrors._calculate_local_upload_files(repo_id)
+        key_sorter = lambda x: \
+            entropy_server.open_repository(x[1]).retrieveAtom(x[0])
 
-         toc = []
+        to_be_added, to_be_removed, to_be_injected = \
+            entropy_server.scan_package_changes()
 
-         toc.append("[%s] %s" % (purple(repo_id),
-             brown(repo_data['description']),))
-         toc.append(("  %s:" % (blue(_("local revision")),),
-             str(repo_rev),))
+        to_be_added = [x[0] for x in to_be_added]
+        to_be_added.sort()
 
-         store_pkgs = []
-         if os.path.isdir(store_dir):
-             store_pkgs = os.listdir(store_dir)
+        toc = []
 
-         toc.append(("  %s:" % (darkgreen(_("stored packages")),),
-             str(len(store_pkgs)),))
-         for pkg_rel in sorted(store_pkgs):
-             toc.append((" ", brown(pkg_rel)))
+        toc.append("[%s] %s" % (purple(repo_id),
+                                brown(repo_data['description']),))
+        toc.append(("  %s:" % (blue(_("local revision")),),
+                    str(repo_rev),))
 
-         toc.append(("  %s:" % (darkgreen(_("upload packages")),),
-             str(upload_files),))
-         for pkg_rel in sorted(upload_packages):
-             toc.append((" ", brown(pkg_rel)))
+        store_pkgs = []
+        if os.path.isdir(store_dir):
+            store_pkgs = os.listdir(store_dir)
 
-         unstaged_len = len(to_be_added) + len(to_be_removed) + \
-             len(to_be_injected)
-         toc.append(("  %s:" % (darkgreen(_("unstaged packages")),),
-             str(unstaged_len),))
+        toc.append(("  %s:" % (darkgreen(_("stored packages")),),
+                    str(len(store_pkgs)),))
+        for pkg_rel in sorted(store_pkgs):
+            toc.append((" ", brown(pkg_rel)))
 
-         print_table(toc)
-         del toc[:]
-         entropy_server.output("")
+        toc.append(("  %s:" % (darkgreen(_("upload packages")),),
+                    str(upload_files),))
+        for pkg_rel in sorted(upload_packages):
+            toc.append((" ", brown(pkg_rel)))
 
-         def _get_spm_slot_repo(pkg_atom):
-             try:
-                 spm_slot = entropy_server.Spm(
-                     ).get_installed_package_metadata(pkg_atom, "SLOT")
-                 spm_repo = entropy_server.Spm(
-                     ).get_installed_package_metadata(pkg_atom,
-                     "repository")
-             except KeyError:
-                 spm_repo = None
-                 spm_slot = None
-             return spm_slot, spm_repo
+        unstaged_len = len(to_be_added) + len(to_be_removed) + \
+            len(to_be_injected)
+        toc.append(("  %s:" % (darkgreen(_("unstaged packages")),),
+                    str(unstaged_len),))
 
-         for pkg_atom in to_be_added:
-             spm_slot, spm_repo = _get_spm_slot_repo(pkg_atom)
+        print_table(toc)
+        del toc[:]
+        entropy_server.output("")
 
-             pkg_str = teal(pkg_atom)
-             if spm_repo is not None:
-                 pkg_id, repo_id = entropy_server.atom_match(pkg_atom,
-                     match_slot = spm_slot)
-                 if pkg_id != -1:
-                     etp_repo = entropy_server.open_repository(
-                         repo_id).retrieveSpmRepository(pkg_id)
-                     if etp_repo != spm_repo:
-                         pkg_str += " [%s=>%s]" % (
-                             etp_repo, spm_repo,)
-             toc.append(("   %s:" % (purple(_("add")),), teal(pkg_str)))
+        def _get_spm_slot_repo(pkg_atom):
+            try:
+                spm_slot = entropy_server.Spm(
+                    ).get_installed_package_metadata(pkg_atom, "SLOT")
+                spm_repo = entropy_server.Spm(
+                    ).get_installed_package_metadata(pkg_atom,
+                                                     "repository")
+            except KeyError:
+                spm_repo = None
+                spm_slot = None
+            return spm_slot, spm_repo
 
-         for package_id, repo_id in sorted(to_be_removed, key = key_sorter):
-             pkg_atom = entropy_server.open_repository(repo_id
-                 ).retrieveAtom(package_id)
-             toc.append(("   %s:" % (darkred(_("remove")),),
-                         brown(pkg_atom)))
+        for pkg_atom in to_be_added:
+            spm_slot, spm_repo = _get_spm_slot_repo(pkg_atom)
 
-         for package_id, repo_id in sorted(to_be_injected,
-                 key = key_sorter):
-             pkg_atom = entropy_server.open_repository(repo_id
-                 ).retrieveAtom( package_id)
-             toc.append(("   %s:" % (bold(_("switch injected")),),
-                 darkgreen(pkg_atom)))
+            pkg_str = teal(pkg_atom)
+            if spm_repo is not None:
+                pkg_id, repo_id = entropy_server.atom_match(pkg_atom,
+                    match_slot = spm_slot)
+                if pkg_id != -1:
+                    etp_repo = entropy_server.open_repository(
+                        repo_id).retrieveSpmRepository(pkg_id)
+                    if etp_repo != spm_repo:
+                        pkg_str += " [%s=>%s]" % (
+                            etp_repo, spm_repo,)
+            toc.append(("   %s:" % (purple(_("add")),), teal(pkg_str)))
 
-         print_table(toc)
-         return 0
+        for package_id, repo_id in sorted(to_be_removed, key = key_sorter):
+            pkg_atom = entropy_server.open_repository(
+                repo_id).retrieveAtom(package_id)
+            toc.append(("   %s:" % (darkred(_("remove")),),
+                        brown(pkg_atom)))
+
+        for package_id, repo_id in sorted(to_be_injected,
+                                          key = key_sorter):
+            pkg_atom = entropy_server.open_repository(
+                repo_id).retrieveAtom( package_id)
+            toc.append(("   %s:" % (bold(_("switch injected")),),
+                        darkgreen(pkg_atom)))
+
+        print_table(toc)
+        return 0
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
