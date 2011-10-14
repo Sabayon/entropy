@@ -31,6 +31,7 @@ class EitStatus(EitCommand):
 
     NAME = "status"
     ALIASES = ["st"]
+    ALLOW_UNPRIVILEGED = True
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
