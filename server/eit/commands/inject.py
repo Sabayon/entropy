@@ -100,6 +100,8 @@ class EitInject(EitCommand):
         if package_ids:
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
+
+        entropy_server.commit_repositories()
         if package_ids:
             return 0
         return 1
