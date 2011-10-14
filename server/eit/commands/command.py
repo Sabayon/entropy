@@ -83,6 +83,24 @@ class EitCommand(object):
                     entropy.tools.release_entropy_locks(server)
                 server.shutdown()
 
+    def _call_unlocked(self, func, repo):
+        """
+        Execute the given function at func after acquiring Entropy
+        Resources Lock, for given repository at repo.
+        The signature of func is: int func(entropy_server).
+        """
+        server = None
+        try:
+            try:
+                server = self._entropy(default_repository=repo)
+            except PermissionDenied as err:
+                print_error(err.value)
+                return 1
+            return func(server)
+        finally:
+            if server is not None:
+                server.shutdown()
+
     def _settings(self):
         """
         Return a SystemSettings instance.
