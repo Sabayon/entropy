@@ -3977,8 +3977,6 @@ class Server(Client):
             self._save_default_repository(repository_id)
 
         self._setup_community_repositories_settings()
-        if not etpUi['quiet']:
-            self._show_interface_status()
         if handle_uninitialized and etpUi['warn']:
             self._handle_uninitialized_repository(repository_id)
 
@@ -4130,8 +4128,6 @@ class Server(Client):
             self.close_repositories()
             self._settings.clear()
             self._setup_services()
-            if not etpUi['quiet']:
-                self._show_interface_status()
         return status
 
     def _is_repository_initialized(self, repo):
