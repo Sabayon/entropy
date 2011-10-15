@@ -286,7 +286,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         self.__transfersize += buf_len
 
     def _update_progress(self, force = False):
-
+        if self._silent:
+            # stfu !
+            return
         upload_percent = 100.0
         upload_size = round(self.__filekbcount, 1)
 

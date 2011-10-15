@@ -136,6 +136,9 @@ class EntropySshUriHandler(EntropyUriHandler):
         self.output(current_txt, back = True, header = "    ")
 
     def _update_progress(self, std_r):
+        if self._silent:
+            # stfu !
+            return
         read_buf = ""
         try:
             char = std_r.read(1)
