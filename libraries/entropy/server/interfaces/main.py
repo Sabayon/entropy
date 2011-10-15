@@ -20,6 +20,7 @@ import errno
 import hashlib
 import subprocess
 import stat
+import codecs
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
@@ -4905,7 +4906,7 @@ class Server(Client):
             # parse the file back, build missing_deps
             all_good = True
             missing_deps = {}
-            with open(tmp_path, "r") as tmp_f:
+            with codecs.open(tmp_path, "r", encoding="utf-8") as tmp_f:
                 pkg_match = None
                 for line in tmp_f.readlines():
                     line = line.strip()
