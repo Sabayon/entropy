@@ -167,7 +167,7 @@ class Server(object):
         return branch_data
 
     def lock_mirrors(self, repository_id, lock, mirrors = None,
-        unlock_locally = True):
+        unlock_locally = True, quiet = False):
         """
         Lock remote mirrors for given repository. In this way repository
         will be locked for both Entropy Server and Entropy Client instances.
@@ -195,21 +195,22 @@ class Server(object):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-            lock_text = _("unlocking")
-            if lock:
-                lock_text = _("locking")
-            self._entropy.output(
-                "[%s|%s] %s %s" % (
-                    brown(repository_id),
-                    darkgreen(crippled_uri),
-                    bold(lock_text),
-                    blue("%s...") % (_("mirror"),),
-                ),
-                importance = 1,
-                level = "info",
-                header = brown(" * "),
-                back = True
-            )
+            if not quiet:
+                lock_text = _("unlocking")
+                if lock:
+                    lock_text = _("locking")
+                self._entropy.output(
+                    "[%s|%s] %s %s" % (
+                        brown(repository_id),
+                        darkgreen(crippled_uri),
+                        bold(lock_text),
+                        blue("%s...") % (_("mirror"),),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = brown(" * "),
+                    back = True
+                )
 
             repo_relative = \
                 self._entropy._get_override_remote_repository_relative_path(
@@ -225,40 +226,47 @@ class Server(object):
 
             txc = self._entropy.Transceiver(uri)
             txc.set_verbosity(False)
+            if quiet:
+                txc.set_silent(True)
 
             with txc as handler:
 
                 if lock and handler.is_file(lock_file):
-                    self._entropy.output(
-                        "[%s|%s] %s" % (
+                    if not quiet:
+                        self._entropy.output(
+                            "[%s|%s] %s" % (
                                 brown(repository_id),
                                 darkgreen(crippled_uri),
                                 blue(_("mirror already locked")),
-                        ),
-                        importance = 1,
-                        level = "info",
-                        header = darkgreen(" * ")
-                    )
+                            ),
+                            importance = 1,
+                            level = "info",
+                            header = darkgreen(" * ")
+                        )
                     continue
 
                 elif not lock and not handler.is_file(lock_file):
-                    self._entropy.output(
-                        "[%s|%s] %s" % (
+                    if not quiet:
+                        self._entropy.output(
+                            "[%s|%s] %s" % (
                                 brown(repository_id),
                                 darkgreen(crippled_uri),
                                 blue(_("mirror already unlocked")),
-                        ),
-                        importance = 1,
-                        level = "info",
-                        header = darkgreen(" * ")
-                    )
+                            ),
+                            importance = 1,
+                            level = "info",
+                            header = darkgreen(" * ")
+                        )
                     continue
 
                 if lock:
-                    rc_lock = self._do_mirror_lock(repository_id, uri, handler)
+                    rc_lock = self._do_mirror_lock(
+                        repository_id, uri, handler, quiet = quiet)
                 else:
-                    rc_lock = self._do_mirror_unlock(repository_id, uri,
-                        handler, unlock_locally = unlock_locally)
+                    rc_lock = self._do_mirror_unlock(
+                        repository_id, uri, handler,
+                        unlock_locally = unlock_locally,
+                        quiet = quiet)
 
             if not rc_lock:
                 done = False
@@ -272,8 +280,8 @@ class Server(object):
         return done
 
 
-    def lock_mirrors_for_download(self, repository_id, lock, mirrors = None,
-        unlock_locally = True):
+    def lock_mirrors_for_download(self, repository_id, lock,
+        mirrors = None, unlock_locally = True, quiet = False):
         """
         This functions makes Entropy clients unable to download the repository
         from given mirrors.
@@ -300,21 +308,22 @@ class Server(object):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-            lock_text = _("unlocking")
-            if lock:
-                lock_text = _("locking")
-            self._entropy.output(
-                "[%s|%s] %s %s..." % (
-                            blue(repository_id),
-                            red(crippled_uri),
-                            bold(lock_text),
-                            blue(_("mirror for download")),
+            if not quiet:
+                lock_text = _("unlocking")
+                if lock:
+                    lock_text = _("locking")
+                self._entropy.output(
+                    "[%s|%s] %s %s..." % (
+                        blue(repository_id),
+                        red(crippled_uri),
+                        bold(lock_text),
+                        blue(_("mirror for download")),
                     ),
-                importance = 1,
-                level = "info",
-                header = red(" @@ "),
-                back = True
-            )
+                    importance = 1,
+                    level = "info",
+                    header = red(" @@ "),
+                    back = True
+                )
 
             lock_file = etpConst['etpdatabasedownloadlockfile']
             repo_relative = \
@@ -330,6 +339,8 @@ class Server(object):
 
             txc = self._entropy.Transceiver(uri)
             txc.set_verbosity(False)
+            if quiet:
+                txc.set_silent(True)
 
             with txc as handler:
 
@@ -360,18 +371,22 @@ class Server(object):
                     continue
 
                 if lock:
-                    rc_lock = self._do_mirror_lock(repository_id, uri, handler,
-                        dblock = False)
+                    rc_lock = self._do_mirror_lock(
+                        repository_id, uri, handler,
+                        dblock = False, quiet = quiet)
                 else:
-                    rc_lock = self._do_mirror_unlock(repository_id, uri,
+                    rc_lock = self._do_mirror_unlock(
+                        repository_id, uri,
                         handler, dblock = False,
-                        unlock_locally = unlock_locally)
+                        unlock_locally = unlock_locally,
+                        quiet = quiet)
                 if not rc_lock:
                     done = False
 
         return done
 
-    def _do_mirror_lock(self, repository_id, uri, txc_handler, dblock = True):
+    def _do_mirror_lock(self, repository_id, uri, txc_handler,
+        dblock = True, quiet = False):
 
         repo_relative = \
             self._entropy._get_override_remote_repository_relative_path(
@@ -405,38 +420,40 @@ class Server(object):
 
         rc_upload = txc_handler.upload(lock_file, remote_path)
         if rc_upload:
-            self._entropy.output(
-                "[%s|%s] %s %s" % (
-                    blue(repository_id),
-                    red(crippled_uri),
-                    blue(_("mirror successfully locked")),
-                    blue(lock_string),
-                ),
-                importance = 1,
-                level = "info",
-                header = red(" @@ ")
-            )
+            if not quiet:
+                self._entropy.output(
+                    "[%s|%s] %s %s" % (
+                        blue(repository_id),
+                        red(crippled_uri),
+                        blue(_("mirror successfully locked")),
+                        blue(lock_string),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = red(" @@ ")
+                )
         else:
-            self._entropy.output(
-                "[%s|%s] %s: %s - %s %s" % (
-                    blue(repository_id),
-                    red(crippled_uri),
-                    blue("lock error"),
-                    rc_upload,
-                    blue(_("mirror not locked")),
-                    blue(lock_string),
-                ),
-                importance = 1,
-                level = "error",
-                header = darkred(" * ")
-            )
+            if not quiet:
+                self._entropy.output(
+                    "[%s|%s] %s: %s - %s %s" % (
+                        blue(repository_id),
+                        red(crippled_uri),
+                        blue("lock error"),
+                        rc_upload,
+                        blue(_("mirror not locked")),
+                        blue(lock_string),
+                    ),
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" * ")
+                )
             self._entropy._remove_local_repository_lockfile(repository_id)
 
         return rc_upload
 
 
-    def _do_mirror_unlock(self, repository_id, uri, txc_handler, dblock = True,
-        unlock_locally = True):
+    def _do_mirror_unlock(self, repository_id, uri, txc_handler,
+        dblock = True, unlock_locally = True, quiet = False):
 
         repo_relative = \
             self._entropy._get_override_remote_repository_relative_path(
@@ -460,16 +477,17 @@ class Server(object):
 
         rc_delete = txc_handler.delete(remote_path)
         if rc_delete:
-            self._entropy.output(
-                "[%s|%s] %s" % (
-                    blue(repository_id),
-                    red(crippled_uri),
-                    blue(_("mirror successfully unlocked")),
-                ),
-                importance = 1,
-                level = "info",
-                header = darkgreen(" * ")
-            )
+            if not quiet:
+                self._entropy.output(
+                    "[%s|%s] %s" % (
+                        blue(repository_id),
+                        red(crippled_uri),
+                        blue(_("mirror successfully unlocked")),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = darkgreen(" * ")
+                )
             if unlock_locally:
                 if dblock:
                     self._entropy._remove_local_repository_lockfile(
@@ -478,18 +496,19 @@ class Server(object):
                     self._entropy._remove_local_repository_download_lockfile(
                         repository_id)
         else:
-            self._entropy.output(
-                "[%s|%s] %s: %s - %s" % (
-                    blue(repository_id),
-                    red(crippled_uri),
-                    blue(_("unlock error")),
-                    rc_delete,
-                    blue(_("mirror not unlocked")),
-                ),
-                importance = 1,
-                level = "error",
-                header = darkred(" * ")
-            )
+            if not quiet:
+                self._entropy.output(
+                    "[%s|%s] %s: %s - %s" % (
+                        blue(repository_id),
+                        red(crippled_uri),
+                        blue(_("unlock error")),
+                        rc_delete,
+                        blue(_("mirror not unlocked")),
+                    ),
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" * ")
+                )
 
         return rc_delete
 
