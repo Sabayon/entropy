@@ -52,7 +52,7 @@ entropy-server-install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/server
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
-	mkdir -p $(DESTDIR)$(PREFIX)/bin
+	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
 
 	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
@@ -60,7 +60,7 @@ entropy-server-install:
 	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	cp server/eit $(DESTDIR)/$(LIBDIR)/entropy/server/ -Ra
-	ln -sf /$(LIBDIR)/entropy/server/eit.py $(DESTDIR)$(PREFIX)/bin/eit
+	mv $(DESTDIR)/$(LIBDIR)/entropy/server/eit.py $(DESTDIR)$(BINDIR)/eit
 	install -m 755 services/matter $(DESTDIR)$(PREFIX)/sbin
 
 	# copy man pages
@@ -81,10 +81,8 @@ equo-install:
 
 	install -m 644 client/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 644 client/revision $(DESTDIR)/$(LIBDIR)/entropy/client/
-	install -m 755 client/equo.py $(DESTDIR)/$(LIBDIR)/entropy/client/
+	install -m 755 client/equo.py $(DESTDIR)/$(BINDIR)/equo
 	install -m 755 services/kernel-switcher $(DESTDIR)$(BINDIR)/
-
-	ln -sf /$(LIBDIR)/entropy/client/equo.py $(DESTDIR)$(BINDIR)/equo
 
 	# copy man page
 	install -m 644 docs/man/man1/equo.1 $(DESTDIR)$(PREFIX)/share/man/man1/
