@@ -14,6 +14,7 @@ import os
 import errno
 import argparse
 import tempfile
+import codecs
 
 from entropy.i18n import _
 from entropy.output import blue, darkred, darkgreen, purple, brown, teal
@@ -118,7 +119,7 @@ class EitNotice(EitCommand):
             notice_body = ""
             notice_url = None
             all_good = False
-            with open(tmp_path, "r") as tmp_f:
+            with codecs.open(tmp_path, "r", encoding="utf-8") as tmp_f:
                 line = None
                 last_line = None
                 for line in tmp_f.readlines():
