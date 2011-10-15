@@ -51,7 +51,7 @@ class EitSearch(EitCommand):
                             help=_("search packages in given repository"),
                             dest="inrepo", default=None)
 
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 

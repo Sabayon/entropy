@@ -47,10 +47,10 @@ class EitList(EitCommand):
 
         parser.add_argument("repo", nargs='+', default=None,
                             metavar="<repo>", help=_("repository"))
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
-        parser.add_argument("--verbose", action="store_true",
+        parser.add_argument("--verbose", "-v", action="store_true",
            default=self._verbose,
            help=_('output more package info'))
 

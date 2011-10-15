@@ -54,7 +54,7 @@ class EitRevgraph(EitCommand):
         parser.add_argument("--complete", action="store_true",
            default=self._complete,
            help=_('show system packages, build deps, circular deps'))
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
