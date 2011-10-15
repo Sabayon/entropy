@@ -14,7 +14,7 @@ import os
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, teal
+from entropy.output import darkgreen, teal, purple
 from entropy.server.interfaces import Server
 
 from eit.commands.descriptor import EitCommandDescriptor
@@ -48,8 +48,6 @@ class EitTest(EitCommand):
 
         deps_parser = subparsers.add_parser("deps",
             help=_("dependencies test"))
-        deps_parser.add_argument("repo", nargs='?', default=None,
-                            metavar="<repo>", help=_("repository"))
         deps_parser.set_defaults(func=self._deptest)
 
         libs_parser = subparsers.add_parser("libs",
@@ -64,6 +62,15 @@ class EitTest(EitCommand):
                                   metavar="<excluded lib>",
                                   help=_("excluded soname"))
         links_parser.set_defaults(func=self._linktest)
+
+        pkgs_parser = subparsers.add_parser("pkgs",
+            help=_("verify local packages integrity"))
+        pkgs_parser.add_argument("repo", nargs='?', default=None,
+                                 metavar="<repo>", help=_("repository"))
+        pkgs_parser.add_argument("--quick", action="store_true",
+                            default=False,
+                            help=_("no stupid questions"))
+        pkgs_parser.set_defaults(func=self._pkgtest)
 
         try:
             nsargs = parser.parse_args(self._args)
@@ -99,6 +106,25 @@ class EitTest(EitCommand):
             if found_something:
                 rc = 1
         return rc
+
+    def _pkgtest(self, entropy_server):
+        repository_id = self._nsargs.repo
+        if repository_id is None:
+            repository_id = entropy_server.repository()
+        if repository_id not in entropy_server.repositories():
+            entropy_server.output(
+                "%s: %s" % (
+                    purple(_("Invalid repository")),
+                    teal(repository_id)),
+                importance=1, level="error")
+            return 1
+
+        fine, failed, dl_fine, dl_err = \
+            entropy_server._verify_local_packages(
+                repository_id, [], ask = not self._nsargs.quick)
+        if failed:
+            return 1
+        return 0
 
 
 EitCommandDescriptor.register(
