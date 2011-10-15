@@ -67,7 +67,7 @@ class EitNotice(EitCommand):
 
         try:
             nsargs = parser.parse_args(self._args)
-        except IOError as err:
+        except IOError:
             return parser.print_help, []
 
         self._repository_id = nsargs.repo
