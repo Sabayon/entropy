@@ -22,7 +22,7 @@ import subprocess
 import stat
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
-    SystemDatabaseError
+    SystemDatabaseError, RepositoryError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, etpUi, \
     const_setup_file, const_get_stringtype, const_debug_write, \
@@ -4346,6 +4346,7 @@ class Server(Client):
         @type do_treeupdates: allow the execution of package names and slot
             updates
         @type do_treeupdates: bool
+        @raise RepositoryError: if repository doesn't exist
         @return: EntropyRepositoryBase instance
         @rtype: EntropyRepositoryBase
         """
@@ -4361,8 +4362,12 @@ class Server(Client):
             read_only = True
             no_upload = True
 
-        local_dbfile = self._get_local_repository_file(repository_id,
-            branch = use_branch)
+        try:
+            local_dbfile = self._get_local_repository_file(
+                repository_id, branch = use_branch)
+        except KeyError:
+            # repository not available
+            raise RepositoryError(repository_id)
         if do_cache:
             cached = self._server_dbcache.get(
                 (repository_id, etpConst['systemroot'], local_dbfile, read_only,
