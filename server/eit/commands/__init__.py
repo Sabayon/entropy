@@ -24,4 +24,8 @@ for py_file in os.listdir(_cur_dir):
     _mod = "eit.commands." + py_file[:-3]
     if _mod in _excluded_mods:
         continue
-    __import__(_mod)
+    try:
+        __import__(_mod)
+    except ValueError:
+        # garbage
+        continue
