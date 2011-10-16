@@ -140,7 +140,7 @@ class EitQuery(EitCommand):
         self._quiet = nsargs.quiet
         self._verbose = getattr(nsargs, "verbose", self._verbose)
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func, self._repository_id]
+        return self._call_unlocked, [nsargs.func, self._repository_id]
 
     def _tags(self, entropy_server):
         """
