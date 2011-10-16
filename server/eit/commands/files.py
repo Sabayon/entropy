@@ -13,7 +13,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import purple, darkgreen, blue, brown, teal
+from entropy.output import bold, purple, darkgreen, blue, brown, teal
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -83,6 +83,12 @@ class EitFiles(EitCommand):
             else:
                 for path in files:
                     entropy_server.output(path)
+                entropy_server.output(
+                    "[%s] %s: %s %s" % (
+                        purple(pkg_repo),
+                        darkgreen(atom),
+                        bold(str(len(files))),
+                        teal(_("files found"))))
 
         return exit_st
 
