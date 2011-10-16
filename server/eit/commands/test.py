@@ -63,6 +63,13 @@ class EitTest(EitCommand):
                                   help=_("excluded soname"))
         links_parser.set_defaults(func=self._linktest)
 
+        pkglibs_parser = subparsers.add_parser("pkglibs",
+            help=_("library linking test (using live system)"))
+        pkglibs_parser.add_argument("packages", nargs='+', default=None,
+                                  metavar="<package>",
+                                  help=_("package names"))
+        pkglibs_parser.set_defaults(func=self._pkglibs)
+
         pkgs_parser = subparsers.add_parser("pkgs",
             help=_("verify local packages integrity"))
         pkgs_parser.add_argument("repo", nargs='?', default=None,
@@ -106,6 +113,22 @@ class EitTest(EitCommand):
             if found_something:
                 rc = 1
         return rc
+
+    def _pkglibs(self, entropy_server):
+        pkg_matches = []
+        for package in self._nsargs.packages:
+            pkg_id, pkg_repo = entropy_server.atom_match(package)
+            if pkg_id == -1:
+                entropy_server.output(
+                    "%s: %s" % (
+                        purple(_("Not matched")), teal(package)),
+                    level="error", importance=1)
+                return 1
+            pkg_matches.append((pkg_id, pkg_repo))
+
+        entropy_server.missing_runtime_dependencies_test(
+            pkg_matches, bump_packages = True)
+        return 0
 
     def _pkgtest(self, entropy_server):
         repository_id = self._nsargs.repo
