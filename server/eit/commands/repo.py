@@ -43,8 +43,9 @@ class EitRepo(EitCommand):
         """ Overridden from EitCommand """
         parser = self._get_parser()
         try:
-            nsargs = parser.parse_args(self._args)
+            parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
         return self._call_locked, [self._void, None]
 

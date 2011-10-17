@@ -277,7 +277,6 @@ class EitQuery(EitCommand):
         sets = entropy_server.Sets()
 
         match_num = 0
-        exit_st = 0
         if not self._nsargs.sets:
             self._nsargs.sets.append("*")
         for item in self._nsargs.sets:

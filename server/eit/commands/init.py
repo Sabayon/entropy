@@ -28,6 +28,10 @@ class EitInit(EitCommand):
     NAME = "init"
     ALIASES = []
 
+    def __init__(self, args):
+        EitCommand.__init__(self, args)
+        self._ask = True
+
     def _get_parser(self):
         """ Overridden from EitInit """
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -40,7 +44,7 @@ class EitInit(EitCommand):
         parser.add_argument("repo", nargs=1, default=None,
                             metavar="<repo>", help=_("repository"))
         parser.add_argument("--quick", action="store_true",
-                            default=False,
+                            default=not self._ask,
                             help=_("no stupid questions"))
 
         return parser
@@ -51,6 +55,7 @@ class EitInit(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._ask = not nsargs.quick

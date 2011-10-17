@@ -10,11 +10,10 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.i18n import _
-from entropy.output import teal, purple
+from entropy.output import purple
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -60,6 +59,7 @@ class EitVacuum(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._ask = not nsargs.quick

@@ -10,7 +10,6 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.i18n import _
@@ -49,6 +48,7 @@ class EitRepack(EitCommit):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         # setup atoms variable before spawning commit

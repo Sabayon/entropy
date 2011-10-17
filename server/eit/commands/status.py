@@ -53,6 +53,7 @@ class EitStatus(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         return self._call_locked, [self._status, nsargs.repo]
@@ -71,7 +72,6 @@ class EitStatus(EitCommand):
         repo_data = repos_data[repo_id]
         repo_rev = entropy_server.local_repository_revision(repo_id)
         store_dir = entropy_server._get_local_store_directory(repo_id)
-        upload_basedir = entropy_server._get_local_upload_directory(repo_id)
         upload_files, upload_packages = \
             entropy_server.Mirrors._calculate_local_upload_files(repo_id)
         key_sorter = lambda x: \

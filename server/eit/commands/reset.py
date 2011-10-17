@@ -10,11 +10,10 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, teal
+from entropy.output import darkgreen
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.push import EitPush
@@ -59,6 +58,7 @@ class EitReset(EitPush):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._local = nsargs.local

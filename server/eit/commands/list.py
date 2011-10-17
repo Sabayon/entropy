@@ -64,6 +64,7 @@ class EitList(EitCommand):
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._quiet = nsargs.quiet
