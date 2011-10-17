@@ -32,6 +32,7 @@ class EitTest(EitCommand):
     def __init__(self, args):
         EitCommand.__init__(self, args)
         self._nsargs = None
+        self._ask = False
 
     def parse(self):
         """ Overridden from EitCommand """
@@ -70,14 +71,23 @@ class EitTest(EitCommand):
                                   help=_("package names"))
         pkglibs_parser.set_defaults(func=self._pkglibs)
 
-        pkgs_parser = subparsers.add_parser("pkgs",
+        pkgs_parser = subparsers.add_parser("local",
             help=_("verify local packages integrity"))
         pkgs_parser.add_argument("repo", nargs='?', default=None,
                                  metavar="<repo>", help=_("repository"))
         pkgs_parser.add_argument("--quick", action="store_true",
-                            default=False,
-                            help=_("no stupid questions"))
+                                 default=not self._ask,
+                                 help=_("no stupid questions"))
         pkgs_parser.set_defaults(func=self._pkgtest)
+
+        rempkgs_parser = subparsers.add_parser("remote",
+            help=_("verify remote packages integrity"))
+        rempkgs_parser.add_argument("repo", nargs='?', default=None,
+                                    metavar="<repo>", help=_("repository"))
+        rempkgs_parser.add_argument("--quick", action="store_true",
+                                    default=not self._ask,
+                                    help=_("no stupid questions"))
+        rempkgs_parser.set_defaults(func=self._rem_pkgtest)
 
         try:
             nsargs = parser.parse_args(self._args)
@@ -149,6 +159,13 @@ class EitTest(EitCommand):
             return 1
         return 0
 
+    def _rem_pkgtest(self, entropy_server):
+        repository_id = self._nsargs.repo
+        if repository_id is None:
+            repository_id = entropy_server.repository()
+        entropy_server._verify_remote_packages(repository_id, [],
+            ask = self._ask)
+        return 0
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
