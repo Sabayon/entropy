@@ -36,27 +36,26 @@ class EitMv(EitCp):
             formatter_class=argparse.RawDescriptionHelpFormatter,
             prog="%s %s" % (sys.argv[0], EitMv.NAME))
 
-        parser.add_argument("source", nargs=1,
-                            metavar="<source>",
+        parser.add_argument("source", metavar="<source>",
                             help=_("source repository"))
-        parser.add_argument("dest", nargs=1,
-                            metavar="<dest>",
+        parser.add_argument("dest", metavar="<dest>",
                             help=_("destination repository"))
         parser.add_argument("--deps", action="store_true",
                             default=False,
                             help=_("include dependencies"))
-        parser.add_argument("package", nargs='+', metavar="<package>",
-                            help=_("package dependency"))
+        parser.add_argument("packages", nargs='*', metavar="<package>",
+                           help=_("package names (all if none)"),
+                            default=None)
 
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             return parser.print_help, []
 
-        self._source = nsargs.source[0]
-        self._dest = nsargs.dest[0]
+        self._source = nsargs.source
+        self._dest = nsargs.dest
         self._deps = nsargs.deps
-        self._packages += nsargs.package
+        self._packages += nsargs.packages
         self._copy = False
         return self._call_locked, [self._move_copy, self._source]
 
