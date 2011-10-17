@@ -1625,6 +1625,7 @@ Name:    %s
             srv_set = self._settings[plg_id]['server']
             qa_sets = self._settings[plg_id]['qa_sets']
             base_repo = srv_set['base_repository_id']
+            community_mode = srv_set['community_mode']
             if base_repo is None:
                 base_repo = self._repository_id
 
@@ -1677,8 +1678,7 @@ Name:    %s
             # missing dependencies QA test
             deps_not_found = self._entropy.extended_dependencies_test(
                 [self._repository_id])
-            if deps_not_found \
-                and not self._entropy.community_repo:
+            if deps_not_found and not community_mode:
 
                 self._entropy.output(
                     "[repo:%s|%s] %s: %s" % (
