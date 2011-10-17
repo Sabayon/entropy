@@ -32,7 +32,7 @@ class EitMerge(EitCommand):
         self._merge_branch = None
         self._ask = True
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommit """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitMerge.NAME)
@@ -50,9 +50,15 @@ class EitMerge(EitCommand):
                             default=not self._ask,
                             help=_("no stupid questions"))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommit """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._ask = not nsargs.quick

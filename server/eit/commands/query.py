@@ -10,15 +10,11 @@
 
 """
 import sys
-import os
 import argparse
 
-from entropy.output import blue, purple, darkgreen, bold, brown, teal, \
-    darkred
-from entropy.const import const_convert_to_rawstring, etpConst
+from entropy.output import purple, darkgreen, bold, brown, teal
+from entropy.const import etpConst
 from entropy.i18n import _
-from entropy.security import Repository
-from entropy.tools import convert_unix_time_to_human_time
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -42,7 +38,7 @@ class EitQuery(EitCommand):
         from text_query import print_package_info
         self._pprint = print_package_info
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitQuery.NAME)
@@ -130,6 +126,11 @@ class EitQuery(EitCommand):
                                  help=_("package description"))
         desc_parser.set_defaults(func=self._desc)
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

@@ -36,7 +36,7 @@ class EitMatch(EitCommand):
         from text_query import print_package_info
         self._pprinter = print_package_info
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitMatch.NAME)
         parser = argparse.ArgumentParser(
@@ -51,6 +51,10 @@ class EitMatch(EitCommand):
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

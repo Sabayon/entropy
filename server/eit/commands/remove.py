@@ -34,7 +34,7 @@ class EitRemove(EitCommand):
         self._nodeps = False
         self._ask = True
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitRemove.NAME)
         parser = argparse.ArgumentParser(
@@ -54,6 +54,10 @@ class EitRemove(EitCommand):
                             default=not self._ask,
                             help=_("no stupid questions"))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

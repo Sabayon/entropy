@@ -29,7 +29,7 @@ class EitLog(EitCommand):
     ALIASES = []
     ALLOW_UNPRIVILEGED = True
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitLog.NAME)
         parser = argparse.ArgumentParser(
@@ -40,6 +40,10 @@ class EitLog(EitCommand):
         parser.add_argument("repo", nargs='?', default=None,
                             metavar="<repo>", help=_("repository"))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

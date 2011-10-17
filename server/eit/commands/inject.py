@@ -32,7 +32,7 @@ class EitInject(EitCommand):
         EitCommand.__init__(self, args)
         self._packages = []
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitInject.NAME)
         parser = argparse.ArgumentParser(
@@ -46,6 +46,10 @@ class EitInject(EitCommand):
                             help=_("inject into given repository"),
                             default=None)
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

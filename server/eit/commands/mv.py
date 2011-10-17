@@ -27,7 +27,7 @@ class EitMv(EitCp):
     NAME = "mv"
     ALIASES = []
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitMv """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitMv.NAME)
@@ -47,6 +47,10 @@ class EitMv(EitCp):
                            help=_("package names (all if none)"),
                             default=None)
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

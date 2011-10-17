@@ -37,6 +37,13 @@ class EitCommand(object):
     def __init__(self, args):
         self._args = args
 
+    def _get_parser(self):
+        """
+        This is the argparse parser setup method, it shall return
+        the ArgumentParser object that will be used by parse().
+        """
+        raise NotImplementedError()
+
     def parse(self):
         """
         Parse the actual arguments and return

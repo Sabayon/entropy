@@ -48,7 +48,7 @@ class EitPush(EitCommand):
         self._cleanup_only = False
         self._as_repository_id = None
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitPush.NAME)
         parser = argparse.ArgumentParser(
@@ -69,6 +69,10 @@ class EitPush(EitCommand):
         group.add_argument("--as", metavar="<repo>", default=None,
             help=_("push as fake repository"), dest="asrepo")
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

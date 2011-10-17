@@ -29,8 +29,23 @@ class EitRepo(EitCommand):
     ALIASES = []
     ALLOW_UNPRIVILEGED = True
 
+    def _get_parser(self):
+        """ Overridden from EitCommand """
+        descriptor = EitCommandDescriptor.obtain_descriptor(
+            EitRepo.NAME)
+        parser = argparse.ArgumentParser(
+            description=descriptor.get_description(),
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            prog="%s %s" % (sys.argv[0], EitRepo.NAME))
+        return parser
+
     def parse(self):
-        """ Overridden from EitRepo """
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
+        try:
+            nsargs = parser.parse_args(self._args)
+        except IOError as err:
+            return parser.print_help, []
         return self._call_locked, [self._void, None]
 
     def _void(self, entropy_server):

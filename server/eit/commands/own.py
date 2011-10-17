@@ -38,7 +38,7 @@ class EitOwn(EitCommand):
         from text_query import search_belongs
         self._query_func = search_belongs
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitOwn.NAME)
         parser = argparse.ArgumentParser(
@@ -56,6 +56,10 @@ class EitOwn(EitCommand):
                             help=_("search packages in given repository"),
                             dest="inrepo", default=None)
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

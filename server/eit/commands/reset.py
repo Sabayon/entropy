@@ -33,8 +33,8 @@ class EitReset(EitPush):
         self._reset_repository_id = None
         self._local = False
 
-    def parse(self):
-        """ Overridden from EitPush """
+    def _get_parser(self):
+        """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitReset.NAME)
         parser = argparse.ArgumentParser(
@@ -51,6 +51,11 @@ class EitReset(EitPush):
                             default=False,
                             help=_("do not pull the remote repository"))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitPush """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

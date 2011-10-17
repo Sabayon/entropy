@@ -28,7 +28,7 @@ class EitCheckout(EitCommand):
     NAME = "checkout"
     ALIASES = ["ci"]
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitCheckout.NAME)
@@ -39,7 +39,11 @@ class EitCheckout(EitCommand):
 
         parser.add_argument("repo", metavar="<repo>",
                             help=_("repository"))
+        return parser
 
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

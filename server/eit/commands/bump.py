@@ -10,7 +10,6 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.output import darkgreen, blue
@@ -28,7 +27,11 @@ class EitBump(EitCommand):
     NAME = "bump"
     ALIASES = []
 
-    def parse(self):
+    def __init__(self, args):
+        EitCommand.__init__(self, args)
+        self._sync = False
+
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitBump.NAME)
@@ -40,12 +43,17 @@ class EitBump(EitCommand):
         parser.add_argument("repo", nargs='?', default=None,
                             metavar="<repo>", help=_("repository"))
         parser.add_argument("--sync", action="store_true",
-                            default=False,
+                            default=self._sync,
                             help=_("sync with remote repository"))
+        return parser
 
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
+            sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
         self._sync = nsargs.sync

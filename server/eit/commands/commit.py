@@ -42,7 +42,7 @@ class EitCommit(EitCommand):
         # execute actions only for given atoms, if any
         self._packages = []
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitCommit.NAME)
         parser = argparse.ArgumentParser(
@@ -59,6 +59,10 @@ class EitCommit(EitCommand):
                             default=not self._ask,
                             help=_("no stupid questions"))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

@@ -10,11 +10,10 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.i18n import _
-from entropy.output import brown, teal, purple, darkgreen, blue
+from entropy.output import brown, teal, purple, darkgreen
 
 import entropy.dep
 
@@ -38,7 +37,7 @@ class EitList(EitCommand):
         self._verbose = False
         self._injected = False
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitList.NAME)
         parser = argparse.ArgumentParser(
@@ -58,6 +57,10 @@ class EitList(EitCommand):
            default=self._injected,
            help=_('only list injected packages'))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

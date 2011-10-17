@@ -35,7 +35,8 @@ class EitVacuum(EitCommand):
         self._pretend = False
         self._days = 0
 
-    def parse(self):
+    def _get_parser(self):
+        """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitVacuum.NAME)
         parser = argparse.ArgumentParser(
@@ -51,6 +52,11 @@ class EitVacuum(EitCommand):
         parser.add_argument('--days', type=int, default=self._days,
             help=_("expired since how many days, default: 0"))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

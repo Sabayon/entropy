@@ -37,7 +37,8 @@ class EitSearch(EitCommand):
         self._pprinter = print_package_info
         self._repository_id = None
 
-    def parse(self):
+    def _get_parser(self):
+        """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitSearch.NAME)
         parser = argparse.ArgumentParser(
@@ -55,6 +56,11 @@ class EitSearch(EitCommand):
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

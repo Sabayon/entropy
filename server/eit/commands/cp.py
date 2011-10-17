@@ -36,7 +36,7 @@ class EitCp(EitCommand):
         self._packages = []
         self._copy = True
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCp """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitCp.NAME)
@@ -56,7 +56,11 @@ class EitCp(EitCommand):
                             help=_("include dependencies"))
         parser.add_argument("package", nargs='+', metavar="<package>",
                             help=_("package dependency"))
+        return parser
 
+    def parse(self):
+        """ Overridden from EitCp """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

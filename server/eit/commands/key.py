@@ -10,12 +10,11 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.output import blue, purple, darkgreen, bold, brown, teal, \
     darkred
-from entropy.const import const_convert_to_rawstring, etpConst
+from entropy.const import const_convert_to_rawstring
 from entropy.i18n import _
 from entropy.security import Repository
 from entropy.tools import convert_unix_time_to_human_time
@@ -37,7 +36,7 @@ class EitKey(EitCommand):
         self._nsargs = None
         self._gpg_msg_shown = False
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitKey.NAME)
@@ -104,6 +103,11 @@ class EitKey(EitCommand):
             help=_("private key path"))
         export_priv_parser.set_defaults(func=self._export_priv)
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
@@ -410,8 +414,6 @@ class EitKey(EitCommand):
         return self.__export_key(
             entropy_server, repo_sec, True, entropy_server.repository(),
             key_path)
-
-        return 0
 
     def _export_priv(self, entropy_server):
         """

@@ -28,7 +28,7 @@ class EitCleanup(EitCommand):
     NAME = "cleanup"
     ALIASES = ["cn", "clean"]
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitCleanup.NAME)
@@ -42,7 +42,11 @@ class EitCleanup(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
+        return parser
 
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

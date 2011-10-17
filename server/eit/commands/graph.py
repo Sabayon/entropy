@@ -38,7 +38,7 @@ class EitGraph(EitCommand):
         self._quiet = False
         self._repository_id = None
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitGraph.NAME)
         parser = argparse.ArgumentParser(
@@ -58,6 +58,10 @@ class EitGraph(EitCommand):
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

@@ -13,7 +13,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, brown, teal, purple, blue, darkred
+from entropy.output import darkgreen, brown, purple, blue, darkred
 from entropy.transceivers import EntropyTransceiver
 
 from eit.commands.descriptor import EitCommandDescriptor
@@ -37,7 +37,7 @@ class EitLock(EitCommand):
         self._quiet = False
         self._name = EitLock.NAME
 
-    def parse(self):
+    def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitLock.NAME)
         parser = argparse.ArgumentParser(
@@ -60,6 +60,10 @@ class EitLock(EitCommand):
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

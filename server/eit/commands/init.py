@@ -28,7 +28,7 @@ class EitInit(EitCommand):
     NAME = "init"
     ALIASES = []
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitInit """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitInit.NAME)
@@ -43,6 +43,11 @@ class EitInit(EitCommand):
                             default=False,
                             help=_("no stupid questions"))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitInit """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:

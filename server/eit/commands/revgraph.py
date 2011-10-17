@@ -38,7 +38,8 @@ class EitRevgraph(EitCommand):
         self._quiet = False
         self._repository_id = None
 
-    def parse(self):
+    def _get_parser(self):
+        """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitRevgraph.NAME)
         parser = argparse.ArgumentParser(
@@ -58,6 +59,11 @@ class EitRevgraph(EitCommand):
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

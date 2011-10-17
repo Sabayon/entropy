@@ -35,7 +35,7 @@ class EitNotice(EitCommand):
         EitCommand.__init__(self, args)
         self._repository_id = None
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitNotice.NAME)
@@ -66,6 +66,10 @@ class EitNotice(EitCommand):
                                    metavar="<repo>", help=_("repository"))
         show_parser.set_defaults(func=self._show)
 
+        return parser
+
+    def parse(self):
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

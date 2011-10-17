@@ -14,7 +14,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import bold, purple, darkgreen, blue, brown, teal
+from entropy.output import bold, purple, darkgreen, blue
 
 import entropy.tools
 
@@ -38,7 +38,8 @@ class EitBranch(EitCommand):
         self._repository_id = None
         self._ask = True
 
-    def parse(self):
+    def _get_parser(self):
+        """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitBranch.NAME)
         parser = argparse.ArgumentParser(
@@ -58,7 +59,11 @@ class EitBranch(EitCommand):
         parser.add_argument("--from", metavar="<branch>",
                             help=_("from branch"),
                             dest="frombranch", default=None)
+        return parser
 
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:

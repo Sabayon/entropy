@@ -10,11 +10,10 @@
 
 """
 import sys
-import os
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, teal, purple
+from entropy.output import teal, purple
 from entropy.server.interfaces import Server
 
 from eit.commands.descriptor import EitCommandDescriptor
@@ -34,7 +33,7 @@ class EitTest(EitCommand):
         self._nsargs = None
         self._ask = False
 
-    def parse(self):
+    def _get_parser(self):
         """ Overridden from EitCommand """
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitTest.NAME)
@@ -89,6 +88,11 @@ class EitTest(EitCommand):
                                     help=_("no stupid questions"))
         rempkgs_parser.set_defaults(func=self._rem_pkgtest)
 
+        return parser
+
+    def parse(self):
+        """ Overridden from EitCommand """
+        parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
