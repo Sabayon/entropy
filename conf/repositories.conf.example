@@ -36,6 +36,9 @@ repository = sabayonlinux.org||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.r
 # Freelydifferent.com, France
 repository = sabayonlinux.org||http://mirror.freelydifferent.com/sabayon/entropy|
 
+# Open Source Institute, Clarkson University, United States
+repository = sabayonlinux.org||http://mirror.clarkson.edu/sabayon/entropy|
+
 # NLUUG, Holland
 repository = sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy rsync://ftp.nluug.nl/sabayonlinux/entropy|
 # Surfnet, Holland
