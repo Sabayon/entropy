@@ -98,15 +98,19 @@ class EitCp(EitCommand):
                 match_repo = [self._source], multi_match = True)
             if not p_matches:
                 entropy_server.output(
-                    red("%s: " % (_("Cannot match"),) ) + bold(package) + \
-                    red(" %s " % (_("in"),) ) + bold(self._source) + \
-                        red(" %s" % (_("repository"),)),
-                    header=brown(" * "),
-                    level="warning",
-                    importance=1)
+                    "%s: %s" % (
+                        purple(_("Not matched")), teal(package)),
+                    level="warning", importance=1)
             else:
                 package_ids += [pkg_id for pkg_id, r_id in p_matches if \
                     (pkg_id not in package_ids)]
+
+        if (not self._packages) and (not package_ids):
+            entropy_server.output(
+                purple(_("Considering all the packages")),
+                importance=1, level="warning")
+            repo = entropy_server.open_repository(self._source)
+            package_ids = repo.listAllPackageIds()
 
         if not package_ids:
             return 1
