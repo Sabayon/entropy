@@ -52,12 +52,6 @@ import portage.versions
 import portage
 
 
-def get_entropy_server(community_mode):
-    """
-    Return Entropy Server interface object.
-    """
-    return Server(community_repo = community_mode)
-
 def exec_cmd(args, env = None):
     """
     Execute a command with given environment.
@@ -1464,7 +1458,7 @@ Matter Resources Lock file you can use to detect if matter is running:
         raise SystemExit(1)
 
     if nsargs.community:
-        etpConst['community']['mode'] = True
+        os.environ['ETP_COMMUNITY_MODE'] = "1"
 
     if nsargs.debug:
         print_warning(repr(nsargs))
@@ -1493,7 +1487,7 @@ Matter Resources Lock file you can use to detect if matter is running:
 
     try:
         try:
-            entropy_server = get_entropy_server(etpConst['community']['mode'])
+            entropy_server = Server()
         except PermissionDenied:
             # repository not available or not configured
             print_error("no valid server-side repositories configured")

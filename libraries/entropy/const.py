@@ -215,11 +215,6 @@ def const_default_settings(rootdir):
         with open(cmdline_file, "r") as cmdline_f:
             cmdline = cmdline_f.readline().strip().split()
 
-    def _default_community_repo_mode():
-        if os.getuid() != 0:
-            return False
-        return os.getenv("ETP_COMMUNITY_MODE", False)
-
     etpConst.clear()
     my_const = {
         'logging': {
@@ -227,9 +222,6 @@ def const_default_settings(rootdir):
             'verbose_loglevel_id': 2,
         },
         'server_repositories': {},
-        'community': {
-            'mode': _default_community_repo_mode(),
-        },
         'cmdline': cmdline,
         'backed_up': {},
         # entropy default installation directory

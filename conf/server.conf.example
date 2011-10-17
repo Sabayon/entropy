@@ -13,6 +13,16 @@
 #
 # expiration-days = <internal value>
 
+# Community repository mode, enable this if your repositories
+# are just "overlays" of other full-blown repositories.
+# For example, you're providing your own set of customized packages
+# that are meant to work with some distribution repositories' packages.
+#
+# syntax for community-mode:
+#    community-mode = <enable/disable>
+#    default is: disable
+#
+community-mode = disable
 
 #
 #  syntax for default-repository:

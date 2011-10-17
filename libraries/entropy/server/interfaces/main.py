@@ -598,6 +598,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
+            'community_mode': False,
             'qa_langs': ["en_US", "C"],
             'default_repository_id': etpConst['defaultserverrepositoryid'],
             'base_repository_id': None,
@@ -731,6 +732,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             if bool_setting is not None:
                 data['changelog'] = bool_setting
 
+        def _community_mode(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['community_mode'] = bool_setting
+
         def _rss_feed(line, setting):
             bool_setting = entropy.tools.setting_to_bool(setting)
             if bool_setting is not None:
@@ -769,6 +775,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'officialserverrepositoryid': _offservrepoid,
             'default-repository': _default_repo,
             'expiration-days': _exp_days,
+            'community-mode': _community_mode,
             'expiration-based-scope': _exp_based_scope,
             'nonfree-packages-directory-support': _nf_packages_dir_sup,
             'disabled-eapis': _disabled_eapis,
@@ -801,8 +808,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 continue
             func(line, value)
 
+        env_community_mode = os.getenv("ETP_COMMUNITY_MODE")
+        if env_community_mode == "0":
+            data['community_mode'] = False
+        elif env_community_mode == "1":
+            data['community_mode'] = True
+
         # add system database if community repository mode is enabled
-        if self._helper.community_repo:
+        if data['community_mode']:
             data['repositories'][etpConst['clientserverrepoid']] = {}
             mydata = {}
             mydata['description'] = "Community Repositories System Repository"
@@ -1067,8 +1080,7 @@ class Server(Client):
     SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
 
     def init_singleton(self, default_repository = None, save_repository = False,
-            community_repo = False, fake_default_repo = False,
-            fake_default_repo_id = None,
+            fake_default_repo = False, fake_default_repo_id = None,
             fake_default_repo_desc = 'this is a fake repository'):
 
         self.__instance_destroyed = False
@@ -1079,7 +1091,6 @@ class Server(Client):
         self._treeupdates_repos = set()
         self._server_dbcache = {}
         self._settings = SystemSettings()
-        self.community_repo = community_repo
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
         self.fake_default_repo_id = fake_default_repo_id
@@ -3983,7 +3994,7 @@ class Server(Client):
 
     def _setup_community_repositories_settings(self):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if self.community_repo:
+        if srv_set['community_mode']:
             for repoid in srv_set['repositories']:
                 srv_set['repositories'][repoid]['community'] = True
 
@@ -4355,8 +4366,9 @@ class Server(Client):
         if repository_id in self._memory_db_srv_instances:
             return self._memory_db_srv_instances[repository_id]
 
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if repository_id == etpConst['clientserverrepoid'] and \
-            self.community_repo:
+                srv_set['community_mode']:
             return self.installed_repository()
 
         if just_reading:
@@ -5436,7 +5448,7 @@ class Server(Client):
             if setting not in self._settings_to_backup:
                 self._settings_to_backup.append(setting)
         # setup client database
-        if not self.community_repo:
+        if not srv_set['community_mode']:
             etpConst['etpdatabaseclientfilepath'] = \
                 self._get_local_repository_file(repository_id)
             etpConst['clientdbid'] = etpConst['serverdbid']
@@ -5444,7 +5456,8 @@ class Server(Client):
 
     def _show_interface_status(self):
         type_txt = _("server-side repository")
-        if self.community_repo:
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        if srv_set['community_mode']:
             type_txt = _("community repository")
         # ..on repository: <repository_name>
         mytxt = _("Entropy Server Interface Instance on repository")
