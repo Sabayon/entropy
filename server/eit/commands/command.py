@@ -53,8 +53,6 @@ class EitCommand(object):
         Return the Entropy Server object.
         This method is not thread safe.
         """
-        if "community_repo" not in kwargs:
-            kwargs["community_repo"] = etpConst['community']['mode']
         return Server(*args, **kwargs)
 
     def _call_locked(self, func, repo):
