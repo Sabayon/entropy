@@ -12,7 +12,7 @@ for env in ("LANG", "LC_ALL", "LANGUAGE",):
 import time
 import calendar
 
-sys.path.insert(0, "../libraries")
+sys.path.insert(0, "../lib")
 from entropy.const import etpConst
 from entropy.client.interfaces import Client
 import entropy.tools

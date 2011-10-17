@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.insert(0, "../libraries")
+sys.path.insert(0, "../lib")
 import tempfile
 import subprocess
 import bz2

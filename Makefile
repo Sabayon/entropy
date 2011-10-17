@@ -15,7 +15,7 @@ clean:
 
 entropy-install:
 
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/libraries
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/lib
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)/etc/entropy
@@ -24,7 +24,7 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/logrotate.d
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
-	cp libraries/entropy $(DESTDIR)/$(LIBDIR)/entropy/libraries/ -Ra
+	cp lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/ -Ra
 	install -m 755 misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
 	install -m 755 services/smartapp_wrapper $(DESTDIR)/$(LIBDIR)/entropy/services/

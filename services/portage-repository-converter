@@ -1,7 +1,7 @@
 #!/usr/bin/python2
 import sys
-sys.path.insert(0, '/usr/lib/entropy/libraries')
-sys.path.insert(0, '../libraries')
+sys.path.insert(0, '/usr/lib/entropy/lib')
+sys.path.insert(0, '../lib')
 
 import os
 import tempfile

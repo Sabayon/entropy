@@ -27,12 +27,12 @@ import threading
 import errno
 
 # Entropy Imports
-if "../../libraries" not in sys.path:
-    sys.path.insert(0, "../../libraries")
+if "../../lib" not in sys.path:
+    sys.path.insert(0, "../../lib")
 if "../../client" not in sys.path:
     sys.path.insert(1, "../../client")
-if "/usr/lib/entropy/libraries" not in sys.path:
-    sys.path.insert(2, "/usr/lib/entropy/libraries")
+if "/usr/lib/entropy/lib" not in sys.path:
+    sys.path.insert(2, "/usr/lib/entropy/lib")
 if "/usr/lib/entropy/client" not in sys.path:
     sys.path.insert(3, "/usr/lib/entropy/client")
 if "/usr/lib/entropy/sulfur" not in sys.path:

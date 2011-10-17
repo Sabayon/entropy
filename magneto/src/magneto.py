@@ -19,11 +19,11 @@ import time
 
 def _startup():
     sys.path.insert(0, '/usr/lib/entropy/client')
-    sys.path.insert(0, '/usr/lib/entropy/libraries')
+    sys.path.insert(0, '/usr/lib/entropy/lib')
     sys.path.insert(0, '/usr/lib/entropy/sulfur')
     sys.path.insert(0, '/usr/lib/entropy/magneto')
     sys.path.insert(0, '../../client')
-    sys.path.insert(0, '../../libraries')
+    sys.path.insert(0, '../../lib')
     sys.path.insert(0, '../../sulfur/src')
     sys.path.insert(0, '../')
 
