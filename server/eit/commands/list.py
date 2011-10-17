@@ -36,6 +36,7 @@ class EitList(EitCommand):
         self._repositories = []
         self._quiet = False
         self._verbose = False
+        self._injected = False
 
     def parse(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -53,6 +54,9 @@ class EitList(EitCommand):
         parser.add_argument("--verbose", "-v", action="store_true",
            default=self._verbose,
            help=_('output more package info'))
+        parser.add_argument("--injected", action="store_true",
+           default=self._injected,
+           help=_('only list injected packages'))
 
         try:
             nsargs = parser.parse_args(self._args)
@@ -61,6 +65,7 @@ class EitList(EitCommand):
 
         self._quiet = nsargs.quiet
         self._verbose = nsargs.verbose
+        self._injected = nsargs.injected
         self._repositories += nsargs.repo
         return self._call_unlocked, [self._list, None]
 
@@ -86,6 +91,9 @@ class EitList(EitCommand):
         """
         entropy_repository = entropy_server.open_repository(repository_id)
         pkg_ids = entropy_repository.listAllPackageIds(order_by = "atom")
+        if self._injected:
+            pkg_ids = [x for x in pkg_ids if \
+                           entropy_repository.isInjected(x)]
 
         for pkg_id in pkg_ids:
             atom = entropy_repository.retrieveAtom(pkg_id)
@@ -98,7 +106,7 @@ class EitList(EitCommand):
             sizeinfo = ""
             if self._verbose:
                 branch = entropy_repository.retrieveBranch(pkg_id)
-                branchinfo = darkgreen(" [")+teal(branch)+darkgreen("] ")
+                branchinfo = darkgreen("[")+teal(branch)+darkgreen("]")
                 mysize = entropy_repository.retrieveOnDiskSize(pkg_id)
                 mysize = entropy.tools.bytes_into_human(mysize)
                 sizeinfo = brown("[")+purple(mysize)+brown("]")
@@ -106,7 +114,7 @@ class EitList(EitCommand):
             if not self._quiet:
                 entropy_server.output(
                     "%s %s %s" % (
-                        sizeinfo, branchinfo, atom),
+                        atom, sizeinfo, branchinfo),
                     header="")
             else:
                 entropy_server.output(atom, level="generic")
