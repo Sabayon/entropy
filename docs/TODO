@@ -1,29 +1,24 @@
 Backlog (raw)
 
   1.0:
+    REAGENT:
 
-    - ditch reagent and activator in favour of eit (make it usable with equo community tools too, ditch stuff from there)
-        - use argparse
-        - add "eit notice"
-        - add "eit sets"
-        - ceit (community repos eit)
-        - add "eit revdeps"
-        - add "eit fitin"
+    - ditch reagent and activator in favour of eit
         - add man page
+        - update build.git scripts (eit addto -> eit add --to, etc)
+        - ditch text_query usage from eit?
 
     - pkgcore spm plugin
         PF CATEGORY CFLAGS CXXFLAGS NEEDED FEATURES INHERITED are missing
 
-    - fine grained locking support (acquire entropy resources lock only when really needed)
+    - fine grained locking support
+      (acquire entropy resources lock only when really needed
+        [eit add vs eit graph --> needed? pkg_id no more avail])
       kill the Big Entropy Lock :-)
-
-    - graph improvements:
-        - graph with or dependencies support
-        - graph with weighted edges (nvidia-userspace:0 must not collide with something
-          already pulled in)
 
   1.1:
 
+    - ditch close_repositories() for commit_repositories() when possible
     - python 3.x support -> more tests
     - sulfur: rewrite using pygtk3
 
