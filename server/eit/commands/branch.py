@@ -128,11 +128,15 @@ class EitBranch(EitCommand):
 
         # set branch to new branch first
         entropy_server.set_branch(self._to_branch)
-        status = entropy_server._switch_packages_branch(
-            repository_id, from_branch, self._to_branch)
-        if status is None:
-            entropy_server.set_branch(from_branch)
-            return 1
+        status = None
+        try:
+            status = entropy_server._switch_packages_branch(
+                repository_id, from_branch, self._to_branch)
+            if status is None:
+                return 1
+        finally:
+            if status is None:
+                entropy_server.set_branch(from_branch)
 
         switched, already_switched, ignored, \
             not_found, no_checksum = status
