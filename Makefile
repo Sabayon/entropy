@@ -53,7 +53,6 @@ entropy-server-install:
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)$(BINDIR)
-	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
 
 	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
 
@@ -62,10 +61,6 @@ entropy-server-install:
 	cp server/eit $(DESTDIR)/$(LIBDIR)/entropy/server/ -Ra
 	mv $(DESTDIR)/$(LIBDIR)/entropy/server/eit.py $(DESTDIR)$(BINDIR)/eit
 	install -m 755 services/matter $(DESTDIR)$(PREFIX)/sbin
-
-	# copy man pages
-	install -m 644 docs/man/man1/reagent.1 $(DESTDIR)$(PREFIX)/share/man/man1/
-	install -m 644 docs/man/man1/activator.1 $(DESTDIR)$(PREFIX)/share/man/man1/
 
 equo-install:
 
