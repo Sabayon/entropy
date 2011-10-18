@@ -14,6 +14,7 @@ import argparse
 
 from entropy.i18n import _
 from entropy.output import purple
+from entropy.cli import print_package_info
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -32,9 +33,6 @@ class EitMatch(EitCommand):
         EitCommand.__init__(self, args)
         self._packages = []
         self._quiet = False
-        # text_query import augh
-        from text_query import print_package_info
-        self._pprinter = print_package_info
 
     def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -75,7 +73,7 @@ class EitMatch(EitCommand):
                 continue
 
             count += 1
-            self._pprinter(
+            print_package_info(
                 pkg_id,
                 entropy_server,
                 entropy_server.open_repository(pkg_repo),

@@ -14,6 +14,7 @@ import argparse
 
 from entropy.output import purple, darkgreen, bold, brown, teal
 from entropy.const import etpConst
+from entropy.cli import print_package_info
 from entropy.i18n import _
 
 from eit.commands.descriptor import EitCommandDescriptor
@@ -35,8 +36,6 @@ class EitQuery(EitCommand):
         self._quiet = False
         self._verbose = False
         self._repository_id = None
-        from text_query import print_package_info
-        self._pprint = print_package_info
 
     def _get_parser(self):
         """ Overridden from EitCommand """
@@ -166,7 +165,7 @@ class EitQuery(EitCommand):
                         entropy_server.output(atom,
                             level="generic")
                     else:
-                        self._pprint(pkg_id, entropy_server,
+                        print_package_info(pkg_id, entropy_server,
                                      repo, quiet = False)
 
                 if (not results) and (not self._quiet):

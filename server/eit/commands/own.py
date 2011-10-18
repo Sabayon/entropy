@@ -15,6 +15,7 @@ import argparse
 
 from entropy.i18n import _
 from entropy.output import purple, darkgreen, teal, bold
+from entropy.cli import print_package_info
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -35,8 +36,6 @@ class EitOwn(EitCommand):
         self._quiet = False
         self._verbose = False
         self._repository_id = None
-        from text_query import print_package_info
-        self._pprint = print_package_info
 
     def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -130,7 +129,7 @@ class EitOwn(EitCommand):
                             repo.retrieveAtom(pkg_id),
                             level="generic")
                     else:
-                        self._pprint(pkg_id, entropy_server,
+                        print_package_info(pkg_id, entropy_server,
                                      repo, installed_search = True,
                                      extended = self._verbose,
                                      quiet = self._quiet)

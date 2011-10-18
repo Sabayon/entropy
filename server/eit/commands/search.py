@@ -14,6 +14,7 @@ import argparse
 
 from entropy.i18n import _
 from entropy.output import purple
+from entropy.cli import print_package_info
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -32,9 +33,6 @@ class EitSearch(EitCommand):
         EitCommand.__init__(self, args)
         self._packages = []
         self._quiet = False
-        # text_query import augh
-        from text_query import print_package_info
-        self._pprinter = print_package_info
         self._repository_id = None
 
     def _get_parser(self):
@@ -88,7 +86,7 @@ class EitSearch(EitCommand):
                     package, order_by = "atom")
                 for result in results:
                     count += 1
-                    self._pprinter(
+                    print_package_info(
                         result[1],
                         entropy_server,
                         repo,

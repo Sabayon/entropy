@@ -16,11 +16,11 @@ from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
 from entropy.exceptions import DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.client.interfaces import Client
+from entropy.cli import print_package_info
 import entropy.dep
 import entropy.tools
 
 # equo modules
-from text_query import print_package_info
 from text_ui import install_packages
 
 APP_NAME = os.path.basename(sys.argv[0])
