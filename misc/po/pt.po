@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 17:10+0200\n"
+"POT-Creation-Date: 2011-10-18 22:33+0200\n"
 "PO-Revision-Date: 2011-08-02 09:58-0300 \n"
 "Last-Translator: albfneto <albfneto@fcfrp.usp.br>\n"
 "Language-Team: Lucas Azevedo <lucasazevedo9@gmail.com>\n"
@@ -67,8 +67,8 @@ msgid "Title"
 msgstr "Título"
 
 #: ../../client/text_security.py:136 ../../client/text_ugc.py:520
-#: ../../client/text_query.py:1710 ../../server/eit/commands/key.py:328
-#: ../../sulfur/src/sulfur/views.py:2921 ../../sulfur/src/sulfur/views.py:3151
+#: ../../server/eit/commands/key.py:328 ../../sulfur/src/sulfur/views.py:2921
+#: ../../sulfur/src/sulfur/views.py:3151
 #: ../../sulfur/src/sulfur/dialogs.py:674
 #: ../../sulfur/src/sulfur/sulfur.glade.h:62
 msgid "Description"
@@ -821,8 +821,8 @@ msgid "Insert document path"
 msgstr "Inserir diretório do documento"
 
 #: ../../client/text_ugc.py:525 ../../client/text_ugc.py:747
-#: ../../client/text_query.py:1061 ../../client/text_query.py:1178
-#: ../../client/text_query.py:1756 ../../sulfur/src/sulfur/dialogs.py:700
+#: ../../client/text_query.py:764 ../../client/text_query.py:881
+#: ../../sulfur/src/sulfur/dialogs.py:700
 #: ../../sulfur/src/sulfur/dialogs.py:1429
 #: ../../sulfur/src/sulfur/sulfur.glade.h:117
 msgid "Keywords"
@@ -880,8 +880,7 @@ msgstr "removido(os) com sucesso"
 msgid "No title"
 msgstr "Sem título"
 
-#: ../../client/text_ugc.py:754 ../../client/text_query.py:1672
-#: ../../client/text_ui.py:1188
+#: ../../client/text_ugc.py:754 ../../client/text_ui.py:1188
 msgid "Download"
 msgstr "Receber"
 
@@ -893,229 +892,183 @@ msgstr "sem votos"
 msgid "current package vote"
 msgstr "Votos atuais do pacote"
 
-#: ../../client/text_query.py:47 ../../client/text_ui.py:82
+#: ../../client/text_query.py:49 ../../client/text_ui.py:82
 #: ../../client/text_ui.py:87
 msgid "Malformed command"
 msgstr "Comando mal formado"
 
-#: ../../client/text_query.py:202 ../../client/text_query.py:1121
+#: ../../client/text_query.py:204 ../../client/text_query.py:824
 msgid "Searching"
 msgstr "Buscando"
 
-#: ../../client/text_query.py:207 ../../client/text_query.py:559
-#: ../../client/text_query.py:738 ../../client/text_query.py:800
-#: ../../client/text_query.py:1001 ../../client/text_query.py:1080
+#: ../../client/text_query.py:209 ../../client/text_query.py:262
+#: ../../client/text_query.py:441 ../../client/text_query.py:503
+#: ../../client/text_query.py:704 ../../client/text_query.py:783
 msgid "Repository is not available"
 msgstr "repositório não disponível"
 
-#: ../../client/text_query.py:238 ../../client/text_query.py:603
-#: ../../client/text_query.py:714 ../../client/text_query.py:1223
-#: ../../client/text_query.py:1288 ../../client/text_query.py:1330
-#: ../../client/text_query.py:1371 ../../client/text_query.py:1410
-#: ../../client/text_query.py:1440 ../../client/text_query.py:1484
-#: ../../client/text_query.py:1540
+#: ../../client/text_query.py:240 ../../client/text_query.py:306
+#: ../../client/text_query.py:417 ../../client/text_query.py:926
+#: ../../client/text_query.py:991 ../../client/text_query.py:1033
+#: ../../client/text_query.py:1074 ../../client/text_query.py:1113
+#: ../../client/text_query.py:1143 ../../client/text_query.py:1187
+#: ../../client/text_query.py:1243
 msgid "Keyword"
 msgstr "Palavras-Chave"
 
-#: ../../client/text_query.py:239 ../../client/text_query.py:245
-#: ../../client/text_query.py:604 ../../client/text_query.py:723
-#: ../../client/text_query.py:757 ../../client/text_query.py:786
-#: ../../client/text_query.py:822 ../../client/text_query.py:1063
-#: ../../client/text_query.py:1180 ../../client/text_query.py:1224
-#: ../../client/text_query.py:1289 ../../client/text_query.py:1331
-#: ../../client/text_query.py:1372 ../../client/text_query.py:1411
-#: ../../client/text_query.py:1441 ../../client/text_query.py:1485
-#: ../../client/text_query.py:1541
+#: ../../client/text_query.py:241 ../../client/text_query.py:247
+#: ../../client/text_query.py:307 ../../client/text_query.py:426
+#: ../../client/text_query.py:460 ../../client/text_query.py:489
+#: ../../client/text_query.py:525 ../../client/text_query.py:766
+#: ../../client/text_query.py:883 ../../client/text_query.py:927
+#: ../../client/text_query.py:992 ../../client/text_query.py:1034
+#: ../../client/text_query.py:1075 ../../client/text_query.py:1114
+#: ../../client/text_query.py:1144 ../../client/text_query.py:1188
+#: ../../client/text_query.py:1244
 msgid "Found"
 msgstr "Encontrado"
 
-#: ../../client/text_query.py:240 ../../client/text_query.py:246
-#: ../../client/text_query.py:605 ../../client/text_query.py:724
-#: ../../client/text_query.py:1064 ../../client/text_query.py:1181
-#: ../../client/text_query.py:1225 ../../client/text_query.py:1290
-#: ../../client/text_query.py:1332 ../../client/text_query.py:1373
-#: ../../client/text_query.py:1412 ../../client/text_query.py:1442
-#: ../../client/text_query.py:1486 ../../client/text_query.py:1542
+#: ../../client/text_query.py:242 ../../client/text_query.py:248
+#: ../../client/text_query.py:308 ../../client/text_query.py:427
+#: ../../client/text_query.py:767 ../../client/text_query.py:884
+#: ../../client/text_query.py:928 ../../client/text_query.py:993
+#: ../../client/text_query.py:1035 ../../client/text_query.py:1076
+#: ../../client/text_query.py:1115 ../../client/text_query.py:1145
+#: ../../client/text_query.py:1189 ../../client/text_query.py:1245
 msgid "entries"
 msgstr "entradas"
 
-#: ../../client/text_query.py:265
-msgid "Reverse graphing installed package"
-msgstr "Comparação inversa dos pacotes instalados"
-
-#: ../../client/text_query.py:322 ../../client/text_query.py:1688
-msgid "Legend"
-msgstr "Legenda"
-
-#: ../../client/text_query.py:325
-msgid "packages passed as arguments"
-msgstr "pacotes passados como argumentos"
-
-#: ../../client/text_query.py:328
-msgid "packages with no further dependencies"
-msgstr "pacotes sem dependências complementares"
-
-#: ../../client/text_query.py:331
-msgid "packages with further dependencies (node)"
-msgstr "pacotes com dependências complementares (nó)"
-
-#: ../../client/text_query.py:334
-msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pacotes colocados como dependências em níveis mais altos (circularidade)"
-
-#: ../../client/text_query.py:343 ../../client/text_query.py:1585
-#: ../../client/text_query.py:1586 ../../server/eit/commands/deps.py:72
-#: ../../server/eit/commands/key.py:321 ../../server/eit/commands/key.py:325
-#: ../../sulfur/src/sulfur/dialogs.py:495
-#: ../../sulfur/src/sulfur/dialogs.py:664
-#: ../../sulfur/src/sulfur/dialogs.py:669
-#: ../../sulfur/src/sulfur/dialogs.py:682
-#: ../../sulfur/src/sulfur/dialogs.py:1069
-#: ../../sulfur/src/sulfur/dialogs.py:1895
-#: ../../sulfur/src/sulfur/dialogs.py:1903
-#: ../../sulfur/src/sulfur/dialogs.py:1905
-#: ../../sulfur/src/sulfur/dialogs.py:1907
-msgid "N/A"
-msgstr "N/D"
-
-#: ../../client/text_query.py:427
-msgid "Graphing"
-msgstr "Comparando"
-
-#: ../../client/text_query.py:554
+#: ../../client/text_query.py:257
 msgid "Belong Search"
 msgstr "Busca por Pertencente"
 
-#: ../../client/text_query.py:614
+#: ../../client/text_query.py:317
 msgid "ChangeLog Search"
 msgstr "Busca por ChangeLog"
 
-#: ../../client/text_query.py:621 ../../client/text_query.py:626
+#: ../../client/text_query.py:324 ../../client/text_query.py:329
 #: ../../client/text_ui.py:700
 msgid "No match for"
 msgstr "Nenhum corresponde à"
 
-#: ../../client/text_query.py:634 ../../client/text_query.py:756
-#: ../../client/text_query.py:821 ../../client/text_query.py:1610
-#: ../../sulfur/src/sulfur/dialogs.py:1692
+#: ../../client/text_query.py:337 ../../client/text_query.py:459
+#: ../../client/text_query.py:524 ../../sulfur/src/sulfur/dialogs.py:1692
 #: ../../sulfur/src/sulfur/dialogs.py:2675
 msgid "Package"
 msgstr "Pacote"
 
 #. == "None" is a bug, see:
 #. 685b865453d552d37ce3a9559f4cefb9a88f8beb
-#: ../../client/text_query.py:640
+#: ../../client/text_query.py:343
 msgid "No ChangeLog available"
 msgstr "Nenhum ChangeLog disponível"
 
-#: ../../client/text_query.py:651
+#: ../../client/text_query.py:354
 msgid "Attention: developer-repo option not enabled"
 msgstr "Atenção: repositório do desenvolvedor não ativado"
 
-#: ../../client/text_query.py:662
+#: ../../client/text_query.py:365
 msgid "Inverse Dependencies Search"
 msgstr "Busca Inversa de Dependências"
 
-#: ../../client/text_query.py:715 ../../client/text_ui.py:2396
+#: ../../client/text_query.py:418 ../../client/text_ui.py:2396
 msgid "Matched"
 msgstr "Comparado"
 
-#: ../../client/text_query.py:716 ../../client/text_query.py:1635
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+#: ../../client/text_query.py:419 ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Masked"
 msgstr "Mascarado"
 
-#: ../../client/text_query.py:719
+#: ../../client/text_query.py:422
 msgid "from repository"
 msgstr "do repositório"
 
-#: ../../client/text_query.py:721
+#: ../../client/text_query.py:424
 msgid "from installed packages database"
 msgstr "da base de dados de pacotes instalados"
 
-#: ../../client/text_query.py:733
+#: ../../client/text_query.py:436
 msgid "Needed Search"
 msgstr "Busca pelo que é necessário"
 
-#: ../../client/text_query.py:758
+#: ../../client/text_query.py:461
 msgid "libraries"
 msgstr "bibliotecas"
 
-#: ../../client/text_query.py:767
+#: ../../client/text_query.py:470
 msgid "Required Search"
 msgstr "Busca pelo que é requerido"
 
-#: ../../client/text_query.py:785
+#: ../../client/text_query.py:488
 msgid "Library"
 msgstr "Biblioteca"
 
-#: ../../client/text_query.py:787 ../../client/text_ui.py:1128
+#: ../../client/text_query.py:490 ../../client/text_ui.py:1128
 #: ../../server/eit/commands/branch.py:122
 msgid "packages"
 msgstr "pacotes"
 
-#: ../../client/text_query.py:823
+#: ../../client/text_query.py:526
 msgid "files"
 msgstr "arquivos"
 
-#: ../../client/text_query.py:832
+#: ../../client/text_query.py:535
 msgid "Orphans Search"
 msgstr "Búsca por Órfãos"
 
-#: ../../client/text_query.py:886
+#: ../../client/text_query.py:589
 msgid "Analyzing"
 msgstr "Analizando"
 
-#: ../../client/text_query.py:904
+#: ../../client/text_query.py:607
 msgid "Analyzed directories"
 msgstr "Diretórios analizados"
 
-#: ../../client/text_query.py:906
+#: ../../client/text_query.py:609
 msgid "Masked directories"
 msgstr "Diretórios mascarados"
 
-#: ../../client/text_query.py:909
+#: ../../client/text_query.py:612
 msgid "Number of files collected on the filesystem"
 msgstr "Número de arquivos coletados no sistema de arquivos"
 
-#: ../../client/text_query.py:912
+#: ../../client/text_query.py:615
 msgid "Now looking into Installed Packages database"
 msgstr "Agora buscando na base de dados de Pacotes Instalados"
 
-#: ../../client/text_query.py:938
+#: ../../client/text_query.py:641
 msgid "Intersecting with content of the package"
 msgstr "Interseccionando com conteúdo do pacote"
 
-#: ../../client/text_query.py:949
+#: ../../client/text_query.py:652
 msgid "Intersection completed. Showing statistics"
 msgstr "Interseção completa. Mostrando estatísticas"
 
-#: ../../client/text_query.py:951
+#: ../../client/text_query.py:654
 msgid "Number of total files"
 msgstr "Número total de arquivos"
 
-#: ../../client/text_query.py:953
+#: ../../client/text_query.py:656
 msgid "Number of matching files"
 msgstr "Número de arquivos correspondentes"
 
-#: ../../client/text_query.py:956
+#: ../../client/text_query.py:659
 msgid "Number of orphaned files"
 msgstr "Número de arquivos tornados órfãos"
 
-#: ../../client/text_query.py:958
+#: ../../client/text_query.py:661
 msgid "Writing file to disk"
 msgstr "Escrevendo arquivo no disco"
 
-#: ../../client/text_query.py:984
+#: ../../client/text_query.py:687
 msgid "Total wasted space"
 msgstr "Espaço total desperdiçado"
 
-#: ../../client/text_query.py:996
+#: ../../client/text_query.py:699
 msgid "Removal Search"
 msgstr "Busca por Remoção"
 
-#: ../../client/text_query.py:1009 ../../client/text_ui.py:1040
+#: ../../client/text_query.py:712 ../../client/text_ui.py:1040
 #: ../../client/text_ui.py:1185 ../../client/text_ui.py:1281
 #: ../../client/text_ui.py:1782 ../../client/text_ui.py:1874
 #: ../../client/text_ui.py:1972 ../../server/eit/commands/remove.py:88
@@ -1124,23 +1077,23 @@ msgstr "Busca por Remoção"
 msgid "No packages found"
 msgstr "Pacotes não encontrados"
 
-#: ../../client/text_query.py:1021 ../../client/text_ui.py:2063
+#: ../../client/text_query.py:724 ../../client/text_ui.py:2063
 msgid "Ouch!"
 msgstr "Oh!"
 
-#: ../../client/text_query.py:1022 ../../client/text_ui.py:2064
+#: ../../client/text_query.py:725 ../../client/text_ui.py:2064
 msgid "the following system packages were pulled in"
 msgstr "Os seguintes pacotes de  sistema foram colocados"
 
-#: ../../client/text_query.py:1032 ../../client/text_query.py:1112
-#: ../../client/text_query.py:1229 ../../client/text_query.py:1294
-#: ../../client/text_query.py:1336 ../../client/text_query.py:1377
-#: ../../client/text_query.py:1416 ../../client/text_query.py:1446
-#: ../../client/text_query.py:1490 ../../client/text_query.py:1515
+#: ../../client/text_query.py:735 ../../client/text_query.py:815
+#: ../../client/text_query.py:932 ../../client/text_query.py:997
+#: ../../client/text_query.py:1039 ../../client/text_query.py:1080
+#: ../../client/text_query.py:1119 ../../client/text_query.py:1149
+#: ../../client/text_query.py:1193 ../../client/text_query.py:1218
 msgid "No matches"
 msgstr "Nenhum resultado"
 
-#: ../../client/text_query.py:1049 ../../client/text_ui.py:823
+#: ../../client/text_query.py:752 ../../client/text_ui.py:823
 #: ../../client/text_ui.py:874 ../../client/text_ui.py:884
 #: ../../client/text_ui.py:1366 ../../client/text_ui.py:1388
 #: ../../client/text_ui.py:1454 ../../client/text_ui.py:1889
@@ -1151,155 +1104,53 @@ msgstr "Nenhum resultado"
 msgid "Not available"
 msgstr "Não disponível"
 
-#: ../../client/text_query.py:1050 ../../client/text_smart.py:140
+#: ../../client/text_query.py:753 ../../client/text_smart.py:140
 #: ../../client/text_smart.py:320 ../../client/text_smart.py:470
 #: ../../client/text_ui.py:718 ../../client/text_ui.py:1455
 #: ../../client/text_ui.py:1652 ../../sulfur/src/sulfur/package.py:306
 msgid "from"
 msgstr "de"
 
-#: ../../client/text_query.py:1075
+#: ../../client/text_query.py:778
 #, fuzzy
 msgid "Listing Packages"
 msgstr "Trocando pacotes"
 
-#: ../../client/text_query.py:1191
+#: ../../client/text_query.py:894
 msgid "Searching mimetype"
 msgstr "busca por mimetype"
 
-#: ../../client/text_query.py:1238
+#: ../../client/text_query.py:941
 msgid "Matching"
 msgstr "Comparando"
 
-#: ../../client/text_query.py:1304
+#: ../../client/text_query.py:1007
 msgid "Slot Search"
 msgstr "Busca por Slot"
 
-#: ../../client/text_query.py:1345
+#: ../../client/text_query.py:1048
 msgid "Package Set Search"
 msgstr "Busca por Conjunto de Pacotes"
 
-#: ../../client/text_query.py:1385
+#: ../../client/text_query.py:1088
 msgid "Tag Search"
 msgstr "Busca por Tag"
 
-#: ../../client/text_query.py:1424
+#: ../../client/text_query.py:1127
 msgid "Revision Search"
 msgstr "Busca por Revisão"
 
-#: ../../client/text_query.py:1425
+#: ../../client/text_query.py:1128
 msgid "Installed packages repository"
 msgstr "Repositório dos pacotes Instalados"
 
-#: ../../client/text_query.py:1455
+#: ../../client/text_query.py:1158
 msgid "License Search"
 msgstr "Busca por Licença"
 
-#: ../../client/text_query.py:1499
+#: ../../client/text_query.py:1202
 msgid "Description Search"
 msgstr "Busca por Descrição"
-
-#. now fetch essential info
-#: ../../client/text_query.py:1552
-msgid "CORRUPTED"
-msgstr "CORROMPIDO"
-
-#. client info
-#: ../../client/text_query.py:1584 ../../client/text_ui.py:871
-#: ../../client/text_ui.py:911
-msgid "Not installed"
-msgstr "Não instalado"
-
-#: ../../client/text_query.py:1611
-msgid "branch"
-msgstr "branch"
-
-#: ../../client/text_query.py:1617
-msgid "Category"
-msgstr "Categoria"
-
-#: ../../client/text_query.py:1619 ../../sulfur/src/sulfur/__init__.py:2079
-msgid "Name"
-msgstr "Nome"
-
-#: ../../client/text_query.py:1638 ../../sulfur/src/sulfur/sulfur.glade.h:17
-msgid "Available"
-msgstr "Disponível"
-
-#: ../../client/text_query.py:1640 ../../client/text_query.py:1648
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
-msgid "Installed"
-msgstr "Instalado"
-
-#: ../../client/text_query.py:1643 ../../client/text_query.py:1649
-msgid "version"
-msgstr "versão"
-
-#: ../../client/text_query.py:1644 ../../client/text_query.py:1651
-msgid "revision"
-msgstr "revisão"
-
-#: ../../client/text_query.py:1654 ../../sulfur/src/sulfur/sulfur.glade.h:232
-msgid "Slot"
-msgstr "Slot"
-
-#: ../../client/text_query.py:1670
-msgid "Size"
-msgstr "Tamanho"
-
-#: ../../client/text_query.py:1674
-msgid "Checksum"
-msgstr "Soma de Checagem"
-
-#: ../../client/text_query.py:1679 ../../server/eit/commands/deps.py:185
-#: ../../sulfur/src/sulfur/dialogs.py:1445
-msgid "Dependencies"
-msgstr "Dependências"
-
-#: ../../client/text_query.py:1696
-msgid "Conflicts"
-msgstr "Conflitos"
-
-#: ../../client/text_query.py:1701
-msgid "Homepage"
-msgstr "Homepage"
-
-#: ../../client/text_query.py:1718 ../../sulfur/src/sulfur/dialogs.py:1437
-msgid "USE flags"
-msgstr "USE flags"
-
-#: ../../client/text_query.py:1736 ../../sulfur/src/sulfur/sulfur.glade.h:26
-msgid "CHOST"
-msgstr "CHOST"
-
-#: ../../client/text_query.py:1738 ../../sulfur/src/sulfur/sulfur.glade.h:25
-msgid "CFLAGS"
-msgstr "CFLAGS"
-
-#: ../../client/text_query.py:1740 ../../sulfur/src/sulfur/sulfur.glade.h:28
-msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
-
-#: ../../client/text_query.py:1744 ../../sulfur/src/sulfur/dialogs.py:1413
-msgid "Sources"
-msgstr "Códigos-Fonte"
-
-#: ../../client/text_query.py:1749
-msgid "Entry API"
-msgstr "API de Entrada"
-
-#: ../../client/text_query.py:1751
-msgid "Compiled with"
-msgstr "Compilado com"
-
-#: ../../client/text_query.py:1769
-msgid "Created"
-msgstr "Criado"
-
-#: ../../client/text_query.py:1775 ../../client/text_ui.py:1648
-#: ../../sulfur/src/sulfur/dialogs.py:3466
-msgid "License"
-msgstr "Licença"
 
 #: ../../client/text_rescue.py:53 ../../client/text_smart.py:174
 msgid "Source Package Manager backend not available"
@@ -1868,7 +1719,7 @@ msgstr "leitor de quadro de avisos de repositório"
 msgid "show respositories status"
 msgstr "mostrar status dos repositórios"
 
-#: ../../client/equo.py:87 ../../server/eit/commands/search.py:111
+#: ../../client/equo.py:87 ../../server/eit/commands/search.py:109
 msgid "search packages in repositories"
 msgstr "buscar pacotes nos repositórios"
 
@@ -2717,6 +2568,11 @@ msgstr "Estes seriam os pacotes que seriam removidos"
 msgid "These are the chosen packages"
 msgstr "Estes são os pacotes escolhidos"
 
+#. client info
+#: ../../client/text_ui.py:871 ../../client/text_ui.py:911
+msgid "Not installed"
+msgstr "Não instalado"
+
 #: ../../client/text_ui.py:899
 msgid "Versions"
 msgstr "Versões"
@@ -2913,6 +2769,10 @@ msgstr "Sua escolha (digite um número e pressione enter)"
 msgid "You need to accept the licenses below"
 msgstr "Você precisa aceitar a licença abaixo"
 
+#: ../../client/text_ui.py:1648 ../../sulfur/src/sulfur/dialogs.py:3466
+msgid "License"
+msgstr "Licença"
+
 #: ../../client/text_ui.py:1648
 msgid "needed by"
 msgstr "requisitado por"
@@ -3052,8 +2912,8 @@ msgid "Libraries/Executables statistics"
 msgstr "Estatísticas de Bibliotecas/Executáveis"
 
 #: ../../client/text_ui.py:2389 ../../server/eit/commands/test.py:138
-#: ../../server/eit/commands/query.py:201
-#: ../../server/eit/commands/query.py:242
+#: ../../server/eit/commands/query.py:200
+#: ../../server/eit/commands/query.py:241
 #: ../../server/eit/commands/files.py:76 ../../server/eit/commands/cp.py:106
 msgid "Not matched"
 msgstr "Não comparados"
@@ -3103,8 +2963,8 @@ msgstr ""
 msgid "library linking test (using live system)"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:70 ../../server/eit/commands/query.py:76
-#: ../../server/eit/commands/query.py:94 ../../server/eit/commands/add.py:40
+#: ../../server/eit/commands/test.py:70 ../../server/eit/commands/query.py:75
+#: ../../server/eit/commands/query.py:93 ../../server/eit/commands/add.py:40
 #: ../../server/eit/commands/repack.py:39
 #: ../../server/eit/commands/files.py:46
 #, fuzzy
@@ -3137,117 +2997,117 @@ msgstr "verificar também integridade de pacotes"
 msgid "run QA tests"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:51
+#: ../../server/eit/commands/query.py:50
 #, fuzzy
 msgid "execute query"
 msgstr "Executar cópia"
 
-#: ../../server/eit/commands/query.py:52
+#: ../../server/eit/commands/query.py:51
 #, fuzzy
 msgid "available queries"
 msgstr "disponível"
 
-#: ../../server/eit/commands/query.py:55
+#: ../../server/eit/commands/query.py:54
 #, fuzzy
 msgid "search package tags"
 msgstr "package.mask do usuário"
 
-#: ../../server/eit/commands/query.py:58 ../../server/eit/commands/query.py:71
-#: ../../server/eit/commands/query.py:83
-#: ../../server/eit/commands/query.py:101
-#: ../../server/eit/commands/query.py:117 ../../server/eit/commands/list.py:52
-#: ../../server/eit/commands/own.py:54 ../../server/eit/commands/search.py:57
-#: ../../server/eit/commands/revgraph.py:59
-#: ../../server/eit/commands/match.py:52 ../../server/eit/commands/lock.py:61
-#: ../../server/eit/commands/files.py:49 ../../server/eit/commands/graph.py:58
+#: ../../server/eit/commands/query.py:57 ../../server/eit/commands/query.py:70
+#: ../../server/eit/commands/query.py:82
+#: ../../server/eit/commands/query.py:100
+#: ../../server/eit/commands/query.py:116 ../../server/eit/commands/list.py:52
+#: ../../server/eit/commands/own.py:53 ../../server/eit/commands/search.py:55
+#: ../../server/eit/commands/revgraph.py:57
+#: ../../server/eit/commands/match.py:50 ../../server/eit/commands/lock.py:61
+#: ../../server/eit/commands/files.py:49 ../../server/eit/commands/graph.py:56
 msgid "quiet output, for scripting purposes"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:60
-#: ../../server/eit/commands/query.py:106
-#: ../../server/eit/commands/query.py:122
+#: ../../server/eit/commands/query.py:59
+#: ../../server/eit/commands/query.py:105
+#: ../../server/eit/commands/query.py:121
 #, fuzzy
 msgid "query into given repository only"
 msgstr "habilitar o repositório especificado"
 
-#: ../../server/eit/commands/query.py:64
+#: ../../server/eit/commands/query.py:63
 #, fuzzy
 msgid "tag name"
 msgstr "Nome do host"
 
-#: ../../server/eit/commands/query.py:68
+#: ../../server/eit/commands/query.py:67
 #, fuzzy
 msgid "show libraries (.so) required by matched packages"
 msgstr "Estes são os pacotes correspondentes"
 
-#: ../../server/eit/commands/query.py:80
+#: ../../server/eit/commands/query.py:79
 #, fuzzy
 msgid "show reverse dependencies of packages"
 msgstr "mostrar árvore de dependências reversas para os átomos fornecidos"
 
-#: ../../server/eit/commands/query.py:86
+#: ../../server/eit/commands/query.py:85
 msgid "verbose output, show more info"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:89
+#: ../../server/eit/commands/query.py:88
 #, fuzzy
 msgid "include build dependencies"
 msgstr "não foi possível incluir as dependências reversas"
 
-#: ../../server/eit/commands/query.py:98
+#: ../../server/eit/commands/query.py:97
 #, fuzzy
 msgid "search through package sets"
 msgstr "mostrar conjuntos de pacotes disponíveis"
 
-#: ../../server/eit/commands/query.py:104
+#: ../../server/eit/commands/query.py:103
 msgid "verbose output, show package sets content"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:110
+#: ../../server/eit/commands/query.py:109
 #, fuzzy
 msgid "package set name"
 msgstr "Nome do Conjunto de Pacotes"
 
-#: ../../server/eit/commands/query.py:114
+#: ../../server/eit/commands/query.py:113
 #, fuzzy
 msgid "search packages through their description"
 msgstr "procurar por pacote pela descrição"
 
-#: ../../server/eit/commands/query.py:120
+#: ../../server/eit/commands/query.py:119
 #, fuzzy
 msgid "verbose output, show more information"
 msgstr "Informações dos repositórios"
 
-#: ../../server/eit/commands/query.py:126
+#: ../../server/eit/commands/query.py:125
 #, fuzzy
 msgid "package description"
 msgstr "Descrição do pacote"
 
-#: ../../server/eit/commands/query.py:175
+#: ../../server/eit/commands/query.py:174
 #, fuzzy
 msgid "Nothing found for"
 msgstr "Nada encontrado"
 
-#: ../../server/eit/commands/query.py:221
+#: ../../server/eit/commands/query.py:220
 #, fuzzy
 msgid "libraries found"
 msgstr "bibliotecas"
 
-#: ../../server/eit/commands/query.py:263
+#: ../../server/eit/commands/query.py:262
 msgid "revdep(s) found"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:313
+#: ../../server/eit/commands/query.py:312
 #, fuzzy
 msgid "sets found"
 msgstr "usuário não encontrado"
 
-#: ../../server/eit/commands/query.py:347 ../../server/eit/commands/own.py:144
+#: ../../server/eit/commands/query.py:346 ../../server/eit/commands/own.py:143
 #, fuzzy
 msgid "packages found"
 msgstr "Pacotes não encontrados"
 
-#: ../../server/eit/commands/query.py:356
+#: ../../server/eit/commands/query.py:355
 #, fuzzy
 msgid "miscellaneous package metadata queries"
 msgstr "Atualizando metadados dos pacotes"
@@ -3282,7 +3142,7 @@ msgstr "trocando pacotes injetados"
 msgid "show repository status"
 msgstr "mostrar status dos repositórios"
 
-#: ../../server/eit/commands/list.py:55 ../../server/eit/commands/own.py:57
+#: ../../server/eit/commands/list.py:55 ../../server/eit/commands/own.py:56
 #, fuzzy
 msgid "output more package info"
 msgstr "Não há pacotes de Kernel"
@@ -3301,18 +3161,18 @@ msgstr "não disponível"
 msgid "No packages"
 msgstr "sem pacotes"
 
-#: ../../server/eit/commands/own.py:50
+#: ../../server/eit/commands/own.py:49
 msgid "path"
 msgstr ""
 
-#: ../../server/eit/commands/own.py:59 ../../server/eit/commands/search.py:52
-#: ../../server/eit/commands/revgraph.py:52
-#: ../../server/eit/commands/graph.py:51
+#: ../../server/eit/commands/own.py:58 ../../server/eit/commands/search.py:50
+#: ../../server/eit/commands/revgraph.py:50
+#: ../../server/eit/commands/graph.py:49
 #, fuzzy
 msgid "search packages in given repository"
 msgstr "buscar pacotes nos repositórios"
 
-#: ../../server/eit/commands/own.py:153
+#: ../../server/eit/commands/own.py:152
 #, fuzzy
 msgid "search packages owning paths"
 msgstr "buscar pacotes nos repositórios"
@@ -3348,17 +3208,17 @@ msgstr ""
 msgid "move packages from a repository to another"
 msgstr "mover pacotes de um repositório para outro"
 
-#: ../../server/eit/commands/search.py:50
-#: ../../server/eit/commands/revgraph.py:50
-#: ../../server/eit/commands/match.py:48
+#: ../../server/eit/commands/search.py:48
+#: ../../server/eit/commands/revgraph.py:48
+#: ../../server/eit/commands/match.py:46
 #: ../../server/eit/commands/remove.py:46 ../../server/eit/commands/deps.py:44
-#: ../../server/eit/commands/graph.py:49
+#: ../../server/eit/commands/graph.py:47
 #, fuzzy
 msgid "package name"
 msgstr "Nome do Conjunto de Pacotes"
 
-#: ../../server/eit/commands/search.py:102
-#: ../../server/eit/commands/match.py:89
+#: ../../server/eit/commands/search.py:100
+#: ../../server/eit/commands/match.py:87
 #: ../../sulfur/src/sulfur/packages.py:1135
 msgid "Nothing found"
 msgstr "Nada encontrado"
@@ -3573,14 +3433,14 @@ msgstr "trabalhando na base de dados"
 msgid "merge branch into current"
 msgstr ""
 
-#: ../../server/eit/commands/revgraph.py:56
-#: ../../server/eit/commands/graph.py:55
+#: ../../server/eit/commands/revgraph.py:54
+#: ../../server/eit/commands/graph.py:53
 #, fuzzy
 msgid "show system packages, build deps, circular deps"
 msgstr ""
 "inclue pacotes de sistema, monta dependências e informação de circularidade"
 
-#: ../../server/eit/commands/revgraph.py:95
+#: ../../server/eit/commands/revgraph.py:93
 #, fuzzy
 msgid "show reverse dependency graph for packages"
 msgstr "mostrar árvore de dependências reversas para os átomos fornecidos"
@@ -3595,7 +3455,7 @@ msgstr "habilitar o repositório especificado"
 msgid "rebuild packages in repository"
 msgstr " repositório dos pacotes Instalados"
 
-#: ../../server/eit/commands/match.py:98
+#: ../../server/eit/commands/match.py:96
 #, fuzzy
 msgid "match packages in repositories"
 msgstr "comparar um pacote nos repositórios"
@@ -3819,6 +3679,19 @@ msgstr "não foi possível incluir as dependências reversas"
 msgid "remove packages from repository"
 msgstr "mover pacotes de um repositório para outro"
 
+#: ../../server/eit/commands/deps.py:72 ../../server/eit/commands/key.py:321
+#: ../../server/eit/commands/key.py:325 ../../sulfur/src/sulfur/dialogs.py:495
+#: ../../sulfur/src/sulfur/dialogs.py:664
+#: ../../sulfur/src/sulfur/dialogs.py:669
+#: ../../sulfur/src/sulfur/dialogs.py:682
+#: ../../sulfur/src/sulfur/dialogs.py:1069
+#: ../../sulfur/src/sulfur/dialogs.py:1895
+#: ../../sulfur/src/sulfur/dialogs.py:1903
+#: ../../sulfur/src/sulfur/dialogs.py:1905
+#: ../../sulfur/src/sulfur/dialogs.py:1907
+msgid "N/A"
+msgstr "N/D"
+
 #: ../../server/eit/commands/deps.py:85
 msgid "package dependencies"
 msgstr "dependências do pacote"
@@ -3842,6 +3715,11 @@ msgstr "Tipo de dependência"
 #: ../../server/eit/commands/deps.py:164
 msgid "Select a dependency type for"
 msgstr "Selecione um tipo de dependência para"
+
+#: ../../server/eit/commands/deps.py:185
+#: ../../sulfur/src/sulfur/dialogs.py:1445
+msgid "Dependencies"
+msgstr "Dependências"
 
 #: ../../server/eit/commands/deps.py:189
 msgid "Dependencies editor"
@@ -3878,7 +3756,7 @@ msgstr "Configurando pacote"
 msgid "copy packages from a repository to another"
 msgstr "copiar pacotes de um repositório para outro"
 
-#: ../../server/eit/commands/graph.py:93
+#: ../../server/eit/commands/graph.py:91
 #, fuzzy
 msgid "show dependency graph for packages"
 msgstr "Desempacotando pacote de dependências"
@@ -4745,6 +4623,10 @@ msgid "No packages need or can be queued at the moment."
 msgstr "Não há pacotes necessitando o que possam ser enfileirados no momento."
 
 #: ../../sulfur/src/sulfur/__init__.py:2079
+msgid "Name"
+msgstr "Nome"
+
+#: ../../sulfur/src/sulfur/__init__.py:2079
 msgid "Name and description"
 msgstr "Nome e Descrição"
 
@@ -4976,10 +4858,18 @@ msgstr "Log de Mudanças do Pacote"
 msgid "License name"
 msgstr "Nome da Licença"
 
+#: ../../sulfur/src/sulfur/dialogs.py:1413
+msgid "Sources"
+msgstr "Códigos-Fonte"
+
 #: ../../sulfur/src/sulfur/dialogs.py:1421
 #: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Mirrors"
 msgstr "Espelhos"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1437
+msgid "USE flags"
+msgstr "USE flags"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1453
 msgid "Depends"
@@ -5679,6 +5569,10 @@ msgstr ""
 "Esses Aplicativos podem alterar a configuração do seu sistema, faça as "
 "modificações requeridas manualmente"
 
+#: ../../sulfur/src/sulfur/sulfur.glade.h:17
+msgid "Available"
+msgstr "Disponível"
+
 #: ../../sulfur/src/sulfur/sulfur.glade.h:19
 msgid "Background error message"
 msgstr "Mensagem de erro de fundo"
@@ -5703,9 +5597,21 @@ msgstr "Navegar nas aplicações"
 msgid "Bugs"
 msgstr "Bugs"
 
+#: ../../sulfur/src/sulfur/sulfur.glade.h:25
+msgid "CFLAGS"
+msgstr "CFLAGS"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:26
+msgid "CHOST"
+msgstr "CHOST"
+
 #: ../../sulfur/src/sulfur/sulfur.glade.h:27
 msgid "CONFIG_PROTECT"
 msgstr "CONFIG_PROTECT"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:28
+msgid "CXXFLAGS"
+msgstr "CXXFLAGS"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:29
 msgid "C_hanges"
@@ -6010,6 +5916,10 @@ msgstr "Instalar Conjunto de Pacotes"
 #: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "Install the selected package"
 msgstr "Instalar o pacote selecionado"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+msgid "Installed"
+msgstr "Instalado"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:113
 msgid "Installed Packages"
@@ -6438,6 +6348,10 @@ msgstr "Mostrar não aplicados"
 msgid "Show updates"
 msgstr "Mostrar atualizações"
 
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+msgid "Slot"
+msgstr "Slot"
+
 #: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "Socket settings"
 msgstr "Configurações de socket"
@@ -6781,6 +6695,65 @@ msgstr "Notificador de Atualizações de Aplicativos Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Carregar Gerenciador de Pacotes"
+
+#~ msgid "Reverse graphing installed package"
+#~ msgstr "Comparação inversa dos pacotes instalados"
+
+#~ msgid "Legend"
+#~ msgstr "Legenda"
+
+#~ msgid "packages passed as arguments"
+#~ msgstr "pacotes passados como argumentos"
+
+#~ msgid "packages with no further dependencies"
+#~ msgstr "pacotes sem dependências complementares"
+
+#~ msgid "packages with further dependencies (node)"
+#~ msgstr "pacotes com dependências complementares (nó)"
+
+#~ msgid ""
+#~ "packages already pulled in as dependency in upper levels (circularity)"
+#~ msgstr ""
+#~ "pacotes colocados como dependências em níveis mais altos (circularidade)"
+
+#~ msgid "Graphing"
+#~ msgstr "Comparando"
+
+#~ msgid "CORRUPTED"
+#~ msgstr "CORROMPIDO"
+
+#~ msgid "branch"
+#~ msgstr "branch"
+
+#~ msgid "Category"
+#~ msgstr "Categoria"
+
+#~ msgid "version"
+#~ msgstr "versão"
+
+#~ msgid "revision"
+#~ msgstr "revisão"
+
+#~ msgid "Size"
+#~ msgstr "Tamanho"
+
+#~ msgid "Checksum"
+#~ msgstr "Soma de Checagem"
+
+#~ msgid "Conflicts"
+#~ msgstr "Conflitos"
+
+#~ msgid "Homepage"
+#~ msgstr "Homepage"
+
+#~ msgid "Entry API"
+#~ msgstr "API de Entrada"
+
+#~ msgid "Compiled with"
+#~ msgstr "Compilado com"
+
+#~ msgid "Created"
+#~ msgstr "Criado"
 
 #~ msgid "Cleaning"
 #~ msgstr "Limpando"
