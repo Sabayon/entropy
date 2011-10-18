@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-18 22:49+0200\n"
-"PO-Revision-Date: 2011-10-18 22:52+0100\n"
+"PO-Revision-Date: 2011-10-18 23:06+0100\n"
 "Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "Language-Team: Fabio Erculiani <lxnay@sabayon.org>\n"
 "Language: \n"
@@ -6405,24 +6405,20 @@ msgid "run given test"
 msgstr "esegui i test forniti"
 
 #: ../../server/eit/commands/test.py:47
-#, fuzzy
 msgid "available tests"
-msgstr "disponibile"
+msgstr "test disponibili"
 
 #: ../../server/eit/commands/test.py:50
-#, fuzzy
 msgid "dependencies test"
-msgstr "Test dipendenze"
+msgstr "test dipendenze"
 
 #: ../../server/eit/commands/test.py:54
-#, fuzzy
 msgid "libraries test"
-msgstr "Test librerie"
+msgstr "test librerie"
 
 #: ../../server/eit/commands/test.py:56
-#, fuzzy
 msgid "dump results to file"
-msgstr "riversa risultati nei file"
+msgstr "riversa risultati su file"
 
 #: ../../server/eit/commands/test.py:60
 #, fuzzy
@@ -6443,14 +6439,12 @@ msgstr ""
 #: ../../server/eit/commands/repack.py:39
 #: ../../server/eit/commands/add.py:40
 #: ../../server/eit/commands/files.py:46
-#, fuzzy
 msgid "package names"
-msgstr "Atomi"
+msgstr "nomi pacchetto"
 
 #: ../../server/eit/commands/test.py:74
-#, fuzzy
 msgid "verify local packages integrity"
-msgstr "verifica inoltre l'integrità dei pacchetti"
+msgstr "verifica integrità pacchetti locali"
 
 #: ../../server/eit/commands/test.py:79
 #: ../../server/eit/commands/test.py:88
@@ -6468,28 +6462,24 @@ msgid "no stupid questions"
 msgstr "nessuna domanda stupida"
 
 #: ../../server/eit/commands/test.py:83
-#, fuzzy
 msgid "verify remote packages integrity"
-msgstr "verifica inoltre l'integrità dei pacchetti"
+msgstr "verifica integrità pacchetti remoti"
 
 #: ../../server/eit/commands/test.py:178
 msgid "run QA tests"
 msgstr "esegui test QA"
 
 #: ../../server/eit/commands/query.py:50
-#, fuzzy
 msgid "execute query"
-msgstr "Esegui copia"
+msgstr "esegui query"
 
 #: ../../server/eit/commands/query.py:51
-#, fuzzy
 msgid "available queries"
-msgstr "disponibile"
+msgstr "query disponibili"
 
 #: ../../server/eit/commands/query.py:54
-#, fuzzy
 msgid "search package tags"
-msgstr "package.mask lato utente"
+msgstr "cerca tag pacchetti"
 
 #: ../../server/eit/commands/query.py:57
 #: ../../server/eit/commands/query.py:70
@@ -6510,14 +6500,12 @@ msgstr ""
 #: ../../server/eit/commands/query.py:59
 #: ../../server/eit/commands/query.py:105
 #: ../../server/eit/commands/query.py:121
-#, fuzzy
 msgid "query into given repository only"
-msgstr "abilita la repository specificata"
+msgstr "query solamente dentro la repository fornita"
 
 #: ../../server/eit/commands/query.py:63
-#, fuzzy
 msgid "tag name"
-msgstr "Nome host"
+msgstr "nome tag"
 
 #: ../../server/eit/commands/query.py:67
 #, fuzzy
@@ -6525,32 +6513,28 @@ msgid "show libraries (.so) required by matched packages"
 msgstr "Questi sono i pacchetti accoppiati"
 
 #: ../../server/eit/commands/query.py:79
-#, fuzzy
 msgid "show reverse dependencies of packages"
-msgstr "visualizza albero dipendenze inverse per gli atomi installati forniti"
+msgstr "visualizza dipendenze inverse dei pacchetti"
 
 #: ../../server/eit/commands/query.py:85
 msgid "verbose output, show more info"
 msgstr "output verboso, visualizza più info"
 
 #: ../../server/eit/commands/query.py:88
-#, fuzzy
 msgid "include build dependencies"
-msgstr "non includere dipendenze inverse"
+msgstr "includi dipendenze compilazione"
 
 #: ../../server/eit/commands/query.py:97
-#, fuzzy
 msgid "search through package sets"
-msgstr "cerca package set disponibili"
+msgstr "ricerca attraverso package set"
 
 #: ../../server/eit/commands/query.py:103
 msgid "verbose output, show package sets content"
 msgstr ""
 
 #: ../../server/eit/commands/query.py:109
-#, fuzzy
 msgid "package set name"
-msgstr "Nome Package Set"
+msgstr "nome package set"
 
 #: ../../server/eit/commands/query.py:113
 #, fuzzy
@@ -6563,34 +6547,29 @@ msgid "verbose output, show more information"
 msgstr "Informazioni repository"
 
 #: ../../server/eit/commands/query.py:125
-#, fuzzy
 msgid "package description"
-msgstr "Descrizione pacchetto"
+msgstr "descrizione pacchetto"
 
 #: ../../server/eit/commands/query.py:174
-#, fuzzy
 msgid "Nothing found for"
-msgstr "Trovato un fico secco"
+msgstr "Trovato nulla per"
 
 #: ../../server/eit/commands/query.py:220
-#, fuzzy
 msgid "libraries found"
-msgstr "librerie"
+msgstr "librerie trovate"
 
 #: ../../server/eit/commands/query.py:262
 msgid "revdep(s) found"
 msgstr "dipendenze inverse trovate"
 
 #: ../../server/eit/commands/query.py:312
-#, fuzzy
 msgid "sets found"
-msgstr "utente non trovato"
+msgstr "set trovati"
 
 #: ../../server/eit/commands/query.py:346
 #: ../../server/eit/commands/own.py:143
-#, fuzzy
 msgid "packages found"
-msgstr "Nessun pacchetto trovato"
+msgstr "pacchetti trovati"
 
 #: ../../server/eit/commands/query.py:355
 #, fuzzy
@@ -6606,19 +6585,16 @@ msgid "stored packages"
 msgstr "pacchetti immagazzinati"
 
 #: ../../server/eit/commands/status.py:102
-#, fuzzy
 msgid "upload packages"
-msgstr "pacchetti scaricati"
+msgstr "pacchetti upload"
 
 #: ../../server/eit/commands/status.py:109
-#, fuzzy
 msgid "unstaged packages"
-msgstr "pacchetti firmati"
+msgstr ""
 
 #: ../../server/eit/commands/status.py:141
-#, fuzzy
 msgid "add"
-msgstr "Da aggiungere"
+msgstr "aggiungi"
 
 #: ../../server/eit/commands/status.py:153
 #, fuzzy
@@ -6627,7 +6603,6 @@ msgstr "migrazione"
 
 #: ../../server/eit/commands/status.py:163
 #: ../../server/eit/commands/list.py:136
-#, fuzzy
 msgid "show repository status"
 msgstr "visualizza stato repository"
 
@@ -6647,9 +6622,8 @@ msgid "not available"
 msgstr "non disponibile"
 
 #: ../../server/eit/commands/list.py:128
-#, fuzzy
 msgid "No packages"
-msgstr "nessun pacchetto"
+msgstr "Nessun pacchetto"
 
 #: ../../server/eit/commands/own.py:49
 msgid "path"
@@ -6690,9 +6664,8 @@ msgstr "Repository di destinazione"
 
 #: ../../server/eit/commands/mv.py:45
 #: ../../server/eit/commands/cp.py:56
-#, fuzzy
 msgid "include dependencies"
-msgstr "dipendenze pacchetto"
+msgstr "includi dipendenze"
 
 #: ../../server/eit/commands/mv.py:47
 msgid "package names (all if none)"
@@ -6708,9 +6681,8 @@ msgstr "muove i pacchetti da una repository all'altra"
 #: ../../server/eit/commands/remove.py:46
 #: ../../server/eit/commands/deps.py:44
 #: ../../server/eit/commands/graph.py:47
-#, fuzzy
 msgid "package name"
-msgstr "Nome Package Set"
+msgstr "nome pacchetto"
 
 #: ../../server/eit/commands/search.py:100
 #: ../../server/eit/commands/match.py:87
@@ -6719,9 +6691,8 @@ msgid "Nothing found"
 msgstr "Trovato un fico secco"
 
 #: ../../server/eit/commands/reset.py:51
-#, fuzzy
 msgid "do not pull the remote repository"
-msgstr "non è elencato nella repository !"
+msgstr "non scaricare repository remota"
 
 #: ../../server/eit/commands/reset.py:84
 #, fuzzy
@@ -6749,14 +6720,12 @@ msgstr "Entropy Infrastructure Toolkit"
 
 #: ../../server/eit/commands/help.py:66
 #: ../../services/kernel-switcher:226
-#, fuzzy
 msgid "this help"
-msgstr "questo output"
+msgstr "questo help"
 
 #: ../../server/eit/commands/bump.py:47
-#, fuzzy
 msgid "sync with remote repository"
-msgstr "rimuove repository"
+msgstr "sincronizza con repository remota"
 
 #: ../../server/eit/commands/bump.py:67
 #, fuzzy
@@ -6769,42 +6738,36 @@ msgid "bump repository revision, force push"
 msgstr "Revisione repository"
 
 #: ../../server/eit/commands/push.py:68
-#, fuzzy
 msgid "push all the repositories"
-msgstr "Aggiorna Repository"
+msgstr "push di tutte le repository"
 
 #: ../../server/eit/commands/push.py:70
-#, fuzzy
 msgid "push as fake repository"
-msgstr "Scegli la repository"
+msgstr "push come repository fake"
 
 #: ../../server/eit/commands/push.py:151
 msgid "Commit message"
 msgstr "Messaggio di commit"
 
 #: ../../server/eit/commands/push.py:153
-#, fuzzy
 msgid "Enter the commit message"
-msgstr "Per favore inserisci un messaggio di commit"
+msgstr "Inserisci messaggio commit"
 
 #: ../../server/eit/commands/push.py:174
-#, fuzzy
 msgid "Entropy Repository Status"
-msgstr "Stato dei database delle repository Entropy remote"
+msgstr "Stato Repository Entropy"
 
 #: ../../server/eit/commands/push.py:181
 msgid "Host"
 msgstr "Host"
 
 #: ../../server/eit/commands/push.py:184
-#, fuzzy
 msgid "Remote"
-msgstr "Da remoto"
+msgstr "Remoto"
 
 #: ../../server/eit/commands/push.py:190
-#, fuzzy
 msgid "Local"
-msgstr "locale"
+msgstr "Locale"
 
 #: ../../server/eit/commands/push.py:213
 #: ../../server/eit/commands/push.py:249
@@ -6821,15 +6784,13 @@ msgid "push (or pull) repository packages and metadata"
 msgstr "repository cambiata. Aggiornamento metadati"
 
 #: ../../server/eit/commands/notice.py:48
-#, fuzzy
 msgid "execute given action"
-msgstr "Genera informazioni login"
+msgstr "esegui azione fornita"
 
 #: ../../server/eit/commands/notice.py:49
 #: ../../server/eit/commands/key.py:50
-#, fuzzy
 msgid "available actions"
-msgstr "Visualizza applicazioni disponibili"
+msgstr "azioni disponibili"
 
 #: ../../server/eit/commands/notice.py:52
 #, fuzzy
@@ -6853,9 +6814,8 @@ msgstr "Inserisci URL"
 
 #: ../../server/eit/commands/notice.py:170
 #: ../../server/eit/commands/notice.py:322
-#, fuzzy
 msgid "URL"
-msgstr "URI"
+msgstr "URL"
 
 #: ../../server/eit/commands/notice.py:244
 msgid "Choose the one you want to remove"
@@ -7108,9 +7068,8 @@ msgid "files found"
 msgstr "file non trovato"
 
 #: ../../server/eit/commands/files.py:104
-#, fuzzy
 msgid "show files owned by packages"
-msgstr "visualizza file posseduti dagli atomi forniti"
+msgstr "visualizza file posseduti da pacchetti"
 
 #: ../../server/eit/commands/remove.py:48
 #: ../../server/eit/commands/deps.py:46
@@ -7124,9 +7083,8 @@ msgid "do not include reverse dependencies"
 msgstr "non includere dipendenze inverse"
 
 #: ../../server/eit/commands/remove.py:127
-#, fuzzy
 msgid "remove packages from repository"
-msgstr "muove i pacchetti da una repository all'altra"
+msgstr "rimuovi pacchetti da repository"
 
 #: ../../server/eit/commands/deps.py:85
 msgid "package dependencies"
@@ -7162,9 +7120,8 @@ msgid "edit dependencies for packages in repository"
 msgstr "Repository applicazioni installate"
 
 #: ../../server/eit/commands/cp.py:58
-#, fuzzy
 msgid "package dependency"
-msgstr "dipendenze pacchetto"
+msgstr "dipendenza pacchetto"
 
 #: ../../server/eit/commands/cp.py:85
 msgid "source equals destination"
@@ -7185,9 +7142,8 @@ msgid "show dependency graph for packages"
 msgstr "Spacchettizzazione del pacchetto dipendenza"
 
 #: ../../server/eit/commands/key.py:49
-#, fuzzy
 msgid "execute action"
-msgstr "forza azione"
+msgstr "esegui azione"
 
 #: ../../server/eit/commands/key.py:53
 #, fuzzy
