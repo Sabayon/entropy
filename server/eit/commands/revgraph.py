@@ -13,6 +13,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
+from entropy.cli import revgraph_packages
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -31,9 +32,6 @@ class EitRevgraph(EitCommand):
         EitCommand.__init__(self, args)
         self._packages = []
         self._complete = False
-        # Import text_query from equo libraries
-        from text_query import revgraph_packages
-        self._graph_func = revgraph_packages
         self._quiet = False
         self._repository_id = None
 
@@ -82,7 +80,7 @@ class EitRevgraph(EitCommand):
             repository_ids = entropy_server.repositories()
         else:
             repository_ids = [self._repository_id]
-        return self._graph_func(
+        return revgraph_packages(
             self._packages, entropy_server,
             complete = self._complete,
             repository_ids = repository_ids, quiet = self._quiet)

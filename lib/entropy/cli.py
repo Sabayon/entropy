@@ -20,6 +20,8 @@ from entropy.const import etpConst, const_convert_to_unicode
 from entropy.output import print_info, print_generic, writechar, blue, \
     red, bold, darkred, brown, darkblue, purple, teal, darkgreen, \
     decolorize
+from entropy.graph import Graph
+from entropy.misc import Lifo
 from entropy.i18n import _
 
 import entropy.dep
@@ -284,7 +286,8 @@ def countdown(secs = 5, what = "Counting...", back = False):
             try:
                 print_generic(red(">>") + " " + what, end = "")
             except UnicodeEncodeError:
-                print_generic(red(">>") + " " + what.encode('utf-8'), end = "")
+                print_generic(red(">>") + " " + what.encode('utf-8'),
+                              end = "")
         else:
             print_generic(what)
         for i in range(secs)[::-1]:
@@ -556,7 +559,8 @@ def print_package_info(package_id, entropy_client, entropy_repository,
                         brown(conflict),))
 
     home_txt = "       %s:" % (_("Homepage"),)
-    home_lines = _my_formatted_print(pkghome, "", "", color = brown,
+    home_lines = _my_formatted_print(
+        entropy_client, pkghome, "", "", color = brown,
         min_chars = 15, get_data = True)
     for home_line in home_lines:
         toc.append((darkgreen(home_txt), home_line,))
@@ -565,7 +569,8 @@ def print_package_info(package_id, entropy_client, entropy_repository,
     if not strict_output:
 
         desc_txt = "       %s:" % (_("Description"),)
-        desc_lines = _my_formatted_print(pkgdesc, "", "", get_data = True)
+        desc_lines = _my_formatted_print(
+            entropy_client, pkgdesc, "", "", get_data = True)
         for desc_line in desc_lines:
             toc.append((darkgreen(desc_txt), purple(desc_line)))
             desc_txt = " "
@@ -574,6 +579,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
             pkguseflags = entropy_repository.retrieveUseflags(package_id)
             use_txt = "       %s:" % (_("USE flags"),)
             use_lines = _my_formatted_print(
+                entropy_client,
                 pkguseflags, "", "", color = teal,
                 get_data = True)
             for use_line in use_lines:
@@ -612,7 +618,8 @@ def print_package_info(package_id, entropy_client, entropy_repository,
             pkgkeywords = ' '.join(
                 sorted(entropy_repository.retrieveKeywords(package_id)))
             keyword_txt = "       %s:" % (_("Keywords"),)
-            keyword_lines = _my_formatted_print(pkgkeywords, "", "",
+            keyword_lines = _my_formatted_print(
+                entropy_client, pkgkeywords, "", "",
                 color = brown, get_data = True)
             for keyword_line in keyword_lines:
                 toc.append((darkgreen(keyword_txt), brown(keyword_line)))
@@ -636,8 +643,8 @@ def print_package_info(package_id, entropy_client, entropy_repository,
 
     print_table(toc, cell_spacing = 3)
 
-def _my_formatted_print(data, header, reset_columns, min_chars = 25,
-    color = None, get_data = False):
+def _my_formatted_print(entropy_client, data, header, reset_columns,
+                        min_chars = 25, color = None, get_data = False):
 
     out_data = []
 
@@ -661,14 +668,14 @@ def _my_formatted_print(data, header, reset_columns, min_chars = 25,
             if get_data:
                 out_data.append(desc_text)
             else:
-                print_info(desc_text)
+                entropy_client.output(desc_text)
             desc_text = reset_columns
 
     if fcount > 0:
         if get_data:
             out_data.append(desc_text)
         else:
-            print_info(desc_text)
+            entropy_client.output(desc_text)
 
     if get_data:
         return out_data
@@ -690,3 +697,310 @@ def show_dependencies_legend(entropy_client, indent = '',
             entropy_client.output(txt)
     if get_data:
         return data
+
+def revgraph_packages(packages, entropy_client, complete = False,
+    repository_ids = None, quiet = False):
+
+    if repository_ids is None:
+        repository_ids = [entropy_client.installed_repository(
+                ).repository_id()]
+
+    found = False
+    for repository_id in repository_ids:
+        entropy_repository = entropy_client.open_repository(repository_id)
+        for package in packages:
+            pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+            if pkg_rc == 1:
+                continue
+            if not quiet:
+                entropy_client.output(
+                    darkgreen("%s %s..." % (
+                            _("Reverse graphing installed package"),
+                            purple(package),) ),
+                    header=brown(" @@ "))
+
+            found = True
+            g_pkg = entropy_repository.retrieveAtom(pkg_id)
+            _revgraph_package(entropy_client, pkg_id, g_pkg,
+                              entropy_repository,
+                              show_complete = complete, quiet = quiet)
+
+    if not found:
+        entropy_client.output(
+            purple(_("No packages found")),
+            level="warning", importance=1)
+        return 1
+
+    return 0
+
+def _print_graph_item_deps(entropy_client, item, out_data = None,
+                           colorize = None):
+
+    if out_data is None:
+        out_data = {}
+
+    if "cache" not in out_data:
+        out_data['cache'] = set()
+    if "lvl" not in out_data:
+        out_data['lvl'] = 0
+    item_translation_callback = out_data.get('txc_cb')
+    show_already_pulled_in = out_data.get('show_already_pulled_in')
+
+    out_val = repr(item.item())
+    if item_translation_callback:
+        out_val = item_translation_callback(item.item())
+
+    endpoints = set()
+    for arch in item.arches():
+        if item.is_arch_outgoing(arch):
+            endpoints |= arch.endpoints()
+
+    valid_endpoints = [x for x in endpoints if x not in \
+        out_data['cache']]
+    cached_endpoints = [x for x in endpoints if x in \
+        out_data['cache']]
+
+    if colorize is None and not valid_endpoints:
+        colorize = darkgreen
+    elif colorize is None:
+        colorize = purple
+
+    ind_lvl = out_data['lvl']
+    indent_txt = '[%s]\t' % (teal(str(ind_lvl)),) + '  ' * ind_lvl
+    entropy_client.output(indent_txt + colorize(out_val), level="generic")
+    if cached_endpoints and show_already_pulled_in:
+        indent_txt = '[%s]\t' % (teal(str(ind_lvl)),) + '  ' * (ind_lvl + 1)
+        for endpoint in sorted(cached_endpoints, key = lambda x: x.item()):
+            endpoint_item = item_translation_callback(endpoint.item())
+            entropy_client.output(indent_txt + brown(endpoint_item),
+                                  level="generic")
+
+    if valid_endpoints:
+        out_data['lvl'] += 1
+        out_data['cache'].update(valid_endpoints)
+        for endpoint in sorted(valid_endpoints, key = lambda x: x.item()):
+            _print_graph_item_deps(entropy_client, endpoint, out_data)
+        out_data['lvl'] -= 1
+
+def _show_graph_legend(entropy_client):
+    entropy_client.output("%s:" % (purple(_("Legend")),))
+
+    entropy_client.output("[%s] %s" % (blue("x"),
+        blue(_("packages passed as arguments")),))
+
+    entropy_client.output("[%s] %s" % (darkgreen("x"),
+        darkgreen(_("packages with no further dependencies")),))
+
+    entropy_client.output("[%s] %s" % (purple("x"),
+        purple(_("packages with further dependencies (node)")),))
+
+    entropy_client.output("[%s] %s" % (brown("x"),
+        brown(_("packages already pulled in as dependency in upper levels (circularity)")),))
+
+    entropy_client.output("="*40, level="generic")
+
+def _revgraph_package(entropy_client, installed_pkg_id, package, dbconn,
+                      show_complete = False, quiet = False):
+
+    include_sys_pkgs = False
+    show_already_pulled_in = False
+    include_build_deps = False
+    if show_complete:
+        include_sys_pkgs = True
+        show_already_pulled_in = True
+        include_build_deps = True
+
+    excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+    if not include_build_deps:
+        excluded_dep_types = None
+
+    graph = Graph()
+    stack = Lifo()
+    inst_item = (installed_pkg_id, package)
+    stack.push(inst_item)
+    stack_cache = set()
+    # ensure package availability in graph, initialize now
+    graph.add(inst_item, set())
+
+    rev_pkgs_sorter = lambda x: dbconn.retrieveAtom(x)
+
+    while stack.is_filled():
+
+        item = stack.pop()
+        if item in stack_cache:
+            continue
+        stack_cache.add(item)
+        pkg_id, was_dep = item
+
+        rev_deps = dbconn.retrieveReverseDependencies(pkg_id,
+            exclude_deptypes = excluded_dep_types)
+
+        graph_deps = []
+        for rev_pkg_id in sorted(rev_deps, key = rev_pkgs_sorter):
+
+            dep = dbconn.retrieveAtom(rev_pkg_id)
+            do_include = True
+            if not include_sys_pkgs:
+                do_include = not dbconn.isSystemPackage(rev_pkg_id)
+
+            g_item = (rev_pkg_id, dep)
+            if do_include:
+                stack.push(g_item)
+            graph_deps.append(g_item)
+
+        graph.add(item, graph_deps)
+
+    def item_translation_func(match):
+        return match[1]
+
+    _graph_to_stdout(entropy_client, graph, graph.get_node(inst_item),
+        item_translation_func, show_already_pulled_in, quiet)
+    if not quiet:
+        _show_graph_legend(entropy_client)
+
+    del stack
+    graph.destroy()
+    del graph
+    return 0
+
+def graph_packages(packages, entropy_client, complete = False,
+    repository_ids = None, quiet = False):
+
+    found = False
+    for package in packages:
+        match = entropy_client.atom_match(package, match_repo = repository_ids)
+        if match[0] == -1:
+            continue
+        if not quiet:
+            entropy_client.output(
+                darkgreen("%s %s..." % (
+                _("Graphing"), purple(package),) ),
+                header=brown(" @@ "))
+
+        found = True
+        pkg_id, repo_id = match
+        repodb = entropy_client.open_repository(repo_id)
+        g_pkg = repodb.retrieveAtom(pkg_id)
+        _graph_package(match, g_pkg, entropy_client,
+                       show_complete = complete, quiet = quiet)
+
+    if not found:
+        entropy_client.output(
+            purple(_("No packages found")),
+            level="warning", importance=1)
+        return 1
+
+    return 0
+
+def _graph_package(match, package, entropy_intf, show_complete = False,
+                   quiet = False):
+
+    include_sys_pkgs = False
+    show_already_pulled_in = False
+    if show_complete:
+        include_sys_pkgs = True
+        show_already_pulled_in = True
+
+    graph = Graph()
+    stack = Lifo()
+    start_item = (match, package, None)
+    stack.push(start_item)
+    stack_cache = set()
+    # ensure package availability in graph, initialize now
+    graph.add(start_item, [])
+    depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
+
+    while stack.is_filled():
+
+        item = stack.pop()
+        if item in stack_cache:
+            continue
+        stack_cache.add(item)
+        ((pkg_id, repo_id,), was_dep, dep_type) = item
+
+        # deps
+        repodb = entropy_intf.open_repository(repo_id)
+        deps = repodb.retrieveDependencies(pkg_id, extended = True,
+            resolve_conditional_deps = False)
+
+        graph_deps = []
+        for dep, x_dep_type in sorted(deps, key = depsorter):
+
+            if dep.startswith("!"): # conflict
+                continue
+
+            dep_item = entropy_intf.atom_match(dep)
+            if dep_item[0] == -1:
+                continue
+            do_include = True
+            if not include_sys_pkgs:
+                dep_repodb = entropy_intf.open_repository(dep_item[1])
+                do_include = not dep_repodb.isSystemPackage(dep_item[0])
+
+            g_item = (dep_item, dep, x_dep_type)
+            if do_include:
+                stack.push(g_item)
+            graph_deps.append(g_item)
+
+        graph.add(item, graph_deps)
+
+    def item_translation_func(match):
+        value = "%s" % (match[1],)
+        if match[2] is not None:
+            value += " %s%s%s" % (teal("{"), brown(str(match[2])), teal("}"),)
+        return value
+
+    _graph_to_stdout(entropy_intf, graph, graph.get_node(start_item),
+        item_translation_func, show_already_pulled_in, quiet)
+    if not quiet:
+        _show_graph_legend(entropy_intf)
+        show_dependencies_legend(entropy_intf)
+
+    del stack
+    graph.destroy()
+    del graph
+    return 0
+
+def _graph_to_stdout(entropy_client, graph, start_item,
+                     item_translation_callback,
+                     show_already_pulled_in, quiet):
+
+    if not quiet:
+        entropy_client.output("="*40, level="generic")
+
+    sorted_data = graph.solve_nodes()
+    stack = Lifo()
+    for dep_level in sorted(sorted_data.keys(), reverse = True):
+        stack.push(sorted_data[dep_level])
+    # required to make sure that our first pkg is user required one
+    stack.push((start_item,))
+
+    out_data = {
+        'cache': set(),
+        'lvl': 0,
+        'txc_cb': item_translation_callback,
+        'show_already_pulled_in': show_already_pulled_in,
+    }
+
+    first_tree_item = True
+
+    while stack.is_filled():
+
+        stack_items = stack.pop()
+        # cleanup already printed items
+        items = [x for x in stack_items if x not in out_data['cache']]
+        if not items:
+            continue
+        out_data['cache'].update(stack_items)
+
+        # print items and its deps
+        for item in items:
+            old_level = out_data['lvl']
+            _print_graph_item_deps(
+                entropy_client, item, out_data, colorize = blue)
+            out_data['lvl'] = old_level
+            if first_tree_item:
+                out_data['lvl'] += 1
+            first_tree_item = False
+
+    del stack
