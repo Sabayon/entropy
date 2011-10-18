@@ -3153,7 +3153,7 @@ class PortagePlugin(SpmPlugin):
             entropy_output.output(txt,
                 importance = 1,
                 level = "warning",
-                header = brown(_(" !!! ")),
+                header = brown(" !!! "),
             )
             preserved_libs = vardb._plib_registry.getPreservedLibs()
             for cpv, path_list in preserved_libs.items():
@@ -3162,14 +3162,14 @@ class PortagePlugin(SpmPlugin):
                         darkblue(cpv),
                         importance = 0,
                         level = "warning",
-                        header = teal(_(" @@ ")),
+                        header = teal(" @@ "),
                     )
                 for path in path_list:
                     entropy_output.output(
                         path,
                         importance = 0,
                         level = "warning",
-                        header = purple(_("    # ")),
+                        header = purple("    # "),
                     )
             entropy_output.output("", importance = 0, level = "warning")
         return 0, None
