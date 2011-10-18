@@ -14,7 +14,6 @@ import argparse
 
 from entropy.i18n import _
 from entropy.const import etpUi
-from entropy.output import purple
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand

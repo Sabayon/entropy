@@ -12,7 +12,7 @@
 import argparse
 
 from entropy.i18n import _
-from entropy.output import purple, teal, darkgreen, decolorize
+from entropy.output import purple, teal, darkgreen
 
 from eit.colorful import ColorfulFormatter, ColorfulStr
 from eit.commands.descriptor import EitCommandDescriptor
