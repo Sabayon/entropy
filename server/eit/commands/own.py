@@ -10,10 +10,11 @@
 
 """
 import sys
+import os
 import argparse
 
 from entropy.i18n import _
-from entropy.const import etpUi
+from entropy.output import purple, darkgreen, teal, bold
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -32,10 +33,10 @@ class EitOwn(EitCommand):
         EitCommand.__init__(self, args)
         self._paths = []
         self._quiet = False
+        self._verbose = False
         self._repository_id = None
-        # use text_query from equo library
-        from text_query import search_belongs
-        self._query_func = search_belongs
+        from text_query import print_package_info
+        self._pprint = print_package_info
 
     def _get_parser(self):
         descriptor = EitCommandDescriptor.obtain_descriptor(
@@ -51,6 +52,9 @@ class EitOwn(EitCommand):
         parser.add_argument("--quiet", "-q", action="store_true",
            default=self._quiet,
            help=_('quiet output, for scripting purposes'))
+        parser.add_argument("--verbose", "-v", action="store_true",
+           default=self._verbose,
+           help=_('output more package info'))
         parser.add_argument("--in", metavar="<repository>",
                             help=_("search packages in given repository"),
                             dest="inrepo", default=None)
@@ -65,8 +69,7 @@ class EitOwn(EitCommand):
             return parser.print_help, []
 
         self._quiet = nsargs.quiet
-        # search_belongs uses etpUi['quiet'] augh
-        etpUi['quiet'] = self._quiet
+        self._quiet = nsargs.quiet
         self._paths += nsargs.paths
         self._repository_id = nsargs.inrepo
         return self._call_unlocked, [self._own, self._repository_id]
@@ -82,10 +85,65 @@ class EitOwn(EitCommand):
         exit_st = 1
         for repository_id in repository_ids:
             repo = entropy_server.open_repository(repository_id)
-            sts = self._query_func(self._paths, entropy_server, repo)
+            sts = self._search(entropy_server, repository_id, repo)
             if sts != 0:
                 exit_st = 1
         return exit_st
+
+    def _search(self, entropy_server, repository_id, repo):
+
+        results = {}
+        flatresults = {}
+        reverse_symlink_map = self._settings()['system_rev_symlinks']
+        for xfile in self._paths:
+            results[xfile] = set()
+            pkg_ids = repo.searchBelongs(xfile)
+            if not pkg_ids:
+                # try real path if possible
+                pkg_ids = repo.searchBelongs(os.path.realpath(xfile))
+            if not pkg_ids:
+                # try using reverse symlink mapping
+                for sym_dir in reverse_symlink_map:
+                    if xfile.startswith(sym_dir):
+                        for sym_child in reverse_symlink_map[sym_dir]:
+                            my_file = sym_child+xfile[len(sym_dir):]
+                            pkg_ids = repo.searchBelongs(my_file)
+                            if pkg_ids:
+                                break
+
+            for pkg_id in pkg_ids:
+                if not flatresults.get(pkg_id):
+                    results[xfile].add(pkg_id)
+                    flatresults[pkg_id] = True
+
+        if results:
+            key_sorter = lambda x: repo.retrieveAtom(x)
+            for result in results:
+
+                # print info
+                xfile = result
+                result = results[result]
+
+                for pkg_id in sorted(result, key = key_sorter):
+                    if self._quiet:
+                        entropy_server.output(
+                            repo.retrieveAtom(pkg_id),
+                            level="generic")
+                    else:
+                        self._pprint(pkg_id, entropy_server,
+                                     repo, installed_search = True,
+                                     extended = self._verbose,
+                                     quiet = self._quiet)
+
+                if not self._quiet:
+                    entropy_server.output(
+                        "[%s] %s: %s %s" % (
+                            purple(repository_id),
+                            darkgreen(xfile),
+                            bold(str(len(result))),
+                            teal(_("packages found"))))
+
+        return 0
 
 
 EitCommandDescriptor.register(
