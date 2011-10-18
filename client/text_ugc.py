@@ -17,7 +17,7 @@ from entropy.services.client import WebService
 from entropy.client.services.interfaces import Document, DocumentFactory, \
     ClientWebService
 from entropy.i18n import _
-from text_tools import get_entropy_webservice as _get_service
+from entropy.cli import get_entropy_webservice as _get_service
 
 import entropy.tools
 

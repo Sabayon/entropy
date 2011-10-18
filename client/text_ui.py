@@ -32,8 +32,7 @@ from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
 from entropy.i18n import _
 from entropy.services.client import WebService
-
-from text_tools import countdown, enlightenatom, get_entropy_webservice
+from entropy.cli import countdown, enlightenatom, get_entropy_webservice
 
 import entropy.dep
 import entropy.tools

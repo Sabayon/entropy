@@ -27,7 +27,7 @@ from entropy.misc import ParallelTask
 from entropy.i18n import _
 from entropy.services.client import WebService
 
-from text_tools import print_table, get_entropy_webservice
+from entropy.cli import print_table, get_entropy_webservice
 
 import entropy.tools
 SystemSettings = SysSet()

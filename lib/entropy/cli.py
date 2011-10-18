@@ -6,7 +6,9 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    B{Entropy Client text-based tools}.
+    B{Entropy misc command line interface (CLI) module}.
+    In this module are enclosed all the miscellaneous functions
+    used by Command Line based applications.
 
 """
 import sys

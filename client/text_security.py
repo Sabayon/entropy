@@ -14,7 +14,7 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, darkgreen, darkblue, \
     bold, purple, green, teal, print_error, print_warning, print_info, \
     print_generic
-from text_tools import print_table
+from entropy.cli import print_table
 from entropy.i18n import _
 import entropy.tools
 

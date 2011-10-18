@@ -18,7 +18,7 @@ from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, darkred, \
     bold, purple, blue
 
-from text_tools import print_table
+from entropy.cli import print_table
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand

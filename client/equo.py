@@ -35,7 +35,7 @@ except ImportError:
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
     is_stdout_a_tty, bold, purple, teal, blue
-from text_tools import print_menu, print_bashcomp, read_equo_release
+from entropy.cli import print_menu, print_bashcomp, read_equo_release
 from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
 try:
@@ -356,7 +356,7 @@ def _do_text_cleanup(main_cmd, options):
     acquired = False
     client = None
     try:
-        import text_tools
+        from entropy.cli import cleanup
         from entropy.client.interfaces import Client
         client = Client(repo_validation = False,
             indexing = False, installed_repo = False)
@@ -373,7 +373,7 @@ def _do_text_cleanup(main_cmd, options):
             dirs.append(os.path.join(etpConst['entropyworkdir'], rel))
             # new location
             dirs.append(os.path.join(etpConst['entropypackagesworkdir'], rel))
-        text_tools.cleanup(dirs)
+        cleanup(dirs)
         return 0
 
     finally:

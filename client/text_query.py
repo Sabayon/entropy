@@ -21,7 +21,7 @@ from entropy.i18n import _
 import entropy.dep
 import entropy.tools
 
-from text_tools import print_table, get_file_mime, enlightenatom
+from entropy.cli import print_table, get_file_mime, enlightenatom
 
 def query(options):
 

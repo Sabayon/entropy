@@ -1,12 +1,11 @@
-../client/text_tools.py
 ../client/text_cache.py
 ../client/text_security.py
-../client/text_smart.py
-../client/text_query.py
 ../client/text_repositories.py
 ../client/text_configuration.py
 ../client/text_ugc.py
+../client/text_query.py
 ../client/text_rescue.py
+../client/text_smart.py
 ../client/equo.py
 ../client/text_ui.py
 ../server/eit.py
@@ -52,11 +51,11 @@
 ../sulfur/src/sulfur_client.py
 ../sulfur/src/sulfur/views.py
 ../sulfur/src/sulfur/packages.py
-../sulfur/src/sulfur/dialogs.py
 ../sulfur/src/sulfur/event.py
 ../sulfur/src/sulfur/setup.py
 ../sulfur/src/sulfur/package.py
 ../sulfur/src/sulfur/__init__.py
+../sulfur/src/sulfur/dialogs.py
 ../sulfur/src/sulfur/events.py
 ../sulfur/src/sulfur/core.py
 ../sulfur/src/sulfur/entropyapi.py
