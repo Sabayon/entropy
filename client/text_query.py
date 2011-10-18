@@ -89,11 +89,11 @@ def query(options):
 
         elif cmd == "graph":
             rc_status = graph_packages(args, etp_client,
-                complete = complete_graph)
+                complete = complete_graph, quiet = etpUi['quiet'])
 
         elif cmd == "revgraph":
             rc_status = revgraph_packages(args, etp_client,
-                complete = complete_graph)
+                complete = complete_graph, quiet = etpUi['quiet'])
 
         elif cmd == "installed":
             rc_status = search_repository_packages(args, etp_client,
@@ -101,7 +101,8 @@ def query(options):
 
         elif cmd == "belongs":
             rc_status = search_belongs(args, etp_client,
-                etp_client.installed_repository())
+                etp_client.installed_repository(), quiet=etpUi['quiet'],
+                                       verbose=etpUi['verbose'])
 
         elif cmd == "changelog":
             rc_status = search_changelog(args, etp_client,
@@ -248,7 +249,7 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
     return 0
 
 def revgraph_packages(packages, entropy_client, complete = False,
-    repository_ids = None):
+    repository_ids = None, quiet = False):
 
     if repository_ids is None:
         repository_ids = [entropy_client.installed_repository().repository_id()]
@@ -259,14 +260,14 @@ def revgraph_packages(packages, entropy_client, complete = False,
             pkg_id, pkg_rc = entropy_repository.atomMatch(package)
             if pkg_rc == 1:
                 continue
-            if not etpUi['quiet']:
+            if not quiet:
                 print_info(brown(" @@ ")+darkgreen("%s %s..." % (
                     _("Reverse graphing installed package"),
                         purple(package),) ))
 
             g_pkg = entropy_repository.retrieveAtom(pkg_id)
             _revgraph_package(pkg_id, g_pkg, entropy_repository,
-                show_complete = complete)
+                show_complete = complete, quiet = quiet)
 
     return 0
 
@@ -348,7 +349,8 @@ def _show_dependencies_legend(indent = '', get_data = False):
     if get_data:
         return data
 
-def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
+def _revgraph_package(installed_pkg_id, package, dbconn,
+                      show_complete = False, quiet = False):
 
     include_sys_pkgs = False
     show_already_pulled_in = False
@@ -404,8 +406,8 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
         return match[1]
 
     _graph_to_stdout(graph, graph.get_node(inst_item),
-        item_translation_func, show_already_pulled_in)
-    if not etpUi['quiet']:
+        item_translation_func, show_already_pulled_in, quiet)
+    if not quiet:
         _show_graph_legend()
 
     del stack
@@ -414,24 +416,26 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
     return 0
 
 def graph_packages(packages, entropy_client, complete = False,
-    repository_ids = None):
+    repository_ids = None, quiet = False):
 
     for package in packages:
         match = entropy_client.atom_match(package, match_repo = repository_ids)
         if match[0] == -1:
             continue
-        if not etpUi['quiet']:
+        if not quiet:
             print_info(brown(" @@ ")+darkgreen("%s %s..." % (
                 _("Graphing"), purple(package),) ))
 
         pkg_id, repo_id = match
         repodb = entropy_client.open_repository(repo_id)
         g_pkg = repodb.retrieveAtom(pkg_id)
-        _graph_package(match, g_pkg, entropy_client, show_complete = complete)
+        _graph_package(match, g_pkg, entropy_client,
+                       show_complete = complete, quiet = quiet)
 
     return 0
 
-def _graph_package(match, package, entropy_intf, show_complete = False):
+def _graph_package(match, package, entropy_intf, show_complete = False,
+                   quiet = False):
 
     include_sys_pkgs = False
     show_already_pulled_in = False
@@ -491,8 +495,8 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         return value
 
     _graph_to_stdout(graph, graph.get_node(start_item),
-        item_translation_func, show_already_pulled_in)
-    if not etpUi['quiet']:
+        item_translation_func, show_already_pulled_in, quiet)
+    if not quiet:
         _show_graph_legend()
         _show_dependencies_legend()
 
@@ -502,9 +506,9 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
     return 0
 
 def _graph_to_stdout(graph, start_item, item_translation_callback,
-    show_already_pulled_in):
+    show_already_pulled_in, quiet):
 
-    if not etpUi['quiet']:
+    if not quiet:
         print_generic("="*40)
 
     sorted_data = graph.solve_nodes()
@@ -543,13 +547,14 @@ def _graph_to_stdout(graph, start_item, item_translation_callback,
 
     del stack
 
-def search_belongs(files, entropy_client, entropy_repository):
+def search_belongs(files, entropy_client, entropy_repository,
+                   quiet = False, verbose = False):
 
-    if not etpUi['quiet']:
+    if not quiet:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Belong Search"),)))
 
     if entropy_repository is None:
-        if not etpUi['quiet']:
+        if not quiet:
             print_warning(purple(" !!! ") + \
                 teal(_("Repository is not available")))
         return 127
@@ -587,13 +592,13 @@ def search_belongs(files, entropy_client, entropy_repository):
             result = results[result]
 
             for pkg_id in sorted(result, key = key_sorter):
-                if etpUi['quiet']:
+                if quiet:
                     print_generic(entropy_repository.retrieveAtom(pkg_id))
                 else:
                     print_package_info(pkg_id, entropy_client,
                         entropy_repository, installed_search = True,
-                        extended = etpUi['verbose'], quiet = etpUi['quiet'])
-            if not etpUi['quiet']:
+                        extended = verbose, quiet = quiet)
+            if not quiet:
                 toc = []
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(xfile)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (

@@ -13,7 +13,6 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.const import etpUi
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -68,8 +67,6 @@ class EitGraph(EitCommand):
             return parser.print_help, []
 
         self._quiet = nsargs.quiet
-        # support for code using etpUi (text_query)
-        etpUi['quiet'] = self._quiet
         self._packages += nsargs.packages
         self._complete = nsargs.complete
         self._repository_id = nsargs.inrepo
@@ -86,7 +83,7 @@ class EitGraph(EitCommand):
         return self._graph_func(
             self._packages, entropy_server,
             complete = self._complete,
-            repository_ids = repository_ids)
+            repository_ids = repository_ids, quiet = self._quiet)
 
 
 EitCommandDescriptor.register(
