@@ -9,7 +9,7 @@
 
     B{Entropy miscellaneous tools module}.
     In this module are enclosed all the miscellaneous functions
-    used arount the Entropy codebase.
+    used around the Entropy codebase.
 
 """
 import stat
