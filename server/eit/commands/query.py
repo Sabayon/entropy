@@ -248,7 +248,7 @@ class EitQuery(EitCommand):
             results = repo.retrieveReverseDependencies(pkg_id,
                 exclude_deptypes = excluded_dep_types)
             for pkg_id in sorted(results, key = key_sorter):
-                self._pprint(pkg_id, entropy_server, repo,
+                print_package_info(pkg_id, entropy_server, repo,
                     installed_search = True, strict_output = self._quiet,
                     extended = self._verbose, quiet = self._quiet)
 
@@ -333,7 +333,7 @@ class EitQuery(EitCommand):
                         entropy_server.output(
                             repo.retrieveAtom(pkg_id), level="generic")
                     else:
-                        self._pprint(pkg_id, entropy_server, repo,
+                        print_package_info(pkg_id, entropy_server, repo,
                                      extended = self._verbose,
                                      strict_output = False,
                                      quiet = False)
