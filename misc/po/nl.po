@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-17 14:27+0200\n"
+"POT-Creation-Date: 2011-10-18 17:10+0200\n"
 "PO-Revision-Date: 2011-05-23 14:30+0100\n"
 "Last-Translator: Andre Parhan <dyingmuppet@sabayon.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -19,30 +19,6 @@ msgstr ""
 "X-Poedit-Country: NETHERLANDS\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: KBabel 1.11.4\n"
-
-#: ../../client/text_tools.py:51
-msgid "Cleaning"
-msgstr "Opruimen"
-
-#: ../../client/text_tools.py:52
-msgid "directory"
-msgstr "map"
-
-#: ../../client/text_tools.py:58
-msgid "Cleaned"
-msgstr "Opgeruimd"
-
-#: ../../client/text_tools.py:58
-msgid "files and directories"
-msgstr "bestanden en mappen"
-
-#: ../../client/text_tools.py:362 ../../sulfur/src/sulfur/dialogs.py:2200
-msgid "Downloading"
-msgstr "Downloaden"
-
-#: ../../client/text_tools.py:364 ../../sulfur/src/sulfur/dialogs.py:2202
-msgid "Uploading"
-msgstr "Uploaden"
 
 #: ../../client/text_cache.py:29
 msgid "Cleaning Entropy cache, please wait ..."
@@ -61,9 +37,9 @@ msgstr "Je moet of root zijn of in deze groep zitten:"
 msgid "You must be an administrator."
 msgstr "U moet een beheerder zijn."
 
-#: ../../client/text_security.py:85 ../../client/text_smart.py:68
-#: ../../client/text_rescue.py:84 ../../client/equo.py:365
-#: ../../client/text_ui.py:152 ../../server/eit/commands/command.py:75
+#: ../../client/text_security.py:85 ../../client/text_rescue.py:84
+#: ../../client/text_smart.py:68 ../../client/equo.py:365
+#: ../../client/text_ui.py:151 ../../server/eit/commands/command.py:81
 #: ../../services/kernel-switcher:120 ../../services/kernel-switcher:197
 msgid "Another Entropy is currently running."
 msgstr "Een ander Entropy proces draait nog."
@@ -89,17 +65,17 @@ msgstr "GLSA Identifier"
 #: ../../client/text_security.py:131 ../../client/text_repositories.py:491
 #: ../../client/text_repositories.py:523 ../../client/text_repositories.py:578
 #: ../../client/text_ugc.py:515 ../../client/text_ugc.py:735
-#: ../../server/eit/commands/notice.py:156
-#: ../../server/eit/commands/notice.py:309
-#: ../../server/eit/commands/notice.py:344
+#: ../../server/eit/commands/notice.py:160
+#: ../../server/eit/commands/notice.py:313
+#: ../../server/eit/commands/notice.py:348
 #: ../../sulfur/src/sulfur/dialogs.py:372
 #: ../../sulfur/src/sulfur/dialogs.py:691
 #: ../../sulfur/src/sulfur/sulfur.glade.h:253
 msgid "Title"
 msgstr "Titel"
 
-#: ../../client/text_security.py:136 ../../client/text_query.py:1705
-#: ../../client/text_ugc.py:520 ../../server/eit/commands/key.py:324
+#: ../../client/text_security.py:136 ../../client/text_ugc.py:520
+#: ../../client/text_query.py:1710 ../../server/eit/commands/key.py:328
 #: ../../sulfur/src/sulfur/views.py:2921 ../../sulfur/src/sulfur/views.py:3151
 #: ../../sulfur/src/sulfur/dialogs.py:674
 #: ../../sulfur/src/sulfur/sulfur.glade.h:62
@@ -216,605 +192,10 @@ msgstr "Berekenen beveiliging Updates"
 msgid "All the available updates have been already installed"
 msgstr "Alle beschikbare updates zijn al geinstalleerde"
 
-#: ../../client/text_smart.py:31
-msgid "You are not"
-msgstr "U bent niet"
-
-#: ../../client/text_smart.py:43 ../../client/text_repositories.py:51
-#: ../../client/text_ugc.py:38 ../../client/text_ui.py:133
+#: ../../client/text_repositories.py:51 ../../client/text_ugc.py:38
+#: ../../client/text_smart.py:43 ../../client/text_ui.py:132
 msgid "Wrong parameters"
 msgstr "Foutieve parameters"
-
-#: ../../client/text_smart.py:99 ../../client/text_smart.py:165
-#: ../../client/text_smart.py:294 ../../client/text_smart.py:438
-msgid "No packages specified"
-msgstr "Geen pakketten opgegeven"
-
-#: ../../client/text_smart.py:121 ../../client/text_smart.py:303
-#: ../../client/text_smart.py:454
-msgid "Cannot find"
-msgstr "Kan `%s' niet vinden."
-
-#: ../../client/text_smart.py:128 ../../client/text_smart.py:310
-#: ../../client/text_smart.py:459
-msgid "No valid packages specified"
-msgstr "Geen geldige pakketten opgegeven"
-
-#. print the list
-#: ../../client/text_smart.py:132
-msgid "This is the list of the packages that would be quickpkg'd"
-msgstr "De volgende pakketten zullen worden ge-quickpkgt"
-
-#: ../../client/text_smart.py:140 ../../client/text_smart.py:320
-#: ../../client/text_smart.py:470 ../../client/text_query.py:1045
-#: ../../client/text_ui.py:719 ../../client/text_ui.py:1456
-#: ../../client/text_ui.py:1653 ../../sulfur/src/sulfur/package.py:306
-msgid "from"
-msgstr "van"
-
-#: ../../client/text_smart.py:140
-#: ../../magneto/src/magneto/kde/interfaces.py:245
-#: ../../magneto/src/magneto/gtk/interfaces.py:213
-msgid "installed"
-msgstr "Geinstalleerd"
-
-#: ../../client/text_smart.py:143
-msgid "Would you like to recompose the selected packages ?"
-msgstr "Wil je de geselecteerde pakketten her-composeren ?"
-
-#. masked ?
-#: ../../client/text_smart.py:144 ../../client/text_smart.py:323
-#: ../../client/text_smart.py:475 ../../client/text_configuration.py:117
-#: ../../client/text_configuration.py:144 ../../client/text_rescue.py:229
-#: ../../client/text_rescue.py:233 ../../client/text_rescue.py:237
-#: ../../client/text_rescue.py:520 ../../client/text_rescue.py:603
-#: ../../client/text_rescue.py:606 ../../client/text_rescue.py:610
-#: ../../client/equo.py:716 ../../client/text_ui.py:486
-#: ../../client/text_ui.py:949 ../../client/text_ui.py:1537
-#: ../../client/text_ui.py:1819 ../../client/text_ui.py:1903
-#: ../../client/text_ui.py:2041 ../../client/text_ui.py:2048
-#: ../../client/text_ui.py:2140 ../../client/text_ui.py:2312
-#: ../../client/text_ui.py:2422 ../../server/eit/commands/push.py:241
-#: ../../server/eit/commands/notice.py:178
-#: ../../server/eit/commands/notice.py:186
-#: ../../server/eit/commands/commit.py:309
-#: ../../server/eit/commands/remove.py:110
-#: ../../server/eit/commands/deps.py:196 ../../server/eit/commands/key.py:157
-#: ../../server/eit/commands/key.py:254
-#: ../../server/eit/commands/branch.py:126
-#: ../../sulfur/src/sulfur/dialogs.py:1210
-#: ../../sulfur/src/sulfur/entropyapi.py:395
-msgid "No"
-msgstr "Nee"
-
-#: ../../client/text_smart.py:149
-msgid "Compressing"
-msgstr "Comprimeren"
-
-#: ../../client/text_smart.py:154
-msgid "Error while creating package for"
-msgstr "Fout bij aanmaken van pakket voor"
-
-#: ../../client/text_smart.py:155 ../../client/text_smart.py:329
-#: ../../client/text_smart.py:480 ../../client/equo.py:643
-msgid "Cannot continue"
-msgstr "Kan niet verder"
-
-#: ../../client/text_smart.py:158
-msgid "Saved in"
-msgstr "Opgeslagen in"
-
-#: ../../client/text_smart.py:174 ../../client/text_rescue.py:53
-msgid "Source Package Manager backend not available"
-msgstr "Source Pakket Beheerder back-end niet beschikbaar"
-
-#: ../../client/text_smart.py:180
-msgid "directory does not exist"
-msgstr "map bestaat niet"
-
-#: ../../client/text_smart.py:192
-msgid "is not a valid Entropy package"
-msgstr "is geen geldig Entropy pakket"
-
-#: ../../client/text_smart.py:209
-msgid "Using branch"
-msgstr "Gebruiken van Branche"
-
-#: ../../client/text_smart.py:221
-msgid "Extracting package metadata"
-msgstr "Uitpakken van pakket metadata"
-
-#: ../../client/text_smart.py:229
-msgid "Package extraction complete"
-msgstr "Uitpakken van pakket is compleet"
-
-#: ../../client/text_smart.py:254
-msgid "Inflated package"
-msgstr "Geinfleerd pakket"
-
-#: ../../client/text_smart.py:262
-msgid "Deflating"
-msgstr "Deflatie"
-
-#: ../../client/text_smart.py:270
-msgid "Deflated package"
-msgstr "Gedefleerd pakket"
-
-#: ../../client/text_smart.py:278
-msgid "Extracting Entropy metadata from"
-msgstr "Entropy metadata wordt uitgepakt vanaf"
-
-#: ../../client/text_smart.py:287
-msgid "Extracted Entropy metadata from"
-msgstr "Entropy metadata uitgepakt vanaf"
-
-#. print the list
-#: ../../client/text_smart.py:314
-msgid "This is the list of the packages that would be merged into a single one"
-msgstr "De volgende pakketten zullen worden samengevoegd in een enkel pakket"
-
-#: ../../client/text_smart.py:322 ../../client/text_smart.py:474
-msgid "Would you like to create the packages above ?"
-msgstr "Wilt u de pakketten hierboven creeren ?"
-
-#: ../../client/text_smart.py:326
-msgid "Creating merged Smart Package"
-msgstr "Aanmaken van samengevoegde 'Smart Package'"
-
-#: ../../client/text_smart.py:373
-msgid "collecting Entropy metadata"
-msgstr "verzamelen van Entropy metadata"
-
-#: ../../client/text_smart.py:408
-msgid "Unpack failed due to unknown reasons"
-msgstr "Uitpakken gefaald door een onbekende reden"
-
-#: ../../client/text_smart.py:413
-msgid "Compressing smart package"
-msgstr "Comprimeren van 'smart' pakket"
-
-#: ../../client/text_smart.py:422
-msgid "Compression failed due to unknown reasons"
-msgstr "Compressie gefaald door een onbekende reden"
-
-#: ../../client/text_smart.py:426
-msgid "Compressed file does not exist"
-msgstr "Gecomprimeerd bestand bestaat niet meer"
-
-#: ../../client/text_smart.py:443
-msgid "Cannot find G++ compiler"
-msgstr "Kan G++ compiler niet vinden"
-
-#: ../../client/text_smart.py:465
-msgid "This is the list of the packages that would be worked out"
-msgstr "De volgende pakketten worden behandeld"
-
-#: ../../client/text_smart.py:514
-msgid "Unpacking the main package"
-msgstr "Uitpakken van het basis pakket"
-
-#: ../../client/text_smart.py:533
-msgid "Unpacking dependency package"
-msgstr "Uitpakken van afhankelijkheid pakket"
-
-#: ../../client/text_smart.py:577
-msgid "Compressing smart application"
-msgstr "Comprimeren van 'smart' applicatie"
-
-#: ../../client/text_query.py:47 ../../client/text_ui.py:83
-#: ../../client/text_ui.py:88
-msgid "Malformed command"
-msgstr "Misvormd commando"
-
-#: ../../client/text_query.py:201 ../../client/text_query.py:1116
-msgid "Searching"
-msgstr "Bezig met zoeken"
-
-#: ../../client/text_query.py:206 ../../client/text_query.py:554
-#: ../../client/text_query.py:733 ../../client/text_query.py:795
-#: ../../client/text_query.py:996 ../../client/text_query.py:1075
-msgid "Repository is not available"
-msgstr "Repositorie is niet beschikbaar"
-
-#: ../../client/text_query.py:237 ../../client/text_query.py:598
-#: ../../client/text_query.py:709 ../../client/text_query.py:1218
-#: ../../client/text_query.py:1283 ../../client/text_query.py:1325
-#: ../../client/text_query.py:1366 ../../client/text_query.py:1405
-#: ../../client/text_query.py:1435 ../../client/text_query.py:1479
-#: ../../client/text_query.py:1535
-msgid "Keyword"
-msgstr "Sleutelwoord"
-
-#: ../../client/text_query.py:238 ../../client/text_query.py:244
-#: ../../client/text_query.py:599 ../../client/text_query.py:718
-#: ../../client/text_query.py:752 ../../client/text_query.py:781
-#: ../../client/text_query.py:817 ../../client/text_query.py:1058
-#: ../../client/text_query.py:1175 ../../client/text_query.py:1219
-#: ../../client/text_query.py:1284 ../../client/text_query.py:1326
-#: ../../client/text_query.py:1367 ../../client/text_query.py:1406
-#: ../../client/text_query.py:1436 ../../client/text_query.py:1480
-#: ../../client/text_query.py:1536
-msgid "Found"
-msgstr "Gevonden"
-
-#: ../../client/text_query.py:239 ../../client/text_query.py:245
-#: ../../client/text_query.py:600 ../../client/text_query.py:719
-#: ../../client/text_query.py:1059 ../../client/text_query.py:1176
-#: ../../client/text_query.py:1220 ../../client/text_query.py:1285
-#: ../../client/text_query.py:1327 ../../client/text_query.py:1368
-#: ../../client/text_query.py:1407 ../../client/text_query.py:1437
-#: ../../client/text_query.py:1481 ../../client/text_query.py:1537
-msgid "entries"
-msgstr "overeenkomsten"
-
-#: ../../client/text_query.py:264
-msgid "Reverse graphing installed package"
-msgstr "Dit zijn de geinstalleerde pakketten"
-
-#: ../../client/text_query.py:321 ../../client/text_query.py:1683
-msgid "Legend"
-msgstr "Legenda"
-
-#: ../../client/text_query.py:324
-msgid "packages passed as arguments"
-msgstr "pakketten doorgevoerd als argumenten"
-
-#: ../../client/text_query.py:327
-msgid "packages with no further dependencies"
-msgstr "pakketten zonder enige verdere afhankelijkheden"
-
-#: ../../client/text_query.py:330
-msgid "packages with further dependencies (node)"
-msgstr "pakketten met verdere afhankelijkheden (knooppunt)"
-
-#: ../../client/text_query.py:333
-msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen "
-"(circulair)"
-
-#: ../../client/text_query.py:342 ../../client/text_query.py:1580
-#: ../../client/text_query.py:1581 ../../server/eit/commands/deps.py:68
-#: ../../server/eit/commands/key.py:317 ../../server/eit/commands/key.py:321
-#: ../../sulfur/src/sulfur/dialogs.py:495
-#: ../../sulfur/src/sulfur/dialogs.py:664
-#: ../../sulfur/src/sulfur/dialogs.py:669
-#: ../../sulfur/src/sulfur/dialogs.py:682
-#: ../../sulfur/src/sulfur/dialogs.py:1069
-#: ../../sulfur/src/sulfur/dialogs.py:1895
-#: ../../sulfur/src/sulfur/dialogs.py:1903
-#: ../../sulfur/src/sulfur/dialogs.py:1905
-#: ../../sulfur/src/sulfur/dialogs.py:1907
-msgid "N/A"
-msgstr "N/B"
-
-#: ../../client/text_query.py:425
-msgid "Graphing"
-msgstr "Graphische"
-
-#: ../../client/text_query.py:549
-msgid "Belong Search"
-msgstr "Zoeken op bijbehorenden"
-
-#: ../../client/text_query.py:609
-msgid "ChangeLog Search"
-msgstr "Zoeken op Veranderingen-Log"
-
-#: ../../client/text_query.py:616 ../../client/text_query.py:621
-#: ../../client/text_ui.py:701
-msgid "No match for"
-msgstr "Geen overeenkomsten voor"
-
-#: ../../client/text_query.py:629 ../../client/text_query.py:751
-#: ../../client/text_query.py:816 ../../client/text_query.py:1605
-#: ../../sulfur/src/sulfur/dialogs.py:1692
-#: ../../sulfur/src/sulfur/dialogs.py:2675
-msgid "Package"
-msgstr "Pakket"
-
-#. == "None" is a bug, see:
-#. 685b865453d552d37ce3a9559f4cefb9a88f8beb
-#: ../../client/text_query.py:635
-msgid "No ChangeLog available"
-msgstr "Geen Veranderingen-Log beschikbaar"
-
-#: ../../client/text_query.py:646
-msgid "Attention: developer-repo option not enabled"
-msgstr "Attentie: developer-repo optie niet ingeschakeld"
-
-#: ../../client/text_query.py:657
-msgid "Inverse Dependencies Search"
-msgstr "Tegengestelde afhankelijkheden Zoeken"
-
-#: ../../client/text_query.py:710 ../../client/text_ui.py:2397
-msgid "Matched"
-msgstr "Overeenkomend"
-
-#: ../../client/text_query.py:711 ../../client/text_query.py:1630
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
-msgid "Masked"
-msgstr "Afgeschermd"
-
-#: ../../client/text_query.py:714
-msgid "from repository"
-msgstr "uit repositorie"
-
-#: ../../client/text_query.py:716
-msgid "from installed packages database"
-msgstr "uit geinstalleerde pakketten database"
-
-#: ../../client/text_query.py:728
-msgid "Needed Search"
-msgstr "Zoeken op Benodigde"
-
-#: ../../client/text_query.py:753
-msgid "libraries"
-msgstr "bibliotheken"
-
-#: ../../client/text_query.py:762
-msgid "Required Search"
-msgstr "Zoeken op Benodigde"
-
-#: ../../client/text_query.py:780
-msgid "Library"
-msgstr "Bibliotheek"
-
-#: ../../client/text_query.py:782 ../../client/text_ui.py:1129
-#: ../../server/eit/commands/branch.py:117
-msgid "packages"
-msgstr "Pakketten"
-
-#: ../../client/text_query.py:818
-msgid "files"
-msgstr "bestanden"
-
-#: ../../client/text_query.py:827
-msgid "Orphans Search"
-msgstr "Zoeken op Wezen"
-
-#: ../../client/text_query.py:881
-msgid "Analyzing"
-msgstr "Analyseren"
-
-#: ../../client/text_query.py:899
-msgid "Analyzed directories"
-msgstr "Geanalyseerde mappen"
-
-#: ../../client/text_query.py:901
-msgid "Masked directories"
-msgstr "Afgeschermde mappen"
-
-#: ../../client/text_query.py:904
-msgid "Number of files collected on the filesystem"
-msgstr "Aantal bestanden gevonden op het bestandssysteem"
-
-#: ../../client/text_query.py:907
-msgid "Now looking into Installed Packages database"
-msgstr "Nu zoeken in geinstalleerde pakketten database"
-
-#: ../../client/text_query.py:933
-msgid "Intersecting with content of the package"
-msgstr "Kruisend met de inhoud van het pakket"
-
-#: ../../client/text_query.py:944
-msgid "Intersection completed. Showing statistics"
-msgstr "Kruising afgesloten. Weergeven van statistieken"
-
-#: ../../client/text_query.py:946
-msgid "Number of total files"
-msgstr "totaal aantal bestanden"
-
-#: ../../client/text_query.py:948
-msgid "Number of matching files"
-msgstr "Aantal overeenkomende bestanden"
-
-#: ../../client/text_query.py:951
-msgid "Number of orphaned files"
-msgstr "Aantal wees bestanden"
-
-#: ../../client/text_query.py:953
-msgid "Writing file to disk"
-msgstr "bestand wordt geschreven naar schijf"
-
-#: ../../client/text_query.py:979
-msgid "Total wasted space"
-msgstr "Totaal verbruikte ruimte"
-
-#: ../../client/text_query.py:991
-msgid "Removal Search"
-msgstr "Zoek op verwijderde"
-
-#: ../../client/text_query.py:1004 ../../client/text_ui.py:1041
-#: ../../client/text_ui.py:1186 ../../client/text_ui.py:1282
-#: ../../client/text_ui.py:1783 ../../client/text_ui.py:1875
-#: ../../client/text_ui.py:1973 ../../server/eit/commands/remove.py:84
-#: ../../server/eit/commands/deps.py:126
-#: ../../server/eit/commands/branch.py:110
-msgid "No packages found"
-msgstr "Geen pakketten gevonden"
-
-#: ../../client/text_query.py:1016 ../../client/text_ui.py:2064
-msgid "Ouch!"
-msgstr "Auw!"
-
-#: ../../client/text_query.py:1017 ../../client/text_ui.py:2065
-msgid "the following system packages were pulled in"
-msgstr "de volgende systeem pakketten worden meegenomen"
-
-#: ../../client/text_query.py:1027 ../../client/text_query.py:1107
-#: ../../client/text_query.py:1224 ../../client/text_query.py:1289
-#: ../../client/text_query.py:1331 ../../client/text_query.py:1372
-#: ../../client/text_query.py:1411 ../../client/text_query.py:1441
-#: ../../client/text_query.py:1485 ../../client/text_query.py:1510
-msgid "No matches"
-msgstr "Geen overeenkomsten"
-
-#: ../../client/text_query.py:1044 ../../client/text_ui.py:824
-#: ../../client/text_ui.py:875 ../../client/text_ui.py:885
-#: ../../client/text_ui.py:1367 ../../client/text_ui.py:1389
-#: ../../client/text_ui.py:1455 ../../client/text_ui.py:1890
-#: ../../client/text_ui.py:2012 ../../sulfur/src/sulfur/views.py:346
-#: ../../sulfur/src/sulfur/views.py:386 ../../sulfur/src/sulfur/package.py:340
-#: ../../sulfur/src/sulfur/package.py:347
-#: ../../sulfur/src/sulfur/__init__.py:1091
-msgid "Not available"
-msgstr "Niet beschikbaar"
-
-#: ../../client/text_query.py:1056 ../../client/text_query.py:1173
-#: ../../client/text_query.py:1751 ../../client/text_ugc.py:525
-#: ../../client/text_ugc.py:747 ../../sulfur/src/sulfur/dialogs.py:700
-#: ../../sulfur/src/sulfur/dialogs.py:1429
-#: ../../sulfur/src/sulfur/sulfur.glade.h:117
-msgid "Keywords"
-msgstr "Keywords"
-
-#: ../../client/text_query.py:1070
-#, fuzzy
-msgid "Listing Packages"
-msgstr "Wisselen van pakketten"
-
-#: ../../client/text_query.py:1186
-msgid "Searching mimetype"
-msgstr "Zoeken op bestandstype"
-
-#: ../../client/text_query.py:1233
-msgid "Matching"
-msgstr "Overeenkomende"
-
-#: ../../client/text_query.py:1299
-msgid "Slot Search"
-msgstr "Zoek op slot"
-
-#: ../../client/text_query.py:1340
-msgid "Package Set Search"
-msgstr "Pakket Set Zoeken"
-
-#: ../../client/text_query.py:1380
-msgid "Tag Search"
-msgstr "Zoek op tag"
-
-#: ../../client/text_query.py:1419
-msgid "Revision Search"
-msgstr "Zoeken op Revisie"
-
-#: ../../client/text_query.py:1420
-msgid "Installed packages repository"
-msgstr "GeÃ¯nstalleerde Pakketten"
-
-#: ../../client/text_query.py:1450
-msgid "License Search"
-msgstr "Zoeken op Licentie"
-
-#: ../../client/text_query.py:1494
-msgid "Description Search"
-msgstr "Zoeken op Beschrijving"
-
-#. now fetch essential info
-#: ../../client/text_query.py:1547
-msgid "CORRUPTED"
-msgstr "CORRUPT"
-
-#. client info
-#: ../../client/text_query.py:1579 ../../client/text_ui.py:872
-#: ../../client/text_ui.py:912
-msgid "Not installed"
-msgstr "niet geinstalleerd"
-
-#: ../../client/text_query.py:1606
-msgid "branch"
-msgstr "branche"
-
-#: ../../client/text_query.py:1612
-msgid "Category"
-msgstr "Categorie"
-
-#: ../../client/text_query.py:1614 ../../sulfur/src/sulfur/__init__.py:2079
-msgid "Name"
-msgstr "Naam"
-
-#: ../../client/text_query.py:1633 ../../sulfur/src/sulfur/sulfur.glade.h:17
-msgid "Available"
-msgstr "Beschikbaar"
-
-#: ../../client/text_query.py:1635 ../../client/text_query.py:1643
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
-msgid "Installed"
-msgstr "Geinstalleerd"
-
-#: ../../client/text_query.py:1638 ../../client/text_query.py:1644
-msgid "version"
-msgstr "versie"
-
-#: ../../client/text_query.py:1639 ../../client/text_query.py:1646
-msgid "revision"
-msgstr "Herziening"
-
-#: ../../client/text_query.py:1649 ../../sulfur/src/sulfur/sulfur.glade.h:232
-msgid "Slot"
-msgstr "Slot"
-
-#: ../../client/text_query.py:1665
-msgid "Size"
-msgstr "Grootte"
-
-#: ../../client/text_query.py:1667 ../../client/text_ugc.py:754
-#: ../../client/text_ui.py:1189
-msgid "Download"
-msgstr "Download"
-
-#: ../../client/text_query.py:1669
-msgid "Checksum"
-msgstr "Controlesom"
-
-#: ../../client/text_query.py:1674 ../../server/eit/commands/deps.py:181
-#: ../../sulfur/src/sulfur/dialogs.py:1445
-msgid "Dependencies"
-msgstr "Afhankelijkheden"
-
-#: ../../client/text_query.py:1691
-msgid "Conflicts"
-msgstr "Conflicten"
-
-#: ../../client/text_query.py:1696
-msgid "Homepage"
-msgstr "Website"
-
-#: ../../client/text_query.py:1713 ../../sulfur/src/sulfur/dialogs.py:1437
-msgid "USE flags"
-msgstr "USE flags"
-
-#: ../../client/text_query.py:1731 ../../sulfur/src/sulfur/sulfur.glade.h:26
-msgid "CHOST"
-msgstr "CHOST"
-
-#: ../../client/text_query.py:1733 ../../sulfur/src/sulfur/sulfur.glade.h:25
-msgid "CFLAGS"
-msgstr "CFLAGS"
-
-#: ../../client/text_query.py:1735 ../../sulfur/src/sulfur/sulfur.glade.h:28
-msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
-
-#: ../../client/text_query.py:1739 ../../sulfur/src/sulfur/dialogs.py:1413
-msgid "Sources"
-msgstr "Broncode"
-
-#: ../../client/text_query.py:1744
-msgid "Entry API"
-msgstr "Entry API"
-
-#: ../../client/text_query.py:1746
-msgid "Compiled with"
-msgstr "gecompileerd met"
-
-#: ../../client/text_query.py:1764
-msgid "Created"
-msgstr "Aangemaakt"
-
-#: ../../client/text_query.py:1770 ../../client/text_ui.py:1649
-#: ../../sulfur/src/sulfur/dialogs.py:3466
-msgid "License"
-msgstr "Licentie"
 
 #: ../../client/text_repositories.py:79
 msgid "You must be root"
@@ -873,7 +254,7 @@ msgid "repository already enabled"
 msgstr "repositorie reeds ingeschakeld"
 
 #: ../../client/text_repositories.py:197 ../../client/text_repositories.py:214
-#: ../../client/text_repositories.py:317 ../../server/eit/commands/cp.py:89
+#: ../../client/text_repositories.py:317 ../../server/eit/commands/cp.py:93
 msgid "repository not available"
 msgstr "repositorie is niet beschikbaar"
 
@@ -983,19 +364,19 @@ msgstr ""
 msgid "Have a nice day"
 msgstr "Een prettige dag verder"
 
-#: ../../client/text_repositories.py:438 ../../client/text_ui.py:585
+#: ../../client/text_repositories.py:438 ../../client/text_ui.py:584
 #: ../../sulfur/src/sulfur/__init__.py:1571
 msgid "No repositories specified in"
 msgstr "Geen repositories opgegeven in"
 
-#: ../../client/text_repositories.py:442 ../../client/text_ui.py:590
+#: ../../client/text_repositories.py:442 ../../client/text_ui.py:589
 #: ../../sulfur/src/sulfur/__init__.py:1578
 msgid "Unhandled exception"
 msgstr "Niet afgehandelde exceptie"
 
 #: ../../client/text_repositories.py:474
-#: ../../server/eit/commands/notice.py:230
-#: ../../server/eit/commands/notice.py:281
+#: ../../server/eit/commands/notice.py:234
+#: ../../server/eit/commands/notice.py:285
 msgid "Notice board not available"
 msgstr "Notitie bord is niet beschikbaar"
 
@@ -1011,7 +392,7 @@ msgid "Link"
 msgstr "Link"
 
 #: ../../client/text_repositories.py:510
-#: ../../server/eit/commands/notice.py:327
+#: ../../server/eit/commands/notice.py:331
 msgid "Press Enter to continue"
 msgstr "Druk op Enter om door te gaan"
 
@@ -1022,7 +403,7 @@ msgid "Exit"
 msgstr "Afsluiten"
 
 #: ../../client/text_repositories.py:537
-#: ../../server/eit/commands/notice.py:359
+#: ../../server/eit/commands/notice.py:363
 msgid "Choose one by typing its identifier"
 msgstr "Kies a.u.b. een door het identificatie nummer te typen."
 
@@ -1061,6 +442,32 @@ msgstr "Configuratiebestand"
 #: ../../client/text_configuration.py:116
 msgid "Overwrite ?"
 msgstr "Overschrijven ?"
+
+#. masked ?
+#: ../../client/text_configuration.py:117
+#: ../../client/text_configuration.py:144 ../../client/text_rescue.py:229
+#: ../../client/text_rescue.py:233 ../../client/text_rescue.py:237
+#: ../../client/text_rescue.py:520 ../../client/text_rescue.py:603
+#: ../../client/text_rescue.py:606 ../../client/text_rescue.py:610
+#: ../../client/text_smart.py:144 ../../client/text_smart.py:323
+#: ../../client/text_smart.py:475 ../../client/equo.py:716
+#: ../../client/text_ui.py:485 ../../client/text_ui.py:948
+#: ../../client/text_ui.py:1536 ../../client/text_ui.py:1818
+#: ../../client/text_ui.py:1902 ../../client/text_ui.py:2040
+#: ../../client/text_ui.py:2047 ../../client/text_ui.py:2139
+#: ../../client/text_ui.py:2311 ../../client/text_ui.py:2421
+#: ../../server/eit/commands/push.py:246
+#: ../../server/eit/commands/notice.py:182
+#: ../../server/eit/commands/notice.py:190
+#: ../../server/eit/commands/commit.py:313
+#: ../../server/eit/commands/remove.py:114
+#: ../../server/eit/commands/deps.py:200 ../../server/eit/commands/key.py:161
+#: ../../server/eit/commands/key.py:258
+#: ../../server/eit/commands/branch.py:131
+#: ../../sulfur/src/sulfur/dialogs.py:1210
+#: ../../sulfur/src/sulfur/entropyapi.py:395
+msgid "No"
+msgstr "Nee"
 
 #: ../../client/text_configuration.py:119
 msgid "Moving"
@@ -1192,7 +599,7 @@ msgid "Unique files that would be automerged"
 msgstr "Unieke bestanden die automatisch samengevoegd worden"
 
 #: ../../client/text_ugc.py:73 ../../client/text_ugc.py:164
-#: ../../client/text_ugc.py:214 ../../server/eit/commands/test.py:150
+#: ../../client/text_ugc.py:214 ../../server/eit/commands/test.py:154
 msgid "Invalid repository"
 msgstr "Ongeldige repositorie"
 
@@ -1232,22 +639,22 @@ msgstr "Wachtwoord"
 msgid "Please login against"
 msgstr "A.u.b. inloggen op"
 
-#: ../../client/text_ugc.py:111 ../../server/eit/commands/test.py:77
-#: ../../server/eit/commands/test.py:86 ../../server/eit/commands/status.py:45
-#: ../../server/eit/commands/list.py:50 ../../server/eit/commands/init.py:41
-#: ../../server/eit/commands/reset.py:46
+#: ../../client/text_ugc.py:111 ../../server/eit/commands/test.py:76
+#: ../../server/eit/commands/test.py:85 ../../server/eit/commands/status.py:46
+#: ../../server/eit/commands/list.py:49 ../../server/eit/commands/init.py:45
+#: ../../server/eit/commands/reset.py:45
 #: ../../server/eit/commands/checkout.py:41
-#: ../../server/eit/commands/bump.py:41 ../../server/eit/commands/push.py:60
+#: ../../server/eit/commands/bump.py:44 ../../server/eit/commands/push.py:60
 #: ../../server/eit/commands/notice.py:54
 #: ../../server/eit/commands/notice.py:60
 #: ../../server/eit/commands/notice.py:66
 #: ../../server/eit/commands/commit.py:54 ../../server/eit/commands/log.py:41
 #: ../../server/eit/commands/cleanup.py:41
 #: ../../server/eit/commands/lock.py:49 ../../server/eit/commands/vacuum.py:47
-#: ../../server/eit/commands/key.py:56 ../../server/eit/commands/key.py:62
-#: ../../server/eit/commands/key.py:68 ../../server/eit/commands/key.py:74
-#: ../../server/eit/commands/key.py:80 ../../server/eit/commands/key.py:92
-#: ../../server/eit/commands/key.py:101 ../../server/eit/commands/branch.py:57
+#: ../../server/eit/commands/key.py:55 ../../server/eit/commands/key.py:61
+#: ../../server/eit/commands/key.py:67 ../../server/eit/commands/key.py:73
+#: ../../server/eit/commands/key.py:79 ../../server/eit/commands/key.py:91
+#: ../../server/eit/commands/key.py:100 ../../server/eit/commands/branch.py:58
 #: ../../sulfur/src/sulfur/views.py:2016
 #: ../../sulfur/src/sulfur/dialogs.py:1323
 #: ../../sulfur/src/sulfur/dialogs.py:2021
@@ -1338,16 +745,16 @@ msgstr "Wil je ze toevoegen?"
 #: ../../client/text_ugc.py:308 ../../client/text_ugc.py:542
 #: ../../client/text_ugc.py:641 ../../client/text_ugc.py:663
 #: ../../client/text_rescue.py:485 ../../client/text_rescue.py:489
-#: ../../client/text_rescue.py:516 ../../client/text_ui.py:486
-#: ../../client/text_ui.py:513 ../../server/eit/commands/notice.py:178
-#: ../../server/eit/commands/notice.py:184
-#: ../../server/eit/commands/notice.py:249
-#: ../../server/eit/commands/commit.py:177
-#: ../../server/eit/commands/commit.py:179
-#: ../../server/eit/commands/commit.py:217
-#: ../../server/eit/commands/commit.py:234
-#: ../../server/eit/commands/commit.py:236
-#: ../../server/eit/commands/commit.py:257
+#: ../../client/text_rescue.py:516 ../../client/text_ui.py:485
+#: ../../client/text_ui.py:512 ../../server/eit/commands/notice.py:182
+#: ../../server/eit/commands/notice.py:188
+#: ../../server/eit/commands/notice.py:253
+#: ../../server/eit/commands/commit.py:181
+#: ../../server/eit/commands/commit.py:183
+#: ../../server/eit/commands/commit.py:221
+#: ../../server/eit/commands/commit.py:238
+#: ../../server/eit/commands/commit.py:240
+#: ../../server/eit/commands/commit.py:261
 #: ../../sulfur/src/sulfur/dialogs.py:1214
 #: ../../sulfur/src/sulfur/dialogs.py:2082
 #: ../../sulfur/src/sulfur/events.py:304 ../../sulfur/src/sulfur/events.py:743
@@ -1419,6 +826,14 @@ msgstr "Entropy GGI document indiening"
 msgid "Insert document path"
 msgstr "Voer document pad in"
 
+#: ../../client/text_ugc.py:525 ../../client/text_ugc.py:747
+#: ../../client/text_query.py:1061 ../../client/text_query.py:1178
+#: ../../client/text_query.py:1756 ../../sulfur/src/sulfur/dialogs.py:700
+#: ../../sulfur/src/sulfur/dialogs.py:1429
+#: ../../sulfur/src/sulfur/sulfur.glade.h:117
+msgid "Keywords"
+msgstr "Keywords"
+
 #: ../../client/text_ugc.py:531
 msgid "Document path"
 msgstr "Document pad"
@@ -1471,6 +886,11 @@ msgstr "succesvol verwijderd"
 msgid "No title"
 msgstr "Geen titel"
 
+#: ../../client/text_ugc.py:754 ../../client/text_query.py:1672
+#: ../../client/text_ui.py:1188
+msgid "Download"
+msgstr "Download"
+
 #: ../../client/text_ugc.py:761
 msgid "no votes"
 msgstr "geen stemmen"
@@ -1479,12 +899,425 @@ msgstr "geen stemmen"
 msgid "current package vote"
 msgstr "Huidige pakket stem"
 
+#: ../../client/text_query.py:47 ../../client/text_ui.py:82
+#: ../../client/text_ui.py:87
+msgid "Malformed command"
+msgstr "Misvormd commando"
+
+#: ../../client/text_query.py:202 ../../client/text_query.py:1121
+msgid "Searching"
+msgstr "Bezig met zoeken"
+
+#: ../../client/text_query.py:207 ../../client/text_query.py:559
+#: ../../client/text_query.py:738 ../../client/text_query.py:800
+#: ../../client/text_query.py:1001 ../../client/text_query.py:1080
+msgid "Repository is not available"
+msgstr "Repositorie is niet beschikbaar"
+
+#: ../../client/text_query.py:238 ../../client/text_query.py:603
+#: ../../client/text_query.py:714 ../../client/text_query.py:1223
+#: ../../client/text_query.py:1288 ../../client/text_query.py:1330
+#: ../../client/text_query.py:1371 ../../client/text_query.py:1410
+#: ../../client/text_query.py:1440 ../../client/text_query.py:1484
+#: ../../client/text_query.py:1540
+msgid "Keyword"
+msgstr "Sleutelwoord"
+
+#: ../../client/text_query.py:239 ../../client/text_query.py:245
+#: ../../client/text_query.py:604 ../../client/text_query.py:723
+#: ../../client/text_query.py:757 ../../client/text_query.py:786
+#: ../../client/text_query.py:822 ../../client/text_query.py:1063
+#: ../../client/text_query.py:1180 ../../client/text_query.py:1224
+#: ../../client/text_query.py:1289 ../../client/text_query.py:1331
+#: ../../client/text_query.py:1372 ../../client/text_query.py:1411
+#: ../../client/text_query.py:1441 ../../client/text_query.py:1485
+#: ../../client/text_query.py:1541
+msgid "Found"
+msgstr "Gevonden"
+
+#: ../../client/text_query.py:240 ../../client/text_query.py:246
+#: ../../client/text_query.py:605 ../../client/text_query.py:724
+#: ../../client/text_query.py:1064 ../../client/text_query.py:1181
+#: ../../client/text_query.py:1225 ../../client/text_query.py:1290
+#: ../../client/text_query.py:1332 ../../client/text_query.py:1373
+#: ../../client/text_query.py:1412 ../../client/text_query.py:1442
+#: ../../client/text_query.py:1486 ../../client/text_query.py:1542
+msgid "entries"
+msgstr "overeenkomsten"
+
+#: ../../client/text_query.py:265
+msgid "Reverse graphing installed package"
+msgstr "Dit zijn de geinstalleerde pakketten"
+
+#: ../../client/text_query.py:322 ../../client/text_query.py:1688
+msgid "Legend"
+msgstr "Legenda"
+
+#: ../../client/text_query.py:325
+msgid "packages passed as arguments"
+msgstr "pakketten doorgevoerd als argumenten"
+
+#: ../../client/text_query.py:328
+msgid "packages with no further dependencies"
+msgstr "pakketten zonder enige verdere afhankelijkheden"
+
+#: ../../client/text_query.py:331
+msgid "packages with further dependencies (node)"
+msgstr "pakketten met verdere afhankelijkheden (knooppunt)"
+
+#: ../../client/text_query.py:334
+msgid "packages already pulled in as dependency in upper levels (circularity)"
+msgstr ""
+"pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen "
+"(circulair)"
+
+#: ../../client/text_query.py:343 ../../client/text_query.py:1585
+#: ../../client/text_query.py:1586 ../../server/eit/commands/deps.py:72
+#: ../../server/eit/commands/key.py:321 ../../server/eit/commands/key.py:325
+#: ../../sulfur/src/sulfur/dialogs.py:495
+#: ../../sulfur/src/sulfur/dialogs.py:664
+#: ../../sulfur/src/sulfur/dialogs.py:669
+#: ../../sulfur/src/sulfur/dialogs.py:682
+#: ../../sulfur/src/sulfur/dialogs.py:1069
+#: ../../sulfur/src/sulfur/dialogs.py:1895
+#: ../../sulfur/src/sulfur/dialogs.py:1903
+#: ../../sulfur/src/sulfur/dialogs.py:1905
+#: ../../sulfur/src/sulfur/dialogs.py:1907
+msgid "N/A"
+msgstr "N/B"
+
+#: ../../client/text_query.py:427
+msgid "Graphing"
+msgstr "Graphische"
+
+#: ../../client/text_query.py:554
+msgid "Belong Search"
+msgstr "Zoeken op bijbehorenden"
+
+#: ../../client/text_query.py:614
+msgid "ChangeLog Search"
+msgstr "Zoeken op Veranderingen-Log"
+
+#: ../../client/text_query.py:621 ../../client/text_query.py:626
+#: ../../client/text_ui.py:700
+msgid "No match for"
+msgstr "Geen overeenkomsten voor"
+
+#: ../../client/text_query.py:634 ../../client/text_query.py:756
+#: ../../client/text_query.py:821 ../../client/text_query.py:1610
+#: ../../sulfur/src/sulfur/dialogs.py:1692
+#: ../../sulfur/src/sulfur/dialogs.py:2675
+msgid "Package"
+msgstr "Pakket"
+
+#. == "None" is a bug, see:
+#. 685b865453d552d37ce3a9559f4cefb9a88f8beb
+#: ../../client/text_query.py:640
+msgid "No ChangeLog available"
+msgstr "Geen Veranderingen-Log beschikbaar"
+
+#: ../../client/text_query.py:651
+msgid "Attention: developer-repo option not enabled"
+msgstr "Attentie: developer-repo optie niet ingeschakeld"
+
+#: ../../client/text_query.py:662
+msgid "Inverse Dependencies Search"
+msgstr "Tegengestelde afhankelijkheden Zoeken"
+
+#: ../../client/text_query.py:715 ../../client/text_ui.py:2396
+msgid "Matched"
+msgstr "Overeenkomend"
+
+#: ../../client/text_query.py:716 ../../client/text_query.py:1635
+#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+msgid "Masked"
+msgstr "Afgeschermd"
+
+#: ../../client/text_query.py:719
+msgid "from repository"
+msgstr "uit repositorie"
+
+#: ../../client/text_query.py:721
+msgid "from installed packages database"
+msgstr "uit geinstalleerde pakketten database"
+
+#: ../../client/text_query.py:733
+msgid "Needed Search"
+msgstr "Zoeken op Benodigde"
+
+#: ../../client/text_query.py:758
+msgid "libraries"
+msgstr "bibliotheken"
+
+#: ../../client/text_query.py:767
+msgid "Required Search"
+msgstr "Zoeken op Benodigde"
+
+#: ../../client/text_query.py:785
+msgid "Library"
+msgstr "Bibliotheek"
+
+#: ../../client/text_query.py:787 ../../client/text_ui.py:1128
+#: ../../server/eit/commands/branch.py:122
+msgid "packages"
+msgstr "Pakketten"
+
+#: ../../client/text_query.py:823
+msgid "files"
+msgstr "bestanden"
+
+#: ../../client/text_query.py:832
+msgid "Orphans Search"
+msgstr "Zoeken op Wezen"
+
+#: ../../client/text_query.py:886
+msgid "Analyzing"
+msgstr "Analyseren"
+
+#: ../../client/text_query.py:904
+msgid "Analyzed directories"
+msgstr "Geanalyseerde mappen"
+
+#: ../../client/text_query.py:906
+msgid "Masked directories"
+msgstr "Afgeschermde mappen"
+
+#: ../../client/text_query.py:909
+msgid "Number of files collected on the filesystem"
+msgstr "Aantal bestanden gevonden op het bestandssysteem"
+
+#: ../../client/text_query.py:912
+msgid "Now looking into Installed Packages database"
+msgstr "Nu zoeken in geinstalleerde pakketten database"
+
+#: ../../client/text_query.py:938
+msgid "Intersecting with content of the package"
+msgstr "Kruisend met de inhoud van het pakket"
+
+#: ../../client/text_query.py:949
+msgid "Intersection completed. Showing statistics"
+msgstr "Kruising afgesloten. Weergeven van statistieken"
+
+#: ../../client/text_query.py:951
+msgid "Number of total files"
+msgstr "totaal aantal bestanden"
+
+#: ../../client/text_query.py:953
+msgid "Number of matching files"
+msgstr "Aantal overeenkomende bestanden"
+
+#: ../../client/text_query.py:956
+msgid "Number of orphaned files"
+msgstr "Aantal wees bestanden"
+
+#: ../../client/text_query.py:958
+msgid "Writing file to disk"
+msgstr "bestand wordt geschreven naar schijf"
+
+#: ../../client/text_query.py:984
+msgid "Total wasted space"
+msgstr "Totaal verbruikte ruimte"
+
+#: ../../client/text_query.py:996
+msgid "Removal Search"
+msgstr "Zoek op verwijderde"
+
+#: ../../client/text_query.py:1009 ../../client/text_ui.py:1040
+#: ../../client/text_ui.py:1185 ../../client/text_ui.py:1281
+#: ../../client/text_ui.py:1782 ../../client/text_ui.py:1874
+#: ../../client/text_ui.py:1972 ../../server/eit/commands/remove.py:88
+#: ../../server/eit/commands/deps.py:130
+#: ../../server/eit/commands/branch.py:115
+msgid "No packages found"
+msgstr "Geen pakketten gevonden"
+
+#: ../../client/text_query.py:1021 ../../client/text_ui.py:2063
+msgid "Ouch!"
+msgstr "Auw!"
+
+#: ../../client/text_query.py:1022 ../../client/text_ui.py:2064
+msgid "the following system packages were pulled in"
+msgstr "de volgende systeem pakketten worden meegenomen"
+
+#: ../../client/text_query.py:1032 ../../client/text_query.py:1112
+#: ../../client/text_query.py:1229 ../../client/text_query.py:1294
+#: ../../client/text_query.py:1336 ../../client/text_query.py:1377
+#: ../../client/text_query.py:1416 ../../client/text_query.py:1446
+#: ../../client/text_query.py:1490 ../../client/text_query.py:1515
+msgid "No matches"
+msgstr "Geen overeenkomsten"
+
+#: ../../client/text_query.py:1049 ../../client/text_ui.py:823
+#: ../../client/text_ui.py:874 ../../client/text_ui.py:884
+#: ../../client/text_ui.py:1366 ../../client/text_ui.py:1388
+#: ../../client/text_ui.py:1454 ../../client/text_ui.py:1889
+#: ../../client/text_ui.py:2011 ../../sulfur/src/sulfur/views.py:346
+#: ../../sulfur/src/sulfur/views.py:386 ../../sulfur/src/sulfur/package.py:340
+#: ../../sulfur/src/sulfur/package.py:347
+#: ../../sulfur/src/sulfur/__init__.py:1091
+msgid "Not available"
+msgstr "Niet beschikbaar"
+
+#: ../../client/text_query.py:1050 ../../client/text_smart.py:140
+#: ../../client/text_smart.py:320 ../../client/text_smart.py:470
+#: ../../client/text_ui.py:718 ../../client/text_ui.py:1455
+#: ../../client/text_ui.py:1652 ../../sulfur/src/sulfur/package.py:306
+msgid "from"
+msgstr "van"
+
+#: ../../client/text_query.py:1075
+#, fuzzy
+msgid "Listing Packages"
+msgstr "Wisselen van pakketten"
+
+#: ../../client/text_query.py:1191
+msgid "Searching mimetype"
+msgstr "Zoeken op bestandstype"
+
+#: ../../client/text_query.py:1238
+msgid "Matching"
+msgstr "Overeenkomende"
+
+#: ../../client/text_query.py:1304
+msgid "Slot Search"
+msgstr "Zoek op slot"
+
+#: ../../client/text_query.py:1345
+msgid "Package Set Search"
+msgstr "Pakket Set Zoeken"
+
+#: ../../client/text_query.py:1385
+msgid "Tag Search"
+msgstr "Zoek op tag"
+
+#: ../../client/text_query.py:1424
+msgid "Revision Search"
+msgstr "Zoeken op Revisie"
+
+#: ../../client/text_query.py:1425
+msgid "Installed packages repository"
+msgstr "GeÃ¯nstalleerde Pakketten"
+
+#: ../../client/text_query.py:1455
+msgid "License Search"
+msgstr "Zoeken op Licentie"
+
+#: ../../client/text_query.py:1499
+msgid "Description Search"
+msgstr "Zoeken op Beschrijving"
+
+#. now fetch essential info
+#: ../../client/text_query.py:1552
+msgid "CORRUPTED"
+msgstr "CORRUPT"
+
+#. client info
+#: ../../client/text_query.py:1584 ../../client/text_ui.py:871
+#: ../../client/text_ui.py:911
+msgid "Not installed"
+msgstr "niet geinstalleerd"
+
+#: ../../client/text_query.py:1611
+msgid "branch"
+msgstr "branche"
+
+#: ../../client/text_query.py:1617
+msgid "Category"
+msgstr "Categorie"
+
+#: ../../client/text_query.py:1619 ../../sulfur/src/sulfur/__init__.py:2079
+msgid "Name"
+msgstr "Naam"
+
+#: ../../client/text_query.py:1638 ../../sulfur/src/sulfur/sulfur.glade.h:17
+msgid "Available"
+msgstr "Beschikbaar"
+
+#: ../../client/text_query.py:1640 ../../client/text_query.py:1648
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+msgid "Installed"
+msgstr "Geinstalleerd"
+
+#: ../../client/text_query.py:1643 ../../client/text_query.py:1649
+msgid "version"
+msgstr "versie"
+
+#: ../../client/text_query.py:1644 ../../client/text_query.py:1651
+msgid "revision"
+msgstr "Herziening"
+
+#: ../../client/text_query.py:1654 ../../sulfur/src/sulfur/sulfur.glade.h:232
+msgid "Slot"
+msgstr "Slot"
+
+#: ../../client/text_query.py:1670
+msgid "Size"
+msgstr "Grootte"
+
+#: ../../client/text_query.py:1674
+msgid "Checksum"
+msgstr "Controlesom"
+
+#: ../../client/text_query.py:1679 ../../server/eit/commands/deps.py:185
+#: ../../sulfur/src/sulfur/dialogs.py:1445
+msgid "Dependencies"
+msgstr "Afhankelijkheden"
+
+#: ../../client/text_query.py:1696
+msgid "Conflicts"
+msgstr "Conflicten"
+
+#: ../../client/text_query.py:1701
+msgid "Homepage"
+msgstr "Website"
+
+#: ../../client/text_query.py:1718 ../../sulfur/src/sulfur/dialogs.py:1437
+msgid "USE flags"
+msgstr "USE flags"
+
+#: ../../client/text_query.py:1736 ../../sulfur/src/sulfur/sulfur.glade.h:26
+msgid "CHOST"
+msgstr "CHOST"
+
+#: ../../client/text_query.py:1738 ../../sulfur/src/sulfur/sulfur.glade.h:25
+msgid "CFLAGS"
+msgstr "CFLAGS"
+
+#: ../../client/text_query.py:1740 ../../sulfur/src/sulfur/sulfur.glade.h:28
+msgid "CXXFLAGS"
+msgstr "CXXFLAGS"
+
+#: ../../client/text_query.py:1744 ../../sulfur/src/sulfur/dialogs.py:1413
+msgid "Sources"
+msgstr "Broncode"
+
+#: ../../client/text_query.py:1749
+msgid "Entry API"
+msgstr "Entry API"
+
+#: ../../client/text_query.py:1751
+msgid "Compiled with"
+msgstr "gecompileerd met"
+
+#: ../../client/text_query.py:1769
+msgid "Created"
+msgstr "Aangemaakt"
+
+#: ../../client/text_query.py:1775 ../../client/text_ui.py:1648
+#: ../../sulfur/src/sulfur/dialogs.py:3466
+msgid "License"
+msgstr "Licentie"
+
+#: ../../client/text_rescue.py:53 ../../client/text_smart.py:174
+msgid "Source Package Manager backend not available"
+msgstr "Source Pakket Beheerder back-end niet beschikbaar"
+
 #: ../../client/text_rescue.py:61
 msgid "Installed packages database not available"
 msgstr "Geinstalleerde pakketten database niet beschikbaar"
 
 #: ../../client/text_rescue.py:101 ../../client/text_rescue.py:111
-#: ../../client/equo.py:339 ../../client/text_ui.py:219
+#: ../../client/equo.py:339 ../../client/text_ui.py:218
 msgid "is deprecated, please use"
 msgstr "is afgeschreven, gebruik "
 
@@ -1578,13 +1411,13 @@ msgid "Please wait"
 msgstr "Een moment a.u.b."
 
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:293
-#: ../../client/text_ui.py:1529 ../../client/text_ui.py:1530
-#: ../../client/text_ui.py:1532 ../../client/text_ui.py:1533
+#: ../../client/text_ui.py:1528 ../../client/text_ui.py:1529
+#: ../../client/text_ui.py:1531 ../../client/text_ui.py:1532
 #: ../../sulfur/src/sulfur/packages.py:101
 #: ../../sulfur/src/sulfur/packages.py:432
 #: ../../sulfur/src/sulfur/packages.py:454
-#: ../../sulfur/src/sulfur/dialogs.py:3074
-#: ../../sulfur/src/sulfur/__init__.py:1356 ../../services/kernel-switcher:101
+#: ../../sulfur/src/sulfur/__init__.py:1356
+#: ../../sulfur/src/sulfur/dialogs.py:3074 ../../services/kernel-switcher:101
 msgid "Attention"
 msgstr "Attentie"
 
@@ -1789,6 +1622,150 @@ msgstr "is corrupt"
 msgid "database does not exist or is badly broken"
 msgstr "database bestaat niet of is gevaarlijk beschadigd"
 
+#: ../../client/text_smart.py:31
+msgid "You are not"
+msgstr "U bent niet"
+
+#: ../../client/text_smart.py:99 ../../client/text_smart.py:165
+#: ../../client/text_smart.py:294 ../../client/text_smart.py:438
+msgid "No packages specified"
+msgstr "Geen pakketten opgegeven"
+
+#: ../../client/text_smart.py:121 ../../client/text_smart.py:303
+#: ../../client/text_smart.py:454
+msgid "Cannot find"
+msgstr "Kan `%s' niet vinden."
+
+#: ../../client/text_smart.py:128 ../../client/text_smart.py:310
+#: ../../client/text_smart.py:459
+msgid "No valid packages specified"
+msgstr "Geen geldige pakketten opgegeven"
+
+#. print the list
+#: ../../client/text_smart.py:132
+msgid "This is the list of the packages that would be quickpkg'd"
+msgstr "De volgende pakketten zullen worden ge-quickpkgt"
+
+#: ../../client/text_smart.py:140
+#: ../../magneto/src/magneto/kde/interfaces.py:245
+#: ../../magneto/src/magneto/gtk/interfaces.py:213
+msgid "installed"
+msgstr "Geinstalleerd"
+
+#: ../../client/text_smart.py:143
+msgid "Would you like to recompose the selected packages ?"
+msgstr "Wil je de geselecteerde pakketten her-composeren ?"
+
+#: ../../client/text_smart.py:149
+msgid "Compressing"
+msgstr "Comprimeren"
+
+#: ../../client/text_smart.py:154
+msgid "Error while creating package for"
+msgstr "Fout bij aanmaken van pakket voor"
+
+#: ../../client/text_smart.py:155 ../../client/text_smart.py:329
+#: ../../client/text_smart.py:480 ../../client/equo.py:643
+msgid "Cannot continue"
+msgstr "Kan niet verder"
+
+#: ../../client/text_smart.py:158
+msgid "Saved in"
+msgstr "Opgeslagen in"
+
+#: ../../client/text_smart.py:180
+msgid "directory does not exist"
+msgstr "map bestaat niet"
+
+#: ../../client/text_smart.py:192
+msgid "is not a valid Entropy package"
+msgstr "is geen geldig Entropy pakket"
+
+#: ../../client/text_smart.py:209
+msgid "Using branch"
+msgstr "Gebruiken van Branche"
+
+#: ../../client/text_smart.py:221
+msgid "Extracting package metadata"
+msgstr "Uitpakken van pakket metadata"
+
+#: ../../client/text_smart.py:229
+msgid "Package extraction complete"
+msgstr "Uitpakken van pakket is compleet"
+
+#: ../../client/text_smart.py:254
+msgid "Inflated package"
+msgstr "Geinfleerd pakket"
+
+#: ../../client/text_smart.py:262
+msgid "Deflating"
+msgstr "Deflatie"
+
+#: ../../client/text_smart.py:270
+msgid "Deflated package"
+msgstr "Gedefleerd pakket"
+
+#: ../../client/text_smart.py:278
+msgid "Extracting Entropy metadata from"
+msgstr "Entropy metadata wordt uitgepakt vanaf"
+
+#: ../../client/text_smart.py:287
+msgid "Extracted Entropy metadata from"
+msgstr "Entropy metadata uitgepakt vanaf"
+
+#. print the list
+#: ../../client/text_smart.py:314
+msgid "This is the list of the packages that would be merged into a single one"
+msgstr "De volgende pakketten zullen worden samengevoegd in een enkel pakket"
+
+#: ../../client/text_smart.py:322 ../../client/text_smart.py:474
+msgid "Would you like to create the packages above ?"
+msgstr "Wilt u de pakketten hierboven creeren ?"
+
+#: ../../client/text_smart.py:326
+msgid "Creating merged Smart Package"
+msgstr "Aanmaken van samengevoegde 'Smart Package'"
+
+#: ../../client/text_smart.py:373
+msgid "collecting Entropy metadata"
+msgstr "verzamelen van Entropy metadata"
+
+#: ../../client/text_smart.py:408
+msgid "Unpack failed due to unknown reasons"
+msgstr "Uitpakken gefaald door een onbekende reden"
+
+#: ../../client/text_smart.py:413
+msgid "Compressing smart package"
+msgstr "Comprimeren van 'smart' pakket"
+
+#: ../../client/text_smart.py:422
+msgid "Compression failed due to unknown reasons"
+msgstr "Compressie gefaald door een onbekende reden"
+
+#: ../../client/text_smart.py:426
+msgid "Compressed file does not exist"
+msgstr "Gecomprimeerd bestand bestaat niet meer"
+
+#: ../../client/text_smart.py:443
+msgid "Cannot find G++ compiler"
+msgstr "Kan G++ compiler niet vinden"
+
+#: ../../client/text_smart.py:465
+msgid "This is the list of the packages that would be worked out"
+msgstr "De volgende pakketten worden behandeld"
+
+#: ../../client/text_smart.py:514
+msgid "Unpacking the main package"
+msgstr "Uitpakken van het basis pakket"
+
+#: ../../client/text_smart.py:533
+msgid "Unpacking dependency package"
+msgstr "Uitpakken van afhankelijkheid pakket"
+
+#: ../../client/text_smart.py:577
+msgid "Compressing smart application"
+msgstr "Comprimeren van 'smart' applicatie"
+
 #: ../../client/equo.py:48
 msgid "You should run equo --help"
 msgstr "Probeer eens equo --help"
@@ -1897,7 +1874,7 @@ msgstr "repositorie notitie bord lezer"
 msgid "show respositories status"
 msgstr "geef repositories status weer"
 
-#: ../../client/equo.py:87 ../../server/eit/commands/search.py:105
+#: ../../client/equo.py:87 ../../server/eit/commands/search.py:111
 msgid "search packages in repositories"
 msgstr "zoek naar pakketten in repositories"
 
@@ -2560,78 +2537,78 @@ msgstr "Entropy/Equo versies komen niet overeen"
 msgid "it could make your system explode!"
 msgstr "het kan uw systeem exploderen!"
 
-#: ../../client/text_ui.py:177 ../../client/text_ui.py:193
-#: ../../client/text_ui.py:211 ../../client/text_ui.py:235
-#: ../../client/text_ui.py:247 ../../client/text_ui.py:254
-#: ../../client/text_ui.py:262 ../../client/text_ui.py:270
-#: ../../client/text_ui.py:1297 ../../client/text_ui.py:2032
+#: ../../client/text_ui.py:176 ../../client/text_ui.py:192
+#: ../../client/text_ui.py:210 ../../client/text_ui.py:234
+#: ../../client/text_ui.py:246 ../../client/text_ui.py:253
+#: ../../client/text_ui.py:261 ../../client/text_ui.py:269
+#: ../../client/text_ui.py:1296 ../../client/text_ui.py:2031
 msgid "Nothing to do"
 msgstr "Niets te doen"
 
-#: ../../client/text_ui.py:294
+#: ../../client/text_ui.py:293
 msgid "Scanning configuration files to update"
 msgstr "Scannen van configuratie bestanden om up te daten"
 
-#: ../../client/text_ui.py:308
+#: ../../client/text_ui.py:307
 msgid "Unable to scan configuration files to update."
 msgstr "Onmogelijk configuratie bestanden te scannen voor update."
 
-#: ../../client/text_ui.py:312
+#: ../../client/text_ui.py:311
 msgid "Configuration files scan complete."
 msgstr "Configuratie bestanden scan compleet."
 
-#: ../../client/text_ui.py:320
+#: ../../client/text_ui.py:319
 #: ../../magneto/src/magneto/core/interfaces.py:225
 #: ../../magneto/src/magneto/core/interfaces.py:233
 msgid "There are"
 msgstr "Er is/zijn"
 
-#: ../../client/text_ui.py:322
+#: ../../client/text_ui.py:321
 msgid "configuration file(s) needing update"
 msgstr "configuratie bestand(en) toe aan een update"
 
-#: ../../client/text_ui.py:325
+#: ../../client/text_ui.py:324
 msgid "Please run"
 msgstr "Voer eerst uit"
 
-#: ../../client/text_ui.py:342
+#: ../../client/text_ui.py:341
 msgid "Packages matching update"
 msgstr "Overeenkomende pakketten voor update"
 
-#: ../../client/text_ui.py:347
+#: ../../client/text_ui.py:346
 msgid "Packages matching not available"
 msgstr "Overeenkomende pakketten zijn niet beschikbaar"
 
-#: ../../client/text_ui.py:352
+#: ../../client/text_ui.py:351
 msgid "Packages matching already up to date"
 msgstr "Overeenkomende pakketten zijn reeds bijgewerkt"
 
 #. None or {}
-#: ../../client/text_ui.py:374 ../../client/text_ui.py:1566
-#: ../../client/text_ui.py:2163
+#: ../../client/text_ui.py:373 ../../client/text_ui.py:1565
+#: ../../client/text_ui.py:2162
 msgid "Nothing to resume"
 msgstr "Niks om te hervatten"
 
-#: ../../client/text_ui.py:385 ../../client/text_ui.py:1582
-#: ../../client/text_ui.py:2170
+#: ../../client/text_ui.py:384 ../../client/text_ui.py:1581
+#: ../../client/text_ui.py:2169
 msgid "Resume cache corrupted"
 msgstr "Her start cache corrupt"
 
-#: ../../client/text_ui.py:400 ../../client/text_ui.py:1176
-#: ../../client/text_ui.py:1243 ../../client/text_ui.py:1758
-#: ../../client/text_ui.py:1847 ../../client/text_ui.py:1935
+#: ../../client/text_ui.py:399 ../../client/text_ui.py:1175
+#: ../../client/text_ui.py:1242 ../../client/text_ui.py:1757
+#: ../../client/text_ui.py:1846 ../../client/text_ui.py:1934
 msgid "Running with"
 msgstr "Starten met"
 
-#: ../../client/text_ui.py:405
+#: ../../client/text_ui.py:404
 msgid "Calculating System Updates"
 msgstr "Calculeren van Systeem Updates"
 
-#: ../../client/text_ui.py:436
+#: ../../client/text_ui.py:435
 msgid "Nothing to update"
 msgstr "Niets te updaten"
 
-#: ../../client/text_ui.py:465
+#: ../../client/text_ui.py:464
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
@@ -2639,461 +2616,461 @@ msgstr ""
 "Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op "
 "de online repositories"
 
-#: ../../client/text_ui.py:470
+#: ../../client/text_ui.py:469
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
 msgstr "Zelfs al zijn ze onschadelijk, het is aangeraden om ze te verwijderen."
 
-#: ../../client/text_ui.py:486
+#: ../../client/text_ui.py:485
 msgid "Selective"
 msgstr "Selectief"
 
-#: ../../client/text_ui.py:491 ../../sulfur/src/sulfur/views.py:3076
+#: ../../client/text_ui.py:490 ../../sulfur/src/sulfur/views.py:3076
 #: ../../sulfur/src/sulfur/__init__.py:1124
 msgid "Repository"
 msgstr "Repositorie"
 
-#: ../../client/text_ui.py:494
+#: ../../client/text_ui.py:493
 msgid "Would you like to remove them?"
 msgstr "Wilt u ze verwijderen?"
 
-#: ../../client/text_ui.py:512
+#: ../../client/text_ui.py:511
 msgid "Remove this?"
 msgstr "Verwijderen?"
 
-#: ../../client/text_ui.py:528
+#: ../../client/text_ui.py:527
 msgid "Nothing to remove"
 msgstr "Niets te verwijderen"
 
-#: ../../client/text_ui.py:551
+#: ../../client/text_ui.py:550
 msgid "There are more updates to install, reloading Entropy"
 msgstr "Er zijn meer updates te vinden, herladen van Entropy"
 
-#: ../../client/text_ui.py:560
+#: ../../client/text_ui.py:559
 msgid "Cannot switch branch as user"
 msgstr "Kan branche niet schakelen als gebruiker"
 
-#: ../../client/text_ui.py:567
+#: ../../client/text_ui.py:566
 msgid "Already on branch"
 msgstr "Reeds in branche"
 
-#: ../../client/text_ui.py:610
+#: ../../client/text_ui.py:609
 msgid "Succesfully switched to branch"
 msgstr "Succesvol geschakeld naar branche"
 
-#: ../../client/text_ui.py:614
+#: ../../client/text_ui.py:613
 msgid "Now run 'equo upgrade' to upgrade your distribution to"
 msgstr "Start nu 'equo upgrade' om de distributie te upgraden naar"
 
-#: ../../client/text_ui.py:621
+#: ../../client/text_ui.py:620
 msgid "Unable to switch to branch"
 msgstr "Onmogelijk om branche te wisselen"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:661
+#: ../../client/text_ui.py:660
 msgid "Every package matching"
 msgstr "Alle overeenkomende pakketten"
 
-#: ../../client/text_ui.py:663
+#: ../../client/text_ui.py:662
 msgid "is masked"
 msgstr "is gemaskeerd"
 
-#: ../../client/text_ui.py:685
+#: ../../client/text_ui.py:684
 msgid "matching"
 msgstr "overeenkomend"
 
-#: ../../client/text_ui.py:687
+#: ../../client/text_ui.py:686
 msgid "is broken"
 msgstr "is beschadigd"
 
-#: ../../client/text_ui.py:691
+#: ../../client/text_ui.py:690
 msgid "atom"
 msgstr "atoom"
 
-#: ../../client/text_ui.py:693
+#: ../../client/text_ui.py:692
 msgid "in"
 msgstr "in"
 
-#: ../../client/text_ui.py:703
+#: ../../client/text_ui.py:702
 msgid "in repositories"
 msgstr "in repositories"
 
-#: ../../client/text_ui.py:712
+#: ../../client/text_ui.py:711
 msgid "Not found"
 msgstr "Niet gevonden"
 
-#: ../../client/text_ui.py:717
+#: ../../client/text_ui.py:716
 msgid "Probably needed by"
 msgstr "Waarschijnlijk gebruikt door"
 
-#: ../../client/text_ui.py:792 ../../client/text_ui.py:1769
-#: ../../client/text_ui.py:1831 ../../client/text_ui.py:1860
-#: ../../client/text_ui.py:1959
+#: ../../client/text_ui.py:791 ../../client/text_ui.py:1768
+#: ../../client/text_ui.py:1830 ../../client/text_ui.py:1859
+#: ../../client/text_ui.py:1958
 msgid "Warning"
 msgstr "Waarschuwing"
 
-#: ../../client/text_ui.py:795
+#: ../../client/text_ui.py:794
 msgid "Skipped"
 msgstr "Overgeslagen"
 
-#: ../../client/text_ui.py:807
+#: ../../client/text_ui.py:806
 msgid "These are the packages that should be MANUALLY removed"
 msgstr "Dit zijn de pakketten die HANDMATIG verwijderd moeten worden"
 
-#: ../../client/text_ui.py:810 ../../client/text_ui.py:1438
-#: ../../server/eit/commands/remove.py:94
+#: ../../client/text_ui.py:809 ../../client/text_ui.py:1437
+#: ../../server/eit/commands/remove.py:98
 #: ../../sulfur/src/sulfur/packages.py:633
 msgid "These are the packages that would be removed"
 msgstr "Volgende pakketten worden verwijderd"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:849 ../../client/text_ui.py:1981
+#: ../../client/text_ui.py:848 ../../client/text_ui.py:1980
 msgid "These are the chosen packages"
 msgstr "Dit zijn de gekozen pakketten"
 
-#: ../../client/text_ui.py:900
+#: ../../client/text_ui.py:899
 msgid "Versions"
 msgstr "Versies"
 
-#: ../../client/text_ui.py:921
+#: ../../client/text_ui.py:920
 msgid "Switch repo"
 msgstr "Wissel repo"
 
-#: ../../client/text_ui.py:922 ../../client/text_ui.py:925
+#: ../../client/text_ui.py:921 ../../client/text_ui.py:924
 #: ../../sulfur/src/sulfur/sulfur.glade.h:186
 msgid "Reinstall"
 msgstr "Herinstalleer"
 
-#: ../../client/text_ui.py:927 ../../sulfur/src/sulfur/__init__.py:464
+#: ../../client/text_ui.py:926 ../../sulfur/src/sulfur/__init__.py:464
 #: ../../sulfur/src/sulfur/sulfur.glade.h:105
 msgid "Install"
 msgstr "Installeer"
 
-#: ../../client/text_ui.py:929
+#: ../../client/text_ui.py:928
 msgid "Upgrade"
 msgstr "Upgrade"
 
-#: ../../client/text_ui.py:931
+#: ../../client/text_ui.py:930
 msgid "Downgrade"
 msgstr "Downgrade"
 
-#: ../../client/text_ui.py:937
+#: ../../client/text_ui.py:936
 msgid "Action"
 msgstr "Actie"
 
-#: ../../client/text_ui.py:939 ../../client/text_ui.py:1897
-#: ../../client/text_ui.py:2029
+#: ../../client/text_ui.py:938 ../../client/text_ui.py:1896
+#: ../../client/text_ui.py:2028
 msgid "Packages involved"
 msgstr "Pakketten die betrokken zijn"
 
-#: ../../client/text_ui.py:945
+#: ../../client/text_ui.py:944
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Wil je doorgaan met de afhankelijkheden calculatie ?"
 
-#: ../../client/text_ui.py:948 ../../server/eit/commands/remove.py:109
-#: ../../server/eit/commands/branch.py:125
+#: ../../client/text_ui.py:947 ../../server/eit/commands/remove.py:113
+#: ../../server/eit/commands/branch.py:130
 msgid "Would you like to continue ?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../client/text_ui.py:963
+#: ../../client/text_ui.py:962
 msgid "When you wrote"
 msgstr "Toen je schreef"
 
-#: ../../client/text_ui.py:965
+#: ../../client/text_ui.py:964
 msgid "You Meant(tm)"
 msgstr "U bedoelde(tm)"
 
-#: ../../client/text_ui.py:966
+#: ../../client/text_ui.py:965
 msgid "one of these below?"
 msgstr "een van de onderstaande?"
 
-#: ../../client/text_ui.py:990
+#: ../../client/text_ui.py:989
 msgid "Calculating dependencies"
 msgstr "Berekenen van afhankelijkheden"
 
-#: ../../client/text_ui.py:999
+#: ../../client/text_ui.py:998
 msgid "Cannot find needed dependencies"
 msgstr "Kan benodigde afhankelijkheden niet vinden"
 
-#: ../../client/text_ui.py:1008
+#: ../../client/text_ui.py:1007
 msgid "Conflicting packages were pulled in"
 msgstr "Conflicterende pakketten zijn ingevoerd"
 
-#: ../../client/text_ui.py:1019
+#: ../../client/text_ui.py:1018
 msgid "Please mask conflicts using"
 msgstr "Maskeer aub de conflicten van"
 
-#: ../../client/text_ui.py:1044
+#: ../../client/text_ui.py:1043
 msgid "Source code download"
 msgstr "Bron code download"
 
-#: ../../client/text_ui.py:1072
+#: ../../client/text_ui.py:1071
 msgid "sources fetch"
 msgstr "bronnen ophaal"
 
-#: ../../client/text_ui.py:1127 ../../client/text_ui.py:1153
+#: ../../client/text_ui.py:1126 ../../client/text_ui.py:1152
 msgid "fetch"
 msgstr "ophalen"
 
-#: ../../client/text_ui.py:1202 ../../client/text_ui.py:2227
+#: ../../client/text_ui.py:1201 ../../client/text_ui.py:2226
 msgid "All done"
 msgstr "Alles verwerkt"
 
-#: ../../client/text_ui.py:1261 ../../sulfur/src/sulfur/__init__.py:2144
+#: ../../client/text_ui.py:1260 ../../sulfur/src/sulfur/__init__.py:2144
 msgid "Please update the following critical packages"
 msgstr "Update a.u.b. de volgende kritieke pakketten"
 
-#: ../../client/text_ui.py:1267 ../../sulfur/src/sulfur/__init__.py:2145
+#: ../../client/text_ui.py:1266 ../../sulfur/src/sulfur/__init__.py:2145
 msgid "You should install them as soon as possible"
 msgstr "U moet ze zo snel mogelijk installeren"
 
-#: ../../client/text_ui.py:1314
+#: ../../client/text_ui.py:1313
 msgid "These are the packages that would be installed"
 msgstr "Dit zijn de pakketten die zouden worden geinstalleerd"
 
-#: ../../client/text_ui.py:1439
+#: ../../client/text_ui.py:1438
 msgid "conflicting/substituted"
 msgstr "conflicterend/vervangen"
 
 #. show download info
-#: ../../client/text_ui.py:1461
+#: ../../client/text_ui.py:1460
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Pakketten die moeten worden geinstalleerd/geupdate/gedowngrade"
 
-#: ../../client/text_ui.py:1463 ../../client/text_ui.py:2091
+#: ../../client/text_ui.py:1462 ../../client/text_ui.py:2090
 msgid "Packages needing to be removed"
 msgstr "Pakketten die moeten worden verwijderd"
 
-#: ../../client/text_ui.py:1467
+#: ../../client/text_ui.py:1466
 msgid "Packages needing to be installed"
 msgstr "Pakketten die moeten worden geinstalleerd"
 
-#: ../../client/text_ui.py:1472
+#: ../../client/text_ui.py:1471
 msgid "Packages needing to be reinstalled"
 msgstr "Pakketten die moeten worden geherinstalleerd"
 
-#: ../../client/text_ui.py:1477
+#: ../../client/text_ui.py:1476
 msgid "Packages needing to be updated"
 msgstr "Pakketten die moeten worden geupdate"
 
-#: ../../client/text_ui.py:1482
+#: ../../client/text_ui.py:1481
 msgid "Packages needing to be downgraded"
 msgstr "Pakketten die moeten worden gedowngrade"
 
-#: ../../client/text_ui.py:1492
+#: ../../client/text_ui.py:1491
 msgid "Download size"
 msgstr "Download grootte"
 
-#: ../../client/text_ui.py:1498
+#: ../../client/text_ui.py:1497
 msgid "Used disk space"
 msgstr "Gebruikte schijf ruimte"
 
-#: ../../client/text_ui.py:1500 ../../client/text_ui.py:2119
+#: ../../client/text_ui.py:1499 ../../client/text_ui.py:2118
 #: ../../sulfur/src/sulfur/packages.py:527
 msgid "Freed disk space"
 msgstr "Vrijgemaakte schijfruimte"
 
-#: ../../client/text_ui.py:1512
+#: ../../client/text_ui.py:1511
 msgid "You need at least"
 msgstr "Je hebt minimaal nodig"
 
-#: ../../client/text_ui.py:1514
+#: ../../client/text_ui.py:1513
 msgid "of free space"
 msgstr "aan vrije ruimte"
 
-#: ../../client/text_ui.py:1526
+#: ../../client/text_ui.py:1525
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
 
-#: ../../client/text_ui.py:1536
+#: ../../client/text_ui.py:1535
 msgid "Would you like to execute the queue ?"
 msgstr "Wilt u de wachtrij uitvoeren ?"
 
-#: ../../client/text_ui.py:1580 ../../client/text_ui.py:2168
+#: ../../client/text_ui.py:1579 ../../client/text_ui.py:2167
 msgid "Resuming previous operations"
 msgstr "Doorgaan met vorige acties"
 
-#: ../../client/text_ui.py:1598
+#: ../../client/text_ui.py:1597
 msgid "Resume cache no longer valid"
 msgstr "Her start cache niet meer beschikbaar"
 
-#: ../../client/text_ui.py:1614
+#: ../../client/text_ui.py:1613
 msgid "Please select an option"
 msgstr "selecteer een optie"
 
-#: ../../client/text_ui.py:1615
+#: ../../client/text_ui.py:1614
 msgid "Read the license"
 msgstr "Lees de licentie"
 
-#: ../../client/text_ui.py:1616
+#: ../../client/text_ui.py:1615
 msgid "Accept the license (I've read it)"
 msgstr "Accepteer de licentie (Ik heb 'm gelezen)"
 
-#: ../../client/text_ui.py:1617
+#: ../../client/text_ui.py:1616
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Accepteer de licentie en vraag er niet meer om (gelezen)"
 
-#: ../../client/text_ui.py:1618
+#: ../../client/text_ui.py:1617
 msgid "Quit"
 msgstr "Afsluiten"
 
 #. wait user interaction
-#: ../../client/text_ui.py:1620
+#: ../../client/text_ui.py:1619
 msgid "Your choice (type a number and press enter)"
 msgstr "Jouw keuze (typ een nummer en druk op enter)"
 
-#: ../../client/text_ui.py:1646
+#: ../../client/text_ui.py:1645
 msgid "You need to accept the licenses below"
 msgstr "Je moet de licentie hieronder accepteren"
 
-#: ../../client/text_ui.py:1649
+#: ../../client/text_ui.py:1648
 msgid "needed by"
 msgstr "nodig voor"
 
-#: ../../client/text_ui.py:1668
+#: ../../client/text_ui.py:1667
 msgid "No file viewer"
 msgstr "Geen bestand viewer"
 
-#: ../../client/text_ui.py:1668
+#: ../../client/text_ui.py:1667
 msgid "License saved into"
 msgstr "Licentie opgeslagen in"
 
-#: ../../client/text_ui.py:1687
+#: ../../client/text_ui.py:1686
 msgid "Download incomplete"
 msgstr "Download onvolledig"
 
-#: ../../client/text_ui.py:1695
+#: ../../client/text_ui.py:1694
 msgid "Download complete"
 msgstr "Download voltooid"
 
-#: ../../client/text_ui.py:1712
+#: ../../client/text_ui.py:1711
 msgid "install"
 msgstr "Installeer"
 
-#: ../../client/text_ui.py:1746
+#: ../../client/text_ui.py:1745
 msgid "Installation complete"
 msgstr "Installatie voltooid"
 
-#: ../../client/text_ui.py:1771
+#: ../../client/text_ui.py:1770
 msgid "is not available"
 msgstr "is niet beschikbaar"
 
-#: ../../client/text_ui.py:1787
+#: ../../client/text_ui.py:1786
 msgid "These are the packages that would be masked"
 msgstr "Dit zijn de pakketten die zouden worden gemaskeerd"
 
-#: ../../client/text_ui.py:1818 ../../server/eit/commands/key.py:156
+#: ../../client/text_ui.py:1817 ../../server/eit/commands/key.py:160
 msgid "Would you like to continue?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../client/text_ui.py:1833
+#: ../../client/text_ui.py:1832
 msgid "action not executed"
 msgstr "actie is niet uitgevoerd"
 
-#: ../../client/text_ui.py:1862 ../../client/text_ui.py:1961
+#: ../../client/text_ui.py:1861 ../../client/text_ui.py:1960
 msgid "is not installed"
 msgstr "is niet geinstalleerd"
 
-#: ../../client/text_ui.py:1891
+#: ../../client/text_ui.py:1890
 msgid "Installed from"
 msgstr "geinstalleerd vanuit"
 
-#: ../../client/text_ui.py:1902
+#: ../../client/text_ui.py:1901
 msgid "Would you like to configure them now ?"
 msgstr "Wil je ze nu configureren ?"
 
-#: ../../client/text_ui.py:1913
+#: ../../client/text_ui.py:1912
 msgid "configure"
 msgstr "configureren"
 
-#: ../../client/text_ui.py:2001
+#: ../../client/text_ui.py:2000
 msgid "vital package"
 msgstr "vitaal pakket"
 
-#: ../../client/text_ui.py:2002
+#: ../../client/text_ui.py:2001
 msgid "Removal forbidden"
 msgstr "Verwijderen verboden"
 
-#: ../../client/text_ui.py:2038
+#: ../../client/text_ui.py:2037
 msgid "Would you like to calculate dependencies ?"
 msgstr "Wilt u de afhankelijkheden berekenen ?"
 
-#: ../../client/text_ui.py:2045 ../../server/eit/commands/commit.py:232
+#: ../../client/text_ui.py:2044 ../../server/eit/commands/commit.py:236
 msgid "Would you like to remove them now ?"
 msgstr "Wilt u ze nu verwijderen ?"
 
-#: ../../client/text_ui.py:2079
+#: ../../client/text_ui.py:2078
 msgid "Cannot calculate dependencies"
 msgstr "Kan afhankelijkheden niet berekenen"
 
-#: ../../client/text_ui.py:2080
+#: ../../client/text_ui.py:2079
 msgid "please run equo as superuser"
 msgstr "equo dient als root gebruiker te worden uitgevoerd"
 
-#: ../../client/text_ui.py:2126
+#: ../../client/text_ui.py:2125
 msgid "Total bandwidth wasted"
 msgstr "Totaal verbruikte bandbreedte"
 
-#: ../../client/text_ui.py:2138
+#: ../../client/text_ui.py:2137
 msgid "Would you like to proceed ?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../client/text_ui.py:2144
+#: ../../client/text_ui.py:2143
 msgid "Starting removal in"
 msgstr "Start verwijderen in"
 
-#: ../../client/text_ui.py:2203 ../../server/eit/commands/status.py:140
+#: ../../client/text_ui.py:2202 ../../server/eit/commands/status.py:146
 msgid "remove"
 msgstr "verwijder"
 
-#: ../../client/text_ui.py:2233
+#: ../../client/text_ui.py:2232
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 "Starten van ongebruikte pakketten test, houdt aandacht, er zijn valse "
 "positieven"
 
-#: ../../client/text_ui.py:2259
+#: ../../client/text_ui.py:2258
 msgid "Running dependency test"
 msgstr "Start afhankelijkheids test"
 
-#: ../../client/text_ui.py:2302
+#: ../../client/text_ui.py:2301
 msgid "These are the dependencies not found"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
-#: ../../client/text_ui.py:2306
+#: ../../client/text_ui.py:2305
 msgid "Needed by"
 msgstr "Nodig voor"
 
-#: ../../client/text_ui.py:2311
+#: ../../client/text_ui.py:2310
 msgid "Would you like to install the available packages ?"
 msgstr "Wil je de beschikbare pakketten installeren ?"
 
-#: ../../client/text_ui.py:2316 ../../client/text_ui.py:2427
+#: ../../client/text_ui.py:2315 ../../client/text_ui.py:2426
 msgid "Installing available packages in"
 msgstr "Installeren van beschikbare pakketten in"
 
-#: ../../client/text_ui.py:2317 ../../client/text_ui.py:2428
+#: ../../client/text_ui.py:2316 ../../client/text_ui.py:2427
 msgid "10 seconds"
 msgstr "10 seconden"
 
-#: ../../client/text_ui.py:2358 ../../client/text_ui.py:2382
+#: ../../client/text_ui.py:2357 ../../client/text_ui.py:2381
 msgid "System is healthy"
 msgstr "Systeem is gezond"
 
-#: ../../client/text_ui.py:2387
+#: ../../client/text_ui.py:2386
 msgid "Libraries/Executables statistics"
 msgstr "Statistieken van Bibliotheken/Opstartbestanden"
 
-#: ../../client/text_ui.py:2390 ../../server/eit/commands/test.py:134
-#: ../../server/eit/commands/query.py:200
-#: ../../server/eit/commands/query.py:241
-#: ../../server/eit/commands/files.py:72 ../../server/eit/commands/cp.py:102
+#: ../../client/text_ui.py:2389 ../../server/eit/commands/test.py:138
+#: ../../server/eit/commands/query.py:201
+#: ../../server/eit/commands/query.py:242
+#: ../../server/eit/commands/files.py:76 ../../server/eit/commands/cp.py:106
 msgid "Not matched"
 msgstr "Niet overeenkomend"
 
-#: ../../client/text_ui.py:2421
+#: ../../client/text_ui.py:2420
 msgid "Would you like to install them ?"
 msgstr "Will je ze installeren ?"
 
@@ -3101,176 +3078,176 @@ msgstr "Will je ze installeren ?"
 msgid "superuser access required"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:47
+#: ../../server/eit/commands/test.py:46
 msgid "run given test"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:48
+#: ../../server/eit/commands/test.py:47
 #, fuzzy
 msgid "available tests"
 msgstr "Beschikbaar"
 
-#: ../../server/eit/commands/test.py:51
+#: ../../server/eit/commands/test.py:50
 #, fuzzy
 msgid "dependencies test"
 msgstr "Afhankelijkheden test"
 
-#: ../../server/eit/commands/test.py:55
+#: ../../server/eit/commands/test.py:54
 #, fuzzy
 msgid "libraries test"
 msgstr "Bibliotheken test"
 
-#: ../../server/eit/commands/test.py:57
+#: ../../server/eit/commands/test.py:56
 #, fuzzy
 msgid "dump results to file"
 msgstr "resultaten naar bestand schrijven"
 
-#: ../../server/eit/commands/test.py:61
+#: ../../server/eit/commands/test.py:60
 #, fuzzy
 msgid "library linking test (using repository metadata)"
 msgstr "zoek naar ontbrekende bibliotheken"
 
-#: ../../server/eit/commands/test.py:64
+#: ../../server/eit/commands/test.py:63
 msgid "excluded soname"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:68
+#: ../../server/eit/commands/test.py:67
 msgid "library linking test (using live system)"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:71 ../../server/eit/commands/query.py:80
-#: ../../server/eit/commands/query.py:98 ../../server/eit/commands/add.py:40
-#: ../../server/eit/commands/repack.py:40
+#: ../../server/eit/commands/test.py:70 ../../server/eit/commands/query.py:76
+#: ../../server/eit/commands/query.py:94 ../../server/eit/commands/add.py:40
+#: ../../server/eit/commands/repack.py:39
 #: ../../server/eit/commands/files.py:46
 #, fuzzy
 msgid "package names"
 msgstr "Pakket atomen"
 
-#: ../../server/eit/commands/test.py:75
+#: ../../server/eit/commands/test.py:74
 #, fuzzy
 msgid "verify local packages integrity"
 msgstr "verifieer ook de pakketten integriteit"
 
-#: ../../server/eit/commands/test.py:80 ../../server/eit/commands/test.py:89
-#: ../../server/eit/commands/init.py:44 ../../server/eit/commands/reset.py:49
+#: ../../server/eit/commands/test.py:79 ../../server/eit/commands/test.py:88
+#: ../../server/eit/commands/init.py:48 ../../server/eit/commands/reset.py:48
 #: ../../server/eit/commands/push.py:63 ../../server/eit/commands/add.py:46
 #: ../../server/eit/commands/merge.py:51
 #: ../../server/eit/commands/commit.py:60
 #: ../../server/eit/commands/cleanup.py:44
 #: ../../server/eit/commands/vacuum.py:50
 #: ../../server/eit/commands/remove.py:55
-#: ../../server/eit/commands/branch.py:51
+#: ../../server/eit/commands/branch.py:52
 msgid "no stupid questions"
 msgstr ""
 
-#: ../../server/eit/commands/test.py:84
+#: ../../server/eit/commands/test.py:83
 #, fuzzy
 msgid "verify remote packages integrity"
 msgstr "verifieer ook de pakketten integriteit"
 
-#: ../../server/eit/commands/test.py:174
+#: ../../server/eit/commands/test.py:178
 msgid "run QA tests"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:55
+#: ../../server/eit/commands/query.py:51
 #, fuzzy
 msgid "execute query"
 msgstr "Voer kopie uit"
 
-#: ../../server/eit/commands/query.py:56
+#: ../../server/eit/commands/query.py:52
 #, fuzzy
 msgid "available queries"
 msgstr "Beschikbaar"
 
-#: ../../server/eit/commands/query.py:59
+#: ../../server/eit/commands/query.py:55
 #, fuzzy
 msgid "search package tags"
 msgstr "gebruikers package.mask"
 
-#: ../../server/eit/commands/query.py:62 ../../server/eit/commands/query.py:75
-#: ../../server/eit/commands/query.py:87
-#: ../../server/eit/commands/query.py:105
-#: ../../server/eit/commands/query.py:121 ../../server/eit/commands/list.py:53
-#: ../../server/eit/commands/own.py:54 ../../server/eit/commands/search.py:56
+#: ../../server/eit/commands/query.py:58 ../../server/eit/commands/query.py:71
+#: ../../server/eit/commands/query.py:83
+#: ../../server/eit/commands/query.py:101
+#: ../../server/eit/commands/query.py:117 ../../server/eit/commands/list.py:52
+#: ../../server/eit/commands/own.py:54 ../../server/eit/commands/search.py:57
 #: ../../server/eit/commands/revgraph.py:59
 #: ../../server/eit/commands/match.py:52 ../../server/eit/commands/lock.py:61
-#: ../../server/eit/commands/files.py:49 ../../server/eit/commands/graph.py:59
+#: ../../server/eit/commands/files.py:49 ../../server/eit/commands/graph.py:58
 msgid "quiet output, for scripting purposes"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:64
-#: ../../server/eit/commands/query.py:110
-#: ../../server/eit/commands/query.py:126
+#: ../../server/eit/commands/query.py:60
+#: ../../server/eit/commands/query.py:106
+#: ../../server/eit/commands/query.py:122
 #, fuzzy
 msgid "query into given repository only"
 msgstr "gespecificeerde repositorie aanzetten"
 
-#: ../../server/eit/commands/query.py:68
+#: ../../server/eit/commands/query.py:64
 #, fuzzy
 msgid "tag name"
 msgstr "Hostnaam"
 
-#: ../../server/eit/commands/query.py:72
+#: ../../server/eit/commands/query.py:68
 #, fuzzy
 msgid "show libraries (.so) required by matched packages"
 msgstr "Dit zijn de overeenkomende pakketten"
 
-#: ../../server/eit/commands/query.py:84
+#: ../../server/eit/commands/query.py:80
 #, fuzzy
 msgid "show reverse dependencies of packages"
 msgstr ""
 "geef tegengestelde afhankelijkheden boom weer voor gegeven geinstalleerde "
 "atomen"
 
-#: ../../server/eit/commands/query.py:90
+#: ../../server/eit/commands/query.py:86
 msgid "verbose output, show more info"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:93
+#: ../../server/eit/commands/query.py:89
 #, fuzzy
 msgid "include build dependencies"
 msgstr "voer geen tegengestelde afhankelijkheden door"
 
-#: ../../server/eit/commands/query.py:102
+#: ../../server/eit/commands/query.py:98
 #, fuzzy
 msgid "search through package sets"
 msgstr "zoek beschikbare pakket sets"
 
-#: ../../server/eit/commands/query.py:108
+#: ../../server/eit/commands/query.py:104
 msgid "verbose output, show package sets content"
 msgstr ""
 
-#: ../../server/eit/commands/query.py:114
+#: ../../server/eit/commands/query.py:110
 #, fuzzy
 msgid "package set name"
 msgstr "Pakket Set naam"
 
-#: ../../server/eit/commands/query.py:118
+#: ../../server/eit/commands/query.py:114
 #, fuzzy
 msgid "search packages through their description"
 msgstr "zoek pakketten op beschrijving"
 
-#: ../../server/eit/commands/query.py:124
+#: ../../server/eit/commands/query.py:120
 #, fuzzy
 msgid "verbose output, show more information"
 msgstr "Repositorie informatie"
 
-#: ../../server/eit/commands/query.py:130
+#: ../../server/eit/commands/query.py:126
 #, fuzzy
 msgid "package description"
 msgstr "Pakket omschrijving"
 
-#: ../../server/eit/commands/query.py:174
+#: ../../server/eit/commands/query.py:175
 #, fuzzy
 msgid "Nothing found for"
 msgstr "Niets gevonden"
 
-#: ../../server/eit/commands/query.py:220
+#: ../../server/eit/commands/query.py:221
 #, fuzzy
 msgid "libraries found"
 msgstr "bibliotheken"
 
-#: ../../server/eit/commands/query.py:262
+#: ../../server/eit/commands/query.py:263
 msgid "revdep(s) found"
 msgstr ""
 
@@ -3279,7 +3256,7 @@ msgstr ""
 msgid "sets found"
 msgstr "gebruiker niet gevonden"
 
-#: ../../server/eit/commands/query.py:347
+#: ../../server/eit/commands/query.py:347 ../../server/eit/commands/own.py:144
 #, fuzzy
 msgid "packages found"
 msgstr "Geen pakketten gevonden"
@@ -3289,54 +3266,54 @@ msgstr "Geen pakketten gevonden"
 msgid "miscellaneous package metadata queries"
 msgstr "Draaien van pakketten metadata update"
 
-#: ../../server/eit/commands/status.py:84
+#: ../../server/eit/commands/status.py:90
 msgid "local revision"
 msgstr "Herziening"
 
-#: ../../server/eit/commands/status.py:91
+#: ../../server/eit/commands/status.py:97
 msgid "stored packages"
 msgstr "opgeslagen pakketten"
 
-#: ../../server/eit/commands/status.py:96
+#: ../../server/eit/commands/status.py:102
 msgid "upload packages"
 msgstr "upload pakketten"
 
-#: ../../server/eit/commands/status.py:103
+#: ../../server/eit/commands/status.py:109
 #, fuzzy
 msgid "unstaged packages"
 msgstr "ondertekende pakketten"
 
-#: ../../server/eit/commands/status.py:135
+#: ../../server/eit/commands/status.py:141
 #, fuzzy
 msgid "add"
 msgstr "toegevoegd"
 
-#: ../../server/eit/commands/status.py:147
+#: ../../server/eit/commands/status.py:153
 #, fuzzy
 msgid "switch injected"
 msgstr "Veranderen"
 
-#: ../../server/eit/commands/status.py:157
-#: ../../server/eit/commands/list.py:132
+#: ../../server/eit/commands/status.py:163
+#: ../../server/eit/commands/list.py:136
 #, fuzzy
 msgid "show repository status"
 msgstr "geef repositories status weer"
 
-#: ../../server/eit/commands/list.py:56
+#: ../../server/eit/commands/list.py:55 ../../server/eit/commands/own.py:57
 #, fuzzy
 msgid "output more package info"
 msgstr "Geen kernel pakket"
 
-#: ../../server/eit/commands/list.py:59
+#: ../../server/eit/commands/list.py:58
 #, fuzzy
 msgid "only list injected packages"
 msgstr "Toon geinstalleerde pakketten"
 
-#: ../../server/eit/commands/list.py:80
+#: ../../server/eit/commands/list.py:84
 msgid "not available"
 msgstr "niet beschikbaar"
 
-#: ../../server/eit/commands/list.py:124
+#: ../../server/eit/commands/list.py:128
 #, fuzzy
 msgid "No packages"
 msgstr "geen pakketten"
@@ -3345,23 +3322,23 @@ msgstr "geen pakketten"
 msgid "path"
 msgstr ""
 
-#: ../../server/eit/commands/own.py:56 ../../server/eit/commands/search.py:51
+#: ../../server/eit/commands/own.py:59 ../../server/eit/commands/search.py:52
 #: ../../server/eit/commands/revgraph.py:52
-#: ../../server/eit/commands/graph.py:52
+#: ../../server/eit/commands/graph.py:51
 #, fuzzy
 msgid "search packages in given repository"
 msgstr "zoek naar pakketten in repositories"
 
-#: ../../server/eit/commands/own.py:92
+#: ../../server/eit/commands/own.py:153
 #, fuzzy
 msgid "search packages owning paths"
 msgstr "zoek naar pakketten in repositories"
 
-#: ../../server/eit/commands/init.py:59
+#: ../../server/eit/commands/init.py:69
 msgid "Entropy repository has been initialized"
 msgstr "Entropy repositorie is geinitialiseerd"
 
-#: ../../server/eit/commands/init.py:69
+#: ../../server/eit/commands/init.py:79
 msgid "initialize repository (erasing all its content)"
 msgstr ""
 
@@ -3384,46 +3361,46 @@ msgstr "pakket afhankelijkheden"
 msgid "package names (all if none)"
 msgstr ""
 
-#: ../../server/eit/commands/mv.py:67
+#: ../../server/eit/commands/mv.py:72
 msgid "move packages from a repository to another"
 msgstr "verplaats pakketten van de ene repositorie naar een ander"
 
-#: ../../server/eit/commands/search.py:49
+#: ../../server/eit/commands/search.py:50
 #: ../../server/eit/commands/revgraph.py:50
 #: ../../server/eit/commands/match.py:48
 #: ../../server/eit/commands/remove.py:46 ../../server/eit/commands/deps.py:44
-#: ../../server/eit/commands/graph.py:50
+#: ../../server/eit/commands/graph.py:49
 #, fuzzy
 msgid "package name"
 msgstr "Pakket Set naam"
 
-#: ../../server/eit/commands/search.py:96
-#: ../../server/eit/commands/match.py:85
+#: ../../server/eit/commands/search.py:102
+#: ../../server/eit/commands/match.py:89
 #: ../../sulfur/src/sulfur/packages.py:1135
 msgid "Nothing found"
 msgstr "Niets gevonden"
 
-#: ../../server/eit/commands/reset.py:52
+#: ../../server/eit/commands/reset.py:51
 #, fuzzy
 msgid "do not pull the remote repository"
 msgstr "staat niet in de lijst van de repositorie!"
 
-#: ../../server/eit/commands/reset.py:79
+#: ../../server/eit/commands/reset.py:84
 #, fuzzy
 msgid "reset error"
 msgstr "socket fout"
 
-#: ../../server/eit/commands/reset.py:84
+#: ../../server/eit/commands/reset.py:89
 #, fuzzy
 msgid "local repository revision reset complete"
 msgstr "ongeldige repositorie herziening"
 
-#: ../../server/eit/commands/reset.py:95
+#: ../../server/eit/commands/reset.py:100
 #, fuzzy
 msgid "reset repository to remote status"
 msgstr "geef repositories status weer"
 
-#: ../../server/eit/commands/checkout.py:65
+#: ../../server/eit/commands/checkout.py:69
 #, fuzzy
 msgid "switch from a repository to another"
 msgstr "verplaats pakketten van de ene repositorie naar een ander"
@@ -3439,37 +3416,37 @@ msgstr "Pakket atomen"
 msgid "inject into given repository"
 msgstr "gespecificeerde repositorie aanzetten"
 
-#: ../../server/eit/commands/inject.py:72
+#: ../../server/eit/commands/inject.py:76
 #, fuzzy
 msgid "no such file or directory"
 msgstr "Kan cache map niet op zetten"
 
-#: ../../server/eit/commands/inject.py:85
+#: ../../server/eit/commands/inject.py:89
 #, fuzzy
 msgid "unsupported extension"
 msgstr "Niet ondersteunde Service"
 
-#: ../../server/eit/commands/inject.py:91
+#: ../../server/eit/commands/inject.py:95
 #, fuzzy
 msgid "no valid package paths"
 msgstr "Ongeldig backend-type"
 
-#: ../../server/eit/commands/inject.py:114
+#: ../../server/eit/commands/inject.py:118
 #, fuzzy
 msgid "inject package files into repository"
 msgstr "zoek naar pakketten in repositories"
 
-#: ../../server/eit/commands/bump.py:44
+#: ../../server/eit/commands/bump.py:47
 #, fuzzy
 msgid "sync with remote repository"
 msgstr "verwijder repositorie"
 
-#: ../../server/eit/commands/bump.py:59
+#: ../../server/eit/commands/bump.py:67
 #, fuzzy
 msgid "Bumping repository"
 msgstr "Repositorie wordt overgeslagen"
 
-#: ../../server/eit/commands/bump.py:70
+#: ../../server/eit/commands/bump.py:78
 #, fuzzy
 msgid "bump repository revision, force push"
 msgstr "Repositorie herziening"
@@ -3484,43 +3461,43 @@ msgstr "Update Repositories"
 msgid "push as fake repository"
 msgstr "Kies de repositorie"
 
-#: ../../server/eit/commands/push.py:146
+#: ../../server/eit/commands/push.py:151
 msgid "Commit message"
 msgstr "Verstuur bericht"
 
-#: ../../server/eit/commands/push.py:148
+#: ../../server/eit/commands/push.py:153
 #, fuzzy
 msgid "Enter the commit message"
 msgstr "Voer een uitvoer bericht in"
 
-#: ../../server/eit/commands/push.py:169
+#: ../../server/eit/commands/push.py:174
 #, fuzzy
 msgid "Entropy Repository Status"
 msgstr "Externe Entropy Repositorie Status"
 
-#: ../../server/eit/commands/push.py:176
+#: ../../server/eit/commands/push.py:181
 msgid "Host"
 msgstr "Host"
 
-#: ../../server/eit/commands/push.py:179
+#: ../../server/eit/commands/push.py:184
 #, fuzzy
 msgid "Remote"
 msgstr "Op afstand"
 
-#: ../../server/eit/commands/push.py:185
+#: ../../server/eit/commands/push.py:190
 #, fuzzy
 msgid "Local"
 msgstr "lokaal"
 
-#: ../../server/eit/commands/push.py:208 ../../server/eit/commands/push.py:244
+#: ../../server/eit/commands/push.py:213 ../../server/eit/commands/push.py:249
 msgid "Aborting !"
 msgstr "Afbreken !"
 
-#: ../../server/eit/commands/push.py:240
+#: ../../server/eit/commands/push.py:245
 msgid "Should I cleanup old packages on mirrors ?"
 msgstr ""
 
-#: ../../server/eit/commands/push.py:255
+#: ../../server/eit/commands/push.py:260
 msgid "push (or pull) repository packages and metadata"
 msgstr ""
 
@@ -3529,12 +3506,12 @@ msgstr ""
 msgid "add to given repository"
 msgstr "gespecificeerde repositorie aanzetten"
 
-#: ../../server/eit/commands/add.py:62
+#: ../../server/eit/commands/add.py:66
 #, fuzzy
 msgid "commit to repository the provided packages"
 msgstr "Downloaden van repositorie database"
 
-#: ../../server/eit/commands/repo.py:46
+#: ../../server/eit/commands/repo.py:62
 #, fuzzy
 msgid "show current repository"
 msgstr "Huidige repositorie"
@@ -3544,7 +3521,7 @@ msgstr "Huidige repositorie"
 msgid "execute given action"
 msgstr "Genereer inlog informatie"
 
-#: ../../server/eit/commands/notice.py:49 ../../server/eit/commands/key.py:51
+#: ../../server/eit/commands/notice.py:49 ../../server/eit/commands/key.py:50
 #, fuzzy
 msgid "available actions"
 msgstr "Toon beschikbare Pakketten"
@@ -3564,38 +3541,38 @@ msgstr "Verwijdere notitie bord invoer"
 msgid "show notice-board"
 msgstr "Notitie Bord"
 
-#: ../../server/eit/commands/notice.py:164
+#: ../../server/eit/commands/notice.py:168
 #, fuzzy
 msgid "no URL"
 msgstr "Voer URL in"
 
-#: ../../server/eit/commands/notice.py:166
-#: ../../server/eit/commands/notice.py:318
+#: ../../server/eit/commands/notice.py:170
+#: ../../server/eit/commands/notice.py:322
 #, fuzzy
 msgid "URL"
 msgstr "URI"
 
-#: ../../server/eit/commands/notice.py:176
+#: ../../server/eit/commands/notice.py:180
 msgid "Do you agree?"
 msgstr "Weet u het zeker?"
 
-#: ../../server/eit/commands/notice.py:178
+#: ../../server/eit/commands/notice.py:182
 msgid "Repeat"
 msgstr ""
 
-#: ../../server/eit/commands/notice.py:240
+#: ../../server/eit/commands/notice.py:244
 msgid "Choose the one you want to remove"
 msgstr "Kies degene die je wilt verwijderen"
 
-#: ../../server/eit/commands/notice.py:248
+#: ../../server/eit/commands/notice.py:252
 msgid "Are you sure you want to remove this?"
 msgstr "Weet je zeker dat je deze wilt verwijderen?"
 
-#: ../../server/eit/commands/notice.py:352
+#: ../../server/eit/commands/notice.py:356
 msgid "Exit/Commit"
 msgstr "Sluiten/Indienen"
 
-#: ../../server/eit/commands/notice.py:375
+#: ../../server/eit/commands/notice.py:379
 #, fuzzy
 msgid "manage repository notice-board"
 msgstr "Haal repositorie notitie bord op"
@@ -3610,36 +3587,36 @@ msgstr "repositorie pad"
 msgid "work inside given repository"
 msgstr "werken met repositorie"
 
-#: ../../server/eit/commands/merge.py:74
+#: ../../server/eit/commands/merge.py:80
 msgid "merge branch into current"
 msgstr ""
 
 #: ../../server/eit/commands/revgraph.py:56
-#: ../../server/eit/commands/graph.py:56
+#: ../../server/eit/commands/graph.py:55
 #, fuzzy
 msgid "show system packages, build deps, circular deps"
 msgstr ""
 "Neem systeem pakketten mee, opbouwen afhankelijkheden en circulaire "
 "informatie"
 
-#: ../../server/eit/commands/revgraph.py:92
+#: ../../server/eit/commands/revgraph.py:95
 #, fuzzy
 msgid "show reverse dependency graph for packages"
 msgstr ""
 "geef tegengestelde afhankelijkheden boom weer voor gegeven geinstalleerde "
 "atomen"
 
-#: ../../server/eit/commands/repack.py:42
+#: ../../server/eit/commands/repack.py:41
 #, fuzzy
 msgid "repack to given repository"
 msgstr "gespecificeerde repositorie aanzetten"
 
-#: ../../server/eit/commands/repack.py:59
+#: ../../server/eit/commands/repack.py:63
 #, fuzzy
 msgid "rebuild packages in repository"
 msgstr "Geinstalleerde Pakketten repositorie"
 
-#: ../../server/eit/commands/match.py:94
+#: ../../server/eit/commands/match.py:98
 #, fuzzy
 msgid "match packages in repositories"
 msgstr "vergelijk een pakket in de repositories"
@@ -3649,127 +3626,127 @@ msgstr "vergelijk een pakket in de repositories"
 msgid "selectively pick changes"
 msgstr "Verwijderen van geselecteerde pakketten"
 
-#: ../../server/eit/commands/commit.py:95
+#: ../../server/eit/commands/commit.py:99
 msgid "Cannot match"
 msgstr "Komt niet overeen"
 
-#: ../../server/eit/commands/commit.py:115
+#: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "Er zijn geen geldige pakketten om opnieuw te verpakken."
 
-#: ../../server/eit/commands/commit.py:121
+#: ../../server/eit/commands/commit.py:125
 msgid "Scanning database for differences"
 msgstr "Scannen van database op verschillen"
 
-#: ../../server/eit/commands/commit.py:145
+#: ../../server/eit/commands/commit.py:149
 #, fuzzy
 msgid "Invalid package"
 msgstr "Ongeldig backend-type"
 
-#: ../../server/eit/commands/commit.py:156
+#: ../../server/eit/commands/commit.py:160
 #, fuzzy
 msgid "Zarro thinggz to do"
 msgstr "Niks te doen"
 
-#: ../../server/eit/commands/commit.py:163
+#: ../../server/eit/commands/commit.py:167
 #, fuzzy
 msgid "These would be marked as injected"
 msgstr "is geinjecteerd"
 
-#: ../../server/eit/commands/commit.py:175
+#: ../../server/eit/commands/commit.py:179
 msgid "Do it now ?"
 msgstr ""
 
-#: ../../server/eit/commands/commit.py:186
+#: ../../server/eit/commands/commit.py:190
 #, fuzzy
 msgid "Transforming"
 msgstr "Transformeren van database"
 
-#: ../../server/eit/commands/commit.py:191
+#: ../../server/eit/commands/commit.py:195
 #, fuzzy
 msgid "Action completed"
 msgstr "invoeren compleet"
 
-#: ../../server/eit/commands/commit.py:202
+#: ../../server/eit/commands/commit.py:206
 msgid "expired"
 msgstr "verlopen"
 
-#: ../../server/eit/commands/commit.py:209
+#: ../../server/eit/commands/commit.py:213
 #, fuzzy
 msgid "Select packages for removal"
 msgstr "Zoeken naar pakketten die kunnen worden verwijderd"
 
-#: ../../server/eit/commands/commit.py:216
+#: ../../server/eit/commands/commit.py:220
 msgid "Remove this package?"
 msgstr "Dit pakket verwijderen?"
 
-#: ../../server/eit/commands/commit.py:223
+#: ../../server/eit/commands/commit.py:227
 #, fuzzy
 msgid "These would be removed from repository"
 msgstr "Overeenkomende voor verwijdering van de repositorie database"
 
-#: ../../server/eit/commands/commit.py:248
+#: ../../server/eit/commands/commit.py:252
 #, fuzzy
 msgid "Select packages to add"
 msgstr "Sommige pakketten zijn gemaskeerd"
 
-#: ../../server/eit/commands/commit.py:256
+#: ../../server/eit/commands/commit.py:260
 msgid "Add this package?"
 msgstr "Dit pakket toevoegen?"
 
-#: ../../server/eit/commands/commit.py:264
+#: ../../server/eit/commands/commit.py:268
 #, fuzzy
 msgid "These would be added or updated"
 msgstr "Deze worden toegevoegd aan de systeem database"
 
-#: ../../server/eit/commands/commit.py:297
+#: ../../server/eit/commands/commit.py:301
 msgid "warning"
 msgstr "Waarschuwing"
 
-#: ../../server/eit/commands/commit.py:304
+#: ../../server/eit/commands/commit.py:308
 msgid "Would you like to package them now ?"
 msgstr "Wil je ze nu inpakken ?"
 
-#: ../../server/eit/commands/commit.py:305
+#: ../../server/eit/commands/commit.py:309
 msgid "inside"
 msgstr "binnenin"
 
-#: ../../server/eit/commands/commit.py:318
+#: ../../server/eit/commands/commit.py:322
 msgid "Compressing packages"
 msgstr "Pakketten comprimeren"
 
-#: ../../server/eit/commands/commit.py:332
+#: ../../server/eit/commands/commit.py:336
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr "Negeren van gebroken Spm ingang, hercompileer a.u.b."
 
-#: ../../server/eit/commands/commit.py:339
+#: ../../server/eit/commands/commit.py:343
 msgid "Nothing to do, check later."
 msgstr "Niets te doen, controleer later."
 
-#: ../../server/eit/commands/commit.py:353
+#: ../../server/eit/commands/commit.py:357
 msgid "Statistics"
 msgstr "Statistieken"
 
-#: ../../server/eit/commands/commit.py:354
+#: ../../server/eit/commands/commit.py:358
 msgid "Entries handled"
 msgstr "Invoer behandeld"
 
-#: ../../server/eit/commands/commit.py:364
+#: ../../server/eit/commands/commit.py:368
 #, fuzzy
 msgid "commit changes to repository"
 msgstr "Geinstalleerde Pakketten repositorie"
 
-#: ../../server/eit/commands/log.py:58
+#: ../../server/eit/commands/log.py:63
 #, fuzzy
 msgid "log is not available"
 msgstr "is niet beschikbaar"
 
-#: ../../server/eit/commands/log.py:72
+#: ../../server/eit/commands/log.py:77
 #, fuzzy
 msgid "show log for repository"
 msgstr "werken met repositorie"
 
-#: ../../server/eit/commands/cleanup.py:67
+#: ../../server/eit/commands/cleanup.py:71
 #, fuzzy
 msgid "clean expired packages from a repository"
 msgstr "Opruimen van onbeschikbare pakketten van repositorie"
@@ -3783,34 +3760,34 @@ msgstr ""
 msgid "show current status"
 msgstr "geef huidige vergrendel status"
 
-#: ../../server/eit/commands/lock.py:85
+#: ../../server/eit/commands/lock.py:89
 #, fuzzy
 msgid "Mirrors status"
 msgstr "spiegels status tabel"
 
-#: ../../server/eit/commands/lock.py:99 ../../server/eit/commands/lock.py:114
+#: ../../server/eit/commands/lock.py:103 ../../server/eit/commands/lock.py:118
 msgid "Locked"
 msgstr "geblokkeerd"
 
-#: ../../server/eit/commands/lock.py:102 ../../server/eit/commands/lock.py:117
+#: ../../server/eit/commands/lock.py:106 ../../server/eit/commands/lock.py:121
 msgid "Unlocked"
 msgstr "Vrijgemaakt"
 
-#: ../../server/eit/commands/lock.py:110
+#: ../../server/eit/commands/lock.py:114
 #, fuzzy
 msgid "server"
 msgstr "Server"
 
-#: ../../server/eit/commands/lock.py:125
+#: ../../server/eit/commands/lock.py:129
 msgid "client"
 msgstr ""
 
-#: ../../server/eit/commands/lock.py:157
+#: ../../server/eit/commands/lock.py:161
 #, fuzzy
 msgid "lock repository"
 msgstr "Naar repositorie"
 
-#: ../../server/eit/commands/lock.py:180
+#: ../../server/eit/commands/lock.py:184
 #, fuzzy
 msgid "unlock repository"
 msgstr "In repositorie"
@@ -3819,29 +3796,29 @@ msgstr "In repositorie"
 msgid "expired since how many days, default: 0"
 msgstr ""
 
-#: ../../server/eit/commands/vacuum.py:70
+#: ../../server/eit/commands/vacuum.py:76
 #, fuzzy
 msgid "Removing unavailable packages overriding defaults"
 msgstr ""
 "Verwijderen van onbeschikbare pakketten, overschrijden van Entropy "
 "standaarden is over het algemeen slecht."
 
-#: ../../server/eit/commands/vacuum.py:74
+#: ../../server/eit/commands/vacuum.py:80
 #, fuzzy
 msgid "Users with old repositories will need to update"
 msgstr "Alle repositories waren reeds up to date"
 
-#: ../../server/eit/commands/vacuum.py:90
+#: ../../server/eit/commands/vacuum.py:96
 #, fuzzy
 msgid "clean expired/removed packages from repository"
 msgstr "Opruimen van onbeschikbare pakketten van repositorie"
 
-#: ../../server/eit/commands/files.py:91
+#: ../../server/eit/commands/files.py:95
 #, fuzzy
 msgid "files found"
 msgstr "bestand niet gevonden"
 
-#: ../../server/eit/commands/files.py:100
+#: ../../server/eit/commands/files.py:104
 #, fuzzy
 msgid "show files owned by packages"
 msgstr "geef bestanden weer behorend aan de gegeven atomen"
@@ -3858,48 +3835,48 @@ msgstr "deze hulp"
 msgid "do not include reverse dependencies"
 msgstr "voer geen tegengestelde afhankelijkheden door"
 
-#: ../../server/eit/commands/remove.py:123
+#: ../../server/eit/commands/remove.py:127
 #, fuzzy
 msgid "remove packages from repository"
 msgstr "verplaats pakketten van de ene repositorie naar een ander"
 
-#: ../../server/eit/commands/deps.py:81
+#: ../../server/eit/commands/deps.py:85
 msgid "package dependencies"
 msgstr "pakket afhankelijkheden"
 
-#: ../../server/eit/commands/deps.py:89
+#: ../../server/eit/commands/deps.py:93
 msgid "type"
 msgstr "type"
 
-#: ../../server/eit/commands/deps.py:96
+#: ../../server/eit/commands/deps.py:100
 msgid "No dependencies"
 msgstr "Geen afhankelijkheden"
 
-#: ../../server/eit/commands/deps.py:122
+#: ../../server/eit/commands/deps.py:126
 msgid "not found"
 msgstr "niet gevonden"
 
-#: ../../server/eit/commands/deps.py:154
+#: ../../server/eit/commands/deps.py:158
 msgid "Dependency type"
 msgstr "Afhankelijkheden type"
 
-#: ../../server/eit/commands/deps.py:160
+#: ../../server/eit/commands/deps.py:164
 msgid "Select a dependency type for"
 msgstr "Selecteer een afhankelijkheid type voor"
 
-#: ../../server/eit/commands/deps.py:185
+#: ../../server/eit/commands/deps.py:189
 msgid "Dependencies editor"
 msgstr "Afhankelijkheden editor"
 
-#: ../../server/eit/commands/deps.py:195
+#: ../../server/eit/commands/deps.py:199
 msgid "Confirm ?"
 msgstr "Bevestigen"
 
-#: ../../server/eit/commands/deps.py:219
+#: ../../server/eit/commands/deps.py:223
 msgid "dependencies updated successfully"
 msgstr "afhankelijkheden succesvol geupdate"
 
-#: ../../server/eit/commands/deps.py:230
+#: ../../server/eit/commands/deps.py:234
 #, fuzzy
 msgid "edit dependencies for packages in repository"
 msgstr "Geinstalleerde Pakketten repositorie"
@@ -3909,252 +3886,252 @@ msgstr "Geinstalleerde Pakketten repositorie"
 msgid "package dependency"
 msgstr "pakket afhankelijkheden"
 
-#: ../../server/eit/commands/cp.py:81
+#: ../../server/eit/commands/cp.py:85
 msgid "source equals destination"
 msgstr ""
 
-#: ../../server/eit/commands/cp.py:110
+#: ../../server/eit/commands/cp.py:114
 #, fuzzy
 msgid "Considering all the packages"
 msgstr "Configureren van pakket"
 
-#: ../../server/eit/commands/cp.py:134
+#: ../../server/eit/commands/cp.py:138
 msgid "copy packages from a repository to another"
 msgstr "kopieer pakketten van de ene repositorie naar de andere"
 
-#: ../../server/eit/commands/graph.py:92
+#: ../../server/eit/commands/graph.py:93
 #, fuzzy
 msgid "show dependency graph for packages"
 msgstr "Uitpakken van afhankelijkheid pakket"
 
-#: ../../server/eit/commands/key.py:50
+#: ../../server/eit/commands/key.py:49
 #, fuzzy
 msgid "execute action"
 msgstr "forceer actie"
 
-#: ../../server/eit/commands/key.py:54
+#: ../../server/eit/commands/key.py:53
 #, fuzzy
 msgid "create keypair for repository and packages"
 msgstr "Creeer sleutel paar voor repositories en onderteken pakketten"
 
-#: ../../server/eit/commands/key.py:60
+#: ../../server/eit/commands/key.py:59
 #, fuzzy
 msgid "delete keypair (and signatures) from repository"
 msgstr "verwijder sleutel paar (en digitale handtekeningen) van repositorie"
 
-#: ../../server/eit/commands/key.py:66
+#: ../../server/eit/commands/key.py:65
 #, fuzzy
 msgid "show keypair status for repository"
 msgstr "Geen sleutelpaar voor repositorie"
 
-#: ../../server/eit/commands/key.py:72
+#: ../../server/eit/commands/key.py:71
 #, fuzzy
 msgid "sign packages in repository using current keypair"
 msgstr ""
 "teken (of her-teken) pakketten in de repositorie door middel van het huidige "
 "sleutel paar"
 
-#: ../../server/eit/commands/key.py:78
+#: ../../server/eit/commands/key.py:77
 msgid "import keypair, bind to given repository"
 msgstr "importeer sleutel paar, en koppen die met de gegeven repositorie"
 
-#: ../../server/eit/commands/key.py:83 ../../server/eit/commands/key.py:104
+#: ../../server/eit/commands/key.py:82 ../../server/eit/commands/key.py:103
 msgid "private key path"
 msgstr ""
 
-#: ../../server/eit/commands/key.py:86 ../../server/eit/commands/key.py:95
+#: ../../server/eit/commands/key.py:85 ../../server/eit/commands/key.py:94
 #, fuzzy
 msgid "public key path"
 msgstr "Publieke sleutel vingerafdruk"
 
-#: ../../server/eit/commands/key.py:90
+#: ../../server/eit/commands/key.py:89
 #, fuzzy
 msgid "export the repository public key to file"
 msgstr "externe repositorie opeens geblokkeerd"
 
-#: ../../server/eit/commands/key.py:99
+#: ../../server/eit/commands/key.py:98
 msgid "export the repository private key to file"
 msgstr ""
 
-#: ../../server/eit/commands/key.py:121
+#: ../../server/eit/commands/key.py:125
 msgid "GPG interface loaded, home directory"
 msgstr "GPG omgeving geladen, thuis map"
 
-#: ../../server/eit/commands/key.py:131
+#: ../../server/eit/commands/key.py:135
 msgid "GnuPG not available"
 msgstr "GnuPG niet beschikbaar"
 
-#: ../../server/eit/commands/key.py:146
+#: ../../server/eit/commands/key.py:150
 msgid "Creating keys for repository"
 msgstr "Creeer sleutels voor repositorie"
 
-#: ../../server/eit/commands/key.py:150
+#: ../../server/eit/commands/key.py:154
 msgid "Another key already exists for repository"
 msgstr "Een ander sleutel bestaat al voor repositorie"
 
-#: ../../server/eit/commands/key.py:174
+#: ../../server/eit/commands/key.py:178
 msgid "Insert e-mail"
 msgstr "Voer e-mail in"
 
-#: ../../server/eit/commands/key.py:176
+#: ../../server/eit/commands/key.py:180
 msgid "Insert expiration days (0=no expiration)"
 msgstr "Voer verloop tijd in dagen in (0= geen verloop tijd)"
 
-#: ../../server/eit/commands/key.py:178
+#: ../../server/eit/commands/key.py:182
 msgid "Insert passphrase (empty=no passphrase)"
 msgstr "Voer wachtzin in (leeg=geen wachtzin)"
 
-#: ../../server/eit/commands/key.py:182
+#: ../../server/eit/commands/key.py:186
 msgid "Repository GPG keypair creation"
 msgstr "Repositorie GPG sleutel paar creatie"
 
-#: ../../server/eit/commands/key.py:198
+#: ../../server/eit/commands/key.py:202
 msgid "Produced GPG key with fingerprint"
 msgstr "GPG sleutel gemaakt met vingerafdruk"
 
-#: ../../server/eit/commands/key.py:204
+#: ../../server/eit/commands/key.py:208
 msgid "Now you should sign all the packages in it"
 msgstr "Nu moet je alle pakketten erin ondertekenen"
 
-#: ../../server/eit/commands/key.py:211
+#: ../../server/eit/commands/key.py:215
 #, fuzzy
 msgid "Generate a revoke key and store it in a safe place"
 msgstr ""
 "Wees 100% zeker dat een herstel sleutel wordt gemaakt en sla die op op een "
 "veilige plaats."
 
-#: ../../server/eit/commands/key.py:221
+#: ../../server/eit/commands/key.py:225
 #, fuzzy
 msgid "You may want to send your keys to a key server"
 msgstr "U wilt waarschijnlijk uw sleutels ook naar een sleutel server sturen"
 
-#: ../../server/eit/commands/key.py:242
+#: ../../server/eit/commands/key.py:246
 msgid "Deleting keys for repository"
 msgstr "Verwijder sleutels van repositorie"
 
-#: ../../server/eit/commands/key.py:246
+#: ../../server/eit/commands/key.py:250
 msgid "No keys available for given repository"
 msgstr "Geen sleutels beschikbaar voor gegeven repositorie"
 
-#: ../../server/eit/commands/key.py:253
+#: ../../server/eit/commands/key.py:257
 msgid "Are you really sure?"
 msgstr "Weet je het zeker?"
 
-#: ../../server/eit/commands/key.py:261 ../../server/eit/commands/key.py:295
+#: ../../server/eit/commands/key.py:265 ../../server/eit/commands/key.py:299
 msgid "Keys metadata not available for"
 msgstr "Sleutel metadata niet beschikbaar voor"
 
-#: ../../server/eit/commands/key.py:275
+#: ../../server/eit/commands/key.py:279
 msgid "Deleted GPG key with fingerprint"
 msgstr "GPG sleutel verwijderd met vingerafdruk"
 
-#: ../../server/eit/commands/key.py:303
+#: ../../server/eit/commands/key.py:307
 msgid "GPG information for repository"
 msgstr "GPG informatie voor repositorie"
 
-#: ../../server/eit/commands/key.py:325
+#: ../../server/eit/commands/key.py:329
 msgid "Public key identifier"
 msgstr "Publieke sleutel herkenning"
 
-#: ../../server/eit/commands/key.py:326
+#: ../../server/eit/commands/key.py:330
 msgid "Public key fingerprint"
 msgstr "Publieke sleutel vingerafdruk"
 
-#: ../../server/eit/commands/key.py:327
+#: ../../server/eit/commands/key.py:331
 msgid "Key size"
 msgstr "Sleutel grootte"
 
-#: ../../server/eit/commands/key.py:328
+#: ../../server/eit/commands/key.py:332
 #: ../../sulfur/src/sulfur/sulfur.glade.h:48
 msgid "Creation date"
 msgstr "Aanmaakdatum"
 
-#: ../../server/eit/commands/key.py:329
+#: ../../server/eit/commands/key.py:333
 msgid "Expires on"
 msgstr "Verloopt op"
 
-#: ../../server/eit/commands/key.py:366
+#: ../../server/eit/commands/key.py:370
 #, fuzzy
 msgid "Importing keypair"
 msgstr "Importeren van sleutel paar voor repositorie"
 
-#: ../../server/eit/commands/key.py:372
+#: ../../server/eit/commands/key.py:376
 #, fuzzy
 msgid "Another keypair already exists"
 msgstr "Een ander sleutel paar bestaat reeds voor de repositorie"
 
-#: ../../server/eit/commands/key.py:385
+#: ../../server/eit/commands/key.py:389
 msgid "Imported GPG key with fingerprint"
 msgstr "Geimporteerde GPG sleutel met vingerafdruk"
 
-#: ../../server/eit/commands/key.py:391
+#: ../../server/eit/commands/key.py:395
 #, fuzzy
 msgid "Now sign all the packages in it"
 msgstr "Nu moet je alle pakketten erin ondertekenen"
 
-#: ../../server/eit/commands/key.py:436
+#: ../../server/eit/commands/key.py:438
 msgid "Exporting private key for repository"
 msgstr "Exporteren van prive sleutel voor repositorie"
 
-#: ../../server/eit/commands/key.py:440
+#: ../../server/eit/commands/key.py:442
 msgid "Exporting public key for repository"
 msgstr "Exporteren van publieke sleutel voor repositorie"
 
-#: ../../server/eit/commands/key.py:445
+#: ../../server/eit/commands/key.py:447
 msgid "No keypair available for repository"
 msgstr "Geen sleutelpaar voor repositorie"
 
-#: ../../server/eit/commands/key.py:453
+#: ../../server/eit/commands/key.py:455
 msgid "Keypair is EXPIRED for repository"
 msgstr "Sleutel VERLOPEN voor deze repositorie"
 
-#: ../../server/eit/commands/key.py:474
+#: ../../server/eit/commands/key.py:476
 msgid "Unable to export GPG key for repository"
 msgstr "Onmogelijk de GPG sleutel te exporteren voor repositorie"
 
-#: ../../server/eit/commands/key.py:483
+#: ../../server/eit/commands/key.py:485
 msgid "Exported GPG key for repository"
 msgstr "Geexporteerde GPG sleutel voor repositorie"
 
-#: ../../server/eit/commands/key.py:496
+#: ../../server/eit/commands/key.py:498
 #, fuzzy
 msgid "manage repository GPG keys"
 msgstr "onderhoud een repositorie"
 
-#: ../../server/eit/commands/branch.py:54
+#: ../../server/eit/commands/branch.py:55
 #, fuzzy
 msgid "switch to given branch"
 msgstr "Onmogelijk om branche te wisselen"
 
-#: ../../server/eit/commands/branch.py:59
+#: ../../server/eit/commands/branch.py:60
 #, fuzzy
 msgid "from branch"
 msgstr "branche"
 
-#: ../../server/eit/commands/branch.py:89
-#: ../../server/eit/commands/branch.py:98
+#: ../../server/eit/commands/branch.py:94
+#: ../../server/eit/commands/branch.py:103
 #, fuzzy
 msgid "Invalid branch"
 msgstr "Ongeldig atoom"
 
-#: ../../server/eit/commands/branch.py:118
+#: ../../server/eit/commands/branch.py:123
 msgid "would be copied to branch"
 msgstr ""
 
-#: ../../server/eit/commands/branch.py:171
+#: ../../server/eit/commands/branch.py:176
 #, fuzzy
 msgid "manage repository branches"
 msgstr "onderhoud een repositorie"
 
 #: ../../sulfur/src/sulfur/views.py:92 ../../sulfur/src/sulfur/views.py:152
 #: ../../sulfur/src/sulfur/views.py:2796
+#: ../../sulfur/src/sulfur/package.py:316
 #: ../../sulfur/src/sulfur/dialogs.py:2514
 #: ../../sulfur/src/sulfur/dialogs.py:2747
 #: ../../sulfur/src/sulfur/dialogs.py:2758
 #: ../../sulfur/src/sulfur/dialogs.py:2769
 #: ../../sulfur/src/sulfur/dialogs.py:2780
 #: ../../sulfur/src/sulfur/dialogs.py:2791
-#: ../../sulfur/src/sulfur/package.py:316
 msgid "No description"
 msgstr "Geen omschrijving"
 
@@ -4442,400 +4419,6 @@ msgstr "Geen pakketten gevonden"
 msgid "There are no packages that can be shown, sorry."
 msgstr "Er kunnen geen pakketten worden weergegeven, sorry."
 
-#: ../../sulfur/src/sulfur/dialogs.py:76
-msgid ""
-"Did you know that you can comment, vote and add documents to applications "
-"like in a wiki?"
-msgstr ""
-"Wist je dat je kan reageren, stemmen en documenten kan toevoegen aan "
-"applicaties net als in de wiki?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:77
-msgid ""
-"Did you know that you can add icons or files to applications by simply "
-"dropping images from your Desktop onto them?"
-msgstr ""
-"Wist je dat je icoontjes en bestanden kan toevoegen aan applicaties door ze "
-"simpel weg er naar toe te slepen?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:78
-msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"Wist u dat Sulfur een geavanceerde modus heeft, klik gewoon op Sulfur -> "
-"Geavanceerde modus?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:79
-msgid ""
-"Did you know that the guy who wrote this tip was really asleep at the time?"
-msgstr ""
-"Wist u dat de persoon die dit schreef eigenlijk aan het slapen was op dat "
-"moment?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:80
-msgid ""
-"Did you know that you can backup your installed application repository by "
-"enabling Advanced mode and going to Preferences tab?"
-msgstr ""
-"Wist u dat u uw geinstalleerde bestanden repositorie kan back-uppen door in "
-"de Geavanceerde modus naar het Eigenschappen tabblad te gaan?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:81
-msgid ""
-"Did you know that you can customize interface colors by enabling Advanced "
-"mode and going to Preferences tab?"
-msgstr ""
-"Wist u dat u zelf ingestelde kleuren kan activeren in de Geavanceerde modus "
-"onder het Eigenschappen tabblad?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:177
-msgid "No Repository Identifier"
-msgstr "Geen Repositorie Identifier"
-
-#: ../../sulfur/src/sulfur/dialogs.py:181
-msgid "Duplicated Repository Identifier"
-msgstr "Dubbele Repositorie identifier"
-
-#: ../../sulfur/src/sulfur/dialogs.py:186
-#, fuzzy
-msgid "Invalid Repository Identifier"
-msgstr "Repositorie Identifier"
-
-#: ../../sulfur/src/sulfur/dialogs.py:192
-msgid "No download mirrors"
-msgstr "Geen download spiegels"
-
-#: ../../sulfur/src/sulfur/dialogs.py:197
-msgid "Repository URL must be a valid URL"
-msgstr "Repository URL moet een geldige URL zijn"
-
-#: ../../sulfur/src/sulfur/dialogs.py:228
-#: ../../sulfur/src/sulfur/dialogs.py:242
-msgid "Insert URL"
-msgstr "Voer URL in"
-
-#: ../../sulfur/src/sulfur/dialogs.py:229
-msgid "Enter a download mirror, HTTP or FTP"
-msgstr "Voer een download spiegel in, HTTP of FTP"
-
-#: ../../sulfur/src/sulfur/dialogs.py:243
-msgid "Enter a download mirror URL"
-msgstr "Voer een download spiegel URL in"
-
-#: ../../sulfur/src/sulfur/dialogs.py:249
-msgid "You must enter either a valid URL."
-msgstr "Vul een geldig URL in."
-
-#: ../../sulfur/src/sulfur/dialogs.py:254
-msgid "Insert Repository"
-msgstr "Voer Repositorie in"
-
-#: ../../sulfur/src/sulfur/dialogs.py:255
-msgid "Insert Repository identification string"
-msgstr "Voer Repositorie identificatie reeks in"
-
-#: ../../sulfur/src/sulfur/dialogs.py:266
-msgid "This Repository identification string is malformed"
-msgstr "Ongeldige Repositorie invoer"
-
-#: ../../sulfur/src/sulfur/dialogs.py:282
-#: ../../sulfur/src/sulfur/dialogs.py:289
-msgid "Wrong entries, errors"
-msgstr "Verkeerde invoer, fouten"
-
-#: ../../sulfur/src/sulfur/dialogs.py:318
-#: ../../sulfur/src/sulfur/sulfur.glade.h:202
-msgid "Repositories Notice Board"
-msgstr "Repositories Notitie Bord"
-
-#: ../../sulfur/src/sulfur/dialogs.py:319
-msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
-"Double click on each item to retrieve detailed info."
-msgstr ""
-"Hier onder vind je een lijst met belangrijk nieuws afkomstig van de "
-"applicatie onderhouders.\n"
-"Dubbel klikken om gedetailleerde info van elk item te zien."
-
-#: ../../sulfur/src/sulfur/dialogs.py:348
-msgid "Notice"
-msgstr "Let op"
-
-#: ../../sulfur/src/sulfur/dialogs.py:658
-msgid "Expand to browse"
-msgstr "Uitvouwen om te doorzoeken"
-
-#: ../../sulfur/src/sulfur/dialogs.py:686
-#: ../../sulfur/src/sulfur/sulfur.glade.h:16
-msgid "Author"
-msgstr "Auteur"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1122
-#: ../../sulfur/src/sulfur/dialogs.py:1166
-msgid "Please wait..."
-msgstr "Een moment a.u.b."
-
-#: ../../sulfur/src/sulfur/dialogs.py:1263
-msgid "Package ChangeLog"
-msgstr "Pakket Veranderingen-Log"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1405
-msgid "License name"
-msgstr "Licentie naam"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1421
-#: ../../sulfur/src/sulfur/sulfur.glade.h:132
-msgid "Mirrors"
-msgstr "Spiegels"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1453
-msgid "Depends"
-msgstr "Afhankelijk van"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1461
-msgid "Needed libraries"
-msgstr "Benodigde bibliotheken"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1469
-msgid "Protected item"
-msgstr "Beschermd item"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1472
-#: ../../sulfur/src/sulfur/dialogs.py:1484
-#: ../../sulfur/src/sulfur/dialogs.py:1496
-msgid "Type"
-msgstr "Type"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1480
-msgid "File"
-msgstr "Bestand"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1630
-msgid "Remotely"
-msgstr "Op afstand"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1636
-msgid "Removed repository"
-msgstr "Verwijderde repositorie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1700
-msgid "Bug"
-msgstr "Bug"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1708
-msgid "Reference"
-msgstr "Referentie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1785
-msgid "impact"
-msgstr "impact"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1789
-msgid "access"
-msgstr "toegang"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1804
-msgid "Vulnerables"
-msgstr "Kwetsbaarheden"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1808
-msgid "Unaffected"
-msgstr "Onaangetast"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1898
-msgid "Id"
-msgstr "ID"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1925
-msgid "No keywords"
-msgstr "Geen sleutelwoorden"
-
-#: ../../sulfur/src/sulfur/dialogs.py:1999
-msgid "Write your"
-msgstr "Schrijf jouw"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2003
-msgid "Select your"
-msgstr "Selecteer uw"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2047
-msgid "Submit issue"
-msgstr "Voeg melding toe"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2060
-msgid "Empty Document"
-msgstr "Leeg Document"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2065
-msgid "Invalid Description"
-msgstr "Ongeldige Omschrijving"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2072
-msgid "Invalid Document Type"
-msgstr "Ongeldig Document Soort"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2076
-msgid "Invalid Title"
-msgstr "Ongeldige Titel"
-
-#. confirm ?
-#: ../../sulfur/src/sulfur/dialogs.py:2081
-msgid "Do you confirm your submission?"
-msgstr "Wilt u uw indiening bevestigen?"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2097
-#: ../../sulfur/src/sulfur/dialogs.py:2101
-msgid "Service is unavailable"
-msgstr "Service niet beschikbaar"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2157
-msgid "Invalid fields"
-msgstr "Ongeldige velden"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2179
-msgid "Document added successfully. Thank you"
-msgstr "Document succesvol toegevoegd. Dank u"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2180
-msgid "Success!"
-msgstr "Gelukt!"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2188
-msgid "UGC Error"
-msgstr "GGI Fout"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2226
-msgid "Write your document"
-msgstr "Schrijf jouw document"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2234
-msgid "Select your file"
-msgstr "selecteer jouw bestand"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2275
-msgid "On repository"
-msgstr "In repositorie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2344
-msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te "
-"voldoen"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2346
-msgid "Some packages are masked"
-msgstr "Sommige pakketten zijn gemaskeerd"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2433
-msgid "Masked package"
-msgstr "Gemaskeerde Pakketten"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2441
-msgid "Enabled"
-msgstr "Ingeschakeld"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2637
-msgid "Please confirm the actions above"
-msgstr "Bevestig bovenstaande actie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2681
-#: ../../sulfur/src/sulfur/__init__.py:1040
-#: ../../sulfur/src/sulfur/__init__.py:1050
-#: ../../sulfur/src/sulfur/__init__.py:1060
-msgid "Item"
-msgstr "Item"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2698
-#: ../../sulfur/src/sulfur/dialogs.py:2752
-msgid "To be downgraded"
-msgstr "Gemarkeerd voor downgrade"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2704
-#: ../../sulfur/src/sulfur/dialogs.py:2741
-msgid "To be removed"
-msgstr "Gemarkeerd voor verwijdering"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2710
-#: ../../sulfur/src/sulfur/dialogs.py:2763
-msgid "To be reinstalled"
-msgstr "Gemarkeerd voor Herinstallatie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2716
-#: ../../sulfur/src/sulfur/dialogs.py:2774
-msgid "To be installed"
-msgstr "Gemarkeerd voor Installatie"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2722
-#: ../../sulfur/src/sulfur/dialogs.py:2785
-msgid "To be updated"
-msgstr "Gemarkeerd voor update"
-
-#: ../../sulfur/src/sulfur/dialogs.py:2922
-msgid "About"
-msgstr "Over"
-
-#. open file selector
-#: ../../sulfur/src/sulfur/dialogs.py:3007
-msgid "Sulfur file chooser"
-msgstr "Sulfur bestands kiezer"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3043
-msgid "Sulfur Question"
-msgstr "Sulfur Vraag"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3048
-msgid "Hey!"
-msgstr "Hey!"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3090
-msgid "Please fill the following form"
-msgstr "Vul het volgende formulier in aub."
-
-#: ../../sulfur/src/sulfur/dialogs.py:3160
-msgid "Add atom"
-msgstr "Atoom toevoegen"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3161
-msgid "Atom"
-msgstr "Atoom"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3316
-#: ../../sulfur/src/sulfur/dialogs.py:3318
-msgid "Invalid entry"
-msgstr "Ongeldige invoer"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3378
-msgid "Cancel"
-msgstr "Annuleer"
-
-#. new
-#: ../../sulfur/src/sulfur/dialogs.py:3469
-msgid "Accepted"
-msgstr "Geaccepteerd"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3536
-#: ../../sulfur/src/sulfur/events.py:731
-msgid "license text"
-msgstr "licentie tekst"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3576
-msgid "Exception caught"
-msgstr "Uitzondering Opgetreden"
-
-#: ../../sulfur/src/sulfur/dialogs.py:3577
-msgid "Sulfur crashed! An unexpected error occured."
-msgstr "Sulfur is gecrasht! Een onacceptabele fout heeft zich voor gedaan."
-
-#: ../../sulfur/src/sulfur/dialogs.py:3600
-msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr "Je rapport is succesvol opgestuurd! Hartelijk dank."
-
-#: ../../sulfur/src/sulfur/dialogs.py:3602
-msgid "Cannot submit your report. Not connected to Internet?"
-msgstr "Kan je rapport niet versturen. Heb je wel contact met internet?"
-
 #: ../../sulfur/src/sulfur/setup.py:73
 msgid "Programming:"
 msgstr "Programmeerwerk:"
@@ -4960,6 +4543,13 @@ msgstr "Download nu"
 #: ../../sulfur/src/sulfur/__init__.py:701
 msgid "Skip"
 msgstr "Overslaan"
+
+#: ../../sulfur/src/sulfur/__init__.py:1040
+#: ../../sulfur/src/sulfur/__init__.py:1050
+#: ../../sulfur/src/sulfur/__init__.py:1060
+#: ../../sulfur/src/sulfur/dialogs.py:2681
+msgid "Item"
+msgstr "Item"
 
 #: ../../sulfur/src/sulfur/__init__.py:1069
 msgid "Database"
@@ -5268,6 +4858,401 @@ msgstr "Geen pakketten geselecteerd"
 #: ../../sulfur/src/sulfur/__init__.py:2518
 msgid "Skipping current mirror."
 msgstr "Huidige spiegel wordt overgeslagen."
+
+#: ../../sulfur/src/sulfur/dialogs.py:76
+msgid ""
+"Did you know that you can comment, vote and add documents to applications "
+"like in a wiki?"
+msgstr ""
+"Wist je dat je kan reageren, stemmen en documenten kan toevoegen aan "
+"applicaties net als in de wiki?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:77
+msgid ""
+"Did you know that you can add icons or files to applications by simply "
+"dropping images from your Desktop onto them?"
+msgstr ""
+"Wist je dat je icoontjes en bestanden kan toevoegen aan applicaties door ze "
+"simpel weg er naar toe te slepen?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:78
+msgid ""
+"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
+"mode?"
+msgstr ""
+"Wist u dat Sulfur een geavanceerde modus heeft, klik gewoon op Sulfur -> "
+"Geavanceerde modus?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:79
+msgid ""
+"Did you know that the guy who wrote this tip was really asleep at the time?"
+msgstr ""
+"Wist u dat de persoon die dit schreef eigenlijk aan het slapen was op dat "
+"moment?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:80
+msgid ""
+"Did you know that you can backup your installed application repository by "
+"enabling Advanced mode and going to Preferences tab?"
+msgstr ""
+"Wist u dat u uw geinstalleerde bestanden repositorie kan back-uppen door in "
+"de Geavanceerde modus naar het Eigenschappen tabblad te gaan?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:81
+msgid ""
+"Did you know that you can customize interface colors by enabling Advanced "
+"mode and going to Preferences tab?"
+msgstr ""
+"Wist u dat u zelf ingestelde kleuren kan activeren in de Geavanceerde modus "
+"onder het Eigenschappen tabblad?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:177
+msgid "No Repository Identifier"
+msgstr "Geen Repositorie Identifier"
+
+#: ../../sulfur/src/sulfur/dialogs.py:181
+msgid "Duplicated Repository Identifier"
+msgstr "Dubbele Repositorie identifier"
+
+#: ../../sulfur/src/sulfur/dialogs.py:186
+#, fuzzy
+msgid "Invalid Repository Identifier"
+msgstr "Repositorie Identifier"
+
+#: ../../sulfur/src/sulfur/dialogs.py:192
+msgid "No download mirrors"
+msgstr "Geen download spiegels"
+
+#: ../../sulfur/src/sulfur/dialogs.py:197
+msgid "Repository URL must be a valid URL"
+msgstr "Repository URL moet een geldige URL zijn"
+
+#: ../../sulfur/src/sulfur/dialogs.py:228
+#: ../../sulfur/src/sulfur/dialogs.py:242
+msgid "Insert URL"
+msgstr "Voer URL in"
+
+#: ../../sulfur/src/sulfur/dialogs.py:229
+msgid "Enter a download mirror, HTTP or FTP"
+msgstr "Voer een download spiegel in, HTTP of FTP"
+
+#: ../../sulfur/src/sulfur/dialogs.py:243
+msgid "Enter a download mirror URL"
+msgstr "Voer een download spiegel URL in"
+
+#: ../../sulfur/src/sulfur/dialogs.py:249
+msgid "You must enter either a valid URL."
+msgstr "Vul een geldig URL in."
+
+#: ../../sulfur/src/sulfur/dialogs.py:254
+msgid "Insert Repository"
+msgstr "Voer Repositorie in"
+
+#: ../../sulfur/src/sulfur/dialogs.py:255
+msgid "Insert Repository identification string"
+msgstr "Voer Repositorie identificatie reeks in"
+
+#: ../../sulfur/src/sulfur/dialogs.py:266
+msgid "This Repository identification string is malformed"
+msgstr "Ongeldige Repositorie invoer"
+
+#: ../../sulfur/src/sulfur/dialogs.py:282
+#: ../../sulfur/src/sulfur/dialogs.py:289
+msgid "Wrong entries, errors"
+msgstr "Verkeerde invoer, fouten"
+
+#: ../../sulfur/src/sulfur/dialogs.py:318
+#: ../../sulfur/src/sulfur/sulfur.glade.h:202
+msgid "Repositories Notice Board"
+msgstr "Repositories Notitie Bord"
+
+#: ../../sulfur/src/sulfur/dialogs.py:319
+msgid ""
+"Here below you will find a list of important news directly issued by your "
+"applications maintainers.\n"
+"Double click on each item to retrieve detailed info."
+msgstr ""
+"Hier onder vind je een lijst met belangrijk nieuws afkomstig van de "
+"applicatie onderhouders.\n"
+"Dubbel klikken om gedetailleerde info van elk item te zien."
+
+#: ../../sulfur/src/sulfur/dialogs.py:348
+msgid "Notice"
+msgstr "Let op"
+
+#: ../../sulfur/src/sulfur/dialogs.py:658
+msgid "Expand to browse"
+msgstr "Uitvouwen om te doorzoeken"
+
+#: ../../sulfur/src/sulfur/dialogs.py:686
+#: ../../sulfur/src/sulfur/sulfur.glade.h:16
+msgid "Author"
+msgstr "Auteur"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1122
+#: ../../sulfur/src/sulfur/dialogs.py:1166
+msgid "Please wait..."
+msgstr "Een moment a.u.b."
+
+#: ../../sulfur/src/sulfur/dialogs.py:1263
+msgid "Package ChangeLog"
+msgstr "Pakket Veranderingen-Log"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1405
+msgid "License name"
+msgstr "Licentie naam"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1421
+#: ../../sulfur/src/sulfur/sulfur.glade.h:132
+msgid "Mirrors"
+msgstr "Spiegels"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1453
+msgid "Depends"
+msgstr "Afhankelijk van"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1461
+msgid "Needed libraries"
+msgstr "Benodigde bibliotheken"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1469
+msgid "Protected item"
+msgstr "Beschermd item"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1472
+#: ../../sulfur/src/sulfur/dialogs.py:1484
+#: ../../sulfur/src/sulfur/dialogs.py:1496
+msgid "Type"
+msgstr "Type"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1480
+msgid "File"
+msgstr "Bestand"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1630
+msgid "Remotely"
+msgstr "Op afstand"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1636
+msgid "Removed repository"
+msgstr "Verwijderde repositorie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1700
+msgid "Bug"
+msgstr "Bug"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1708
+msgid "Reference"
+msgstr "Referentie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1785
+msgid "impact"
+msgstr "impact"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1789
+msgid "access"
+msgstr "toegang"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1804
+msgid "Vulnerables"
+msgstr "Kwetsbaarheden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1808
+msgid "Unaffected"
+msgstr "Onaangetast"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1898
+msgid "Id"
+msgstr "ID"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1925
+msgid "No keywords"
+msgstr "Geen sleutelwoorden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:1999
+msgid "Write your"
+msgstr "Schrijf jouw"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2003
+msgid "Select your"
+msgstr "Selecteer uw"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2047
+msgid "Submit issue"
+msgstr "Voeg melding toe"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2060
+msgid "Empty Document"
+msgstr "Leeg Document"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2065
+msgid "Invalid Description"
+msgstr "Ongeldige Omschrijving"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2072
+msgid "Invalid Document Type"
+msgstr "Ongeldig Document Soort"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2076
+msgid "Invalid Title"
+msgstr "Ongeldige Titel"
+
+#. confirm ?
+#: ../../sulfur/src/sulfur/dialogs.py:2081
+msgid "Do you confirm your submission?"
+msgstr "Wilt u uw indiening bevestigen?"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2097
+#: ../../sulfur/src/sulfur/dialogs.py:2101
+msgid "Service is unavailable"
+msgstr "Service niet beschikbaar"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2157
+msgid "Invalid fields"
+msgstr "Ongeldige velden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2179
+msgid "Document added successfully. Thank you"
+msgstr "Document succesvol toegevoegd. Dank u"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2180
+msgid "Success!"
+msgstr "Gelukt!"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2188
+msgid "UGC Error"
+msgstr "GGI Fout"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2200
+msgid "Downloading"
+msgstr "Downloaden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2202
+msgid "Uploading"
+msgstr "Uploaden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2226
+msgid "Write your document"
+msgstr "Schrijf jouw document"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2234
+msgid "Select your file"
+msgstr "selecteer jouw bestand"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2275
+msgid "On repository"
+msgstr "In repositorie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2344
+msgid "These are the packages that must be enabled to satisfy your request"
+msgstr ""
+"Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te "
+"voldoen"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2346
+msgid "Some packages are masked"
+msgstr "Sommige pakketten zijn gemaskeerd"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2433
+msgid "Masked package"
+msgstr "Gemaskeerde Pakketten"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2441
+msgid "Enabled"
+msgstr "Ingeschakeld"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2637
+msgid "Please confirm the actions above"
+msgstr "Bevestig bovenstaande actie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2698
+#: ../../sulfur/src/sulfur/dialogs.py:2752
+msgid "To be downgraded"
+msgstr "Gemarkeerd voor downgrade"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2704
+#: ../../sulfur/src/sulfur/dialogs.py:2741
+msgid "To be removed"
+msgstr "Gemarkeerd voor verwijdering"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2710
+#: ../../sulfur/src/sulfur/dialogs.py:2763
+msgid "To be reinstalled"
+msgstr "Gemarkeerd voor Herinstallatie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2716
+#: ../../sulfur/src/sulfur/dialogs.py:2774
+msgid "To be installed"
+msgstr "Gemarkeerd voor Installatie"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2722
+#: ../../sulfur/src/sulfur/dialogs.py:2785
+msgid "To be updated"
+msgstr "Gemarkeerd voor update"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2922
+msgid "About"
+msgstr "Over"
+
+#. open file selector
+#: ../../sulfur/src/sulfur/dialogs.py:3007
+msgid "Sulfur file chooser"
+msgstr "Sulfur bestands kiezer"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3043
+msgid "Sulfur Question"
+msgstr "Sulfur Vraag"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3048
+msgid "Hey!"
+msgstr "Hey!"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3090
+msgid "Please fill the following form"
+msgstr "Vul het volgende formulier in aub."
+
+#: ../../sulfur/src/sulfur/dialogs.py:3160
+msgid "Add atom"
+msgstr "Atoom toevoegen"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3161
+msgid "Atom"
+msgstr "Atoom"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3316
+#: ../../sulfur/src/sulfur/dialogs.py:3318
+msgid "Invalid entry"
+msgstr "Ongeldige invoer"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3378
+msgid "Cancel"
+msgstr "Annuleer"
+
+#. new
+#: ../../sulfur/src/sulfur/dialogs.py:3469
+msgid "Accepted"
+msgstr "Geaccepteerd"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3536
+#: ../../sulfur/src/sulfur/events.py:731
+msgid "license text"
+msgstr "licentie tekst"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3576
+msgid "Exception caught"
+msgstr "Uitzondering Opgetreden"
+
+#: ../../sulfur/src/sulfur/dialogs.py:3577
+msgid "Sulfur crashed! An unexpected error occured."
+msgstr "Sulfur is gecrasht! Een onacceptabele fout heeft zich voor gedaan."
+
+#: ../../sulfur/src/sulfur/dialogs.py:3600
+msgid "Your report has been submitted successfully! Thanks a lot."
+msgstr "Je rapport is succesvol opgestuurd! Hartelijk dank."
+
+#: ../../sulfur/src/sulfur/dialogs.py:3602
+msgid "Cannot submit your report. Not connected to Internet?"
+msgstr "Kan je rapport niet versturen. Heb je wel contact met internet?"
 
 #: ../../sulfur/src/sulfur/events.py:69
 msgid "Error during backup"
@@ -6818,6 +6803,18 @@ msgstr "Magneto Software update kennisgever"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Start Pakketten Beheerder"
+
+#~ msgid "Cleaning"
+#~ msgstr "Opruimen"
+
+#~ msgid "directory"
+#~ msgstr "map"
+
+#~ msgid "Cleaned"
+#~ msgstr "Opgeruimd"
+
+#~ msgid "files and directories"
+#~ msgstr "bestanden en mappen"
 
 #~ msgid "Syncing current database"
 #~ msgstr "Synchroniseren van huidige database"
