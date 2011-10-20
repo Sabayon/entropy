@@ -3,10 +3,9 @@ Backlog (raw)
   1.0:
     REAGENT:
 
-    - ditch reagent and activator in favour of eit
-        - add man page
-        - update build.git scripts (eit addto -> eit add --to, etc)
-        - ditch text_query usage from eit?
+    - entropy server:
+        - if local repo < remote repo, repo should be downloaded first
+          then packages.
 
     - pkgcore spm plugin
         PF CATEGORY CFLAGS CXXFLAGS NEEDED FEATURES INHERITED are missing
