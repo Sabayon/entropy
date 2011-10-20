@@ -1,3 +1,1510 @@
+commit 87fc11980f0c38a9b6f16ec3f7b30e581fde746b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 16:16:46 2011 +0200
+
+    Release Entropy 1.0_rc60
+
+commit f8e41b63fb73aff9ab96bbae8f874ca1ed42b653
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 10:15:45 2011 +0200
+
+    [po] update Italian translation
+
+commit dd7671c956329a47814fcd5328c674676184c83d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 00:45:58 2011 +0200
+
+    [po] update Italian translation
+
+commit 7608102e5f4ea87bfa5123b2ca82953de156c619
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 19 17:46:37 2011 +0200
+
+    [eit.commands.pkgmove] new command "eit pkgmove"
+
+commit c571721028ae8a4bbcb1b5b96e4e2dec394cbd41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 19 16:12:55 2011 +0200
+
+    [conf] repositories.conf: update umoss.org -> umd.edu, see bug 2785
+
+commit 4eb7edebfc5d0e52f28057c394ba3b014fe8f6f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 23:07:00 2011 +0200
+
+    [po] update Italian translation
+
+commit b05da104b3fc7374a8069bf46279b4a5007d72bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 22:55:05 2011 +0200
+
+    [entropy.spm] PortagePlugin: fix minor typos
+
+commit caa8f50f316a51d0f65110ef116dd049745c3bd5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 22:54:41 2011 +0200
+
+    [po] update translations, again
+
+commit ee2fad46f38735ea554007475dcd522302126bf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 22:33:37 2011 +0200
+
+    [po] update translations
+
+commit 37eaa4ae99bd4c8d0ebce3c2356e432eeaeab25f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 22:33:04 2011 +0200
+
+    [eit.commands.query] fix undefined reference
+
+commit d9ebffa7863c4302fe39669f32562ce272fbf5eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 22:24:33 2011 +0200
+
+    [text_query] move graph, revgraph drawing functions to entropy.cli
+
+commit 57a25ff512c7d1c73dbb280506aed5fa20e3cddc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 17:26:45 2011 +0200
+
+    [entropy.cli] move print_package_info to entropy.cli module
+
+commit eeac23e2e8eb7b572c961ec24743ffe65c027325
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 17:10:49 2011 +0200
+
+    [po] update translations
+
+commit fc4452ff0a56f40223a18e2edc9b119074d8b9b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 17:09:48 2011 +0200
+
+    [entropy] move text_tools module from client/ to entropy package (entropy.cli)
+
+commit 156fcab74db1497375462f6a9adfa39380eac3a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 17:05:37 2011 +0200
+
+    [entropy.tools] fix typo
+
+commit 7ee8f755521458e33e61eccba2f51836abbe7c84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 06:29:27 2011 +0200
+
+    [eit.commands.{graph,revgraph}] drop etpUi usage from eit code
+
+commit 07f5080d4f5ec364f789cf0f432e50d89de10576
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 06:19:11 2011 +0200
+
+    [eit.commands.own] drop etpUi usage
+
+commit c62481ed630e154d8db24b5b05ed04db78ad225f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 05:54:13 2011 +0200
+
+    [repo] AUTHORS file is old and so wrong
+
+commit fc31edf16fba554cfd00ab91e8df8c470bcee46d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 05:53:24 2011 +0200
+
+    [scripts] drop old scripts
+
+commit a1010fb6ca43beaa23834b62fffdcb19baa7024a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 18 05:52:42 2011 +0200
+
+    [eit.*] more code cleanup
+
+commit 905a01ea1f02340c7d2c2044e832c9ff5ebdad5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 22:28:30 2011 +0200
+
+    [eit.*] some code cleanup
+
+commit 86fdfbaba04b6f87f87fecd1d81fd79eadc02ee2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 15:36:49 2011 +0200
+
+    [eit.*] split ArgumentParser object creation from parsing code
+
+commit 69a0bb87e05dd3b9ee123626d0368f6560aa352f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 14:27:58 2011 +0200
+
+    [entropy] move libraries/ to lib/
+
+commit d05ecad5be9dfe665a60176707ed85c749b2fec3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:36:32 2011 +0200
+
+    [server] move trigger.sh to more appropriate location
+
+commit 0ba9a2e68cf3dac5a1fdcb30ba586773e3f58a75
+Merge: e601148 07a6730
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:29:21 2011 +0200
+
+    Merge remote-tracking branch 'origin/master'
+
+commit e601148b14fb3ff40d4a2cb1dff9b9f32aec64d2
+Merge: 0743021 08c4921
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:27:02 2011 +0200
+
+    Merge remote-tracking branch 'origin/eit'
+
+commit 0743021dd6ec7d17db22961ff6df648d3b8ddb20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:26:01 2011 +0200
+
+    [todo] update TODO
+
+commit 8aa579ca50db20d58246b81b641f523fd74c3000
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:25:20 2011 +0200
+
+    [po] update translations
+
+commit ed2c56f30d1437ecbd86de4daa51832391b48326
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:23:53 2011 +0200
+
+    [Makefile] drop man pages installation for reagent, activator
+
+commit 87e61ecb8f77eba4ea3fdcf5675ccab08b8770ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:22:47 2011 +0200
+
+    [equo] drop "equo community", please use eit now (editing server.conf setting: community-mode = enable)
+
+commit 429af02477267a5308379fff5e1bf393c83d7b3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:22:21 2011 +0200
+
+    [man] drop reagent, activator man page files
+
+commit e469d77d374a103766791839f0b8cc3269ec22fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:21:32 2011 +0200
+
+    [activator] goodbye man page
+
+commit a7eef0a68f0ec6683dd4684b42fa5eb3cef91bc1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:21:21 2011 +0200
+
+    [reagent] goodbye man page
+
+commit ae599c14ef6b6cfc6918ee445782d5e8017e8f9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:17:40 2011 +0200
+
+    [entropy.server.interfaces.db] community_repo variable has been killed
+
+commit 22675dadf606e8720abb7548c5632e08527f7b0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:12:43 2011 +0200
+
+    [reagent] goodbye, RIP my friend
+
+commit 4cc4407eaa951cd4e59c67100cf799f8b128206a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:12:14 2011 +0200
+
+    [entropy.server] drop etpConst['community']['mode'], move setting into server.conf
+
+commit 5c3823ccd1e43a86b5b9ff3bbbfd39b0694db661
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:41:35 2011 +0200
+
+    [eit.commands.mv] add support for complete repo packages migration
+
+commit b1e00ab89537b56732e57723d9bf372ff4946ecd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:40:44 2011 +0200
+
+    [eit.commands.cp] if empty packages list is passed, consider all the packages
+
+commit 294666bfc3df82e49985cd46c436af28b12f7693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:19:46 2011 +0200
+
+    [eit.commands.test] new command "eit test remote"
+
+commit 56cc92defb49ecafd012bd4bea783d32cb962a84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 09:58:47 2011 +0200
+
+    [eit.commands.list] add --injected switch
+
+commit 6f9aabc55e1f12a83f344eaed1e71829a219b9e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 09:43:09 2011 +0200
+
+    [eit.commands.branch] make branch switching more atomic
+
+commit 79e04d55c8d7f2e03d7f59783d10729253e38806
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 23:01:51 2011 +0200
+
+    [eit.commands.branch] new command "eit branch"
+
+commit a50f26f38a7f5a28859c2513e0fe17665195a567
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:25:14 2011 +0200
+
+    [eit.commands.test] add command "eit test pkglibs"
+
+commit eb89b51c2fc72286f3ca11f2fd29936efcfc0a60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:01:55 2011 +0200
+
+    [eit.commands.merge] new command "eit merge"
+
+commit e66f64269ef778badd1593b65e34ff63ab84d403
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:01:26 2011 +0200
+
+    [eit.commands.query] do not lock entropy resources when running
+
+commit 3ed4db1d4bfaa77b10f60bf41747a4a991312c4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:44:23 2011 +0200
+
+    [server] server_query module is dying
+
+commit 0de7a1aef9e1fd806c267c9f0489cec02f21cec9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:43:28 2011 +0200
+
+    [eit.commands.query] new command "eit query"
+
+commit 1b1d954c3ca43fc7d9b78141e49121276c5079c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:43:05 2011 +0200
+
+    [eit.commands] catch empty module exception (raises ValueError)
+
+commit d3a568d769727f9c4e1e2e2644e9a77f9c5a0d12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 15:08:41 2011 +0200
+
+    [eit.commands.files] add more output to command (show repo and matched atom)
+
+commit 656c8928ee08c01cb2fcdb85989a24c56513e682
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 14:32:16 2011 +0200
+
+    [eit.commands.files] new command "eit files"
+
+commit 74c818f28ec55f8b5db8b55a0cd170dbe2d0c44f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:18:42 2011 +0200
+
+    [server] drop scripts dir, stuff is now in build.git repo
+
+commit e42ffb523771ad50549aa7d822b03e701add2f6b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:18:10 2011 +0200
+
+    [server] drop server_key module
+
+commit 909a7ec7084f65259063415b215da89e0d0fc32e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:17:21 2011 +0200
+
+    [activator] goodbye, RIP
+
+commit 4647cf25de3e501ef0da7e473d8990cc3a43845b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:04:41 2011 +0200
+
+    [eit.commands.key] new command "eit key"
+
+commit 5d4ba80bcb184e1266b791d5ae22580f60198e4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 22:58:24 2011 +0200
+
+    [eit.commands.notice] use codecs.open() with encoding="utf-8" with edit_file
+
+commit 363456ced36c654658f09f832d8a6bf477246dc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 22:57:47 2011 +0200
+
+    [entropy.server] use codecs.open() with encoding="utf-8" with edit_file
+
+commit 55287aa4c1b0cad859dc320c5890f7b59a7cc7d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 21:01:06 2011 +0200
+
+    [Makefile] do not use ln -sf, rather move the file in place instead
+
+commit 2106fe617a368339609e451d6edba35f3344ad23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 20:54:00 2011 +0200
+
+    [Makefile] install eit instead of reagent, activator
+
+commit 092fd6d2f000fffe67f61d053bf8a1a9c81952e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 20:40:39 2011 +0200
+
+    [eit.commands.test] new command "eit test pkgs"
+
+commit 00ce25912ef6d9c27184560a656516b0e550bfd9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 18:50:37 2011 +0200
+
+    [eit.commands.notice] trivial code style update
+
+commit 18102ecd6d320830db18db1883b36ed90580295a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 18:49:26 2011 +0200
+
+    [eit.commands.notice] new command "eit notice"
+
+commit 212526db99e32f44d75d0f25a4adc2f2b1a77175
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:14:12 2011 +0200
+
+    [eit.commands.lock] new commands "eit lock", "eit unlock"
+
+commit 451fd7234f862ed7174958180b8af91dae7b1f06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:13:15 2011 +0200
+
+    [entropy.transceivers.{ssh,ftp}] respect silent mode if enabled
+
+commit da517f7d4476f55b1eb9aad8755fef6709994bf7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:12:25 2011 +0200
+
+    [entropy.server.mirrors] add quiet keyword arg support to mirrors locking/unlocking methods
+
+commit f734223c45e91c8169ace6eec28c2ec5ff9522ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 11:27:40 2011 +0200
+
+    [eit.commands.own] new command "eit own"
+
+commit ddd7a0c9d78a5d3b91add6bfed82c215973366dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:33:37 2011 +0200
+
+    [eit.commands.{graph,list,match,revgraph,search}] add -q -v switch support (short form of --quiet, --verbose)
+
+commit 1731121077a609785c3c87e33d8ed750de9c7dca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:28:19 2011 +0200
+
+    [eit.commands.match] directly expose output of Entropy.atom_match()
+
+commit f66ae2347563ab1f2f8d2ee1e89a6f43f4f27bff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:26:50 2011 +0200
+
+    [entropy.server] open_server_repository(): raise RepositoryError
+    
+    If repository_id is not available raise RepositoryError.
+    This is a requirement for atom_match(), that handles the same
+    exception.
+
+commit abc97a9f6f7b486c34d63f8bc0e5c703aff8ee3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:30:49 2011 +0200
+
+    [eit.commands.match] new command "eit match"
+
+commit 708056e4c2a188e5fa4f37ab01c65f941a2300c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:30:38 2011 +0200
+
+    [eit.commands.search] fix command description
+
+commit 93f49a52f4476e425cc59c1c339a9ba1a600719b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:18:55 2011 +0200
+
+    [eit.commands.search] new command "eit search"
+
+commit 6b797efd4f18653364e739a3307b8c30967b53e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:10:16 2011 +0200
+
+    [eit.commands.{list,log,repo,revgraph,status}] allow unprivileged execution
+
+commit d936971f6ad684d511f81600cbd2bd21b20ae9a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:09:25 2011 +0200
+
+    [eit.commands.command] add support for unprivileged commands execution
+
+commit 6efe20ce5a23dcba603f4e039564c57857cf3359
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:48:46 2011 +0200
+
+    [eit.commands.revgraph] new command "eit revgraph"
+
+commit 05e10635b74706fbf75272bb5997265a9cd42ad7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:48:27 2011 +0200
+
+    [eit.commands.graph] add --in <repo> switch
+
+commit a0b8cce3be95c004901c5a28775c3cfb0ae00486
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:16:15 2011 +0200
+
+    [eit.commands.list] new command "eit list"
+
+commit b273bafd9bdb991c512cddb384d17563458a3693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:14:59 2011 +0200
+
+    [entropy.output] TextInterface.output: add output level "generic", using print_generic()
+
+commit b2cf59a39791f0dc098a6755848e745cb9193094
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:46:05 2011 +0200
+
+    [eit.commands.repo] explicitly print server config info
+
+commit 7c507628d4655745c2b5089e7e889b28d30dc1e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:37:44 2011 +0200
+
+    [eit.commands.graph] add --quiet support
+
+commit 1cdb4d842f04896e348b52d0144ae27b021d070d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:37:21 2011 +0200
+
+    [eit.commands.checkout] explicitly print server config after checkout
+
+commit 0796cf7886a6dc5c02b677ca55b3846aaa4c23c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:36:52 2011 +0200
+
+    [eit.commands.status] fix indentation and explicitly print server config info
+
+commit bbd6cdf2fc35e7705894da7dcf9ae476ce7b34ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:35:04 2011 +0200
+
+    [entropy.server] avoid using etpUi in library code
+
+commit 6b29c77cce132ea370adff6187390fb7809d041e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:38:56 2011 +0200
+
+    [eit.commands.graph] new command "eit graph"
+
+commit 4dab61739b9c0f3f0535e84fa9294d040583fa34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:38:31 2011 +0200
+
+    [eit.commands.command] add _call_unlocked() method
+
+commit f61ed7143dd0598303d01d3cf31e679b9c0b8d47
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:52 2011 +0200
+
+    [eit.commands.deps] new command "eit deps"
+
+commit a9ed8d237dceccdcb8f22e52640cf7e8a469763c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:31 2011 +0200
+
+    [eit.commands.inject] use commit_repositories() instead of close_repositories()
+
+commit 7c190331ff76eee06257db6f14689cb31c284300
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:06 2011 +0200
+
+    [eit.commands.commit] use commit_repositories() instead of close_repositories()
+
+commit b4567449c58991ab989114422e017b1ff40567be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:09:46 2011 +0200
+
+    [eit.commands.add] add --quick switch
+
+commit 5e6503863fb4cabe2096ac8b5b0400f1c8b3a4d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:09:22 2011 +0200
+
+    [entropy.server] add new method: commit_repositories()
+
+commit 0185ea0d300fcd1ca6e67ea9bbbe3a13cc5cd81b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:08:34 2011 +0200
+
+    [entropy.db] EntropyRepository.commit: use readonly() method instead of bool variable to avoid superfluous commits
+
+commit 9b1c2afbfe83fe398a5039fe791668eb4cf95718
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 17:12:16 2011 +0200
+
+    [eit.commands.remove] new command "eit remove"
+
+commit d57cc04c998a1db75f2796d5a0af8a10477921d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 16:46:41 2011 +0200
+
+    [eit.commands.inject] new command "eit inject"
+
+commit 4a02fab1c754dbfebe92b2806e3a8913c296348e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 15:17:40 2011 +0200
+
+    [eit.commands.log] new command "eit log"
+
+commit 6fa5925e12806f5147857adf14456a980135cf41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 15:09:41 2011 +0200
+
+    [eit.commands.vacuum] new command "eit vacuum"
+
+commit ad62299cde035a952e4efb6d929e3c17edbb6d7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 22:52:19 2011 +0200
+
+    [eit.commands.test] new command "eit test" (deps, libs, links)
+
+commit 14dc23816caf03e8c781049a14ac968ed6951b8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:02:47 2011 +0200
+
+    [eit.commands.reset] drop TODO comment
+
+commit 18b99eead61d4738031a6ba7f15f949f5fe65a82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:02:20 2011 +0200
+
+    [eit.commands.reset] new command "eit reset"
+
+commit a78c03fd0f66cfeb657d8bb84f7c29ed483f168f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:01:48 2011 +0200
+
+    [eit.commands.push] add missing import, improve code robustness
+
+commit dc39a382cbf42409ea4b5f0dc5256578ac7a6bfd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 19:45:05 2011 +0200
+
+    [eit.commands.push] refine command line options
+
+commit 988c3fce48c4d00c52f646c6bfb8140a26598876
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 16:21:54 2011 +0200
+
+    [eit.commands.push] new command "eit push"
+
+commit 412fab0f9b7fd50fd30c172d22ff284ada9588a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 16:21:38 2011 +0200
+
+    [eit.commands.command] add missing import
+
+commit e10c8722ad2864b19ce5776d912af492ebe205e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 23:32:01 2011 +0200
+
+    [eit.commands.repo] new command "eit repo"
+
+commit f4cc0230b2e14784df0e7e2d1a549488e64b9da3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 23:24:49 2011 +0200
+
+    [eit.commit.init] new command "eit init"
+
+commit a3dd7002372b5568bf5d70f59cc5d35773f87ecf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:31 2011 +0200
+
+    [eit.commands.mv] new command "eit mv"
+
+commit 136c73ab7f5f6d9055e20571a132e4b9d3fef92f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:19 2011 +0200
+
+    [eit.commands.cp] new command "eit cp"
+
+commit 1aebc3f185f9ec0e3264d577db45519f5c540f0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:03 2011 +0200
+
+    [eit.commands.cleanup] add "eit clean" alias
+
+commit 9a8d18b8cab1dd26c39143cbc84f2662de1c626a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 20:23:02 2011 +0200
+
+    [eit.commands.cleanup] add new command "eit cleanup"
+
+commit 4c246a9ebdba7a874e1db633104e3d0b643ac35a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 19:59:34 2011 +0200
+
+    [eit.commands.checkout] new command "eit checkout"
+
+commit b70222133f0f1a568196dd831f24d0624a68bbaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 19:59:18 2011 +0200
+
+    [eit.commands.*] drop unused imports
+
+commit f87bb75049586f50c9be8f277fd8a886cc986dc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:21:27 2011 +0200
+
+    [entropy.server.interfaces.db] uncompress the right packages.db.meta on download
+
+commit bf9f16868fbc701388d2aafb520b156a9a4e5e03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:42 2011 +0200
+
+    [eit.commands.*] make use of EitCommand._call_locked method
+
+commit ca965c03c04d3ba698d1a31c6e95ea69e0c8142a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:27 2011 +0200
+
+    [eit.commands.bump] new command "eit bump"
+
+commit 419e980538e252a0c86b9640e7fb0eb6b0c33d35
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:02 2011 +0200
+
+    [eit.commands.command] move general entropy resources locking method to EitCommand
+
+commit ef00dc6d9426e1d2e45c29fea582881b2e53da76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 14:46:03 2011 +0200
+
+    [eit.commands] automatically import all the available submodules
+
+commit f2f17a27f95be70bb624c4df882bf2305e8a5221
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 14:45:49 2011 +0200
+
+    [eit.main] fix catch-all class
+
+commit fb018e5dcf3493c888f425ff681a5ecbc78132fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 00:24:14 2011 +0200
+
+    [eit.colorful] add some whacky classes to inject some colors into argparse output
+
+commit 8f319ca1c86bc0387f3f6b50ab9a1e9d3cfba6df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 00:23:09 2011 +0200
+
+    [eit.commands.repack] implement new command "eit repack"
+
+commit f4c29b84895299b61d950480a34bc41ca649f5ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 18:49:57 2011 +0200
+
+    [eit.main] automatically build the list of available commands, add command aliases support
+
+commit 657437333c27109c07672b27a5daf269d44104a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 17:48:31 2011 +0200
+
+    [eit.commands.add] implement "eit add" (and eit add --to, was eit addto)
+
+commit 897e66dd23c67415f698e378d3ebcfeeeaf8280c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 17:48:13 2011 +0200
+
+    [eit.commands.status] trivial help update
+
+commit b41866f7db7d5351d9c8fb0c3dea124308c3d4d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 15:10:22 2011 +0200
+
+    [eit.commands] avoid using print_info(), print_warning() and print_error() when possible
+
+commit 27eaacd1cb186bea1a483695a73136922411b225
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 19:32:36 2011 +0200
+
+    [eit.commands.commit] use TextInterface.output() instead of print_* functions
+
+commit 3a83175cb76787d979495129a1b2dacb6d992296
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:11:57 2011 +0200
+
+    [po] update translations
+
+commit 70551c22d61a432ebab02a9223cefa42e38284d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:10:26 2011 +0200
+
+    [eit] first chunk of code for the new server-side repository management toolkit (greatly inspired to git)
+
+commit 335c11db9615d3f8dcd47a97df1dba23151cccdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:06:03 2011 +0200
+
+    [entropy.server] drop warning when running as user, no need to have it in lib
+
+commit 6613beb457e2cd1fc5525e33c09b6ba31757410f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:05:32 2011 +0200
+
+    [git] update .gitignore file, add #*# files
+
+commit 08c49210823011340c68340ee360085822ba1e24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:25:20 2011 +0200
+
+    [po] update translations
+
+commit fd49f5be6e0b5bfd5d5ef9db3a9b12f54e8d5f98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:23:53 2011 +0200
+
+    [Makefile] drop man pages installation for reagent, activator
+
+commit 6132921f3bcd74471c832a5a52b9cfe6fc131dfe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:22:47 2011 +0200
+
+    [equo] drop "equo community", please use eit now (editing server.conf setting: community-mode = enable)
+
+commit 590afc91d13e269a4c466f09f1d0649e3c7448ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:22:21 2011 +0200
+
+    [man] drop reagent, activator man page files
+
+commit b6acea37a08195495f8eccefb836d594b6148998
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:21:32 2011 +0200
+
+    [activator] goodbye man page
+
+commit ab19233ab4987ada19aa5cb9670e828955260f6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:21:21 2011 +0200
+
+    [reagent] goodbye man page
+
+commit bc8eac7eec38eefc3bdb4e692bfc7bd3f164725b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:17:40 2011 +0200
+
+    [entropy.server.interfaces.db] community_repo variable has been killed
+
+commit aebdcad4dc60cbcc2092a4b4b759074ef6dd7370
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:12:43 2011 +0200
+
+    [reagent] goodbye, RIP my friend
+
+commit 4583e68df15842ca81f040176e1d5e84f429578e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 11:12:14 2011 +0200
+
+    [entropy.server] drop etpConst['community']['mode'], move setting into server.conf
+
+commit 07b15b5d1f391674135b1305b806ede94e53a090
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:41:35 2011 +0200
+
+    [eit.commands.mv] add support for complete repo packages migration
+
+commit 4ca86eb750398bc09c65aceeca543d3efebc2fd9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:40:44 2011 +0200
+
+    [eit.commands.cp] if empty packages list is passed, consider all the packages
+
+commit b594a4385c51e2ee44c7044668030bcbf4a21f32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 10:19:46 2011 +0200
+
+    [eit.commands.test] new command "eit test remote"
+
+commit 4aebd05488c19be2241c0ea8e2ab99f27ed7bf2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 09:58:47 2011 +0200
+
+    [eit.commands.list] add --injected switch
+
+commit 5ed044c863df5bbe507416e2c8637ceaed50ad07
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 17 09:43:09 2011 +0200
+
+    [eit.commands.branch] make branch switching more atomic
+
+commit a4039ef52f022b1dcdeaa96e2180e78e61bd1071
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 23:01:51 2011 +0200
+
+    [eit.commands.branch] new command "eit branch"
+
+commit 9a28139758c959c198e5b55627da549747457f99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:25:14 2011 +0200
+
+    [eit.commands.test] add command "eit test pkglibs"
+
+commit 810812a5617ec6fbd4fee802fe509dc1ae4c8868
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:01:55 2011 +0200
+
+    [eit.commands.merge] new command "eit merge"
+
+commit f6e82db4255ba33b7a880c27314ceb68a521baa2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 18:01:26 2011 +0200
+
+    [eit.commands.query] do not lock entropy resources when running
+
+commit cb9fa8542168372242fa451c183d2fc9517c4517
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:44:23 2011 +0200
+
+    [server] server_query module is dying
+
+commit d25c64d88f99ed3304c57d44ab36ccfe81a1e1f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:43:28 2011 +0200
+
+    [eit.commands.query] new command "eit query"
+
+commit 69b9831aff745df9e0ebf572a1147385d63500dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:43:05 2011 +0200
+
+    [eit.commands] catch empty module exception (raises ValueError)
+
+commit 07a67303166af76fe944d09e0903c3a5d2027cd6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 17:05:20 2011 +0200
+
+    [conf] add Clarkson University mirror
+
+commit 7751e9ac9a7fe7761aa23c46c2aa5d3cb8ef4b21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 15:08:41 2011 +0200
+
+    [eit.commands.files] add more output to command (show repo and matched atom)
+
+commit ecec229f08a3c2be611cd2b965bb093282f732d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 14:32:16 2011 +0200
+
+    [eit.commands.files] new command "eit files"
+
+commit a41543d853f93f52bd34c22f8d6ea61b84065474
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:18:42 2011 +0200
+
+    [server] drop scripts dir, stuff is now in build.git repo
+
+commit e92fc8a16350eae9a17ffed0a80ca821f9e8db10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:18:10 2011 +0200
+
+    [server] drop server_key module
+
+commit fb66baae9a620bad979700db9dadbec2fd09dc2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:17:21 2011 +0200
+
+    [activator] goodbye, RIP
+
+commit 89bd32e8ac10173f9315a826215181ed685c6fbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 16 13:04:41 2011 +0200
+
+    [eit.commands.key] new command "eit key"
+
+commit e02e34d61c637e41993ec0c6bb6752f15d5801d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 22:58:24 2011 +0200
+
+    [eit.commands.notice] use codecs.open() with encoding="utf-8" with edit_file
+
+commit 44e7fc4d83f408d3730643f13eb68cb6a1e76351
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 22:57:47 2011 +0200
+
+    [entropy.server] use codecs.open() with encoding="utf-8" with edit_file
+
+commit a576442c92e81fc0eab9a416ad730bbfd99fd060
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 21:01:06 2011 +0200
+
+    [Makefile] do not use ln -sf, rather move the file in place instead
+
+commit 26ca5f063690f9c66c1a4dcc4e07ee7d6382ef88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 20:54:00 2011 +0200
+
+    [Makefile] install eit instead of reagent, activator
+
+commit bc2bd895a1888d4aa49de320c924b9867039019b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 20:40:39 2011 +0200
+
+    [eit.commands.test] new command "eit test pkgs"
+
+commit 5d391df063062b35f7595f2155ba801f1172740a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 18:50:37 2011 +0200
+
+    [eit.commands.notice] trivial code style update
+
+commit 97ac1693eea3ff7939fc33e10b288187ff6d5e96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 18:49:26 2011 +0200
+
+    [eit.commands.notice] new command "eit notice"
+
+commit 8ec43d55f3ded0201b825b3377a23151461f7da3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:14:12 2011 +0200
+
+    [eit.commands.lock] new commands "eit lock", "eit unlock"
+
+commit 3bc58c86a41da72f3c0a0ae9d05977b9451284af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:13:15 2011 +0200
+
+    [entropy.transceivers.{ssh,ftp}] respect silent mode if enabled
+
+commit 2885df330edeee007df8e31555cbe130095b464f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 15:12:25 2011 +0200
+
+    [entropy.server.mirrors] add quiet keyword arg support to mirrors locking/unlocking methods
+
+commit 836be5e538d21089c037ecd05de7541dd6f7001e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 11:27:40 2011 +0200
+
+    [eit.commands.own] new command "eit own"
+
+commit cf990b6b7764700d8e42f87f390fa4a33f2fd2a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:33:37 2011 +0200
+
+    [eit.commands.{graph,list,match,revgraph,search}] add -q -v switch support (short form of --quiet, --verbose)
+
+commit fddf3e1cf257ea8418803637c0f5d0ab0d0b6b25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:28:19 2011 +0200
+
+    [eit.commands.match] directly expose output of Entropy.atom_match()
+
+commit 7f821cb900b664372a32047c2858bf103fda739f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 10:26:50 2011 +0200
+
+    [entropy.server] open_server_repository(): raise RepositoryError
+    
+    If repository_id is not available raise RepositoryError.
+    This is a requirement for atom_match(), that handles the same
+    exception.
+
+commit 504332a11d0476538962abd0a1f14e010906f7de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:30:49 2011 +0200
+
+    [eit.commands.match] new command "eit match"
+
+commit ba2f185f7d7a8288a3cbff04c5f17bd02339e99d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:30:38 2011 +0200
+
+    [eit.commands.search] fix command description
+
+commit de302fb138ac4eb806e44ae91c277f80123c611b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:18:55 2011 +0200
+
+    [eit.commands.search] new command "eit search"
+
+commit e2b1fad5bf3a214227ca37f86b09abf61f6654a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:10:16 2011 +0200
+
+    [eit.commands.{list,log,repo,revgraph,status}] allow unprivileged execution
+
+commit 5396eee4c30517556cbc051092b2843760d17997
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 15 00:09:25 2011 +0200
+
+    [eit.commands.command] add support for unprivileged commands execution
+
+commit 07fd931d3171cbc965058de420484cf49a06e21a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:48:46 2011 +0200
+
+    [eit.commands.revgraph] new command "eit revgraph"
+
+commit c7add16133646b1798b522df7231a7efef9244aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:48:27 2011 +0200
+
+    [eit.commands.graph] add --in <repo> switch
+
+commit 8ac6fe12875b9a922583750c246aca54432c77c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:16:15 2011 +0200
+
+    [eit.commands.list] new command "eit list"
+
+commit d696845e4bba9b3801b32891f827bdf1f9411e20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 23:14:59 2011 +0200
+
+    [entropy.output] TextInterface.output: add output level "generic", using print_generic()
+
+commit 3d43a4d2568b74688591eeee671a42d85389713a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:46:05 2011 +0200
+
+    [eit.commands.repo] explicitly print server config info
+
+commit 6f0e6ae40e26eb89da4a55604ae822eacf9e7c3c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:37:44 2011 +0200
+
+    [eit.commands.graph] add --quiet support
+
+commit 53a3f9db841406ae4b57ff0c0a4f3afdb8b6981f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:37:21 2011 +0200
+
+    [eit.commands.checkout] explicitly print server config after checkout
+
+commit cc6a2868e7e301b3dcc83f63bde19efadef69da3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:36:52 2011 +0200
+
+    [eit.commands.status] fix indentation and explicitly print server config info
+
+commit c4d8fdf87c2775da9b6bf2c5751a1f90267d9a87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 22:35:04 2011 +0200
+
+    [entropy.server] avoid using etpUi in library code
+
+commit 855efbe3a03c5b7c4ac830632c2aac73d9a0e666
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:38:56 2011 +0200
+
+    [eit.commands.graph] new command "eit graph"
+
+commit a07a9683fa720fe99af02fa7ea1430f690e46532
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:38:31 2011 +0200
+
+    [eit.commands.command] add _call_unlocked() method
+
+commit 4d91a20607ac50a3bafe004ed175ffeba49d497c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:52 2011 +0200
+
+    [eit.commands.deps] new command "eit deps"
+
+commit 89b02d512548eed7591b30b8d90002c63aaf1907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:31 2011 +0200
+
+    [eit.commands.inject] use commit_repositories() instead of close_repositories()
+
+commit df77559f6dba7538e259c9e673c99b5c6ccd9ebd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:10:06 2011 +0200
+
+    [eit.commands.commit] use commit_repositories() instead of close_repositories()
+
+commit 49df75648a0fb328fcf3aa996c3885097b1b1f82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:09:46 2011 +0200
+
+    [eit.commands.add] add --quick switch
+
+commit 886ebac5a03bec8d0ea6e959c55017bf4f1504ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:09:22 2011 +0200
+
+    [entropy.server] add new method: commit_repositories()
+
+commit d86b2f14cb3f2be3417661f0e6d3bfab5782c541
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 18:08:34 2011 +0200
+
+    [entropy.db] EntropyRepository.commit: use readonly() method instead of bool variable to avoid superfluous commits
+
+commit 6afedef9c75bc8fef351286c87440c9a7a5b47bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 17:12:16 2011 +0200
+
+    [eit.commands.remove] new command "eit remove"
+
+commit cbd3c90110fe08518eecf1bbbeabd37e1fbe0715
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 16:46:41 2011 +0200
+
+    [eit.commands.inject] new command "eit inject"
+
+commit 27edab19907efda764bf502c004a68edef7995d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 15:17:40 2011 +0200
+
+    [eit.commands.log] new command "eit log"
+
+commit bf64eada7e8d8d21f01607888388c0451b80f7cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 14 15:09:41 2011 +0200
+
+    [eit.commands.vacuum] new command "eit vacuum"
+
+commit b7ee6a356ab4e3fbc69658220645195c832b717f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 22:52:19 2011 +0200
+
+    [eit.commands.test] new command "eit test" (deps, libs, links)
+
+commit d48942215bdb08dc564fe56bda59e27ffb0b3fdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:02:47 2011 +0200
+
+    [eit.commands.reset] drop TODO comment
+
+commit e3acca310231ab211b9cfba4e8a3bd2b58e3d216
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:02:20 2011 +0200
+
+    [eit.commands.reset] new command "eit reset"
+
+commit 2fdc36e65a3c152303f16a855062798802b30684
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 20:01:48 2011 +0200
+
+    [eit.commands.push] add missing import, improve code robustness
+
+commit caf46488315801552aabc1343a587dc735b89a85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 19:45:05 2011 +0200
+
+    [eit.commands.push] refine command line options
+
+commit 7d6c7e2650ceff2f9be8cdbaf4fdc3994857e5b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 16:21:54 2011 +0200
+
+    [eit.commands.push] new command "eit push"
+
+commit 5bd0da60ba84e195891a985f376a5aafb06c7171
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 13 16:21:38 2011 +0200
+
+    [eit.commands.command] add missing import
+
+commit 5bd22445e8ffc8eaa143fc9fce68df63e4fdd2a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 23:32:01 2011 +0200
+
+    [eit.commands.repo] new command "eit repo"
+
+commit 09505a2f94649e0b4b765358634e90e5e8f5b12b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 23:24:49 2011 +0200
+
+    [eit.commit.init] new command "eit init"
+
+commit 70d89146d6ec4fbbea386777b30e74e4e1bcb226
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:31 2011 +0200
+
+    [eit.commands.mv] new command "eit mv"
+
+commit 6ef3ce1bed558be91ef4070f8a432dcd680c0cd7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:19 2011 +0200
+
+    [eit.commands.cp] new command "eit cp"
+
+commit d4d5eec3df369ab5f38d052c2c1c5075f519fbc8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 22:52:03 2011 +0200
+
+    [eit.commands.cleanup] add "eit clean" alias
+
+commit fc557d951c91a8390caccd9684e6f52c69c3a26a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 20:23:02 2011 +0200
+
+    [eit.commands.cleanup] add new command "eit cleanup"
+
+commit db37314f6ed74f3eb2f01e407b1257bb5e1885b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 19:59:34 2011 +0200
+
+    [eit.commands.checkout] new command "eit checkout"
+
+commit 6d30f5a38f8841b90ffce9aa6250b3054c8d55f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 19:59:18 2011 +0200
+
+    [eit.commands.*] drop unused imports
+
+commit 0b1999ab51f399b3840cbf8f302f134a0bcdce8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:21:27 2011 +0200
+
+    [entropy.server.interfaces.db] uncompress the right packages.db.meta on download
+
+commit 47fbff23ae3af930efec7cef8e39345ff0496cea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:42 2011 +0200
+
+    [eit.commands.*] make use of EitCommand._call_locked method
+
+commit dad7177dcfa715ec143d65d95510cecf614a8f5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:27 2011 +0200
+
+    [eit.commands.bump] new command "eit bump"
+
+commit e7d31352396fae88f8b1ae7d9f449f66d17e5cb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 15:11:02 2011 +0200
+
+    [eit.commands.command] move general entropy resources locking method to EitCommand
+
+commit 84dcd668bc22af0233e9a0d20fd9160132af5344
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 14:46:03 2011 +0200
+
+    [eit.commands] automatically import all the available submodules
+
+commit df513ad130d1077c933d2aea1e733842a6179268
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 14:45:49 2011 +0200
+
+    [eit.main] fix catch-all class
+
+commit ddb3cf2510d9fc147cfc3e4e1ac260aea9da8d98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 00:24:14 2011 +0200
+
+    [eit.colorful] add some whacky classes to inject some colors into argparse output
+
+commit 9f318a04080f1d254f421876b2dade7fd8ea24da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 12 00:23:09 2011 +0200
+
+    [eit.commands.repack] implement new command "eit repack"
+
+commit 66468d23ebb2bd37600727d19b893c54d4135755
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 18:49:57 2011 +0200
+
+    [eit.main] automatically build the list of available commands, add command aliases support
+
+commit 3dc0c707013d1e1cd07a0944e171aa485a5b0ccb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 17:48:31 2011 +0200
+
+    [eit.commands.add] implement "eit add" (and eit add --to, was eit addto)
+
+commit 43390464e5b8eee9ba34950efe6a1c67f99ec43b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 17:48:13 2011 +0200
+
+    [eit.commands.status] trivial help update
+
+commit 49314e677e77eda8c74b51d2e67b2bf5b80a234f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 10 15:10:22 2011 +0200
+
+    [eit.commands] avoid using print_info(), print_warning() and print_error() when possible
+
+commit d819281926b690d388a31e6a13c1df4218135232
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 19:32:36 2011 +0200
+
+    [eit.commands.commit] use TextInterface.output() instead of print_* functions
+
+commit cad69e0625f38113ec4c5c3c46981efb8e523cca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:11:57 2011 +0200
+
+    [po] update translations
+
+commit ea47fe703df6ddf4388f4f05201049ffa5be3b20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:10:26 2011 +0200
+
+    [eit] first chunk of code for the new server-side repository management toolkit (greatly inspired to git)
+
+commit 612e39a1e81026584a8f8b3160bc28de01275b5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:06:03 2011 +0200
+
+    [entropy.server] drop warning when running as user, no need to have it in lib
+
+commit 2f413d4677cdf4fc8ffef3e5c7b14a97823d76c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 17:05:32 2011 +0200
+
+    [git] update .gitignore file, add #*# files
+
+commit ffc0343efb1ad2fbb877451a19a4d29fe56f547b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 9 10:17:49 2011 +0200
+
+    [sulfur.views] fix get_stars_rating caching, was causing rendering problems with installed packages icons
+
+commit f9947a372f4391ae83dc50be256798e0a3ab44c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 7 21:39:14 2011 +0200
+
+    [entropy.client.interfaces.package] export pkgpath metadatum only for package fetch (not sources fetch)
+
+commit dc8043f74ef0056addfb0675a6e6640fbab3fad6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 19:27:35 2011 +0200
+
+    [entropy.db] EntropyRepository.readonly(): if uid == 0, override os.access() check
+
+commit 3044690fa58a86698502d967fc4e110e9b921a65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 17:50:54 2011 +0200
+
+    [entropy.server] open_server_repository(): always check effective rw status when needed
+    
+    Check if the repository is actually accessibile in write mode before
+    calling package_names_update()
+
+commit 2a3d3788e1375383e7ae49fb0c0024234795341e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 17:49:43 2011 +0200
+
+    [entropy.db] EntropyRepositoryBase: update readonly() docstring
+
+commit f5f77bcebc8461eb6c8e3306f3274a04674de201
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 17:44:50 2011 +0200
+
+    [entropy.db] EntropyRepository: reimplement readonly(), if False, also check actual file permissions
+
+commit 39cc9e54ead97929df0f11efc4061a6122d4ebd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 08:38:37 2011 +0200
+
+    [po] update translations
+
+commit e0e08d44892947bb98876acdd12ce49473fb9819
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 6 08:25:16 2011 +0200
+
+    [magneto] set notification applet title to "System Updates"
+
+commit 105023141e32b22990d3bdd7a0867b217196f9a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 5 23:08:29 2011 +0200
+
+    [todo] update TODO
+
+commit d8cf907287562c3391ddd60bcdc9f7993a164476
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 5 22:51:12 2011 +0200
+
+    [entropy.client.interfaces.dep] update get_install_queue() public API
+
+commit ddbec96b33ed88f95ba6994f1b52a261260c38c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 5 10:46:05 2011 +0200
+
+    [todo] update TODO
+
+commit cd8d70728d4fdaed54842d750972e79971b22908
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 5 10:44:42 2011 +0200
+
+    [entropy] simplify entropy locks management code, drop non-atomic functions
+
+commit 1df7743540d21ef37a3254d8d818624a4e190f5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 23:33:26 2011 +0200
+
+    [entropy.spm] PortagePlugin: add_installed_package, always bump mtime of pkg_dir if available
+
+commit b999bb37d63e6c49b417a4cea19e21378198dc78
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 23:14:18 2011 +0200
+
+    [entropy.const] make const_unsetup_entropy_pid() and const_setup_entropy_pid() work in child processes
+
+commit a19670410259b26ae0b02fbf248ad44b2b350715
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 22:41:20 2011 +0200
+
+    [entropy.client.interfaces.methods] always use flock to handle lock file status
+    
+    Make _check_pid_file_lock() use flock with LOCK_NB | LOCK_EX and LOCK_UN
+    to determine if the passed pid file is locked, and contains a different
+    pid value.
+    At the same time, unlock_resources() now removes the pid file before
+    releasing the lock associated with it. This makes possible to avoid
+    waiting 5 seconds when polling the same pid file to determine if it's
+    locked or not.
+
+commit 9725e74266e6bc1113d2163af59ca3a4a5b82abe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 22:37:22 2011 +0200
+
+    [entropy.const] rewrite const_setup_entropy_pid() to not use pid information
+    
+    Use a full blown lock file instead of a random file serially accessed
+    and containing unreliable pid information. Of course, pids can be
+    reused across fork()s, even if this is unlikely (but not impossible).
+
+commit e7b70c8f7b3e3787547409449f7488e18765cc14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 20:44:43 2011 +0200
+
+    [sulfur] try to acquire Entropy locks for at most 5 seconds before giving up
+
+commit b131650974fd39d51c97f68a42b998f1c0fa7d0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 20:44:16 2011 +0200
+
+    [entropy.tools] acquire_entropy_locks, acquire_entropy_resources_lock: add keyword arg max_tries
+
+commit b2f685e59149fb56a2da8f227741e4eb9f238366
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 4 16:14:03 2011 +0200
+
+    [po] update German translation, thanks to Tobias Rosenberger
+
+commit 745b215a104640fe35e8bd8f6dc17dda5972d32d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 30 14:42:13 2011 +0200
+
+    [entropy.services.client] catch IOError when raised by EntropyCacher.save() (disk full or whatever)
+
+commit 3f92f4537d3b45b9cc558cbd9d97457de8e13762
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 28 23:19:47 2011 +0200
+
+    Tagging Entropy version 1.0_rc59
+
 commit a88e1782a155c138509b3c40864cc8461d8b423a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 28 23:19:43 2011 +0200
