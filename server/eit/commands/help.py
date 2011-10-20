@@ -12,9 +12,9 @@
 import argparse
 
 from entropy.i18n import _
-from entropy.output import purple, teal, darkgreen
+from entropy.output import teal, purple, darkgreen
 
-from eit.colorful import ColorfulFormatter, ColorfulStr
+from eit.colorful import ColorfulFormatter
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
 
@@ -44,16 +44,13 @@ class EitHelp(EitCommand):
         group = parser.add_argument_group("command", "available commands")
         for descriptor in descriptors:
             aliases = descriptor.get_class().ALIASES
-            aliases_str = ", ".join(
-                [teal(x) for x in aliases])
+            aliases_str = ", ".join([teal(x) for x in aliases])
             if aliases_str:
                 aliases_str = " [%s]" % (aliases_str,)
-            name = u"%s%s" % (purple(descriptor.get_name()),
+            name = "%s%s" % (purple(descriptor.get_name()),
                 aliases_str)
-            desc = darkgreen(descriptor.get_description())
-            group.add_argument(ColorfulStr(name),
-                help=ColorfulStr(desc),
-                action="store_true")
+            desc = descriptor.get_description()
+            group.add_argument(name, help=darkgreen(desc), action="store_true")
         parser.print_help()
         if not self._args:
             return 1
