@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-18 22:49+0200\n"
-"PO-Revision-Date: 2011-10-20 00:45+0100\n"
+"PO-Revision-Date: 2011-10-20 10:15+0100\n"
 "Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "Language-Team: Fabio Erculiani <lxnay@sabayon.org>\n"
 "Language: \n"
@@ -291,9 +291,8 @@ msgid "Attach this"
 msgstr "Allega questo"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2310
-#, fuzzy
 msgid "Cannot run SPM configure phase for"
-msgstr "Impossibile eseguire Spm pkg_config() per"
+msgstr "Impossibile eseguire fase configurazione SPM per"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2314
 #: ../../lib/entropy/client/interfaces/package.py:2947
@@ -450,9 +449,8 @@ msgid "IOError while reading"
 msgstr "IOError durante lettura"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4368
-#, fuzzy
 msgid "illegal Entropy package tag in ebuild"
-msgstr "Collezione dei pacchetti Entropy"
+msgstr "Tag pacchetto Entropy invalida nell'ebuild"
 
 #: ../../lib/entropy/server/transceivers.py:90
 msgid "verifying upload (if supported)"
@@ -617,9 +615,8 @@ msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr "sembra corrotto. Prendi in considerazione di ripacchettizzarlo. Mi arrendo!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:730
-#, fuzzy
 msgid "mirror hasn't valid repository revision file"
-msgstr "mirror senza un file revisione database valido"
+msgstr "mirror non ha un file di revisione repository valido"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:750
 msgid "unable to download repository revision"
@@ -974,9 +971,8 @@ msgid "Keys for repository are expired"
 msgstr "Le chavi per la repository sono scadute"
 
 #: ../../lib/entropy/server/interfaces/db.py:684
-#, fuzzy
 msgid "preparing to download repository from mirror"
-msgstr "preparazione download database da mirror"
+msgstr "preparazione per il download dai mirror"
 
 #: ../../lib/entropy/server/interfaces/db.py:693
 msgid "download path"
@@ -1013,9 +1009,8 @@ msgid "None configured"
 msgstr "Nessuno configurato"
 
 #: ../../lib/entropy/server/interfaces/db.py:1130
-#, fuzzy
 msgid "creating compressed repository dump + checksum"
-msgstr "creazione dump database compresso + firma"
+msgstr "creazione dump repository compressa + firma"
 
 #: ../../lib/entropy/server/interfaces/db.py:1137
 #: ../../lib/entropy/server/interfaces/db.py:1185
@@ -1037,14 +1032,12 @@ msgid "opener"
 msgstr "istanziatore"
 
 #: ../../lib/entropy/server/interfaces/db.py:1177
-#, fuzzy
 msgid "compressing repository + checksum"
-msgstr "compressione database + firma"
+msgstr "compressione repository + firma"
 
 #: ../../lib/entropy/server/interfaces/db.py:1192
-#, fuzzy
 msgid "compressed repository path"
-msgstr "dati repository composti"
+msgstr "path repository compressa"
 
 #: ../../lib/entropy/server/interfaces/db.py:1201
 msgid "repository checksum"
@@ -1055,23 +1048,20 @@ msgid "compressed checksum"
 msgstr "firma compressa"
 
 #: ../../lib/entropy/server/interfaces/db.py:1232
-#, fuzzy
 msgid "preparing uncompressed repository for the upload"
-msgstr "preparazione database non compresso per upload"
+msgstr "preparazione repository non compressa per upload"
 
 #: ../../lib/entropy/server/interfaces/db.py:1353
 msgid "disabled EAPI"
 msgstr "EAPI disabilitato"
 
 #: ../../lib/entropy/server/interfaces/db.py:1373
-#, fuzzy
 msgid "preparing to upload repository to mirror"
-msgstr "preparazione all'upload del database sul mirror"
+msgstr "preparazione per l'upload della repository su mirror"
 
 #: ../../lib/entropy/server/interfaces/db.py:1524
-#, fuzzy
 msgid "upload failed, locking and continuing"
-msgstr "upload fallito, non sblocco e continuo"
+msgstr "upload fallito, bloccaggio e continuazione"
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1593
@@ -1080,9 +1070,8 @@ msgstr "repository già sincronizzate"
 
 #: ../../lib/entropy/server/interfaces/db.py:1611
 #: ../../lib/entropy/server/interfaces/db.py:1749
-#, fuzzy
 msgid "repository sync failed"
-msgstr "repository abilitata"
+msgstr "sync repository fallito"
 
 #: ../../lib/entropy/server/interfaces/db.py:1612
 msgid "download issues"
@@ -1099,23 +1088,20 @@ msgid "missing package sets"
 msgstr "package set mancanti"
 
 #: ../../lib/entropy/server/interfaces/db.py:1688
-#, fuzzy
 msgid "dependencies test reported errors"
-msgstr "dependencies_test() ha riportato errori"
+msgstr "il test delle dipendenze ha riportato errori"
 
 #: ../../lib/entropy/server/interfaces/db.py:1723
-#, fuzzy
 msgid "these packages haven't been removed yet"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "questi pacchetti non sono ancora stati rimossi"
 
 #: ../../lib/entropy/server/interfaces/db.py:1750
 msgid "upload issues"
 msgstr "problemi di upload"
 
 #: ../../lib/entropy/server/interfaces/db.py:1763
-#, fuzzy
 msgid "repository sync completed successfully"
-msgstr "sincronizzazione database completata con successo"
+msgstr "sync repository completato con successo"
 
 #: ../../lib/entropy/server/interfaces/main.py:150
 msgid "mirrors have not been unlocked. Sync them."
@@ -1155,9 +1141,8 @@ msgid "protected repository id, can't use this, sorry dude..."
 msgstr "repository id protetto, impossibile usarlo, mi dispiace..."
 
 #: ../../lib/entropy/server/interfaces/main.py:1500
-#, fuzzy
 msgid "invalid repository revision"
-msgstr "Revisione repository"
+msgstr "revisione repository non valida"
 
 #: ../../lib/entropy/server/interfaces/main.py:1502
 msgid "defaulting to 0"
@@ -1260,9 +1245,8 @@ msgid "package flushed"
 msgstr "pacchetto inglobato"
 
 #: ../../lib/entropy/server/interfaces/main.py:2194
-#, fuzzy
 msgid "Cannot touch system repository"
-msgstr "Impossibile toccare il database di sistema"
+msgstr "Impossibile toccare la repository di sistema"
 
 #: ../../lib/entropy/server/interfaces/main.py:2209
 msgid "Preparing to move selected packages to"
@@ -1306,23 +1290,20 @@ msgid "moving file"
 msgstr "spostamento file"
 
 #: ../../lib/entropy/server/interfaces/main.py:2471
-#, fuzzy
 msgid "loading data from source repository"
-msgstr "caricamento dati dal database sorgente"
+msgstr "caricamento dati da repository sorgente"
 
 #: ../../lib/entropy/server/interfaces/main.py:2501
 msgid "GPG key was available in"
 msgstr "La chiave GPG era disponibile in"
 
 #: ../../lib/entropy/server/interfaces/main.py:2526
-#, fuzzy
 msgid "injecting data to destination repository"
-msgstr "iniettamento dati nel database di destinazione"
+msgstr "iniettamento dati nella repository di destinazione"
 
 #: ../../lib/entropy/server/interfaces/main.py:2546
-#, fuzzy
 msgid "removing entry from source repository"
-msgstr "rimozione voce dal database sorgente"
+msgstr "rimozione voce da repository sorgente"
 
 #: ../../lib/entropy/server/interfaces/main.py:2564
 msgid "successfully handled atom"
@@ -1616,9 +1597,8 @@ msgstr "Repository Entropy già bloccata da te :-)"
 
 #. check if the database is locked REMOTELY
 #: ../../lib/entropy/server/interfaces/main.py:4179
-#, fuzzy
 msgid "Locking and Syncing Entropy repository"
-msgstr "Blocco e sincronizzazione database Entropy"
+msgstr "Blocco e sincronizzazione repository Entropy"
 
 #: ../../lib/entropy/server/interfaces/main.py:4193
 msgid "Mirrors status table"
@@ -1728,28 +1708,24 @@ msgid "Repeat"
 msgstr "Ripeti"
 
 #: ../../lib/entropy/server/interfaces/main.py:5109
-#, fuzzy
 msgid "metadata QA hook"
-msgstr "Risoluzione metadata"
+msgstr "hook QA metadati"
 
 #: ../../lib/entropy/server/interfaces/main.py:5111
 msgid "not owned by uid and gid = 0"
 msgstr "non posseduto da uid e gid = 0"
 
 #: ../../lib/entropy/server/interfaces/main.py:5124
-#, fuzzy
 msgid "using metadata QA hook"
-msgstr "Risoluzione metadata"
+msgstr "utilizzo hook QA metadati"
 
 #: ../../lib/entropy/server/interfaces/main.py:5151
-#, fuzzy
 msgid "metadata QA check for"
-msgstr "Blocco database completato"
+msgstr "controllo QA metadati per"
 
 #: ../../lib/entropy/server/interfaces/main.py:5200
-#, fuzzy
 msgid "cannot execute metadata QA hook for"
-msgstr "Risoluzione metadata"
+msgstr "impossibile eseguire hook QA metadata per"
 
 #: ../../lib/entropy/server/interfaces/main.py:5226
 msgid "attention, QA hook returned a warning"
@@ -1760,9 +1736,8 @@ msgid "attention, QA hook returned an error"
 msgstr "attenzione, hook QA ha ritornato un errore"
 
 #: ../../lib/entropy/server/interfaces/main.py:5265
-#, fuzzy
 msgid "metadata QA check complete"
-msgstr "Blocco database completato"
+msgstr "controllo QA metadati completato"
 
 #: ../../lib/entropy/server/interfaces/main.py:5348
 msgid "injected package, no separate debug package"
@@ -1845,9 +1820,8 @@ msgstr "sostituito"
 
 #: ../../lib/entropy/server/interfaces/main.py:5987
 #: ../../lib/entropy/server/interfaces/main.py:6001
-#, fuzzy
 msgid "No dependency rewrite made for"
-msgstr "fa in modo che le regole di dipendenza siano più severe"
+msgstr "Nessun rewrite di dipendenza effettuato per"
 
 #: ../../lib/entropy/server/interfaces/main.py:6073
 #: ../../lib/entropy/server/interfaces/main.py:6093
@@ -2182,9 +2156,8 @@ msgid "please report"
 msgstr "per favore notifica"
 
 #: ../../lib/entropy/client/interfaces/package.py:2677
-#, fuzzy
 msgid "Cannot protect broken symlink"
-msgstr "Impossibile rimuovere pacchetti"
+msgstr "Impossibile proteggere symlink rotti"
 
 #: ../../lib/entropy/client/interfaces/package.py:2716
 msgid "Skipping file installation/removal"
@@ -2290,9 +2263,8 @@ msgid "Cleaning"
 msgstr "Pulizia"
 
 #: ../../lib/entropy/client/interfaces/package.py:3293
-#, fuzzy
 msgid "Cleaning previously installed application data."
-msgstr "Pulitura informazioni precedentemente installate..."
+msgstr "Pulizia dei dati dell'applicazione precedente."
 
 #: ../../lib/entropy/client/interfaces/package.py:3400
 msgid "Configuring package"
@@ -2430,9 +2402,8 @@ msgid "Try again in a few minutes"
 msgstr "Prova nuovamente fra qualche minuto"
 
 #: ../../lib/entropy/client/interfaces/db.py:453
-#, fuzzy
 msgid "remote repository got suddenly locked"
-msgstr "database remoto improvvisamente bloccato"
+msgstr "repository remota bloccata improvvisamente"
 
 #. starting to download
 #: ../../lib/entropy/client/interfaces/db.py:463
@@ -2518,9 +2489,8 @@ msgid "Repository revision"
 msgstr "Revisione repository"
 
 #: ../../lib/entropy/client/interfaces/db.py:1082
-#, fuzzy
 msgid "Checking downloaded repository"
-msgstr "Controllo database scaricato"
+msgstr "Controllo repository scaricata"
 
 #: ../../lib/entropy/client/interfaces/db.py:1096
 msgid "Cannot open digest"
@@ -2540,9 +2510,8 @@ msgid "ERROR"
 msgstr "ERRORE"
 
 #: ../../lib/entropy/client/interfaces/db.py:1128
-#, fuzzy
 msgid "An error occured while checking repository integrity"
-msgstr "E' avvenuto un errore durante la verifica dell'integrità del database"
+msgstr "E' avvenuto un errore durante il controllo dell'integrità della repository"
 
 #: ../../lib/entropy/client/interfaces/db.py:1129
 msgid "Giving up"
@@ -2629,9 +2598,8 @@ msgid "threshold"
 msgstr "soglia"
 
 #: ../../lib/entropy/client/interfaces/db.py:1490
-#, fuzzy
 msgid "Web Service communication error"
-msgstr "Errore di comunicazione"
+msgstr "Errore di comunicazione Web Service"
 
 #: ../../lib/entropy/client/interfaces/db.py:1510
 msgid "Web Service data error"
@@ -2676,18 +2644,16 @@ msgid "repository error while removing packages"
 msgstr "errore repository durante la rimozione di pacchetti"
 
 #: ../../lib/entropy/client/interfaces/db.py:1715
-#, fuzzy
 msgid "Repository checksum doesn't match remote."
-msgstr "Firma database non combacia con quella remota."
+msgstr "Checksum repository non combacia con quello remoto."
 
 #: ../../lib/entropy/client/interfaces/db.py:1723
 msgid "remote"
 msgstr "remoto"
 
 #: ../../lib/entropy/client/interfaces/db.py:1781
-#, fuzzy
 msgid "repository is already up to date"
-msgstr "Tutte le repository erano già aggiornate."
+msgstr "repository già aggiornata"
 
 #: ../../lib/entropy/client/interfaces/db.py:1985
 msgid "Configuration files update error, not critical, continuing"
@@ -2725,14 +2691,12 @@ msgid "running in safe mode using temporary, empty repository"
 msgstr "esecuzione in modalità provvisoria usando una repository vuota"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1045
-#, fuzzy
 msgid "Backing up repository to"
-msgstr "Accoppiamento nella repository"
+msgstr "Backup repository su"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1065
-#, fuzzy
 msgid "Repository backed up successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "Repository backuppata correttamente"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
@@ -2741,9 +2705,8 @@ msgid "All fine"
 msgstr "Tutto fatto"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1093
-#, fuzzy
 msgid "Restoring backed up repository"
-msgstr "Ripristino backup database"
+msgstr "Ripristino backup repository"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1111
 msgid "Unable to unpack"
@@ -2818,9 +2781,8 @@ msgid "there are"
 msgstr "ci sono"
 
 #: ../../lib/entropy/client/interfaces/repository.py:194
-#, fuzzy
 msgid "package files that could be removed"
-msgstr "Pacchetti da rimuovere"
+msgstr "file pacchetto che possono essere rimossi"
 
 #: ../../lib/entropy/client/interfaces/repository.py:205
 msgid "Packages are stored in"
@@ -3421,9 +3383,8 @@ msgid "Element number to remove (-1 to go back):"
 msgstr "Numero elemento da rimuovere (-1 per tornare indietro):"
 
 #: ../../lib/entropy/qa.py:160
-#, fuzzy
 msgid "Searching for broken reverse dependencies"
-msgstr "Ricerca dipendenze inverse mancanti"
+msgstr "Ricarca di dipendenze inverse non valide"
 
 #: ../../lib/entropy/qa.py:177
 msgid "scanning for broken reverse dependencies"
@@ -3438,9 +3399,8 @@ msgid "needs"
 msgstr "richiede"
 
 #: ../../lib/entropy/qa.py:273
-#, fuzzy
 msgid "Searching for missing Runtime dependencies"
-msgstr "Ricerca dipendenze inverse mancanti"
+msgstr "Ricarca di dipendenze runtime mancanti"
 
 #: ../../lib/entropy/qa.py:280
 msgid "scanning"
@@ -3456,14 +3416,12 @@ msgid "blacklisted dependencies !!!"
 msgstr "dipendenze blacklistate !!!"
 
 #: ../../lib/entropy/qa.py:388
-#, fuzzy
 msgid "is potentially missing these dependencies"
-msgstr "manca delle seguenti dipendenze"
+msgstr "richiede potenzialmente queste dipendenze mancanti"
 
 #: ../../lib/entropy/qa.py:518
-#, fuzzy
 msgid "determining missing libraries"
-msgstr "cerca librerie mancanti"
+msgstr "determinazione librerie mancanti"
 
 #: ../../lib/entropy/qa.py:550
 msgid "requires"
@@ -3475,9 +3433,8 @@ msgid "provided by"
 msgstr "fornito da"
 
 #: ../../lib/entropy/qa.py:591
-#, fuzzy
 msgid "no missing runtime libraries found"
-msgstr "Nessuna dipendenza mancante trovata."
+msgstr "nessuna libreria runtime mancante trovata"
 
 #: ../../lib/entropy/qa.py:624
 #: ../../sulfur/src/sulfur/sulfur.glade.h:119
@@ -3644,18 +3601,16 @@ msgid "No advisories available or applicable"
 msgstr "Nessun avviso disponibile o applicabile"
 
 #: ../../client/text_security.py:298
-#, fuzzy
 msgid "Installed packages repository is not available"
-msgstr "Database dei pacchetti installati non disponibile"
+msgstr "Repository dei pacchetti installati non disponibile"
 
 #: ../../client/text_security.py:302
 msgid "Checking system files"
 msgstr "Controllo file di sistema"
 
 #: ../../client/text_security.py:320
-#, fuzzy
 msgid "no checksum information"
-msgstr "visualizza informazioni di sistema"
+msgstr "nessun checksum"
 
 #: ../../client/text_security.py:365
 msgid "altered files"
@@ -3670,18 +3625,16 @@ msgid "unavailable"
 msgstr "non disponibile"
 
 #: ../../client/text_security.py:387
-#, fuzzy
 msgid "No altered files found"
-msgstr "Nessun package set trovato"
+msgstr "Nessun file alterato trovato"
 
 #: ../../client/text_security.py:408
 msgid "Altered files have been found"
 msgstr "Sono stati trovati file alterati"
 
 #: ../../client/text_security.py:411
-#, fuzzy
 msgid "Packages have been reinstalled successfully"
-msgstr "Database reinizializzato correttamente"
+msgstr "Pacchetti reinstallati correttamente"
 
 #: ../../client/text_security.py:418
 msgid "Calculating security updates"
@@ -3707,19 +3660,16 @@ msgid "invalid data, skipping"
 msgstr "dati non validi, salto"
 
 #: ../../client/text_repositories.py:139
-#, fuzzy
 msgid "Adding repository string"
-msgstr "nelle repository"
+msgstr "Aggiunta stringa repository"
 
 #: ../../client/text_repositories.py:147
-#, fuzzy
 msgid "invalid repository string, skipping"
-msgstr "Repository non valida"
+msgstr "stringa repository non valida, ignoro"
 
 #: ../../client/text_repositories.py:153
-#, fuzzy
 msgid "Repository id:"
-msgstr "Repository"
+msgstr "Id repository:"
 
 #: ../../client/text_repositories.py:154
 msgid "Description:"
@@ -3746,9 +3696,8 @@ msgid "repository added succesfully"
 msgstr "repository aggiunta con successo"
 
 #: ../../client/text_repositories.py:178
-#, fuzzy
 msgid "repository id not available"
-msgstr "repository non disponibile"
+msgstr "id repository non disponibile"
 
 #: ../../client/text_repositories.py:183
 msgid "repository removed succesfully"
@@ -3774,47 +3723,40 @@ msgid "repository already disabled"
 msgstr "repository già disabilitata"
 
 #: ../../client/text_repositories.py:220
-#, fuzzy
 msgid "cannot disable repository"
-msgstr "impossibile disabilitare la repository di default"
+msgstr "impossibile disattivare repository"
 
 #: ../../client/text_repositories.py:223
 msgid "repository disabled"
 msgstr "repository disabilitata"
 
 #: ../../client/text_repositories.py:229
-#, fuzzy
 msgid "not enough repositories specified"
-msgstr "Nessuna repository specificata in"
+msgstr "nessuna repository specificata"
 
 #: ../../client/text_repositories.py:242
 msgid "repositories not found"
 msgstr "repository non trovate"
 
 #: ../../client/text_repositories.py:249
-#, fuzzy
 msgid "repository cannot be source and destination"
-msgstr "Notice board della repository, inserimento nuovo elemento"
+msgstr "repository non può essere sorgente e destinazione"
 
 #: ../../client/text_repositories.py:254
-#, fuzzy
 msgid "merging repositories"
-msgstr "nelle repository"
+msgstr "merge delle repository"
 
 #: ../../client/text_repositories.py:265
-#, fuzzy
 msgid "working on repository"
-msgstr "Salto repository"
+msgstr "lavoro su repository"
 
 #: ../../client/text_repositories.py:279
-#, fuzzy
 msgid "merging package"
-msgstr "Incorporamento pacchetto"
+msgstr "merge del pacchetto"
 
 #: ../../client/text_repositories.py:300
-#, fuzzy
 msgid "done merging packages"
-msgstr "Incorporamento pacchetto"
+msgstr "merge pacchetti completato"
 
 #: ../../client/text_repositories.py:325
 msgid "mirror order:"
@@ -3863,9 +3805,8 @@ msgid "Repositories will be updated in background"
 msgstr "Le repository saranno aggiornate in background"
 
 #: ../../client/text_repositories.py:380
-#, fuzzy
 msgid "sys-apps/entropy-client-services not installed or configured. Update not allowed."
-msgstr "sys-apps/entropy-client-services non installato. Aggiornamento non permesso."
+msgstr "sys-apps/entropy-client-services non installato o configurato. Aggiornamento non permesso."
 
 #: ../../client/text_repositories.py:420
 msgid "Have a nice day"
@@ -4043,9 +3984,8 @@ msgid "Edit proposed file and show diffs again"
 msgstr "Modifica il file proposto e visualizza le differenze di nuovo"
 
 #: ../../client/text_configuration.py:311
-#, fuzzy
 msgid "Interactively merge original with update"
-msgstr "Sostituisci l'originale con l'aggiornamento"
+msgstr "Merge interattivo dell'originale con l'aggiornamento"
 
 #: ../../client/text_configuration.py:312
 msgid "Show differences again"
@@ -4348,9 +4288,8 @@ msgstr "Cercando"
 #: ../../client/text_query.py:503
 #: ../../client/text_query.py:704
 #: ../../client/text_query.py:783
-#, fuzzy
 msgid "Repository is not available"
-msgstr "repository non disponibile"
+msgstr "Repository non disponibile"
 
 #: ../../client/text_query.py:240
 #: ../../client/text_query.py:306
@@ -4572,9 +4511,8 @@ msgid "from"
 msgstr "da"
 
 #: ../../client/text_query.py:778
-#, fuzzy
 msgid "Listing Packages"
-msgstr "Migrazione pacchetti"
+msgstr "Elenco pacchetti"
 
 #: ../../client/text_query.py:894
 msgid "Searching mimetype"
@@ -4875,9 +4813,8 @@ msgid "Scanning..."
 msgstr "Scansione..."
 
 #: ../../client/text_rescue.py:760
-#, fuzzy
 msgid "Error checking package"
-msgstr "controllo hash pacchetto"
+msgstr "Errore controllando il pacchetto"
 
 #: ../../client/text_rescue.py:769
 msgid "passed"
@@ -5127,9 +5064,8 @@ msgid "remove repository"
 msgstr "rimuove repository"
 
 #: ../../client/equo.py:81
-#, fuzzy
 msgid "reorder mirrors basing on response time"
-msgstr "Tabella stato dei mirror"
+msgstr "riordina mirror basandosi su tempo di risposta"
 
 #: ../../client/equo.py:82
 msgid "merge content of source repos to dest [for developers]"
@@ -5259,9 +5195,8 @@ msgid "update hashes and mtime (useful after editing config files)"
 msgstr "aggiorna hash e mtime (utile dopo aver editato file di configurazione)"
 
 #: ../../client/equo.py:113
-#, fuzzy
 msgid "reinstall faulty packages"
-msgstr "installa atomi o pacchetti binari"
+msgstr "reinstalla pacchetti danneggiati"
 
 #: ../../client/equo.py:114
 #: ../../client/equo.py:126
@@ -5272,9 +5207,8 @@ msgid "show less details (useful for scripting)"
 msgstr "visualizza meno dettagli (utile per scriptare)"
 
 #: ../../client/equo.py:115
-#, fuzzy
 msgid "also list removed files"
-msgstr "Impossibile rimuovere file della cache"
+msgstr "elenca anche i file rimossi"
 
 #: ../../client/equo.py:116
 msgid "download the latest Security Advisories"
@@ -5602,14 +5536,12 @@ msgid "contains System rescue tools"
 msgstr "contiene strumenti di ripristino sistema"
 
 #: ../../client/equo.py:255
-#, fuzzy
 msgid "check installed packages repository for errors"
-msgstr "Repository applicazioni installate"
+msgstr "controlla repository pacchetti installati alla ricerca di errori"
 
 #: ../../client/equo.py:256
-#, fuzzy
 msgid "remove installed packages repository internal indexes to save disk space"
-msgstr "rimuove gli indici interni del Database di Sistema per salvare spazio"
+msgstr "rimuove indici interni nella repository dei pacchetti installati per salvare spazio su disco"
 
 #: ../../client/equo.py:257
 msgid "generate installed packages database using Source Package Manager repositories"
@@ -5768,9 +5700,8 @@ msgid "Thank you very much. The error has been reported and hopefully, the probl
 msgstr "Grazie mille. L'errore è stato riportato e, sperando bene, il problema sarà risolto il prima possibile."
 
 #: ../../client/equo.py:743
-#, fuzzy
 msgid "Ugh. Cannot send the report. When you want, mail the file below to lxnay@sabayon.org."
-msgstr "Argh. Impossibile inviare il rapporto. Ho salvato l'errore in /tmp/equoerror.txt. Quando vuoi, invialo a lxnay@sabayon.org"
+msgstr "Argh. Impossibile inviare il rapporto. Quando vuoi, invia il file sotto a lxnay@sabayon.org"
 
 #: ../../client/equo.py:762
 msgid "Entropy/Equo version mismatch"
@@ -5866,9 +5797,8 @@ msgid "On the system there are packages that are not available anymore in the on
 msgstr "Sul sistema ci sono pacchetti che non sono più disponibili nelle repository online"
 
 #: ../../client/text_ui.py:469
-#, fuzzy
 msgid "Even if they are usually harmless, it is suggested (after proper verification) to remove them."
-msgstr "Sebbene siano solitamente innocui, si suggerisce di rimuoverli."
+msgstr "Sebbene siano solitamente innocui, è suggerita (dopo verifica appropriata) la loro rimozione."
 
 #: ../../client/text_ui.py:485
 msgid "Selective"
@@ -5952,9 +5882,8 @@ msgid "Skipped"
 msgstr "Saltato"
 
 #: ../../client/text_ui.py:806
-#, fuzzy
 msgid "These are the packages that should be MANUALLY removed"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Questi sono i pacchetti che dovrebbero essere rimossi MANUALMENTE"
 
 #: ../../client/text_ui.py:809
 #: ../../client/text_ui.py:1437
@@ -6032,9 +5961,8 @@ msgid "Cannot find needed dependencies"
 msgstr "Impossibile trovare dipendenze richieste"
 
 #: ../../client/text_ui.py:1007
-#, fuzzy
 msgid "Conflicting packages were pulled in"
-msgstr "pacchetti di sistema trovati durante il calcolo delle dipendenze"
+msgstr "Pacchetti in conflitto sono stati inclusi nelle dipendenze"
 
 #: ../../client/text_ui.py:1018
 msgid "Please mask conflicts using"
@@ -6138,9 +6066,8 @@ msgid "Resuming previous operations"
 msgstr "Ripristino operazioni precedenti"
 
 #: ../../client/text_ui.py:1597
-#, fuzzy
 msgid "Resume cache no longer valid"
-msgstr "Cache di ripristino corrotta"
+msgstr "Cache di resume non più valida"
 
 #: ../../client/text_ui.py:1614
 msgid "Read the license"
@@ -6326,9 +6253,8 @@ msgid "dump results to file"
 msgstr "riversa risultati su file"
 
 #: ../../server/eit/commands/test.py:60
-#, fuzzy
 msgid "library linking test (using repository metadata)"
-msgstr "cerca librerie mancanti"
+msgstr "test linking librerie (usando metadati repository)"
 
 #: ../../server/eit/commands/test.py:63
 msgid "excluded soname"
@@ -6413,9 +6339,8 @@ msgid "tag name"
 msgstr "nome tag"
 
 #: ../../server/eit/commands/query.py:67
-#, fuzzy
 msgid "show libraries (.so) required by matched packages"
-msgstr "Questi sono i pacchetti accoppiati"
+msgstr "visualizza librerie (.so) richiesta dai pacchetti matchati"
 
 #: ../../server/eit/commands/query.py:79
 msgid "show reverse dependencies of packages"
@@ -6442,14 +6367,12 @@ msgid "package set name"
 msgstr "nome package set"
 
 #: ../../server/eit/commands/query.py:113
-#, fuzzy
 msgid "search packages through their description"
 msgstr "cerca pacchetti per descrizione"
 
 #: ../../server/eit/commands/query.py:119
-#, fuzzy
 msgid "verbose output, show more information"
-msgstr "Informazioni repository"
+msgstr "output verboso, visualizza più informazioni"
 
 #: ../../server/eit/commands/query.py:125
 msgid "package description"
@@ -6477,9 +6400,8 @@ msgid "packages found"
 msgstr "pacchetti trovati"
 
 #: ../../server/eit/commands/query.py:355
-#, fuzzy
 msgid "miscellaneous package metadata queries"
-msgstr "forzatura aggiornamento metadati pacchetti"
+msgstr "query metadati pacchetto"
 
 #: ../../server/eit/commands/status.py:90
 msgid "local revision"
@@ -6495,7 +6417,7 @@ msgstr "pacchetti upload"
 
 #: ../../server/eit/commands/status.py:109
 msgid "unstaged packages"
-msgstr ""
+msgstr "pacchetti inattivi"
 
 #: ../../server/eit/commands/status.py:141
 msgid "add"
@@ -6536,14 +6458,12 @@ msgstr "path"
 #: ../../server/eit/commands/search.py:50
 #: ../../server/eit/commands/revgraph.py:50
 #: ../../server/eit/commands/graph.py:49
-#, fuzzy
 msgid "search packages in given repository"
-msgstr "cerca pacchetti nelle repository"
+msgstr "cerca pacchetti nella repository fornita"
 
 #: ../../server/eit/commands/own.py:152
-#, fuzzy
 msgid "search packages owning paths"
-msgstr "cerca pacchetti nelle repository"
+msgstr "cerca pacchetti che possiedono i path"
 
 #: ../../server/eit/commands/init.py:69
 msgid "Entropy repository has been initialized"
@@ -6600,19 +6520,16 @@ msgid "reset error"
 msgstr "errore reset"
 
 #: ../../server/eit/commands/reset.py:89
-#, fuzzy
 msgid "local repository revision reset complete"
-msgstr "Revisione repository"
+msgstr "reset revisione repository locale completato"
 
 #: ../../server/eit/commands/reset.py:100
-#, fuzzy
 msgid "reset repository to remote status"
-msgstr "visualizza stato repository"
+msgstr "resetta repository allo stato remoto"
 
 #: ../../server/eit/commands/checkout.py:69
-#, fuzzy
 msgid "switch from a repository to another"
-msgstr "muove i pacchetti da una repository all'altra"
+msgstr "switch da una repository all'altra"
 
 #: ../../server/eit/commands/help.py:38
 msgid "Entropy Infrastructure Toolkit"
@@ -6632,9 +6549,8 @@ msgid "Bumping repository"
 msgstr "Salto repository"
 
 #: ../../server/eit/commands/bump.py:78
-#, fuzzy
 msgid "bump repository revision, force push"
-msgstr "Revisione repository"
+msgstr "balza revisione repository, forza invio"
 
 #: ../../server/eit/commands/push.py:68
 msgid "push all the repositories"
@@ -6678,9 +6594,8 @@ msgid "Should I cleanup old packages on mirrors ?"
 msgstr "Devo pulire i vecchi pacchetti sui mirrors ?"
 
 #: ../../server/eit/commands/push.py:260
-#, fuzzy
 msgid "push (or pull) repository packages and metadata"
-msgstr "repository cambiata. Aggiornamento metadati"
+msgstr "invia (o scarica) pacchetti repository e metadati"
 
 #: ../../server/eit/commands/notice.py:48
 msgid "execute given action"
@@ -6725,37 +6640,32 @@ msgid "Exit/Commit"
 msgstr "Esci/Salva"
 
 #: ../../server/eit/commands/notice.py:379
-#, fuzzy
 msgid "manage repository notice-board"
-msgstr "Ottieni Notice Board repository"
+msgstr "gestisci notice-board della repository"
 
 #: ../../server/eit/commands/merge.py:45
 msgid "repository branch"
 msgstr "branch repository"
 
 #: ../../server/eit/commands/merge.py:47
-#, fuzzy
 msgid "work inside given repository"
-msgstr "Salto repository"
+msgstr "lavora all'interno della repository data"
 
 #: ../../server/eit/commands/merge.py:80
 msgid "merge branch into current"
 msgstr "riversa branch in quella corrente"
 
 #: ../../server/eit/commands/repack.py:41
-#, fuzzy
 msgid "repack to given repository"
-msgstr "abilita la repository specificata"
+msgstr "ripacchettizza nella repository fornita"
 
 #: ../../server/eit/commands/repack.py:63
-#, fuzzy
 msgid "rebuild packages in repository"
-msgstr "Repository applicazioni installate"
+msgstr "ricompila pacchetti nella repository"
 
 #: ../../server/eit/commands/commit.py:57
-#, fuzzy
 msgid "selectively pick changes"
-msgstr "Rimozione dei pacchetti selezionati"
+msgstr "scegli cambiamenti in maniera selettiva"
 
 #: ../../server/eit/commands/commit.py:99
 msgid "Cannot match"
@@ -6770,14 +6680,12 @@ msgid "Scanning database for differences"
 msgstr "Scansione differenziale del database"
 
 #: ../../server/eit/commands/commit.py:149
-#, fuzzy
 msgid "Invalid package"
-msgstr "Backend non valido"
+msgstr "Pacchetto non valido"
 
 #: ../../server/eit/commands/commit.py:160
-#, fuzzy
 msgid "Zarro thinggz to do"
-msgstr "Da far miga!"
+msgstr "Niente da fare"
 
 #: ../../server/eit/commands/commit.py:167
 msgid "These would be marked as injected"
@@ -6800,18 +6708,16 @@ msgid "expired"
 msgstr "scaduto"
 
 #: ../../server/eit/commands/commit.py:213
-#, fuzzy
 msgid "Select packages for removal"
-msgstr "Ricerca dei pacchetti \"iniettati\" da rimuovere"
+msgstr "Seleziona pacchetti da rimuovere"
 
 #: ../../server/eit/commands/commit.py:220
 msgid "Remove this package?"
 msgstr "Rimuovere questo pacchetto?"
 
 #: ../../server/eit/commands/commit.py:227
-#, fuzzy
 msgid "These would be removed from repository"
-msgstr "Match da rimuovere dal database repository"
+msgstr "Questi vorrebbero essere rimossi dalla repository"
 
 #: ../../server/eit/commands/commit.py:252
 msgid "Select packages to add"
@@ -6866,18 +6772,16 @@ msgid "show log for repository"
 msgstr "visualizza log per repository"
 
 #: ../../server/eit/commands/match.py:96
-#, fuzzy
 msgid "match packages in repositories"
-msgstr "risolvi un pacchetto nelle repository"
+msgstr "match dei pacchetti nelle repository"
 
 #: ../../server/eit/commands/add.py:42
 msgid "add to given repository"
 msgstr "aggiungi alla repository fornita"
 
 #: ../../server/eit/commands/add.py:66
-#, fuzzy
 msgid "commit to repository the provided packages"
-msgstr "Scaricamento database repository"
+msgstr "commit su repository i pacchetti forniti"
 
 #: ../../server/eit/commands/lock.py:54
 msgid "affect entropy clients only"
@@ -6909,38 +6813,32 @@ msgstr "sblocca repository"
 
 #: ../../server/eit/commands/revgraph.py:54
 #: ../../server/eit/commands/graph.py:53
-#, fuzzy
 msgid "show system packages, build deps, circular deps"
-msgstr "include pacchetti di sistema, dipendenze di compilazione ed informazioni sulla circolarità"
+msgstr "visualizza pacchetti di sistema, dipendenze compilazione e circolari"
 
 #: ../../server/eit/commands/revgraph.py:93
-#, fuzzy
 msgid "show reverse dependency graph for packages"
-msgstr "visualizza albero dipendenze inverse per gli atomi installati forniti"
+msgstr "visualizza grafo dipendenze inverse per i pacchetti"
 
 #: ../../server/eit/commands/cleanup.py:71
-#, fuzzy
 msgid "clean expired packages from a repository"
-msgstr "Calcolo pacchetti disponibili per"
+msgstr "pulisci pacchetti scaduti da una repository"
 
 #: ../../server/eit/commands/vacuum.py:52
 msgid "expired since how many days, default: 0"
 msgstr "da quanti giorni è scaduto, default: 0"
 
 #: ../../server/eit/commands/vacuum.py:76
-#, fuzzy
 msgid "Removing unavailable packages overriding defaults"
-msgstr "Calcolo pacchetti disponibili per"
+msgstr "Rimozione pacchetti non disponibili, scavalcando i default"
 
 #: ../../server/eit/commands/vacuum.py:80
-#, fuzzy
 msgid "Users with old repositories will need to update"
-msgstr "Tutte le repository erano già aggiornate."
+msgstr "Utenti con repository datate avranno bisogno di aggiornare le stesse"
 
 #: ../../server/eit/commands/vacuum.py:96
-#, fuzzy
 msgid "clean expired/removed packages from repository"
-msgstr "Calcolo pacchetti disponibili per"
+msgstr "pulisci pacchetti scaduti/rimossi dalla repository"
 
 #: ../../server/eit/commands/files.py:95
 msgid "files found"
@@ -6953,9 +6851,8 @@ msgstr "visualizza file posseduti da pacchetti"
 #: ../../server/eit/commands/remove.py:48
 #: ../../server/eit/commands/deps.py:46
 #: ../../server/eit/commands/inject.py:46
-#, fuzzy
 msgid "inject into given repository"
-msgstr "abilita la repository specificata"
+msgstr "inietta nella repository fornita"
 
 #: ../../server/eit/commands/remove.py:51
 msgid "do not include reverse dependencies"
@@ -6994,9 +6891,8 @@ msgid "dependencies updated successfully"
 msgstr "dipendenze aggiornate con successo"
 
 #: ../../server/eit/commands/deps.py:234
-#, fuzzy
 msgid "edit dependencies for packages in repository"
-msgstr "Repository applicazioni installate"
+msgstr "modifica dipendenze per i pacchetti nella repository"
 
 #: ../../server/eit/commands/cp.py:58
 msgid "package dependency"
@@ -7007,42 +6903,36 @@ msgid "source equals destination"
 msgstr "sorgente e destinazione identici"
 
 #: ../../server/eit/commands/cp.py:114
-#, fuzzy
 msgid "Considering all the packages"
-msgstr "Configurazione pacchetto"
+msgstr "Inclusione di tutti i pacchetti"
 
 #: ../../server/eit/commands/cp.py:138
 msgid "copy packages from a repository to another"
 msgstr "copia pacchetti da una repository all'altra"
 
 #: ../../server/eit/commands/graph.py:91
-#, fuzzy
 msgid "show dependency graph for packages"
-msgstr "Spacchettizzazione del pacchetto dipendenza"
+msgstr "visualizza grafo dipendenze per i pacchetti"
 
 #: ../../server/eit/commands/key.py:49
 msgid "execute action"
 msgstr "esegui azione"
 
 #: ../../server/eit/commands/key.py:53
-#, fuzzy
 msgid "create keypair for repository and packages"
-msgstr "crea coppia chiavi per le repository e firma pacchetti"
+msgstr "crea keypair per repository e pacchetti"
 
 #: ../../server/eit/commands/key.py:59
-#, fuzzy
 msgid "delete keypair (and signatures) from repository"
-msgstr "elimina coppia di chiavi (e firme digitali) della repository"
+msgstr "elimina keypair (e firme) dalla repository"
 
 #: ../../server/eit/commands/key.py:65
-#, fuzzy
 msgid "show keypair status for repository"
-msgstr "importa coppia chiavi, collega alla repository fornita"
+msgstr "visualizza stato keypair della repository"
 
 #: ../../server/eit/commands/key.py:71
-#, fuzzy
 msgid "sign packages in repository using current keypair"
-msgstr "firma (o firma di nuovo) i pacchetti nella repository usando la coppia di chiavi impostata"
+msgstr "firma pacchetti nella repository usando il keypair corrente"
 
 #: ../../server/eit/commands/key.py:77
 msgid "import keypair, bind to given repository"
@@ -7059,9 +6949,8 @@ msgid "public key path"
 msgstr "path chiave pubblica"
 
 #: ../../server/eit/commands/key.py:89
-#, fuzzy
 msgid "export the repository public key to file"
-msgstr "database remoto improvvisamente bloccato"
+msgstr "esporta la chiave pubblica della repository su file"
 
 #: ../../server/eit/commands/key.py:98
 msgid "export the repository private key to file"
@@ -7076,9 +6965,8 @@ msgid "Creating keys for repository"
 msgstr "Creazione chiavi per repository"
 
 #: ../../server/eit/commands/key.py:154
-#, fuzzy
 msgid "Another key already exists for repository"
-msgstr "è entrato nella repository"
+msgstr "Un'altra chiave esiste già per la repository"
 
 #: ../../server/eit/commands/key.py:178
 msgid "Insert e-mail"
@@ -7093,37 +6981,32 @@ msgid "Insert passphrase (empty=no passphrase)"
 msgstr "Inserisci frase di accesso (vuoto=nessuna frase di accesso)"
 
 #: ../../server/eit/commands/key.py:186
-#, fuzzy
 msgid "Repository GPG keypair creation"
-msgstr "Informazioni repository"
+msgstr "Creazione keypair GPG repository"
 
 #: ../../server/eit/commands/key.py:202
 msgid "Produced GPG key with fingerprint"
 msgstr "Prodotta chiave GPG con impronta"
 
 #: ../../server/eit/commands/key.py:208
-#, fuzzy
 msgid "Now you should sign all the packages in it"
-msgstr "Dovresti installarli il prima possibile"
+msgstr "Ora dovresti firmare tutti i pacchetti contenuti"
 
 #: ../../server/eit/commands/key.py:215
-#, fuzzy
 msgid "Generate a revoke key and store it in a safe place"
-msgstr "Accertati di generare una chiave di revoca e memorizzarla in un posto sicuro."
+msgstr "Genera una chiave di revoca e salvala in un posto sicuro"
 
 #: ../../server/eit/commands/key.py:225
-#, fuzzy
 msgid "You may want to send your keys to a key server"
-msgstr "Potresti voler inviare le chiavi ad un server chiavi (key server)"
+msgstr "Potresti voler inviare le tue chiavi ad un server di chiavi"
 
 #: ../../server/eit/commands/key.py:246
 msgid "Deleting keys for repository"
 msgstr "Eliminazione chiavi per repository"
 
 #: ../../server/eit/commands/key.py:250
-#, fuzzy
 msgid "No keys available for given repository"
-msgstr "abilita la repository specificata"
+msgstr "Nessuna chiave disponibile per la repository data"
 
 #: ../../server/eit/commands/key.py:257
 msgid "Are you really sure?"
@@ -7131,9 +7014,8 @@ msgstr "Sei davvero sicuro?"
 
 #: ../../server/eit/commands/key.py:265
 #: ../../server/eit/commands/key.py:299
-#, fuzzy
 msgid "Keys metadata not available for"
-msgstr "Chiavi non disponibili per"
+msgstr "Metadati chiavi non disponibili per"
 
 #: ../../server/eit/commands/key.py:279
 msgid "Deleted GPG key with fingerprint"
@@ -7177,34 +7059,28 @@ msgid "Imported GPG key with fingerprint"
 msgstr "Chiave GPG importata con impronta"
 
 #: ../../server/eit/commands/key.py:395
-#, fuzzy
 msgid "Now sign all the packages in it"
-msgstr "Dovresti installarli il prima possibile"
+msgstr "Ora firma tutti i pacchetti dentro essa"
 
 #: ../../server/eit/commands/key.py:438
-#, fuzzy
 msgid "Exporting private key for repository"
-msgstr "exporta chiave privata della repository fornita"
+msgstr "Esportazione chiave privata per repository"
 
 #: ../../server/eit/commands/key.py:442
-#, fuzzy
 msgid "Exporting public key for repository"
-msgstr "exporta chiave pubblica della repository fornita"
+msgstr "Esportazione chiave pubblica per repository"
 
 #: ../../server/eit/commands/key.py:447
-#, fuzzy
 msgid "No keypair available for repository"
-msgstr "importa coppia chiavi, collega alla repository fornita"
+msgstr "Nessun keypair disponibile per la repository"
 
 #: ../../server/eit/commands/key.py:455
-#, fuzzy
 msgid "Keypair is EXPIRED for repository"
-msgstr "Chiave GPG SCADUTA per repository"
+msgstr "Keypair SCADUTO per la repository"
 
 #: ../../server/eit/commands/key.py:476
-#, fuzzy
 msgid "Unable to export GPG key for repository"
-msgstr "Installazione chiave GPG per repository"
+msgstr "Impossibile esportare la chiave GPG per la repository"
 
 #: ../../server/eit/commands/key.py:485
 msgid "Exported GPG key for repository"
@@ -7231,9 +7107,8 @@ msgid "no valid package paths"
 msgstr "nessun path a pacchetto valido"
 
 #: ../../server/eit/commands/inject.py:118
-#, fuzzy
 msgid "inject package files into repository"
-msgstr "cerca pacchetti nelle repository"
+msgstr "inietta pacchetti file nella repository"
 
 #: ../../server/eit/commands/branch.py:55
 msgid "switch to given branch"
@@ -7463,9 +7338,8 @@ msgid "Conflicting packages were pulled in, in the same key and slot"
 msgstr "Trovati pacchetti in conflitto nella stessa chiave e slot"
 
 #: ../../sulfur/src/sulfur/packages.py:456
-#, fuzzy
 msgid "Please mask packages that are causing the issue"
-msgstr "cerca pacchetti utilizzanti le eclass fornite"
+msgstr "Maschera i pacchetti che stanno causando problemi"
 
 #: ../../sulfur/src/sulfur/packages.py:524
 msgid "Needed disk space"
@@ -7821,9 +7695,8 @@ msgid "These packages are no longer available"
 msgstr "Questi pacchetti non sono più disponibili"
 
 #: ../../sulfur/src/sulfur/__init__.py:1847
-#, fuzzy
 msgid "These packages should be removed (if you agree) because support has been dropped. Do you want to remove them?"
-msgstr "Questi pacchetti dovrebbero essere rimossi perché il loro supporto è stato abbandonato. Vuoi rimuoverli?"
+msgstr "Questi pacchetti dovrebbero essere rimossi (se sei d'accordo) perché il loro supporto è stato abbandonato. Vuoi rimuoverli?"
 
 #: ../../sulfur/src/sulfur/__init__.py:1862
 msgid "These are orphaned vital packages"
@@ -7910,12 +7783,11 @@ msgid ""
 msgstr "Attenzione. E' avvenuto qualcosa di veramente brutto."
 
 #: ../../sulfur/src/sulfur/__init__.py:2304
-#, fuzzy
 msgid ""
 "Attention. Other updates that must be installed.\n"
 "Sulfur will be reloaded."
 msgstr ""
-"Attenzione. Hai aggiornato Entropy.\n"
+"Attenzione. Altri aggiornamenti devono essere installati.\n"
 "Sulfur sarà ricaricato."
 
 #: ../../sulfur/src/sulfur/__init__.py:2310
@@ -7992,9 +7864,8 @@ msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Inserisci un mirror di scaricamento, HTTP o FTP"
 
 #: ../../sulfur/src/sulfur/dialogs.py:243
-#, fuzzy
 msgid "Enter a download mirror URL"
-msgstr "Inserisci un mirror di scaricamento, HTTP o FTP"
+msgstr "Inserisci un URL mirror di download"
 
 #: ../../sulfur/src/sulfur/dialogs.py:249
 #, fuzzy
@@ -8603,14 +8474,12 @@ msgid "Repositories are being updated automatically"
 msgstr "Repository in fase di aggiornamento automatico"
 
 #: ../../magneto/src/magneto/core/interfaces.py:264
-#, fuzzy
 msgid "Installed Packages Repository Integrity Problem"
-msgstr "Database dei pacchetti installati non disponibile"
+msgstr "Problema di integrità della Repository dei pacchetti installati"
 
 #: ../../magneto/src/magneto/core/interfaces.py:266
-#, fuzzy
 msgid "Installed Packages Repository Integrity"
-msgstr "Repository applicazioni installate"
+msgstr "Integrità Repository Pacchetti Installati"
 
 #: ../../magneto/src/magneto/core/interfaces.py:267
 msgid "Integrity corruption detected, this might indicate a filesystem or system issue"
@@ -8967,7 +8836,6 @@ msgid "FTP Proxy"
 msgstr "Proxy FTP"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:89
-#, fuzzy
 msgid "Filter currently shown items, or paste entropy:// action strings (for eg. entropy://amarok, to install Amarok!)"
 msgstr "Filtra elementi correntemente visualizzati o incolla una stringa azione entropy:// (per esempio, entropy://amarok per installare Amarok!)"
 
