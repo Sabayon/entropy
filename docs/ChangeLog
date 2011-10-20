@@ -1,3 +1,63 @@
+commit 163b3f0987ed80c3b22439e08b25f21db1934779
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:44:08 2011 +0200
+
+    Release Entropy 1.0_rc61
+
+commit edd4fc1c5216571bb85a0a29dd98da476f244cfb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:43:46 2011 +0200
+
+    [entropy.const] rename libraries -> lib
+
+commit 8557c9daab136948200ccaefc934267c0eee35ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:42:45 2011 +0200
+
+    [docs] rename libraries -> lib
+
+commit dd2dd8c546bfb6243bac5754fec78f7dce317d6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:41:47 2011 +0200
+
+    [eit.colorful] drop unused imports
+
+commit 9d9bcbc2b353877a3bcc9112447c6dddfbea9f6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:41:32 2011 +0200
+
+    [scripts] update tag scripts, libraries -> lib
+
+commit a34233f106bfcc3248bd5ed89a63836e45814bda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 18:39:04 2011 +0200
+
+    [eit.commands.help] rewrite ColorfulFormatter, drop side effects completely
+
+commit ed1a0ceffde4c04c1c2fe5c640bfd7619e491a53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 17:11:32 2011 +0200
+
+    [todo] update TODO
+
+commit 437de4d5da5d73872c2ac9181f5786f792875774
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 17:01:28 2011 +0200
+
+    [misc] fix path in 05entropy.envd
+
+commit 9e13dfa7396a19d9c3f0199c7d20c7f1650e9d15
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 16:49:52 2011 +0200
+
+    [todo] update TODO
+
+commit 0af25183f1702c0e7437fcdb01616f06401d0b03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 16:16:54 2011 +0200
+
+    Tagging Entropy version 1.0_rc60
+
 commit 87fc11980f0c38a9b6f16ec3f7b30e581fde746b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 20 16:16:46 2011 +0200
