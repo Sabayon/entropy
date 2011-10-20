@@ -14,7 +14,7 @@ import argparse
 
 import textwrap as _textwrap
 
-from entropy.output import decolorize, purple, teal, darkgreen
+from entropy.output import decolorize
 
 class ColorfulFormatter(argparse.RawTextHelpFormatter):
     """
