@@ -37,6 +37,7 @@ from entropy.services.client import WebService
 from entropy.client.services.interfaces import RepositoryWebService, \
     RepositoryWebServiceFactory
 
+import entropy.dep
 import entropy.tools
 
 __all__ = ["CachedRepository", "ClientEntropyRepositoryPlugin",
@@ -2041,6 +2042,12 @@ class MaskableRepository(EntropyRepositoryBase):
             user_package_mask_ids = set()
 
             for atom in self._settings['mask']:
+                atom, repository_ids = entropy.dep.dep_get_match_in_repos(atom)
+                if repository_ids is not None:
+                    if self.name not in repository_ids:
+                        # then the mask doesn't involve us
+                        continue
+                # check if @repository is specified
                 matches, r = self.atomMatch(atom, multiMatch = True,
                     maskFilter = False)
                 if r != 0:
@@ -2074,6 +2081,11 @@ class MaskableRepository(EntropyRepositoryBase):
 
             user_package_unmask_ids = set()
             for atom in self._settings['unmask']:
+                atom, repository_ids = entropy.dep.dep_get_match_in_repos(atom)
+                if repository_ids is not None:
+                    if self.name not in repository_ids:
+                        # then the mask doesn't involve us
+                        continue
                 matches, r = self.atomMatch(atom, multiMatch = True,
                     maskFilter = False)
                 if r != 0:
