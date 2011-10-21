@@ -1,3 +1,63 @@
+commit c575040a9551e325d9f695777a1c2f879827e31c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 19:01:44 2011 +0200
+
+    Release Entropy 1.0_rc62
+
+commit 4328ca9878ca37dcbb8bda4d59b87aae7c7516cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 17:39:32 2011 +0200
+
+    [magneto] update packages website URL, close bug 2795
+
+commit ce36d5a1404f94a568ea84d35f5c6d538bfc2179
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 14:02:23 2011 +0200
+
+    [po] update translations
+
+commit dbeef165634eda198e91eadfc5fe86f5617aef31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 14:00:59 2011 +0200
+
+    [entropy.core] use os.path.sep
+
+commit 1401e385a42d9ce0c21de68241673887a2416835
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 13:53:58 2011 +0200
+
+    [todo] update TODO
+
+commit 5c0f255f5d77f3db05f589a7b137e4644075ab79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 13:51:54 2011 +0200
+
+    [entropy.core] add *.d/* directories support for mask, unmask, license.{mask,accept}, system
+
+commit 4b61e5387b2373eff1b3f4ac1a23c29d601531c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 10:58:50 2011 +0200
+
+    [conf] update package.{mask,unmask} documentation
+
+commit 2a3391b2d4e504fb796b4e6b3152a4e1d361b9aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 10:56:42 2011 +0200
+
+    [entropy.client.interfaces.db] add support for "::repo" syntax in package.mask and package.unmask
+
+commit 590b7c84d9d67ae6b8252cdd8085c2de0fcac6a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:52:49 2011 +0200
+
+    [git] libraries -> lib
+
+commit 9988f353aff428f61dea3e179b24373fdb28126d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 19:44:09 2011 +0200
+
+    Tagging Entropy version 1.0_rc61
+
 commit 163b3f0987ed80c3b22439e08b25f21db1934779
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 20 19:44:08 2011 +0200
