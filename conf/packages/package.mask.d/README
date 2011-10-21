@@ -1,0 +1,7 @@
+This directory should contain distribution-provided configuration files
+extending /etc/entropy/packages/package.mask content.
+User should rather edit /etc/entropy/packages/package.mask instead of
+creating files inside this directory.
+
+Files are processed in lexical order. ".keep" and "README" files are
+skipped and never considered.

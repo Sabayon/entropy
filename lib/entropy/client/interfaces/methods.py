@@ -2437,6 +2437,12 @@ class MatchMixin:
     def _clear_package_mask(self, package_match, dry_run = False):
         setting_data = self._settings.get_setting_files_data()
         masking_list = [setting_data['mask'], setting_data['unmask']]
+
+        setting_dirs = self._settings.get_setting_dirs_data()
+        conf_dir, conf_files, auto_upd = setting_dirs['mask_d']
+        masking_list += [conf_p for conf_p, mtime_p in conf_files]
+        conf_dir, conf_files, auto_upd = setting_dirs['unmask_d']
+        masking_list += [conf_p for conf_p, mtime_p in conf_files]
         return self._clear_match_generic(package_match,
             masking_list = masking_list, dry_run = dry_run)
 

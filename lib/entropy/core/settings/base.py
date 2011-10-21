@@ -67,6 +67,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False
+        self.__cache_cleared = False
         self.__inside_with_stmt = 0
         self.__pkg_comment_tag = "##"
 
@@ -74,6 +75,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files_order = []
         self.__setting_files_pre_run = []
         self.__setting_files = {}
+        self.__setting_dirs = {}
         self.__mtime_files = {}
         self.__persistent_settings = {
             'pkg_masking_reasons': etpConst['pkg_masking_reasons'].copy(),
@@ -174,6 +176,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__setting_files['satisfied'],
             self.__setting_files['system_mask'],
         ])
+        for setting_id, dir_sett, auto_update in self.__setting_dirs.items():
+            if not auto_update:
+                continue
+            for conf_file, mtime_conf_file in dir_sett:
+                own_list.add(conf_file)
+
         # poll plugins
         for plugin in self.get_plugins().values():
             files = plugin.get_updatable_configuration_files(repository_id)
@@ -199,7 +207,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         del self.__setting_files_order[:]
         del self.__setting_files_pre_run[:]
         self.__setting_files.clear()
+        self.__setting_dirs.clear()
         self.__mtime_files.clear()
+        self.__cache_cleared = False
 
         self.__setting_files.update({
              # keywording configuration files
@@ -246,6 +256,39 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'system_mask_mtime': os.path.join(dmp_dir, "system_mask.mtime"),
         })
 
+        conf_d_descriptors = [
+            ("mask_d", "package.mask.d", True),
+            ("unmask_d", "package.unmask.d", True),
+            ("license_mask_d", "license.mask.d", False),
+            ("license_accept_d", "license.accept.d", False),
+            ("system_mask_d", "system.mask.d", True),
+        ]
+        for setting_id, rel_dir, auto_update in conf_d_descriptors:
+            conf_dir = etpConst['confpackagesdir']+"/" + rel_dir
+            self.__setting_dirs[setting_id] = [conf_dir, [], auto_update]
+            if not (os.path.isdir(conf_dir) and \
+                        os.access(conf_dir, os.R_OK)):
+                continue
+
+            conf_files = []
+            try:
+                conf_files += [os.path.join(conf_dir, x) for x in \
+                                      os.listdir(conf_dir)]
+            except (OSError, IOError):
+                continue
+            conf_files = [x for x in conf_files if \
+                os.path.isfile(x) and os.access(x, os.R_OK) \
+                and (not x.startswith(".keep")) and x != "README"]
+            mtime_base_file = os.path.join(dmp_dir, rel_dir + "_")
+            conf_files = [
+                (x, mtime_base_file + os.path.basename(x) + ".mtime") for \
+                    x in conf_files]
+            self.__setting_dirs[setting_id][1] += conf_files
+            # this will make us call _<setting_id>_parser()
+            # and that must return None, becase the outcome
+            # has to be written into '<setting_id/_d>' metadata object
+            # thus, these have to always run AFTER their alter-egos
+            self.__setting_files_order.append(setting_id)
 
     def __scan(self):
 
@@ -514,6 +557,17 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         return self.__setting_files.copy()
 
+    def get_setting_dirs_data(self):
+        """
+        Return a copy of the internal *dirs* dictionary.
+        This dict contains *.d config dirs enclosing respective
+        config files.
+
+        @return: dict __setting_dirs
+        @rtype: dict
+        """
+        return self.__setting_dirs.copy()
+
     def _keywords_parser(self):
         """
         Parser returning package keyword masking metadata
@@ -609,9 +663,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         valid = self.validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['unmask'],
             comment_tag = self.__pkg_comment_tag)
@@ -628,12 +683,78 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         valid = self.validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['mask'],
             comment_tag = self.__pkg_comment_tag)
+
+    def _mask_d_parser(self):
+        """
+        Parser returning package masking metadata read from
+        packages/package.mask.d/* files (alpha sorting).
+        It writes directly to __data['mask'] in append.
+        """
+        return self.__generic_d_parser("mask_d", "mask")
+
+    def _unmask_d_parser(self):
+        """
+        Parser returning package masking metadata read from
+        packages/package.unmask.d/* files (alpha sorting).
+        It writes directly to __data['unmask'] in append.
+        """
+        return self.__generic_d_parser("unmask_d", "unmask")
+
+    def _license_mask_d_parser(self):
+        """
+        Parser returning package masking metadata read from
+        packages/license.mask.d/* files (alpha sorting).
+        It writes directly to __data['license_mask'] in append.
+        """
+        return self.__generic_d_parser("license_mask_d", "license_mask")
+
+    def _system_mask_d_parser(self):
+        """
+        Parser returning package masking metadata read from
+        packages/system.mask.d/* files (alpha sorting).
+        It writes directly to __data['system_mask'] in append.
+        """
+        return self.__generic_d_parser("system_mask_d", "system_mask")
+
+    def _license_accept_d_parser(self):
+        """
+        Parser returning package masking metadata read from
+        packages/license.accept.d/* files (alpha sorting).
+        It writes directly to __data['license_accept'] in append.
+        """
+        return self.__generic_d_parser("license_accept_d", "license_accept")
+
+    def __generic_d_parser(self, setting_dirs_id, setting_id):
+        """
+        Generic parser used by _*_d_parser() functions.
+        """
+        conf_dir, setting_files, auto_upd = self.__setting_dirs[setting_dirs_id]
+        dmp_dir = etpConst['dumpstoragedir']
+        dmp_mtime_dir_file = os.path.join(
+            dmp_dir, os.path.basename(conf_dir) + ".mtime")
+
+        valid = self.validate_entropy_cache(
+            conf_dir, dmp_mtime_dir_file)
+        if (not valid) and (not self.__cache_cleared):
+            self.__cache_cleared = True
+            EntropyCacher.clear_cache()
+
+        for sett_file, mtime_sett_file in setting_files:
+            valid = self.validate_entropy_cache(
+                sett_file, mtime_sett_file)
+            if (not valid) and (not self.__cache_cleared):
+                self.__cache_cleared = True
+                EntropyCacher.clear_cache()
+            self.__data[setting_id] += self.__generic_parser(
+                sett_file,
+                comment_tag = self.__pkg_comment_tag)
 
     def _satisfied_parser(self):
         """
@@ -647,9 +768,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         valid = self.validate_entropy_cache(self.__setting_files['satisfied'],
             self.__mtime_files['satisfied_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['satisfied'],
             comment_tag = self.__pkg_comment_tag)
@@ -667,9 +789,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         valid = self.validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['system_mask'],
             comment_tag = self.__pkg_comment_tag)
@@ -686,9 +809,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         valid = self.validate_entropy_cache(
             self.__setting_files['license_mask'],
                 self.__mtime_files['license_mask_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['license_mask'])
 
@@ -704,9 +828,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         valid = self.validate_entropy_cache(
             self.__setting_files['license_accept'],
             self.__mtime_files['license_accept_mtime'])
-        if not valid:
+        if (not valid) and (not self.__cache_cleared):
             # all the cache must be cleared (including upgrade and
             # repository match cache
+            self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['license_accept'])
 
@@ -1468,10 +1593,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        if not os.path.isfile(toread):
-            currmtime = 0.0
-        else:
+        try:
             currmtime = os.path.getmtime(toread)
+        except (OSError, IOError):
+            currmtime = 0.0
 
         if not os.path.isdir(etpConst['dumpstoragedir']):
             try:
