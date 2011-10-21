@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: entropy_vitovtREV01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 22:49+0200\n"
+"POT-Creation-Date: 2011-10-21 14:01+0200\n"
 "PO-Revision-Date: 2010-01-15 21:04+0200\n"
 "Last-Translator: Grusha Linux Team\n"
 "Language-Team:  <contact@lgrusha.org.ua>\n"
@@ -29,7 +29,7 @@ msgid "Syncing current database"
 msgstr "Синхронізація поточної бази даних"
 
 #: ../../lib/entropy/db/__init__.py:5026
-#: ../../lib/entropy/client/interfaces/db.py:287
+#: ../../lib/entropy/client/interfaces/db.py:288
 msgid "please wait"
 msgstr "зачекайте, будь-ласка"
 
@@ -387,10 +387,10 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3150
 #: ../../lib/entropy/server/interfaces/main.py:1640
-#: ../../lib/entropy/client/interfaces/db.py:403
-#: ../../lib/entropy/client/interfaces/db.py:452
-#: ../../lib/entropy/client/interfaces/db.py:506
-#: ../../lib/entropy/client/interfaces/db.py:1780 ../../lib/entropy/qa.py:797
+#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:1781 ../../lib/entropy/qa.py:797
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:293
 #: ../../client/text_ui.py:1528 ../../client/text_ui.py:1529
 #: ../../client/text_ui.py:1531 ../../client/text_ui.py:1532
@@ -1422,7 +1422,7 @@ msgstr "Число зламаних пакунків"
 
 #: ../../lib/entropy/server/interfaces/main.py:2963
 #: ../../lib/entropy/server/interfaces/main.py:3120
-#: ../../lib/entropy/client/interfaces/db.py:1718
+#: ../../lib/entropy/client/interfaces/db.py:1719
 msgid "local"
 msgstr "локально"
 
@@ -2433,316 +2433,316 @@ msgstr "Інша сесія Entropy увімкнена. Неможливо об�
 msgid "An error occured. Action aborted."
 msgstr "Виникла помилка. Дію скасовано."
 
-#: ../../lib/entropy/client/interfaces/db.py:285
+#: ../../lib/entropy/client/interfaces/db.py:286
 msgid "Injecting downloaded dump"
 msgstr "Додається обсяг завантаженого"
 
-#: ../../lib/entropy/client/interfaces/db.py:373
+#: ../../lib/entropy/client/interfaces/db.py:374
 #, fuzzy
 msgid "Repository URL"
 msgstr "Репозиторій"
 
-#: ../../lib/entropy/client/interfaces/db.py:381
+#: ../../lib/entropy/client/interfaces/db.py:382
 #, fuzzy
 msgid "Repository local path"
 msgstr "Шлях до бази даних репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:389
+#: ../../lib/entropy/client/interfaces/db.py:390
 #, fuzzy
 msgid "Repository API"
 msgstr "Репозиторій"
 
-#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:405
 msgid "Repository is being updated"
 msgstr "Репозиторій оновлюється"
 
-#: ../../lib/entropy/client/interfaces/db.py:405
+#: ../../lib/entropy/client/interfaces/db.py:406
 msgid "Try again in a few minutes"
 msgstr "Спробуйте знову через кілька хвилин"
 
-#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:454
 #, fuzzy
 msgid "remote repository got suddenly locked"
 msgstr "віддалену базу даних несподівано було заблоковано."
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:463
+#: ../../lib/entropy/client/interfaces/db.py:464
 #, fuzzy
 msgid "Downloading repository"
 msgstr "Завантаження бази даних репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:508
 #, fuzzy
 msgid "repository does not exist online"
 msgstr "директорія не існує"
 
-#: ../../lib/entropy/client/interfaces/db.py:527
+#: ../../lib/entropy/client/interfaces/db.py:528
 msgid "Downloading checksum"
 msgstr "Завантаження контрольної суми"
 
-#: ../../lib/entropy/client/interfaces/db.py:552
+#: ../../lib/entropy/client/interfaces/db.py:553
 msgid "Cannot fetch checksum"
 msgstr "Неможливо отримати контрольну суму"
 
-#: ../../lib/entropy/client/interfaces/db.py:553
-#: ../../lib/entropy/client/interfaces/db.py:1097
+#: ../../lib/entropy/client/interfaces/db.py:554
+#: ../../lib/entropy/client/interfaces/db.py:1098
 #, fuzzy
 msgid "Cannot verify repository integrity"
 msgstr "Неможливо перевірити цілісність бази даних"
 
-#: ../../lib/entropy/client/interfaces/db.py:643
+#: ../../lib/entropy/client/interfaces/db.py:644
 msgid "Unpacking database to"
 msgstr "Розпакування бази даних у"
 
-#: ../../lib/entropy/client/interfaces/db.py:660
+#: ../../lib/entropy/client/interfaces/db.py:661
 msgid "Cannot unpack compressed package"
 msgstr "Неможливо розпакувати стислий пакунк"
 
-#: ../../lib/entropy/client/interfaces/db.py:661
+#: ../../lib/entropy/client/interfaces/db.py:662
 msgid "Skipping repository"
 msgstr "Пропускаю репозиторій"
 
-#: ../../lib/entropy/client/interfaces/db.py:693
+#: ../../lib/entropy/client/interfaces/db.py:694
 #, fuzzy
 msgid "Repository is invalid"
 msgstr "Репозиторій оновлюється"
 
-#: ../../lib/entropy/client/interfaces/db.py:717
+#: ../../lib/entropy/client/interfaces/db.py:718
 msgid "Indexing Repository metadata"
 msgstr "Індексування мета-інформації репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:905
+#: ../../lib/entropy/client/interfaces/db.py:906
 msgid "Downloading repository metafile"
 msgstr "Завантажую мета-файл репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:915
+#: ../../lib/entropy/client/interfaces/db.py:916
 #, fuzzy
 msgid "Downloading GPG signature of repository metafile"
 msgstr "Завантажую мета-файл репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:925
+#: ../../lib/entropy/client/interfaces/db.py:926
 msgid "Downloading Notice Board"
 msgstr "Завантажую дошку повідомлень"
 
-#: ../../lib/entropy/client/interfaces/db.py:951
+#: ../../lib/entropy/client/interfaces/db.py:952
 msgid "unpacked meta file"
 msgstr "розпакований мета-файл"
 
-#: ../../lib/entropy/client/interfaces/db.py:957
+#: ../../lib/entropy/client/interfaces/db.py:958
 #, fuzzy
 msgid "removed meta file"
 msgstr "розпакований мета-файл"
 
-#: ../../lib/entropy/client/interfaces/db.py:974
+#: ../../lib/entropy/client/interfaces/db.py:975
 msgid "not available, it's ok"
 msgstr "недоступно, але це нормально"
 
-#: ../../lib/entropy/client/interfaces/db.py:978
+#: ../../lib/entropy/client/interfaces/db.py:979
 #, fuzzy
 msgid "not available, not very ok!"
 msgstr "недоступно, і це дуже-дуже погано!"
 
-#: ../../lib/entropy/client/interfaces/db.py:991
+#: ../../lib/entropy/client/interfaces/db.py:992
 msgid "available, w00t!"
 msgstr "ура, є!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1008
+#: ../../lib/entropy/client/interfaces/db.py:1009
 #, fuzzy
 msgid "cannot be unpacked, not very ok!"
 msgstr "неможливо відкрити пакунки, на жаль"
 
-#: ../../lib/entropy/client/interfaces/db.py:1059
+#: ../../lib/entropy/client/interfaces/db.py:1060
 #: ../../client/text_repositories.py:365
 msgid "Repository revision"
 msgstr "Перевірка репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:1082
+#: ../../lib/entropy/client/interfaces/db.py:1083
 #, fuzzy
 msgid "Checking downloaded repository"
 msgstr "Перевірка завантаженої бази даних"
 
-#: ../../lib/entropy/client/interfaces/db.py:1096
+#: ../../lib/entropy/client/interfaces/db.py:1097
 msgid "Cannot open digest"
 msgstr "Неможливо відкрити огляд"
 
-#: ../../lib/entropy/client/interfaces/db.py:1107
-#: ../../lib/entropy/client/interfaces/db.py:1118
+#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1119
 #, fuzzy
 msgid "Downloaded repository status"
 msgstr "Завантаження бази даних репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1109
 msgid "OK"
 msgstr "Гаразд"
 
-#: ../../lib/entropy/client/interfaces/db.py:1119
+#: ../../lib/entropy/client/interfaces/db.py:1120
 msgid "ERROR"
 msgstr "ПОМИЛКА"
 
-#: ../../lib/entropy/client/interfaces/db.py:1128
+#: ../../lib/entropy/client/interfaces/db.py:1129
 #, fuzzy
 msgid "An error occured while checking repository integrity"
 msgstr "Трпилась помилка при перевірці цілісності бази даних"
 
-#: ../../lib/entropy/client/interfaces/db.py:1129
+#: ../../lib/entropy/client/interfaces/db.py:1130
 msgid "Giving up"
 msgstr "Здаюсь"
 
-#: ../../lib/entropy/client/interfaces/db.py:1151
+#: ../../lib/entropy/client/interfaces/db.py:1152
 #: ../../lib/entropy/security.py:278
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1170
+#: ../../lib/entropy/client/interfaces/db.py:1171
 #, fuzzy
 msgid "This repository suports GPG-signed packages"
 msgstr "Помилка репозиторію при додаванні пакунків"
 
-#: ../../lib/entropy/client/interfaces/db.py:1177
+#: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1211
+#: ../../lib/entropy/client/interfaces/db.py:1212
 #: ../../lib/entropy/security.py:317
 #, fuzzy
 msgid "GPG key changed for"
 msgstr "Пакунок встановлений повторно"
 
-#: ../../lib/entropy/client/interfaces/db.py:1231
+#: ../../lib/entropy/client/interfaces/db.py:1232
 #: ../../lib/entropy/security.py:336
 #, fuzzy
 msgid "GPG key already installed for"
 msgstr "Пакунок встановлений повторно"
 
-#: ../../lib/entropy/client/interfaces/db.py:1244
+#: ../../lib/entropy/client/interfaces/db.py:1245
 #, fuzzy
 msgid "GPG key EXPIRED for repository"
 msgstr "Хибний репозиторій"
 
-#: ../../lib/entropy/client/interfaces/db.py:1256
+#: ../../lib/entropy/client/interfaces/db.py:1257
 #, fuzzy
 msgid "Installing GPG key for repository"
 msgstr "Хибний репозиторій"
 
-#: ../../lib/entropy/client/interfaces/db.py:1274
-#: ../../lib/entropy/client/interfaces/db.py:1306
+#: ../../lib/entropy/client/interfaces/db.py:1275
+#: ../../lib/entropy/client/interfaces/db.py:1307
 #: ../../lib/entropy/security.py:374
 #, fuzzy
 msgid "Error during GPG key installation"
 msgstr "Помилка при заповненні списку"
 
-#: ../../lib/entropy/client/interfaces/db.py:1284
+#: ../../lib/entropy/client/interfaces/db.py:1285
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1318
+#: ../../lib/entropy/client/interfaces/db.py:1319
 #, fuzzy
 msgid "Successfully installed GPG key for repository"
 msgstr "Успішно від'єднано від хоста"
 
-#: ../../lib/entropy/client/interfaces/db.py:1327
+#: ../../lib/entropy/client/interfaces/db.py:1328
 #: ../../lib/entropy/security.py:394
 msgid "Fingerprint"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1367
+#: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "Verifying GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1381
+#: ../../lib/entropy/client/interfaces/db.py:1382
 msgid "Verified GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1391
+#: ../../lib/entropy/client/interfaces/db.py:1392
 #: ../../lib/entropy/security.py:419
 #, fuzzy
 msgid "Error during GPG verification of"
 msgstr "перевірка списків"
 
-#: ../../lib/entropy/client/interfaces/db.py:1400
+#: ../../lib/entropy/client/interfaces/db.py:1401
 #: ../../lib/entropy/security.py:428
 msgid "It could mean a potential security risk"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1454
+#: ../../lib/entropy/client/interfaces/db.py:1455
 #, fuzzy
 msgid "Web Service"
 msgstr "С_лужби"
 
-#: ../../lib/entropy/client/interfaces/db.py:1455
+#: ../../lib/entropy/client/interfaces/db.py:1456
 msgid "skipping differential sync"
 msgstr "пропуск різної синхронізації"
 
-#: ../../lib/entropy/client/interfaces/db.py:1456
+#: ../../lib/entropy/client/interfaces/db.py:1457
 msgid "threshold"
 msgstr "поріг"
 
-#: ../../lib/entropy/client/interfaces/db.py:1490
+#: ../../lib/entropy/client/interfaces/db.py:1491
 #, fuzzy
 msgid "Web Service communication error"
 msgstr "Помилка комунікації"
 
-#: ../../lib/entropy/client/interfaces/db.py:1510
+#: ../../lib/entropy/client/interfaces/db.py:1511
 #, fuzzy
 msgid "Web Service data error"
 msgstr "Помилка служби EAPI3"
 
-#: ../../lib/entropy/client/interfaces/db.py:1526
+#: ../../lib/entropy/client/interfaces/db.py:1527
 msgid "Local status"
 msgstr "Локальний статус"
 
-#: ../../lib/entropy/client/interfaces/db.py:1558
+#: ../../lib/entropy/client/interfaces/db.py:1559
 msgid "Fetching segments"
 msgstr "Завантаження сегментів"
 
-#: ../../lib/entropy/client/interfaces/db.py:1594
-#: ../../lib/entropy/client/interfaces/db.py:1613
-#: ../../lib/entropy/client/interfaces/db.py:1630
+#: ../../lib/entropy/client/interfaces/db.py:1595
+#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1631
 #, fuzzy
 msgid "Web Service status"
 msgstr "Статус служби"
 
-#: ../../lib/entropy/client/interfaces/db.py:1595
+#: ../../lib/entropy/client/interfaces/db.py:1596
 msgid "cannot fetch repository metadata"
 msgstr "неможливо завантажити мета-інформацію репозиторію"
 
-#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1615
 msgid "cannot update treeupdates data"
 msgstr "неможливо оновити інформацію дерева оновлень"
 
-#: ../../lib/entropy/client/interfaces/db.py:1631
+#: ../../lib/entropy/client/interfaces/db.py:1632
 msgid "cannot update package sets data"
 msgstr "неможливо оновити інформацію щодо розділами пакунків"
 
-#: ../../lib/entropy/client/interfaces/db.py:1647
+#: ../../lib/entropy/client/interfaces/db.py:1648
 msgid "Fetch error on segment while adding"
 msgstr "Помилка завантаження під час додавання сегмента"
 
-#: ../../lib/entropy/client/interfaces/db.py:1674
+#: ../../lib/entropy/client/interfaces/db.py:1675
 msgid "repository error while adding packages"
 msgstr "Помилка репозиторію при додаванні пакунків"
 
-#: ../../lib/entropy/client/interfaces/db.py:1699
+#: ../../lib/entropy/client/interfaces/db.py:1700
 msgid "repository error while removing packages"
 msgstr "помилка репозиторію під час видалення пакунків"
 
-#: ../../lib/entropy/client/interfaces/db.py:1715
+#: ../../lib/entropy/client/interfaces/db.py:1716
 #, fuzzy
 msgid "Repository checksum doesn't match remote."
 msgstr ""
 "Контрольна сума локальної бази даних не співпадає з сумою віддаленої "
 "базиданих"
 
-#: ../../lib/entropy/client/interfaces/db.py:1723
+#: ../../lib/entropy/client/interfaces/db.py:1724
 msgid "remote"
 msgstr "віддалене"
 
-#: ../../lib/entropy/client/interfaces/db.py:1781
+#: ../../lib/entropy/client/interfaces/db.py:1782
 #, fuzzy
 msgid "repository is already up to date"
 msgstr "Все репозиторії вже оновлені до останньої версії."
 
-#: ../../lib/entropy/client/interfaces/db.py:1985
+#: ../../lib/entropy/client/interfaces/db.py:1986
 msgid "Configuration files update error, not critical, continuing"
 msgstr "Помилка під час оновлення файлів налаштувань, некритична, продовжую"
 
@@ -6699,7 +6699,7 @@ msgstr "перемістити пакунки в інший репозиторі
 msgid "Entropy Infrastructure Toolkit"
 msgstr ""
 
-#: ../../server/eit/commands/help.py:66 ../../services/kernel-switcher:226
+#: ../../server/eit/commands/help.py:63 ../../services/kernel-switcher:226
 #, fuzzy
 msgid "this help"
 msgstr "цю інструкцію"

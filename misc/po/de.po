@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 22:49+0200\n"
+"POT-Creation-Date: 2011-10-21 14:01+0200\n"
 "PO-Revision-Date: 2011-02-02 14:36+0100\n"
 "Last-Translator: Tobias Rosenberger <TRosenberger@gmx.de>\n"
 "Language-Team:  <bluetsauger@gmail.com>\n"
@@ -23,7 +23,7 @@ msgid "Syncing current database"
 msgstr "Synchronisiere aktuelle Datenbank"
 
 #: ../../lib/entropy/db/__init__.py:5026
-#: ../../lib/entropy/client/interfaces/db.py:287
+#: ../../lib/entropy/client/interfaces/db.py:288
 msgid "please wait"
 msgstr "bitte warten"
 
@@ -360,10 +360,10 @@ msgstr "Kann von SPM installierte pkg-Dateien nicht aktualisieren"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3150
 #: ../../lib/entropy/server/interfaces/main.py:1640
-#: ../../lib/entropy/client/interfaces/db.py:403
-#: ../../lib/entropy/client/interfaces/db.py:452
-#: ../../lib/entropy/client/interfaces/db.py:506
-#: ../../lib/entropy/client/interfaces/db.py:1780 ../../lib/entropy/qa.py:797
+#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:1781 ../../lib/entropy/qa.py:797
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:293
 #: ../../client/text_ui.py:1528 ../../client/text_ui.py:1529
 #: ../../client/text_ui.py:1531 ../../client/text_ui.py:1532
@@ -1365,7 +1365,7 @@ msgstr "Zahl der fehlerhaften Pakete"
 
 #: ../../lib/entropy/server/interfaces/main.py:2963
 #: ../../lib/entropy/server/interfaces/main.py:3120
-#: ../../lib/entropy/client/interfaces/db.py:1718
+#: ../../lib/entropy/client/interfaces/db.py:1719
 msgid "local"
 msgstr "lokal"
 
@@ -2351,295 +2351,295 @@ msgstr "Ein anderes Entropy läuft bereits."
 msgid "An error occured. Action aborted."
 msgstr "Es ist ein Fehler Aufgetreten. Aktion abgebrochen."
 
-#: ../../lib/entropy/client/interfaces/db.py:285
+#: ../../lib/entropy/client/interfaces/db.py:286
 msgid "Injecting downloaded dump"
 msgstr "Heruntergeladenen Inhalt einspeisen"
 
-#: ../../lib/entropy/client/interfaces/db.py:373
+#: ../../lib/entropy/client/interfaces/db.py:374
 msgid "Repository URL"
 msgstr "Repositoriums-URL"
 
-#: ../../lib/entropy/client/interfaces/db.py:381
+#: ../../lib/entropy/client/interfaces/db.py:382
 msgid "Repository local path"
 msgstr "Lokaler Repositoriums-Pfad"
 
-#: ../../lib/entropy/client/interfaces/db.py:389
+#: ../../lib/entropy/client/interfaces/db.py:390
 msgid "Repository API"
 msgstr "Repositoriums-API"
 
-#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:405
 msgid "Repository is being updated"
 msgstr "Repositorium ist am aktualisieren"
 
-#: ../../lib/entropy/client/interfaces/db.py:405
+#: ../../lib/entropy/client/interfaces/db.py:406
 msgid "Try again in a few minutes"
 msgstr "Versuche es in einigen Minuten erneut"
 
-#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:454
 msgid "remote repository got suddenly locked"
 msgstr "entferntes Repositorium wurde urplötzlich gesperrt"
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:463
+#: ../../lib/entropy/client/interfaces/db.py:464
 msgid "Downloading repository"
 msgstr "Lade Repositorium herunter"
 
-#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:508
 msgid "repository does not exist online"
 msgstr "Repositorium existiert online nicht"
 
-#: ../../lib/entropy/client/interfaces/db.py:527
+#: ../../lib/entropy/client/interfaces/db.py:528
 msgid "Downloading checksum"
 msgstr "Lade Prüfsumme herunter"
 
-#: ../../lib/entropy/client/interfaces/db.py:552
+#: ../../lib/entropy/client/interfaces/db.py:553
 msgid "Cannot fetch checksum"
 msgstr "Kann Prüfsumme nicht erhalten"
 
-#: ../../lib/entropy/client/interfaces/db.py:553
-#: ../../lib/entropy/client/interfaces/db.py:1097
+#: ../../lib/entropy/client/interfaces/db.py:554
+#: ../../lib/entropy/client/interfaces/db.py:1098
 msgid "Cannot verify repository integrity"
 msgstr "Kann Repositoriums-Integrität nicht prüfen"
 
-#: ../../lib/entropy/client/interfaces/db.py:643
+#: ../../lib/entropy/client/interfaces/db.py:644
 msgid "Unpacking database to"
 msgstr "Entpacke Datenbank nach"
 
-#: ../../lib/entropy/client/interfaces/db.py:660
+#: ../../lib/entropy/client/interfaces/db.py:661
 msgid "Cannot unpack compressed package"
 msgstr "Kann komprimiertes Paket nicht entpacken"
 
-#: ../../lib/entropy/client/interfaces/db.py:661
+#: ../../lib/entropy/client/interfaces/db.py:662
 msgid "Skipping repository"
 msgstr "Überspringe Repositorium"
 
-#: ../../lib/entropy/client/interfaces/db.py:693
+#: ../../lib/entropy/client/interfaces/db.py:694
 msgid "Repository is invalid"
 msgstr "Repositorium wird aktualisiert"
 
-#: ../../lib/entropy/client/interfaces/db.py:717
+#: ../../lib/entropy/client/interfaces/db.py:718
 msgid "Indexing Repository metadata"
 msgstr "Indiziere Repositoriums-Metadaten"
 
-#: ../../lib/entropy/client/interfaces/db.py:905
+#: ../../lib/entropy/client/interfaces/db.py:906
 msgid "Downloading repository metafile"
 msgstr "Lade Repositoriums-Datenbank herunter"
 
-#: ../../lib/entropy/client/interfaces/db.py:915
+#: ../../lib/entropy/client/interfaces/db.py:916
 msgid "Downloading GPG signature of repository metafile"
 msgstr "Lade GPG Signaturen aus Repositoriums-Metadatei"
 
-#: ../../lib/entropy/client/interfaces/db.py:925
+#: ../../lib/entropy/client/interfaces/db.py:926
 msgid "Downloading Notice Board"
 msgstr "Lade Schwarzes Brett herunter"
 
-#: ../../lib/entropy/client/interfaces/db.py:951
+#: ../../lib/entropy/client/interfaces/db.py:952
 msgid "unpacked meta file"
 msgstr "ungepackte Metadatei"
 
-#: ../../lib/entropy/client/interfaces/db.py:957
+#: ../../lib/entropy/client/interfaces/db.py:958
 msgid "removed meta file"
 msgstr "Kann Datei nicht automatisch zusammenfügen"
 
-#: ../../lib/entropy/client/interfaces/db.py:974
+#: ../../lib/entropy/client/interfaces/db.py:975
 msgid "not available, it's ok"
 msgstr "nicht verfügbar aber OK"
 
-#: ../../lib/entropy/client/interfaces/db.py:978
+#: ../../lib/entropy/client/interfaces/db.py:979
 msgid "not available, not very ok!"
 msgstr "nicht verfügbar, nicht sehr Ok!"
 
-#: ../../lib/entropy/client/interfaces/db.py:991
+#: ../../lib/entropy/client/interfaces/db.py:992
 msgid "available, w00t!"
 msgstr "verfügbar, w00t!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1008
+#: ../../lib/entropy/client/interfaces/db.py:1009
 msgid "cannot be unpacked, not very ok!"
 msgstr "kann nicht entpacken, nicht sehr Ok!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1059
+#: ../../lib/entropy/client/interfaces/db.py:1060
 #: ../../client/text_repositories.py:365
 msgid "Repository revision"
 msgstr "Repository Version"
 
-#: ../../lib/entropy/client/interfaces/db.py:1082
+#: ../../lib/entropy/client/interfaces/db.py:1083
 msgid "Checking downloaded repository"
 msgstr "Überprüfe heruntergeladenes Repositorium"
 
-#: ../../lib/entropy/client/interfaces/db.py:1096
+#: ../../lib/entropy/client/interfaces/db.py:1097
 msgid "Cannot open digest"
 msgstr "Kann Übersicht nicht öffnen"
 
-#: ../../lib/entropy/client/interfaces/db.py:1107
-#: ../../lib/entropy/client/interfaces/db.py:1118
+#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1119
 msgid "Downloaded repository status"
 msgstr "Status des Repositoriums-Downloads"
 
-#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1109
 msgid "OK"
 msgstr "OK"
 
-#: ../../lib/entropy/client/interfaces/db.py:1119
+#: ../../lib/entropy/client/interfaces/db.py:1120
 msgid "ERROR"
 msgstr "FEHLER"
 
-#: ../../lib/entropy/client/interfaces/db.py:1128
+#: ../../lib/entropy/client/interfaces/db.py:1129
 msgid "An error occured while checking repository integrity"
 msgstr ""
 "Ein Fehler ist während der Überprüfung der Repositoriums-Integrität "
 "aufgetreten"
 
-#: ../../lib/entropy/client/interfaces/db.py:1129
+#: ../../lib/entropy/client/interfaces/db.py:1130
 msgid "Giving up"
 msgstr "Ich geb's auf"
 
-#: ../../lib/entropy/client/interfaces/db.py:1151
+#: ../../lib/entropy/client/interfaces/db.py:1152
 #: ../../lib/entropy/security.py:278
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 "Stelle sicher den importierten Schlüssel zu verifizieren und setze einen "
 "entsprechenden Vertrauenslevel"
 
-#: ../../lib/entropy/client/interfaces/db.py:1170
+#: ../../lib/entropy/client/interfaces/db.py:1171
 msgid "This repository suports GPG-signed packages"
 msgstr "Dieses Repositorium unterstützt GPG-signierte Pakete"
 
-#: ../../lib/entropy/client/interfaces/db.py:1177
+#: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 "du möchtest  vielleicht GnuPG installieren um die Vorteile dieser Funktion "
 "zu nutzen"
 
-#: ../../lib/entropy/client/interfaces/db.py:1211
+#: ../../lib/entropy/client/interfaces/db.py:1212
 #: ../../lib/entropy/security.py:317
 msgid "GPG key changed for"
 msgstr "GPG-Schlüssel geändert für"
 
-#: ../../lib/entropy/client/interfaces/db.py:1231
+#: ../../lib/entropy/client/interfaces/db.py:1232
 #: ../../lib/entropy/security.py:336
 msgid "GPG key already installed for"
 msgstr "GPG-Schlüssel bereits installiert für"
 
-#: ../../lib/entropy/client/interfaces/db.py:1244
+#: ../../lib/entropy/client/interfaces/db.py:1245
 msgid "GPG key EXPIRED for repository"
 msgstr "GPG Schlüssel für Repositorium ist ABGELAUFEN"
 
-#: ../../lib/entropy/client/interfaces/db.py:1256
+#: ../../lib/entropy/client/interfaces/db.py:1257
 msgid "Installing GPG key for repository"
 msgstr "Installiere GPG-Schlüssel für Repositorium"
 
-#: ../../lib/entropy/client/interfaces/db.py:1274
-#: ../../lib/entropy/client/interfaces/db.py:1306
+#: ../../lib/entropy/client/interfaces/db.py:1275
+#: ../../lib/entropy/client/interfaces/db.py:1307
 #: ../../lib/entropy/security.py:374
 msgid "Error during GPG key installation"
 msgstr "Fehler während der Installation des GPG-Schlüssels"
 
-#: ../../lib/entropy/client/interfaces/db.py:1284
+#: ../../lib/entropy/client/interfaces/db.py:1285
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1318
+#: ../../lib/entropy/client/interfaces/db.py:1319
 msgid "Successfully installed GPG key for repository"
 msgstr "Erfolgreich GPG-Schlüssel für Repositorium installiert"
 
-#: ../../lib/entropy/client/interfaces/db.py:1327
+#: ../../lib/entropy/client/interfaces/db.py:1328
 #: ../../lib/entropy/security.py:394
 msgid "Fingerprint"
 msgstr "Fingerabdruck"
 
-#: ../../lib/entropy/client/interfaces/db.py:1367
+#: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "Verifying GPG signature of"
 msgstr "Vergleiche GPG Signatur von"
 
-#: ../../lib/entropy/client/interfaces/db.py:1381
+#: ../../lib/entropy/client/interfaces/db.py:1382
 msgid "Verified GPG signature of"
 msgstr "Verglichene GPG Signatur von"
 
-#: ../../lib/entropy/client/interfaces/db.py:1391
+#: ../../lib/entropy/client/interfaces/db.py:1392
 #: ../../lib/entropy/security.py:419
 msgid "Error during GPG verification of"
 msgstr "Fehler während des GPG Vergleichs von"
 
-#: ../../lib/entropy/client/interfaces/db.py:1400
+#: ../../lib/entropy/client/interfaces/db.py:1401
 #: ../../lib/entropy/security.py:428
 msgid "It could mean a potential security risk"
 msgstr "Es könnte ein potentielles Sicherheitsproblem darstellen"
 
-#: ../../lib/entropy/client/interfaces/db.py:1454
+#: ../../lib/entropy/client/interfaces/db.py:1455
 #, fuzzy
 msgid "Web Service"
 msgstr "D_ienste"
 
-#: ../../lib/entropy/client/interfaces/db.py:1455
+#: ../../lib/entropy/client/interfaces/db.py:1456
 msgid "skipping differential sync"
 msgstr "überspringe differentielle Synchronisation"
 
-#: ../../lib/entropy/client/interfaces/db.py:1456
+#: ../../lib/entropy/client/interfaces/db.py:1457
 msgid "threshold"
 msgstr "Schwelle"
 
-#: ../../lib/entropy/client/interfaces/db.py:1490
+#: ../../lib/entropy/client/interfaces/db.py:1491
 #, fuzzy
 msgid "Web Service communication error"
 msgstr "Kommunikationsfehler"
 
-#: ../../lib/entropy/client/interfaces/db.py:1510
+#: ../../lib/entropy/client/interfaces/db.py:1511
 #, fuzzy
 msgid "Web Service data error"
 msgstr "EAPI3 Service Fehler"
 
-#: ../../lib/entropy/client/interfaces/db.py:1526
+#: ../../lib/entropy/client/interfaces/db.py:1527
 msgid "Local status"
 msgstr "Lokaler Status"
 
-#: ../../lib/entropy/client/interfaces/db.py:1558
+#: ../../lib/entropy/client/interfaces/db.py:1559
 msgid "Fetching segments"
 msgstr "Lade Segmente"
 
-#: ../../lib/entropy/client/interfaces/db.py:1594
-#: ../../lib/entropy/client/interfaces/db.py:1613
-#: ../../lib/entropy/client/interfaces/db.py:1630
+#: ../../lib/entropy/client/interfaces/db.py:1595
+#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1631
 #, fuzzy
 msgid "Web Service status"
 msgstr "Service Status"
 
-#: ../../lib/entropy/client/interfaces/db.py:1595
+#: ../../lib/entropy/client/interfaces/db.py:1596
 msgid "cannot fetch repository metadata"
 msgstr "kann keine Repositoriums-Metadaten holen"
 
-#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1615
 msgid "cannot update treeupdates data"
 msgstr "kann treeupdate-Daten nicht aktualisieren"
 
-#: ../../lib/entropy/client/interfaces/db.py:1631
+#: ../../lib/entropy/client/interfaces/db.py:1632
 msgid "cannot update package sets data"
 msgstr "kann Paketsets-Daten nicht updaten"
 
-#: ../../lib/entropy/client/interfaces/db.py:1647
+#: ../../lib/entropy/client/interfaces/db.py:1648
 msgid "Fetch error on segment while adding"
 msgstr "Fehler bein laden und Hinzufügen des Segmentes"
 
-#: ../../lib/entropy/client/interfaces/db.py:1674
+#: ../../lib/entropy/client/interfaces/db.py:1675
 msgid "repository error while adding packages"
 msgstr "Repositoriumsfehler während des Hinzufügens von Paketen"
 
-#: ../../lib/entropy/client/interfaces/db.py:1699
+#: ../../lib/entropy/client/interfaces/db.py:1700
 msgid "repository error while removing packages"
 msgstr "Repositoriums-Prüfsumme stimmt mit entfernter nicht überein"
 
-#: ../../lib/entropy/client/interfaces/db.py:1715
+#: ../../lib/entropy/client/interfaces/db.py:1716
 msgid "Repository checksum doesn't match remote."
 msgstr "Repositoriums-Prüfsumme entspricht nicht der entfernten."
 
-#: ../../lib/entropy/client/interfaces/db.py:1723
+#: ../../lib/entropy/client/interfaces/db.py:1724
 msgid "remote"
 msgstr "auf entferntem Computer"
 
-#: ../../lib/entropy/client/interfaces/db.py:1781
+#: ../../lib/entropy/client/interfaces/db.py:1782
 msgid "repository is already up to date"
 msgstr "Repositorium ist bereits auf dem aktuellen Stand."
 
-#: ../../lib/entropy/client/interfaces/db.py:1985
+#: ../../lib/entropy/client/interfaces/db.py:1986
 msgid "Configuration files update error, not critical, continuing"
 msgstr "Konfigurationsdatei Updatefehler, nicht kritisch, fahre fort"
 
@@ -6480,7 +6480,7 @@ msgstr "verschiebe Pakete von einem Repository in ein anderes"
 msgid "Entropy Infrastructure Toolkit"
 msgstr ""
 
-#: ../../server/eit/commands/help.py:66 ../../services/kernel-switcher:226
+#: ../../server/eit/commands/help.py:63 ../../services/kernel-switcher:226
 #, fuzzy
 msgid "this help"
 msgstr "diese Ausgabe"

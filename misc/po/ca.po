@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-18 22:49+0200\n"
-"PO-Revision-Date: 2011-02-27 20:35+0100\n"
+"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"PO-Revision-Date: 2011-10-21 11:16+0100\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "Language: ca\n"
@@ -23,7 +23,7 @@ msgid "Syncing current database"
 msgstr "S'està sincronitzant la base de dades actual"
 
 #: ../../lib/entropy/db/__init__.py:5026
-#: ../../lib/entropy/client/interfaces/db.py:287
+#: ../../lib/entropy/client/interfaces/db.py:288
 msgid "please wait"
 msgstr "espereu"
 
@@ -76,9 +76,8 @@ msgid "SPM"
 msgstr "SPM"
 
 #: ../../lib/entropy/db/skel.py:1633
-#, fuzzy
 msgid "Running packages metadata update"
-msgstr "s'està forçant l'actualització de les metadades dels paquets"
+msgstr "S'estan actualitzant les metadades dels paquets"
 
 #: ../../lib/entropy/db/skel.py:1634
 msgid "it could take a while"
@@ -360,10 +359,10 @@ msgstr "No es pot actualitzar el fitxer SPM de paquets instal·lats"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3150
 #: ../../lib/entropy/server/interfaces/main.py:1640
-#: ../../lib/entropy/client/interfaces/db.py:403
-#: ../../lib/entropy/client/interfaces/db.py:452
-#: ../../lib/entropy/client/interfaces/db.py:506
-#: ../../lib/entropy/client/interfaces/db.py:1780 ../../lib/entropy/qa.py:797
+#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:1781 ../../lib/entropy/qa.py:797
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:293
 #: ../../client/text_ui.py:1528 ../../client/text_ui.py:1529
 #: ../../client/text_ui.py:1531 ../../client/text_ui.py:1532
@@ -376,9 +375,8 @@ msgid "Attention"
 msgstr "Atenció"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3151
-#, fuzzy
 msgid "preserved libraries have been found on system"
-msgstr "S'han trobat fitxers alterats"
+msgstr "S'han trobat llibreries preservades al sistema"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3285
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3437
@@ -960,9 +958,8 @@ msgid "failed to download from mirror"
 msgstr "ha fallat en baixar de la rèplica"
 
 #: ../../lib/entropy/server/interfaces/db.py:795
-#, fuzzy
 msgid "failed to unpack"
-msgstr "No es pot empaquetar"
+msgstr "ha fallat en desempaquetar"
 
 #: ../../lib/entropy/server/interfaces/db.py:1063
 msgid "Troubles with treeupdates"
@@ -1097,7 +1094,6 @@ msgid "quickpkg manually to update embedded db"
 msgstr "quickpkg manualment per actualitzar la base de dades incrustada"
 
 #: ../../lib/entropy/server/interfaces/main.py:392
-#, fuzzy
 msgid "Repository updated anyway"
 msgstr "El repositori s'ha actualitzat igualment"
 
@@ -1358,7 +1354,7 @@ msgstr "Número de paquets trencats"
 
 #: ../../lib/entropy/server/interfaces/main.py:2963
 #: ../../lib/entropy/server/interfaces/main.py:3120
-#: ../../lib/entropy/client/interfaces/db.py:1718
+#: ../../lib/entropy/client/interfaces/db.py:1719
 msgid "local"
 msgstr "local"
 
@@ -1626,20 +1622,17 @@ msgid "manual dependencies for"
 msgstr "dependències manuals per a"
 
 #: ../../lib/entropy/server/interfaces/main.py:4816
-#, fuzzy
 msgid "these are the missing dependencies"
-msgstr "Aquestes són les dependències que no s'han trobat"
+msgstr "aquestes són les dependències que falten"
 
 #: ../../lib/entropy/server/interfaces/main.py:4972
-#, fuzzy
 msgid "no missing dependencies !"
-msgstr "No s'han trobat dependències perdudes."
+msgstr "no s'han trobat a faltar dependències !"
 
 #: ../../lib/entropy/server/interfaces/main.py:4987
 #: ../../server/eit/commands/notice.py:180
-#, fuzzy
 msgid "Do you agree?"
-msgstr "N'esteu segur?"
+msgstr "Hi esteu d'acord?"
 
 #: ../../lib/entropy/server/interfaces/main.py:4989
 #: ../../lib/entropy/server/interfaces/main.py:4995
@@ -1667,43 +1660,43 @@ msgstr "Sí"
 #: ../../lib/entropy/server/interfaces/main.py:4989
 #: ../../server/eit/commands/notice.py:182
 msgid "Repeat"
-msgstr ""
+msgstr "Repeteix"
 
 #: ../../lib/entropy/server/interfaces/main.py:5109
 msgid "metadata QA hook"
-msgstr ""
+msgstr "ganxo QA de metadades"
 
 #: ../../lib/entropy/server/interfaces/main.py:5111
 msgid "not owned by uid and gid = 0"
-msgstr ""
+msgstr "no és propietat de uid i gid = 0"
 
 #: ../../lib/entropy/server/interfaces/main.py:5124
 msgid "using metadata QA hook"
-msgstr ""
+msgstr "s'està usant el ganxo QA de metadades"
 
 #: ../../lib/entropy/server/interfaces/main.py:5151
 msgid "metadata QA check for"
-msgstr ""
+msgstr "comprovació QA de metadades per"
 
 #: ../../lib/entropy/server/interfaces/main.py:5200
 msgid "cannot execute metadata QA hook for"
-msgstr ""
+msgstr "no es pot executar el ganxo QA de metadades per"
 
 #: ../../lib/entropy/server/interfaces/main.py:5226
 msgid "attention, QA hook returned a warning"
-msgstr ""
+msgstr "atenció, el ganxo QA ha retornat un avís"
 
 #: ../../lib/entropy/server/interfaces/main.py:5248
 msgid "attention, QA hook returned an error"
-msgstr ""
+msgstr "atenció, el ganxo QA ha retornat un error"
 
 #: ../../lib/entropy/server/interfaces/main.py:5265
 msgid "metadata QA check complete"
-msgstr ""
+msgstr "La comprovació QA de metadades ha acabat"
 
 #: ../../lib/entropy/server/interfaces/main.py:5348
 msgid "injected package, no separate debug package"
-msgstr ""
+msgstr "el paquet s'ha injectat, no hi ha paquet de depuració separat"
 
 #: ../../lib/entropy/server/interfaces/main.py:5366
 msgid "Exception caught, closing tasks"
@@ -1768,7 +1761,7 @@ msgstr "hi ha fitxers de configuració pendents d'actualitzar"
 
 #: ../../lib/entropy/server/interfaces/main.py:5859
 msgid "found available dep_rewrites for this package"
-msgstr "hi ha dep_rewrites per aquest paquet"
+msgstr "hi ha dep_rewrites disponibles per aquest paquet"
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
@@ -1804,9 +1797,8 @@ msgid "removing package set"
 msgstr "s'està eliminant el conjunt de paquets"
 
 #: ../../lib/entropy/client/services/interfaces.py:55
-#, fuzzy
 msgid "Unknown documents"
-msgstr "Afegeix document"
+msgstr "Documents desconeguts"
 
 #: ../../lib/entropy/client/services/interfaces.py:56
 msgid "Comments"
@@ -1823,16 +1815,15 @@ msgstr "Fitxers genèrics"
 
 #: ../../lib/entropy/client/services/interfaces.py:60
 msgid "Videos"
-msgstr ""
+msgstr "Vídeos"
 
 #: ../../lib/entropy/client/services/interfaces.py:61
 msgid "Icons"
-msgstr ""
+msgstr "Icones"
 
 #: ../../lib/entropy/client/services/interfaces.py:64
-#, fuzzy
 msgid "Unknown document"
-msgstr "Afegeix document"
+msgstr "Document desconegut"
 
 #: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Comment"
@@ -1849,11 +1840,11 @@ msgstr "Fitxer genèric"
 
 #: ../../lib/entropy/client/services/interfaces.py:69
 msgid "Video"
-msgstr ""
+msgstr "Vídeo"
 
 #: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Icon"
-msgstr ""
+msgstr "Icona"
 
 #: ../../lib/entropy/client/misc.py:173 ../../client/text_configuration.py:165
 #: ../../client/text_configuration.py:177
@@ -2121,9 +2112,8 @@ msgid "please report"
 msgstr "si us plau informeu-ne"
 
 #: ../../lib/entropy/client/interfaces/package.py:2677
-#, fuzzy
 msgid "Cannot protect broken symlink"
-msgstr "No es pot eliminar l'enllaç simbòlic"
+msgstr "No es pot protegir l'enllaç simbòlic"
 
 #: ../../lib/entropy/client/interfaces/package.py:2716
 msgid "Skipping file installation/removal"
@@ -2199,7 +2189,7 @@ msgstr "S'està instal·lant el paquet"
 
 #: ../../lib/entropy/client/interfaces/package.py:3155
 msgid "unsupported splitdebug usage (package files)"
-msgstr ""
+msgstr "ús de splitdebug no implementat (fitxers de paquets)"
 
 #: ../../lib/entropy/client/interfaces/package.py:3159
 msgid "<3 debug files installation enabled <3"
@@ -2306,7 +2296,7 @@ msgstr "Postinstal·lació"
 
 #: ../../lib/entropy/client/interfaces/package.py:3564
 msgid "Setup"
-msgstr ""
+msgstr "Configuració"
 
 #: ../../lib/entropy/client/interfaces/package.py:3572
 msgid "Preinstall"
@@ -2337,292 +2327,289 @@ msgstr "S'està executant una altra instància d'Entropy."
 msgid "An error occured. Action aborted."
 msgstr "S'ha produït un error. L'acció s'ha interromput."
 
-#: ../../lib/entropy/client/interfaces/db.py:285
+#: ../../lib/entropy/client/interfaces/db.py:286
 msgid "Injecting downloaded dump"
 msgstr "S'estan injectant els elements que s'han baixat"
 
-#: ../../lib/entropy/client/interfaces/db.py:373
+#: ../../lib/entropy/client/interfaces/db.py:374
 msgid "Repository URL"
 msgstr "URL del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:381
+#: ../../lib/entropy/client/interfaces/db.py:382
 msgid "Repository local path"
 msgstr "Camí del repositori local"
 
-#: ../../lib/entropy/client/interfaces/db.py:389
+#: ../../lib/entropy/client/interfaces/db.py:390
 msgid "Repository API"
 msgstr "API del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:405
 msgid "Repository is being updated"
 msgstr "S'està actualitzant el repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:405
+#: ../../lib/entropy/client/interfaces/db.py:406
 msgid "Try again in a few minutes"
 msgstr "Torneu-ho a intentar en uns minuts"
 
-#: ../../lib/entropy/client/interfaces/db.py:453
+#: ../../lib/entropy/client/interfaces/db.py:454
 msgid "remote repository got suddenly locked"
 msgstr "el repositori remot de sobte s'ha bloquejat"
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:463
+#: ../../lib/entropy/client/interfaces/db.py:464
 msgid "Downloading repository"
 msgstr "S'està baixant el repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:507
+#: ../../lib/entropy/client/interfaces/db.py:508
 msgid "repository does not exist online"
 msgstr "el repositori no està en línia"
 
-#: ../../lib/entropy/client/interfaces/db.py:527
+#: ../../lib/entropy/client/interfaces/db.py:528
 msgid "Downloading checksum"
 msgstr "S'està baixant la suma de verificació"
 
-#: ../../lib/entropy/client/interfaces/db.py:552
+#: ../../lib/entropy/client/interfaces/db.py:553
 msgid "Cannot fetch checksum"
 msgstr "No es pot obtenir la suma de verificació"
 
-#: ../../lib/entropy/client/interfaces/db.py:553
-#: ../../lib/entropy/client/interfaces/db.py:1097
+#: ../../lib/entropy/client/interfaces/db.py:554
+#: ../../lib/entropy/client/interfaces/db.py:1098
 msgid "Cannot verify repository integrity"
 msgstr "No es pot verificar la integritat del respositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:643
+#: ../../lib/entropy/client/interfaces/db.py:644
 msgid "Unpacking database to"
 msgstr "S'està desempaquetant la base de dades a"
 
-#: ../../lib/entropy/client/interfaces/db.py:660
+#: ../../lib/entropy/client/interfaces/db.py:661
 msgid "Cannot unpack compressed package"
 msgstr "No es pot desempaquetar el paquet comprimit"
 
-#: ../../lib/entropy/client/interfaces/db.py:661
+#: ../../lib/entropy/client/interfaces/db.py:662
 msgid "Skipping repository"
 msgstr "S'omet el repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:693
+#: ../../lib/entropy/client/interfaces/db.py:694
 msgid "Repository is invalid"
 msgstr "El repositori no és vàlid"
 
-#: ../../lib/entropy/client/interfaces/db.py:717
+#: ../../lib/entropy/client/interfaces/db.py:718
 msgid "Indexing Repository metadata"
 msgstr "S'estan indexant les metadades del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:905
+#: ../../lib/entropy/client/interfaces/db.py:906
 msgid "Downloading repository metafile"
 msgstr "S'està baixant el metafitxer del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:915
+#: ../../lib/entropy/client/interfaces/db.py:916
 msgid "Downloading GPG signature of repository metafile"
 msgstr "S'està baixant la signatura GPG del metafitxer del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:925
+#: ../../lib/entropy/client/interfaces/db.py:926
 msgid "Downloading Notice Board"
 msgstr "S'està baixant el Tauler de Notícies"
 
-#: ../../lib/entropy/client/interfaces/db.py:951
+#: ../../lib/entropy/client/interfaces/db.py:952
 msgid "unpacked meta file"
 msgstr "el metafitxer s'ha desempaquetat"
 
-#: ../../lib/entropy/client/interfaces/db.py:957
+#: ../../lib/entropy/client/interfaces/db.py:958
 msgid "removed meta file"
 msgstr "s'ha eliminat el metafitxer"
 
-#: ../../lib/entropy/client/interfaces/db.py:974
+#: ../../lib/entropy/client/interfaces/db.py:975
 msgid "not available, it's ok"
 msgstr "no disponible, està bé"
 
-#: ../../lib/entropy/client/interfaces/db.py:978
+#: ../../lib/entropy/client/interfaces/db.py:979
 msgid "not available, not very ok!"
 msgstr "no disponible, no gaire bé!"
 
-#: ../../lib/entropy/client/interfaces/db.py:991
+#: ../../lib/entropy/client/interfaces/db.py:992
 msgid "available, w00t!"
 msgstr "disponible, bé!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1008
+#: ../../lib/entropy/client/interfaces/db.py:1009
 msgid "cannot be unpacked, not very ok!"
 msgstr "No es pot desempaquetar, no gaire bé!"
 
-#: ../../lib/entropy/client/interfaces/db.py:1059
+#: ../../lib/entropy/client/interfaces/db.py:1060
 #: ../../client/text_repositories.py:365
 msgid "Repository revision"
 msgstr "Revisió del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1082
+#: ../../lib/entropy/client/interfaces/db.py:1083
 msgid "Checking downloaded repository"
 msgstr "S'està comprovant el repositori baixat"
 
-#: ../../lib/entropy/client/interfaces/db.py:1096
+#: ../../lib/entropy/client/interfaces/db.py:1097
 msgid "Cannot open digest"
 msgstr "No es pot obrir l'empremta electrònica"
 
-#: ../../lib/entropy/client/interfaces/db.py:1107
-#: ../../lib/entropy/client/interfaces/db.py:1118
+#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1119
 msgid "Downloaded repository status"
 msgstr "S'ha baixat l'estat del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1108
+#: ../../lib/entropy/client/interfaces/db.py:1109
 msgid "OK"
 msgstr "CORRECTE"
 
-#: ../../lib/entropy/client/interfaces/db.py:1119
+#: ../../lib/entropy/client/interfaces/db.py:1120
 msgid "ERROR"
 msgstr "ERROR"
 
-#: ../../lib/entropy/client/interfaces/db.py:1128
+#: ../../lib/entropy/client/interfaces/db.py:1129
 msgid "An error occured while checking repository integrity"
 msgstr ""
 "S'ha produït un error mentre s'estava analitzant la integritat del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1129
+#: ../../lib/entropy/client/interfaces/db.py:1130
 msgid "Giving up"
 msgstr "S'abandona"
 
-#: ../../lib/entropy/client/interfaces/db.py:1151
+#: ../../lib/entropy/client/interfaces/db.py:1152
 #: ../../lib/entropy/security.py:278
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 "Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de "
 "confiança apropiat"
 
-#: ../../lib/entropy/client/interfaces/db.py:1170
+#: ../../lib/entropy/client/interfaces/db.py:1171
 msgid "This repository suports GPG-signed packages"
 msgstr "Aquest repositori permet paquets signats amb GPG"
 
-#: ../../lib/entropy/client/interfaces/db.py:1177
+#: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr "potser voleu instal·lar GnuPG i aprofitar-vos d'aquesta característica"
 
-#: ../../lib/entropy/client/interfaces/db.py:1211
+#: ../../lib/entropy/client/interfaces/db.py:1212
 #: ../../lib/entropy/security.py:317
 msgid "GPG key changed for"
 msgstr "la clau GPG ha canviat per"
 
-#: ../../lib/entropy/client/interfaces/db.py:1231
+#: ../../lib/entropy/client/interfaces/db.py:1232
 #: ../../lib/entropy/security.py:336
 msgid "GPG key already installed for"
 msgstr "la clau GPG ja està instal·lada per a"
 
-#: ../../lib/entropy/client/interfaces/db.py:1244
+#: ../../lib/entropy/client/interfaces/db.py:1245
 msgid "GPG key EXPIRED for repository"
 msgstr "La clau GPG del repositori ha VENÇUT"
 
-#: ../../lib/entropy/client/interfaces/db.py:1256
+#: ../../lib/entropy/client/interfaces/db.py:1257
 msgid "Installing GPG key for repository"
 msgstr "S'està instal·lant la clau GPG pel repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1274
-#: ../../lib/entropy/client/interfaces/db.py:1306
+#: ../../lib/entropy/client/interfaces/db.py:1275
+#: ../../lib/entropy/client/interfaces/db.py:1307
 #: ../../lib/entropy/security.py:374
 msgid "Error during GPG key installation"
 msgstr "Error en instal·lar la clau GPG"
 
-#: ../../lib/entropy/client/interfaces/db.py:1284
+#: ../../lib/entropy/client/interfaces/db.py:1285
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
+"La clau GPG sembla instal·lada, però no desada correctament, es restableix"
 
-#: ../../lib/entropy/client/interfaces/db.py:1318
+#: ../../lib/entropy/client/interfaces/db.py:1319
 msgid "Successfully installed GPG key for repository"
 msgstr "S'ha instal·lat la clau GPG pel repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1327
+#: ../../lib/entropy/client/interfaces/db.py:1328
 #: ../../lib/entropy/security.py:394
 msgid "Fingerprint"
 msgstr "Empremta"
 
-#: ../../lib/entropy/client/interfaces/db.py:1367
+#: ../../lib/entropy/client/interfaces/db.py:1368
 msgid "Verifying GPG signature of"
 msgstr "S'està comprovant la signatura GPG de"
 
-#: ../../lib/entropy/client/interfaces/db.py:1381
+#: ../../lib/entropy/client/interfaces/db.py:1382
 msgid "Verified GPG signature of"
 msgstr "S'ha comprovat la signatura GPG de"
 
-#: ../../lib/entropy/client/interfaces/db.py:1391
+#: ../../lib/entropy/client/interfaces/db.py:1392
 #: ../../lib/entropy/security.py:419
 msgid "Error during GPG verification of"
 msgstr "Error en la comprovació GPG de"
 
-#: ../../lib/entropy/client/interfaces/db.py:1400
+#: ../../lib/entropy/client/interfaces/db.py:1401
 #: ../../lib/entropy/security.py:428
 msgid "It could mean a potential security risk"
 msgstr "Pot comportar un risc potencial de seguretat"
 
-#: ../../lib/entropy/client/interfaces/db.py:1454
-#, fuzzy
-msgid "Web Service"
-msgstr "S_erveis"
-
 #: ../../lib/entropy/client/interfaces/db.py:1455
+msgid "Web Service"
+msgstr "Servei web"
+
+#: ../../lib/entropy/client/interfaces/db.py:1456
 msgid "skipping differential sync"
 msgstr "s'estan ometent les sincronitzacions diferencials"
 
-#: ../../lib/entropy/client/interfaces/db.py:1456
+#: ../../lib/entropy/client/interfaces/db.py:1457
 msgid "threshold"
 msgstr "llindar"
 
-#: ../../lib/entropy/client/interfaces/db.py:1490
-#, fuzzy
+#: ../../lib/entropy/client/interfaces/db.py:1491
 msgid "Web Service communication error"
-msgstr "Error de Servei EAPI3"
+msgstr "Error de comunicació del Servei Web"
 
-#: ../../lib/entropy/client/interfaces/db.py:1510
-#, fuzzy
+#: ../../lib/entropy/client/interfaces/db.py:1511
 msgid "Web Service data error"
-msgstr "Error de Servei EAPI3"
+msgstr "Error de dades del Servei Web"
 
-#: ../../lib/entropy/client/interfaces/db.py:1526
+#: ../../lib/entropy/client/interfaces/db.py:1527
 msgid "Local status"
 msgstr "Estat local"
 
-#: ../../lib/entropy/client/interfaces/db.py:1558
+#: ../../lib/entropy/client/interfaces/db.py:1559
 msgid "Fetching segments"
 msgstr "S'estan obtenint segments"
 
-#: ../../lib/entropy/client/interfaces/db.py:1594
-#: ../../lib/entropy/client/interfaces/db.py:1613
-#: ../../lib/entropy/client/interfaces/db.py:1630
-#, fuzzy
-msgid "Web Service status"
-msgstr "Estat de servei"
-
 #: ../../lib/entropy/client/interfaces/db.py:1595
+#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1631
+msgid "Web Service status"
+msgstr "Estat del Servei Web"
+
+#: ../../lib/entropy/client/interfaces/db.py:1596
 msgid "cannot fetch repository metadata"
 msgstr "no es poden obtenir les metadades del repositori"
 
-#: ../../lib/entropy/client/interfaces/db.py:1614
+#: ../../lib/entropy/client/interfaces/db.py:1615
 msgid "cannot update treeupdates data"
 msgstr "no es poden actualitzar les dades de l'arbre d'actualitzacions"
 
-#: ../../lib/entropy/client/interfaces/db.py:1631
+#: ../../lib/entropy/client/interfaces/db.py:1632
 msgid "cannot update package sets data"
 msgstr "no es poden actualitzar les dades dels conjunts de paquets"
 
-#: ../../lib/entropy/client/interfaces/db.py:1647
+#: ../../lib/entropy/client/interfaces/db.py:1648
 msgid "Fetch error on segment while adding"
 msgstr "S'ha produït un error d'obtenció del segment mentre s'afegia"
 
-#: ../../lib/entropy/client/interfaces/db.py:1674
+#: ../../lib/entropy/client/interfaces/db.py:1675
 msgid "repository error while adding packages"
 msgstr "error del repositori en afegir paquets"
 
-#: ../../lib/entropy/client/interfaces/db.py:1699
+#: ../../lib/entropy/client/interfaces/db.py:1700
 msgid "repository error while removing packages"
 msgstr "error del repositori en eliminar paquets"
 
-#: ../../lib/entropy/client/interfaces/db.py:1715
+#: ../../lib/entropy/client/interfaces/db.py:1716
 msgid "Repository checksum doesn't match remote."
 msgstr "La suma de verificació del repositori no coincideix amb la remota."
 
-#: ../../lib/entropy/client/interfaces/db.py:1723
+#: ../../lib/entropy/client/interfaces/db.py:1724
 msgid "remote"
 msgstr "remot"
 
-#: ../../lib/entropy/client/interfaces/db.py:1781
+#: ../../lib/entropy/client/interfaces/db.py:1782
 msgid "repository is already up to date"
 msgstr "el repositori ja està actualitzat"
 
-#: ../../lib/entropy/client/interfaces/db.py:1985
+#: ../../lib/entropy/client/interfaces/db.py:1986
 msgid "Configuration files update error, not critical, continuing"
 msgstr ""
 "Hi ha un error en l'actualització dels fitxers de configuració, no és "
@@ -2691,24 +2678,20 @@ msgid "Resources unlocked, let's go!"
 msgstr "Els recursos s'han desbloquejat. Som-hi!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1680
-#, fuzzy
 msgid "Resources still locked, giving up!"
-msgstr "Els recursos segueixen ocupats després de %s minuts. S'abandona!"
+msgstr "Els recursos segueixen bloquejats, s'abandona!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1688
-#, fuzzy
 msgid "Resources locked, sleeping..."
-msgstr "Els recursos s'han desbloquejat. Som-hi!"
+msgstr "Els recursos estan bloquejats, esperant..."
 
 #: ../../lib/entropy/client/interfaces/methods.py:1837
-#, fuzzy
 msgid "Checking speed of"
-msgstr "S'està comprovant el temps de resposta de"
+msgstr "S'està comprovant la velocitat de"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1864
-#, fuzzy
 msgid "Mirror speed"
-msgstr "Rèpliques"
+msgstr "Velocitat de la rèplica"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2326
 msgid "not a valid method"
@@ -2736,7 +2719,7 @@ msgstr "Fase de preinstal·lació"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:499
 msgid "setup phase"
-msgstr ""
+msgstr "fase de configuració"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:509
 msgid "pre-remove phase"
@@ -3030,9 +3013,8 @@ msgid "files and directories"
 msgstr "fitxers i directoris"
 
 #: ../../lib/entropy/cli.py:370 ../../sulfur/src/sulfur/dialogs.py:2202
-#, fuzzy
 msgid "Uploading"
-msgstr "S'està baixant"
+msgstr "S'està penjant"
 
 #: ../../lib/entropy/cli.py:404 ../../client/text_rescue.py:776
 msgid "corrupted"
@@ -3308,9 +3290,8 @@ msgid "Element number to remove (-1 to go back):"
 msgstr "Número de l'element a eliminar (-1 per tornar):"
 
 #: ../../lib/entropy/qa.py:160
-#, fuzzy
 msgid "Searching for broken reverse dependencies"
-msgstr "Ara s'estan cercant dependències inverses trencades"
+msgstr "Cercant dependències inverses trencades"
 
 #: ../../lib/entropy/qa.py:177
 msgid "scanning for broken reverse dependencies"
@@ -3325,14 +3306,12 @@ msgid "needs"
 msgstr "necessita"
 
 #: ../../lib/entropy/qa.py:273
-#, fuzzy
 msgid "Searching for missing Runtime dependencies"
-msgstr "Ara s'estan cercant dependències inverses trencades"
+msgstr "Cercant dependències en temps d'execució no satisfetes"
 
 #: ../../lib/entropy/qa.py:280
-#, fuzzy
 msgid "scanning"
-msgstr "S'està escanejant..."
+msgstr "escanejant..."
 
 #: ../../lib/entropy/qa.py:298 ../../lib/entropy/qa.py:579
 msgid "no packages"
@@ -3343,28 +3322,24 @@ msgid "blacklisted dependencies !!!"
 msgstr "dependències a la llista negra !!!"
 
 #: ../../lib/entropy/qa.py:388
-#, fuzzy
 msgid "is potentially missing these dependencies"
-msgstr "és possible que li faltin aquestes altres dependències"
+msgstr "potencialment li falten aquestes dependències"
 
 #: ../../lib/entropy/qa.py:518
-#, fuzzy
 msgid "determining missing libraries"
-msgstr "cerca llibreries perdudes"
+msgstr "determinant llibreries que falten"
 
 #: ../../lib/entropy/qa.py:550
 msgid "requires"
-msgstr ""
+msgstr "requereix"
 
 #: ../../lib/entropy/qa.py:567 ../../lib/entropy/qa.py:578
-#, fuzzy
 msgid "provided by"
-msgstr "Necessàries per"
+msgstr "facilitades per"
 
 #: ../../lib/entropy/qa.py:591
-#, fuzzy
 msgid "no missing runtime libraries found"
-msgstr "No s'han trobat dependències perdudes."
+msgstr "no s'han trobat a faltar dependències en temps d'execució"
 
 #: ../../lib/entropy/qa.py:624 ../../sulfur/src/sulfur/sulfur.glade.h:119
 msgid "Libraries test"
@@ -3644,9 +3619,8 @@ msgid "repository already disabled"
 msgstr "el repositori ja està desactivat"
 
 #: ../../client/text_repositories.py:220
-#, fuzzy
 msgid "cannot disable repository"
-msgstr "no es pot desactivar el repositori per defecte"
+msgstr "no es pot desactivar el repositori"
 
 #: ../../client/text_repositories.py:223
 msgid "repository disabled"
@@ -3681,9 +3655,8 @@ msgid "done merging packages"
 msgstr "els paquets s'han fusionat"
 
 #: ../../client/text_repositories.py:325
-#, fuzzy
 msgid "mirror order:"
-msgstr "s'ha desbloquejat la rèplica"
+msgstr "ordre de la rèplica:"
 
 #: ../../client/text_repositories.py:331
 msgid "mirrors sorted successfully"
@@ -3934,9 +3907,8 @@ msgstr "Repositori no vàlid"
 
 #: ../../client/text_ugc.py:82 ../../client/text_ugc.py:173
 #: ../../client/text_ugc.py:223 ../../client/text_ugc.py:358
-#, fuzzy
 msgid "Repository does not support Entropy Services."
-msgstr "el repositori no és compatible amb EAPI3"
+msgstr "El repositori no per met l'ús dels Serveis Entropy"
 
 #: ../../client/text_ugc.py:92
 msgid "Already logged in as"
@@ -3970,24 +3942,21 @@ msgid "Please login against"
 msgstr "Inicieu la sessió per al"
 
 #: ../../client/text_ugc.py:119 ../../sulfur/src/sulfur/events.py:844
-#, fuzzy
 msgid "Login aborted. Not logged in."
-msgstr "Error en l'inici de sessió. No esteu connectat."
+msgstr "L'inici de sessió ha fallat. No esteu connectat."
 
 #: ../../client/text_ugc.py:132 ../../sulfur/src/sulfur/views.py:2031
 #: ../../sulfur/src/sulfur/dialogs.py:1338
 #: ../../sulfur/src/sulfur/dialogs.py:2036
 #: ../../sulfur/src/sulfur/events.py:855
-#, fuzzy
 msgid "Authentication error. Not logged in."
-msgstr "Error en l'inici de sessió. No esteu connectat."
+msgstr "Error d'autenticació. No esteu connectat."
 
 #: ../../client/text_ugc.py:140 ../../sulfur/src/sulfur/dialogs.py:1342
 #: ../../sulfur/src/sulfur/dialogs.py:2040
 #: ../../sulfur/src/sulfur/events.py:859
-#, fuzzy
 msgid "Communication error. Not logged in."
-msgstr "Error en l'inici de sessió. No esteu connectat."
+msgstr "Error de comunicació. No esteu connectat."
 
 #: ../../client/text_ugc.py:149
 msgid "Successfully logged in as"
@@ -3998,22 +3967,20 @@ msgid "From now on, any UGC action will be committed as this user"
 msgstr "A partir d'ara, qualsevol acció UGC serà tramesa per aquest usuari"
 
 #: ../../client/text_ugc.py:183
-#, fuzzy
 msgid "Not logged in."
-msgstr "No us heu connectat"
+msgstr "No esteu connectat."
 
 #: ../../client/text_ugc.py:192 ../../sulfur/src/sulfur/package.py:330
 msgid "User"
 msgstr "Usuari"
 
 #: ../../client/text_ugc.py:194
-#, fuzzy
 msgid "has been logged out."
-msgstr "s'ha desconnectat"
+msgstr "s'ha desconnectat."
 
 #: ../../client/text_ugc.py:233 ../../client/text_ugc.py:433
 msgid "Not logged in, please login first."
-msgstr ""
+msgstr "No s'ha iniciat la sessió, acrediteu-vos primer."
 
 #: ../../client/text_ugc.py:247 ../../client/text_ugc.py:289
 #: ../../client/text_ugc.py:318 ../../client/text_ugc.py:328
@@ -4026,9 +3993,8 @@ msgid "UGC error"
 msgstr "Error UGC"
 
 #: ../../client/text_ugc.py:260
-#, fuzzy
 msgid "add vote"
-msgstr "Afegeix vot"
+msgstr "afegeix vot"
 
 #: ../../client/text_ugc.py:265
 msgid "Insert your vote (from 1 to 5)"
@@ -4040,7 +4006,7 @@ msgstr "Tramesa de vot Entropy UGC"
 
 #: ../../client/text_ugc.py:290
 msgid "invalid vote, must be in range"
-msgstr ""
+msgstr "el vot no és vàlid, cal que estigui en el rang"
 
 #: ../../client/text_ugc.py:299 ../../client/text_ugc.py:511
 #: ../../client/text_ugc.py:616
@@ -4056,23 +4022,20 @@ msgid "Do you want to submit?"
 msgstr "Voleu enviar-ho?"
 
 #: ../../client/text_ugc.py:329
-#, fuzzy
 msgid "already voted"
-msgstr "Ja habilitat"
+msgstr "ja heu votat"
 
 #: ../../client/text_ugc.py:336
-#, fuzzy
 msgid "vote added, thank you!"
-msgstr "El vot s'ha afegit, gràcies!"
+msgstr "el vot s'ha afegit, gràcies!"
 
 #: ../../client/text_ugc.py:413 ../../sulfur/src/sulfur/dialogs.py:1560
 msgid "Number of downloads"
 msgstr "Número de descàrregues"
 
 #: ../../client/text_ugc.py:420
-#, fuzzy
 msgid "No User Generated Content available."
-msgstr "No hi ha Contingut Generat per l'Usuari disponible"
+msgstr "No hi ha Contingut Generat per l'Usuari disponible."
 
 #: ../../client/text_ugc.py:442
 msgid "Add document"
@@ -4084,7 +4047,7 @@ msgstr "comentari de text"
 
 #: ../../client/text_ugc.py:447
 msgid "icon"
-msgstr ""
+msgstr "icona"
 
 #: ../../client/text_ugc.py:448
 msgid "simple file"
@@ -4096,7 +4059,7 @@ msgstr "imatge simple"
 
 #: ../../client/text_ugc.py:450
 msgid "video"
-msgstr ""
+msgstr "vídeo"
 
 #: ../../client/text_ugc.py:467
 msgid "Insert document title"
@@ -4131,9 +4094,8 @@ msgid "Document type"
 msgstr "Tipus de document"
 
 #: ../../client/text_ugc.py:573
-#, fuzzy
 msgid "Invalid document"
-msgstr "El tipus de document no és vàlid"
+msgstr "El document no és vàlid"
 
 #: ../../client/text_ugc.py:600
 msgid "Document added, thank you!"
@@ -4160,32 +4122,28 @@ msgid "Would you like to continue with the removal?"
 msgstr "Voleu continuar amb l'eliminació?"
 
 #: ../../client/text_ugc.py:686
-#, fuzzy
 msgid "cannot get the requested Document"
-msgstr "No es pot crear l'element"
+msgstr "No es pot obtenir el Document sol·licitat"
 
 #: ../../client/text_ugc.py:706
 msgid "UGC status"
 msgstr "Estat UGC"
 
 #: ../../client/text_ugc.py:707
-#, fuzzy
 msgid "removed successfully"
-msgstr "el reporitori s'han eliminat correctament"
+msgstr "eliminat correctament"
 
 #: ../../client/text_ugc.py:719
 msgid "No title"
 msgstr "Sense títol"
 
 #: ../../client/text_ugc.py:761
-#, fuzzy
 msgid "no votes"
-msgstr "Ordena per vots"
+msgstr "sense vots"
 
 #: ../../client/text_ugc.py:767
-#, fuzzy
 msgid "current package vote"
-msgstr "Votació actual del paquet"
+msgstr "vot del paquet actual"
 
 #: ../../client/text_query.py:49 ../../client/text_ui.py:82
 #: ../../client/text_ui.py:87
@@ -4383,9 +4341,8 @@ msgid "from"
 msgstr "des de"
 
 #: ../../client/text_query.py:778
-#, fuzzy
 msgid "Listing Packages"
-msgstr "S'estan commutant paquets"
+msgstr "Llistat de paquets"
 
 #: ../../client/text_query.py:894
 msgid "Searching mimetype"
@@ -4906,9 +4863,8 @@ msgid "disable colorized output"
 msgstr "desactiva la sortida en colors"
 
 #: ../../client/equo.py:68
-#, fuzzy
 msgid "force colorized output"
-msgstr "desactiva la sortida en colors"
+msgstr "força la sortida en colors"
 
 #: ../../client/equo.py:69
 msgid "print a bash completion script to stdout"
@@ -5274,9 +5230,8 @@ msgid "list installed packages"
 msgstr "llista els paquets instal·lats"
 
 #: ../../client/equo.py:211
-#, fuzzy
 msgid "only packages installed by user"
-msgstr "Paquet instal·lat de nou"
+msgstr "només paquets instal·lats per l'usuari"
 
 #: ../../client/equo.py:212
 msgid "list available packages"
@@ -5737,7 +5692,7 @@ msgstr "No hi ha res a eliminar"
 
 #: ../../client/text_ui.py:550
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
+msgstr "Hi ha més actualitzacions per instal·lar, es torna a carregar Entropy"
 
 #: ../../client/text_ui.py:559
 msgid "Cannot switch branch as user"
@@ -6132,57 +6087,51 @@ msgstr "Voleu instal·lar-los?"
 
 #: ../../server/eit/main.py:82
 msgid "superuser access required"
-msgstr ""
+msgstr "cal que accediu com a superusuari"
 
 #: ../../server/eit/commands/test.py:46
 msgid "run given test"
-msgstr ""
+msgstr "executa el test especificat"
 
 #: ../../server/eit/commands/test.py:47
-#, fuzzy
 msgid "available tests"
-msgstr "disponible"
+msgstr "comprovacions disponibles"
 
 #: ../../server/eit/commands/test.py:50
-#, fuzzy
 msgid "dependencies test"
-msgstr "Prova de dependències"
+msgstr "comprovació de dependències"
 
 #: ../../server/eit/commands/test.py:54
-#, fuzzy
 msgid "libraries test"
-msgstr "Verificació de les llibreries"
+msgstr "comprovació de llibreries"
 
 #: ../../server/eit/commands/test.py:56
-#, fuzzy
 msgid "dump results to file"
-msgstr "aboca els resultats en fitxers"
+msgstr "aboca els resultats en un fitxer"
 
 #: ../../server/eit/commands/test.py:60
-#, fuzzy
 msgid "library linking test (using repository metadata)"
-msgstr "cerca llibreries perdudes"
+msgstr ""
+"comprovació d'enllaços de llibreries (usant les metadades del repositori)"
 
 #: ../../server/eit/commands/test.py:63
 msgid "excluded soname"
-msgstr ""
+msgstr "s'exclou el soname"
 
 #: ../../server/eit/commands/test.py:67
 msgid "library linking test (using live system)"
-msgstr ""
+msgstr "comprova els enllaços de llibraries (usant sistema autònom)"
 
 #: ../../server/eit/commands/test.py:70 ../../server/eit/commands/query.py:75
 #: ../../server/eit/commands/query.py:93
 #: ../../server/eit/commands/repack.py:39 ../../server/eit/commands/add.py:40
 #: ../../server/eit/commands/files.py:46
-#, fuzzy
 msgid "package names"
-msgstr "Àtoms de paquets"
+msgstr "nom dels paquets"
 
 #: ../../server/eit/commands/test.py:74
-#, fuzzy
 msgid "verify local packages integrity"
-msgstr "a més, verifica la integritat dels paquets"
+msgstr "verifica la integritat dels paquets locals"
 
 #: ../../server/eit/commands/test.py:79 ../../server/eit/commands/test.py:88
 #: ../../server/eit/commands/init.py:48 ../../server/eit/commands/reset.py:48
@@ -6193,30 +6142,27 @@ msgstr "a més, verifica la integritat dels paquets"
 #: ../../server/eit/commands/remove.py:55
 #: ../../server/eit/commands/branch.py:52
 msgid "no stupid questions"
-msgstr ""
+msgstr "no feu preguntes estúpides"
 
 #: ../../server/eit/commands/test.py:83
-#, fuzzy
 msgid "verify remote packages integrity"
-msgstr "a més, verifica la integritat dels paquets"
+msgstr "verifica la integritat dels paquets remots"
 
 #: ../../server/eit/commands/test.py:178
 msgid "run QA tests"
-msgstr ""
+msgstr "executa comprovacions QA"
 
 #: ../../server/eit/commands/query.py:50
 msgid "execute query"
-msgstr ""
+msgstr "executa consuta"
 
 #: ../../server/eit/commands/query.py:51
-#, fuzzy
 msgid "available queries"
-msgstr "disponible"
+msgstr "consultes disponibles"
 
 #: ../../server/eit/commands/query.py:54
-#, fuzzy
 msgid "search package tags"
-msgstr "package.mask d'usuari"
+msgstr "cerca etiquetes disponibles"
 
 #: ../../server/eit/commands/query.py:57 ../../server/eit/commands/query.py:70
 #: ../../server/eit/commands/query.py:82
@@ -6227,98 +6173,81 @@ msgstr "package.mask d'usuari"
 #: ../../server/eit/commands/revgraph.py:57
 #: ../../server/eit/commands/files.py:49 ../../server/eit/commands/graph.py:56
 msgid "quiet output, for scripting purposes"
-msgstr ""
+msgstr "silencia la sortida, útil per a scripts"
 
 #: ../../server/eit/commands/query.py:59
 #: ../../server/eit/commands/query.py:105
 #: ../../server/eit/commands/query.py:121
-#, fuzzy
 msgid "query into given repository only"
-msgstr "habilita el repositori especificat"
+msgstr "consulta només en el repositori indicat"
 
 #: ../../server/eit/commands/query.py:63
-#, fuzzy
 msgid "tag name"
-msgstr "Nom de l'ordinador central"
+msgstr "nom de l'etiqueta"
 
 #: ../../server/eit/commands/query.py:67
-#, fuzzy
 msgid "show libraries (.so) required by matched packages"
-msgstr "Aquests són els paquets coincidents"
+msgstr "mostra les llibreries (.so) necessàries pels paquets coincidents"
 
 #: ../../server/eit/commands/query.py:79
-#, fuzzy
 msgid "show reverse dependencies of packages"
-msgstr ""
-"mostra l'arbre de dependències inverses pels àtoms d'instal·lació "
-"proporcionats"
+msgstr "mostra les dependències inverses dels paquets"
 
 #: ../../server/eit/commands/query.py:85
 msgid "verbose output, show more info"
-msgstr ""
+msgstr "sortida detallada, mostra més informació"
 
 #: ../../server/eit/commands/query.py:88
-#, fuzzy
 msgid "include build dependencies"
-msgstr "no inclou dependències inverses"
+msgstr "inclou les dependències de construcció"
 
 #: ../../server/eit/commands/query.py:97
-#, fuzzy
 msgid "search through package sets"
-msgstr "cerca conjunts de paquets disponibles"
+msgstr "cerca a través dels conjunts de paquets"
 
 #: ../../server/eit/commands/query.py:103
 msgid "verbose output, show package sets content"
-msgstr ""
+msgstr "sortida detallada, mostra el contingut de conjunts de paquets"
 
 #: ../../server/eit/commands/query.py:109
-#, fuzzy
 msgid "package set name"
-msgstr "Nom del conjunt de paquets"
+msgstr "nom del conjunt de paquet"
 
 #: ../../server/eit/commands/query.py:113
-#, fuzzy
 msgid "search packages through their description"
-msgstr "cerca paquets per descripció"
+msgstr "cerca paquets per la seva descripció"
 
 #: ../../server/eit/commands/query.py:119
-#, fuzzy
 msgid "verbose output, show more information"
-msgstr "Informació del repositori"
+msgstr "informació detallada, mostra més informació"
 
 #: ../../server/eit/commands/query.py:125
-#, fuzzy
 msgid "package description"
-msgstr "Descripció del paquet"
+msgstr "descripció del paquet"
 
 #: ../../server/eit/commands/query.py:174
-#, fuzzy
 msgid "Nothing found for"
-msgstr "No s'ha trobat res"
+msgstr "No s'ha trobat res per"
 
 #: ../../server/eit/commands/query.py:220
-#, fuzzy
 msgid "libraries found"
-msgstr "llibreries"
+msgstr "llibreries trobades"
 
 #: ../../server/eit/commands/query.py:262
 msgid "revdep(s) found"
-msgstr ""
+msgstr "s'ha(n) trobat revdep(s)"
 
 #: ../../server/eit/commands/query.py:312
-#, fuzzy
 msgid "sets found"
-msgstr "no s'ha trobat l'usuari"
+msgstr "conjunts trobats"
 
 #: ../../server/eit/commands/query.py:346 ../../server/eit/commands/own.py:143
-#, fuzzy
 msgid "packages found"
-msgstr "No s'han trobat paquets"
+msgstr "paquets trobats"
 
 #: ../../server/eit/commands/query.py:355
-#, fuzzy
 msgid "miscellaneous package metadata queries"
-msgstr "s'està forçant l'actualització de les metadades dels paquets"
+msgstr "consultes diverses de metadades de paquets"
 
 #: ../../server/eit/commands/status.py:90
 msgid "local revision"
@@ -6333,61 +6262,51 @@ msgid "upload packages"
 msgstr "paquets pujats"
 
 #: ../../server/eit/commands/status.py:109
-#, fuzzy
 msgid "unstaged packages"
-msgstr "paquets signats"
+msgstr "paquets fora de l'índex"
 
 #: ../../server/eit/commands/status.py:141
-#, fuzzy
 msgid "add"
-msgstr "afegit"
+msgstr "afegeix"
 
 #: ../../server/eit/commands/status.py:153
-#, fuzzy
 msgid "switch injected"
-msgstr "s'està commutant"
+msgstr "commuta als injectats"
 
 #: ../../server/eit/commands/status.py:163
 #: ../../server/eit/commands/list.py:136
-#, fuzzy
 msgid "show repository status"
-msgstr "mostra l'estat dels repositoris"
+msgstr "mostra l'estat del repositori"
 
 #: ../../server/eit/commands/list.py:55 ../../server/eit/commands/own.py:56
-#, fuzzy
 msgid "output more package info"
-msgstr "No es proporcionen paquets del nucli"
+msgstr "mostra més informació del paquet"
 
 #: ../../server/eit/commands/list.py:58
-#, fuzzy
 msgid "only list injected packages"
-msgstr "llista els paquets instal·lats"
+msgstr "llista només paquets injectats"
 
 #: ../../server/eit/commands/list.py:84
-#, fuzzy
 msgid "not available"
-msgstr "No disponible"
+msgstr "no disponible"
 
 #: ../../server/eit/commands/list.py:128
-#, fuzzy
 msgid "No packages"
-msgstr "sense paquets"
+msgstr "Sense paquets"
 
 #: ../../server/eit/commands/own.py:49
 msgid "path"
-msgstr ""
+msgstr "camí"
 
 #: ../../server/eit/commands/own.py:58 ../../server/eit/commands/search.py:50
 #: ../../server/eit/commands/revgraph.py:50
 #: ../../server/eit/commands/graph.py:49
-#, fuzzy
 msgid "search packages in given repository"
-msgstr "cerca paquets en els repositoris"
+msgstr "cerca paquets en el repositori indicat"
 
 #: ../../server/eit/commands/own.py:152
-#, fuzzy
 msgid "search packages owning paths"
-msgstr "cerca paquets en els repositoris"
+msgstr "cerca paquets que continguin els camins"
 
 #: ../../server/eit/commands/init.py:69
 msgid "Entropy repository has been initialized"
@@ -6395,26 +6314,23 @@ msgstr "S'ha inicialitzat el repositori d'Entropy"
 
 #: ../../server/eit/commands/init.py:79
 msgid "initialize repository (erasing all its content)"
-msgstr ""
+msgstr "inicialitza el repositori (eliminant tot el seu contingut)"
 
 #: ../../server/eit/commands/mv.py:40 ../../server/eit/commands/cp.py:50
-#, fuzzy
 msgid "source repository"
-msgstr "Repositori actual"
+msgstr "repositori origen"
 
 #: ../../server/eit/commands/mv.py:42 ../../server/eit/commands/cp.py:53
-#, fuzzy
 msgid "destination repository"
-msgstr "s'està indexant el respositori"
+msgstr "respositori destí"
 
 #: ../../server/eit/commands/mv.py:45 ../../server/eit/commands/cp.py:56
-#, fuzzy
 msgid "include dependencies"
-msgstr "dependències de paquets"
+msgstr "inclou dependències"
 
 #: ../../server/eit/commands/mv.py:47
 msgid "package names (all if none)"
-msgstr ""
+msgstr "nom de paquets (tots si no s'especifica)"
 
 #: ../../server/eit/commands/mv.py:72
 msgid "move packages from a repository to another"
@@ -6425,9 +6341,8 @@ msgstr "desplaça els paquets d'un repositori a un altre"
 #: ../../server/eit/commands/revgraph.py:48
 #: ../../server/eit/commands/remove.py:46 ../../server/eit/commands/deps.py:44
 #: ../../server/eit/commands/graph.py:47
-#, fuzzy
 msgid "package name"
-msgstr "Nom del conjunt de paquets"
+msgstr "nom del paquet"
 
 #: ../../server/eit/commands/search.py:100
 #: ../../server/eit/commands/match.py:87
@@ -6436,91 +6351,76 @@ msgid "Nothing found"
 msgstr "No s'ha trobat res"
 
 #: ../../server/eit/commands/reset.py:51
-#, fuzzy
 msgid "do not pull the remote repository"
-msgstr "no està llistat al repositori!"
+msgstr "no baixis el repositori remot"
 
 #: ../../server/eit/commands/reset.py:84
-#, fuzzy
 msgid "reset error"
-msgstr "error en el sòcol"
+msgstr "error en reiniciar"
 
 #: ../../server/eit/commands/reset.py:89
-#, fuzzy
 msgid "local repository revision reset complete"
-msgstr "la revisió del repositori no és vàlida"
+msgstr "la revisió del reinici del repositori local ha acabat"
 
 #: ../../server/eit/commands/reset.py:100
-#, fuzzy
 msgid "reset repository to remote status"
-msgstr "mostra l'estat dels repositoris"
+msgstr "reinicia el repositori a l'estat remot"
 
 #: ../../server/eit/commands/checkout.py:69
-#, fuzzy
 msgid "switch from a repository to another"
-msgstr "desplaça els paquets d'un repositori a un altre"
+msgstr "commuta d'un repositori a un altre"
 
 #: ../../server/eit/commands/help.py:38
 msgid "Entropy Infrastructure Toolkit"
-msgstr ""
+msgstr "Joc d'Eines de la Infraestructura Entropy"
 
-#: ../../server/eit/commands/help.py:66 ../../services/kernel-switcher:226
+#: ../../server/eit/commands/help.py:63 ../../services/kernel-switcher:226
 msgid "this help"
 msgstr "aquesta ajuda"
 
 #: ../../server/eit/commands/bump.py:47
-#, fuzzy
 msgid "sync with remote repository"
-msgstr "elimina el repositori"
+msgstr "sincronitza amb el repositori remot"
 
 #: ../../server/eit/commands/bump.py:67
-#, fuzzy
 msgid "Bumping repository"
-msgstr "S'omet el repositori"
+msgstr "Elevant el repositori"
 
 #: ../../server/eit/commands/bump.py:78
-#, fuzzy
 msgid "bump repository revision, force push"
-msgstr "Revisió del repositori"
+msgstr "eleva la revisió del repositori, força l'enviament"
 
 #: ../../server/eit/commands/push.py:68
-#, fuzzy
 msgid "push all the repositories"
-msgstr "sincronitza tots els repositoris configurats"
+msgstr "envia tots els repositoris"
 
 #: ../../server/eit/commands/push.py:70
-#, fuzzy
 msgid "push as fake repository"
-msgstr "gestiona un repositori"
+msgstr "envia com a repositori fals"
 
 #: ../../server/eit/commands/push.py:151
-#, fuzzy
 msgid "Commit message"
-msgstr "Missatge d'error"
+msgstr "Publica el missatge"
 
 #: ../../server/eit/commands/push.py:153
-#, fuzzy
 msgid "Enter the commit message"
-msgstr "Si us plau, introduïu un missatge de publicació"
+msgstr "Escriviu el missatge de publicació"
 
 #: ../../server/eit/commands/push.py:174
-#, fuzzy
 msgid "Entropy Repository Status"
-msgstr "Estat del Repositori d'Entropy Remot"
+msgstr "Estat del Repositori d'Entropy"
 
 #: ../../server/eit/commands/push.py:181
 msgid "Host"
 msgstr "Ordinador central"
 
 #: ../../server/eit/commands/push.py:184
-#, fuzzy
 msgid "Remote"
-msgstr "Remotament"
+msgstr "Remot"
 
 #: ../../server/eit/commands/push.py:190
-#, fuzzy
 msgid "Local"
-msgstr "local"
+msgstr "Local"
 
 #: ../../server/eit/commands/push.py:213 ../../server/eit/commands/push.py:249
 msgid "Aborting !"
@@ -6528,47 +6428,40 @@ msgstr "S'està interrompent!"
 
 #: ../../server/eit/commands/push.py:245
 msgid "Should I cleanup old packages on mirrors ?"
-msgstr ""
+msgstr "Hauria d'eliminar els paquets antics de les rèpliques ?"
 
 #: ../../server/eit/commands/push.py:260
 msgid "push (or pull) repository packages and metadata"
-msgstr ""
+msgstr "envia (o rep) paquets i metadades del repositori"
 
 #: ../../server/eit/commands/notice.py:48
-#, fuzzy
 msgid "execute given action"
-msgstr "Genera informació d'entrada"
+msgstr "executa l'acció indicada"
 
 #: ../../server/eit/commands/notice.py:49 ../../server/eit/commands/key.py:50
-#, fuzzy
 msgid "available actions"
-msgstr "Mostra les aplicacions disponibles"
+msgstr "accions disponibles"
 
 #: ../../server/eit/commands/notice.py:52
-#, fuzzy
 msgid "add notice-board entry"
-msgstr "s'està carregant el tauler de notícies de"
+msgstr "afegeix una entrada al tauler de notícies"
 
 #: ../../server/eit/commands/notice.py:58
-#, fuzzy
 msgid "remove notice-board entry"
-msgstr "s'està eliminant el tauler de notícies de"
+msgstr "elimina una entrada del tauler de notícies"
 
 #: ../../server/eit/commands/notice.py:64
-#, fuzzy
 msgid "show notice-board"
-msgstr "Tauler de notícies"
+msgstr "mostra el tauler de notícies"
 
 #: ../../server/eit/commands/notice.py:168
-#, fuzzy
 msgid "no URL"
-msgstr "Escriviu l'adreça URL"
+msgstr "sense URL"
 
 #: ../../server/eit/commands/notice.py:170
 #: ../../server/eit/commands/notice.py:322
-#, fuzzy
 msgid "URL"
-msgstr "URI"
+msgstr "URL"
 
 #: ../../server/eit/commands/notice.py:244
 msgid "Choose the one you want to remove"
@@ -6583,38 +6476,32 @@ msgid "Exit/Commit"
 msgstr "Surt/Envia"
 
 #: ../../server/eit/commands/notice.py:379
-#, fuzzy
 msgid "manage repository notice-board"
-msgstr "lector del tauler de notícies del repositori"
+msgstr "gestiona el tauler de notícies del repositori"
 
 #: ../../server/eit/commands/merge.py:45
-#, fuzzy
 msgid "repository branch"
-msgstr "camí del repositori"
+msgstr "branca del repositori"
 
 #: ../../server/eit/commands/merge.py:47
-#, fuzzy
 msgid "work inside given repository"
-msgstr "s'està treballant en el repositori"
+msgstr "treballa dins en el repositori indicat"
 
 #: ../../server/eit/commands/merge.py:80
 msgid "merge branch into current"
-msgstr ""
+msgstr "fusiona la branca en l'actual"
 
 #: ../../server/eit/commands/repack.py:41
-#, fuzzy
 msgid "repack to given repository"
-msgstr "habilita el repositori especificat"
+msgstr "empaqueta de nou dins el repositori indicat"
 
 #: ../../server/eit/commands/repack.py:63
-#, fuzzy
 msgid "rebuild packages in repository"
-msgstr "repositori de paquets instal·lats"
+msgstr "rebuild els paquets en el repositori"
 
 #: ../../server/eit/commands/commit.py:57
-#, fuzzy
 msgid "selectively pick changes"
-msgstr "S'estan eliminat els paquets seleccionats"
+msgstr "escull els canvis selectivament"
 
 #: ../../server/eit/commands/commit.py:99
 msgid "Cannot match"
@@ -6629,65 +6516,56 @@ msgid "Scanning database for differences"
 msgstr "S'estan cercant diferències a la base de dades"
 
 #: ../../server/eit/commands/commit.py:149
-#, fuzzy
 msgid "Invalid package"
-msgstr "S'està instal·lant el paquet"
+msgstr "El paquet no és vàlid"
 
 #: ../../server/eit/commands/commit.py:160
-#, fuzzy
 msgid "Zarro thinggz to do"
 msgstr "No hi ha tasques pendents"
 
 #: ../../server/eit/commands/commit.py:167
-#, fuzzy
 msgid "These would be marked as injected"
-msgstr "s'ha injectat"
+msgstr "Es marcaran com a injectats"
 
 #: ../../server/eit/commands/commit.py:179
 msgid "Do it now ?"
-msgstr ""
+msgstr "Ara ?"
 
 #: ../../server/eit/commands/commit.py:190
-#, fuzzy
 msgid "Transforming"
-msgstr "S'està transformant des de la base de dades"
+msgstr "S'està transformant"
 
 #: ../../server/eit/commands/commit.py:195
-#, fuzzy
 msgid "Action completed"
-msgstr "la injecció ha acabat"
+msgstr "L'acció ha acabat"
 
 #: ../../server/eit/commands/commit.py:206
 msgid "expired"
 msgstr "vençut"
 
 #: ../../server/eit/commands/commit.py:213
-#, fuzzy
 msgid "Select packages for removal"
-msgstr "S'estan cercant els paquets injectats per eliminar"
+msgstr "Seleccioneu els paquets a eliminar"
 
 #: ../../server/eit/commands/commit.py:220
 msgid "Remove this package?"
 msgstr "Elimina aquest paquet?"
 
 #: ../../server/eit/commands/commit.py:227
-#, fuzzy
 msgid "These would be removed from repository"
-msgstr "S'eliminaran de la base de dades del sistema"
+msgstr "S'eliminaran del repositori"
 
 #: ../../server/eit/commands/commit.py:252
-#, fuzzy
 msgid "Select packages to add"
-msgstr "Hi ha alguns paquets emmascarats"
+msgstr "Seleccioneu els paquets a afegir"
 
 #: ../../server/eit/commands/commit.py:260
 msgid "Add this package?"
 msgstr "Afegeix aquest paquet?"
 
 #: ../../server/eit/commands/commit.py:268
-#, fuzzy
 msgid "These would be added or updated"
-msgstr "S'afegiran a la base de dades del sistema"
+msgstr "S'afegiran o s'actualitzaran"
 
 #: ../../server/eit/commands/commit.py:301
 msgid "warning"
@@ -6718,133 +6596,108 @@ msgid "Entries handled"
 msgstr "Entrades gestionades"
 
 #: ../../server/eit/commands/commit.py:368
-#, fuzzy
 msgid "commit changes to repository"
-msgstr "repositori de paquets instal·lats"
+msgstr "publica els canvis al repositori"
 
 #: ../../server/eit/commands/log.py:63
-#, fuzzy
 msgid "log is not available"
-msgstr "no està disponible"
+msgstr "el registre no està disponible"
 
 #: ../../server/eit/commands/log.py:77
-#, fuzzy
 msgid "show log for repository"
-msgstr "s'està treballant en el repositori"
+msgstr "mostra el registre del repositori"
 
 #: ../../server/eit/commands/match.py:96
-#, fuzzy
 msgid "match packages in repositories"
-msgstr "coincidència d'un paquet en els repositoris"
+msgstr "coincideix paquets en els repositoris"
 
 #: ../../server/eit/commands/add.py:42
-#, fuzzy
 msgid "add to given repository"
-msgstr "habilita el repositori especificat"
+msgstr "afegeix en el repositori indicat"
 
 #: ../../server/eit/commands/add.py:66
-#, fuzzy
 msgid "commit to repository the provided packages"
-msgstr "error del repositori en eliminar paquets"
+msgstr "publica els paquets facilitats al repositori"
 
 #: ../../server/eit/commands/lock.py:54
 msgid "affect entropy clients only"
-msgstr ""
+msgstr "afecta només els clients d'entropy"
 
 #: ../../server/eit/commands/lock.py:57
-#, fuzzy
 msgid "show current status"
-msgstr "mostra l'estat actual de bloquejos"
+msgstr "mostra l'estat actual"
 
 #: ../../server/eit/commands/lock.py:89
-#, fuzzy
 msgid "Mirrors status"
-msgstr "Taula d'estat de les rèpliques"
+msgstr "Estat de les rèpliques"
 
 #: ../../server/eit/commands/lock.py:114
 msgid "server"
-msgstr ""
+msgstr "servidor"
 
 #: ../../server/eit/commands/lock.py:129
 msgid "client"
-msgstr ""
+msgstr "client"
 
 #: ../../server/eit/commands/lock.py:161
-#, fuzzy
 msgid "lock repository"
-msgstr "del repositori"
+msgstr "bloqueja el repositori"
 
 #: ../../server/eit/commands/lock.py:184
-#, fuzzy
 msgid "unlock repository"
-msgstr "Al repositori"
+msgstr "desbloqueja el repositori"
 
 #: ../../server/eit/commands/revgraph.py:54
 #: ../../server/eit/commands/graph.py:53
-#, fuzzy
 msgid "show system packages, build deps, circular deps"
 msgstr ""
-"inclou paquets del sistema, dependències de construcció i informació circular"
+"mostra els paquets del sistema, dependències de construcció i circulars"
 
 #: ../../server/eit/commands/revgraph.py:93
-#, fuzzy
 msgid "show reverse dependency graph for packages"
-msgstr ""
-"mostra l'arbre de dependències inverses pels àtoms d'instal·lació "
-"proporcionats"
+msgstr "mostra el graf de dependències inverses dels paquets"
 
 #: ../../server/eit/commands/cleanup.py:71
-#, fuzzy
 msgid "clean expired packages from a repository"
-msgstr "S'estan netejant els paquets no disponibles del repositori"
+msgstr "elimina els paquets caducats del repositori"
 
 #: ../../server/eit/commands/vacuum.py:52
 msgid "expired since how many days, default: 0"
-msgstr ""
+msgstr "quants dies fa que ha caducat, per defecte: 0"
 
 #: ../../server/eit/commands/vacuum.py:76
-#, fuzzy
 msgid "Removing unavailable packages overriding defaults"
 msgstr ""
-"S'estan eliminant paquets no disponibles, substituir allò predeterminat per "
-"Entropy sol ser dolent."
+"S'estan eliminant paquets no disponibles substituint els predeterminats"
 
 #: ../../server/eit/commands/vacuum.py:80
-#, fuzzy
 msgid "Users with old repositories will need to update"
-msgstr ""
-"Els usuaris amb repositoris antics no podran trobar fitxers de paquets "
-"remotament."
+msgstr "Els usuaris amb repositoris antics han d'actualitzar-los"
 
 #: ../../server/eit/commands/vacuum.py:96
-#, fuzzy
 msgid "clean expired/removed packages from repository"
-msgstr "S'estan netejant els paquets no disponibles del repositori"
+msgstr "neteja els paquets eliminats/caducats del repositori"
 
 #: ../../server/eit/commands/files.py:95
-#, fuzzy
 msgid "files found"
-msgstr "fitxers desats"
+msgstr "s'han trobat fitxers"
 
 #: ../../server/eit/commands/files.py:104
-#, fuzzy
 msgid "show files owned by packages"
-msgstr "mostra quins fitxers pertanyen als àtoms proporcionats"
+msgstr "mostra fitxers que pertanyen als paquets"
 
 #: ../../server/eit/commands/remove.py:48 ../../server/eit/commands/deps.py:46
 #: ../../server/eit/commands/inject.py:46
-#, fuzzy
 msgid "inject into given repository"
-msgstr "habilita el repositori especificat"
+msgstr "injecta al repositori indicat"
 
 #: ../../server/eit/commands/remove.py:51
 msgid "do not include reverse dependencies"
 msgstr "no inclou dependències inverses"
 
 #: ../../server/eit/commands/remove.py:127
-#, fuzzy
 msgid "remove packages from repository"
-msgstr "desplaça els paquets d'un repositori a un altre"
+msgstr "elimina paquets del repositori"
 
 #: ../../server/eit/commands/deps.py:85
 msgid "package dependencies"
@@ -6875,58 +6728,48 @@ msgid "dependencies updated successfully"
 msgstr "Les dependències s'han actualitzat"
 
 #: ../../server/eit/commands/deps.py:234
-#, fuzzy
 msgid "edit dependencies for packages in repository"
-msgstr "repositori de paquets instal·lats"
+msgstr "edita les dependències dels paquets en el repositori"
 
 #: ../../server/eit/commands/cp.py:58
-#, fuzzy
 msgid "package dependency"
-msgstr "dependències de paquets"
+msgstr "dependències del paquet"
 
 #: ../../server/eit/commands/cp.py:85
 msgid "source equals destination"
-msgstr ""
+msgstr "l'origen és igual que el destí"
 
 #: ../../server/eit/commands/cp.py:114
-#, fuzzy
 msgid "Considering all the packages"
-msgstr "S'està configurant el paquet"
+msgstr "S'estan considerant tots els paquets"
 
 #: ../../server/eit/commands/cp.py:138
 msgid "copy packages from a repository to another"
 msgstr "copia els paquets d'un repositori a un altre"
 
 #: ../../server/eit/commands/graph.py:91
-#, fuzzy
 msgid "show dependency graph for packages"
-msgstr "S'estan desempaquetant els paquets de dependències"
+msgstr "mostra el graf de dependències dels paquets"
 
 #: ../../server/eit/commands/key.py:49
-#, fuzzy
 msgid "execute action"
-msgstr "força l'acció"
+msgstr "executa l'acció"
 
 #: ../../server/eit/commands/key.py:53
-#, fuzzy
 msgid "create keypair for repository and packages"
-msgstr "crea un parell de claus pels repositoris i signa els paquets"
+msgstr "crea un parell de claus pel repositori i els paquets"
 
 #: ../../server/eit/commands/key.py:59
-#, fuzzy
 msgid "delete keypair (and signatures) from repository"
 msgstr "esborra el parell de claus (i les signatures digitals) del repositori"
 
 #: ../../server/eit/commands/key.py:65
-#, fuzzy
 msgid "show keypair status for repository"
-msgstr "No hi ha parells de claus disponibles pel repositori"
+msgstr "mostra l'estat del parell de claus del repositori"
 
 #: ../../server/eit/commands/key.py:71
-#, fuzzy
 msgid "sign packages in repository using current keypair"
-msgstr ""
-"signa (o signa de nou) paquets del repositori usant el parell de claus actual"
+msgstr "signa paquets del repositori usant el parell de claus actual"
 
 #: ../../server/eit/commands/key.py:77
 msgid "import keypair, bind to given repository"
@@ -6934,21 +6777,19 @@ msgstr "importa el parell de claus, aplica al repositori especificat"
 
 #: ../../server/eit/commands/key.py:82 ../../server/eit/commands/key.py:103
 msgid "private key path"
-msgstr ""
+msgstr "camí a la clau privada"
 
 #: ../../server/eit/commands/key.py:85 ../../server/eit/commands/key.py:94
-#, fuzzy
 msgid "public key path"
-msgstr "Empremta de clau pública"
+msgstr "camí de la clau pública"
 
 #: ../../server/eit/commands/key.py:89
-#, fuzzy
 msgid "export the repository public key to file"
-msgstr "el repositori remot de sobte s'ha bloquejat"
+msgstr "exporta la clau pública del repositori al fitxer"
 
 #: ../../server/eit/commands/key.py:98
 msgid "export the repository private key to file"
-msgstr ""
+msgstr "exporta la clau privada del repositori a un fitxer"
 
 #: ../../server/eit/commands/key.py:125
 msgid "GPG interface loaded, home directory"
@@ -6987,15 +6828,12 @@ msgid "Now you should sign all the packages in it"
 msgstr "Ara és recomanable que signeu tots els paquets que conté"
 
 #: ../../server/eit/commands/key.py:215
-#, fuzzy
 msgid "Generate a revoke key and store it in a safe place"
-msgstr ""
-"Assegureu-vos generar una clau de revocació i deseu-la en un lloc segur."
+msgstr "Genereu una clau de revocació i la deseu-la en un lloc segur"
 
 #: ../../server/eit/commands/key.py:225
-#, fuzzy
 msgid "You may want to send your keys to a key server"
-msgstr "Potser també voleu enviar les vostres claus a un servidor de claus"
+msgstr "Potser voleu enviar les vostres claus a un servidor de claus"
 
 #: ../../server/eit/commands/key.py:246
 msgid "Deleting keys for repository"
@@ -7011,7 +6849,7 @@ msgstr "N'esteu segur?"
 
 #: ../../server/eit/commands/key.py:265 ../../server/eit/commands/key.py:299
 msgid "Keys metadata not available for"
-msgstr "No hi ha metadades de claus per"
+msgstr "No hi ha metadades de claus disponibles per"
 
 #: ../../server/eit/commands/key.py:279
 msgid "Deleted GPG key with fingerprint"
@@ -7043,23 +6881,20 @@ msgid "Expires on"
 msgstr "Expira el"
 
 #: ../../server/eit/commands/key.py:370
-#, fuzzy
 msgid "Importing keypair"
-msgstr "S'està important el parell de claus pel repositori"
+msgstr "S'està important el parell de claus"
 
 #: ../../server/eit/commands/key.py:376
-#, fuzzy
 msgid "Another keypair already exists"
-msgstr "Ja existeix un  altre parell de claus pel repositori"
+msgstr "Ja existeix un  altre parell de claus"
 
 #: ../../server/eit/commands/key.py:389
 msgid "Imported GPG key with fingerprint"
 msgstr "S'ha importat la clau GPG amb empremta"
 
 #: ../../server/eit/commands/key.py:395
-#, fuzzy
 msgid "Now sign all the packages in it"
-msgstr "Ara és recomanable que signeu tots els paquets que conté"
+msgstr "Signa tots els paquets que conté"
 
 #: ../../server/eit/commands/key.py:438
 msgid "Exporting private key for repository"
@@ -7086,64 +6921,53 @@ msgid "Exported GPG key for repository"
 msgstr "S'ha exportat la clau GPG pel repositori"
 
 #: ../../server/eit/commands/key.py:498
-#, fuzzy
 msgid "manage repository GPG keys"
-msgstr "gestiona un repositori"
+msgstr "gestiona les claus GPG del repositori"
 
 #: ../../server/eit/commands/inject.py:44
-#, fuzzy
 msgid "package paths"
-msgstr "Àtoms de paquets"
+msgstr "camí dels paquets"
 
 #: ../../server/eit/commands/inject.py:76
-#, fuzzy
 msgid "no such file or directory"
-msgstr "directori de càrrega"
+msgstr "el fitxer o carpeta no existeixen"
 
 #: ../../server/eit/commands/inject.py:89
-#, fuzzy
 msgid "unsupported extension"
-msgstr "no està implementada"
+msgstr "no s'admet l'extensió"
 
 #: ../../server/eit/commands/inject.py:95
-#, fuzzy
 msgid "no valid package paths"
-msgstr "S'està instal·lant el paquet"
+msgstr "els camins de paquets no són vàlids"
 
 #: ../../server/eit/commands/inject.py:118
-#, fuzzy
 msgid "inject package files into repository"
-msgstr "cerca paquets en els repositoris"
+msgstr "injecta fitxers de paquets al repositori"
 
 #: ../../server/eit/commands/branch.py:55
-#, fuzzy
 msgid "switch to given branch"
-msgstr "No s'ha pogut commutar a la branca"
+msgstr "commuta a la branca indicada"
 
 #: ../../server/eit/commands/branch.py:60
-#, fuzzy
 msgid "from branch"
-msgstr "branca"
+msgstr "des de la branca"
 
 #: ../../server/eit/commands/branch.py:94
 #: ../../server/eit/commands/branch.py:103
-#, fuzzy
 msgid "Invalid branch"
-msgstr "Àtom no vàlid"
+msgstr "Branca no vàlida"
 
 #: ../../server/eit/commands/branch.py:123
 msgid "would be copied to branch"
-msgstr ""
+msgstr "es copiaria a la branca"
 
 #: ../../server/eit/commands/branch.py:176
-#, fuzzy
 msgid "manage repository branches"
-msgstr "gestiona un repositori"
+msgstr "gestiona les branques del repositori"
 
 #: ../../server/eit/commands/repo.py:62
-#, fuzzy
 msgid "show current repository"
-msgstr "Repositori actual"
+msgstr "mostra el repositori actual"
 
 #: ../../sulfur/src/sulfur/views.py:92 ../../sulfur/src/sulfur/views.py:152
 #: ../../sulfur/src/sulfur/views.py:2796
@@ -7206,15 +7030,13 @@ msgstr "Aplicació"
 
 #: ../../sulfur/src/sulfur/views.py:2034
 #: ../../sulfur/src/sulfur/dialogs.py:1346
-#, fuzzy
 msgid "Successfully logged in."
-msgstr "S'ha connectat correctament com a"
+msgstr "Us heu connectat correctament."
 
 #: ../../sulfur/src/sulfur/views.py:2044
 #: ../../sulfur/src/sulfur/dialogs.py:2090
-#, fuzzy
 msgid "Unsupported Service"
-msgstr "no està implementada"
+msgstr "El servei no està implementat"
 
 #: ../../sulfur/src/sulfur/views.py:2083
 #: ../../sulfur/src/sulfur/dialogs.py:1373
@@ -7227,9 +7049,8 @@ msgstr "S'ha produït un error en registrar el vot"
 
 #: ../../sulfur/src/sulfur/views.py:2088
 #: ../../sulfur/src/sulfur/dialogs.py:1376
-#, fuzzy
 msgid "Already voted"
-msgstr "Ja s'ha eliminat"
+msgstr "Ja heu votat"
 
 #: ../../sulfur/src/sulfur/views.py:2708
 #: ../../sulfur/src/sulfur/__init__.py:460
@@ -7299,9 +7120,8 @@ msgid "Filename"
 msgstr "Nom de fitxer"
 
 #: ../../sulfur/src/sulfur/views.py:3097
-#, fuzzy
 msgid "Cannot disable repository!"
-msgstr "no es pot desactivar el repositori per defecte"
+msgstr "El repositori no es pot desactivar!"
 
 #: ../../sulfur/src/sulfur/views.py:3129
 msgid "Active"
@@ -7463,12 +7283,11 @@ msgstr "Conjunt de paquets recursius"
 
 #: ../../sulfur/src/sulfur/__init__.py:118
 msgid "Access denied. You don't have enough privileges to run Sulfur."
-msgstr ""
+msgstr "Accés denegat. No teniu prou privilegis per executar Sulfur."
 
 #: ../../sulfur/src/sulfur/__init__.py:125
-#, fuzzy
 msgid "Another Entropy application is running. Sorry."
-msgstr "S'està executant una altra instància d'Entropy."
+msgstr "S'està executant una altra aplicació d'Entropy."
 
 #: ../../sulfur/src/sulfur/__init__.py:133
 msgid "Entropy is running in safe mode"
@@ -7483,13 +7302,12 @@ msgid "Safe Mode"
 msgstr "Mode segur"
 
 #: ../../sulfur/src/sulfur/__init__.py:140
-#, fuzzy
 msgid "Entropy Store is running off a Live System"
-msgstr "Entropy s'està executant en mode segur"
+msgstr "Entropy Store s'està executant en un sistema autònom"
 
 #: ../../sulfur/src/sulfur/__init__.py:141
 msgid "performance could get severely compromised"
-msgstr ""
+msgstr "el rendiment es podria veure greument afectat"
 
 #: ../../sulfur/src/sulfur/__init__.py:226
 msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
@@ -7851,12 +7669,11 @@ msgstr ""
 "Mireu la terminal de processos."
 
 #: ../../sulfur/src/sulfur/__init__.py:2304
-#, fuzzy
 msgid ""
 "Attention. Other updates that must be installed.\n"
 "Sulfur will be reloaded."
 msgstr ""
-"Atenció. Heu actualitzat Entropy.\n"
+"Atenció. S'han d'instal·lar altres actualitzacions.\n"
 "Sulfur es reiniciarà."
 
 #: ../../sulfur/src/sulfur/__init__.py:2310
@@ -7934,9 +7751,8 @@ msgid "Duplicated Repository Identifier"
 msgstr "Identificador de repositori duplicat"
 
 #: ../../sulfur/src/sulfur/dialogs.py:186
-#, fuzzy
 msgid "Invalid Repository Identifier"
-msgstr "Identificador del repositori"
+msgstr "L'identificador del repositori no és vàlid"
 
 #: ../../sulfur/src/sulfur/dialogs.py:192
 msgid "No download mirrors"
@@ -8010,9 +7826,8 @@ msgstr "Autor"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1122
 #: ../../sulfur/src/sulfur/dialogs.py:1166
-#, fuzzy
 msgid "Please wait..."
-msgstr "Espereu si us plau"
+msgstr "Espereu..."
 
 #: ../../sulfur/src/sulfur/dialogs.py:1263
 msgid "Package ChangeLog"
@@ -8086,9 +7901,8 @@ msgid "Id"
 msgstr "Id"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1925
-#, fuzzy
 msgid "No keywords"
-msgstr "Keywords"
+msgstr "Sense keywords"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1999
 msgid "Write your"
@@ -8125,14 +7939,12 @@ msgstr "Voleu confirmar la tramesa?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2097
 #: ../../sulfur/src/sulfur/dialogs.py:2101
-#, fuzzy
 msgid "Service is unavailable"
-msgstr "el servei GPG no està disponible"
+msgstr "El servei no està disponible"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2157
-#, fuzzy
 msgid "Invalid fields"
-msgstr "El títol no és vàlid"
+msgstr "Camps no vàlids"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2179
 msgid "Document added successfully. Thank you"
@@ -8300,9 +8112,8 @@ msgid "Packages in all Advisories have been queued."
 msgstr "Els paquets de tots els avisos s'han posat a la cua d'actualització."
 
 #: ../../sulfur/src/sulfur/events.py:303
-#, fuzzy
 msgid "Are you sure you want to remove the default repository?"
-msgstr "Esteu segur que el voleu eliminar?"
+msgstr "Esteu segur que el voleu eliminar el repositori predeterminat?"
 
 #: ../../sulfur/src/sulfur/events.py:346
 msgid "Are you sure ?"
@@ -8337,7 +8148,6 @@ msgid "You have chosen to install this package"
 msgstr "Heu escollit instal·lar aquest paquet"
 
 #: ../../sulfur/src/sulfur/events.py:463
-#, fuzzy
 msgid "Are you sure?"
 msgstr "N'esteu segur?"
 
@@ -8405,9 +8215,8 @@ msgid "dependencies not found"
 msgstr "dependències que no s'han trobat"
 
 #: ../../sulfur/src/sulfur/entropyapi.py:123
-#, fuzzy
 msgid "dependency collisions found"
-msgstr "dependències que no s'han trobat"
+msgstr "s'han trobat col·lisions de dependències"
 
 #: ../../sulfur/src/sulfur/entropyapi.py:146
 msgid "Downloading sources"
@@ -8453,9 +8262,8 @@ msgid "Application updates"
 msgstr "actualitzacions de l'aplicació"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:149
-#, fuzzy
 msgid "System Updates"
-msgstr "S'estan calculant les actualitzacions del sistema"
+msgstr "Actualitzacions del sistema"
 
 #: ../../magneto/src/magneto/gtk/components.py:90
 msgid "Latest version"
@@ -8574,20 +8382,20 @@ msgid "Repositories are being updated automatically"
 msgstr "Els repositoris s'estan actualitzant automàticament"
 
 #: ../../magneto/src/magneto/core/interfaces.py:264
-#, fuzzy
 msgid "Installed Packages Repository Integrity Problem"
-msgstr "El repositori de paquets instal·lats no està disponible"
+msgstr "Problema d'integritat dels paquets instal·lats del repositori"
 
 #: ../../magneto/src/magneto/core/interfaces.py:266
-#, fuzzy
 msgid "Installed Packages Repository Integrity"
-msgstr "Repositori de paquets instal·lats"
+msgstr "Integritat dels paquets instal·lats del repositori"
 
 #: ../../magneto/src/magneto/core/interfaces.py:267
 msgid ""
 "Integrity corruption detected, this might indicate a filesystem or system "
 "issue"
 msgstr ""
+"S'ha detectat corrupció de la integritat, això pot indicar un problema del "
+"sistema o del sistema de fitxers"
 
 #: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Updates Notification Applet Disabled"
@@ -9016,9 +8824,8 @@ msgid "Ignored protected files"
 msgstr "Fitxers protegits ignorats"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:106
-#, fuzzy
 msgid "Install Packages in Set"
-msgstr "Paquets instal·lats"
+msgstr "Instal·la els paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Install Size"
@@ -9033,9 +8840,8 @@ msgid "Install from binary package..."
 msgstr "Instal·la des d'un paquet binari..."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:110
-#, fuzzy
 msgid "Install packages in Set"
-msgstr "El paquet instal·lat ha desaparegut"
+msgstr "Instal·la els paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "Install the selected package"
@@ -9319,9 +9125,8 @@ msgid "Remove"
 msgstr "Elimina"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:192
-#, fuzzy
 msgid "Remove Packages in Set"
-msgstr "Conjunt de paquets eliminable"
+msgstr "Elimina els paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:193
 msgid "Remove Selected"
@@ -9340,9 +9145,8 @@ msgid "Remove atoms"
 msgstr "Elimina àtoms"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:197
-#, fuzzy
 msgid "Remove packages in Set"
-msgstr "Conjunt de paquets eliminable"
+msgstr "Elimina els paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:198
 msgid "Remove packages on the remote server"
@@ -9541,9 +9345,8 @@ msgid "Undo Install"
 msgstr "No instal·lis"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:257
-#, fuzzy
 msgid "Undo Install Packages in Set"
-msgstr "Desfés l'instal·lació del conjunt de paquets"
+msgstr "Desfés la instal·lació dels paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "Undo Install Set action"
@@ -9574,9 +9377,8 @@ msgid "Undo Remove"
 msgstr "No eliminis"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:265
-#, fuzzy
 msgid "Undo Remove Packages in Set"
-msgstr "Conjunt de paquets eliminable"
+msgstr "Desfés l'eliminació dels paquets del conjunt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:266
 msgid "Undo Remove Set action"
@@ -9797,832 +9599,3 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
-
-#~ msgid "CORRUPTED"
-#~ msgstr "MALMÈS"
-
-#~ msgid "handles community-side features"
-#~ msgstr "gestiona les característiques del costat de la comunitat"
-
-#~ msgid "community repositories management functions"
-#~ msgstr "funcions de gestió dels repositoris de la comunitat"
-
-#~ msgid "scan the System looking for newly compiled packages"
-#~ msgstr "escaneja el sistema cercant paquets compilats de nou"
-
-#~ msgid "analyze the Entropy Store directory directly"
-#~ msgstr "analitza el directori d'Entropy Store directament"
-
-#~ msgid "repackage the specified atoms"
-#~ msgstr "torna a empaquetar els àtoms especificats"
-
-#~ msgid "do not ask anything except critical things"
-#~ msgstr "no preguntis res, excepte en casos crítics"
-
-#~ msgid "manage only the specified atoms"
-#~ msgstr "gestiona només els àtoms especificats"
-
-#~ msgid "run in interactive mode (asking things one by one)"
-#~ msgstr "executa en mode interactiu (preguntant coses d'una en una)"
-
-#~ msgid ""
-#~ "add binary packages to repository w/o affecting scopes (multipackages)"
-#~ msgstr ""
-#~ "afegeix paquets binaris al repositori sense afectar scopes (paquets "
-#~ "múltiples)"
-
-#~ msgid "community repositories mirrors management functions"
-#~ msgstr ""
-#~ "funcions de gestió de les rèpliques dels repositoris de la comunitat"
-
-#~ msgid "sync packages, database and also do some tidy"
-#~ msgstr "sincronitza paquets, bases de dades i neteja"
-
-#~ msgid "sync packages across primary mirrors"
-#~ msgstr "sincronitza els paquets a través de rèpliques primàries"
-
-#~ msgid "sync the current repository database across primary mirrors"
-#~ msgstr ""
-#~ "sincronitza la base de dades del repositori actual a través de rèpliques "
-#~ "primàries"
-
-#~ msgid "lock the current repository database (server-side)"
-#~ msgstr "bloqueja la base de dades del repositori (del servidor)"
-
-#~ msgid "unlock the current repository database (server-side)"
-#~ msgstr "desbloqueja la base de dades del repositori actual (del servidor)"
-
-#~ msgid "lock the current repository database (client-side)"
-#~ msgstr "bloqueja la base de dades del repositori (del client)"
-
-#~ msgid "unlock the current repository database (client-side)"
-#~ msgstr "desbloqueja la base de dades del repositori actual (del client)"
-
-#~ msgid "remove binary packages not in repositories and expired"
-#~ msgstr "elimina els paquets binaris que no són als repositoris i han vençut"
-
-#, fuzzy
-#~ msgid ""
-#~ "clean unavailable packages from mirrors (similar to tidy, but more nazi)"
-#~ msgstr ""
-#~ "elimina paquets no disponibles de les rèpliques (semblant a neteja, però "
-#~ "més nazi)"
-
-#~ msgid "expiration days [default is: 0, dangerous!]"
-#~ msgstr "dies de venciment [per defecte és: 0, perillós!]"
-
-#~ msgid "(re)initialize the current repository database"
-#~ msgstr "(re)inicialitza la base de dades del repositori actual"
-
-#~ msgid "do not refill database using packages on mirrors"
-#~ msgstr "no reomplis la base de dades usant els paquets de les rèpliques"
-
-#~ msgid "(re)create the database for the specified repository"
-#~ msgstr "(re)crea la base de dades pel repositori especificat"
-
-#~ msgid "manually force a revision bump for the current repository database"
-#~ msgstr ""
-#~ "força un identificador de revisió per la base de dades del repositori "
-#~ "actual"
-
-#~ msgid "synchronize the database"
-#~ msgstr "sincronitza la base de dades"
-
-#~ msgid "flush back old branches packages to current branch"
-#~ msgstr "elimina paquets de branques antigues a la branca actual"
-
-#~ msgid "remove the provided atoms from the current repository database"
-#~ msgstr ""
-#~ "elimina els àtoms proporcionats per la base de dades del repositori actual"
-
-#~ msgid "remove the provided injected atoms (all if no atom specified)"
-#~ msgstr ""
-#~ "elimina els àtoms injectats proporcionats (tots si no s'especifiquen "
-#~ "àtoms)"
-
-#~ msgid "create an empty repository database in the provided path"
-#~ msgstr "crea una base de dades de repositori buida en el camí indicat"
-
-#~ msgid "switch to the specified branch the provided atoms (or world)"
-#~ msgstr "commuta a la branca especificada els àtoms especificats (o world)"
-
-#~ msgid "verify remote integrity of the provided atoms (or world)"
-#~ msgstr "verifica la integritat remota dels àtoms especificats (o world)"
-
-#~ msgid "backup current repository database"
-#~ msgstr "còpia de seguretat de la base de dades del respositori actual"
-
-#~ msgid "restore a previously backed-up repository database"
-#~ msgstr "restaura una còpia de seguretat de la base de dades del repositori"
-
-#~ msgid "enable the specified repository"
-#~ msgstr "habilita el repositori especificat"
-
-#~ msgid "disable the specified repository"
-#~ msgstr "desactiva el repositori especificat"
-
-#~ msgid "show the current Server Interface status"
-#~ msgstr "mostra l'estat actual de la Interfície de Servidor"
-
-#~ msgid "check packages in repository for missing dependencies"
-#~ msgstr "comprova si falten dependències als paquets del repositori"
-
-#~ msgid "handle packages dependencies"
-#~ msgstr "manega les dependències dels paquets"
-
-#~ msgid "clone a package inside a repository assigning it an arbitrary tag"
-#~ msgstr ""
-#~ "clona un paquet dins d'un repositori assignant-li una etiqueta arbitraria"
-
-#~ msgid "pulls dependencies in"
-#~ msgstr "afegeix dependències"
-
-#~ msgid "set the default repository"
-#~ msgstr "estableix el repositori per defecte"
-
-#~ msgid "manage repository digital signatures (OpenGPG)"
-#~ msgstr "gestiona les signatures digitals del repositori (OpenGPG)"
-
-#~ msgid "show currently configured keys information for given repositories"
-#~ msgstr ""
-#~ "mostra informació de les claus configurades pels repositoris especificats"
-
-#~ msgid "export public key of given repository"
-#~ msgstr "exporta la clau pública del repositori especificat"
-
-#~ msgid "export private key of given repository"
-#~ msgstr "exporta la clau privada del repositori especificat"
-
-#~ msgid "do some searches into community repository databases"
-#~ msgstr "cerca en les bases de dades dels repositoris de la comunitat"
-
-#~ msgid "show from what package the provided files belong"
-#~ msgstr "mostra a quin paquet pertanyen els fitxers proporcionats"
-
-#~ msgid "show what packages depend on the provided atoms"
-#~ msgstr "mostra quins paquets depenen dels àtoms proporcionats"
-
-#~ msgid "list all the packages in the default repository"
-#~ msgstr "llista tots els paquets del repositori per defecte"
-
-#~ msgid "search packages inside the default repository database"
-#~ msgstr "cerca de paquets en la base de dades del repositori per defecte"
-
-#~ msgid "show packages owning the specified tags"
-#~ msgstr "mostra els paquets que contenen les etiquetes especificades"
-
-#~ msgid "show installed packages owning the specified revisions"
-#~ msgstr ""
-#~ "mostra els paquets instal·lats que contenen les revisions especificades"
-
-#~ msgid "source package manager functions"
-#~ msgstr "funcions del gestor de paquets font"
-
-#~ msgid "compilation function"
-#~ msgstr "funció de compilació"
-
-#~ msgid "compile packages belonging to the provided categories"
-#~ msgstr "compila paquets pertanyents a les categories seleccionades"
-
-#~ msgid "just list packages"
-#~ msgstr "només llista els paquets"
-
-#~ msgid "do not pull old package slots"
-#~ msgstr "no afegeixis slots de paquets antics"
-
-#~ msgid "compile packages in provided package set names"
-#~ msgstr "compila paquets pertanyents als conjunts de paquets seleccionats"
-
-#~ msgid "rebuild everything"
-#~ msgstr "recontruïr-ho tot"
-
-#~ msgid "run database update if all went fine"
-#~ msgstr "executeu l'actualització de la base de dades si tot ha anat bé"
-
-#~ msgid "run mirror sync if all went fine"
-#~ msgstr "executeu sincronitza rèpliques si tot ha anat bé"
-
-#~ msgid "scan orphaned packages on SPM"
-#~ msgstr "escaneja paquets orfes a SPM"
-
-#~ msgid "notice board handling functions"
-#~ msgstr "funcions de gestió del tauler de notícies"
-
-#~ msgid "add a news item to the notice board"
-#~ msgstr "afegeix un element al tauler de notícies"
-
-#~ msgid "remove a news item from the notice board"
-#~ msgstr "elimina un element del tauler de notícies"
-
-#~ msgid "read the current notice board"
-#~ msgstr "llegir el tauler de notícies actual"
-
-#~ msgid "look for unsatisfied dependencies across community repositories"
-#~ msgstr ""
-#~ "cerca dependències no satisfetes a través dels repositoris de la comunitat"
-
-#~ msgid "verify the integrity of local package files"
-#~ msgstr "verifica la integritat dels fitxers de paquets locals"
-
-#~ msgid "You need to install sys-apps/entropy-server. :-) Do it !"
-#~ msgstr "Heu d'instal·lar sys-apps/entropy-server. :-) Feu-ho!"
-
-#~ msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
-#~ msgstr "Us cal instal·lar/actualitzar sys-apps/entropy-server. :-) Feu-ho!"
-
-#~ msgid "show current repositories status"
-#~ msgstr "mostra l'estat actual dels repositoris"
-
-#~ msgid "do some searches into repository databases"
-#~ msgstr "cerques en les bases de dades dels repositoris"
-
-#~ msgid "match package dependency inside the default repository database"
-#~ msgstr ""
-#~ "cerca dependències de paquets coincidents en la base de dades del "
-#~ "repositori per defecte"
-
-#, fuzzy
-#~ msgid "(re)initialize the current repository"
-#~ msgstr "(re)inicialitza la base de dades del repositori actual"
-
-#~ msgid "switch to the specified branch the repository"
-#~ msgstr "commuta el repositori a la branca especificada"
-
-#~ msgid "verify remote integrity of the provided atoms"
-#~ msgstr "verifica la integritat remota dels àtoms especificats"
-
-#~ msgid "clone a package assigning it an arbitrary tag"
-#~ msgstr "clona un paquet assignant-li una etiqueta arbitraria"
-
-#~ msgid "mask given package in given repository"
-#~ msgstr "emmascara el paquet en el repositori"
-
-#~ msgid "unmask given packages in given repository"
-#~ msgstr "desemmascara el paquet en el repositori"
-
-#~ msgid "scan orphaned packages in SPM"
-#~ msgstr "escaneja paquets orfes a SPM"
-
-#~ msgid "scan new packages available in SPM"
-#~ msgstr "escaneja paquets nous disponibles a SPM"
-
-#, fuzzy
-#~ msgid "look for missing libraries (scan system)"
-#~ msgstr "cerca llibreries perdudes"
-
-#~ msgid "remove downloaded packages and clean temp. directories)"
-#~ msgstr "elimina els paquets baixats i esborra els directoris temporals)"
-
-#~ msgid "Starting to sync data across mirrors (packages/database)"
-#~ msgstr ""
-#~ "S'estan començant a sincronitzar les dades a través de les rèpliques "
-#~ "(paquets/bases de dades)"
-
-#~ msgid "Should I continue with the tidy procedure ?"
-#~ msgstr "Voleu continuar amb el procés de neteja?"
-
-#~ msgid "Notice text"
-#~ msgstr "Text de la notícia"
-
-#~ msgid "Relevant URL (optional)"
-#~ msgstr "URL destacada (opcional)"
-
-#~ msgid "Repository notice board, new item insertion"
-#~ msgstr "Tauler de notícies del repositori, inserció d'un element nou"
-
-#~ msgid "Starting to lock mirrors databases"
-#~ msgstr "S'estan començant a bloquejar les bases de dades de les rèpliques"
-
-#~ msgid "A problem occured on at least one mirror"
-#~ msgstr "S'ha produït un error en almenys una rèplica"
-
-#~ msgid "Repositories lock complete"
-#~ msgstr "El bloqueig de repositoris ha acabat"
-
-#~ msgid "Starting to unlock mirrors databases"
-#~ msgstr ""
-#~ "S'estan començant a desbloquejar les bases de dades de les rèpliques"
-
-#~ msgid "Repositories unlock complete"
-#~ msgstr "El desbloqueig de repositoris s'ha acabat"
-
-#~ msgid "Starting to lock download mirrors databases"
-#~ msgstr ""
-#~ "S'estan començant a bloquejar les bases de dades de les rèpliques de "
-#~ "baixada"
-
-#~ msgid "Download mirrors lock complete"
-#~ msgstr "El bloqueig de rèpliques de baixada ha acabat"
-
-#~ msgid "Starting to unlock download mirrors databases"
-#~ msgstr ""
-#~ "S'estan començant a desbloquejar les bases de dades de les rèpliques de "
-#~ "baixada"
-
-#~ msgid "Download mirrors unlock complete"
-#~ msgstr "El desbloqueig de les rèpliques de baixada ha acabat"
-
-#~ msgid "DATABASE"
-#~ msgstr "BASE DE DADES"
-
-#~ msgid "DOWNLOAD"
-#~ msgstr "BAIXADA"
-
-#, fuzzy
-#~ msgid "Syncing repository"
-#~ msgstr "S'estan sincronitzant repositoris"
-
-#~ msgid "Repositories sync error, cannot continue."
-#~ msgstr "Error en la sincronització dels repositoris, no es pot continuar."
-
-#~ msgid "Local revision currently at"
-#~ msgstr "La revisió local actualment a"
-
-#~ msgid "choose on what branch operating"
-#~ msgstr "seleccioneu en quina branca voleu operar"
-
-#~ msgid "package repositories handling functions"
-#~ msgstr "funcions de gestió de repositoris de paquets"
-
-#~ msgid "sync package repositories across primary mirrors"
-#~ msgstr ""
-#~ "s'estan sincronitzant repositoris de paquets a través de rèpliques "
-#~ "primàries"
-
-#~ msgid "repository handling functions"
-#~ msgstr "funcions de gestió de repositoris"
-
-#~ msgid "no package specified."
-#~ msgstr "no s'ha especificat cap paquet."
-
-#~ msgid "Enabling"
-#~ msgstr "S'està habilitant"
-
-#~ msgid "already enabled"
-#~ msgstr "Ja habilitat"
-
-#~ msgid "Disabling"
-#~ msgstr "Desactivant"
-
-#~ msgid "Disabled"
-#~ msgstr "Desactivat"
-
-#~ msgid "already disabled"
-#~ msgstr "ja desactivat"
-
-#~ msgid "Invalid syntax."
-#~ msgstr "La sintaxi no és vàlida."
-
-#~ msgid "No valid repository specified."
-#~ msgstr "No s'ha especificat cap repositori vàlid"
-
-#~ msgid "No packages selected."
-#~ msgstr "No s'han seleccionat paquets."
-
-#~ msgid "Masking"
-#~ msgstr "S'està emmascarant"
-
-#~ msgid "Unmasking"
-#~ msgstr "S'està desemmascarant"
-
-#~ msgid "Matching packages to remove"
-#~ msgstr "S'estan concordant paquets a eliminar"
-
-#~ msgid "Not enough parameters"
-#~ msgstr "No hi ha prou paràmetres"
-
-#~ msgid "These are the packages that would be removed from the database"
-#~ msgstr "Aquests són els paquets que s'eliminaran de la base de dades"
-
-#~ msgid "Removing selected packages"
-#~ msgstr "S'estan eliminat els paquets seleccionats"
-
-#~ msgid "Packages removed. To remove binary packages, run activator."
-#~ msgstr ""
-#~ "S'han eliminat els paquets. Per eliminar els paquets binaris, executeu "
-#~ "l'activator."
-
-#~ msgid "These are the injected packages pulled in for removal"
-#~ msgstr ""
-#~ "Aquests són els paquets injectats que s'han seleccionat per eliminar"
-
-#~ msgid "Switching branch, be sure to have your packages in sync."
-#~ msgstr ""
-#~ "S'està commutant de branca, assegureu-vos que teniu els paquets a sync."
-
-#~ msgid "Collecting packages that would be marked"
-#~ msgstr "S'estan recollint paquets que es marcaran"
-
-#~ msgid "These are the packages that would be marked"
-#~ msgstr "Aquests són els paquets que es marcaran"
-
-#~ msgid "No valid repositories specified."
-#~ msgstr "No s'han especificat repositoris vàlids."
-
-#~ msgid "Invalid repositories specified."
-#~ msgstr "Els repositoris especificats no són vàlids."
-
-#~ msgid "Creating empty database to"
-#~ msgstr "S'està creant una base de dades buida a"
-
-#~ msgid "Cannot overwrite already existing file"
-#~ msgstr "No es pot sobreescriure un fitxer que ja existeix"
-
-#~ msgid "Bumping Repository database"
-#~ msgstr "S'està identificant la base de dades del repositori"
-
-#~ msgid "These are the packages that would be changed to injected status"
-#~ msgstr "Aquests són els paquets que es canviaran a l'estat d'injectat"
-
-#~ msgid "Would you like to transform them now ?"
-#~ msgstr "Els voleu transformar ara?"
-
-#~ msgid "Transforming from database"
-#~ msgstr "S'està transformant des de la base de dades"
-
-#~ msgid "Database transform complete"
-#~ msgstr "La transformació de base de dades ha acabat"
-
-#~ msgid "So sweetheart, what packages do you want to remove ?"
-#~ msgstr "Quins paquets voleu eliminar?"
-
-#~ msgid "So sweetheart, what packages do you want to add ?"
-#~ msgstr "Quins paquets voleu afegir?"
-
-#~ msgid "These are the packages that would be added/updated"
-#~ msgstr "Aquests són els paquets que s'instal·laran/s'actualitzaran "
-
-#~ msgid ""
-#~ "These are the newly available packages, either updatable or not installed"
-#~ msgstr ""
-#~ "Aquests són els paquets nous disponibles, siguin actualitzacions o no "
-#~ "instal·lats"
-
-#~ msgid "No package sets found"
-#~ msgstr "No s'han trobat conjuts de paquets"
-
-#~ msgid "package set not found"
-#~ msgstr "no s'ha trobat el conjunt de paquets"
-
-#, fuzzy
-#~ msgid "Transform complete"
-#~ msgstr "La transformació de base de dades ha acabat"
-
-#, fuzzy
-#~ msgid "What packages do you want to remove ?"
-#~ msgstr "Quins paquets voleu eliminar?"
-
-#, fuzzy
-#~ msgid "What packages do you want to add ?"
-#~ msgstr "Quins paquets voleu afegir?"
-
-#~ msgid "Entropy Server interface must be run as root"
-#~ msgstr "Heu d'executar la Interfície del Servidor d'Entropy com a root"
-
-#~ msgid "Cannot acquire Entropy resources lock."
-#~ msgstr "No es pot accedir al bloqueig de recursos d'Entropy."
-
-#~ msgid "Entropy locked during lock acquire"
-#~ msgstr "Entropy està bloquejat mentre l'adquireix el bloqueig"
-
-#~ msgid "Unknown error"
-#~ msgstr "Error desconegut"
-
-#~ msgid "conflicting dependencies were pulled in"
-#~ msgstr "s'han afegit a la cua dependències amb conflictes"
-
-#~ msgid "Calculated dependencies data no longer valid"
-#~ msgstr "Les dades de dependències calculades ja no són vàlides"
-
-#~ msgid ""
-#~ "clean unavaiable packages from mirrors (similar to tidy, but more nazi)"
-#~ msgstr ""
-#~ "elimina paquets no disponibles de les rèpliques (semblant a neteja, però "
-#~ "més nazi)"
-
-#~ msgid "removing"
-#~ msgstr "s'està eliminant"
-
-#~ msgid "Downloading archive"
-#~ msgstr "S'està baixant el fitxer"
-
-#~ msgid "Unpacking package"
-#~ msgstr "S'està desempaquetant"
-
-#, fuzzy
-#~ msgid "requires the following library"
-#~ msgstr "Si us plau, ompliu el següent formulari"
-
-#~ msgid "Injecting package"
-#~ msgstr "S'està injectant un paquet"
-
-#~ msgid "Packages injection complete"
-#~ msgstr "La injecció de paquets ha acabat"
-
-#~ msgid "Packages removal complete"
-#~ msgstr "L'eliminació de paquets ha acabat"
-
-#~ msgid "Mirror response time"
-#~ msgstr "temps de resposta de les rèpliques"
-
-#~ msgid "Installed Search"
-#~ msgstr "Cerca d'instal·lats"
-
-#~ msgid "These are the installed packages"
-#~ msgstr "Aquests són els paquets instal·lats"
-
-#~ msgid "Are you ready ?"
-#~ msgstr "Esteu preparat?"
-
-#~ msgid "local packages"
-#~ msgstr "paquets locals"
-
-#, fuzzy
-#~ msgid "Web Service error"
-#~ msgstr "Error de Servei EAPI3"
-
-#~ msgid "Now searching for missing RDEPENDs"
-#~ msgstr "Ara s'estan cercant RDEPENDs perdudes"
-
-#~ msgid "scanning for missing RDEPENDs"
-#~ msgstr "s'estan escanejant RDEPENDs perdudes"
-
-#~ msgid "is missing the following dependencies"
-#~ msgstr "Falten les dependències següents"
-
-#~ msgid "Do you want to add them?"
-#~ msgstr "Voleu afegir-les?"
-
-#~ msgid "Selectively?"
-#~ msgstr "Selectivament?"
-
-#~ msgid "Want to add?"
-#~ msgstr "Voleu afegir-la?"
-
-#~ msgid "missing dependencies saved"
-#~ msgstr "s'han desat les dependències que faltaven"
-
-#~ msgid "Cannot find a suitable editor. Can't edit file directly."
-#~ msgstr ""
-#~ "No s'ha trobat un editor adequat. No es pot editar el fitxer directament."
-
-#~ msgid "Service port:"
-#~ msgstr "Port de servei:"
-
-#~ msgid "Service port (SSL):"
-#~ msgstr "Port de servei (SSL):"
-
-#~ msgid "Repository Services Port not valid"
-#~ msgstr "Port de serveis de repositoris no vàlid"
-
-#~ msgid "Secure Services Port not valid"
-#~ msgstr "el Port de Serveis Segurs no és vàlid"
-
-#~ msgid "Secure Services Port"
-#~ msgstr "Port de Serveis Segurs"
-
-#~ msgid "Services Port"
-#~ msgstr "Port de Serveis"
-
-#~ msgid "Running fixpackages"
-#~ msgstr "S'està executant fixpackages"
-
-#~ msgid "OutputInterface does not have an output method"
-#~ msgstr "OutputInterface no té un mètode de sortida"
-
-#~ msgid ""
-#~ "A valid entropy.client.services.ugc.commands.Base interface is needed"
-#~ msgstr ""
-#~ "Cal una instància basada en una interfície entropy.client.services.ugc."
-#~ "commands.Base vàlida"
-
-#~ msgid "connection error while receiving data"
-#~ msgstr "s'ha produït un error de connexió mentre es rebien dades"
-
-#~ msgid "command not supported. receive aborted"
-#~ msgstr "ordre sense implementar. La recepció s'interromp"
-
-#~ msgid "malformed EOS. receive aborted"
-#~ msgstr "l'EOS està mal format. La recepció s'interromp"
-
-#~ msgid "malformed data. receive aborted"
-#~ msgstr "les dades estan mal formades . La recepció s'interromp"
-
-#~ msgid "connection timed out while receiving data"
-#~ msgstr "s'ha excedit el temps de connexió en la recepció de dades"
-
-#~ msgid "syscall error while receiving data"
-#~ msgstr "s'ha produït un error syscall mentre es rebien dades"
-
-#~ msgid "Reconnecting to socket"
-#~ msgstr "S'està reconnectant amb el sòcol"
-
-#~ msgid ""
-#~ "Warning: you are using an emergency SSL interface, SSL certificate can't "
-#~ "be verified. Please install dev-python/pyopenssl"
-#~ msgstr ""
-#~ "Atenció: esteu usant una interfície SSL d'emergència. El certificat SSL "
-#~ "no es pot verificar. Si us plau, instal·leu dev-python/pyopenssl"
-
-#~ msgid "Service issuer"
-#~ msgstr "Servei emissor"
-
-#~ msgid "Successfully connected to host"
-#~ msgstr "S'ha connectat correctament amb l'ordinador central"
-
-#~ msgid "Successfully disconnected from host"
-#~ msgstr "S'ha desconnectat de l'ordinador central correctament"
-
-#~ msgid "no username specified"
-#~ msgstr "no s'ha especificat el nom d'usuari"
-
-#~ msgid "no password specified"
-#~ msgstr "no s'ha especificat la contrasenya"
-
-#~ msgid "empty password"
-#~ msgstr "la contrasenya és buida"
-
-#~ msgid "empty username"
-#~ msgstr "el nom d'usuari és buit"
-
-#~ msgid "you need to login on the website to update your password format"
-#~ msgstr ""
-#~ "heu d'iniciar la sessió a la pàgina web per actualitzar el format de la "
-#~ "contrasenya"
-
-#~ msgid "wrong password"
-#~ msgstr "la contrasenya és incorrecta"
-
-#~ msgid "user inactive"
-#~ msgstr "l'usuari és inactiu"
-
-#~ msgid "user banned"
-#~ msgstr "l'usuari està bandejat"
-
-#~ msgid "method not implemented"
-#~ msgstr "el mètode no està implementat"
-
-#~ msgid "feature not supported remotely"
-#~ msgstr "la característica no està implementada de forma remota"
-
-#~ msgid "repo"
-#~ msgstr "repositori"
-
-#~ msgid "arch"
-#~ msgstr "arquitectura"
-
-#~ msgid "product"
-#~ msgstr "producte"
-
-#~ msgid "service temporarily not available"
-#~ msgstr "servei temporalment no disponible"
-
-#~ msgid "command failed"
-#~ msgstr "l'ordre ha fallat"
-
-#~ msgid "received wrong answer"
-#~ msgstr "s'ha rebut una resposta incorrecta"
-
-#~ msgid "cannot convert stream into object"
-#~ msgstr "no s'ha pogut convertir el flux en un objecte"
-
-#~ msgid "sending file"
-#~ msgstr "s'està enviant el fitxer"
-
-#~ msgid "ok"
-#~ msgstr "d'acord"
-
-#~ msgid "login abort"
-#~ msgstr "interromp l'entrada"
-
-#~ msgid "connection issues"
-#~ msgstr "problemes de connexió"
-
-#~ msgid "cannot open a session"
-#~ msgstr "no es pot obrir una sessió"
-
-#~ msgid "Access denied. Login failed"
-#~ msgstr "S'ha denegat l'accés. L'entrada ha fallat"
-
-#~ msgid "Ok"
-#~ msgstr "D'acord"
-
-#~ msgid "Login successful. Do you want to save these credentials ?"
-#~ msgstr ""
-#~ "La sessió s'ha iniciat correctament. Voleu desar aquestes credencials?"
-
-#~ msgid "Cannot write to cache directory"
-#~ msgstr "No es pot escriure en el directori de la memòria de cau"
-
-#~ msgid "Cannot remove cache file"
-#~ msgstr "No es pot eliminar el fitxer de memòria de cau"
-
-#~ msgid "Cannot write to cache file"
-#~ msgstr "No es pot escriure al fitxer de memòria de cau"
-
-#~ msgid "EAPI3 Service status"
-#~ msgstr "Estat del Servei EAPI3"
-
-#~ msgid "EAPI3 Service"
-#~ msgstr "Servei EAPI3"
-
-#~ msgid "Fetch error on segment"
-#~ msgstr "S'ha produït un error en l'obtenció del segment"
-
-#~ msgid "BBcode Documents"
-#~ msgstr "Documents BBcode"
-
-#~ msgid "YouTube(tm) Videos"
-#~ msgstr "Vídeos del YouTube(tm)"
-
-#~ msgid "BBcode Document"
-#~ msgstr "Document BBcode"
-
-#~ msgid "YouTube(tm) Video"
-#~ msgstr "Vídeo del YouTube(tm)"
-
-#~ msgid "cannot disable default repository"
-#~ msgstr "no es pot desactivar el repositori per defecte"
-
-#~ msgid "Vote not valid"
-#~ msgstr "El vot no és vàlid"
-
-#~ msgid "Vote not in range"
-#~ msgstr "Vot fora de rang"
-
-#~ msgid "youtube video"
-#~ msgstr "vídeo del youtube"
-
-#~ msgid "Unknown type"
-#~ msgstr "Tipus desconegut"
-
-#~ msgid "Timeout Error"
-#~ msgstr "Error en temps d'espera"
-
-#~ msgid "Connection timed out, sorry!"
-#~ msgstr "S'ha excedit el temps de connexió!"
-
-#~ msgid "Share your opinion, your documents, your screenshots!"
-#~ msgstr "Compartiu la vostra opinió, documents, captures de pantalla!"
-
-#~ msgid "Be part of our Community!"
-#~ msgstr "Sigueu part de la Comunitat!"
-
-#~ msgid "You! Why do you want to remove the main repository ?"
-#~ msgstr "Voleu esborrar el repositori principal? No és possible!"
-
-#~ msgid "Cleaning UGC cache of"
-#~ msgstr "S'està suprimint la memòria de cau UGC de..."
-
-#~ msgid "UGC cache cleared"
-#~ msgstr "S'ha esborrat la memòria de cau de UGC"
-
-#~ msgid "Clear all cache"
-#~ msgstr "Esborra la memòria de cau"
-
-#~ msgid "Calculating available packages for"
-#~ msgstr "S'estan calculant els paquets disponibles a"
-
-#~ msgid "Resources locked, sleeping %s seconds, check #%s/%s"
-#~ msgstr ""
-#~ "Els recursos estan bloquejats. En espera %s segons. Comprovació #%s/%s"
-
-#~ msgid "Nothing to backup in etpConst with %s key"
-#~ msgstr "No hi ha de què fer la còpia de seguretat a etpConst amb la clau %s"
-
-#~ msgid "must be an ASCII string"
-#~ msgstr "ha de ser una cadena ASCII"
-
-#~ msgid "is not compiled with the same architecture of the system"
-#~ msgstr "no està compilat per la mateixa arquitectura que el vostre sistema"
-
-#~ msgid "Cannot install"
-#~ msgstr "No es pot instal·lar"
-
-#~ msgid ""
-#~ "Another Entropy instance is running. You won't be able to install/remove/"
-#~ "sync applications."
-#~ msgstr ""
-#~ "S'està executant una altra instància d'Entropy. No podreu instal·lar/"
-#~ "eliminar/sincronitzar aplicacions."
-
-#~ msgid "Install Set"
-#~ msgstr "Instal·la el conjunt de paquets"
-
-#~ msgid "Install the selected Package Set"
-#~ msgstr "Instal·la el conjunt de paquets seleccionat"
-
-#~ msgid "Load content"
-#~ msgstr "Mostra el contingut"
-
-#~ msgid "Remove Set"
-#~ msgstr "Elimina el conjunt de paquets"
-
-#~ msgid "Remove the selected Package Set"
-#~ msgstr "Elimina el conjunt de paquets seleccionat"
-
-#~ msgid "Undo Remove Set"
-#~ msgstr "Desfés l'eliminació del conjunt de paquets"
-
-#~ msgid "Are you supa sure?"
-#~ msgstr "N'esteu totalment segur?"
