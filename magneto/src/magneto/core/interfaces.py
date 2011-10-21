@@ -367,7 +367,7 @@ class MagnetoCore(MagnetoCoreUI):
         return pix
 
     def load_packages_url(self, *data):
-        self.load_url("%s/packages" % (etpConst['distro_website_url'],))
+        self.load_url(etpConst['packages_website_url'])
 
     def load_website(self, *data):
         self.load_url(etpConst['distro_website_url'])
