@@ -1,3 +1,21 @@
+commit 7fd6fe80328628d71ffa71043987c15c691b652b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 20:05:53 2011 +0200
+
+    Release Entropy 1.0_rc63
+
+commit 73c2a1f08d6ad7fa7f2387f72e9c7594f2ccdc34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 20:02:03 2011 +0200
+
+    [Makefile] add libraries as symlink of lib/ for backward compatibility
+
+commit 6e49e85658de484497a7e9cb0ec48efa4d3bbdf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 19:01:51 2011 +0200
+
+    Tagging Entropy version 1.0_rc62
+
 commit c575040a9551e325d9f695777a1c2f879827e31c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 21 19:01:44 2011 +0200
