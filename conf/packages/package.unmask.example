@@ -1,10 +1,9 @@
 # package.unmask example file
 #
-# In this file you can specify atoms, one per line, that you would unmask.
-# Unmasking a package (atom) means that you will allow Entropy to pull in a package even if it's marked as "experimental".
+# In this file you can specify dependencies, one per line, that you would like to unmask.
 
 # LINE CONSTRUCTION:
-# <atom>
+# <dependency>
 # See examples below
 # NOTE: for inline comments, please use "##" instead of "#"
 
@@ -14,6 +13,7 @@
 # <media-libs/foo-1.2.3
 # media-libs/foo:1
 # >=media-libs/foo-1.2.3#2.6.23-sabayon-r1
+# media-libs/foo::sabayon-repo
 # 
 # :1 means package with SLOT="1"
 # #2.6.23-sabayon-r1 means package with kernel tag = 2.6.23-sabayon-r1
