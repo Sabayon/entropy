@@ -2035,10 +2035,15 @@ class MaskableRepository(EntropyRepositoryBase):
 
     def _maskFilter_user_package_mask(self, package_id, live):
 
-        mykw = "%smask_ids" % (self.name,)
-        user_package_mask_ids = self._settings.get(mykw)
+        with self._settings['mask']:
+            # thread-safe in here
+            cache_obj = self._settings['mask'].get()
+            if cache_obj is None:
+                cache_obj = {}
+                self._settings['mask'].set(cache_obj)
+        user_package_mask_ids = cache_obj.get(self.name)
 
-        if not isinstance(user_package_mask_ids, (list, set, frozenset)):
+        if user_package_mask_ids is None:
             user_package_mask_ids = set()
 
             for atom in self._settings['mask']:
@@ -2054,7 +2059,7 @@ class MaskableRepository(EntropyRepositoryBase):
                     continue
                 user_package_mask_ids |= set(matches)
 
-            self._settings[mykw] = user_package_mask_ids
+            cache_obj[self.name] = user_package_mask_ids
 
         if package_id in user_package_mask_ids:
             # sorry, masked
@@ -2072,12 +2077,15 @@ class MaskableRepository(EntropyRepositoryBase):
 
     def _maskFilter_user_package_unmask(self, package_id, live):
 
-        # see if we can unmask by just lookin into user
-        # package.unmask stuff -> self._settings['unmask']
-        mykw = "%sunmask_ids" % (self.name,)
-        user_package_unmask_ids = self._settings.get(mykw)
+        with self._settings['unmask']:
+            # thread-safe in here
+            cache_obj = self._settings['unmask'].get()
+            if cache_obj is None:
+                cache_obj = {}
+                self._settings['unmask'].set(cache_obj)
+        user_package_unmask_ids = cache_obj.get(self.name)
 
-        if not isinstance(user_package_unmask_ids, (list, set, frozenset)):
+        if user_package_unmask_ids is None:
 
             user_package_unmask_ids = set()
             for atom in self._settings['unmask']:
@@ -2092,7 +2100,7 @@ class MaskableRepository(EntropyRepositoryBase):
                     continue
                 user_package_unmask_ids |= set(matches)
 
-            self._settings[mykw] = user_package_unmask_ids
+            cache_obj[self.name] = user_package_unmask_ids
 
         if package_id in user_package_unmask_ids:
 

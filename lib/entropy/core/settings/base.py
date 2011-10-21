@@ -20,6 +20,7 @@
 import os
 import errno
 import sys
+import threading
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
@@ -59,6 +60,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
         def __init__(self, *args, **kwargs):
             list.__init__(self, *args, **kwargs)
             self.__cache = None
+            self.__lock = threading.RLock()
+
+        def __enter__(self):
+            """
+            Make possible to acquire the whole cache content in
+            a thread-safe way.
+            """
+            self.__lock.acquire()
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            """
+            Make possible to add plugins without triggering parse() every time.
+            Reload SystemSettings on exit
+            """
+            self.__lock.release()
 
         def get(self):
             """
