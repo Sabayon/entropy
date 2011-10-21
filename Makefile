@@ -25,6 +25,7 @@ entropy-install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
 	cp lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/ -Ra
+	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
 	install -m 755 misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
 	install -m 755 services/smartapp_wrapper $(DESTDIR)/$(LIBDIR)/entropy/services/
