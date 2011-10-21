@@ -264,7 +264,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             ("system_mask_d", "system.mask.d", True),
         ]
         for setting_id, rel_dir, auto_update in conf_d_descriptors:
-            conf_dir = etpConst['confpackagesdir']+"/" + rel_dir
+            conf_dir = etpConst['confpackagesdir']+ os.path.sep  + rel_dir
             self.__setting_dirs[setting_id] = [conf_dir, [], auto_update]
             if not (os.path.isdir(conf_dir) and \
                         os.access(conf_dir, os.R_OK)):
