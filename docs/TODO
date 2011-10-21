@@ -2,14 +2,16 @@ Backlog (raw)
 
   1.0:
 
+    - entropy.settings do not re-parse files if mtime is the same
+      and last parse is available in RAM?
+    - repositories.conf.d/* support?
+
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
           then packages.
         - do not use implicit pull when push is selected, block push if
           local repo is older than remote, implement some kind of atomic
           remote locking to guarantee mutual exclusion.
-
-    - repositories.conf.d/* support?
 
     - fine grained locking support
       (acquire entropy resources lock only when really needed
