@@ -50,6 +50,29 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
     """
 
+    class CachingList(list):
+        """
+        This object overrides a list, making possible to store
+        cache information in the same place of the data to be
+        cached.
+        """
+        def __init__(self, *args, **kwargs):
+            list.__init__(self, *args, **kwargs)
+            self.__cache = None
+
+        def get(self):
+            """
+            Get cache object
+            """
+            return self.__cache
+
+        def set(self, cache_obj):
+            """
+            Set cache object
+            """
+            self.__cache = cache_obj
+
+
     def init_singleton(self):
 
         """
@@ -175,6 +198,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__setting_files['unmask'],
             self.__setting_files['satisfied'],
             self.__setting_files['system_mask'],
+            self.__setting_files['splitdebug'],
         ])
         for setting_id, dir_sett, auto_update in self.__setting_dirs.items():
             if not auto_update:
@@ -220,6 +244,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'mask': etpConst['confpackagesdir']+"/package.mask",
             # satisfied packages configuration file
             'satisfied': etpConst['confpackagesdir']+"/package.satisfied",
+            # selectively enable splitdebug for packages
+            'splitdebug': etpConst['confpackagesdir']+"/package.splitdebug",
              # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask",
             'license_accept': etpConst['confpackagesdir']+"/license.accept",
@@ -240,7 +266,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'license_accept', 'system_mask', 'system_package_sets',
             'system_dirs', 'system_dirs_mask', 'extra_ldpaths',
-            'system', 'system_rev_symlinks', 'hw_hash',
+            'splitdebug', 'system', 'system_rev_symlinks', 'hw_hash',
             'broken_syms', 'broken_libs_mask', 'broken_links_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
@@ -795,6 +821,20 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__cache_cleared = True
             EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['system_mask'],
+            comment_tag = self.__pkg_comment_tag)
+
+    def _splitdebug_parser(self):
+        """
+        Parser returning packages for which the splitdebug feature
+        should be enabled. Splitdebug is about installing /usr/lib/debug
+        files into system. If no entries are listed in here and
+        splitdebug is enabled in client.conf, the feature will be considered
+        enabled for any package.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        return self.__generic_parser(self.__setting_files['splitdebug'],
             comment_tag = self.__pkg_comment_tag)
 
     def _license_mask_parser(self):
@@ -1555,7 +1595,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             comment_tag = comment_tag)
         # filter out non-ASCII lines
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
-        return lines
+        return SystemSettings.CachingList(lines)
 
     def __remove_repo_cache(self, repoid = None):
         """

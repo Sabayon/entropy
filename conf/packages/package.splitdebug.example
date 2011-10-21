@@ -1,0 +1,24 @@
+# package.splitdebug example file
+#
+# In this file you can specify dependencies, one per line, for which you
+# would like to have the splitdebug feature turned on. This means that
+# if at least one valid entry is listed here, the installation of
+# /usr/lib/debug files will be enabled only for it.
+# Otherwise, if splitdebug is enabled in client.conf and no entries
+# are listed here, splitdebug will be considered enabled for any package.
+
+# LINE CONSTRUCTION:
+# <dependency to match>
+# See examples below
+# NOTE: for inline comments, please use "##" instead of "#"
+
+# EXAMPLES:
+# >=media-libs/foo-1.2.3
+# media-libs/foo
+# <media-libs/foo-1.2.3
+# media-libs/foo:1
+# >=media-libs/foo-1.2.3#2.6.23-sabayon-r1
+# media-libs/foo::sabayon-repo
+#
+# :1 means package with SLOT="1"
+# #2.6.23-sabayon-r1 means package with kernel tag = 2.6.23-sabayon-r1

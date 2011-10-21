@@ -3684,6 +3684,38 @@ class Package:
         # generate metadata dictionary
         self._generate_metadata()
 
+    def _package_splitdebug_enabled(self, pkg_match):
+        """
+        Determine if splitdebug is enabled for the package being installed
+        or just fetched. This method should be called only if system-wide
+        splitdebug setting in client.conf is enabled already.
+        """
+        # this is a SystemSettings.CachingList object
+        split_data = self._settings['splitdebug']
+        if not split_data:
+            # no entries, consider splitdebug always enabled
+            return True
+
+        pkg_id, pkg_repo = pkg_match
+        pkg_matches = split_data.get()
+        if pkg_matches is None:
+            # compute the package matching then
+            pkg_matches = set()
+            for dep in self._settings['splitdebug']:
+                dep, repo_ids = entropy.dep.dep_get_match_in_repos(dep)
+                if repo_ids is not None:
+                    if pkg_repo not in repo_ids:
+                        # skip entry, not me
+                        continue
+                dep_matches, rc = self._entropy.atom_match(
+                    dep, multi_match=True, multi_repo=True)
+                pkg_matches |= dep_matches
+            # set cache back
+            split_data.set(pkg_matches)
+        # determine if it's enabled then
+        enabled = pkg_match in pkg_matches
+        return enabled
+
     def __get_base_metadata(self, action):
         def get_splitdebug_data():
             sys_set_plg_id = \
@@ -3852,6 +3884,18 @@ class Package:
         edelta_support = self._settings[cl_id]['misc']['edelta_support']
         self.pkgmeta['edelta_support'] = edelta_support
         is_package_repo = repository.endswith(etpConst['packagesext'])
+
+        # if splitdebug is enabled, check if it's also enabled
+        # via package.splitdebug
+        if self.pkgmeta['splitdebug']:
+            # yeah, this has to affect exported splitdebug setting
+            # because it is read during package files installation
+            # Older splitdebug data was in the same package file of
+            # the actual content. Later on, splitdebug data was moved
+            # to its own package file that gets downloaded and unpacked
+            # only if required (if splitdebug is enabled)
+            self.pkgmeta['splitdebug'] = self._package_splitdebug_enabled(
+                self._package_match)
 
         # fetch abort function
         self.pkgmeta['fetch_abort_function'] = \
@@ -4066,6 +4110,13 @@ class Package:
             if entropy.tools.is_valid_path(fetch_path):
                 self.pkgmeta['fetch_path'] = fetch_path
 
+        # if splitdebug is enabled, check if it's also enabled
+        # via package.splitdebug
+        splitdebug = self.pkgmeta['splitdebug']
+        if splitdebug:
+            splitdebug = self._package_splitdebug_enabled(
+                self._package_match)
+
         self.pkgmeta['repository'] = repository
         self.pkgmeta['idpackage'] = idpackage
         dbconn = self._entropy.open_repository(repository)
@@ -4095,7 +4146,7 @@ class Package:
             }
             self.pkgmeta['signatures'] = signatures
             extra_download = dbconn.retrieveExtraDownload(idpackage)
-            if not self.pkgmeta['splitdebug']:
+            if not splitdebug:
                 extra_download = [x for x in extra_download if \
                     x['type'] != "debug"]
             self.pkgmeta['extra_download'] = extra_download
@@ -4261,7 +4312,15 @@ class Package:
                 idpackage, repository, digest, signatures)
 
             extra_downloads = dbconn.retrieveExtraDownload(idpackage)
-            if not self.pkgmeta['splitdebug']:
+
+            splitdebug = self.pkgmeta['splitdebug']
+            # if splitdebug is enabled, check if it's also enabled
+            # via package.splitdebug
+            if splitdebug:
+                splitdebug = self._package_splitdebug_enabled(
+                    (idpackage, repository))
+
+            if not splitdebug:
                 extra_downloads = [x for x in extra_downloads if \
                     x['type'] != "debug"]
             for extra_download in extra_downloads:
