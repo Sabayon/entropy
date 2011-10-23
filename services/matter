@@ -860,7 +860,15 @@ class PackageBuilder(object):
 
         # list of _emerge.Package.Package objects
         package_queue = graph.altlist()
-        dep_list = [p.cpv+"::"+p.repo for p in package_queue]
+        # package_queue can also contain _emerge.Blocker.Blocker objects
+        # not exposing .cpv field (but just .cp).
+        dep_list = []
+        for pobj in package_queue:
+            cpv = getattr(p, "cpv", p.cp)
+            repo = getattr(p, "repo", "")
+            if repo:
+                repo = "::" + repo
+            dep_list.append(cpv+repo)
 
         # calculate dependencies, if --dependencies is not enabled
         # because we have to validate it
