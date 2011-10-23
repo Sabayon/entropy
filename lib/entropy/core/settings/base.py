@@ -116,6 +116,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files = {}
         self.__setting_dirs = {}
         self.__mtime_files = {}
+        self.__mtime_cache = {}
         self.__persistent_settings = {
             'pkg_masking_reasons': etpConst['pkg_masking_reasons'].copy(),
             'pkg_masking_reference': etpConst['pkg_masking_reference'].copy(),
@@ -1607,11 +1608,28 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: raw text extracted from file
         @rtype: list
         """
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(filepath)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, filepath)
+        cache_obj = self.__mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
         lines = entropy.tools.generic_file_content_parser(filepath,
             comment_tag = comment_tag)
         # filter out non-ASCII lines
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
-        return SystemSettings.CachingList(lines)
+        data = SystemSettings.CachingList(lines)
+        cache_obj['data'] = data
+        self.__mtime_cache[cache_key] = cache_obj
+        return data
 
     def __remove_repo_cache(self, repoid = None):
         """
