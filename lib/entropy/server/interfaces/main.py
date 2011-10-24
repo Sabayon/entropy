@@ -624,8 +624,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         fake_instance = self._helper.fake_default_repo
 
+        enc = etpConst['conf_encoding']
         try:
-            with open(etpConst['serverconf'], "r") as server_f:
+            with codecs.open(etpConst['serverconf'], "r", encoding=enc) \
+                    as server_f:
                 serverconf = [x.strip() for x in server_f.readlines() if \
                     x.strip()]
         except IOError as err:
@@ -1672,7 +1674,8 @@ class Server(Client):
         current_packages.extend(packages)
 
         mask_file_tmp = mask_file + ".mask_packages_tmp"
-        with open(mask_file_tmp, "w") as mask_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(mask_file_tmp, "w", encoding=enc) as mask_f:
             for package in current_packages:
                 mask_f.write(package + "\n")
             mask_f.flush()
@@ -1717,7 +1720,8 @@ class Server(Client):
         current_packages = list(filter(mask_filter, current_packages))
 
         mask_file_tmp = mask_file + ".mask_packages_tmp"
-        with open(mask_file_tmp, "w") as mask_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(mask_file_tmp, "w", encoding=enc) as mask_f:
             for package in current_packages:
                 mask_f.write(package + "\n")
             mask_f.flush()
@@ -3883,7 +3887,8 @@ class Server(Client):
                 entropy.dep.dep_getkey(x[0]), etpConst['entropyslotprefix'],
                     x[1],) for x in sorted(packages)])
             if pkg_list_path is not None:
-                with open(pkg_list_path, "w") as pkg_f:
+                enc = etpConst['conf_encoding']
+                with codecs.open(pkg_list_path, "w", encoding=enc) as pkg_f:
                     for pkgstr in pkgstring_list:
                         pkg_f.write(pkgstr + "\n")
                     pkg_f.flush()
@@ -4043,8 +4048,9 @@ class Server(Client):
         if repoid == etpConst['clientserverrepoid']:
             return
 
+        enc = etpConst['conf_encoding']
         if os.path.isfile(etpConst['serverconf']):
-            f_srv = open(etpConst['serverconf'], "r")
+            f_srv = codecs.open(etpConst['serverconf'], encoding=enc, "r")
             content = f_srv.readlines()
             f_srv.close()
             content = [x.strip() for x in content]
@@ -4058,7 +4064,9 @@ class Server(Client):
                 new_content.append(line)
             if not found:
                 new_content.append("default-repository = %s" % (repoid,))
-            f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp", "w")
+            f_srv_t = codecs.open(
+                etpConst['serverconf']+".save_default_repo_tmp",
+                "w", encoding=enc)
             for line in new_content:
                 f_srv_t.write(line+"\n")
             f_srv_t.flush()
@@ -4066,7 +4074,8 @@ class Server(Client):
             os.rename(etpConst['serverconf']+".save_default_repo_tmp",
                 etpConst['serverconf'])
         else:
-            f_srv = open(etpConst['serverconf'], "w")
+            f_srv = codecs.open(etpConst['serverconf'], "w",
+                                encoding=enc)
             f_srv.write("default-repository = %s\n" % (repoid,))
             f_srv.flush()
             f_srv.close()
@@ -4115,10 +4124,11 @@ class Server(Client):
             return None
 
         tmpfile = etpConst['serverconf']+".switch"
-        with open(etpConst['serverconf']) as f_srv:
+        enc = etpConst['conf_encoding']
+        with codecs.open(etpConst['serverconf'], "r", encoding=enc) as f_srv:
             content = [x.strip() for x in f_srv.readlines()]
 
-        with open(tmpfile, "w") as f_tmp:
+        with codecs.open(tmpfile, "w", encoding=enc) as f_tmp:
             status = False
             for line in content:
                 key, value = entropy.tools.extract_setting(line)

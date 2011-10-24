@@ -9,8 +9,9 @@
     B{Entropy Package Manager Client Core Interface}.
 
 """
-
 import os
+import codecs
+
 from entropy.core import Singleton
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
@@ -576,10 +577,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'config-protect-skip': _configprotectskip,
         }
 
-        client_f = open(cli_conf, "r")
-        clientconf = [x.strip() for x in client_f.readlines() if \
-            x.strip() and not x.strip().startswith("#")]
-        client_f.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(cli_conf, "r", encoding=enc) as client_f:
+            clientconf = [x.strip() for x in client_f.readlines() if \
+                              x.strip() and not x.strip().startswith("#")]
         for line in clientconf:
 
             key, value = entropy.tools.extract_setting(line)
