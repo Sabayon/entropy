@@ -561,15 +561,16 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 os.access(os.path.join(sets_dir, x), os.R_OK))]
             for set_file in set_files:
                 try:
-                    set_file = const_convert_to_unicode(set_file, 'utf-8')
+                    set_file = const_convert_to_unicode(
+                        set_file, etpConst['conf_encoding'])
                 except UnicodeDecodeError:
                     set_file = const_convert_to_unicode(set_file,
                         sys.getfilesystemencoding())
 
                 path = os.path.join(sets_dir, set_file)
                 if sys.hexversion < 0x3000000:
-                    if const_isunicode(path):
-                        path = const_convert_to_rawstring(path, 'utf-8')
+                    path = const_convert_to_rawstring(
+                        path, etpConst['conf_encoding'])
                 pkg_set_data[set_file] = path
 
         self.__setting_files['system_package_sets'].update(pkg_set_data)
@@ -1128,7 +1129,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return data
 
         const_secure_config_file(etp_conf)
-        enc = sys.getfilesystemencoding()
+        enc = etpConst['conf_encoding']
         with codecs.open(etp_conf, "r", encoding=enc) as entropy_f:
             entropyconf = [x.strip() for x in entropy_f.readlines()  if \
                                x.strip() and not x.strip().startswith("#")]
@@ -1304,7 +1305,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             etpConst['etpdatabaserevisionfile'])
         if os.path.isfile(dbrevision_file) and \
             os.access(dbrevision_file, os.R_OK):
-            enc = sys.getfilesystemencoding()
+            enc = etpConst['conf_encoding']
             with codecs.open(dbrevision_file, "r", encoding=enc) as dbrev_f:
                 mydata['dbrevision'] = dbrev_f.readline().strip()
 
@@ -1388,7 +1389,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__mtime_cache[cache_key] = cache_obj
             return data
 
-        enc = sys.getfilesystemencoding()
+        enc = etpConst['conf_encoding']
         with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
             repositoriesconf = [x.strip() for x in \
                                     repo_f.readlines() if x.strip()]
@@ -1705,7 +1706,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         cache_obj = {'mtime': mtime,}
 
-        enc = sys.getfilesystemencoding()
+        enc = etpConst['conf_encoding']
         lines = entropy.tools.generic_file_content_parser(filepath,
             comment_tag = comment_tag, encoding = enc)
         data = SystemSettings.CachingList(lines)

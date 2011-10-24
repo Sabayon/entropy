@@ -660,6 +660,9 @@ def const_default_settings(rootdir):
             'user_live_mask': 12,
         },
 
+        # default entropy configuration files encoding
+        'conf_encoding': "UTF-8",
+
     }
 
     # set current nice level
