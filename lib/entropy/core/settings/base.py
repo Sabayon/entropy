@@ -88,6 +88,14 @@ class SystemSettings(Singleton, EntropyPluginStore):
             """
             self.__cache = cache_obj
 
+    # If set to True, enable in-RAM cache usage if
+    # configuration files have the same mtime of
+    # the last time they were read, during the same
+    # process lifecycle. Any race condition between
+    # reading the mtime and actually reading the file
+    # content can be trascurable as long as the cache
+    # data is stored in ram and not on-disk.
+    DISK_DATA_CACHE = True
 
     def init_singleton(self):
 
@@ -250,6 +258,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files.clear()
         self.__setting_dirs.clear()
         self.__mtime_files.clear()
+        if not SystemSettings.DISK_DATA_CACHE:
+            self.__mtime_cache.clear()
         self.__cache_cleared = False
 
         self.__setting_files.update({
@@ -621,6 +631,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
+        keywords_conf = self.__setting_files['keywords']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(keywords_conf)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, keywords_conf)
+        cache_obj = self.__mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
         # merge universal keywords
         data = {
                 'universal': set(),
@@ -628,12 +653,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 'repositories': {},
         }
 
-        self.validate_entropy_cache(self.__setting_files['keywords'],
+        self.validate_entropy_cache(keywords_conf,
             self.__mtime_files['keywords_mtime'])
         content = [x.split() for x in \
-            self.__generic_parser(self.__setting_files['keywords'],
-            comment_tag = self.__pkg_comment_tag) \
-            if len(x.split()) < 4]
+            self.__generic_parser(keywords_conf,
+                comment_tag = self.__pkg_comment_tag) \
+                if len(x.split()) < 4]
         for keywordinfo in content:
             # skip wrong lines
             if len(keywordinfo) > 3:
@@ -691,6 +716,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         for keyword in data['universal']:
             etpConst['keywords'].add(keyword)
 
+        cache_obj['data'] = data
+        self.__mtime_cache[cache_key] = cache_obj
         return data
 
 
@@ -1002,10 +1029,25 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: string
         """
         hw_hash_file = self.__setting_files['hw_hash']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(hw_hash_file)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, hw_hash_file)
+        cache_obj = self.__mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
         if os.access(hw_hash_file, os.R_OK) and os.path.isfile(hw_hash_file):
-            hash_f = open(hw_hash_file, "r")
-            hash_data = hash_f.readline().strip()
-            hash_f.close()
+            with open(hw_hash_file, "r") as hash_f:
+                hash_data = hash_f.readline().strip()
+            cache_obj['data'] = hash_data
+            self.__mtime_cache[cache_key] = cache_obj
             return hash_data
 
         hash_file_dir = os.path.dirname(hw_hash_file)
@@ -1018,11 +1060,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
             hash_data = pipe.read().strip()
             sts = pipe.close()
             if sts is not None:
+                cache_obj['data'] = None
+                self.__mtime_cache[cache_key] = cache_obj
                 return None
-            hash_f = open(hw_hash_file, "w")
-            hash_f.write(hash_data)
-            hash_f.flush()
-            hash_f.close()
+
+            with open(hw_hash_file, "w") as hash_f:
+                hash_f.write(hash_data)
+                hash_f.flush()
+            cache_obj['data'] = hash_data
+            self.__mtime_cache[cache_key] = cache_obj
             return hash_data
 
     def _system_rev_symlinks_parser(self):
@@ -1052,6 +1098,20 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
+        etp_conf = self.__setting_files['system']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(etp_conf)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, etp_conf)
+        cache_obj = self.__mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
 
         data = {
             'proxy': etpConst['proxy'].copy(),
@@ -1060,16 +1120,16 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'spm_backend': None,
         }
 
-        etp_conf = self.__setting_files['system']
         if not (os.path.isfile(etp_conf) and \
             os.access(etp_conf, os.R_OK)):
+            cache_obj['data'] = data
+            self.__mtime_cache[cache_key] = cache_obj
             return data
 
         const_secure_config_file(etp_conf)
-        entropy_f = open(etp_conf, "r")
-        entropyconf = [x.strip() for x in entropy_f.readlines()  if \
-            x.strip() and not x.strip().startswith("#")]
-        entropy_f.close()
+        with open(etp_conf, "r") as entropy_f:
+            entropyconf = [x.strip() for x in entropy_f.readlines()  if \
+                               x.strip() and not x.strip().startswith("#")]
 
         def _loglevel(setting):
             try:
@@ -1142,6 +1202,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 continue
             func(value)
 
+        cache_obj['data'] = data
+        self.__mtime_cache[cache_key] = cache_obj
         return data
 
     def _analyze_client_repo_string(self, repostring, branch = None,
@@ -1288,6 +1350,20 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
+        repo_conf = etpConst['repositoriesconf']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(repo_conf)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, repo_conf)
+        cache_obj = self.__mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
 
         data = {
             'available': {},
@@ -1304,13 +1380,14 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'differential_update': True,
         }
 
-        repo_conf = etpConst['repositoriesconf']
         if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
+            cache_obj['data'] = data
+            self.__mtime_cache[cache_key] = cache_obj
             return data
 
-        repo_f = open(repo_conf, "r")
-        repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
-        repo_f.close()
+        with open(repo_conf, "r") as repo_f:
+            repositoriesconf = [x.strip() for x in \
+                                    repo_f.readlines() if x.strip()]
         repoids = set()
 
         def _product_func(line, setting):
@@ -1582,6 +1659,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 except KeyError:
                     continue
 
+        cache_obj['data'] = data
+        self.__mtime_cache[cache_key] = cache_obj
         return data
 
     def _clear_repository_cache(self, repoid = None):
