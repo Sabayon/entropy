@@ -2,8 +2,7 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.settings do not re-parse files if mtime is the same
-      and last parse is available in RAM?
+    - SystemSettings: in plugins: always use codecs.open when parsing
     - repositories.conf.d/* support?
 
     - entropy server:
