@@ -226,7 +226,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__setting_files['system_mask'],
             self.__setting_files['splitdebug'],
         ])
-        for setting_id, dir_sett, auto_update in self.__setting_dirs.items():
+        for setting_id, setting_data in self.__setting_dirs.items():
+            conf_dir, dir_sett, auto_update = setting_data
             if not auto_update:
                 continue
             for conf_file, mtime_conf_file in dir_sett:
