@@ -2,7 +2,7 @@ Backlog (raw)
 
   1.0:
 
-    - SystemSettings: in plugins: always use codecs.open when parsing
+    - SystemSettings: in plugins: add in-RAM caching
     - repositories.conf.d/* support?
 
     - entropy server:
