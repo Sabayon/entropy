@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: entropy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2010-08-09 22:18+0000\n"
 "Last-Translator: Patrik Karlsson <patrik@trixon.se>\n"
 "Language-Team: Swedish <kde-i18n-doc@kde.org>\n"
@@ -2903,7 +2903,7 @@ msgstr "Förråden uppdaterades framgångsrikt"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr ""
 
@@ -3196,85 +3196,85 @@ msgstr ""
 msgid "installing"
 msgstr "installerar"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "omvända beroenden"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "omvända beroenden"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "Beroenden"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 #, fuzzy
 msgid "reason not available"
 msgstr "Tillgängliga"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 #, fuzzy
 msgid "user package.mask"
 msgstr "sök paket i förråd"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 #, fuzzy
 msgid "system keywords"
 msgstr "Nyckelord"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 #, fuzzy
 msgid "user package.unmask"
 msgstr "sök paket i förråd"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 #, fuzzy
 msgid "user repo package.keywords"
 msgstr "uppdaterar paket"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 #, fuzzy
 msgid "user package.keywords"
 msgstr "lagrade paket"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 #, fuzzy
 msgid "repository general packages.db.mask"
 msgstr "förrådsfel vid paketborttagning"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr ""
 
@@ -4971,7 +4971,7 @@ msgstr ""
 msgid "installed packages repository"
 msgstr "para ihop i inom installerade paket"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr ""
 
@@ -6830,10 +6830,6 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
 msgstr ""
 
 #: ../../server/eit/commands/commit.py:149

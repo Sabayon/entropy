@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French Entropy translation for Sabayon Linux 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2009-12-04 15:32+0100\n"
 "Last-Translator: SUFFYS <nsuffys@gmail.com>\n"
 "Language-Team: French <nsuffys@gmail.com>\n"
@@ -2826,7 +2826,7 @@ msgstr "Les dépôts ont été mis à jour avec succès"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr "Tout est OK"
 
@@ -3117,90 +3117,90 @@ msgstr "la vérification de hachage a échoué, veuillez réessayer plus tard"
 msgid "installing"
 msgstr "installation"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "Exécution du test de dépendance"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "dépendance"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "dépendance"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 #, fuzzy
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 "générer la base de donnée des paquets installés en utilisant les fichiers du "
 "système [dernier espoir]"
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr "raison non disponible"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 #, fuzzy
 msgid "user package.mask"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr "mots-clé système"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 #, fuzzy
 msgid "user package.unmask"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 #, fuzzy
 msgid "user repo package.keywords (all packages)"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 #, fuzzy
 msgid "user repo package.keywords"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 #, fuzzy
 msgid "user package.keywords"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr "complètement masqué (par mot-clé ?)"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 #, fuzzy
 msgid "repository general packages.db.mask"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 #, fuzzy
 msgid "repository general packages.db.keywords"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 #, fuzzy
 msgid "user license.mask"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 #, fuzzy
 msgid "user live unmask"
 msgstr "Trouvé %s paquets"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 #, fuzzy
 msgid "user live mask"
 msgstr "Trouvé %s paquets"
@@ -4957,7 +4957,7 @@ msgstr "Vérification sanitaire"
 msgid "installed packages repository"
 msgstr "Paquets installés"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr "Vérification..."
 
@@ -6933,10 +6933,6 @@ msgstr "Ne peut pas correspondre"
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "Pas de paquets valides à réempaquetter"
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
-msgstr "Vérification de la base de données pour des différences"
 
 #: ../../server/eit/commands/commit.py:149
 #, fuzzy
@@ -10204,6 +10200,9 @@ msgstr "Icône de notifications "
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Charger le gestionnaire de paquets"
+
+#~ msgid "Scanning database for differences"
+#~ msgstr "Vérification de la base de données pour des différences"
 
 #~ msgid "CORRUPTED"
 #~ msgstr "CORROMPU"

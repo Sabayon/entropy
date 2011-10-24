@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2009-09-21 02:01+0300\n"
 "Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
@@ -2778,7 +2778,7 @@ msgstr "Репозитории обновлены успешно"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr "Всё замечательно"
 
@@ -3064,79 +3064,79 @@ msgstr "проверка списков не удалась, попробуйт�
 msgid "installing"
 msgstr "установка"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "Запуск теста зависимостей"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "зависимость"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "зависимость"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 "Испорчен клиент репозитория. Пожалуйста, восстановите из резервной копии."
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr "причина недоступна"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 msgid "user package.mask"
 msgstr "package.mask пользователя"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr "системные ключевые слова"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 msgid "user package.unmask"
 msgstr "package.unmask пользователя"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr "user repo package.keywords (все пакеты)"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 msgid "user repo package.keywords"
 msgstr "user repo package.keywords"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 msgid "user package.keywords"
 msgstr "package.keywords пользователя"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr "полностью замаскировано (по ключевому слову?)"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 msgid "repository general packages.db.mask"
 msgstr "repository general packages.db.mask"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr "repository in branch packages.db.mask"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr "user license.mask"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr "user live unmask"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr "user live mask"
 
@@ -4879,7 +4879,7 @@ msgstr "проверка работоспособности"
 msgid "installed packages repository"
 msgstr "Установленные пакеты"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr "Сканирование..."
 
@@ -6839,10 +6839,6 @@ msgstr "Невозможно подсчитать"
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "Нет корректных пакетов к перепаковке"
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
-msgstr "Сканирование базы данных на различия"
 
 #: ../../server/eit/commands/commit.py:149
 #, fuzzy
@@ -10066,6 +10062,9 @@ msgstr "Уведомитель об обновлениях приложений 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Загрузить пакетный менеджер"
+
+#~ msgid "Scanning database for differences"
+#~ msgstr "Сканирование базы данных на различия"
 
 #~ msgid "CORRUPTED"
 #~ msgstr "ИСПОРЧЕНО"

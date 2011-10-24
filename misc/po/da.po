@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -3089,7 +3089,7 @@ msgstr "Indlæsning afsluttet"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr ""
 
@@ -3410,90 +3410,90 @@ msgstr "_Beskrivelse"
 msgid "installing"
 msgstr "Installeret"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "Sletter som afhængighed"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "Indstillinger"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "Indstillinger"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 #, fuzzy
 msgid "reason not available"
 msgstr "Tilgængelige"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 #, fuzzy
 msgid "user package.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 #, fuzzy
 msgid "system keywords"
 msgstr "Kører Transaktion"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 #, fuzzy
 msgid "user package.unmask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 #, fuzzy
 msgid "user repo package.keywords (all packages)"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 #, fuzzy
 msgid "user repo package.keywords"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 #, fuzzy
 msgid "user package.keywords"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 #, fuzzy
 msgid "completely masked (by keyword?)"
 msgstr "Ingen valgte pakker"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 #, fuzzy
 msgid "repository general packages.db.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 #, fuzzy
 msgid "repository general packages.db.keywords"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 #, fuzzy
 msgid "user license.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 #, fuzzy
 msgid "user live unmask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 #, fuzzy
 msgid "user live mask"
 msgstr "Fandt %d %s pakker"
@@ -5362,7 +5362,7 @@ msgstr ""
 msgid "installed packages repository"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 #, fuzzy
 msgid "Scanning..."
 msgstr "Søgnings Indstiller"
@@ -7411,11 +7411,6 @@ msgstr "Vis Installerede Pakker"
 #, fuzzy
 msgid "No valid packages to repackage."
 msgstr "Ingen valgte pakker"
-
-#: ../../server/eit/commands/commit.py:125
-#, fuzzy
-msgid "Scanning database for differences"
-msgstr "Kører Transaktion"
 
 #: ../../server/eit/commands/commit.py:149
 #, fuzzy
@@ -10903,6 +10898,10 @@ msgstr ""
 #, fuzzy
 msgid "_Load Package Manager"
 msgstr "Pakker"
+
+#, fuzzy
+#~ msgid "Scanning database for differences"
+#~ msgstr "Kører Transaktion"
 
 #, fuzzy
 #~ msgid "community repositories management functions"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2011-10-21 11:16+0100\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
@@ -2657,7 +2657,7 @@ msgstr "La còpia de seguretat del repositori s'ha fet correctament"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr "Tot és correcte"
 
@@ -2926,77 +2926,77 @@ msgstr ""
 msgid "installing"
 msgstr "s'està instal·lant"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 msgid "Runtime dependency"
 msgstr "Dependència en temps d'execució"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 msgid "Post dependency"
 msgstr "Post dependència"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr "Dependència afegida manualment (pel personal)"
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 msgid "Build dependency"
 msgstr "Dependència de construcció"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 "El repositori del client està malmès. Si us plau, restaureu una còpia de "
 "seguretat."
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr "la raó no està disponible"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 msgid "user package.mask"
 msgstr "package.mask d'usuari"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr "keyword del sistema"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 msgid "user package.unmask"
 msgstr "package.unmask d'usuari"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr "package.keywords del repositori d'usuari (tots els paquets)"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 msgid "user repo package.keywords"
 msgstr "package.keywords del repositori d'usuari"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 msgid "user package.keywords"
 msgstr "package.keywords d'usuari"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr "completament emmascarat (per keyword?)"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 msgid "repository general packages.db.mask"
 msgstr "packages.db.mask del repositori general"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr "packages.db.keywords del repositori general"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr "license.mask d'usuari"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr "desemmascarat d'usuari autònom"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr "emmascarat d'usuari autònom"
 
@@ -4653,7 +4653,7 @@ msgstr "Comprovació de sanitat"
 msgid "installed packages repository"
 msgstr "repositori de paquets instal·lats"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr "S'està escanejant..."
 
@@ -6510,10 +6510,6 @@ msgstr "No hi ha coincidents"
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "No hi ha paquets vàlids per empaquetar de nou."
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
-msgstr "S'estan cercant diferències a la base de dades"
 
 #: ../../server/eit/commands/commit.py:149
 msgid "Invalid package"
@@ -9599,3 +9595,6 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
+
+#~ msgid "Scanning database for differences"
+#~ msgstr "S'estan cercant diferències a la base de dades"

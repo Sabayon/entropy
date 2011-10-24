@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2011-05-14 19:39-0000\n"
 "Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
 "Language-Team: Spanish <kde-i18n-doc@kde.org>\n"
@@ -2844,7 +2844,7 @@ msgstr "Los repositorios se han actualizado correctamente"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr "Todo bien"
 
@@ -3130,83 +3130,83 @@ msgstr "la verificación de firma ha fallado, inténtalo mas tarde"
 msgid "installing"
 msgstr "instalando"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "Ejecutando test de dependencias"
 
 # [server]
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "dependencia"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
 # [server]
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "dependencia"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 "El Repositorio Cliente está Corrupto. Por favor, restaura una copia de "
 "seguridad."
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr "no disponible"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 msgid "user package.mask"
 msgstr "package.mask del usuario"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr "palabras clave del sistema"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 msgid "user package.unmask"
 msgstr "package.unmask del usuario"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr "package.keywords del repositorio del usuario (todos los paquetes)"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 msgid "user repo package.keywords"
 msgstr "package.keywords del repositorio del usuario"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 msgid "user package.keywords"
 msgstr "package.keywords del usuario"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 #, fuzzy
 msgid "completely masked (by keyword?)"
 msgstr "completamente enmascarado"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 msgid "repository general packages.db.mask"
 msgstr "packages.db.mask general del repositorio"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr "packages.db.keywords general del repositorio"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr "license.mask del usuario"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr "desenmascaramiento en vivo del usuario"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr "enmascaramiento en vivo del usuario"
 
@@ -4956,7 +4956,7 @@ msgstr "Comprobación de salud"
 msgid "installed packages repository"
 msgstr "Paquetes instalados"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr "Escaneando..."
 
@@ -6924,10 +6924,6 @@ msgstr "No se puede hacer coincidir"
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "No hay paquetes válidos para reempaquetar."
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
-msgstr "Buscando diferencias en la base de datos"
 
 #: ../../server/eit/commands/commit.py:149
 #, fuzzy
@@ -10188,6 +10184,9 @@ msgstr "Magneto - Notificador de Actualizaciones de Paquetes"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Ejecutar el Administrador de Paquetes"
+
+#~ msgid "Scanning database for differences"
+#~ msgstr "Buscando diferencias en la base de datos"
 
 #~ msgid "CORRUPTED"
 #~ msgstr "CORRUPTO"

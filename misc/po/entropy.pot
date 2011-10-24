@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2640,7 +2640,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr ""
 
@@ -2907,75 +2907,75 @@ msgstr ""
 msgid "installing"
 msgstr ""
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 msgid "Runtime dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 msgid "Post dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 msgid "Build dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr ""
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 msgid "user package.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr ""
 
@@ -4610,7 +4610,7 @@ msgstr ""
 msgid "installed packages repository"
 msgstr ""
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr ""
 
@@ -6404,10 +6404,6 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
 msgstr ""
 
 #: ../../server/eit/commands/commit.py:149

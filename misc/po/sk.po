@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2010-10-31 11:33+0100\n"
 "Last-Translator: Bystrík Pešl <bystrik.pesl@gmail.com>\n"
 "Language-Team: \n"
@@ -2962,7 +2962,7 @@ msgstr "Repozitáre boli úspešne aktualizované"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 #, fuzzy
 msgid "All fine"
 msgstr "Všetko hotovo"
@@ -3254,82 +3254,82 @@ msgstr "zlyhal prehľad overenia, skúste to neskôr"
 msgid "installing"
 msgstr "inštalovanie"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 msgid "Runtime dependency"
 msgstr "Bežiaca závislosť"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 msgid "Post dependency"
 msgstr "Funkčná závislosť"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 msgid "Build dependency"
 msgstr "Zostavovacia závislosť"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 #, fuzzy
 msgid "reason not available"
 msgstr "nie je dostupný"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 #, fuzzy
 msgid "user package.mask"
 msgstr "synchronizácia sád balíčkov"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 #, fuzzy
 msgid "system keywords"
 msgstr "Kľúčové slová"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 #, fuzzy
 msgid "user package.unmask"
 msgstr "synchronizácia sád balíčkov"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 #, fuzzy
 msgid "user repo package.keywords"
 msgstr "odkryť jeden alebo viac balíčkov"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 #, fuzzy
 msgid "user package.keywords"
 msgstr "označené balíčky"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 #, fuzzy
 msgid "repository general packages.db.mask"
 msgstr "repozitár je povolený"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr ""
 
@@ -5047,7 +5047,7 @@ msgstr ""
 msgid "installed packages repository"
 msgstr "Nainštalovaný repozitár balíčkov"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr ""
 
@@ -6911,10 +6911,6 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
 msgstr ""
 
 #: ../../server/eit/commands/commit.py:149

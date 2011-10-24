@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: entropy_vitovtREV01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-21 14:01+0200\n"
+"POT-Creation-Date: 2011-10-24 11:26+0200\n"
 "PO-Revision-Date: 2010-01-15 21:04+0200\n"
 "Last-Translator: Grusha Linux Team\n"
 "Language-Team:  <contact@lgrusha.org.ua>\n"
@@ -2792,7 +2792,7 @@ msgstr "Репозиторії вдало оновлено"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1074
 #: ../../lib/entropy/client/interfaces/methods.py:1132
-#: ../../lib/entropy/const.py:601
+#: ../../lib/entropy/const.py:602
 msgid "All fine"
 msgstr "Все чудово"
 
@@ -3077,79 +3077,79 @@ msgstr "перевірка списків закінчилась невдаче�
 msgid "installing"
 msgstr "встановлюю"
 
-#: ../../lib/entropy/const.py:579
+#: ../../lib/entropy/const.py:580
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "Увімкнення тесту залежностей"
 
-#: ../../lib/entropy/const.py:580
+#: ../../lib/entropy/const.py:581
 #, fuzzy
 msgid "Post dependency"
 msgstr "залежність"
 
-#: ../../lib/entropy/const.py:581
+#: ../../lib/entropy/const.py:582
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:582
+#: ../../lib/entropy/const.py:583
 #, fuzzy
 msgid "Build dependency"
 msgstr "залежність"
 
-#: ../../lib/entropy/const.py:602
+#: ../../lib/entropy/const.py:603
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 "Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
 
-#: ../../lib/entropy/const.py:632
+#: ../../lib/entropy/const.py:633
 msgid "reason not available"
 msgstr "причина невідома"
 
-#: ../../lib/entropy/const.py:633
+#: ../../lib/entropy/const.py:634
 msgid "user package.mask"
 msgstr "package.mask користувача"
 
-#: ../../lib/entropy/const.py:634
+#: ../../lib/entropy/const.py:635
 msgid "system keywords"
 msgstr "системні ключові слова"
 
-#: ../../lib/entropy/const.py:635
+#: ../../lib/entropy/const.py:636
 msgid "user package.unmask"
 msgstr "package.unmask користувача"
 
-#: ../../lib/entropy/const.py:636
+#: ../../lib/entropy/const.py:637
 msgid "user repo package.keywords (all packages)"
 msgstr "репозитарії користувача package.keywords (усі пакунки)"
 
-#: ../../lib/entropy/const.py:637
+#: ../../lib/entropy/const.py:638
 msgid "user repo package.keywords"
 msgstr "репозитарій користувача package.keywords"
 
-#: ../../lib/entropy/const.py:638
+#: ../../lib/entropy/const.py:639
 msgid "user package.keywords"
 msgstr "package.keywords користувача"
 
-#: ../../lib/entropy/const.py:639
+#: ../../lib/entropy/const.py:640
 msgid "completely masked (by keyword?)"
 msgstr "повністю замасковано (за ключовим словом?)"
 
-#: ../../lib/entropy/const.py:640
+#: ../../lib/entropy/const.py:641
 msgid "repository general packages.db.mask"
 msgstr "загальний репозиторій packages.db.mask"
 
-#: ../../lib/entropy/const.py:641
+#: ../../lib/entropy/const.py:642
 msgid "repository general packages.db.keywords"
 msgstr "репозиторій гілки packages.db.mask"
 
-#: ../../lib/entropy/const.py:642
+#: ../../lib/entropy/const.py:643
 msgid "user license.mask"
 msgstr "користувацька license.mask"
 
-#: ../../lib/entropy/const.py:643
+#: ../../lib/entropy/const.py:644
 msgid "user live unmask"
 msgstr "поточне демаскування користувача"
 
-#: ../../lib/entropy/const.py:644
+#: ../../lib/entropy/const.py:645
 msgid "user live mask"
 msgstr "поточна маска користувача"
 
@@ -4897,7 +4897,7 @@ msgstr "перевірка працездатності"
 msgid "installed packages repository"
 msgstr "Встановлені пакунки"
 
-#: ../../client/text_rescue.py:727
+#: ../../client/text_rescue.py:727 ../../server/eit/commands/commit.py:125
 msgid "Scanning..."
 msgstr "Сканування..."
 
@@ -6858,10 +6858,6 @@ msgstr "Неможливо порівняти"
 #: ../../server/eit/commands/commit.py:119
 msgid "No valid packages to repackage."
 msgstr "Немає коректних пакунків до перепакування"
-
-#: ../../server/eit/commands/commit.py:125
-msgid "Scanning database for differences"
-msgstr "Сканую базу даних на відмінності"
 
 #: ../../server/eit/commands/commit.py:149
 #, fuzzy
@@ -10080,6 +10076,9 @@ msgstr "повідомник про оновлення додатків Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Завантажте пакунковий менеджер"
+
+#~ msgid "Scanning database for differences"
+#~ msgstr "Сканую базу даних на відмінності"
 
 #~ msgid "CORRUPTED"
 #~ msgstr "ЗІПСОВАНО"
