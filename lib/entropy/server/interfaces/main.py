@@ -407,6 +407,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
+    def __init__(self, plugin_id, helper_interface):
+        SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
+        self._mtime_cache = {}
+
     @staticmethod
     def analyze_server_repo_string(repostring, product = None):
         """
@@ -475,11 +479,27 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         @return: raw text extracted from file
         @rtype: list
         """
-        lines = entropy.tools.generic_file_content_parser(filepath,
-            comment_tag = "##")
-        # filter out non-ASCII lines
-        lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
-        return lines
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(filepath)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, filepath)
+        cache_obj = self._mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
+        enc = etpConst['conf_encoding']
+        data = entropy.tools.generic_file_content_parser(filepath,
+            comment_tag = "##", encoding = enc)
+        if SystemSettings.DISK_DATA_CACHE:
+            cache_obj['data'] = data
+            self._mtime_cache[cache_key] = cache_obj
+        return data
 
     def get_updatable_configuration_files(self, repository_id):
         """
@@ -595,6 +615,20 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         @return dict data
         """
+        server_conf = etpConst['serverconf']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(server_conf)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, server_conf)
+        cache_obj = self._mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
@@ -626,7 +660,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         enc = etpConst['conf_encoding']
         try:
-            with codecs.open(etpConst['serverconf'], "r", encoding=enc) \
+            with codecs.open(server_conf, "r", encoding=enc) \
                     as server_f:
                 serverconf = [x.strip() for x in server_f.readlines() if \
                     x.strip()]
@@ -898,6 +932,9 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             except ValueError:
                 pass
 
+        if SystemSettings.DISK_DATA_CACHE:
+            cache_obj['data'] = data
+            self._mtime_cache[cache_key] = cache_obj
         return data
 
     @staticmethod
