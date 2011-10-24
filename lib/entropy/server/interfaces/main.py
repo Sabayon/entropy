@@ -4050,7 +4050,7 @@ class Server(Client):
 
         enc = etpConst['conf_encoding']
         if os.path.isfile(etpConst['serverconf']):
-            f_srv = codecs.open(etpConst['serverconf'], encoding=enc, "r")
+            f_srv = codecs.open(etpConst['serverconf'], "r", encoding=enc)
             content = f_srv.readlines()
             f_srv.close()
             content = [x.strip() for x in content]
