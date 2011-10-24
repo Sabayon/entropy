@@ -21,6 +21,7 @@ import os
 import errno
 import sys
 import threading
+import codecs
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
@@ -1127,7 +1128,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return data
 
         const_secure_config_file(etp_conf)
-        with open(etp_conf, "r") as entropy_f:
+        enc = sys.getfilesystemencoding()
+        with codecs.open(etp_conf, "r", encoding=enc) as entropy_f:
             entropyconf = [x.strip() for x in entropy_f.readlines()  if \
                                x.strip() and not x.strip().startswith("#")]
 
@@ -1302,7 +1304,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             etpConst['etpdatabaserevisionfile'])
         if os.path.isfile(dbrevision_file) and \
             os.access(dbrevision_file, os.R_OK):
-            with open(dbrevision_file, "r") as dbrev_f:
+            enc = sys.getfilesystemencoding()
+            with codecs.open(dbrevision_file, "r", encoding=enc) as dbrev_f:
                 mydata['dbrevision'] = dbrev_f.readline().strip()
 
         # setup GPG key path
@@ -1385,7 +1388,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__mtime_cache[cache_key] = cache_obj
             return data
 
-        with open(repo_conf, "r") as repo_f:
+        enc = sys.getfilesystemencoding()
+        with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
             repositoriesconf = [x.strip() for x in \
                                     repo_f.readlines() if x.strip()]
         repoids = set()
@@ -1701,10 +1705,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         cache_obj = {'mtime': mtime,}
 
+        enc = sys.getfilesystemencoding()
         lines = entropy.tools.generic_file_content_parser(filepath,
-            comment_tag = comment_tag)
-        # filter out non-ASCII lines
-        lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
+            comment_tag = comment_tag, encoding = enc)
         data = SystemSettings.CachingList(lines)
         # do not cache CachingList, because it contains cache that
         # shouldn't survive a clear()
