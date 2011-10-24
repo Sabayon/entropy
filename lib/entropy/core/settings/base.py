@@ -1618,7 +1618,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         cache_obj = self.__mtime_cache.get(cache_key)
         if cache_obj is not None:
             if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
+                return SystemSettings.CachingList(cache_obj['data'])
 
         cache_obj = {'mtime': mtime,}
 
@@ -1627,7 +1627,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         # filter out non-ASCII lines
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
         data = SystemSettings.CachingList(lines)
-        cache_obj['data'] = data
+        # do not cache CachingList, because it contains cache that
+        # shouldn't survive a clear()
+        cache_obj['data'] = lines
         self.__mtime_cache[cache_key] = cache_obj
         return data
 
