@@ -31,6 +31,8 @@ import traceback
 import gzip
 import bz2
 import mmap
+import codecs
+
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
@@ -1730,7 +1732,7 @@ def md5string(string):
     return m.hexdigest()
 
 def generic_file_content_parser(filepath, comment_tag = "#",
-    filter_comments = True):
+    filter_comments = True, encoding = None):
     """
     Generic unix-style file content parser. Return a list of parsed lines with
     filtered comments.
@@ -1748,8 +1750,12 @@ def generic_file_content_parser(filepath, comment_tag = "#",
     """
     data = []
     if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
-        with open(filepath, "r") as gen_f:
-            content = gen_f.readlines()
+        if encoding is None:
+            with open(filepath, "r") as gen_f:
+                content = gen_f.readlines()
+        else:
+            with codecs.open(filepath, "r", encoding=encoding) as gen_f:
+                content = gen_f.readlines()
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
             in content if x.strip()]
