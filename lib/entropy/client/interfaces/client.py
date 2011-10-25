@@ -40,6 +40,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self.__repos_files = {}
         self.__repos_mtime = {}
+        self._mtime_cache = {}
         # Package repositories must be able to live across
         # SystemSettings.clear() calls, because they are very
         # special and 3rd-party (but even Sulfur) tools expect to always
@@ -179,8 +180,41 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             self.__repos_mtime['repos_critical_updates'].update(
                 repos_critical_updates_mtime)
 
-            self.__repos_files['repos_keywords'].update(repos_keywords_setting)
-            self.__repos_mtime['repos_keywords'].update(repos_keywords_mtime)
+            self.__repos_files['repos_keywords'].update(
+                repos_keywords_setting)
+            self.__repos_mtime['repos_keywords'].update(
+                repos_keywords_mtime)
+
+    def __generic_parser(self, filepath):
+        """
+        Internal method. This is the generic file parser here.
+
+        @param filepath: valid path
+        @type filepath: string
+        @return: raw text extracted from file
+        @rtype: list
+        """
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(filepath)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, filepath)
+        cache_obj = self._mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
+        enc = etpConst['conf_encoding']
+        data = entropy.tools.generic_file_content_parser(filepath,
+            comment_tag = "##", encoding = enc)
+        if SystemSettings.DISK_DATA_CACHE:
+            cache_obj['data'] = data
+            self._mtime_cache[cache_key] = cache_obj
+        return data
 
     def __run_post_branch_migration_hooks(self, sys_settings_instance):
 
@@ -306,6 +340,20 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         This file contains maintainer supplied per-repository extra
         package keywords.
         """
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(repo_keywords_path)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, repo_keywords_path)
+        cache_obj = self._mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
         data = {
             # universal keywords: keywords added repository-wide to all
             # the available packages (in repo).
@@ -316,8 +364,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'packages_ids': None, # reserved for entropy.db package validation
         }
 
+        enc = etpConst['conf_encoding']
         entries = entropy.tools.generic_file_content_parser(
-            repo_keywords_path)
+            repo_keywords_path, encoding = enc)
 
         # iterate over config file data
         for entry in entries:
@@ -336,6 +385,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 obj = data['packages'].setdefault(pkg, set())
                 obj.update(keywords)
 
+        if SystemSettings.DISK_DATA_CACHE:
+            cache_obj['data'] = data
+            self._mtime_cache[cache_key] = cache_obj
         return data
 
     def __repositories_system_mask(self, sys_settings_instance):
@@ -347,15 +399,16 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         set of atoms.
         """
         system_mask = []
+        enc = etpConst['conf_encoding']
         for repoid in self.__repos_files['repos_system_mask']:
+            filepath = self.__repos_files['repos_system_mask'][repoid]
+            mtimepath = self.__repos_mtime['repos_system_mask'][repoid]
             sys_settings_instance.validate_entropy_cache(
-                self.__repos_files['repos_system_mask'][repoid],
-                self.__repos_mtime['repos_system_mask'][repoid],
-                repoid = repoid)
-            system_mask += [x for x in \
-                entropy.tools.generic_file_content_parser(
-                    self.__repos_files['repos_system_mask'][repoid]) if x \
-                        not in system_mask]
+                filepath, mtimepath, repoid = repoid)
+
+            entries = self.__generic_parser(filepath)
+            system_mask += [x for x in entries if x not in system_mask]
+
         return system_mask
 
     def repositories_parser(self, sys_settings_instance):
@@ -397,9 +450,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_mtime['repos_license_whitelist'][repoid],
                 repoid = repoid)
 
-            data['license_whitelist'][repoid] = \
-                entropy.tools.generic_file_content_parser(
-                    self.__repos_files['repos_license_whitelist'][repoid])
+            data['license_whitelist'][repoid] = self.__generic_parser(
+                self.__repos_files['repos_license_whitelist'][repoid])
 
         # package masking
         # Parser returning packages masked at repository level read from
@@ -409,9 +461,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_files['repos_mask'][repoid],
                 self.__repos_mtime['repos_mask'][repoid], repoid = repoid)
 
-            data['mask'][repoid] = \
-                entropy.tools.generic_file_content_parser(
-                    self.__repos_files['repos_mask'][repoid])
+            data['mask'][repoid] = self.__generic_parser(
+                self.__repos_files['repos_mask'][repoid])
 
         # keywords masking
         # Parser returning packages masked at repository level read from
@@ -419,7 +470,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         for repoid in self.__repos_files['repos_keywords']:
             sys_settings_instance.validate_entropy_cache(
                 self.__repos_files['repos_keywords'][repoid],
-                self.__repos_mtime['repos_keywords'][repoid], repoid = repoid)
+                self.__repos_mtime['repos_keywords'][repoid],
+                repoid = repoid)
 
             data['repos_keywords'][repoid] = \
                 self.__repositories_repos_keywords(
@@ -439,9 +491,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_files['repos_critical_updates'][repoid],
                 self.__repos_mtime['repos_critical_updates'][repoid],
                 repoid = repoid)
-            data['critical_updates'][repoid] = \
-                entropy.tools.generic_file_content_parser(
-                    self.__repos_files['repos_critical_updates'][repoid])
+
+            data['critical_updates'][repoid] = self.__generic_parser(
+                self.__repos_files['repos_critical_updates'][repoid])
 
         return data
 
@@ -471,7 +523,24 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
 
         cli_conf = etpConst['clientconf']
+        root = etpConst['systemroot']
+        try:
+            mtime = os.path.getmtime(cli_conf)
+        except (OSError, IOError):
+            mtime = 0.0
+
+        cache_key = (root, cli_conf)
+        cache_obj = self._mtime_cache.get(cache_key)
+        if cache_obj is not None:
+            if cache_obj['mtime'] == mtime:
+                return cache_obj['data']
+
+        cache_obj = {'mtime': mtime,}
+
         if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
+            if SystemSettings.DISK_DATA_CACHE:
+                cache_obj['data'] = data
+                self._mtime_cache[cache_key] = cache_obj
             return data
 
         def _filesbackup(setting):
@@ -602,6 +671,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if split_debug is not None:
             _splitdebug(split_debug)
 
+        if SystemSettings.DISK_DATA_CACHE:
+            cache_obj['data'] = data
+            self._mtime_cache[cache_key] = cache_obj
         return data
 
     def post_setup(self, system_settings_instance):
@@ -617,8 +689,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             self.__run_post_branch_upgrade_hooks(system_settings_instance)
 
 
-class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
-        RepositoryMixin, MiscMixin, MatchMixin, NoticeBoardMixin):
+class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
+             CalculatorsMixin, RepositoryMixin, MiscMixin, \
+                 MatchMixin, NoticeBoardMixin):
 
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
