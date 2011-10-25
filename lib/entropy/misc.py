@@ -212,7 +212,7 @@ class TimeScheduled(threading.Thread):
         self.__alive = 0
         self.__paused = False
         self.__paused_delay = 2
-        self.__state_sem = threading.Semaphore()
+        self.__state_sem = threading.Semaphore(0)
 
     def pause(self, pause):
         """
