@@ -34,6 +34,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
+        self.Server.remove_repository(self.default_repo)
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
         # calling destroy() and shutdown()
