@@ -80,7 +80,8 @@ class RepositoryMixin:
         for repoid in self._settings['repositories']['order']:
             # open database
             try:
-                dbc = self._open_repository(repoid, _enabled_repos = all_repos)
+                dbc = self._open_repository(
+                    repoid, _enabled_repos = all_repos)
                 dbc.listConfigProtectEntries()
                 dbc.validate()
                 _enabled_repos.append(repoid)
@@ -267,13 +268,21 @@ class RepositoryMixin:
                     level = "warning"
                 )
                 self._repo_error_messages_cache.add(repoid)
-            raise RepositoryError("RepositoryError: %s" % (t,))
+            raise RepositoryError("invalid repository id (1)")
 
-        if repo_data[repoid].get('__temporary__'):
+        try:
+            repo_obj = repo_data[repoid]
+        except KeyError:
+            raise RepositoryError("invalid repository id (2)")
+
+        if repo_obj.get('__temporary__'):
             repo_key = self.__get_repository_cache_key(repoid)
-            conn = self._memory_db_instances.get(repo_key)
+            try:
+                conn = self._memory_db_instances[repo_key]
+            except KeyError:
+                raise RepositoryError("invalid repository id (3)")
         else:
-            dbfile = os.path.join(repo_data[repoid]['dbpath'],
+            dbfile = os.path.join(repo_obj['dbpath'],
                 etpConst['etpdatabasefile'])
             if not os.path.isfile(dbfile):
                 t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
@@ -286,7 +295,7 @@ class RepositoryMixin:
                             level = "warning"
                         )
                     self._repo_error_messages_cache.add(repoid)
-                raise RepositoryError("RepositoryError: %s" % (t,))
+                raise RepositoryError("repository not downloaded")
 
             conn = self.get_repository(repoid)(
                 readOnly = True,
@@ -412,17 +421,28 @@ class RepositoryMixin:
                 repository_id)
             done = True
 
-        # also early remove from validRepositories to avoid
-        # issues when reloading SystemSettings which is bound to Entropy Client
-        # SystemSettings plugin, which triggers calculate_world_updates, which
-        # triggers _all_repositories_hash, which triggers open_repository,
-        # which triggers _load_repository, which triggers an unwanted
+        # also early remove from _enabled_repos to avoid
+        # issues when reloading SystemSettings which is bound to
+        # Entropy Client SystemSettings plugin, which
+        # triggers calculate_world_updates,
+        # which triggers _all_repositories_hash, which triggers
+        # open_repository, which triggers _load_repository,
+        # which triggers an unwanted
         # output message => "bad repository id specified"
         if repository_id in self._enabled_repos:
             self._enabled_repos.remove(repository_id)
 
-        # ensure that all dbs are closed
-        self.close_repositories()
+        try:
+            self._settings['repositories']['order'].remove(
+                repository_id)
+        except IndexError:
+            pass
+
+        repo_key = self.__get_repository_cache_key(repository_id)
+        try:
+            dbconn = self._repodb_cache.pop(repo_key)
+        except KeyError:
+            dbconn = None
 
         if done:
 
@@ -432,9 +452,6 @@ class RepositoryMixin:
                     repository_id)
             except KeyError:
                 pass
-
-            if repository_id in self._settings['repositories']['order']:
-                self._settings['repositories']['order'].remove(repository_id)
 
             # if it's a package repository, don't remove cache here
             if not self._is_package_repository(repository_id):
@@ -450,14 +467,15 @@ class RepositoryMixin:
                     remove = True)
             self._settings.clear()
 
-        repo_mem_key = self.__get_repository_cache_key(repository_id)
-        mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
+        mem_inst = self._memory_db_instances.pop(repo_key, None)
         if isinstance(mem_inst, EntropyRepositoryBase):
             mem_inst.close()
 
-        # reset db cache
-        self.close_repositories()
-        self._validate_repositories()
+        if dbconn is not None:
+            try:
+                dbconn.close(_token = repository_id)
+            except OperationalError:
+                pass
 
     def __save_repository_settings(self, repodata, remove = False,
         disable = False, enable = False):

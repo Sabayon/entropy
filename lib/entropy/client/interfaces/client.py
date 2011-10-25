@@ -105,13 +105,17 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
 
         dmp_dir = etpConst['dumpstoragedir']
+        avail_data = system_settings['repositories']['available']
         for repoid in system_settings['repositories']['order']:
+
+            repo_data = avail_data[repoid]
+            if "__temporary__" in repo_data:
+                continue
 
             repos_mask_setting = {}
             repos_mask_mtime = {}
             repos_lic_wl_setting = {}
             repos_lic_wl_mtime = {}
-            repo_data = system_settings['repositories']['available'][repoid]
             repos_sm_mask_setting = {}
             repos_sm_mask_mtime = {}
             confl_tagged = {}
