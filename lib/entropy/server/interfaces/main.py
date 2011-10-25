@@ -100,12 +100,13 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         repo = entropy_repository_instance.repository_id()
         local_dbfile = self._metadata['local_dbfile']
-        taint_file = self._server._get_local_repository_taint_file(repo)
-        if os.path.isfile(taint_file):
-            dbs = ServerRepositoryStatus()
-            dbs.set_tainted(local_dbfile)
-            dbs.set_bumped(local_dbfile)
-
+        if local_dbfile is not None:
+            taint_file = self._server._get_local_repository_taint_file(
+                repo)
+            if os.path.isfile(taint_file):
+                dbs = ServerRepositoryStatus()
+                dbs.set_tainted(local_dbfile)
+                dbs.set_bumped(local_dbfile)
 
         if "__temporary__" in self._metadata: # in-memory db?
             local_dbfile_exists = True
@@ -142,6 +143,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         repo = entropy_repository_instance.repository_id()
         dbfile = self._metadata['local_dbfile']
+        if dbfile is None:
+            # fake repo, or temporary one
+            return 0
+
         read_only = self._metadata['read_only']
         if not read_only:
             sts = ServerRepositoryStatus()
@@ -168,6 +173,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         dbs = ServerRepositoryStatus()
         dbfile = self._metadata['local_dbfile']
+        if dbfile is None:
+            # fake repo, or temporary one
+            return 0
         repo = entropy_repository_instance.repository_id()
         read_only = self._metadata['read_only']
         if read_only:
@@ -188,7 +196,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # the session to just bump once
             dbs.set_bumped(dbfile)
             """
-            Entropy repository revision bumping function. Every time it's called,
+            Entropy repository revision bumping function.
+            Every time it's called,
             revision is incremented by 1.
             """
             revision_file = self._server._get_local_repository_revision_file(
@@ -407,6 +416,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
+    # List of static server-side repositories that must survive
+    # a repositories metadata reload
+    REPOSITORIES = {}
+
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self._mtime_cache = {}
@@ -622,16 +635,38 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         except (OSError, IOError):
             mtime = 0.0
 
+        serverconf = None
         cache_key = (root, server_conf)
         cache_obj = self._mtime_cache.get(cache_key)
         if cache_obj is not None:
             if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
+                serverconf = cache_obj['data']
+        else:
+            cache_obj = {'mtime': mtime,}
 
-        cache_obj = {'mtime': mtime,}
+        if serverconf is None:
+            enc = etpConst['conf_encoding']
+            try:
+                with codecs.open(server_conf, "r", encoding=enc) \
+                        as server_f:
+                    serverconf = [x.strip() for x in server_f.readlines() \
+                                      if x.strip()]
+            except IOError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                # if file doesn't exist, provide empty
+                # serverconf list. In this way, we make sure that
+                # any additional metadata gets added.
+                # see the for loop iterating through the
+                # repository identifiers
+                serverconf = []
+
+            if SystemSettings.DISK_DATA_CACHE:
+                cache_obj['data'] = serverconf
+                self._mtime_cache[cache_key] = cache_obj
 
         data = {
-            'repositories': etpConst['server_repositories'].copy(),
+            'repositories': ServerSystemSettingsPlugin.REPOSITORIES.copy(),
             'community_mode': False,
             'qa_langs': ["en_US", "C"],
             'default_repository_id': etpConst['defaultserverrepositoryid'],
@@ -641,7 +676,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'disabled_eapis': set(),
             'broken_revdeps_qa_check': True,
             'exp_based_scope': etpConst['expiration_based_scope'],
-            'nonfree_packages_dir_support': False, # disabled by default for now
+            # disabled by default for now
+            'nonfree_packages_dir_support': False,
             'sync_speed_limit': None,
             'changelog': True,
             'rss': {
@@ -657,22 +693,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         }
 
         fake_instance = self._helper.fake_default_repo
-
-        enc = etpConst['conf_encoding']
-        try:
-            with codecs.open(server_conf, "r", encoding=enc) \
-                    as server_f:
-                serverconf = [x.strip() for x in server_f.readlines() if \
-                    x.strip()]
-        except IOError as err:
-            if err.errno != errno.ENOENT:
-                raise
-            # if file doesn't exist, provide empty
-            # serverconf list. In this way, we make sure that
-            # any additional metadata gets added.
-            # see the for loop iterating through the repository identifiers
-            serverconf = []
-
         default_repo_changed = False
 
         def _offservrepoid(line, setting):
@@ -932,9 +952,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             except ValueError:
                 pass
 
-        if SystemSettings.DISK_DATA_CACHE:
-            cache_obj['data'] = data
-            self._mtime_cache[cache_key] = cache_obj
         return data
 
     @staticmethod
@@ -1026,18 +1043,29 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         for repoid, repo_data in srv_repodata.items():
             try:
                 xxx, my_data = sys_set._analyze_client_repo_string(
-                    "repository = %s|%s|http://--fake--|http://--fake--" % (
-                        repoid, repo_data['description'],))
+                    "repository = %s|%s|http://--fake--|http://--fake--" \
+                        % (repoid, repo_data['description'],))
             except AttributeError:
                 continue # sorry!
             my_data['repoid'] = repoid
-            my_data['dbpath'] = self._helper._get_local_repository_dir(repoid)
-            my_data['dbrevision'] = self._helper.local_repository_revision(
-                repoid)
+            if '__temporary__' in repo_data:
+                # fake repositories, temp ones
+                # can't go into Entropy Client, they miss
+                # 'database_dir' and other metadata
+                my_data['dbpath'] = None
+                my_data['__temporary__'] = repo_data['__temporary__']
+                my_data['dbrevision'] = 0
+            else:
+                my_data['dbpath'] = self._helper._get_local_repository_dir(
+                    repoid)
+                my_data['dbrevision'] = \
+                    self._helper.local_repository_revision(
+                        repoid)
             cli_repodata['available'][repoid] = my_data
 
         cli_repodata['default_repository'] = \
             srv_parser_data['default_repository_id']
+
         del cli_repodata['order'][:]
         if srv_parser_data['base_repository_id'] is not None:
             cli_repodata['order'].append(srv_parser_data['base_repository_id'])
@@ -1166,7 +1194,8 @@ class Server(Client):
         # setup fake repository
         if fake_default_repo:
             default_repository = fake_default_repo_id
-            self._init_generic_memory_server_repository(fake_default_repo_id,
+            self._init_generic_memory_server_repository(
+                fake_default_repo_id,
                 fake_default_repo_desc, set_as_default = True)
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -1174,8 +1203,9 @@ class Server(Client):
         if self._repository is None:
             self._repository = srv_set['default_repository_id']
 
-        if self._repository in srv_set['repositories']:
-            self._ensure_paths(self._repository)
+        if not fake_default_repo:
+            if self._repository in srv_set['repositories']:
+                self._ensure_paths(self._repository)
 
         if self._repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
@@ -4301,7 +4331,11 @@ class Server(Client):
             '__temporary__': True,
         }
 
-        etpConst['server_repositories'][repoid] = repodata
+        # NOTE: this repository is not meant for being removed
+        # if an hypothetical remove_repository() has to be introduced
+        # REPOSITORIES should be handled there as well (and perhaps)
+        # also avoiding overlapping entries.
+        ServerSystemSettingsPlugin.REPOSITORIES[repoid] = repodata
         if set_as_default:
             etpConst['defaultserverrepositoryid'] = repoid
         sys_set = SystemSettings()
@@ -4312,7 +4346,7 @@ class Server(Client):
             'no_upload': True,
             'output_interface': self,
             'read_only': False,
-            'local_dbfile': '##this_path_does_not_exist_for_sure#' + repoid,
+            'local_dbfile': None,
             '__temporary__': True,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
@@ -4368,6 +4402,25 @@ class Server(Client):
         """
         return self.open_server_repository(repository_id,
             just_reading = True, do_treeupdates = False)
+
+    def remove_repository(self, repository_id, disable = False):
+        """
+        Remove Repository from those available, server-side override.
+        """
+        try:
+            repo_data = ServerSystemSettingsPlugin.REPOSITORIES
+            del repo_data[repository_id]
+        except KeyError:
+            pass
+
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        try:
+            del srv_set['repositories'][repository_id]
+        except KeyError as err:
+            pass
+
+        return super(Server, self).remove_repository(
+            repository_id, disable = disable)
 
     def open_server_repository(self, repository_id, read_only = True,
             no_upload = True, just_reading = False, indexing = True,
@@ -5494,10 +5547,12 @@ class Server(Client):
         for setting in backup_list:
             if setting not in self._settings_to_backup:
                 self._settings_to_backup.append(setting)
-        # setup client database
+        # setup entropy client repo
         if not srv_set['community_mode']:
-            etpConst['etpdatabaseclientfilepath'] = \
-                self._get_local_repository_file(repository_id)
+            repo_data = srv_set['repositories'][repository_id]
+            if "__temporary__" not in repo_data:
+                etpConst['etpdatabaseclientfilepath'] = \
+                    self._get_local_repository_file(repository_id)
             etpConst['clientdbid'] = etpConst['serverdbid']
         const_create_working_dirs()
 
