@@ -221,7 +221,6 @@ def const_default_settings(rootdir):
             'normal_loglevel_id': 1,
             'verbose_loglevel_id': 2,
         },
-        'server_repositories': {},
         'cmdline': cmdline,
         'backed_up': {},
         # entropy default installation directory
