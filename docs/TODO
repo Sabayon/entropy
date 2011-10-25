@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - SystemSettings: in plugins: add in-RAM caching (entropy.client)
     - ditch serveral shit from etpConst
     - repositories.conf.d/* support?
 
