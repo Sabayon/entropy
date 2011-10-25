@@ -306,9 +306,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'unmask_mtime': os.path.join(dmp_dir, "unmask.mtime"),
             'mask_mtime': os.path.join(dmp_dir, "mask.mtime"),
             'satisfied_mtime': os.path.join(dmp_dir, "satisfied.mtime"),
-            'license_mask_mtime': os.path.join(dmp_dir, "license_mask.mtime"),
-            'license_accept_mtime': os.path.join(dmp_dir, "license_accept.mtime"),
-            'system_mask_mtime': os.path.join(dmp_dir, "system_mask.mtime"),
+            'license_mask_mtime': os.path.join(dmp_dir,
+                                               "license_mask.mtime"),
+            'license_accept_mtime': os.path.join(dmp_dir,
+                                                 "license_accept.mtime"),
+            'system_mask_mtime': os.path.join(dmp_dir,
+                                              "system_mask.mtime"),
         })
 
         conf_d_descriptors = [
