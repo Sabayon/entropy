@@ -728,6 +728,10 @@ def rename_keep_permissions(src, dest):
     be set through entropy.const's const_secure_config_file().
     File is moved using entropy.tools.movefile()
 
+    @param src: path to source file
+    @type src: string
+    @param dest: path to dest file
+    @type dest: string
     @raise OSError: if file cannot be moved.
     """
     dest_avail = True
