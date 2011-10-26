@@ -1063,12 +1063,16 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         cache_obj = {'mtime': mtime,}
 
-        if os.access(hw_hash_file, os.R_OK) and os.path.isfile(hw_hash_file):
-            with open(hw_hash_file, "r") as hash_f:
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(hw_hash_file, "r", encoding=enc) as hash_f:
                 hash_data = hash_f.readline().strip()
             cache_obj['data'] = hash_data
             self.__mtime_cache[cache_key] = cache_obj
             return hash_data
+        except IOError as err:
+            if err.errno not in (errno.ENOENT, errno.EPERM):
+                raise
 
         hash_file_dir = os.path.dirname(hw_hash_file)
         hw_hash_exec = etpConst['etp_hw_hash_gen']
@@ -1084,7 +1088,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 self.__mtime_cache[cache_key] = cache_obj
                 return None
 
-            with open(hw_hash_file, "w") as hash_f:
+            with codecs.open(hw_hash_file, "w", encoding=enc) as hash_f:
                 hash_f.write(hash_data)
                 hash_f.flush()
             cache_obj['data'] = hash_data
