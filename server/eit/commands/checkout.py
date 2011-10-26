@@ -26,7 +26,7 @@ class EitCheckout(EitCommand):
     """
 
     NAME = "checkout"
-    ALIASES = ["ci"]
+    ALIASES = ["co"]
 
     def _get_parser(self):
         """ Overridden from EitCommand """
