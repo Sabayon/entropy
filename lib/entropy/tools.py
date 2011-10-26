@@ -752,6 +752,41 @@ def rename_keep_permissions(src, dest):
     if not movefile(src, dest):
         raise OSError(errno.EPERM, "cannot rename")
 
+def atomic_write(filepath, content_str, encoding):
+    """
+    Atomically write string at content_str using given
+    encoding to file.
+
+    @param filepath: path where to write data atomically
+    @type filepath: string
+    @param content_str: string to write
+    @type content_str: string
+    @param encoding: encoding to use
+    @type encoding: string
+    @raise IOError: if data cannot be written
+    @raise OSError: same as above
+    """
+    tmp_fd, tmp_path = None, None
+    try:
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="atomic_write.")
+        with codecs_fdopen(tmp_fd, "w", encoding) as tmp_f:
+            tmp_f.write(content_str)
+            tmp_f.flush()
+        rename_keep_permissions(tmp_path, filepath)
+    finally:
+        if tmp_fd is not None:
+            try:
+                os.close(tmp_fd)
+            except OSError as err:
+                if err.errno != errno.EBADF:
+                    raise
+        if tmp_path is not None:
+            try:
+                os.remove(tmp_path)
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+
 def get_random_number():
     """
     Return a random number between 10000 and 99999.
