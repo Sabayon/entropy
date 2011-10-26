@@ -42,6 +42,7 @@ entropy-install:
 	install -m 644 conf/brokenlinksmask.conf $(DESTDIR)/etc/entropy/
 
 	install -m 644 conf/repositories.conf.example $(DESTDIR)/etc/entropy/
+	cp conf/repositories.conf.d $(DESTDIR)/etc/entropy/ -Ra
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
 	cp conf/packages $(DESTDIR)/etc/entropy/ -Ra
 	install -m 644 misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
