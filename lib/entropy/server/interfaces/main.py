@@ -884,60 +884,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         # expand paths
         for repoid in data['repositories']:
-            data['repositories'][repoid]['repo_basedir'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid
-                            )
-            data['repositories'][repoid]['packages_dir'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                etpConst['packagesrelativepath_basedir'],
-                                etpConst['currentarch']
-                            )
-            data['repositories'][repoid]['packages_dir_nonfree'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                etpConst['packagesrelativepath_basedir_nonfree'],
-                                etpConst['currentarch']
-                            )
-            data['repositories'][repoid]['packages_dir_restricted'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                etpConst['packagesrelativepath_basedir_restricted'],
-                                etpConst['currentarch']
-                            )
-            data['repositories'][repoid]['store_dir'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                "store",
-                                etpConst['currentarch']
-                            )
-            data['repositories'][repoid]['upload_basedir'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                "upload" # consider this a base dir
-                            )
-            data['repositories'][repoid]['database_dir'] = \
-                os.path.join(   etpConst['entropyworkdir'],
-                                "server",
-                                repoid,
-                                "database",
-                                etpConst['currentarch']
-                            )
-            data['repositories'][repoid]['remote_repo_basedir'] = \
-                os.path.join(   sys_set['repositories']['product'],
-                                repoid
-                            )
-            data['repositories'][repoid]['database_remote_path'] = \
-                ServerSystemSettingsPlugin.get_repository_remote_path(
-                    sys_set, repoid)
-            data['repositories'][repoid]['override_database_remote_path'] = None
+            ServerSystemSettingsPlugin.extend_repository_metadata(
+                sys_set, repoid, data['repositories'][repoid])
 
         # Support for shell variables
         shell_repoid = os.getenv('ETP_REPO')
@@ -953,6 +901,68 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 pass
 
         return data
+
+    @staticmethod
+    def extend_repository_metadata(system_settings, repository_id, metadata):
+        """
+        Extend server-side Repository metadata dictionary
+        with information required by Entropy Server.
+        """
+        metadata['repo_basedir'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id)
+
+        metadata['packages_dir'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            etpConst['packagesrelativepath_basedir'],
+            etpConst['currentarch'])
+
+        metadata['packages_dir_nonfree'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            etpConst['packagesrelativepath_basedir_nonfree'],
+            etpConst['currentarch'])
+
+        metadata['packages_dir_restricted'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            etpConst['packagesrelativepath_basedir_restricted'],
+            etpConst['currentarch'])
+
+        metadata['store_dir'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            "store",
+            etpConst['currentarch'])
+
+        # consider this a base dir
+        metadata['upload_basedir'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            "upload")
+
+        metadata['database_dir'] = os.path.join(
+            etpConst['entropyworkdir'],
+            "server",
+            repository_id,
+            "database",
+            etpConst['currentarch'])
+
+        metadata['remote_repo_basedir'] = os.path.join(
+            system_settings['repositories']['product'],
+            repository_id)
+
+        metadata['database_remote_path'] = \
+            ServerSystemSettingsPlugin.get_repository_remote_path(
+                system_settings, repository_id)
+        metadata['override_database_remote_path'] = None
 
     @staticmethod
     def get_repository_remote_path(system_settings, repository_id):
@@ -4308,7 +4318,7 @@ class Server(Client):
             self.Mirrors.sync_repository(repo, enable_upload = not no_upload)
 
 
-    def _init_generic_memory_server_repository(self, repoid, description,
+    def _init_generic_memory_server_repository(self, repository_id, description,
         pkg_mirrors = None, repo_mirrors = None, community_repo = False,
         service_url = None, set_as_default = False):
 
@@ -4317,12 +4327,12 @@ class Server(Client):
         if repo_mirrors is None:
             repo_mirrors = []
 
-        dbc = self._open_temp_repository(repoid, temp_file = ":memory:")
-        self._memory_db_srv_instances[repoid] = dbc
+        repo = self._open_temp_repository(repository_id, temp_file = ":memory:")
+        self._memory_db_srv_instances[repository_id] = repo
 
         # add to settings
         repodata = {
-            'repoid': repoid,
+            'repoid': repository_id,
             'description': description,
             'pkg_mirrors': pkg_mirrors,
             'repo_mirrors': repo_mirrors,
@@ -4330,16 +4340,24 @@ class Server(Client):
             'handler': '', # not supported
             '__temporary__': True,
         }
+        ServerSystemSettingsPlugin.extend_repository_metadata(
+            self._settings, repository_id, repodata)
 
-        # NOTE: this repository is not meant for being removed
-        # if an hypothetical remove_repository() has to be introduced
-        # REPOSITORIES should be handled there as well (and perhaps)
-        # also avoiding overlapping entries.
-        ServerSystemSettingsPlugin.REPOSITORIES[repoid] = repodata
+        # this will make the change permanent until remove_repository()
+        ServerSystemSettingsPlugin.REPOSITORIES[repository_id] = repodata
+        # this will add our repo to the metadata stuff
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        srv_set['repositories'][repository_id] = repodata
         if set_as_default:
-            etpConst['defaultserverrepositoryid'] = repoid
-        sys_set = SystemSettings()
-        sys_set.clear()
+            # this will make the change permanent
+            etpConst['defaultserverrepositoryid'] = repository_id
+            # this will affect the current settings
+            srv_set['default_repository_id'] = repository_id
+        # not calling SystemSettings.clear()
+        # because it's not strictly needed, but match metadata
+        # could be available if this method gets called after
+        # init_singleton(). In that case, it's up the user to call
+        # clear()
 
         etp_repo_meta = {
             'lock_remote': False,
@@ -4350,8 +4368,8 @@ class Server(Client):
             '__temporary__': True,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
-        dbc.add_plugin(srv_plug)
-        return dbc
+        repo.add_plugin(srv_plug)
+        return repo
 
     def _open_temp_repository(self, repo, temp_file = None, initialize = True):
         """
