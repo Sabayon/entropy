@@ -266,28 +266,41 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         self.__setting_files.update({
              # keywording configuration files
-            'keywords': etpConst['confpackagesdir']+"/package.keywords",
+            'keywords': os.path.join(
+                    etpConst['confpackagesdir'], "package.keywords"),
              # unmasking configuration files
-            'unmask': etpConst['confpackagesdir']+"/package.unmask",
+            'unmask': os.path.join(
+                    etpConst['confpackagesdir'], "package.unmask"),
              # masking configuration files
-            'mask': etpConst['confpackagesdir']+"/package.mask",
+            'mask': os.path.join(etpConst['confpackagesdir'], "package.mask"),
             # satisfied packages configuration file
-            'satisfied': etpConst['confpackagesdir']+"/package.satisfied",
+            'satisfied': os.path.join(
+                    etpConst['confpackagesdir'], "package.satisfied"),
             # selectively enable splitdebug for packages
-            'splitdebug': etpConst['confpackagesdir']+"/package.splitdebug",
+            'splitdebug': os.path.join(
+                    etpConst['confpackagesdir'], "package.splitdebug"),
              # masking configuration files
-            'license_mask': etpConst['confpackagesdir']+"/license.mask",
-            'license_accept': etpConst['confpackagesdir']+"/license.accept",
-            'system_mask': etpConst['confpackagesdir']+"/system.mask",
-            'system_dirs': etpConst['confdir']+"/fsdirs.conf",
-            'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
-            'extra_ldpaths': etpConst['confdir']+"/fsldpaths.conf",
-            'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
-            'broken_syms': etpConst['confdir']+"/brokensyms.conf",
-            'broken_libs_mask': etpConst['confdir']+"/brokenlibsmask.conf",
-            'broken_links_mask': etpConst['confdir']+"/brokenlinksmask.conf",
-            'hw_hash': etpConst['confdir']+"/.hw.hash",
-            'system': etpConst['entropyconf'],
+            'license_mask': os.path.join(
+                    etpConst['confpackagesdir'], "license.mask"),
+            'license_accept': os.path.join(
+                    etpConst['confpackagesdir'], "license.accept"),
+            'system_mask': os.path.join(
+                    etpConst['confpackagesdir'], "system.mask"),
+            'system_dirs': os.path.join(
+                    etpConst['confdir'], "fsdirs.conf"),
+            'system_dirs_mask': os.path.join(
+                    etpConst['confdir'], "fsdirsmask.conf"),
+            'extra_ldpaths': os.path.join(
+                    etpConst['confdir'], "fsldpaths.conf"),
+            'system_rev_symlinks': os.path.join(
+                    etpConst['confdir'], "fssymlinks.conf"),
+            'broken_syms': os.path.join(etpConst['confdir'], "brokensyms.conf"),
+            'broken_libs_mask': os.path.join(
+                    etpConst['confdir'], "brokenlibsmask.conf"),
+            'broken_links_mask': os.path.join(
+                    etpConst['confdir'], "brokenlinksmask.conf"),
+            'hw_hash': os.path.join(etpConst['confdir'], ".hw.hash"),
+            'system': os.path.join(etpConst['confdir'], "entropy.conf"),
             'repositories': etpConst['repositoriesconf'],
             'system_package_sets': {},
         })

@@ -1219,8 +1219,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         sys_settings_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
+        conf_files = self._settings.get_setting_files_data()
         self._preferences = {
-            etpConst['entropyconf']: [
+            conf_files['system']: [
                 (
                     'ftp-proxy',
                     self._settings['system']['proxy']['ftp'],

@@ -242,8 +242,6 @@ def const_default_settings(rootdir):
         'confsetsdir': default_etp_packagesdir+default_etp_setsdir,
         # just the dirname
         'confsetsdirname': default_etp_setsdirname,
-        # entropy.conf file
-        'entropyconf': default_etp_confdir+"/entropy.conf",
         # repositories.conf file
         'repositoriesconf': default_etp_confdir+"/repositories.conf",
         # server.conf file (generic server side settings)
