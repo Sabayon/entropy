@@ -51,6 +51,7 @@ from entropy.output import print_generic
 from entropy.db.exceptions import ProgrammingError, OperationalError
 from entropy.core.settings.base import SystemSettings
 from entropy.services.client import WebService
+from entropy.client.interfaces.client import ClientSystemSettingsPlugin
 
 # Sulfur Imports
 import gtk, gobject
@@ -1220,6 +1221,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         sys_settings_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         conf_files = self._settings.get_setting_files_data()
+        client_conf = ClientSystemSettingsPlugin.client_conf_path()
         self._preferences = {
             conf_files['system']: [
                 (
@@ -1268,7 +1270,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.ui.niceSpinSelect.get_value_as_int,
                 )
             ],
-            etpConst['clientconf']: [
+            client_conf: [
                 (
                     'collision-protect',
                     self._settings[sys_settings_plg_id]['misc']['collisionprotect'],

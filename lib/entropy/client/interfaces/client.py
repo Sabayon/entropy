@@ -48,6 +48,16 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         self.__package_repositories = []
         self.__package_repositories_meta = {}
 
+    @staticmethod
+    def client_conf_path():
+        """
+        Return current client.conf path, this takes into account the current
+        configuration files directory path (which is affected by "root" path
+        changes [default: /])
+        """
+        # path to /etc/entropy/server.conf (usually, depends on systemroot)
+        return os.path.join(etpConst['confdir'], "client.conf")
+
     def _add_package_repository(self, repository_id, repository_metadata):
         """
         Internal method, used by Entropy Client. Add a package repository
@@ -526,7 +536,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'edelta_support': False, # disabled by default
         }
 
-        cli_conf = etpConst['clientconf']
+        cli_conf = ClientSystemSettingsPlugin.client_conf_path()
         root = etpConst['systemroot']
         try:
             mtime = os.path.getmtime(cli_conf)

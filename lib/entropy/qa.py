@@ -1625,11 +1625,14 @@ class ErrorReportInterface:
             with open(etpConst['repositoriesconf'], "r") as rc_f:
                 self.params['repositories.conf'] = rc_f.read()
 
+        from entropy.client.interfaces.client import ClientSystemSettingsPlugin
+        client_conf = ClientSystemSettingsPlugin.client_conf_path()
         self.params['client.conf'] = "---NA---"
-        if os.access(etpConst['clientconf'], os.R_OK) and \
-            os.path.isfile(etpConst['clientconf']):
-            with open(etpConst['clientconf'], "r") as rc_f:
+        try:
+            with open(client_conf, "r") as rc_f:
                 self.params['client.conf'] = rc_f.read()
+        except IOError:
+            pass
 
         self.generated = True
 
