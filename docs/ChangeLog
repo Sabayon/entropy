@@ -1,3 +1,223 @@
+commit 84965b368238996bd3b073b19447e0ef7d5fec0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 12:02:42 2011 +0200
+
+    Release Entropy 1.0_rc64
+
+commit 34c4ecf57cfeb42d70844cc573043af363ef502b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 12:01:57 2011 +0200
+
+    [entropy.server] rework _init_generic_memory_server_repository(), make it more robust
+
+commit 9af42c0b4313ec96292389b943c4ea1438b7bb0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 11:23:42 2011 +0200
+
+    [entropy.server.mirrors] import socket in global scope
+
+commit 4771ab49eb2ab22704e53cd0153e0bd564178070
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 22:52:51 2011 +0200
+
+    [entropy.const] drop global constant from etpConst
+
+commit a16ef24829869c8e0f629b1d7e4b5e457abfe2ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 22:52:28 2011 +0200
+
+    [tests] server: remove repository in tearDown()
+
+commit 2f68edebcbfdd949b0f7ae055477c155a38aad4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 22:51:35 2011 +0200
+
+    [entropy.server] rework repositories metadata handling, fix server.conf parser (cannot cache everything)
+
+commit 8d03c868f51b88705847dd6e9db1e185dd9f452a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 22:50:23 2011 +0200
+
+    [entropy.core] trivial code style update
+
+commit 48dacf3e5f090f4622b779d301f1c45692f745f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 22:49:47 2011 +0200
+
+    [entropy.client] avoid to touch other repositories in remove_repository()
+
+commit 9d95bef987bc4f5e8df90b59ac5624aacfefad9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 19:07:20 2011 +0200
+
+    [entropy.misc] TimeScheduled: stupid python Semaphore() defaults
+
+commit 6079f7a3c53d6d76ad108727f2c071802e3e8d46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 18:53:35 2011 +0200
+
+    [entropy.misc] TimeScheduled: rework locking mechanism that avoids kill() being called before run()
+
+commit 50ac881f8b3b6afa4f6e774afcbe69cd2fd27ec0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 17:14:07 2011 +0200
+
+    [entropy.misc] TimeScheduled: handle race condition between kill() and run()
+    
+    kill() might get called before run() can actually set self.__alive = 1.
+    This would cause run() to reset self.__alive to 1 after kill() has set
+    it to 0. Use a simple Lock() to make possible to communicate this to run()
+
+commit c70e5492c3c7555f40e4957e67bd73c6ae7de43a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 09:07:16 2011 +0200
+
+    [todo] update TODO
+
+commit 5a800c47d7322d342159cff7c432f70aeb3a65f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 09:06:31 2011 +0200
+
+    [entropy.client] add mtime-based in-RAM caching to entropy.client SystemSettings plugins
+
+commit 68ae4c40c018934236f4a2005c7f34f8110e266f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 00:41:01 2011 +0200
+
+    [todo] update TODO
+
+commit 8a335b09d1a71e886346c0343e296e7fe23af3a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 00:38:19 2011 +0200
+
+    [entropy.server] add in-RAM mtime-based caching for config files parsing
+
+commit f8088df4e4ee17cf17844765534c8ab5260f69ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 25 00:37:59 2011 +0200
+
+    [entropy.server] fix non-keyword arg after keyword arg issue
+
+commit 7b1a2b11ce6349068b063612399bee49db46e334
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 17:56:34 2011 +0200
+
+    [todo] update TODO
+
+commit 37452fc93e37ee4085f6b22bcdceee22610d4ca9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 17:55:48 2011 +0200
+
+    [entropy.{client,server}] always use codecs.open() with encoding=
+
+commit 873bf0704696bd85165364e17c5c1e510da03570
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 16:20:35 2011 +0200
+
+    [entropy.core] fix variables unpack while scanning self.__setting_dirs
+
+commit 9c479bd565e5aaa2efe1b551cf96f16a585dd09c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 14:22:10 2011 +0200
+
+    [entropy.{core,const}] use hardcoded filesystem encoding value for entropy config files
+    
+    User could have screwed her glibc/locale settings, so it's better
+    to be fault-tolerant and hardcode UTF-8 as default encoding for
+    entropy config files.
+
+commit b7b52b64dbb6551c1cba8d7b24c2e6b6923d87e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 11:27:06 2011 +0200
+
+    [po] update translations
+
+commit 747c6f2a4d994ff1c52a982d8fa7093324cfa1c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 11:26:20 2011 +0200
+
+    [eit.commands.commit] update i18n string, scanning database -> scanning
+
+commit f241778e823b974ca50de773d932855ced7037a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 11:24:21 2011 +0200
+
+    [entropy.misc] EmailSender.send_mime_email: always encode utf-8 data before calling MIMEText
+
+commit c2916e9a5fa5f70e1f050a2bdd51a1e867782216
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 10:55:59 2011 +0200
+
+    [todo] update TODO
+
+commit 892db3ad9d36e9d3eb41f81fcd53c697bf277e0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 10:55:10 2011 +0200
+
+    [entropy.core] always use codecs.open() with encoding= when reading config files from disk
+
+commit 160f430dd391c2e0de580f7d548b94e9e58366ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 10:54:44 2011 +0200
+
+    [entropy.tools] generic_file_content_parser: add encoding= support
+
+commit e2985c52625c7d44c176c23071aa7d5d9c1882f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 10:37:01 2011 +0200
+
+    [entropy.core] complete in-RAM parsers caching for SystemSettings
+
+commit 8692c4d21316a71392b8143193248d7397b9c569
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 24 10:09:38 2011 +0200
+
+    [entropy.core] SystemSettings: only cache parsed file data, not the whole CachingList object
+    
+    CachingList contains data that cannot survive a clear() cycle.
+
+commit 0288f5b28aba37109967a1f4f622e5fa249f4cc2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 23 23:22:54 2011 +0200
+
+    [entropy.core] cache parser outcome whenever it's possible
+
+commit 201478b91f1db89fab85eb8f31261708ae346cb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 23 23:08:05 2011 +0200
+
+    [matter] package_queue can contain Blocker objects as well, not exposing .cpv field
+
+commit 8581af972fdaeede1989565b777cf63d51626776
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 20 22:28:56 2011 +0200
+
+    [entropy] drop old revision file
+
+commit 36d1cbd223aff7df953bf2a34aa6e59a352b85ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 23:34:39 2011 +0200
+
+    [todo] update TODO
+
+commit a87d34069e250c96183f9aea2fa5467ad7eaa099
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 23:32:55 2011 +0200
+
+    [entropy.client.interfaces.db] use CachingList for storing package.mask, package.unmask repo matches
+
+commit 5c66b8101162f1d588086c20ced5e2db9de5dcb2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 23:01:37 2011 +0200
+
+    [entropy.client] make possible to enable splitdebug per-package, close bug 2712
+
+commit 253c710d410069b0b920f9a1c2fa1eba562d8c70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 21 20:05:55 2011 +0200
+
+    Tagging Entropy version 1.0_rc63
+
 commit 7fd6fe80328628d71ffa71043987c15c691b652b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 21 20:05:53 2011 +0200
