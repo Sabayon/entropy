@@ -2,15 +2,19 @@ Backlog (raw)
 
   1.0:
 
-    - ditch serveral shit from etpConst
     - repositories.conf.d/* support?
+      - molecule scripts that switch to sabayon-weekly
 
+    - use entropy.tools.atomic_write where possibile (search: os.rename)
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
           then packages.
         - do not use implicit pull when push is selected, block push if
           local repo is older than remote, implement some kind of atomic
           remote locking to guarantee mutual exclusion.
+
+    - rework client/ code, as done with eit
+      - ditch etpUi
 
     - fine grained locking support
       (acquire entropy resources lock only when really needed
@@ -19,6 +23,10 @@ Backlog (raw)
 
     - conditional deps support, implement in entropy.spm,
       class is there (add unit test)
+
+  1.0, long term:
+
+    - move variables away from etpConst
 
   1.1:
 
@@ -29,6 +37,7 @@ Backlog (raw)
     - sulfur: rewrite using pygtk3
 
   break backward compat:
+      - deprecate "repository =" statements from repositories.conf
       - enable baseinfo-extrainfo-2010 tables
         test removal (reverse deps could be problematic?) -- add resolved dep
         instead of full conditional?
