@@ -2975,6 +2975,30 @@ def flatten(mylist):
             newlist.append(x)
     return newlist
 
+def codecs_fdopen(fd, mode, encoding, errors='strict'):
+    """
+    Copycats codecs.open() but accepts fd (file descriptors) as input
+    file handle.
+    """
+    if encoding is not None:
+        if 'U' in mode:
+            # No automatic conversion of '\n' is done on reading and writing
+            mode = mode.strip().replace('U', '')
+            if mode[:1] not in set('rwa'):
+                mode = 'r' + mode
+        if 'b' not in mode:
+            # Force opening of the file in binary mode
+            mode = mode + 'b'
+    file = os.fdopen(fd, mode, 4096)
+    if encoding is None:
+        return file
+    info = codecs.lookup(encoding)
+    srw = codecs.StreamReaderWriter(
+        file, info.streamreader, info.streamwriter, errors)
+    # Add attributes to simplify introspection
+    srw.encoding = encoding
+    return srw
+
 def acquire_lock(lock_file, lock_map):
     """
     Make possible to protect a code region using an EXCLUSIVE, non-blocking
