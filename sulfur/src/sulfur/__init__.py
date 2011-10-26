@@ -2332,7 +2332,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     print_generic("process_queue: cleared caches")
 
                 for myrepo in remove_repos:
-                    self._entropy.remove_repository(myrepo)
+                    self._entropy.remove_repository(myrepo) # ignore outcome
 
                 self.reset_cache_status()
                 if self.do_debug:

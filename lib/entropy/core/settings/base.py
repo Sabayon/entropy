@@ -227,7 +227,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__setting_files['splitdebug'],
         ])
         for setting_id, setting_data in self.__setting_dirs.items():
-            conf_dir, dir_sett, auto_update = setting_data
+            conf_dir, dir_sett, skipped_sett, auto_update = setting_data
             if not auto_update:
                 continue
             for conf_file, mtime_conf_file in dir_sett:
@@ -329,15 +329,24 @@ class SystemSettings(Singleton, EntropyPluginStore):
         })
 
         conf_d_descriptors = [
-            ("mask_d", "package.mask.d", True),
-            ("unmask_d", "package.unmask.d", True),
-            ("license_mask_d", "license.mask.d", False),
-            ("license_accept_d", "license.accept.d", False),
-            ("system_mask_d", "system.mask.d", True),
+            ("mask_d", "package.mask.d",
+                 etpConst['confpackagesdir'], True, True),
+            ("unmask_d", "package.unmask.d",
+                 etpConst['confpackagesdir'], True, True),
+            ("license_mask_d", "license.mask.d",
+                 etpConst['confpackagesdir'], False, True),
+            ("license_accept_d", "license.accept.d",
+                 etpConst['confpackagesdir'], False, True),
+            ("system_mask_d", "system.mask.d",
+                 etpConst['confpackagesdir'], True, True),
+            # this will be parsed from inside _repositories_parser
+            ("repositories_conf_d", "repositories.conf.d",
+                 etpConst['confdir'], False, False),
         ]
-        for setting_id, rel_dir, auto_update in conf_d_descriptors:
-            conf_dir = etpConst['confpackagesdir']+ os.path.sep  + rel_dir
-            self.__setting_dirs[setting_id] = [conf_dir, [], auto_update]
+        for setting_id, rel_dir, base_dir, auto_update, add_parser \
+                in conf_d_descriptors:
+            conf_dir = base_dir + os.path.sep + rel_dir
+            self.__setting_dirs[setting_id] = [conf_dir, [], [], auto_update]
             if not (os.path.isdir(conf_dir) and \
                         os.access(conf_dir, os.R_OK)):
                 continue
@@ -351,16 +360,28 @@ class SystemSettings(Singleton, EntropyPluginStore):
             conf_files = [x for x in conf_files if \
                 os.path.isfile(x) and os.access(x, os.R_OK) \
                 and (not x.startswith(".keep")) and x != "README"]
+            # ignore files starting with _
+            skipped_conf_files = [x for x in conf_files if \
+                os.path.basename(x).startswith("_")]
+            conf_files = [x for x in conf_files if not \
+                              os.path.basename(x).startswith("_")]
+
             mtime_base_file = os.path.join(dmp_dir, rel_dir + "_")
+            skipped_conf_files = [
+                (x, mtime_base_file + os.path.basename(x) + ".mtime") for \
+                    x in skipped_conf_files]
             conf_files = [
                 (x, mtime_base_file + os.path.basename(x) + ".mtime") for \
                     x in conf_files]
+
             self.__setting_dirs[setting_id][1] += conf_files
-            # this will make us call _<setting_id>_parser()
-            # and that must return None, becase the outcome
-            # has to be written into '<setting_id/_d>' metadata object
-            # thus, these have to always run AFTER their alter-egos
-            self.__setting_files_order.append(setting_id)
+            self.__setting_dirs[setting_id][2] += skipped_conf_files
+            if add_parser:
+                # this will make us call _<setting_id>_parser()
+                # and that must return None, becase the outcome
+                # has to be written into '<setting_id/_d>' metadata object
+                # thus, these have to always run AFTER their alter-egos
+                self.__setting_files_order.append(setting_id)
 
     def __scan(self):
 
@@ -821,30 +842,41 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         return self.__generic_d_parser("license_accept_d", "license_accept")
 
-    def __generic_d_parser(self, setting_dirs_id, setting_id):
+    def __generic_d_parser(self, setting_dirs_id, setting_id, validate = True,
+                           parse_skipped = False):
         """
         Generic parser used by _*_d_parser() functions.
         """
-        conf_dir, setting_files, auto_upd = self.__setting_dirs[setting_dirs_id]
+        conf_dir, setting_files, skipped_files, auto_upd = \
+            self.__setting_dirs[setting_dirs_id]
         dmp_dir = etpConst['dumpstoragedir']
         dmp_mtime_dir_file = os.path.join(
             dmp_dir, os.path.basename(conf_dir) + ".mtime")
 
-        valid = self.validate_entropy_cache(
-            conf_dir, dmp_mtime_dir_file)
-        if (not valid) and (not self.__cache_cleared):
-            self.__cache_cleared = True
-            EntropyCacher.clear_cache()
-
-        for sett_file, mtime_sett_file in setting_files:
+        if validate:
             valid = self.validate_entropy_cache(
-                sett_file, mtime_sett_file)
+                conf_dir, dmp_mtime_dir_file)
             if (not valid) and (not self.__cache_cleared):
                 self.__cache_cleared = True
                 EntropyCacher.clear_cache()
-            self.__data[setting_id] += self.__generic_parser(
-                sett_file,
+
+        content = []
+        files = setting_files
+        if parse_skipped:
+            files = skipped_files
+        for sett_file, mtime_sett_file in files:
+            if validate:
+                valid = self.validate_entropy_cache(
+                    sett_file, mtime_sett_file)
+                if (not valid) and (not self.__cache_cleared):
+                    self.__cache_cleared = True
+                    EntropyCacher.clear_cache()
+            content += self.__generic_parser(sett_file,
                 comment_tag = self.__pkg_comment_tag)
+        if setting_id is not None:
+            self.__data[setting_id] = content
+        else:
+            return content
 
     def _satisfied_parser(self):
         """
@@ -1368,7 +1400,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         return reponame, mydata
 
     def _repositories_parser(self):
-
         """
         Setup Entropy Client repository settings reading them from
         the relative config file specified in /etc/entropy/repositories.conf
@@ -1412,9 +1443,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return data
 
         enc = etpConst['conf_encoding']
+        # TODO: repository = statements in repositories.conf
+        # will be deprecated by mid 2012
         with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
             repositoriesconf = [x.strip() for x in \
                                     repo_f.readlines() if x.strip()]
+        repositories_d_conf = self.__generic_d_parser(
+            "repositories_conf_d", None, validate=False)
+
+        # add content of skipped (disabled) files as commented
+        # out stuff
+        skipped_conf = ["#" + x for x in self.__generic_d_parser(
+            "repositories_conf_d", None,
+            validate=False, parse_skipped=True)]
+        repositories_d_conf += skipped_conf
+
         repoids = set()
 
         def _product_func(line, setting):
@@ -1526,6 +1569,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             key, value = entropy.tools.extract_setting(line)
             if key is None:
                 continue
+            key = key.replace(" ", "")
+            key = key.replace("\t", "")
+
             if key not in ("product", "branch"):
                 continue
 
@@ -1539,13 +1585,30 @@ class SystemSettings(Singleton, EntropyPluginStore):
             key, value = entropy.tools.extract_setting(line)
             if key is None:
                 continue
-
             key = key.replace(" ", "")
             key = key.replace("\t", "")
+
             func = settings_map.get(key)
             if func is None:
                 continue
             func(line, value)
+
+        for line in repositories_d_conf:
+
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
+            key = key.replace(" ", "")
+            key = key.replace("\t", "")
+            if key not in ("repository", "#repository"):
+                # no other statements supported from here
+                continue
+
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(line, value)
+
 
         try:
             tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))

@@ -3088,18 +3088,22 @@ class EntropyRepoView:
             repoid = self.store.get_value(myiter, 3)
             self.store.set_value(myiter, 0, not state)
             self.Sulfur.gtk_loop()
+            done = False
             if state:
-                self.store.set_value(myiter, 1, not state)
                 try:
-                    self._entropy.disable_repository(repoid)
+                    done = self._entropy.disable_repository(repoid)
                 except ValueError:
                     okDialog(self.ui.main,
                         _("Cannot disable repository!"))
                     return # sorry !!
                 initconfig_entropy_constants(etpSys['rootdir'])
             else:
-                self._entropy.enable_repository(repoid)
+                done = self._entropy.enable_repository(repoid)
                 initconfig_entropy_constants(etpSys['rootdir'])
+
+            if done:
+                self.store.set_value(myiter, 1, not state)
+
             self.Sulfur.reset_cache_status()
             self.Sulfur.show_packages(back_to_page = "repos")
         finally:

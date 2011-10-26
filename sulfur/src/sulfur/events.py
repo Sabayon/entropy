@@ -303,7 +303,9 @@ class SulfurApplicationEventsMixin:
                     _("Are you sure you want to remove the default repository?"))
                 if rc != _("Yes"):
                     return True
-            self._entropy.remove_repository(repoid)
+            removed = self._entropy.remove_repository(repoid)
+            if not removed:
+                okDialog(self.ui.main, _("Unable to remove repository"))
             self.reset_cache_status()
             self.setup_repoView()
 
@@ -483,7 +485,7 @@ class SulfurApplicationEventsMixin:
             return
 
         def clean_n_quit(newrepo):
-            self._entropy.remove_repository(newrepo)
+            self._entropy.remove_repository(newrepo) # ignore outcome
             self.reset_cache_status(quick=True)
             # regenerate packages information
             self.setup_application()

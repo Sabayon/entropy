@@ -161,9 +161,13 @@ def _add_repository(entropy_client, repo_strings):
         toc.append((purple(_("Repository URL:")), darkgreen(db_url)))
         toc.append(" ")
         print_table(toc)
-        entropy_client.add_repository(repodata)
-        print_info("[%s] %s" % (
-            purple(repoid), blue(_("repository added succesfully")),))
+        added = entropy_client.add_repository(repodata)
+        if added:
+            print_info("[%s] %s" % (
+                    purple(repoid), blue(_("repository added succesfully")),))
+        else:
+            print_warning("[%s] %s" % (
+                    purple(repoid), blue(_("cannot add repository")),))
 
     return 0
 
@@ -178,9 +182,15 @@ def _remove_repository(entropy_client, repo_ids):
                 purple(repo_id), blue(_("repository id not available")),))
             continue
 
-        entropy_client.remove_repository(repo_id)
-        print_info("[%s] %s" % (
-            purple(repo_id), blue(_("repository removed succesfully")),))
+        removed = entropy_client.remove_repository(repo_id)
+        if removed:
+            print_info("[%s] %s" % (
+                    purple(repo_id),
+                    blue(_("repository removed succesfully")),))
+        else:
+            print_warning("[%s] %s" % (
+                    purple(repo_id),
+                    blue(_("cannot remove repository")),))
 
     return 0
 
@@ -196,9 +206,13 @@ def _enable_repositories(entropy_client, repos):
             print_warning("[%s] %s" % (
                 purple(repo), blue(_("repository not available")),))
             continue
-        entropy_client.enable_repository(repo)
-        print_info("[%s] %s" % (
-            teal(repo), blue(_("repository enabled")),))
+        enabled = entropy_client.enable_repository(repo)
+        if enabled:
+            print_info("[%s] %s" % (
+                    teal(repo), blue(_("repository enabled")),))
+        else:
+            print_warning("[%s] %s" % (
+                    purple(repo), blue(_("cannot enable repository")),))
     return 0
 
 def _disable_repositories(entropy_client, repos):
@@ -213,14 +227,19 @@ def _disable_repositories(entropy_client, repos):
             print_warning("[%s] %s" % (
                 purple(repo), blue(_("repository not available")),))
             continue
+        disabled = False
         try:
-            entropy_client.disable_repository(repo)
+            disabled = entropy_client.disable_repository(repo)
         except ValueError:
             print_warning("[%s] %s" % (
                 purple(repo), blue(_("cannot disable repository")),))
             continue
-        print_info("[%s] %s" % (
-            teal(repo), blue(_("repository disabled")),))
+        if disabled:
+            print_info("[%s] %s" % (
+                    teal(repo), blue(_("repository disabled")),))
+        else:
+            print_warning("[%s] %s" % (
+                    purple(repo), blue(_("cannot disable repository")),))
     return 0
 
 def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):

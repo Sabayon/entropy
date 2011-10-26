@@ -274,7 +274,10 @@ class AddRepositoryWindow(MenuSkel):
         # validate
         errors = self._validate_repo_submit(repodata)
         if not errors:
-            self._entropy.add_repository(repodata)
+            added = self._entropy.add_repository(repodata)
+            if not added:
+                okDialog(self.addrepo_ui.addRepoWin,
+                    _("Unable to add repository"))
             self.Sulfur.reset_cache_status()
             self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
@@ -294,9 +297,16 @@ class AddRepositoryWindow(MenuSkel):
             repo_excluded = self._entropy.Settings()['repositories']['excluded']
             if repodata['repoid'] in repo_excluded:
                 disable = True
-            self._entropy.remove_repository(repodata['repoid'], disable = disable)
+            removed = self._entropy.remove_repository(
+                repodata['repoid'], disable = disable)
+            if not removed:
+                okDialog(self.addrepo_ui.addRepoWin,
+                         _("Unable to remove/disable repository"))
             if not disable:
-                self._entropy.add_repository(repodata)
+                added = self._entropy.add_repository(repodata)
+                if not added:
+                    okDialog(self.addrepo_ui.addRepoWin,
+                             _("Unable to add repository"))
             self.Sulfur.reset_cache_status()
 
             self.Sulfur.setup_repoView()

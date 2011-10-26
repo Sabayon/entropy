@@ -150,7 +150,9 @@ class RepositoryMixin:
             'packages': package_mirrors,
             'dbpath': temp_file,
         }
-        self.add_repository(repodata)
+        added = self.add_repository(repodata)
+        if not added:
+            raise ValueError("repository not added, wtf?")
         return dbc
 
     def close_repositories(self, mask_clear = True):
@@ -341,6 +343,8 @@ class RepositoryMixin:
             SystemSettings()['repositories']['available'][repository_id]
             for example metadata.
         @type repository_metadata: dict
+        @return: True, if repository has been added
+        @rtype: bool
         """
         avail_data = self._settings['repositories']['available']
         repoid = repository_metadata['repoid']
@@ -349,6 +353,7 @@ class RepositoryMixin:
         avail_data[repoid]['description'] = repository_metadata['description']
         is_temp = repository_metadata.get('__temporary__')
 
+        added = False
         if self._is_package_repository(repoid) or is_temp:
             # package repository
 
@@ -381,6 +386,7 @@ class RepositoryMixin:
             self._settings['repositories']['order'].insert(0, repoid)
             # NOTE: never call SystemSettings.clear() here, or
             # ClientSystemSettingsPlugin.repositories_parser() will explode
+            added = True
 
         else:
 
@@ -389,13 +395,15 @@ class RepositoryMixin:
             if not entropy.tools.validate_repository_id(repoid):
                 raise SecurityError("invalid repository identifier")
 
-            self.__save_repository_settings(repository_metadata)
+            added = self.__conf_add_remove_repository(
+                repoid, repository_metadata)
             self._settings._clear_repository_cache(repoid = repoid)
             self.close_repositories()
             self.clear_cache()
             self._settings.clear()
 
         self._validate_repositories()
+        return added
 
     def remove_repository(self, repository_id, disable = False):
         """
@@ -408,6 +416,8 @@ class RepositoryMixin:
         @keyword disable: instead of removing the repository from entropy
             configuration, just disable it. (default is remove)
         @type disable: bool
+        @return: True, if repository has been removed
+        @rtype: bool
         """
         done = False
         removed_data = None
@@ -435,7 +445,7 @@ class RepositoryMixin:
         try:
             self._settings['repositories']['order'].remove(
                 repository_id)
-        except IndexError:
+        except ValueError:
             pass
 
         repo_key = self.__get_repository_cache_key(repository_id)
@@ -456,15 +466,14 @@ class RepositoryMixin:
             # if it's a package repository, don't remove cache here
             if not self._is_package_repository(repository_id):
                 self._settings._clear_repository_cache(repoid = repository_id)
-            # save new self._settings['repositories']['available'] to file
-            repository_metadata = {}
-            repository_metadata['repoid'] = repository_id
-            if disable:
-                self.__save_repository_settings(repository_metadata,
-                    disable = True)
-            else:
-                self.__save_repository_settings(repository_metadata,
-                    remove = True)
+                # save new self._settings['repositories']['available'] to file
+                # -- nothing to do anyway if repository is a package repository
+                if disable:
+                    done = self.__conf_enable_disable_repository(
+                        repository_id, False)
+                else:
+                    done = self.__conf_add_remove_repository(
+                        repository_id, None)
             self._settings.clear()
 
         mem_inst = self._memory_db_instances.pop(repo_key, None)
@@ -477,13 +486,34 @@ class RepositoryMixin:
             except OperationalError:
                 pass
 
-    def __save_repository_settings(self, repodata, remove = False,
-        disable = False, enable = False):
+        return done
 
-        # package repositories are ignored.
-        if self._is_package_repository(repodata['repoid']):
-            return
+    def __conf_enable_disable_repository(self, repository_id, enable):
+        """
+        Enable or disable given repository from Entropy configuration
+        files.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param enable: True if enable, False if disable
+        @type enable: bool
+        @return: True, if action has been completed successfully
+        @rtype: bool
+        @raise IOError: if there are problems parsing config files
+        """
+        repo_d_conf = self._settings.get_setting_dirs_data(
+            )['repositories_conf_d']
+        conf_d_dir, conf_files_mtime, skipped_files, auto_upd = repo_d_conf
+        repo_confs = [conf_p for conf_p, mtime_p in conf_files_mtime]
+        # as per specifications, enabled config files handled by
+        # Entropy Client (see repositories.conf.d/README) start with
+        # entropy_ prefix.
+        base_name = "entropy_" + repository_id
+        enabled_conf_file = os.path.join(conf_d_dir, base_name)
+        # while disabled config files start with _
+        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
+
+        # backward compatibility, handle repositories.conf
         repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
         enc = etpConst['conf_encoding']
@@ -496,138 +526,188 @@ class RepositoryMixin:
             if err.errno != errno.ENOENT:
                 raise
 
-        if not disable and not enable:
-            new_content = []
-            for line in content:
-                key, value = entropy.tools.extract_setting(line)
-                if key is not None:
-                    r_value = value.split("|")[0].strip()
-                    if (key == "repository") and \
-                        (r_value == repodata['repoid']):
-                        continue
+        new_content = []
+        for line in content:
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
                 new_content.append(line)
-            content = new_content
-            if remove:
-                new_content = []
-                for line in content:
-                    key, value = entropy.tools.extract_setting(line)
-                    if key is not None:
-                        key = key.replace(" ", "")
-                        key = key.replace("\t", "")
-                        r_value = value.split("|")[0].strip()
-                        if key in ("#repository", "##repository") and \
-                            (r_value == repodata['repoid']):
-                            continue
-                    new_content.append(line)
+                continue
 
-        if not remove:
+            key = key.replace(" ", "")
+            key = key.replace("\t", "")
+            line_repository_id = value.split("|")[0].strip()
+            if (key == "repository") and (not enable) and \
+                    (repository_id == line_repository_id):
+                new_content.append("# repository = %s" % (value,))
+                accomplished = True
+                continue
 
-            repolines = []
-            filter_lines = set()
-            repolines_map = {}
-            for line in content:
-                key, value = entropy.tools.extract_setting(line)
-                if key is not None:
-                    key = key.replace(" ", "")
-                    key = key.replace("\t", "")
-                    if key in ("repository", "#repository", "##repository"):
-                        repolines.append(value)
-                        repolines_map[value] = line
-                        filter_lines.add(line)
+            if key in ("#repository", "##repository") and enable and \
+                    (repository_id == line_repository_id):
+                new_content.append("repository = %s" % (value,))
+                accomplished = True
+                continue
+            # generic line, add and forget
+            new_content.append(line)
+        content = new_content
 
-            # exclude lines from repolines
-            content = [x for x in content if x not in filter_lines]
-            # filter sane repolines lines
-            repolines_data = {}
-            repocount = 0
-            for x in repolines:
-
-                x_repoid = x.split("|")[0].strip()
-                repolines_data[repocount] = {}
-                repolines_data[repocount]['repoid'] = x_repoid
-                repolines_data[repocount]['lines'] = [repolines_map[x]]
-
-                if x_repoid == repodata['repoid']:
-                    if disable:
-                        repolines_data[repocount]['lines'] = \
-                            ["# repository = %s" % (x,)]
-                    elif enable:
-                        repolines_data[repocount]['lines'] = \
-                            ["repository = %s" % (x,)]
-
-                repocount += 1
-
-            if not disable and not enable: # so it's a add
-
-                repository_lines = []
-                mirror_count = 0
-                for mirror in repodata['plain_packages']:
-                    if mirror_count == 0:
-                        mirror_count += 1
-                        rline = "repository = %s|%s|%s|%s#%s" % (
-                            repodata['repoid'],
-                            repodata['description'],
-                            mirror,
-                            repodata['plain_database'],
-                            repodata['dbcformat'],
-                        )
-                    else:
-                        rline = "repository = %s||%s|" % (
-                            repodata['repoid'],
-                            mirror,
-                        )
-                    repository_lines.append(rline)
-
-                # seek in repolines_data for a disabled entry and remove
-                for cc in repolines_data.keys():
-                    lines = repolines_data[cc]['lines'][:]
-                    for line in lines:
-                        key, value = entropy.tools.extract_setting(line)
-                        if key is not None:
-                            key = key.replace(" ", "")
-                            key = key.replace("\t", "")
-                            r_value = value.split("|")[0].strip()
-                            if key in ("repository", "#repository") and \
-                                r_value == repodata['repoid']:
-                                del repolines_data[cc]
-
-                repocount += 1
-                repolines_data[repocount] = {}
-                repolines_data[repocount]['repoid'] = repodata['repoid']
-                repolines_data[repocount]['lines'] = repository_lines
-
-            # inject new repodata
-            for cc in sorted(repolines_data):
-                content.extend(repolines_data[cc]['lines'])
-
-        # atomic write
-        tmp_fd, tmp_path = None, None
+        # enabling or disabling the repo is just a rename()
+        # away for the new style files in repositories.conf.d/
+        found_in_confd = False
+        if enable:
+            src = disabled_conf_file
+            dest = enabled_conf_file
+        else:
+            src = enabled_conf_file
+            dest = disabled_conf_file
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp()
-            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
-                for line in content:
-                    tmp_f.write(line + "\n")
-                tmp_f.flush()
-            entropy.tools.rename_keep_permissions(tmp_path, repo_conf)
-        except IOError as err:
-            if err.errno not in (errno.ENOENT, errno.EPERM):
+            os.rename(src, dest)
+            accomplished = True
+            found_in_confd = True
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                # do not handle EPERM ?
                 raise
-            return False
-        finally:
-            if tmp_fd is not None:
-                try:
-                    os.close(tmp_fd)
-                except OSError as err:
-                    if err.errno != errno.EBADF:
-                        raise
-            if tmp_path is not None:
-                try:
-                    os.remove(tmp_path)
-                except OSError as err:
-                    if err.errno != errno.ENOENT:
-                        raise
-        return True
 
+        if enable and found_in_confd:
+            # if the action is enable and the repository
+            # has been found in repositories.conf.d/
+            # avoid updating repositories.conf
+            pass
+        else:
+            # otherwise, go ahead and write the new content
+            entropy.tools.atomic_write(
+                repo_conf, "\n".join(content), enc)
+
+        return accomplished
+
+    def __conf_add_remove_repository(self, repository_id, add_metadata):
+        """
+        Add or remove given repository from Entropy configuration
+        files.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param add_metadata: if not None, the repository metadata
+        is being used to build lines to add to config files. If None,
+        the repository_id will be removed from entropy config, if possible.
+        Repositories in repositories.conf.d/ handled outside Entropy (files not
+        starting with "entropy_<repository-id>") won't be touched.
+        @type add_metadata: dict
+        @return: True, if action has been completed successfully
+        @rtype: bool
+        @raise IOError: if there are problems parsing config files
+        """
+        repo_d_conf = self._settings.get_setting_dirs_data(
+            )['repositories_conf_d']
+        conf_d_dir, conf_files_mtime, skipped_files, auto_upd = repo_d_conf
+        repo_confs = [conf_p for conf_p, mtime_p in conf_files_mtime]
+        # as per specifications, enabled config files handled by
+        # Entropy Client (see repositories.conf.d/README) start with
+        # entropy_ prefix.
+        base_name = "entropy_" + repository_id
+        enabled_conf_file = os.path.join(conf_d_dir, base_name)
+        # while disabled config files start with _
+        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
+
+        # backward compatibility, handle repositories.conf
+        repo_conf = self._settings.get_setting_files_data()['repositories']
+        content = []
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(repo_conf, encoding=enc) as f:
+                content += [x.strip() for x in f.readlines()]
+        except IOError as err:
+            if err.errno == errno.EPERM:
+                return False
+            if err.errno != errno.ENOENT:
+                raise
+
+        # filter out current entry from content
+        accomplished = False
+        new_content = []
+        for line in content:
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                new_content.append(line)
+                continue
+
+            key = key.replace(" ", "")
+            key = key.replace("\t", "")
+
+            r_value = value.split("|")[0].strip()
+            if (key == "repository") and (r_value == repository_id):
+                if add_metadata is None:
+                    accomplished = True
+                continue
+            if add_metadata is None:
+                # remove mode, also drop repository lines
+                # with "repository =" commented out
+                if key in ("#repository", "##repository") and \
+                        (r_value == repository_id):
+                    accomplished = True
+                    continue
+            new_content.append(line)
+        content = new_content
+
+        if add_metadata is None:
+            # remove mode
+            try:
+                os.remove(enabled_conf_file)
+                accomplished = True
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+            # since we want to remove, also drop disabled
+            # config files
+            try:
+                os.remove(disabled_conf_file)
+                accomplished = True
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+
+        else:
+            # add mode
+            repository_lines = []
+            mirror_count = 0
+            for mirror in add_metadata['plain_packages']:
+                if mirror_count == 0:
+                    mirror_count += 1
+                    rline = "repository = %s|%s|%s|%s#%s" % (
+                        add_metadata['repoid'],
+                        add_metadata['description'],
+                        mirror,
+                        add_metadata['plain_database'],
+                        add_metadata['dbcformat'],
+                    )
+                else:
+                    rline = "repository = %s||%s|" % (
+                        add_metadata['repoid'],
+                        mirror,
+                    )
+                repository_lines.append(rline)
+            accomplished = True
+
+            # create (overwrite) enabled_conf_file
+            # containing proper repository_lines
+            entropy.tools.atomic_write(
+                enabled_conf_file, "\n".join(repository_lines), enc)
+
+            # if any disabled entry file is around, kill it with fire!
+            try:
+                os.remove(disabled_conf_file)
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+
+        # commit back changes to config file in both cases.
+        # Add: we migrate to the new config file automatically
+        # Remove: we commit the filtered out content
+        entropy.tools.atomic_write(
+            repo_conf, "\n".join(content), enc)
+
+        return accomplished
 
     def __write_ordered_repositories_entries(self, ordered_repository_list):
         repo_conf = self._settings.get_setting_files_data()['repositories']
@@ -669,30 +749,8 @@ class RepositoryMixin:
             content.append(x)
 
         # atomic write
-        tmp_fd, tmp_path = None, None
-        try:
-            tmp_fd, tmp_path = tempfile.mkstemp()
-            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
-                for line in content:
-                    tmp_f.write(line + "\n")
-                tmp_f.flush()
-            entropy.tools.rename_keep_permissions(tmp_path, repo_conf)
-        except IOError as err:
-            # always bail out here
-            raise
-        finally:
-            if tmp_fd is not None:
-                try:
-                    os.close(tmp_fd)
-                except OSError as err:
-                    if err.errno != errno.EBADF:
-                        raise
-            if tmp_path is not None:
-                try:
-                    os.remove(tmp_path)
-                except OSError as err:
-                    if err.errno != errno.ENOENT:
-                        raise
+        entropy.tools.atomic_write(
+            repo_conf, "\n".join(content), enc)
 
     def shift_repository(self, repository_id, new_position_idx):
         """
@@ -727,15 +785,16 @@ class RepositoryMixin:
 
         @param repository_id: repository identifier
         @type repository_id: string
+        @return: True, if repository has been enabled
+        @rtype: bool
         """
         self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
-        repodata = {}
-        repodata['repoid'] = repository_id
-        self.__save_repository_settings(repodata, enable = True)
+        enabled = self.__conf_enable_disable_repository(repository_id, True)
         self._settings.clear()
         self.close_repositories()
         self._validate_repositories()
+        return enabled
 
     def disable_repository(self, repository_id):
         """
@@ -747,7 +806,14 @@ class RepositoryMixin:
         @param repository_id: repository identifier
         @type repository_id: string
         @raise ValueError: if repository is not available
+        @raise ValueError: if repository is a package repository
+        @return: True, if repository has been disabled, False otherwise
+        @rtype: bool
         """
+        # package repositories are ignored.
+        if self._is_package_repository(repository_id):
+            raise ValueError("repository is a package")
+
         # update self._settings['repositories']['available']
         try:
             del self._settings['repositories']['available'][repository_id]
@@ -763,13 +829,12 @@ class RepositoryMixin:
 
         self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
-        repository_metadata = {}
-        repository_metadata['repoid'] = repository_id
-        self.__save_repository_settings(repository_metadata, disable = True)
+        disabled = self.__conf_enable_disable_repository(repository_id, False)
         self._settings.clear()
 
         self.close_repositories()
         self._validate_repositories()
+        return disabled
 
     def add_package_to_repositories(self, pkg_file):
         """@deprecated please use add_package_repository"""
@@ -881,11 +946,13 @@ class RepositoryMixin:
                     # otherwise, add to package_matches
                 package_matches.append((package_id, basefile))
 
-        self.add_repository(repodata)
+        added = self.add_repository(repodata)
+        if not added:
+            raise EntropyPackageException("error while adding repository (1)")
         self._validate_repositories()
         if basefile not in self._enabled_repos:
-            self.remove_repository(basefile)
-            raise EntropyPackageException("error while adding repository")
+            self.remove_repository(basefile) # ignored outcome
+            raise EntropyPackageException("error while adding repository (2)")
 
         # add to SystemSettings
         self.sys_settings_client_plugin._add_package_repository(
@@ -1941,8 +2008,12 @@ class MiscMixin:
         new_pkg_mirrors = sorted(mirror_stats.keys(),
             key = lambda x: mirror_stats[x])
         repo_data['plain_packages'] = new_pkg_mirrors
-        self.remove_repository(repository_id)
-        self.add_repository(repo_data)
+        removed = self.remove_repository(repository_id)
+        if not removed:
+            raise KeyError("cannot touch given repository (1)")
+        added = self.add_repository(repo_data)
+        if not added:
+            raise KeyError("cannot touch given repository (2)")
         return repo_data
 
     def set_branch(self, branch):
@@ -2496,7 +2567,7 @@ class MatchMixin:
         masking_list = [setting_data['mask'], setting_data['unmask']]
 
         setting_dirs = self._settings.get_setting_dirs_data()
-        conf_dir, conf_files, auto_upd = setting_dirs['mask_d']
+        conf_dir, conf_files, skipped_files, auto_upd = setting_dirs['mask_d']
         masking_list += [conf_p for conf_p, mtime_p in conf_files]
         conf_dir, conf_files, auto_upd = setting_dirs['unmask_d']
         masking_list += [conf_p for conf_p, mtime_p in conf_files]

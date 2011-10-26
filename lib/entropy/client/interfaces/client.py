@@ -442,7 +442,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 repodata = self.__package_repositories_meta[repository_id]
                 # if correct, this won't trigger a stack overflow
                 # add_repository calling SystemSettings.clear() I mean
-                self._helper.add_repository(repodata)
+                added = self._helper.add_repository(repodata)
+                if not added:
+                    raise ValueError("wtf? cannot add repository")
 
         # fill repositories metadata dictionaries
         self.__setup_repos_files(sys_settings_instance)

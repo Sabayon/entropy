@@ -189,7 +189,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         del db_data['original_repository']
         del db_data['extra_download']
         self.assertEqual(data, db_data)
-        self.Client.remove_repository(self.mem_repoid)
+        self.assertTrue(self.Client.remove_repository(self.mem_repoid))
         self.assertNotEqual(
             self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
         def test_load():
