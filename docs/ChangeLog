@@ -1,3 +1,129 @@
+commit e3536bedea8f07840a70de8d64e5aee23f0d5a05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:39:20 2011 +0200
+
+    Release Entropy 1.0_rc65
+
+commit 2c97897cfd186e884087a65b118da1ef962ca3c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:39:08 2011 +0200
+
+    [tests] ignore outcome of remove_repository() since that is a temp repo
+
+commit de47e0de3d71aac7978e6b0a87d0005d1173d137
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:36:44 2011 +0200
+
+    [tests] ignore outcome of remove_repository() since that is a temp repo
+
+commit ec05ee3b07131299e9c541ba862cecf4ec68caf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:31:10 2011 +0200
+
+    [entropy.misc] TimeScheduled: handle multiple kill() calls, and not started threads (and kill() called)
+
+commit e0521e0c6bf5e20a22d5a345d1567b53572efd82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:08:14 2011 +0200
+
+    [todo] update TODO
+
+commit 85238b8de5a5570930e5870d5babef9e4048c03a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:07:44 2011 +0200
+
+    [entropy.*] add support for /etc/entropy/repositories.conf.d/
+
+commit 99acbbcd89e9f4123ac1e56b77ed9e2146f64ea4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 19:59:30 2011 +0200
+
+    [entropy.tools] add atomic_write()
+
+commit cca36b836ab1b9fd6d470e2a04a68a7c1e61c830
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 19:58:59 2011 +0200
+
+    [entropy.tools] rename_keep_permissions: complete docstring
+
+commit ebab3103271c2fc8c155d022bda2f826e3f8f7f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 19:42:44 2011 +0200
+
+    [entropy.tools] make rename_keep_permissions() more robust
+
+commit 0ee9dd7d74efd224c23238af03c35da49a2a3de8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 17:37:44 2011 +0200
+
+    [entropy.core] use codecs.open() in _hw_hash_parser()
+
+commit 9a012ce2cdc48b326634bd097061540f955daa03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 17:28:31 2011 +0200
+
+    [entropy.const] drop another global variable, etpConst['repositoriesconf']
+
+commit b43de50f9b5a8c3573bbe725ee58d377f9c90922
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 17:28:07 2011 +0200
+
+    [entropy.server] use entropy.tools.rename_keep_permissions() when needed
+
+commit 2a5009204f5d15b76a22d0b2cf504325dd5ffc43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 17:27:50 2011 +0200
+
+    [entropy.tools] add rename_keep_permissions() function
+
+commit 6a257fa3fada1c17dda1b93bca8fd95323d8323c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 15:21:09 2011 +0200
+
+    [entropy.qa] ErrorReportInterface: use codecs.open() and be atomic in opening config files
+
+commit 70c19ade9d945526c3346b2da7a33af0fd7a6500
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 15:14:12 2011 +0200
+
+    [entropy.const] drop etpConst['clientconf']
+
+commit 4521efbbe993998263440c5bbf9c068d3c96eb22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 15:08:21 2011 +0200
+
+    [entropy.server] take into account that root ("/") is dynamic, provide server_conf_path() static method
+
+commit 1574ae75a6e63bc1c776e82dd31206d99f8c0c89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 13:24:21 2011 +0200
+
+    [entropy.const] remove global var etpConst['serverconf']
+
+commit 752df7b711871b1742108b451b4317e5c1400413
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 13:24:04 2011 +0200
+
+    [entropy.tools] add new function codecs_fdopen()
+
+commit 296910506414aa90577460092520fdfa7ac2445c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 12:42:10 2011 +0200
+
+    [entropy.const] drop etpConst['entropyconf']
+
+commit 645d09b2fcb9b8a8a89a0941750b20659e94f4e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 12:08:00 2011 +0200
+
+    [eit.commands.checkout] fix alias, it's "co", and not "ci"
+
+commit ccf014c1342b1cf6c789132c3072fbbb4c18c507
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 26 12:02:48 2011 +0200
+
+    Tagging Entropy version 1.0_rc64
+
 commit 84965b368238996bd3b073b19447e0ef7d5fec0e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Oct 26 12:02:42 2011 +0200
