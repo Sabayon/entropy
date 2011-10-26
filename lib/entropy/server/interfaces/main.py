@@ -420,6 +420,9 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
     # a repositories metadata reload
     REPOSITORIES = {}
 
+    # path to /etc/entropy/server.conf (usually, depends on systemroot)
+    SERVER_CONF_PATH = os.path.join(etpConst['confdir'], "server.conf")
+
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self._mtime_cache = {}
@@ -628,7 +631,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         @return dict data
         """
-        server_conf = etpConst['serverconf']
+        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
         root = etpConst['systemroot']
         try:
             mtime = os.path.getmtime(server_conf)
@@ -756,7 +759,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # validate repository id string
             if not entropy.tools.validate_repository_id(repoid):
                 sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
-                    repoid, etpConst['serverconf']))
+                    repoid, ServerSystemSettingsPlugin.SERVER_CONF_PATH))
                 return
 
             if repoid in data['repositories']:
@@ -4126,10 +4129,17 @@ class Server(Client):
             return
 
         enc = etpConst['conf_encoding']
-        if os.path.isfile(etpConst['serverconf']):
-            f_srv = codecs.open(etpConst['serverconf'], "r", encoding=enc)
-            content = f_srv.readlines()
-            f_srv.close()
+        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
+        try:
+            with codecs.open(server_conf, "r", encoding=enc) as f_srv:
+                content = f_srv.readlines()
+        except IOError as err:
+            if err.errno == errno.ENOENT:
+                content = None
+            else:
+                raise
+
+        if content is not None:
             content = [x.strip() for x in content]
             found = False
             new_content = []
@@ -4141,21 +4151,23 @@ class Server(Client):
                 new_content.append(line)
             if not found:
                 new_content.append("default-repository = %s" % (repoid,))
-            f_srv_t = codecs.open(
-                etpConst['serverconf']+".save_default_repo_tmp",
-                "w", encoding=enc)
-            for line in new_content:
-                f_srv_t.write(line+"\n")
-            f_srv_t.flush()
-            f_srv_t.close()
-            os.rename(etpConst['serverconf']+".save_default_repo_tmp",
-                etpConst['serverconf'])
+
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            with entropy.tools.codecs_fdopen(tmp_path, "w", enc) as f_srv_t:
+                for line in new_content:
+                    f_srv_t.write(line+"\n")
+                f_srv_t.flush()
+
+            user = os.stat(server_conf)[stat.ST_UID]
+            group = os.stat(server_conf)[stat.ST_GID]
+            os.chown(tmp_path, user, group)
+            shutil.copymode(server_conf, tmp_path)
+            os.rename(tmp_path, server_conf)
+
         else:
-            f_srv = codecs.open(etpConst['serverconf'], "w",
-                                encoding=enc)
-            f_srv.write("default-repository = %s\n" % (repoid,))
-            f_srv.flush()
-            f_srv.close()
+            with codecs.open(server_conf, "w", encoding=enc) as f_srv:
+                f_srv.write("default-repository = %s\n" % (repoid,))
+                f_srv.flush()
 
     def enable_repository(self, repository_id):
         """
@@ -4197,15 +4209,18 @@ class Server(Client):
         if repository_id == etpConst['clientserverrepoid']:
             return False
 
-        if not os.path.isfile(etpConst['serverconf']):
+        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(server_conf, "r", encoding=enc) as f_srv:
+                content = [x.strip() for x in f_srv.readlines()]
+        except IOError as err:
+            if err.errno != errno.ENOENT:
+                raise
             return None
 
-        tmpfile = etpConst['serverconf']+".switch"
-        enc = etpConst['conf_encoding']
-        with codecs.open(etpConst['serverconf'], "r", encoding=enc) as f_srv:
-            content = [x.strip() for x in f_srv.readlines()]
-
-        with codecs.open(tmpfile, "w", encoding=enc) as f_tmp:
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as f_tmp:
             status = False
             for line in content:
                 key, value = entropy.tools.extract_setting(line)
@@ -4223,7 +4238,11 @@ class Server(Client):
             f_tmp.flush()
 
         if status:
-            os.rename(tmpfile, etpConst['serverconf'])
+            user = os.stat(server_conf)[stat.ST_UID]
+            group = os.stat(server_conf)[stat.ST_GID]
+            os.chown(tmp_path, user, group)
+            shutil.copymode(server_conf, tmp_path)
+            os.rename(tmp_path, server_conf)
             self.close_repositories()
             self._settings.clear()
             self._setup_services()
