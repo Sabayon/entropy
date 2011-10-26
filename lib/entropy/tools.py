@@ -720,6 +720,17 @@ def movefile(src, dest, src_basedir = None):
 
     return True
 
+def rename_keep_permissions(src, dest):
+    """
+    Call rename() for src -> dest files keeping dest permission
+    bits and ownership. Useful in combination with mkstemp()
+    """
+    user = os.stat(dest)[stat.ST_UID]
+    group = os.stat(dest)[stat.ST_GID]
+    os.chown(src, user, group)
+    shutil.copymode(dest, src)
+    os.rename(src, dest)
+
 def get_random_number():
     """
     Return a random number between 10000 and 99999.
