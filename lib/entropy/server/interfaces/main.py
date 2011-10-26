@@ -4167,11 +4167,8 @@ class Server(Client):
                     f_srv_t.write(line+"\n")
                 f_srv_t.flush()
 
-            user = os.stat(server_conf)[stat.ST_UID]
-            group = os.stat(server_conf)[stat.ST_GID]
-            os.chown(tmp_path, user, group)
-            shutil.copymode(server_conf, tmp_path)
-            os.rename(tmp_path, server_conf)
+            entropy.tools.rename_keep_permissions(
+                tmp_path, server_conf)
 
         else:
             with codecs.open(server_conf, "w", encoding=enc) as f_srv:
@@ -4247,11 +4244,8 @@ class Server(Client):
             f_tmp.flush()
 
         if status:
-            user = os.stat(server_conf)[stat.ST_UID]
-            group = os.stat(server_conf)[stat.ST_GID]
-            os.chown(tmp_path, user, group)
-            shutil.copymode(server_conf, tmp_path)
-            os.rename(tmp_path, server_conf)
+            entropy.tools.rename_keep_permissions(
+                tmp_path, server_conf)
             self.close_repositories()
             self._settings.clear()
             self._setup_services()
