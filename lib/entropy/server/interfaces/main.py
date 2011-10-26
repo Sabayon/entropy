@@ -420,12 +420,21 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
     # a repositories metadata reload
     REPOSITORIES = {}
 
-    # path to /etc/entropy/server.conf (usually, depends on systemroot)
-    SERVER_CONF_PATH = os.path.join(etpConst['confdir'], "server.conf")
+
 
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self._mtime_cache = {}
+
+    @staticmethod
+    def server_conf_path():
+        """
+        Return current server.conf path, this takes into account the current
+        configuration files directory path (which is affected by "root" path
+        changes [default: /])
+        """
+        # path to /etc/entropy/server.conf (usually, depends on systemroot)
+        return os.path.join(etpConst['confdir'], "server.conf")
 
     @staticmethod
     def analyze_server_repo_string(repostring, product = None):
@@ -631,7 +640,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         @return dict data
         """
-        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
+        server_conf = ServerSystemSettingsPlugin.server_conf_path()
         root = etpConst['systemroot']
         try:
             mtime = os.path.getmtime(server_conf)
@@ -759,7 +768,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # validate repository id string
             if not entropy.tools.validate_repository_id(repoid):
                 sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
-                    repoid, ServerSystemSettingsPlugin.SERVER_CONF_PATH))
+                    repoid, ServerSystemSettingsPlugin.server_conf_path()))
                 return
 
             if repoid in data['repositories']:
@@ -4129,7 +4138,7 @@ class Server(Client):
             return
 
         enc = etpConst['conf_encoding']
-        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
+        server_conf = ServerSystemSettingsPlugin.server_conf_path()
         try:
             with codecs.open(server_conf, "r", encoding=enc) as f_srv:
                 content = f_srv.readlines()
@@ -4209,7 +4218,7 @@ class Server(Client):
         if repository_id == etpConst['clientserverrepoid']:
             return False
 
-        server_conf = ServerSystemSettingsPlugin.SERVER_CONF_PATH
+        server_conf = ServerSystemSettingsPlugin.server_conf_path()
         enc = etpConst['conf_encoding']
         try:
             with codecs.open(server_conf, "r", encoding=enc) as f_srv:
