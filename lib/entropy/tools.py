@@ -36,7 +36,7 @@ import codecs
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
-    const_israwstring
+    const_israwstring, const_secure_config_file
 from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
 def is_root():
@@ -724,12 +724,29 @@ def rename_keep_permissions(src, dest):
     """
     Call rename() for src -> dest files keeping dest permission
     bits and ownership. Useful in combination with mkstemp()
+    If dest doesn't exist, ownership and permissions will
+    be set through entropy.const's const_secure_config_file().
+    File is moved using entropy.tools.movefile()
+
+    @raise OSError: if file cannot be moved.
     """
-    user = os.stat(dest)[stat.ST_UID]
-    group = os.stat(dest)[stat.ST_GID]
-    os.chown(src, user, group)
-    shutil.copymode(dest, src)
-    os.rename(src, dest)
+    dest_avail = True
+    try:
+        user = os.stat(dest)[stat.ST_UID]
+        group = os.stat(dest)[stat.ST_GID]
+    except OSError as err:
+        if err.errno != errno.ENOENT:
+            raise
+        user = 0
+        group = 0
+        dest_avail = False
+    if dest_avail:
+        os.chown(src, user, group)
+        shutil.copymode(dest, src)
+    else:
+        const_secure_config_file(src)
+    if not movefile(src, dest):
+        raise OSError(errno.EPERM, "cannot rename")
 
 def get_random_number():
     """
