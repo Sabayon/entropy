@@ -213,6 +213,19 @@ class TimeScheduled(threading.Thread):
         self.__paused = False
         self.__paused_delay = 2
         self.__state_sem = threading.Semaphore(0)
+        self.__killed = False
+        self.__kill_status = threading.Lock()
+
+    def start(self):
+        """
+        Override Thread.start() to handle the internal
+        state semaphore.
+        """
+        self.__alive = 1
+        # send the signal to kill, now it can reliably change
+        # self.__alive
+        self.__state_sem.release()
+        return super(TimeScheduled, self).start()
 
     def pause(self, pause):
         """
@@ -261,11 +274,6 @@ class TimeScheduled(threading.Thread):
         This method is called automatically when start() is called.
         Don't call this directly!!!
         """
-        self.__alive = 1
-        # send the signal to kill, now it can reliably change
-        # self.__alive
-        self.__state_sem.release()
-
         while self.__alive:
 
             if self.__delay_before:
@@ -317,8 +325,17 @@ class TimeScheduled(threading.Thread):
 
     def kill(self):
         """ Stop the execution of the timed function """
+        if self.__alive == 0:
+            # never started?
+            return
+        with self.__kill_status:
+            if self.__killed:
+                # kill already called
+                return
+            self.__killed = True
         self.__state_sem.acquire()
-        # at this point run() is called, we're allowed to kill
+        # at this point run() is called or start() hasn't been called
+        # we're allowed to kill
         self.__alive = 0
 
 class ParallelTask(threading.Thread):
