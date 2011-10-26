@@ -16,6 +16,7 @@ import time
 import errno
 import threading
 import multiprocessing
+import socket
 
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
@@ -36,7 +37,6 @@ class Server(object):
 
     SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
 
-    import socket
     def __init__(self, server, repository_id):
 
         from entropy.server.transceivers import TransceiverServerHandler
@@ -1744,7 +1744,7 @@ class Server(object):
                 upload_queue, download_queue, removal_queue, fine_queue, \
                     remote_packages_data = self._calculate_packages_to_sync(
                         repository_id, uri)
-            except self.socket.error as err:
+            except socket.error as err:
                 self._entropy.output(
                     "[%s|%s|%s] %s: %s, %s %s" % (
                         repository_id,
