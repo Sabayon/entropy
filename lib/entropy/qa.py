@@ -23,6 +23,7 @@ import sys
 import subprocess
 import tempfile
 import stat
+import codecs
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
@@ -1598,6 +1599,9 @@ class ErrorReportInterface:
         @rtype: None
         """
         from entropy.tools import getstatusoutput
+        from entropy.client.interfaces.client import ClientSystemSettingsPlugin
+        enc = etpConst['conf_encoding']
+
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text
         self.params['name'] = name
@@ -1608,10 +1612,8 @@ class ErrorReportInterface:
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
         self.params['system_version'] = "N/A"
-        if os.access(etpConst['systemreleasefile'], os.R_OK) and \
-            os.path.isfile(etpConst['systemreleasefile']):
-            with open(etpConst['systemreleasefile'], "r") as f_rel:
-                self.params['system_version'] = f_rel.readline().strip()
+        self.params['repositories.conf'] = "---NA---"
+        self.params['client.conf'] = "---NA---"
 
         self.params['processes'] = getstatusoutput('ps auxf')[1]
         self.params['lsof'] = getstatusoutput('lsof -p %s' % (os.getpid(),))[1]
@@ -1619,17 +1621,23 @@ class ErrorReportInterface:
         self.params['dmesg'] = getstatusoutput('dmesg')[1]
         self.params['locale'] = getstatusoutput('locale -v')[1]
 
-        self.params['repositories.conf'] = "---NA---"
-        if os.access(etpConst['repositoriesconf'], os.R_OK) and \
-            os.path.isfile(etpConst['repositoriesconf']):
-            with open(etpConst['repositoriesconf'], "r") as rc_f:
-                self.params['repositories.conf'] = rc_f.read()
-
-        from entropy.client.interfaces.client import ClientSystemSettingsPlugin
-        client_conf = ClientSystemSettingsPlugin.client_conf_path()
-        self.params['client.conf'] = "---NA---"
         try:
-            with open(client_conf, "r") as rc_f:
+            with codecs.open(etpConst['systemreleasefile'], "r",
+                             encoding=enc) as f_rel:
+                self.params['system_version'] = f_rel.readline().strip()
+        except IOError:
+            pass
+
+        try:
+            with codecs.open(etpConst['repositoriesconf'], "r",
+                             encoding=enc) as rc_f:
+                self.params['repositories.conf'] = rc_f.read()
+        except IOError:
+            pass
+
+        client_conf = ClientSystemSettingsPlugin.client_conf_path()
+        try:
+            with codecs.open(client_conf, "r", encoding=enc) as rc_f:
                 self.params['client.conf'] = rc_f.read()
         except IOError:
             pass
