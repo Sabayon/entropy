@@ -347,12 +347,14 @@ def search_changelog(atoms, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         # check developer repo mode
+        repo_conf = entropy_client.Settings().get_setting_files_data(
+            )['repositories']
         dev_repo = entropy_client.Settings()['repositories']['developer_repo']
         if not dev_repo:
             print_warning(bold(" !!! ") + \
                 brown("%s ! [%s]" % (
                     _("Attention: developer-repo option not enabled"),
-                    blue(etpConst['repositoriesconf']),
+                    blue(repo_conf),
                 )))
 
     return 0

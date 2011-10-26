@@ -1563,8 +1563,8 @@ class ErrorReportInterface:
         self.generated = False
         self.params = {}
 
-        sys_settings = SystemSettings()
-        proxy_settings = sys_settings['system']['proxy']
+        self._settings = SystemSettings()
+        proxy_settings = self._settings['system']['proxy']
         mydict = {}
         if proxy_settings['ftp']:
             mydict['ftp'] = proxy_settings['ftp']
@@ -1621,6 +1621,10 @@ class ErrorReportInterface:
         self.params['dmesg'] = getstatusoutput('dmesg')[1]
         self.params['locale'] = getstatusoutput('locale -v')[1]
 
+        # configuration files paths
+        config_files = self._settings.get_setting_files_data()
+        client_conf = ClientSystemSettingsPlugin.client_conf_path()
+
         try:
             with codecs.open(etpConst['systemreleasefile'], "r",
                              encoding=enc) as f_rel:
@@ -1629,13 +1633,12 @@ class ErrorReportInterface:
             pass
 
         try:
-            with codecs.open(etpConst['repositoriesconf'], "r",
+            with codecs.open(config_files['repositories'], "r",
                              encoding=enc) as rc_f:
                 self.params['repositories.conf'] = rc_f.read()
         except IOError:
             pass
 
-        client_conf = ClientSystemSettingsPlugin.client_conf_path()
         try:
             with codecs.open(client_conf, "r", encoding=enc) as rc_f:
                 self.params['client.conf'] = rc_f.read()

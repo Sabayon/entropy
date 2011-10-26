@@ -576,13 +576,15 @@ def branch_hop(entropy_client, branch):
     entropy_client.set_branch(branch)
     status = True
 
+    repo_conf = entropy_client.Settings().get_setting_files_data(
+        )['repositories']
     try:
         repo_intf = entropy_client.Repositories(None, force = False,
             fetch_security = False)
     except AttributeError as err:
         print_error(darkred(" * ")+red("%s %s [%s]" % (
             _("No repositories specified in"),
-            etpConst['repositoriesconf'], err,)))
+            repo_conf, err,)))
         status = False
     except Exception as e:
         print_error(darkred(" @@ ")+red("%s: %s" % (

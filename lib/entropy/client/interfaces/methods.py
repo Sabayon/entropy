@@ -19,7 +19,7 @@ import shutil
 import time
 import subprocess
 import tempfile
-import warnings
+import codecs
 from datetime import datetime
 
 from entropy.i18n import _
@@ -484,11 +484,17 @@ class RepositoryMixin:
         if self._is_package_repository(repodata['repoid']):
             return
 
+        repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
-        if os.path.isfile(etpConst['repositoriesconf']):
-            f = open(etpConst['repositoriesconf'])
-            content = [x.strip() for x in f.readlines()]
-            f.close()
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(repo_conf, encoding=enc) as f:
+                content += [x.strip() for x in f.readlines()]
+        except IOError as err:
+            if err.errno == errno.EPERM:
+                return False
+            if err.errno != errno.ENOENT:
+                raise
 
         if not disable and not enable:
             new_content = []
@@ -595,24 +601,44 @@ class RepositoryMixin:
                 content.extend(repolines_data[cc]['lines'])
 
         # atomic write
+        tmp_fd, tmp_path = None, None
         try:
-            repo_conf = etpConst['repositoriesconf']
-            tmp_repo_conf = repo_conf + ".cfg_save_set"
-            with open(tmp_repo_conf, "w") as tmp_f:
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
                 for line in content:
                     tmp_f.write(line + "\n")
                 tmp_f.flush()
-            os.rename(tmp_repo_conf, repo_conf)
-        except (OSError, IOError,): # permission denied?
+            entropy.tools.rename_keep_permissions(tmp_path, repo_conf)
+        except IOError as err:
+            if err.errno not in (errno.ENOENT, errno.EPERM):
+                raise
             return False
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError as err:
+                    if err.errno != errno.EBADF:
+                        raise
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError as err:
+                    if err.errno != errno.ENOENT:
+                        raise
         return True
 
 
     def __write_ordered_repositories_entries(self, ordered_repository_list):
+        repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
-        if os.path.isfile(etpConst['repositoriesconf']):
-            with open(etpConst['repositoriesconf'], "r") as f:
-                content = [x.strip() for x in f.readlines()]
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(repo_conf, encoding=enc) as f:
+                content += [x.strip() for x in f.readlines()]
+        except IOError as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         repolines = []
         filter_lines = []
@@ -642,13 +668,31 @@ class RepositoryMixin:
         for x in filter_lines:
             content.append(x)
 
-        repo_conf = etpConst['repositoriesconf']
-        tmp_repo_conf = repo_conf + ".cfg_save"
-        with open(tmp_repo_conf, "w") as tmp_f:
-            for line in content:
-                tmp_f.write(line + "\n")
-            tmp_f.flush()
-        os.rename(tmp_repo_conf, repo_conf)
+        # atomic write
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
+                for line in content:
+                    tmp_f.write(line + "\n")
+                tmp_f.flush()
+            entropy.tools.rename_keep_permissions(tmp_path, repo_conf)
+        except IOError as err:
+            # always bail out here
+            raise
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError as err:
+                    if err.errno != errno.EBADF:
+                        raise
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError as err:
+                    if err.errno != errno.ENOENT:
+                        raise
 
     def shift_repository(self, repository_id, new_position_idx):
         """
@@ -1924,7 +1968,8 @@ class MiscMixin:
         # etpConst should be readonly but we override the rule here
         # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
-        entropy.tools.write_parameter_to_file(etpConst['repositoriesconf'],
+        repo_conf = self._settings.get_setting_files_data()['repositories']
+        entropy.tools.write_parameter_to_file(repo_conf,
             "branch", branch)
         # there are no valid repos atm
         del self._enabled_repos[:]
@@ -2044,12 +2089,6 @@ class MiscMixin:
             if not already_initialized:
                 os.close(tmp_fd)
                 os.remove(tmp_path)
-
-    def quickpkg(self, *args, **kwargs):
-        warnings.warn("Client.quickpkg() is now deprecated. " + \
-            "Please use generate_package()")
-        """@deprecated"""
-        return self.generate_package(*args, **kwargs)
 
     def generate_package(self, entropy_package_metadata, save_directory,
         edb = True, fake = False, compression = "bz2", shiftpath = None):

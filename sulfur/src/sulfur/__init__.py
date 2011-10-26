@@ -1326,7 +1326,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.ui.depResAlgoCombo.get_active,
                 ),
             ],
-            etpConst['repositoriesconf']: [
+            conf_files['repositories']: [
                 (
                     'download-speed-limit',
                     self._settings['repositories']['transfer_limit'],
@@ -1571,8 +1571,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             try:
                 repoConn = self._entropy.Repositories(repos, force = force)
             except AttributeError:
+                repo_conf = self._settings.get_setting_files_data(
+                    )['repositories']
                 msg = "%s: %s" % (_('No repositories specified in'),
-                    etpConst['repositoriesconf'],)
+                    repo_conf,)
                 self.progress_log( msg, extra = "repositories")
                 self._entropy.unlock_resources()
                 self.disable_ugc = False

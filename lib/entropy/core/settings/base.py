@@ -301,7 +301,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     etpConst['confdir'], "brokenlinksmask.conf"),
             'hw_hash': os.path.join(etpConst['confdir'], ".hw.hash"),
             'system': os.path.join(etpConst['confdir'], "entropy.conf"),
-            'repositories': etpConst['repositoriesconf'],
+            'repositories': os.path.join(
+                    etpConst['confdir'], "repositories.conf"),
             'system_package_sets': {},
         })
         self.__setting_files_order.extend([
@@ -1366,12 +1367,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         """
         Setup Entropy Client repository settings reading them from
-        the relative config file specified in etpConst['repositoriesconf']
+        the relative config file specified in /etc/entropy/repositories.conf
 
         @return: parsed metadata
         @rtype: dict
         """
-        repo_conf = etpConst['repositoriesconf']
+        repo_conf = self.__setting_files['repositories']
         root = etpConst['systemroot']
         try:
             mtime = os.path.getmtime(repo_conf)

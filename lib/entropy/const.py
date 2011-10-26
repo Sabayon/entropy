@@ -242,8 +242,6 @@ def const_default_settings(rootdir):
         'confsetsdir': default_etp_packagesdir+default_etp_setsdir,
         # just the dirname
         'confsetsdirname': default_etp_setsdirname,
-        # repositories.conf file
-        'repositoriesconf': default_etp_confdir+"/repositories.conf",
 
         # used by entropy.spm to build pkgs relative URL metadata ("download",
         # returned by EntropyRepository.retrieveDownloadURL())

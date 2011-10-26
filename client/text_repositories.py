@@ -431,11 +431,13 @@ def _do_sync(entropy_client, repo_identifiers = None, force = False):
         repo_identifiers = list(SystemSettings['repositories']['available'])
 
     # load repository class
+    repo_conf = entropy_client.Settings().get_setting_files_data(
+        )['repositories']
     try:
         repo_intf = entropy_client.Repositories(repo_identifiers, force = force)
     except AttributeError:
         print_error(darkred(" * ")+red("%s %s" % (
-            _("No repositories specified in"), etpConst['repositoriesconf'],)))
+            _("No repositories specified in"), repo_conf,)))
         return 127
     except Exception as err:
         print_error(darkred(" @@ ")+red("%s: %s" % (
