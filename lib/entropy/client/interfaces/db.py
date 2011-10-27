@@ -2035,7 +2035,7 @@ class MaskableRepository(EntropyRepositoryBase):
 
     def _maskFilter_user_package_mask(self, package_id, live):
 
-        with self._settings['mask']:
+        with self._settings:
             # thread-safe in here
             cache_obj = self._settings['mask'].get()
             if cache_obj is None:
@@ -2077,7 +2077,7 @@ class MaskableRepository(EntropyRepositoryBase):
 
     def _maskFilter_user_package_unmask(self, package_id, live):
 
-        with self._settings['unmask']:
+        with self._settings:
             # thread-safe in here
             cache_obj = self._settings['unmask'].get()
             if cache_obj is None:
