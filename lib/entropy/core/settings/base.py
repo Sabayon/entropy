@@ -359,7 +359,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 continue
             conf_files = [x for x in conf_files if \
                 os.path.isfile(x) and os.access(x, os.R_OK) \
-                and (not x.startswith(".keep")) and x != "README"]
+                and not os.path.basename(x).startswith(".keep") \
+                and os.path.basename(x) != "README"]
             # ignore files starting with _
             skipped_conf_files = [x for x in conf_files if \
                 os.path.basename(x).startswith("_")]
