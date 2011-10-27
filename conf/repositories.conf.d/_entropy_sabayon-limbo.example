@@ -1,0 +1,11 @@
+# Experimental Sabayon repository "sabayon-limbo"
+# Here you can find in-testing packages that will be merged to
+# the mainline repository soon.
+# You can use any mirror listed for "sabayonlinux.org"
+# repository = sabayon-limbo|Sabayon Limbo Testing Repository|http://cerberus.itti.ifce.edu.br/entropy|http://pkg.sabayon.org,sabayon.org
+# repository = sabayon-limbo||http://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
+# repository = sabayon-limbo||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
+# repository = sabayon-limbo||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
+# repository = sabayon-limbo||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
+# repository = sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
+# repository = sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
