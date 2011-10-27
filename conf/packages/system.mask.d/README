@@ -3,5 +3,6 @@ extending /etc/entropy/packages/system.mask content.
 User should rather edit /etc/entropy/packages/system.mask instead of
 creating files inside this directory.
 
-Files are processed in lexical order. Filenames: ".keep", "README" and
-starting with "_" are skipped and never considered.
+Files are processed in lexical order. Filenames: ".keep", "README" are
+skipped and never considered.
+Files ending with ".example" are never considered.
