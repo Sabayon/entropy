@@ -68,10 +68,7 @@ def smart(options):
                 _("Another Entropy is currently running.")))
             return 1
 
-        if options[0] == "application":
-            rc = smart_apps_handler(entropy_client, options[1:])
-
-        elif options[0] == "package":
+        if options[0] == "package":
             rc = smart_pkg_handler(entropy_client, options[1:])
 
         elif options[0] == "quickpkg":
@@ -416,7 +413,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
         atoms.append(matchedAtoms[x]['atom'].split(os.path.sep)[1])
     atoms = '+'.join(atoms)
     smart_package_path = etpConst['smartpackagesdir'] + os.path.sep + atoms + \
-        etpConst['smartappsext']
+        ".app"
     rc = entropy.tools.compress_tar_bz2(smart_package_path, unpackdir+"/content")
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Compression failed due to unknown reasons"),)))
@@ -431,152 +428,3 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     shutil.rmtree(unpackdir, True)
     return 0
 
-
-def smart_apps_handler(entropy_client, mypackages):
-
-    if not mypackages:
-        print_error(darkred(" * ")+red("%s." % (_("No packages specified"),)))
-        return 1
-
-    gplusplus = os.system("which g++ &> /dev/null")
-    if gplusplus != 0:
-        print_error(darkred(" * ")+red("%s." % (_("Cannot find G++ compiler"),)))
-        return gplusplus
-
-    packages = []
-    for opt in mypackages:
-        if opt in packages:
-            continue
-        match = entropy_client.atom_match(opt)
-        if match[0] != -1:
-            packages.append(match)
-        else:
-            print_warning(darkred(" * ") + red("%s: " %(_("Cannot find"),)) + \
-                bold(opt))
-
-    if not packages:
-        print_error(darkred(" * ") + \
-            red("%s." % (_("No valid packages specified"),)))
-        return 2
-
-    # print the list
-    print_info(darkgreen(" * ") + \
-        red("%s:" % (
-            _("This is the list of the packages that would be worked out"),)))
-
-    for pkg in packages:
-        dbconn = entropy_client.open_repository(pkg[1])
-        atom = dbconn.retrieveAtom(pkg[0])
-        print_info(brown("\t[") + red("%s:" % (_("from"),)) + pkg[1] + \
-            red("|SMART") + brown("]") + " - " + atom)
-
-    rc = entropy_client.ask_question(">>   %s" % (
-        _("Would you like to create the packages above ?"),))
-    if rc == _("No"):
-        return 0
-
-    rc = smartgenerator(entropy_client, packages)
-    if rc != 0:
-        print_error(darkred(" * ")+red("%s." % (_("Cannot continue"),)))
-    return rc
-
-# tool that generates .tar.bz2 packages with all the binary dependencies included
-def smartgenerator(entropy_client, matched_atoms):
-
-    master_atom = matched_atoms[0]
-    dbconn = entropy_client.open_repository(master_atom[1])
-    idpackage = master_atom[0]
-    atom = dbconn.retrieveAtom(idpackage)
-    pkgfilepath = dbconn.retrieveDownloadURL(idpackage)
-    pkgcontent = dbconn.retrieveContent(idpackage)
-    pkgbranch = dbconn.retrieveBranch(idpackage)
-    pkgfilename = os.path.basename(pkgfilepath)
-    pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":", "_").replace("~", "_")
-
-    fetchdata = matched_atoms
-    # run install_packages with onlyfetch
-    import text_ui
-    rc = text_ui.install_packages(entropy_client,
-        atomsdata = fetchdata, deps = False, onlyfetch = True)
-    if rc[1] != 0:
-        return rc[0]
-
-
-    # create the working directory
-    pkgtmpdir = os.path.join(etpConst['entropyunpackdir'], pkgname)
-    pkg_data_dir = os.path.join(pkgtmpdir, pkgname)
-    if os.path.isdir(pkg_data_dir):
-        shutil.rmtree(pkg_data_dir)
-    os.makedirs(pkg_data_dir)
-    main_bin_path = os.path.join(etpConst['entropypackagesworkdir'],
-        pkgfilepath)
-    print_info(darkgreen(" * ") + \
-        red("%s " % (_("Unpacking the main package"),)) + \
-        bold(str(pkgfilename)))
-    entropy.tools.uncompress_tarball(main_bin_path, extract_path = pkg_data_dir)
-
-    binary_execs = []
-    for item in pkgcontent:
-        filepath = pkg_data_dir + item
-        if os.access(filepath, os.X_OK):
-            if getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
-                binary_execs.append(item)
-
-    # now uncompress all the rest
-    for dep_idpackage, dep_repo in matched_atoms[1:]:
-        mydbconn = entropy_client.open_repository(dep_repo)
-        download_path = mydbconn.retrieveDownloadURL(dep_idpackage)
-        download = os.path.basename(download_path)
-        depbranch = mydbconn.retrieveBranch(dep_idpackage)
-        depatom = mydbconn.retrieveAtom(dep_idpackage)
-        print_info(darkgreen(" * ") + \
-            red("%s " % (_("Unpacking dependency package"),)) + bold(depatom))
-        deppath = os.path.join(etpConst['entropypackagesworkdir'],
-            download_path)
-        entropy.tools.uncompress_tarball(deppath,
-            extract_path = pkg_data_dir) # first unpack
-
-    # now create the bash script for each binary_execs
-    os.makedirs(pkg_data_dir+"/wrp")
-    wrapper_file = os.path.join(etpConst['installdir'], "services/smartapp_wrapper")
-    if not os.path.isfile(wrapper_file):
-        wrapper_file = "../services/smartapp_wrapper"
-
-    wrapper_path = pkg_data_dir+"/wrp/wrapper"
-    shutil.copy2(wrapper_file, wrapper_path)
-    # chmod
-    os.chmod(wrapper_path, 0o755)
-
-    cc_content = """
-#include <cstdlib>
-#include <cstdio>
-#include <stdio.h>
-int main() {
-    int rc = system("pid=$(pidof --item--.exe);"
-                    "listpid=$(ps x | grep $pid);"
-                "filename=$(echo $listpid | cut -d' ' -f 5);"
-                "currdir=$(dirname $filename);"
-                "/bin/sh $currdir/wrp/wrapper $currdir --item--" );
-    return rc;
-}
-"""
-
-    for item in binary_execs:
-        item = item.split(os.path.sep)[-1]
-        item_content = cc_content.replace("--item--",item)
-        item_cc = "%s/%s.cc" % (pkg_data_dir,item,)
-        f = open(item_cc,"w")
-        f.write(item_content)
-        f.flush()
-        f.close()
-        # now compile
-        os.system("cd %s/; g++ -Wall %s.cc -o %s.exe" % (pkg_data_dir,item,item,))
-        os.remove(item_cc)
-
-    smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['smartappsext'],)
-    print_info(darkgreen(" * ")+red("%s: " % (_("Compressing smart application"),))+bold(atom))
-    print_info("\t%s" % (smartpath,))
-    entropy.tools.compress_tar_bz2(smartpath, pkgtmpdir)
-    shutil.rmtree(pkgtmpdir,True)
-
-    return 0

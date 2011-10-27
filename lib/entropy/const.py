@@ -190,7 +190,6 @@ def const_default_settings(rootdir):
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
     default_etp_client_repodir = "/client"
-    default_etp_smartappsdir = "/smartapps/"+ETP_ARCH_CONST
     default_etp_smartpackagesdir = "/smartpackages/"+ETP_ARCH_CONST
     default_etp_cachesdir = "/caches/"
     default_etp_securitydir = "/glsa/"
@@ -217,8 +216,6 @@ def const_default_settings(rootdir):
         'installdir': '/usr/lib/entropy',
         # etpConst['packagestmpdir'] --> temp directory
         'packagestmpdir': default_etp_dir+default_etp_tmpdir,
-        # etpConst['smartappsdir'] location where smart apps files are places
-        'smartappsdir': default_etp_dir+default_etp_smartappsdir,
         # etpConst['smartpackagesdir'] location where
         # smart packages files are places
         'smartpackagesdir': default_etp_dir+default_etp_smartpackagesdir,
@@ -417,7 +414,6 @@ def const_default_settings(rootdir):
         'packagesdeltaext': ".edelta",
         # entropy package files binary delta subdir
         'packagesdeltasubdir': "deltas",
-        'smartappsext': ".app",
         # Extension of the file that contains the checksum
         # of its releated package file
         'packagesmd5fileext': ".md5",

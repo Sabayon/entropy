@@ -808,10 +808,6 @@ handles extended functionalities
 
 =over
 
-=item [2] B<application>
-
-make a smart application for the provided atoms (experimental)
-
 =item [2] B<package>
 
 make a smart package for the provided atoms (multiple packages into one file)

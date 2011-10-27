@@ -240,7 +240,6 @@ help_opts_extended = [
     (0, _('Extended Options'), 0, None),
     None,
     (1, 'smart', 2, _('handles extended functionalities')),
-    (2, 'application', 1, _('make a smart application for the provided atoms (experimental)')),
     (2, 'package', 1, _('make a smart package for the provided atoms (multiple packages into one file)')),
     (2, 'quickpkg', 1, _('recreate an Entropy package from your System')),
     (3, '--savedir', 1, _('save new packages into the specified directory')),
