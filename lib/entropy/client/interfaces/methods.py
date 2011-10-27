@@ -2544,17 +2544,16 @@ class MatchMixin:
             return True
 
         content = []
+        enc = etpConst['conf_encoding']
         if exist:
-            f = open(m_file, "r")
-            content = [x.strip() for x in f.readlines()]
-            f.close()
+            with codecs.open(m_file, "r", encoding=enc) as f:
+                content = [x.strip() for x in f.readlines()]
         content.append(keyword)
         m_file_tmp = m_file+".tmp"
-        f = open(m_file_tmp, "w")
-        for line in content:
-            f.write(line+"\n")
-        f.flush()
-        f.close()
+        with codecs.open(m_file_tmp, "w", encoding=enc) as f:
+            for line in content:
+                f.write(line+"\n")
+            f.flush()
         try:
             os.rename(m_file_tmp, m_file)
         except OSError:
@@ -2590,17 +2589,19 @@ class MatchMixin:
         new_mask_list = [x for x in masking_list if os.path.isfile(x) \
             and os.access(x, os.W_OK)]
 
+        enc = etpConst['conf_encoding']
         for mask_file in new_mask_list:
 
             tmp_fd, tmp_path = tempfile.mkstemp(
                 prefix="entropy.client.methods._clear_match_gen")
 
-            with open(mask_file, "r") as mask_f:
+            with codecs.open(mask_file, "r", encoding=enc) as mask_f:
                 with os.fdopen(tmp_fd, "w") as tmp_f:
                     for line in mask_f.readlines():
                         strip_line = line.strip()
 
-                        if not (strip_line.startswith("#") or not strip_line):
+                        if not (strip_line.startswith("#") or \
+                                    not strip_line):
                             mymatch = self.atom_match(strip_line,
                                 mask_filter = False)
                             if mymatch == match:
