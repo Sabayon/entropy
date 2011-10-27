@@ -122,7 +122,7 @@ class EitCommit(EitCommand):
 
         # normal scanning
         entropy_server.output(
-            red("%s..." % (_("Scanning..."),) ),
+            brown(_("Scanning...")),
             header=brown(" * "),
             importance=1)
         try:
