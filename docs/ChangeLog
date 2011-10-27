@@ -1,3 +1,29 @@
+commit f8a1dd8e2052feff579b4bbed2b45c815a85c26e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 15:01:51 2011 +0200
+
+    Release Entropy 1.0_rc69
+
+commit c67e3713776bb673841e392543a9510f6a8ea00c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 15:01:42 2011 +0200
+
+    Revert "[entropy.client.interfaces.db] fix typo in with statement"
+    
+    This reverts commit b0e69bc2f67c70023de4c38353a90f41a30c1bef.
+
+commit 8ccd0de2d2b4f96d487452d1a536424b6d3a26a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 14:56:27 2011 +0200
+
+    [entropy.client] code style update
+
+commit 7ae6b1befb4911b5f03e581e10a92abd4f34e2b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 14:48:13 2011 +0200
+
+    Tagging Entropy version 1.0_rc68
+
 commit 1f7d40bc5f2ef8dfa6a90e7888020f3da9a68b6e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 27 14:48:13 2011 +0200
