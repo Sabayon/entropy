@@ -2428,7 +2428,8 @@ class CalculatorsMixin:
             try:
                 cl_pkgkey, cl_slot, cl_version, \
                     cl_tag, cl_revision, \
-                    cl_atom = self._installed_repository.getStrictData(idpackage)
+                    cl_atom = self._installed_repository.getStrictData(
+                        idpackage)
             except TypeError:
                 # check against broken entries, or removed during iteration
                 continue
