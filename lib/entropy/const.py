@@ -176,7 +176,6 @@ def initconfig_entropy_constants(rootdir):
         sys.excepthook = __const_handle_exception
 
 def const_default_settings(rootdir):
-
     """
     Initialization of all the Entropy base settings.
 
@@ -185,7 +184,6 @@ def const_default_settings(rootdir):
     @rtype: None
     @return: None
     """
-
     default_etp_dir = os.getenv('DEV_ETP_VAR_DIR', rootdir+"/var/lib/entropy")
     default_etp_tmpdir = "/tmp"
     default_etp_dbdir = "/database/"+ETP_ARCH_CONST
@@ -209,19 +207,12 @@ def const_default_settings(rootdir):
     default_etp_tmpcache_dir = os.getenv('DEV_ETP_CACHE_DIR',
         default_etp_dir+default_etp_cachesdir)
 
-    cmdline = []
-    cmdline_file = "/proc/cmdline"
-    if os.access(cmdline_file, os.R_OK) and os.path.isfile(cmdline_file):
-        with open(cmdline_file, "r") as cmdline_f:
-            cmdline = cmdline_f.readline().strip().split()
-
     etpConst.clear()
     my_const = {
         'logging': {
             'normal_loglevel_id': 1,
             'verbose_loglevel_id': 2,
         },
-        'cmdline': cmdline,
         'backed_up': {},
         # entropy default installation directory
         'installdir': '/usr/lib/entropy',
@@ -1456,6 +1447,7 @@ def const_cmp(a, b):
     """
     return (a > b) - (a < b)
 
+_CMDLINE = None
 def const_islive():
     """
     Live environments (Operating System running off a CD/DVD)
@@ -1469,9 +1461,16 @@ def const_islive():
     @rtype: bool
     @return: determine wether this is a Live system or not
     """
-    if "cdroot" in etpConst['cmdline']:
-        return True
-    return False
+    global _CMDLINE
+    if _CMDLINE is None:
+        try:
+            with open("/proc/cmdline", "r") as cmdline_f:
+                _CMDLINE = cmdline_f.readline().strip().split()
+        except IOError as err:
+            if err.errno not in (errno.EPERM, errno.ENOENT):
+                raise
+            _CMDLINE = []
+    return "cdroot" in _CMDLINE
 
 def const_kill_threads(wait_seconds = 120.0):
     """
