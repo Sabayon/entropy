@@ -2609,11 +2609,8 @@ class MatchMixin:
 
                         tmp_f.write(line)
 
-            try:
-                os.rename(tmp_path, mask_file)
-            except OSError:
-                shutil.copy2(tmp_path, mask_file)
-                os.remove(tmp_path)
+            entropy.tools.rename_keep_permissions(
+                tmp_path, mask_file)
 
     def search_installed_mimetype(self, mimetype):
         """
