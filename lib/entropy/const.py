@@ -190,7 +190,6 @@ def const_default_settings(rootdir):
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
     default_etp_client_repodir = "/client"
-    default_etp_triggersdir = "/triggers/"+ETP_ARCH_CONST
     default_etp_smartappsdir = "/smartapps/"+ETP_ARCH_CONST
     default_etp_smartpackagesdir = "/smartpackages/"+ETP_ARCH_CONST
     default_etp_cachesdir = "/caches/"
@@ -223,8 +222,7 @@ def const_default_settings(rootdir):
         # etpConst['smartpackagesdir'] location where
         # smart packages files are places
         'smartpackagesdir': default_etp_dir+default_etp_smartpackagesdir,
-        # etpConst['triggersdir'] location where external triggers are placed
-        'triggersdir': default_etp_dir+default_etp_triggersdir,
+
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,
         # same as above + /packages

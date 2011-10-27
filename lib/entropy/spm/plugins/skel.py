@@ -12,7 +12,7 @@
 """
 import os
 
-from entropy.const import etpConst
+from entropy.const import etpConst, etpSys
 from entropy.core import Singleton
 from entropy.misc import LogFile
 from entropy.core.settings.base import SystemSettings
@@ -51,6 +51,16 @@ class SpmPlugin(Singleton):
         @raise NotImplementedError(): when method is not reimplemented
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def external_triggers_dir():
+        """
+        External Entropy triggers executable directory
+        This path should be used by SPM to read the trigger for
+        packages inside extract_package_metadata()
+        """
+        return os.path.join(
+            etpConst['entropyworkdir'], "triggers", etpSys['arch'])
 
     @staticmethod
     def get_package_groups():

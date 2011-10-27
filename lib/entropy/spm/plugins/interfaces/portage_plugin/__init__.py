@@ -1173,7 +1173,8 @@ class PortagePlugin(SpmPlugin):
                 ebuild_path)
 
         data['trigger'] = const_convert_to_rawstring("")
-        trigger_file = os.path.join(etpConst['triggersdir'], data['category'],
+        triggers_dir = SpmPlugin.external_triggers_dir()
+        trigger_file = os.path.join(triggers_dir, data['category'],
             data['name'], etpConst['triggername'])
         if os.access(trigger_file, os.R_OK) and os.path.isfile(trigger_file):
             with open(trigger_file, "rb") as trig_f:
