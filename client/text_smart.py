@@ -17,7 +17,7 @@ else:
     from commands import getoutput
 import shutil
 
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpSys, etpUi
 from entropy.output import red, darkred, darkgreen, brown, bold, \
     print_info, print_error, print_warning
 from entropy.i18n import _
@@ -405,14 +405,16 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
 
-    if not os.path.isdir(etpConst['smartpackagesdir']):
-        os.makedirs(etpConst['smartpackagesdir'])
+    smartpackages_dir = os.path.join(
+        etpConst['entropyworkdir'], "smartpackages", etpSys['arch'])
+    if not os.path.isdir(smartpackages_dir):
+        os.makedirs(smartpackages_dir)
     print_info(darkgreen("  * ")+red(_("Compressing smart package")))
     atoms = []
     for x in matchedAtoms:
         atoms.append(matchedAtoms[x]['atom'].split(os.path.sep)[1])
     atoms = '+'.join(atoms)
-    smart_package_path = etpConst['smartpackagesdir'] + os.path.sep + atoms + \
+    smart_package_path = smartpackages_dir + os.path.sep + atoms + \
         ".app"
     rc = entropy.tools.compress_tar_bz2(smart_package_path, unpackdir+"/content")
     if rc != 0:

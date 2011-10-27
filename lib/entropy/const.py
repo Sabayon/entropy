@@ -190,7 +190,6 @@ def const_default_settings(rootdir):
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
     default_etp_client_repodir = "/client"
-    default_etp_smartpackagesdir = "/smartpackages/"+ETP_ARCH_CONST
     default_etp_cachesdir = "/caches/"
     default_etp_securitydir = "/glsa/"
     default_etp_setsdirname = "sets"
@@ -216,9 +215,6 @@ def const_default_settings(rootdir):
         'installdir': '/usr/lib/entropy',
         # etpConst['packagestmpdir'] --> temp directory
         'packagestmpdir': default_etp_dir+default_etp_tmpdir,
-        # etpConst['smartpackagesdir'] location where
-        # smart packages files are places
-        'smartpackagesdir': default_etp_dir+default_etp_smartpackagesdir,
 
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,
