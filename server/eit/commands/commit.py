@@ -123,7 +123,6 @@ class EitCommit(EitCommand):
         # normal scanning
         entropy_server.output(
             brown(_("Scanning...")),
-            header=brown(" * "),
             importance=1)
         try:
             myadded, to_be_removed, to_be_injected = \
