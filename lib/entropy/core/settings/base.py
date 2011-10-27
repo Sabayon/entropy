@@ -843,8 +843,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         return self.__generic_d_parser("license_accept_d", "license_accept")
 
-    def __generic_d_parser(self, setting_dirs_id, setting_id, validate = True,
-                           parse_skipped = False):
+    def __generic_d_parser(self, setting_dirs_id, setting_id,
+                           validate = True, parse_skipped = False):
         """
         Generic parser used by _*_d_parser() functions.
         """
@@ -875,7 +875,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
             content += self.__generic_parser(sett_file,
                 comment_tag = self.__pkg_comment_tag)
         if setting_id is not None:
-            self.__data[setting_id] = content
+            # Always push out CachingList objects if
+            # metadata is not available in self.__data
+            # It doesn't harm to have it like this since
+            # CachingList is just a list().
+            # Moreover, DO keep the same object and use
+            # extend rather than throwing it away.
+            self.__data.get(
+                setting_id,
+                SystemSettings.CachingList([])).extend(content)
         else:
             return content
 
