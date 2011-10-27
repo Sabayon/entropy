@@ -1031,6 +1031,14 @@ def _download_sources(entropy_client, packages = None, deps = True,
     deepdeps = False, pkgs = None, savecwd = False, relaxed_deps = False,
     build_deps = False, recursive = True):
 
+    # check if I am root
+    if not entropy.tools.is_root():
+        mytxt = "%s %s %s" % (
+            _("Running with"), bold("--pretend"), red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+        etpUi['ask'] = False
+
     if packages is None:
         packages = []
     if pkgs is None:
@@ -1055,6 +1063,7 @@ def _download_sources(entropy_client, packages = None, deps = True,
         return run_queue
 
     if etpUi['pretend']:
+        print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
         return 0, 0
 
     totalqueue = str(len(run_queue))
