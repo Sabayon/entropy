@@ -6028,7 +6028,7 @@ msgstr "per favore esegui equo come superutente"
 
 #: ../../client/text_ui.py:2125
 msgid "Total bandwidth wasted"
-msgstr "Spazio totale sprecato"
+msgstr "Banda totale sprecata"
 
 #: ../../client/text_ui.py:2137
 msgid "Would you like to proceed ?"
