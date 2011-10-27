@@ -1,3 +1,33 @@
+commit 296771826a6325402c1277b9638e1cb4b85ecefe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 11:50:05 2011 +0200
+
+    Release Entropy 1.0_rc67
+
+commit b0e69bc2f67c70023de4c38353a90f41a30c1bef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 11:49:44 2011 +0200
+
+    [entropy.client.interfaces.db] fix typo in with statement
+
+commit 1421341d8ac5c1ef6650a0f5f1ec8ad3e4b42f63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 11:46:26 2011 +0200
+
+    [po] update translations
+
+commit 3856c5cb6e59ce0363444547f3ff5e085d7908d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 11:45:38 2011 +0200
+
+    [po] update Italian translation, fix typo, thanks to micia
+
+commit 147c654faefad1f7723fd0c013642b17b294c37c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 00:43:28 2011 +0200
+
+    Tagging Entropy version 1.0_rc66
+
 commit 1206ed762f4e36c9326d1e81fcff1f997fd085db
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 27 00:43:24 2011 +0200
