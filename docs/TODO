@@ -2,8 +2,10 @@ Backlog (raw)
 
   1.0:
 
+    - eit pkgmove (duplicated entries wtf)
     - repositories.conf.d/* support?
-      - molecule scripts that switch to sabayon-weekly
+      (update ebuilds)
+    - eit update ebuild, add bash completion
 
     - use entropy.tools.atomic_write where possibile (search: os.rename)
     - entropy server:
@@ -27,6 +29,7 @@ Backlog (raw)
   1.0, long term:
 
     - move variables away from etpConst
+      (to SystemSettings || Client || Server as static methods)
 
   1.1:
 
