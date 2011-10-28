@@ -53,9 +53,15 @@ class EitBump(EitCommand):
         """
         import sys
 
-        entropy_server = self._entropy()
-        outcome = entropy_server.repositories()
-        outcome.append("--sync")
+        entropy_server = self._entropy(handle_uninitialized=False,
+                                       installed_repo=-1)
+        repositories = entropy_server.repositories()
+        for arg in self._args:
+            if arg in repositories:
+                # already given a repo
+                return
+
+        outcome = repositories[:] + ["--sync"]
 
         def _startswith(string):
             if last_arg is not None:
