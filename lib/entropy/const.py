@@ -1109,6 +1109,23 @@ def const_setup_file(myfile, gid, chmod, uid = -1):
         os.chown(myfile, uid, gid)
     const_set_chmod(myfile, chmod)
 
+def const_setup_directory(dirpath):
+    """
+    Setup Entropy directory, creating it if required, changing
+    ownership and permissions as well.
+
+    @param dirpath: path to entropy directory
+    @type dirpath: string
+    @raise OSError: if permissions are fucked up
+    """
+    try:
+        os.makedirs(dirpath)
+    except OSError as err:
+        if err.errno != errno.EEXIST:
+            raise
+    const_setup_perms(dirpath, etpConst['entropygid'],
+                      recursion=False)
+
 def const_get_chmod(myfile):
     """
     This function get the current permissions of the specified
