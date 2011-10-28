@@ -381,7 +381,8 @@ class Trigger:
                 "PV": pv, # package version
                 "PR": pr, # package revision (portage)
                 "PVR": pvr, # package version+revision
-                "PVRTE": pvrte, # package version+revision+entropy tag+entropy rev
+                # package version+revision+entropy tag+entropy rev
+                "PVRTE": pvrte,
                 "PER": per, # package entropy revision
                 "PET": pet, # package entropy tag
                 "SLOT": slot, # package slot
@@ -389,8 +390,10 @@ class Trigger:
                 "P": p, # complete package atom
                 "WORKDIR": unpackdir, # temporary package workdir
                 "B": unpackdir, # unpacked binary package directory?
-                "D": imagedir, # package unpack destination (before merging to live)
-                "ENTROPY_TMPDIR": etpConst['packagestmpdir'], # entropy temporary directory
+                # package unpack destination (before merging to live)
+                "D": imagedir,
+                # entropy temporary directory
+                "ENTROPY_TMPDIR": etpConst['entropyunpackdir'],
                 "CFLAGS": cflags, # compile flags
                 "CXXFLAGS": cxxflags, # compile flags
                 "CHOST": chost, # *nix CHOST

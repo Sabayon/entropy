@@ -1973,7 +1973,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
             # now move these dirs
             for mydir in mydirs:
-                to_path = os.path.join(etpConst['packagestmpdir'],
+                to_path = os.path.join(etpConst['entropyunpackdir'],
                     os.path.basename(mydir))
                 mytxt = "%s: %s '%s' %s '%s'" % (
                     bold(_("SPM")),

@@ -13,6 +13,8 @@ import os
 import sys
 import shutil
 import tempfile
+import subprocess
+import codecs
 
 from entropy.const import etpConst, etpSys, etpUi
 from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
@@ -283,27 +285,27 @@ def _database_resurrect(entropy_client):
         print_error(mytxt)
         return
     # spawn process
-    rnd_num = entropy.tools.get_random_number()
-    tmpfile = os.path.join(etpConst['packagestmpdir'], "%s" % (rnd_num,))
-    if os.path.isfile(tmpfile):
-        os.remove(tmpfile)
-    os.system("find "+etpConst['systemroot']+"/ -mount 1> "+tmpfile)
-    if not os.path.isfile(tmpfile):
+    tmp_fd, tmp_path = tempfile.mkstemp(prefix="resurrect.")
+    os.close(tmp_fd)
+    rc = subprocess.call("find '%s/' -mount 1> '%s'" % (
+            etpConst['systemroot'], tmp_path), shell=True)
+    if rc != 0:
         mytxt = "%s: %s!" % (
             darkred(_("Attention")),
-            red(_("'find' couldn't generate an output file")),
+            red(_("find failed to run")),
         )
         print_error(mytxt)
         return
 
-    f = open(tmpfile, "r")
-    # creating list of files
-    filelist = set()
-    item = f.readline().strip()
-    while item:
-        filelist.add(item)
+    enc = etpConst['conf_encoding']
+    with codecs.open(tmp_path, "r", encoding=enc) as f:
+        # creating list of files
+        filelist = set()
         item = f.readline().strip()
-    f.close()
+        while item:
+            filelist.add(item)
+            item = f.readline().strip()
+    os.remove(tmp_path)
     entries = len(filelist)
 
     mytxt = red("  %s...") % (
@@ -349,7 +351,6 @@ def _database_resurrect(entropy_client):
     print_info(mytxt)
     count = str(len(pkgsfound))
     cnt = 0
-    os.remove(tmpfile)
 
     for pkgfound in pkgsfound:
         cnt += 1

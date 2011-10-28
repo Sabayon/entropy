@@ -213,8 +213,6 @@ def const_default_settings(rootdir):
         'backed_up': {},
         # entropy default installation directory
         'installdir': '/usr/lib/entropy',
-        # etpConst['packagestmpdir'] --> temp directory
-        'packagestmpdir': default_etp_dir+default_etp_tmpdir,
 
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,

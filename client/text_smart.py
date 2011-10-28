@@ -16,8 +16,9 @@ if sys.hexversion >= 0x3000000:
 else:
     from commands import getoutput
 import shutil
+import tempfile
 
-from entropy.const import etpConst, etpSys, etpUi
+from entropy.const import etpConst, etpSys, etpUi, const_setup_directory
 from entropy.output import red, darkred, darkgreen, brown, bold, \
     print_info, print_error, print_warning
 from entropy.i18n import _
@@ -98,10 +99,9 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
             print_error(darkred(" * ")+red(mytxt+"."))
         return 1
 
-    if savedir == None:
-        savedir = etpConst['packagestmpdir']
-        if not os.path.isdir(etpConst['packagestmpdir']):
-            os.makedirs(etpConst['packagestmpdir'])
+    if savedir is None:
+        savedir = etpConst['entropyunpackdir']
+        const_setup_directory(savedir)
     else:
         if not os.path.isdir(savedir):
             print_error(darkred(" * ")+red("--savedir ") + \
@@ -174,19 +174,24 @@ def common_flate(entropy_client, mytbz2s, action, savedir = None):
 
     if savedir:
         if not os.path.isdir(savedir):
-            print_error(darkred(" * ")+bold("--savedir")+":"+red(" %s." % (_("directory does not exist"),)))
+            print_error(darkred(" * ") + bold("--savedir") + ":" \
+                            + red(" %s." % (_("directory does not exist"),)))
             return 1
     else:
-        savedir = etpConst['packagestmpdir']
+        savedir = etpConst['entropyunpackdir']
+        const_setup_directory(savedir)
 
     for tbz2 in mytbz2s:
 
         valid_etp = True
         if action == "deflate":
             valid_etp = entropy.tools.is_entropy_package_file(tbz2)
-        if not (os.path.isfile(tbz2) and tbz2.endswith(etpConst['packagesext']) and \
-            valid_etp):
-                print_error(darkred(" * ")+bold(tbz2)+red(" %s" % (_("is not a valid Entropy package"),)))
+        if not (os.path.isfile(tbz2) and \
+                    tbz2.endswith(etpConst['packagesext']) and \
+                    valid_etp):
+                print_error(
+                    darkred(" * ") + bold(tbz2) + \
+                        red(" %s" % (_("is not a valid Entropy package"),)))
                 return 1
 
     if action == "inflate":
@@ -211,7 +216,8 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("Inflating: ")+tbz2, back = True)
         etptbz2path = savedir+os.path.sep+os.path.basename(tbz2)
-        if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
+        if os.path.realpath(tbz2) != os.path.realpath(etptbz2path):
+            # can convert a file without copying
             shutil.copy2(tbz2, etptbz2path)
         info_package = bold(os.path.basename(etptbz2path)) + ": "
         entropy_client.output(
@@ -234,21 +240,24 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         mydata['download'] = mydata['download'][:-len(etpConst['packagesext'])] + \
             "~9999" + etpConst['packagesext']
         # migrate to the proper format
-        final_tbz2path = os.path.join(os.path.dirname(etptbz2path), os.path.basename(mydata['download']))
+        final_tbz2path = os.path.join(os.path.dirname(etptbz2path),
+                                      os.path.basename(mydata['download']))
         shutil.move(etptbz2path, final_tbz2path)
         etptbz2path = final_tbz2path
-        # create temp database
-        dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
-        while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
+
+        tmp_dir = etpConst['entropyunpackdir']
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="inflate.", dir=tmp_dir)
+        os.close(tmp_fd)
         # create
-        mydbconn = entropy_client.open_generic_repository(dbpath)
+        mydbconn = entropy_client.open_generic_repository(tmp_path)
         mydbconn.initializeRepository()
         idpackage = mydbconn.addPackage(mydata, revision = mydata['revision'])
         mydbconn.close()
-        entropy.tools.aggregate_entropy_metadata(etptbz2path, dbpath)
-        os.remove(dbpath)
-        print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
+        entropy.tools.aggregate_entropy_metadata(etptbz2path, tmp_path)
+        os.remove(tmp_path)
+        print_info(darkgreen(" * ") + \
+                       darkred("%s: " % (_("Inflated package"),)) + \
+                       etptbz2path)
 
     return 0
 

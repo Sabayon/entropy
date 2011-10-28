@@ -364,8 +364,7 @@ def _do_text_cleanup(main_cmd, options):
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
 
-        dirs = [etpConst['packagestmpdir'], etpConst['logdir'],
-            etpConst['entropyunpackdir']]
+        dirs = [etpConst['logdir'], etpConst['entropyunpackdir']]
         for rel in etpConst['packagesrelativepaths']:
             # backward compatibility, packages are moved to packages/ dir,
             # including nonfree, restricted etc.
