@@ -59,13 +59,18 @@ class EitBump(EitCommand):
 
         def _startswith(string):
             if last_arg is not None:
-                return string.startswith(last_arg)
+                if last_arg not in outcome:
+                    return string.startswith(last_arg)
             return True
 
         if self._args:
             # only filter out if last_arg is actually
             # something after this.NAME.
             outcome = sorted(filter(_startswith, outcome))
+
+        for arg in self._args:
+            if arg in outcome:
+                outcome.remove(arg)
 
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
