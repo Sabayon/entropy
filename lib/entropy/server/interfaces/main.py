@@ -1026,8 +1026,12 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
             idpackages = set()
             exp_fp = self._helper._get_local_exp_based_pkgs_rm_whitelist_file(
                 repoid)
-            dbconn = self._helper.open_server_repository(repoid,
-                just_reading = True)
+            try:
+                dbconn = self._helper.open_server_repository(
+                    repoid, just_reading = True)
+            except RepositoryError:
+                # ignore
+                continue
 
             if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
                 pkgs = entropy.tools.generic_file_content_parser(exp_fp)
@@ -1172,8 +1176,11 @@ class Server(Client):
 
     def init_singleton(self, default_repository = None, save_repository = False,
             fake_default_repo = False, fake_default_repo_id = None,
-            fake_default_repo_desc = 'this is a fake repository'):
+            fake_default_repo_desc = None, handle_uninitialized = True,
+            **kwargs):
 
+        if fake_default_repo_desc is None:
+            fake_default_repo_desc = 'this is a fake repository'
         self.__instance_destroyed = False
 
         self._cacher = EntropyCacher()
@@ -1229,7 +1236,12 @@ class Server(Client):
 
         if not fake_default_repo:
             if self._repository in srv_set['repositories']:
-                self._ensure_paths(self._repository)
+                try:
+                    self._ensure_paths(self._repository)
+                except OSError as err:
+                    if err.errno != errno.EACCES:
+                        raise
+                    # sigh, ignore during init
 
         # if repository is still None, fallback to internal
         # fake repository. This way Entropy Server will work
@@ -1255,13 +1267,17 @@ class Server(Client):
                 )
             )
 
-        self.switch_default_repository(self._repository)
+        self.switch_default_repository(
+            self._repository, handle_uninitialized=handle_uninitialized)
         # initialize Entropy Client superclass
+        if "installed_repo" not in kwargs:
+            kwargs["installed_repo"] = False
+        if "repo_validation" not in kwargs:
+            kwargs["repo_validation"] = False
         Client.init_singleton(self,
             indexing = self._indexing,
             xcache = self.xcache,
-            repo_validation = False,
-            installed_repo = False
+            **kwargs
         )
 
     def destroy(self, _from_shutdown = False):
@@ -4288,7 +4304,10 @@ class Server(Client):
             except SystemDatabaseError:
                 return False
 
-        dbc = self.open_server_repository(repo, just_reading = True)
+        try:
+            dbc = self.open_server_repository(repo, just_reading = True)
+        except RepositoryError:
+            return False
         valid = do_validate(dbc)
         if not valid:
             dbc = self.open_server_repository(repo, read_only = False,
@@ -4558,7 +4577,12 @@ class Server(Client):
                 return cached
 
         local_dbfile_dir = os.path.dirname(local_dbfile)
-        self._ensure_dir_path(local_dbfile_dir)
+        try:
+            self._ensure_dir_path(local_dbfile_dir)
+        except OSError as err:
+            if err.errno != errno.EACCES:
+                raise
+            raise RepositoryError(repository_id)
 
         if (not read_only) and (lock_remote) and \
             (repository_id not in self._sync_lock_cache):
