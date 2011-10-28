@@ -307,11 +307,11 @@ class UrlFetcher(TextInterface):
         const_debug_write(__name__,
             "UrlFetcher.download(%s), save: %s, checksum: %s, resume: %s, "
             "show speed: %s, abort func: %s, thread stop func: %s, "
-            "disallow redir: %s, speed limit: %s" % (
+            "disallow redir: %s, speed limit: %s, timeout: %s" % (
                 self.__url, self.__path_to_save, self.__checksum,
                 self.__resume, self.__show_speed, self.__abort_check_func,
                 self.__thread_stop_func, self.__disallow_redirect,
-                self.__speedlimit)
+                self.__speedlimit, self.__timeout)
         )
         if downloader is None:
             # return error, protocol not supported
