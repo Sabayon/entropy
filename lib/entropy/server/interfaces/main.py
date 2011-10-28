@@ -1231,6 +1231,17 @@ class Server(Client):
             if self._repository in srv_set['repositories']:
                 self._ensure_paths(self._repository)
 
+        # if repository is still None, fallback to internal
+        # fake repository. This way Entropy Server will work
+        # out of the box without any server.conf tweak
+        # (and eit bashcomp is happy)
+        if self._repository is None:
+            repository_id = "__builtin__"
+            self._init_generic_memory_server_repository(
+                repository_id, "Built-in fallback fake repository",
+                set_as_default=True)
+            self._repository = repository_id
+
         if self._repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         self._repository,
