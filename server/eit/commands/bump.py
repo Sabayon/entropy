@@ -47,6 +47,29 @@ class EitBump(EitCommand):
                             help=_("sync with remote repository"))
         return parser
 
+    def bashcomp(self, last_arg):
+        """
+        Overridden from EitCommand
+        """
+        import sys
+
+        entropy_server = self._entropy()
+        outcome = entropy_server.repositories()
+        outcome.append("--sync")
+
+        def _startswith(string):
+            if last_arg is not None:
+                return string.startswith(last_arg)
+            return True
+
+        if self._args:
+            # only filter out if last_arg is actually
+            # something after this.NAME.
+            outcome = sorted(filter(_startswith, outcome))
+
+        sys.stdout.write(" ".join(outcome) + "\n")
+        sys.stdout.flush()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()
