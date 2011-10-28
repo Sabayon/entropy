@@ -33,6 +33,33 @@ class EitHelp(EitCommand):
         """
         return self._show_help, []
 
+    def bashcomp(self, last_arg):
+        """
+        Overridden from EitCommand
+        """
+        import sys
+
+        descriptors = EitCommandDescriptor.obtain()
+        descriptors.sort(key = lambda x: x.get_name())
+        outcome = []
+        for descriptor in descriptors:
+            name = descriptor.get_name()
+            if name == EitHelp.NAME:
+                # do not add self
+                continue
+            outcome.append(descriptor.get_name())
+            aliases = descriptor.get_class().ALIASES
+            outcome.extend(aliases)
+
+        def _startswith(string):
+            if last_arg is not None:
+                return string.startswith(last_arg)
+            return True
+
+        outcome = sorted(filter(_startswith, outcome))
+        sys.stdout.write(" ".join(outcome) + "\n")
+        sys.stdout.flush()
+
     def _show_help(self, *args):
         parser = argparse.ArgumentParser(
             description=_("Entropy Infrastructure Toolkit"),

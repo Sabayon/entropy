@@ -56,14 +56,34 @@ def main():
             args_map[alias] = klass
 
     args = sys.argv[1:]
+    is_bashcomp = False
+    if "--bashcomp" in args:
+        is_bashcomp = True
+        args.remove("--bashcomp")
+        # the first eit, because bash does:
+        # argv -> eit --bashcomp eit add
+        # and we need to drop --bashcomp and
+        # argv[2]
+        args.pop(0)
+
     cmd = None
+    last_arg = None
     if args:
+        last_arg = args[-1]
         cmd = args[0]
         args = args[1:]
     cmd_class = args_map.get(cmd)
 
     if cmd_class is None:
         cmd_class = catch_all
+
+    cmd_obj = cmd_class(args)
+    if is_bashcomp:
+        try:
+            cmd_obj.bashcomp(last_arg)
+        except NotImplementedError:
+            pass
+        raise SystemExit(0)
 
     # non-root users not allowed
     allowed = True
@@ -73,7 +93,6 @@ def main():
             cmd_class = catch_all
             allowed = False
 
-    cmd_obj = cmd_class(args)
     func, func_args = cmd_obj.parse()
     exit_st = func(*func_args)
     if allowed:

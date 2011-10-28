@@ -54,6 +54,19 @@ class EitCommand(object):
         """
         raise NotImplementedError()
 
+    def bashcomp(self, last_arg):
+        """
+        Print to standard output the bash completion outcome
+        for given arguments (self._args).
+        Raise NotImplementedError() if not supported.
+
+        @param last_arg: last argument in the argv. Useful
+        for allowing its automagic completion.
+        Can be None !!
+        @type last_arg: string or None
+        """
+        raise NotImplementedError()
+
     def _entropy(self, *args, **kwargs):
         """
         Return the Entropy Server object.
