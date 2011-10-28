@@ -246,6 +246,28 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         return own_list
 
+    @staticmethod
+    def packages_config_directory():
+        """
+        Return the actual {ROOT}etc/entropy/packages path.
+
+        @return: path
+        @type: string
+        """
+        return os.path.join(etpConst['confdir'], "packages")
+
+    @staticmethod
+    def packages_sets_directory():
+        """
+        Return the actual {ROOT}etc/entropy/packages/sets path.
+
+        @return: path
+        @type: string
+        """
+        return os.path.join(
+            SystemSettings.packages_config_directory(),
+            etpConst['confsetsdirname'])
+
     def __setup_const(self):
 
         """
@@ -264,28 +286,29 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__mtime_cache.clear()
         self.__cache_cleared = False
 
+        packages_dir = SystemSettings.packages_config_directory()
         self.__setting_files.update({
              # keywording configuration files
             'keywords': os.path.join(
-                    etpConst['confpackagesdir'], "package.keywords"),
+                    packages_dir, "package.keywords"),
              # unmasking configuration files
             'unmask': os.path.join(
-                    etpConst['confpackagesdir'], "package.unmask"),
+                    packages_dir, "package.unmask"),
              # masking configuration files
-            'mask': os.path.join(etpConst['confpackagesdir'], "package.mask"),
+            'mask': os.path.join(packages_dir, "package.mask"),
             # satisfied packages configuration file
             'satisfied': os.path.join(
-                    etpConst['confpackagesdir'], "package.satisfied"),
+                    packages_dir, "package.satisfied"),
             # selectively enable splitdebug for packages
             'splitdebug': os.path.join(
-                    etpConst['confpackagesdir'], "package.splitdebug"),
+                    packages_dir, "package.splitdebug"),
              # masking configuration files
             'license_mask': os.path.join(
-                    etpConst['confpackagesdir'], "license.mask"),
+                    packages_dir, "license.mask"),
             'license_accept': os.path.join(
-                    etpConst['confpackagesdir'], "license.accept"),
+                    packages_dir, "license.accept"),
             'system_mask': os.path.join(
-                    etpConst['confpackagesdir'], "system.mask"),
+                    packages_dir, "system.mask"),
             'system_dirs': os.path.join(
                     etpConst['confdir'], "fsdirs.conf"),
             'system_dirs_mask': os.path.join(
@@ -330,15 +353,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         conf_d_descriptors = [
             ("mask_d", "package.mask.d",
-                 etpConst['confpackagesdir'], True, True),
+                 packages_dir, True, True),
             ("unmask_d", "package.unmask.d",
-                 etpConst['confpackagesdir'], True, True),
+                 packages_dir, True, True),
             ("license_mask_d", "license.mask.d",
-                 etpConst['confpackagesdir'], False, True),
+                 packages_dir, False, True),
             ("license_accept_d", "license.accept.d",
-                 etpConst['confpackagesdir'], False, True),
+                 packages_dir, False, True),
             ("system_mask_d", "system.mask.d",
-                 etpConst['confpackagesdir'], True, True),
+                 packages_dir, True, True),
             # this will be parsed from inside _repositories_parser
             ("repositories_conf_d", "repositories.conf.d",
                  etpConst['confdir'], False, False),
@@ -594,7 +617,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
 
         # user defined package sets
-        sets_dir = etpConst['confsetsdir']
+        sets_dir = SystemSettings.packages_sets_directory()
         pkg_set_data = {}
         if (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
             set_files = [x for x in os.listdir(sets_dir) if \

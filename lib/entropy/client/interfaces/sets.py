@@ -217,7 +217,7 @@ class Sets:
             The encapsulated error string will contain a mnemonic reason.
         """
         def _ensure_package_sets_dir():
-            sets_dir = etpConst['confsetsdir']
+            sets_dir = SystemSettings.packages_sets_directory()
             if not os.path.isdir(sets_dir):
                 if os.path.lexists(sets_dir):
                     os.remove(sets_dir)
@@ -237,7 +237,8 @@ class Sets:
             raise InvalidPackageSet(_("Name already taken"))
 
         _ensure_package_sets_dir()
-        set_file = os.path.join(etpConst['confsetsdir'], set_name)
+        set_file = os.path.join(SystemSettings.packages_sets_directory(),
+                                set_name)
         if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             try:
                 os.remove(set_file)
@@ -279,7 +280,8 @@ class Sets:
 
         if set_id != etpConst['userpackagesetsid']:
             raise InvalidPackageSet(_("Not defined by user"))
-        set_file = os.path.join(etpConst['confsetsdir'], set_name)
+        set_file = os.path.join(SystemSettings.packages_sets_directory(),
+                                set_name)
         if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             os.remove(set_file)
             if set_name in self._settings['system_package_sets']:

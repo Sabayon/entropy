@@ -192,11 +192,8 @@ def const_default_settings(rootdir):
     default_etp_client_repodir = "/client"
     default_etp_cachesdir = "/caches/"
     default_etp_securitydir = "/glsa/"
-    default_etp_setsdirname = "sets"
-    default_etp_setsdir = "/%s/" % (default_etp_setsdirname,)
     default_etp_logdir = default_etp_dir+"/"+"logs"
     default_etp_confdir = os.getenv('DEV_ETP_ETC_DIR', rootdir+"/etc/entropy")
-    default_etp_packagesdir = default_etp_confdir+"/packages"
     default_etp_syslogdir = os.getenv('DEV_ETP_LOG_DIR',
         rootdir+"/var/log/entropy/")
     default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
@@ -216,12 +213,8 @@ def const_default_settings(rootdir):
 
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,
-        # same as above + /packages
-        'confpackagesdir': default_etp_packagesdir,
-        # system package sets dir
-        'confsetsdir': default_etp_packagesdir+default_etp_setsdir,
-        # just the dirname
-        'confsetsdirname': default_etp_setsdirname,
+        # name of the package sets directory
+        'confsetsdirname': "sets",
 
         # used by entropy.spm to build pkgs relative URL metadata ("download",
         # returned by EntropyRepository.retrieveDownloadURL())
@@ -260,14 +253,7 @@ def const_default_settings(rootdir):
         'etpdatabasemirrorsfile': default_etp_dbfile+".mirrors",
         'etpdatabasefallbackmirrorsfile': default_etp_dbfile+".fallback_mirrors",
         'etpdatabasewebservicesfile': default_etp_dbfile+".webservices",
-        # entropy server QA executable hook script path
-        'etpserverqaexechook': default_etp_packagesdir+"/packages.server.qa.exec",
-        # server-side package dependencies rewrite rules file
-        'etpdatabasedeprewritefile': default_etp_packagesdir+"/packages.server.dep_rewrite",
-        # server-side package broken dependency blacklist file
-        'etpdatabasedepblacklistfile': default_etp_packagesdir+"/packages.server.dep_blacklist",
-        # server-side package broken dependency blacklist file
-        'etpdatabaseqasetsfile': default_etp_packagesdir+"/packages.server.sets",
+
         # per-repository configuration file to list legally sensible pkgs
         'etpdatabaserestrictedfile': default_etp_dbfile+".restricted",
         # the local/remote database revision file

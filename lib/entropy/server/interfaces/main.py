@@ -533,8 +533,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         files = set()
         # hope that all the repos get synchronized with respect to
         # package names moves
-        files.add(etpConst['etpdatabasedeprewritefile'])
-        files.add(etpConst['etpdatabasedepblacklistfile'])
+        dep_rewrite_file = Server._get_conf_dep_rewrite_file()
+        dep_blacklist_file = Server._get_conf_dep_blacklist_file()
+        files.add(dep_rewrite_file)
+        files.add(dep_blacklist_file)
 
         if (repository_id is not None) and \
             (repository_id in self._helper.repositories()):
@@ -568,7 +570,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             return cached
 
         data = {}
-        rewrite_file = etpConst['etpdatabasedeprewritefile']
+        rewrite_file = Server._get_conf_dep_rewrite_file()
         if not os.path.isfile(rewrite_file):
             return data
         rewrite_content = self.__generic_parser(rewrite_file)
@@ -599,7 +601,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
     def dep_blacklist_parser(self, sys_set):
 
         data = {}
-        blacklist_file = etpConst['etpdatabasedepblacklistfile']
+        blacklist_file = Server._get_conf_dep_blacklist_file()
         if not os.path.isfile(blacklist_file):
             return data
         blacklist_content = self.__generic_parser(blacklist_file)
@@ -618,7 +620,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
     def qa_sets_parser(self, sys_set):
 
         data = {}
-        sets_file = etpConst['etpdatabaseqasetsfile']
+        sets_file = Server._get_conf_qa_sets_file()
         if not os.path.isfile(sets_file):
             return data
         sets_content = self.__generic_parser(sets_file)
@@ -1520,6 +1522,21 @@ class Server(Client):
             os.remove(lock_file)
         except OSError:
             pass
+
+    @staticmethod
+    def _get_conf_dep_rewrite_file():
+        packages_dir = SystemSettings.packages_config_directory()
+        return os.path.join(packages_dir, "packages.server.dep_rewrite")
+
+    @staticmethod
+    def _get_conf_dep_blacklist_file():
+        packages_dir = SystemSettings.packages_config_directory()
+        return os.path.join(packages_dir, "packages.server.dep_blacklist")
+
+    @staticmethod
+    def _get_conf_qa_sets_file():
+        packages_dir = SystemSettings.packages_config_directory()
+        return os.path.join(packages_dir, "packages.server.sets")
 
     def complete_remote_package_relative_path(self, pkg_rel_url, repository_id):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -5233,7 +5250,8 @@ class Server(Client):
         Returns True for success, False for error. Warnings are not considered
         blocking.
         """
-        qa_exec = etpConst['etpserverqaexechook']
+        qa_exec = os.path.join(SystemSettings.packages_config_directory(),
+                               "packages.server.qa.exec")
         if not os.path.isfile(qa_exec):
             return True
         if not os.access(qa_exec, os.X_OK | os.R_OK | os.F_OK):
