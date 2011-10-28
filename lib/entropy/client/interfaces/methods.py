@@ -1947,7 +1947,7 @@ class MiscMixin:
         pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
         mirror_cache = set()
-        retries = 2
+        retries = 1
 
         for mirror in pkg_mirrors:
 
