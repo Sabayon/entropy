@@ -15,6 +15,7 @@ import argparse
 import tempfile
 
 from entropy.const import etpConst
+from entropy.exceptions import OnlineMirrorError
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
     bold, purple
@@ -228,7 +229,13 @@ class EitPush(EitCommand):
     def __sync_remote_database(self, entropy_server, repository_id):
         self.__print_repository_status(entropy_server, repository_id)
         # do the actual sync
-        sts = entropy_server.Mirrors.sync_repository(repository_id)
+        try:
+            sts = entropy_server.Mirrors.sync_repository(repository_id)
+        except OnlineMirrorError as err:
+            entropy_server.output(
+                "%s: %s" % (darkred(_("Error")), err.value),
+                importance=1, level="error")
+            return 1
         self.__print_repository_status(entropy_server, repository_id)
         return sts
 
