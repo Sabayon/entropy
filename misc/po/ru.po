@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-10-27 09:02+0200\n"
-"PO-Revision-Date: 2009-09-21 02:01+0300\n"
-"Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
+"PO-Revision-Date: 2011-10-29 14:56+0300\n"
+"Last-Translator: Andrey Esin <andrey@esin.name>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -2687,7 +2687,7 @@ msgstr "Загрузка сегментов"
 #: ../../lib/entropy/client/interfaces/db.py:1631
 #, fuzzy
 msgid "Web Service status"
-msgstr "Статус службы"
+msgstr "Статус службы Web"
 
 #: ../../lib/entropy/client/interfaces/db.py:1596
 msgid "cannot fetch repository metadata"
@@ -2808,7 +2808,7 @@ msgstr "Ресурсы всё ещё заблокированы после %s м
 #: ../../lib/entropy/client/interfaces/methods.py:1817
 #, fuzzy
 msgid "Resources locked, sleeping..."
-msgstr "Ресурсы освобождены. Поехали!"
+msgstr "Ресурсы заблокированы, ожидание..."
 
 #: ../../lib/entropy/client/interfaces/methods.py:1966
 #, fuzzy
@@ -2818,7 +2818,7 @@ msgstr "проверка статуса для"
 #: ../../lib/entropy/client/interfaces/methods.py:1993
 #, fuzzy
 msgid "Mirror speed"
-msgstr "Зеркала"
+msgstr "Скорость зеркала"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2454
 msgid "not a valid method"
@@ -2838,7 +2838,7 @@ msgstr "Невозможно запустить Внешний триггер д
 
 #: ../../lib/entropy/client/interfaces/trigger.py:479
 msgid "post-install phase"
-msgstr "фаза пост-установки"
+msgstr "фаза постустановки"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:489
 msgid "pre-install phase"
@@ -2846,15 +2846,15 @@ msgstr "фаза предустановки"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:499
 msgid "setup phase"
-msgstr ""
+msgstr "фаза установки"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:509
 msgid "pre-remove phase"
-msgstr "фаза пред-удаления"
+msgstr "фаза предудаления"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:519
 msgid "post-remove phase"
-msgstr "фраза пост-удаления"
+msgstr "фаза постудаления"
 
 #: ../../lib/entropy/client/interfaces/repository.py:170
 msgid "Something bad happened. Please have a look."
