@@ -1,3 +1,175 @@
+commit b65a27bd5941c7c6b9d021369e7edaa8451522da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 13:21:07 2011 +0200
+
+    Release Entropy 1.0_rc70
+
+commit a03c9926531ac1d6ed999cdd03217ce0e33eee4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 13:16:58 2011 +0200
+
+    [todo] update TODO
+
+commit 622bda034d8a4a3de25d259355e1a3e6a3d81559
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 12:54:11 2011 +0200
+
+    [eit.commands.pkgmove] keep date information across pkgmove data handling
+    
+    Throwing date information away on every pkgmove edit will cause
+    data duplication in the db, due to the nature of entropy.server
+    cross-repo data sync logic.
+
+commit 8e24e0388d6f7afd48e11e084796755a7bcbb8e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 12:53:50 2011 +0200
+
+    [eit.commands.push] catch OnlineMirrorError exception
+
+commit deb82925474b634e7fa39440be1e0182f45321f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 12:53:19 2011 +0200
+
+    [entropy.db] EntropyRepository: do not use * in SQL statement
+
+commit f0e033cb614b098547276592a08c6e7cd8f42561
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 11:28:26 2011 +0200
+
+    [entropy.client] fix typo in _clear_package_mask()
+
+commit 9b0333f7572bf3845e2507d520db7d3bca8bca5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 11:28:11 2011 +0200
+
+    [eit.commands.lock] implement bash completion
+
+commit bf8c2b8d7d95717de3574c88a6afc21ef473a3e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 22:53:10 2011 +0200
+
+    [todo] update TODO
+
+commit 0a89667eb24fbbb5002c7a00f2252b771489557a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 22:52:12 2011 +0200
+
+    [eit.*] complete basic bashcomp support
+
+commit 1e080cf223796657c78f50ba45e724b1e645ce17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 22:24:35 2011 +0200
+
+    [entropy.server] try to not raise any exception during Server() initialization
+
+commit 7e24c6878febaebef70525952ffd5325783764c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 22:24:10 2011 +0200
+
+    [eit.commands.bump] bashcomp: avoid printing more than one repo
+
+commit 19aa227f9e50fea591cc378674f7ac4b9e5d0d8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 21:30:09 2011 +0200
+
+    [eit.commands.bump] filter out last argument from outcome to avoid looping
+
+commit aa698b4a6d1e93e16184d3d6cf2593845d5c0217
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 20:40:32 2011 +0200
+
+    [eit.commands.bump] add bash-completion support
+
+commit 127c32ceca3877490c05faecdd1a7bb6328d0852
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 20:33:19 2011 +0200
+
+    [entropy.server] setup fake repository (__builtin__) if none is provided in server.conf
+
+commit 25323d4a07c5993eda70f0dcac82bea4d91507ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 19:47:19 2011 +0200
+
+    [eit] implement initial bash-completion support
+
+commit b80846a057b2b34b844a28d8d969c2e478a83e80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 14:37:03 2011 +0200
+
+    [entropy.const] drop other 4 constants from etpConst, woot
+
+commit 44194b07bfb5b04db2005fe453f0d477a9f95cd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 11:37:00 2011 +0200
+
+    [entropy.const] drop another global variable, etpConst['packagestmpdir']
+
+commit ba1539337d5f16c5b0e39843e499ab41414093d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 11:36:41 2011 +0200
+
+    [entropy.const] add const_setup_directory()
+
+commit 99135b33249cb8ccf626a58d1a61758093a9fd0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 10:21:30 2011 +0200
+
+    [entropy.fetchers] UrlFetcher: also print current timeout to debug
+
+commit 57941d5e2c16ce75841090537d8d882b98dbc59d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 28 10:16:27 2011 +0200
+
+    [entropy.client] reorder_mirrors: try at most once (slow connections will benefit)
+
+commit f4d2a65704febfde04741f170644f9a69a184fb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 22:41:48 2011 +0200
+
+    [entropy.const] drop yet another global variable, this time: etpConst['smartpackagesdir']
+
+commit 2384fc13b0241f28849c89ed8075d56f4710337f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 22:32:00 2011 +0200
+
+    [entropy.*] drop smartapps, goodbye crappy crap
+
+commit faaa3d5b2cd0339549baf91ae2d4c4d41644695e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 22:05:27 2011 +0200
+
+    [entropy.const] drop etpConst['triggersdir'] global variable
+
+commit 9eb47eaeaa54dc3551e073a68f2e3c9f21226c2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 21:43:47 2011 +0200
+
+    [entropy.const] drop etpConst['cmdline'] global variable
+
+commit b7c02afb0c4e027147c713097bff507c8acce2bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 20:52:19 2011 +0200
+
+    [conf] migrate repository configurations to repositories.conf.d/
+
+commit d1438c3e66567b21b9c7859e9a5f006a2d8d3830
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 16:17:07 2011 +0200
+
+    [equo] force superuser mode for "equo source"
+
+commit 2ea7e6f088d283aa7fca2267881f705fc1d6d6b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 16:08:21 2011 +0200
+
+    [entropy.core] also exclude files ending with ".example" from .d/* dirs
+
+commit c6b7f1cc7678f75604ffd2f1887e60827ec3170d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 27 15:01:52 2011 +0200
+
+    Tagging Entropy version 1.0_rc69
+
 commit f8a1dd8e2052feff579b4bbed2b45c815a85c26e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 27 15:01:51 2011 +0200
