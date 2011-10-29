@@ -2485,7 +2485,10 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT command, branch, date FROM treeupdatesactions
             """)
         else:
-            cur = self._cursor().execute('SELECT * FROM treeupdatesactions')
+            cur = self._cursor().execute("""
+            SELECT idupdate, repository, command, branch, date
+            FROM treeupdatesactions
+            """)
         return tuple(cur)
 
     def retrieveTreeUpdatesActions(self, repository):
