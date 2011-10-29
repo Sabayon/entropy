@@ -103,7 +103,7 @@ class EitPkgmove(EitCommand):
 #      <unix time> move <from package key> <to package key>
 # - slotmove statement syntax:
 #      <unix time> slotmove <package dependency> <from slot> <to slot>
-# - the order of the statements is taken into consideration (KEPT!).
+# - the order of the statements is given by the unix time (ASC).
 # - lines not starting with "<unix time> move" or "<unix time> slotmove"
 #   will be ignored.
 # - any line starting with "#" will be ignored as well.
@@ -123,6 +123,9 @@ class EitPkgmove(EitCommand):
                            repo.listAllTreeUpdatesActions() \
                            if t_repo == self._repository_id \
                            and t_branch == branch]
+        key_sorter = lambda x: x[0]
+
+        treeupdates.sort(key=key_sorter)
         new_actions = []
         while True:
 
@@ -238,6 +241,7 @@ class EitPkgmove(EitCommand):
                     continue
 
             # show submitted info
+            new_actions.sort(key=key_sorter)
             for unix_time, action in new_actions:
                 entropy_server.output(
                     "%s %s" % (unix_time, action), level="generic")
