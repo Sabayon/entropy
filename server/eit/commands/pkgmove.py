@@ -15,7 +15,6 @@ import errno
 import argparse
 import tempfile
 import codecs
-import time
 
 from entropy.i18n import _
 from entropy.output import purple, teal
@@ -101,22 +100,29 @@ class EitPkgmove(EitCommand):
 # This is the package move metadata for repository %s, read this:
 # - the statements must start with either "move" or "slotmove".
 # - move statement syntax:
-#      move <from package key> <to package key>
+#      <unix time> move <from package key> <to package key>
 # - slotmove statement syntax:
-#      slotmove <package dependency> <from slot> <to slot>
+#      <unix time> slotmove <package dependency> <from slot> <to slot>
 # - the order of the statements is taken into consideration (KEPT!).
-# - lines not starting with "move" or "slotmove" will be ignored.
+# - lines not starting with "<unix time> move" or "<unix time> slotmove"
+#   will be ignored.
 # - any line starting with "#" will be ignored as well.
 #
 # Example:
-# move app-foo/bar app-bar/foo
-# slotmove >=x11-libs/foo-2.0 0 2.0
+# 1319039371.22 move app-foo/bar app-bar/foo
+# 1319039323.10 slotmove >=x11-libs/foo-2.0 0 2.0
 
 """ % (self._repository_id,)
         tmp_path = None
+
+        branch = self._settings()['repositories']['branch']
         repo = entropy_server.open_server_repository(
             self._repository_id, read_only=False)
-        actions = repo.retrieveTreeUpdatesActions(self._repository_id)
+        treeupdates = [(unix_time, t_action) for \
+                           idupd, t_repo, t_action, t_branch, unix_time in \
+                           repo.listAllTreeUpdatesActions() \
+                           if t_repo == self._repository_id \
+                           and t_branch == branch]
         new_actions = []
         while True:
 
@@ -126,8 +132,8 @@ class EitPkgmove(EitCommand):
                     suffix = ".conf")
                 with os.fdopen(tmp_fd, "w") as tmp_f:
                     tmp_f.write(notice_text)
-                    for action in actions:
-                        tmp_f.write(action + "\n")
+                    for unix_time, action in treeupdates:
+                        tmp_f.write("%s %s\n" % (unix_time, action))
                     tmp_f.flush()
 
             success = entropy_server.edit_file(tmp_path)
@@ -147,25 +153,72 @@ class EitPkgmove(EitCommand):
                     if not strip_line:
                         # ignore
                         continue
-                    if strip_line.startswith("move"):
-                        split_line = strip_line.split()
-                        if len(split_line) != 3:
+
+                    split_line = strip_line.split()
+                    try:
+                        unix_time = split_line.pop(0)
+                        unix_time = str(float(unix_time))
+                    except ValueError:
+                        # invalid unix time
+                        entropy_server.output(
+                            "%s: %s !!!" % (
+                                purple(_("invalid line (time field)")),
+                                strip_line),
+                            importance=1, level="warning")
+                        invalid_lines.append(strip_line)
+                        continue
+                    except IndexError:
+                        entropy_server.output(
+                            "%s: %s !!!" % (
+                                purple(_("invalid line (empty)")),
+                                strip_line),
+                            importance=1, level="warning")
+                        invalid_lines.append(strip_line)
+                        continue
+
+                    if not split_line:
+                        # nothing left??
+                        entropy_server.output(
+                            "%s: %s !!!" % (
+                                purple(_("invalid line (incomplete)")),
+                                strip_line),
+                            importance=1, level="warning")
+                        invalid_lines.append(strip_line)
+                        continue
+
+                    cmd = split_line.pop(0)
+                    if cmd == "move":
+                        if len(split_line) != 2:
                             entropy_server.output(
                                 "%s: %s !!!" % (_("invalid line"), strip_line),
                                 importance=1, level="warning")
                             invalid_lines.append(strip_line)
+                        elif split_line[0] == split_line[1]:
+                            entropy_server.output(
+                                "%s: %s !!!" % (
+                                    _("invalid line (copy)"), strip_line),
+                                importance=1, level="warning")
+                            invalid_lines.append(strip_line)
                         else:
-                            new_actions.append(strip_line)
-                    elif strip_line.startswith("slotmove"):
-                        split_line = strip_line.split()
-                        if len(split_line) != 4:
+                            new_action = " ".join(["move"] + split_line)
+                            new_actions.append((unix_time, new_action))
+                    elif cmd == "slotmove":
+                        if len(split_line) != 3:
                             entropy_server.output(
                                 "%s: %s !!!" % (
                                     purple(_("invalid line")), strip_line),
                                 importance=1, level="warning")
                             invalid_lines.append(strip_line)
+                        elif split_line[1] == split_line[2]:
+                            entropy_server.output(
+                                "%s: %s !!!" % (
+                                    purple(_("invalid line (copy)")),
+                                    strip_line),
+                                importance=1, level="warning")
+                            invalid_lines.append(strip_line)
                         else:
-                            new_actions.append(strip_line)
+                            new_action = " ".join(["slotmove"] + split_line)
+                            new_actions.append((unix_time, new_action))
                     else:
                         entropy_server.output(
                             "%s: %s !!!" % (
@@ -185,8 +238,9 @@ class EitPkgmove(EitCommand):
                     continue
 
             # show submitted info
-            for action in new_actions:
-                entropy_server.output(action, level="generic")
+            for unix_time, action in new_actions:
+                entropy_server.output(
+                    "%s %s" % (unix_time, action), level="generic")
             entropy_server.output("", level="generic")
 
             # ask confirmation
@@ -218,13 +272,16 @@ class EitPkgmove(EitCommand):
                     raise
 
         # write new actions
-        branch = self._settings()['repositories']['branch']
         actions_meta = []
-        cur_t = time.time()
         # time is completely fake, no particular precision required
-        for action in new_actions:
-            cur_t += 1
-            actions_meta.append((action, branch, str(cur_t)))
+        for unix_time, action in new_actions:
+            # make sure unix_time has final .XX
+            if "." not in unix_time:
+                unix_time += ".00"
+            elif unix_time.index(".") == (len(unix_time) - 2):
+                # only .X and not .XX
+                unix_time += "0"
+            actions_meta.append((action, branch, unix_time))
 
         repo.removeTreeUpdatesActions(self._repository_id)
         try:
