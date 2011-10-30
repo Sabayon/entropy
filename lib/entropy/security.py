@@ -20,6 +20,7 @@ import subprocess
 import datetime
 import tempfile
 import time
+import codecs
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, etpUi, const_setup_perms, \
@@ -1417,7 +1418,8 @@ class Repository:
         # write back, safely
         self.__key_list_cache = None
         tmp_path = self.__keymap_file+".entropy.tmp"
-        with open(tmp_path, "w") as key_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(tmp_path, "w", encoding=enc) as key_f:
             for key, fp in new_keymap.items():
                 key_f.write("%s %s\n" % (key, fp,))
             key_f.flush()
