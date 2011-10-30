@@ -17,6 +17,7 @@ import errno
 import threading
 import multiprocessing
 import socket
+import codecs
 
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
@@ -158,9 +159,10 @@ class Server(object):
                         break
 
                     if success and os.path.isfile(down_path):
-                        down_f = open(down_path)
-                        branch_data[branch] = down_f.read()
-                        down_f.close()
+                        enc = etpConst['conf_encoding']
+                        with codecs.open(down_path, "r", encoding=enc) \
+                                as down_f:
+                            branch_data[branch] = down_f.read()
 
                     shutil.rmtree(tmp_dir, True)
 
@@ -723,24 +725,24 @@ class Server(object):
                 if os.access(rev_tmp_path, os.R_OK) and \
                     os.path.isfile(rev_tmp_path):
 
-                    f_rev = open(rev_tmp_path, "r")
-                    try:
-                        revision = int(f_rev.readline().strip())
-                    except ValueError:
-                        mytxt = _("mirror hasn't valid repository revision file")
-                        self._entropy.output(
-                            "[%s|%s] %s: %s" % (
-                                brown(repo),
-                                darkgreen(crippled_uri),
-                                blue(mytxt),
-                                bold(revision),
-                            ),
-                            importance = 1,
-                            level = "error",
-                            header = darkred(" !!! ")
-                        )
-                        revision = 0
-                    f_rev.close()
+                    enc = etpConst['conf_encoding']
+                    with codecs.open(rev_tmp_path, "r", encoding=enc) as f_rev:
+                        try:
+                            revision = int(f_rev.readline().strip())
+                        except ValueError:
+                            mytxt = _("mirror hasn't valid repository revision file")
+                            self._entropy.output(
+                                "[%s|%s] %s: %s" % (
+                                    brown(repo),
+                                    darkgreen(crippled_uri),
+                                    blue(mytxt),
+                                    bold(revision),
+                                ),
+                                importance = 1,
+                                level = "error",
+                                header = darkred(" !!! ")
+                            )
+                            revision = 0
 
                 elif dlcount == 0:
                     self._entropy.output(
@@ -2006,7 +2008,7 @@ class Server(object):
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
-        with open(pkg_path, "w") as f_exp:
+        with open(pkg_path, "wb") as f_exp:
             f_exp.flush()
 
     def _collect_expiring_packages(self, repository_id, branch):

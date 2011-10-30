@@ -344,7 +344,8 @@ class ServerPackagesRepositoryUpdater(object):
         # write pubkey to file and add to data upload
         gpg_path = self._entropy._get_local_repository_gpg_signature_file(
             self._repository_id)
-        with open(gpg_path, "w") as gpg_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(gpg_path, "w", encoding=enc) as gpg_f:
             gpg_f.write(pubkey)
             gpg_f.flush()
         return gpg_path
@@ -550,7 +551,7 @@ class ServerPackagesRepositoryUpdater(object):
             something_new = os.path.join(
                 self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabaseeapi3updates'])
-            with open(something_new, "w") as sn_f:
+            with open(something_new, "wb") as sn_f:
                 sn_f.flush()
             data['~~something_new'] = something_new
             critical.append(data['~~something_new'])
@@ -559,7 +560,7 @@ class ServerPackagesRepositoryUpdater(object):
             something_new_webinstall = os.path.join(
                 self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabasewebinstallupdates'])
-            with open(something_new_webinstall, "w") as sn_f:
+            with open(something_new_webinstall, "wb") as sn_f:
                 sn_f.flush()
             data['~~something_new_web'] = something_new_webinstall
             critical.append(data['~~something_new_web'])
@@ -629,16 +630,16 @@ class ServerPackagesRepositoryUpdater(object):
         # content. This is the default behaviour for now and allows to send
         # /etc/make.profile link pointer correctly.
         tmp_dirs = []
+        enc = etpConst['conf_encoding']
         for symname, symfile in spm_syms.items():
 
             mytmpdir = tempfile.mkdtemp(dir = etpConst['entropyunpackdir'])
             tmp_dirs.append(mytmpdir)
             mytmpfile = os.path.join(mytmpdir, os.path.basename(symfile))
             mylink = os.readlink(symfile)
-            f_mkp = open(mytmpfile, "w")
-            f_mkp.write(mylink)
-            f_mkp.flush()
-            f_mkp.close()
+            with codecs.open(mytmpfile, "w", encoding=enc) as f_mkp:
+                f_mkp.write(mylink)
+                f_mkp.flush()
 
             extra_text_files.append(mytmpfile)
 
@@ -1023,7 +1024,8 @@ Name:    %s
         ts_file = self._entropy._get_local_repository_timestamp_file(
             self._repository_id)
         current_ts = "%s" % (datetime.fromtimestamp(time.time()),)
-        with open(ts_file, "w") as ts_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(ts_file, "w", encoding=enc) as ts_f:
             ts_f.write(current_ts)
             ts_f.flush()
 
@@ -1043,15 +1045,18 @@ Name:    %s
         pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
         extra_pkglist = dbconn.listAllExtraDownloads(do_sort = True)
 
-        with open(tmp_pkglist_file, "w") as pkg_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(tmp_pkglist_file, "w", encoding=enc) as pkg_f:
             for pkg in pkglist:
-                pkg_f.write(pkg + "\n")
+                pkg_f.write(pkg)
+                pkg_f.write("\n")
             pkg_f.flush()
         os.rename(tmp_pkglist_file, pkglist_file)
 
-        with open(tmp_extra_pkglist_file, "w") as pkg_f:
+        with codecs.open(tmp_extra_pkglist_file, "w", encoding=enc) as pkg_f:
             for pkg in extra_pkglist:
-                pkg_f.write(pkg + "\n")
+                pkg_f.write(pkg)
+                pkg_f.write("\n")
             pkg_f.flush()
         os.rename(tmp_extra_pkglist_file, extra_pkglist_file)
 
@@ -1278,11 +1283,14 @@ Name:    %s
         Similar to entropy.tools.create_md5_file.
         """
         mydigest = entropy.tools.md5sum(file_path)
-        f_ck = open(checksum_path, "w")
-        mystring = "%s  %s\n" % (mydigest, os.path.basename(file_path),)
-        f_ck.write(mystring)
-        f_ck.flush()
-        f_ck.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(checksum_path, "w", encoding=enc) as f_ck:
+            fname = os.path.basename(file_path)
+            f_ck.write(mydigest)
+            f_ck.write("  ")
+            f_ck.write(fname)
+            f_ck.write("\n")
+            f_ck.flush()
 
     def _compress_file(self, file_path, destination_path, opener):
         """
@@ -1345,7 +1353,8 @@ Name:    %s
         metafile_not_found_file = \
             self._entropy._get_local_repository_metafiles_not_found_file(
                 self._repository_id)
-        with open(metafile_not_found_file, "w") as f_meta:
+        enc = etpConst['conf_encoding']
+        with codecs.open(metafile_not_found_file, "w", encoding=enc) as f_meta:
             f_meta.writelines(not_found_file_list)
             f_meta.flush()
         found_file_list.append(metafile_not_found_file)
