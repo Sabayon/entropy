@@ -700,15 +700,15 @@ class EmailSender:
             maintype, subtype = ctype.split('/', 1)
 
             if maintype == 'image':
-                img_f = open(myfile, 'rb')
+                img_f = open(myfile, "rb")
                 msg = self.image(img_f.read(), _subtype = subtype)
                 img_f.close()
             elif maintype == 'audio':
-                audio_f = open(myfile, 'rb')
+                audio_f = open(myfile, "rb")
                 msg = self.audio(audio_f.read(), _subtype = subtype)
                 audio_f.close()
             else:
-                gen_f = open(myfile, 'rb')
+                gen_f = open(myfile, "rb")
                 msg = self.mimefile(maintype, subtype)
                 msg.set_payload(gen_f.read())
                 gen_f.close()
@@ -1134,10 +1134,10 @@ class RSS:
         # add channel to rss
         rss.appendChild(channel)
         doc.appendChild(rss)
-        rss_f = open(self.__file, "w")
-        rss_f.writelines(doc.toprettyxml(indent="    ").encode('utf-8'))
-        rss_f.flush()
-        rss_f.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(self.__file, "w") as rss_f:
+            rss_f.writelines(doc.toprettyxml(indent="    "))
+            rss_f.flush()
 
 
 class FastRSS:
