@@ -25,7 +25,7 @@ import time
 import bz2
 import codecs
 
-from entropy.const import etpConst, const_setup_file
+from entropy.const import etpConst, const_setup_file, const_convert_to_unicode
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
@@ -842,14 +842,16 @@ class ServerPackagesRepositoryUpdater(object):
             # nothing enabled, no reason to stay here more
             return
 
+        enc = etpConst['conf_encoding']
         url = srv_set['rss']['base_url']
         editor = srv_set['rss']['editor']
         product = self._settings['repositories']['product']
         rss_title = "%s Online Repository Status" % (
             self._settings['system']['name'],)
         rss_description = \
+            const_convert_to_unicode(
             "Keep you updated on what's going on in the %s Repository." % (
-                self._settings['system']['name'],)
+                self._settings['system']['name'],))
         rss_dump_name = self._repository_id + etpConst['rss-dump-name']
         db_revision_path = self._entropy._get_local_repository_revision_file(
             self._repository_id)
@@ -857,15 +859,16 @@ class ServerPackagesRepositoryUpdater(object):
         db_actions = self._cacher.pop(rss_dump_name,
             cache_dir = self._entropy.CACHE_DIR)
 
-        if os.path.isfile(db_revision_path) and \
-            os.access(db_revision_path, os.R_OK):
-            with open(db_revision_path, "r") as f_rev:
+        try:
+            with codecs.open(db_revision_path, "r", encoding=enc) as f_rev:
                 revision = f_rev.readline().strip()
-        else:
-            revision = "N/A"
+        except IOError as err:
+            if err.errno != errno.ENOENT:
+                raise
+            revision = const_convert_to_unicode("N/A")
 
         commit_msg = ServerRssMetadata()['commitmessage'] or \
-            "no commit message"
+            const_convert_to_unicode("no commit message")
 
         if srv_set['rss']['enabled']:
 
@@ -880,10 +883,16 @@ class ServerPackagesRepositoryUpdater(object):
 
             if db_actions:
 
-                title = ": " + self._settings['system']['name'] + " " + \
-                    product[0].upper() + product[1:] + " " + \
-                    self._settings['repositories']['branch'] + \
-                    " :: Revision: " + revision + ' :: ' + commit_msg
+                title = const_convert_to_unicode(": ")
+                title += self._settings['system']['name']
+                title += const_convert_to_unicode(" ")
+                title += self._settings['repositories']['branch']
+                title += const_convert_to_unicode(" ")
+                title += product.title()
+                title += const_convert_to_unicode(" :: Revision: ")
+                title += revision
+                title += const_convert_to_unicode(" :: ")
+                title += commit_msg
 
                 link = srv_set['rss']['base_url']
                 # create description
@@ -893,18 +902,26 @@ class ServerPackagesRepositoryUpdater(object):
                     for atom in sorted(added_items):
                         mylink = link + entropy.dep.remove_entropy_revision(
                             atom)
-                        description = atom + ": " + \
-                            added_items[atom]['description']
-                        rss_main.append("Added/Updated" + title,
+                        description = atom
+                        description += const_convert_to_unicode(": ")
+                        description += const_convert_to_unicode(
+                            added_items[atom]['description'])
+                        atom_title = const_convert_to_unicode("Added/Updated ")
+                        atom_title += title
+                        rss_main.append(atom_title,
                             mylink, description, None)
                 removed_items = db_actions.get("removed")
 
                 if removed_items:
                     for atom in sorted(removed_items):
-                        description = atom + ": " + \
-                            removed_items[atom]['description']
-                        rss_main.append("Removed" + title,
-                            link, description, None)
+                        description = atom
+                        description += const_convert_to_unicode(": ")
+                        description += const_convert_to_unicode(
+                            removed_items[atom]['description'])
+                        atom_title = const_convert_to_unicode("Removed ")
+                        atom_title += title
+                        rss_main.append(atom_title,
+                            mylink, description, None)
 
                 rss_main.commit()
 
@@ -923,29 +940,31 @@ class ServerPackagesRepositoryUpdater(object):
                     mylink = link + entropy.dep.remove_entropy_revision(
                         atom)
                     description = light_items[atom]['description']
-                    rss_light.append("[" + revision + "] " + atom,
+                    atom_title = const_convert_to_unicode("[%s] " % (revision,))
+                    atom_title += atom
+                    rss_light.append(atom_title,
                         mylink, description, None)
 
                 if light_items:
                     rss_light.commit()
 
         _uname = os.uname()
-        msg = "\n    ".join(commit_msg.split("\n"))
+        msg = const_convert_to_unicode("\n    ").join(
+            commit_msg.split(const_convert_to_unicode("\n")))
         msg = msg.rstrip()
 
         def _write_changelog_entry(changelog_f, atom, pkg_meta):
             this_time = time.strftime(etpConst['changelog_date_format'])
-            changelog_str = """\
+            changelog_str = const_convert_to_unicode("""\
 commit %s; %s; %s
 Machine: %s; %s; %s
 Date:    %s
 Name:    %s
 
-    %s
-
-""" % (revision, pkg_meta['package_id'], pkg_meta['time_hash'],
-            _uname[1], _uname[2], _uname[4], this_time, atom,
-            msg,)
+    """ % (revision, pkg_meta['package_id'], pkg_meta['time_hash'],
+            _uname[1], _uname[2], _uname[4], this_time, atom,))
+            changelog_str += msg
+            changelog_str += const_convert_to_unicode("\n\n")
 
             # append at the bottom and don't care here
             changelog_f.write(changelog_str)
