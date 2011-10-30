@@ -5637,13 +5637,13 @@ class Server(Client):
         db_dir = self._get_local_repository_dir(repo)
         for mydir in [upload_dir, db_dir]:
             if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
-                os.makedirs(mydir, 0o755)
+                os.makedirs(mydir, 0o775)
                 const_setup_perms(mydir, etpConst['entropygid'],
                     recursion = False, uid = etpConst['uid'])
 
     def _ensure_dir_path(self, dir_path):
         if not os.path.isdir(dir_path):
-            os.makedirs(dir_path, 0o755)
+            os.makedirs(dir_path, 0o775)
             const_setup_perms(dir_path, etpConst['entropygid'],
                 recursion = False, uid = etpConst['uid'])
 
