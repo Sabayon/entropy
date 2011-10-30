@@ -1046,7 +1046,8 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                 continue
 
             if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
-                pkgs = entropy.tools.generic_file_content_parser(exp_fp)
+                pkgs = entropy.tools.generic_file_content_parser(
+                    exp_fp, encoding = etpConst['conf_encoding'])
                 if '*' in pkgs: # wildcard support
                     idpackages.add(-1)
                 else:
@@ -1826,7 +1827,8 @@ class Server(Client):
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
             current_packages = entropy.tools.generic_file_content_parser(
-                mask_file, comment_tag = "##", filter_comments = False)
+                mask_file, comment_tag = "##", filter_comments = False,
+                encoding = etpConst['conf_encoding'])
         # this is untrusted input, it's fine because that config file is
         # untrusted too
         current_packages.extend(packages)
@@ -1858,7 +1860,8 @@ class Server(Client):
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
             current_packages = entropy.tools.generic_file_content_parser(
-                mask_file, comment_tag = "##", filter_comments = False)
+                mask_file, comment_tag = "##", filter_comments = False,
+                encoding = etpConst['conf_encoding'])
 
         def mask_filter(package):
             if package.startswith("#"):
@@ -4732,14 +4735,15 @@ class Server(Client):
             repository_id)
         if not os.path.isfile(wl_file):
             return []
-        return entropy.tools.generic_file_content_parser(wl_file)
+        return entropy.tools.generic_file_content_parser(
+            wl_file, encoding = etpConst['conf_encoding'])
 
     def _get_restricted_packages(self, repository_id):
         rl_file = self._get_local_restricted_file(repository_id)
         if not os.path.isfile(rl_file):
             return []
         return entropy.tools.generic_file_content_parser(rl_file,
-            comment_tag = "##")
+            comment_tag = "##", encoding = etpConst['conf_encoding'])
 
     def _is_pkg_restricted(self, repository_id, pkg_atom, pkg_slot):
 
