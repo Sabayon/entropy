@@ -31,7 +31,9 @@
 import sys
 import os
 import time
+import codecs
 
+_ENCODING = "UTF-8"
 # check for potentially disruptive filesystem encoding setting.
 # Values different from UTF-8 are not supported and can cause
 # massive system destruction. Unfortunately, there is no good way
@@ -618,7 +620,7 @@ def const_default_settings(rootdir):
         },
 
         # default entropy configuration files encoding
-        'conf_encoding': "UTF-8",
+        'conf_encoding': _ENCODING,
 
     }
 
@@ -663,7 +665,7 @@ def const_read_entropy_release():
     if os.path.isfile(revision_file) and \
         os.access(revision_file, os.R_OK):
 
-        with open(revision_file, "r") as rev_f:
+        with codecs.open(revision_file, "r", encoding=_ENCODING) as rev_f:
             myrev = rev_f.readline().strip()
             etpConst['entropyversion'] = myrev
 
@@ -1253,7 +1255,8 @@ def _const_add_entropy_group(group_name):
         raise KeyError
     ids = set()
 
-    with open(group_file, "r") as group_f:
+    with codecs.open(group_file, "r", encoding=_ENCODING) \
+            as group_f:
         for line in group_f.readlines():
             if line and line.split(":"):
                 try:
@@ -1271,7 +1274,8 @@ def _const_add_entropy_group(group_name):
         else:
             new_id = 10000
 
-    with open(group_file, "a") as group_fw:
+    with codecs.open(group_file, "a", encoding=_ENCODING) \
+            as group_fw:
         group_fw.seek(0, 2)
         app_line = "%s:x:%s:\n" % (group_name, new_id,)
         group_fw.write(app_line)
@@ -1455,7 +1459,8 @@ def const_islive():
     global _CMDLINE
     if _CMDLINE is None:
         try:
-            with open("/proc/cmdline", "r") as cmdline_f:
+            with codecs.open("/proc/cmdline", "r", encoding=_ENCODING) \
+                    as cmdline_f:
                 _CMDLINE = cmdline_f.readline().strip().split()
         except IOError as err:
             if err.errno not in (errno.EPERM, errno.ENOENT):
