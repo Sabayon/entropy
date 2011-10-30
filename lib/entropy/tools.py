@@ -1622,12 +1622,13 @@ def create_md5_file(filepath):
     """
     md5hash = md5sum(filepath)
     hashfile = filepath+etpConst['packagesmd5fileext']
-    with open(hashfile, "w") as f:
+    enc = etpConst['conf_encoding']
+    with codecs.open(hashfile, "w", encoding=enc) as f:
         name = os.path.basename(filepath)
-        if sys.hexversion >= 0x3000000:
-            f.write(md5hash+"  "+name+"\n")
-        else:
-            f.write(md5hash+"  "+name.encode('utf-8')+"\n")
+        f.write(md5hash)
+        f.write("  ")
+        f.write(name)
+        f.write("\n")
         f.flush()
     return hashfile
 
@@ -1642,12 +1643,13 @@ def create_sha512_file(filepath):
     """
     sha512hash = sha512(filepath)
     hashfile = filepath+etpConst['packagessha512fileext']
-    with open(hashfile, "w") as f:
+    enc = etpConst['conf_encoding']
+    with codecs.open(hashfile, "w", encoding=enc) as f:
         fname = os.path.basename(filepath)
-        if sys.hexversion >= 0x3000000:
-            f.write(sha512hash+"  "+fname+"\n")
-        else:
-            f.write(sha512hash+"  "+fname.encode('utf-8')+"\n")
+        f.write(sha512hash)
+        f.write("  ")
+        f.write(fname)
+        f.write("\n")
         f.flush()
     return hashfile
 
@@ -1662,12 +1664,13 @@ def create_sha256_file(filepath):
     """
     sha256hash = sha256(filepath)
     hashfile = filepath+etpConst['packagessha256fileext']
-    with open(hashfile, "w") as f:
+    enc = etpConst['conf_encoding']
+    with codecs.open(hashfile, "w", encoding=enc) as f:
         fname = os.path.basename(filepath)
-        if sys.hexversion >= 0x3000000:
-            f.write(sha256hash+"  "+fname+"\n")
-        else:
-            f.write(sha256hash+"  "+fname.encode('utf-8')+"\n")
+        f.write(sha256hash)
+        f.write("  ")
+        f.write(fname)
+        f.write("\n")
         f.flush()
     return hashfile
 
@@ -1682,12 +1685,13 @@ def create_sha1_file(filepath):
     """
     sha1hash = sha1(filepath)
     hashfile = filepath+etpConst['packagessha1fileext']
-    with open(hashfile, "w") as f:
+    enc = etpConst['conf_encoding']
+    with codecs.open(hashfile, "w", encoding=enc) as f:
         fname = os.path.basename(filepath)
-        if sys.hexversion >= 0x3000000:
-            f.write(sha1hash+"  "+fname+"\n")
-        else:
-            f.write(sha1hash+"  "+fname.encode('utf-8')+"\n")
+        f.write(sha1hash)
+        f.write("  ")
+        f.write(fname)
+        f.write("\n")
         f.flush()
     return hashfile
 
@@ -1720,8 +1724,9 @@ def get_hash_from_md5file(md5path):
     @rtype: string
     @raise ValueError: if md5path contains invalid data
     """
+    enc = etpConst['conf_encoding']
     try:
-        with open(md5path, "r") as md5_f:
+        with codecs.open(md5path, "r", encoding=enc) as md5_f:
             md5_str = md5_f.read(32)
             if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
                 raise ValueError("invalid md5 file")
@@ -2334,18 +2339,19 @@ def write_parameter_to_file(config_file, name, data):
         return False
 
     content = []
+    enc = etpConst['conf_encoding']
     if os.path.isfile(config_file):
-        with open(config_file, "r") as f:
+        with codecs.open(config_file, "r", encoding=enc) as f:
             content = [x.strip() for x in f.readlines()]
 
     # write new
     config_file_tmp = config_file+".tmp"
-    with open(config_file_tmp, "w") as f:
+    with codecs.open(config_file_tmp, "w", encoding=enc) as f:
         param_found = False
         if data:
-            proposed_line = "%s = %s" % (name, data,)
+            proposed_line = const_convert_to_unicode("%s = %s" % (name, data,))
         else:
-            proposed_line = "# %s =" % (name,)
+            proposed_line = const_convert_to_unicode("# %s =" % (name,))
 
             new_content = []
             # remove older setting
@@ -2361,9 +2367,11 @@ def write_parameter_to_file(config_file, name, data):
             if key == name:
                 param_found = True
                 line = proposed_line
-            f.write(line+"\n")
+            f.write(line)
+            f.write("\n")
         if (not param_found) and data:
-            f.write(proposed_line+"\n")
+            f.write(proposed_line)
+            f.write("\n")
         f.flush()
 
     try:
