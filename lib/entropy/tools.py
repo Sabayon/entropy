@@ -1869,9 +1869,8 @@ def istextfile(filename, blocksize = 512):
     @return: True, if text file
     @rtype: bool
     """
-    f = open(filename, "r")
-    r = istext(f.read(blocksize))
-    f.close()
+    with open(filename, "r") as f:
+        r = istext(f.read(blocksize))
     return r
 
 def istext(mystring):
@@ -2968,7 +2967,8 @@ def collect_linker_paths():
     if not (os.path.isfile(ld_conf) and os.access(ld_conf, os.R_OK)):
         return builtin_paths
 
-    with open(ld_conf, "r") as ld_f:
+    enc = etpConst['conf_encoding']
+    with codecs.open(ld_conf, "r", encoding=enc) as ld_f:
         paths = [os.path.normpath(x.strip()) for x in ld_f.readlines() \
             if x.startswith("/")]
 
