@@ -1072,12 +1072,22 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         cli_repodata['available'].clear()
 
         for repoid, repo_data in srv_repodata.items():
+
             try:
+                # we must skip the repository validation because
+                # repositories have been already validated.
+                # moreover, the system repository_id might not be
+                # valid (__system__). But still, this is the wanted
+                # behaviour.
                 xxx, my_data = sys_set._analyze_client_repo_string(
                     "repository = %s|%s|http://--fake--|http://--fake--" \
-                        % (repoid, repo_data['description'],))
-            except AttributeError:
+                        % (repoid, repo_data['description'],),
+                    _skip_repository_validation=True)
+            except AttributeError as err:
+                # yeah, at least let stderr know.
+                sys.stderr.write(repr(err) + "\n")
                 continue # sorry!
+
             my_data['repoid'] = repoid
             if '__temporary__' in repo_data:
                 # fake repositories, temp ones
