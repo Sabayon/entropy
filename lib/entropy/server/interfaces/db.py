@@ -23,8 +23,9 @@ import shutil
 import tempfile
 import time
 import bz2
+import codecs
 
-from entropy.const import etpConst, const_setup_file, const_set_chmod
+from entropy.const import etpConst, const_setup_file
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
@@ -942,7 +943,7 @@ Name:    %s
 
     %s
 
-""" % (revision, pkg_meta['package_id'], pkg_meta['time_hash'], 
+""" % (revision, pkg_meta['package_id'], pkg_meta['time_hash'],
             _uname[1], _uname[2], _uname[4], this_time, atom,
             msg,)
 
@@ -957,26 +958,37 @@ Name:    %s
             changelog_path = \
                 self._entropy._get_local_repository_changelog_file(
                     self._repository_id)
+            enc = etpConst['conf_encoding']
+
             tmp_fd, tmp_path = tempfile.mkstemp(
                 dir=os.path.dirname(changelog_path))
-            # unsafe, but not really a problem
-            os.close(tmp_fd)
 
-            with open(tmp_path, "w") as tmp_f:
-                for atom in sorted(light_items.keys()):
+            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
+
+                # write new changelog entries here
+                atoms = list(light_items.keys())
+                atoms.sort()
+                for atom in atoms:
                     pkg_meta = light_items[atom]
                     _write_changelog_entry(tmp_f, atom, pkg_meta)
 
                 # append the rest of the file
-                if os.path.isfile(changelog_path):
-                    with open(changelog_path, "r") as changelog_f:
+                try:
+                    with codecs.open(changelog_path, "r", encoding=enc) \
+                            as changelog_f:
                         chunk = changelog_f.read(16384)
                         while chunk:
                             tmp_f.write(chunk)
                             chunk = changelog_f.read(16384)
+                except IOError as err:
+                    if err.errno != errno.ENOENT:
+                        raise
+                    # otherwise ignore append, there is no file yet
+
                 tmp_f.flush()
 
-            const_set_chmod(tmp_path, 0o644)
+            # someday unprivileged users will be able to push stuff
+            const_setup_file(tmp_path, etpConst['entropygid'], 0o664)
             # atomicity
             os.rename(tmp_path, changelog_path)
 
