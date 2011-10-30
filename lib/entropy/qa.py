@@ -804,13 +804,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
             header = red(" @@ ")
         )
 
+        enc = etpConst['conf_encoding']
         syms_list_f = None
         if syms_list_path:
-            syms_list_f = open(syms_list_path, "w")
+            syms_list_f = codecs.open(syms_list_path, "w", encoding=enc)
 
         files_list_f = None
         if files_list_path:
-            files_list_f = open(files_list_path, "w")
+            files_list_f = codecs.open(files_list_path, "w", encoding=enc)
 
         plain_brokenexecs = set()
         total = len(executables)
