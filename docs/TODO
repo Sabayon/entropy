@@ -2,7 +2,8 @@ Backlog (raw)
 
   1.0:
 
-    - use entropy.tools.atomic_write where possibile (search: os.rename)
+    - eit man page
+
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
           then packages.
