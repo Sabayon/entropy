@@ -577,7 +577,7 @@ class RepositoryMixin:
         else:
             # otherwise, go ahead and write the new content
             entropy.tools.atomic_write(
-                repo_conf, "\n".join(content), enc)
+                repo_conf, "\n".join(content) + "\n", enc)
 
         return accomplished
 
@@ -692,7 +692,7 @@ class RepositoryMixin:
             # create (overwrite) enabled_conf_file
             # containing proper repository_lines
             entropy.tools.atomic_write(
-                enabled_conf_file, "\n".join(repository_lines), enc)
+                enabled_conf_file, "\n".join(repository_lines) + "\n", enc)
 
             # if any disabled entry file is around, kill it with fire!
             try:
@@ -705,7 +705,7 @@ class RepositoryMixin:
         # Add: we migrate to the new config file automatically
         # Remove: we commit the filtered out content
         entropy.tools.atomic_write(
-            repo_conf, "\n".join(content), enc)
+            repo_conf, "\n".join(content) + "\n", enc)
 
         return accomplished
 
@@ -750,7 +750,7 @@ class RepositoryMixin:
 
         # atomic write
         entropy.tools.atomic_write(
-            repo_conf, "\n".join(content), enc)
+            repo_conf, "\n".join(content) + "\n", enc)
 
     def shift_repository(self, repository_id, new_position_idx):
         """
