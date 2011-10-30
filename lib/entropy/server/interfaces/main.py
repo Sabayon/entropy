@@ -886,13 +886,16 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         # add system database if community repository mode is enabled
         if data['community_mode']:
-            data['repositories'][etpConst['clientserverrepoid']] = {}
+            client_repository_id = etpConst['clientserverrepoid']
+            data['repositories'][client_repository_id] = {}
             mydata = {}
             mydata['description'] = "Community Repositories System Repository"
             mydata['pkg_mirrors'] = []
             mydata['repo_mirrors'] = []
             mydata['community'] = False
-            data['repositories'][etpConst['clientserverrepoid']].update(mydata)
+            data['repositories'][client_repository_id].update(mydata)
+            ServerSystemSettingsPlugin.REPOSITORIES[client_repository_id] = \
+                mydata
             # installed packages repository is now the base repository
             data['base_repository_id'] = etpConst['clientserverrepoid']
 
