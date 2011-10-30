@@ -864,8 +864,8 @@ class PackageBuilder(object):
         # not exposing .cpv field (but just .cp).
         dep_list = []
         for pobj in package_queue:
-            cpv = getattr(p, "cpv", p.cp)
-            repo = getattr(p, "repo", "")
+            cpv = getattr(pobj, "cpv", pobj.cp)
+            repo = getattr(pobj, "repo", "")
             if repo:
                 repo = "::" + repo
             dep_list.append(cpv+repo)
