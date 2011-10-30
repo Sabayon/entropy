@@ -15,7 +15,7 @@
 import os
 import sys
 import time
-import tempfile
+import codecs
 if sys.hexversion >= 0x3000000:
     import urllib.request, urllib.error, urllib.parse
     UrllibBaseHandler = urllib.request.BaseHandler
@@ -27,7 +27,7 @@ import logging
 import threading
 from collections import deque
 from entropy.const import etpConst, const_isunicode, \
-    const_isfileobj, const_convert_log_level, const_set_chmod
+    const_isfileobj, const_convert_log_level, const_setup_file
 
 import entropy.tools
 
@@ -1478,13 +1478,10 @@ class FastRSS:
                 node.unlink()
                 to_remove -= 1
 
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.FastRSS.",
-            dir = os.path.dirname(self.__file))
-        with os.fdopen(tmp_fd, "wb") as rss_f:
-            rss_f.write(doc.toxml().encode("UTF-8"))
-            rss_f.flush()
-        const_set_chmod(tmp_path, 0o644)
-        os.rename(tmp_path, self.__file)
+        # considering enc == doc.toxml() encoding, cross fingers
+        enc = etpConst['conf_encoding']
+        entropy.tools.atomic_write(self.__file, doc.toxml(), enc)
+        const_setup_file(self.__file, etpConst['entropygid'], 0o664)
 
 
 class LogFile:
