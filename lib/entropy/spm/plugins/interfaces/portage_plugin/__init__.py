@@ -855,7 +855,7 @@ class PortagePlugin(SpmPlugin):
         if locked:
             dblnk.unlockdb()
         # now do atomic move
-        const_setup_file(tmp_file, etpConst['entropygid'], 0o644)
+        const_setup_file(tmp_file, etpConst['entropygid'], 0o664)
         os.rename(tmp_file, file_save_path)
         generated_package_files.append(file_save_path)
 
@@ -863,7 +863,7 @@ class PortagePlugin(SpmPlugin):
             if debug_empty:
                 os.remove(debug_tmp_file)
             else:
-                const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o644)
+                const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o664)
                 os.rename(debug_tmp_file, debug_file_save_path)
                 generated_package_files.append(debug_file_save_path)
 
