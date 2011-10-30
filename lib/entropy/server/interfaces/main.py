@@ -1003,6 +1003,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         repo_data = srv_data['repositories'][repository_id]
         repo_data['override_database_remote_path'] = repo_path
 
+
 class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
     def repos_parser(self, sys_set):
