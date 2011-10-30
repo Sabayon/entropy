@@ -22,6 +22,7 @@ import tempfile
 import subprocess
 import tarfile
 import time
+import codecs
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
@@ -491,7 +492,6 @@ class PortagePlugin(SpmPlugin):
         """
         ebuild_path = self.get_package_build_script_path(package)
         if isinstance(ebuild_path, const_get_stringtype()):
-
             clog_path = os.path.join(os.path.dirname(ebuild_path), "ChangeLog")
             if os.access(clog_path, os.R_OK) and os.path.isfile(clog_path):
                 with open(clog_path, "rb") as clog_f:
@@ -586,7 +586,9 @@ class PortagePlugin(SpmPlugin):
             checklist = []
             if os.access(glsaconfig["CHECKFILE"], os.R_OK) and \
                 os.path.isfile(glsaconfig["CHECKFILE"]):
-                with open(glsaconfig["CHECKFILE"], "rb") as check_f:
+                enc = etpConst['conf_encoding']
+                with codecs.open(glsaconfig["CHECKFILE"], "r", encoding=enc) \
+                        as check_f:
                     checklist.extend([x.strip() for x in check_f.readlines()])
             glsalist = [x for x in completelist if x not in checklist]
 
@@ -888,6 +890,7 @@ class PortagePlugin(SpmPlugin):
         modinfo_path = "/sbin/modinfo"
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
         content = [x for x in content if x.endswith(kmox_sfx)]
+        enc = etpConst['conf_encoding']
 
         # filter out hidden files
         if not content:
@@ -903,9 +906,8 @@ class PortagePlugin(SpmPlugin):
                         ko_path), stdout = tmp_fw, stderr = tmp_fw)
                     tmp_fw.flush()
 
-                tmp_r = open(tmp_file, "r")
-                modinfo_output = tmp_r.read().strip()
-                tmp_r.close()
+                with codecs.open(tmp_file, "r", encoding=enc) as tmp_r:
+                    modinfo_output = tmp_r.read().strip()
             finally:
                 try:
                     os.close(tmp_fd)
@@ -979,7 +981,8 @@ class PortagePlugin(SpmPlugin):
                 sts = proc.wait()
                 std_f.flush()
 
-            with open(tmp_file, "r") as std_f:
+            enc = etpConst['conf_encoding']
+            with codecs.open(tmp_file, "r", encoding=enc) as std_f:
                 output = std_f.read()
         finally:
             try:
@@ -1053,16 +1056,15 @@ class PortagePlugin(SpmPlugin):
         data['branch'] = system_settings['repositories']['branch']
 
         portage_entries = self._extract_pkg_metadata_generate_extraction_dict()
+        enc = etpConst['conf_encoding']
         for item in portage_entries:
 
             value = ''
             try:
                 item_path = os.path.join(meta_dir,
                     portage_entries[item]['path'])
-                with open(item_path, "rb") as item_f:
+                with codecs.open(item_path, "r", encoding=enc) as item_f:
                     value = item_f.readline().strip()
-                    value = const_convert_to_unicode(value)
-
             except IOError:
                 if portage_entries[item]['critical']:
                     raise
@@ -1526,9 +1528,10 @@ class PortagePlugin(SpmPlugin):
         if not os.access(counter_dir, os.W_OK):
             raise SPMError("SPM package directory not found")
 
-        with open(counter_path, "wb") as count_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(counter_path, "w", encoding=enc) as count_f:
             new_counter = vartree.dbapi.counter_tick(root, mycpv = package)
-            count_f.write(const_convert_to_rawstring(new_counter))
+            count_f.write(const_convert_to_unicode(new_counter))
             count_f.flush()
 
         return new_counter
@@ -1551,8 +1554,9 @@ class PortagePlugin(SpmPlugin):
             os.path.isfile(atom_counter_path)):
             return None # not found
 
+        enc = etpConst['conf_encoding']
         try:
-            with open(atom_counter_path, "r") as f:
+            with codecs.open(atom_counter_path, "r", encoding=enc) as f:
                 counter = int(f.readline().strip())
         except ValueError:
             raise SPMError("invalid Unique Identifier found")
@@ -1793,16 +1797,13 @@ class PortagePlugin(SpmPlugin):
         myebuilddir = os.path.dirname(myebuild)
         keys = sorted(self._portage.auxdbkeys) + ["repository"]
         metadata = {}
+        enc = etpConst['conf_encoding']
 
         for key in keys:
             mykeypath = os.path.join(myebuilddir, key)
             if os.path.isfile(mykeypath) and os.access(mykeypath, os.R_OK):
-                if sys.hexversion >= 0x3000000:
-                    f = open(mykeypath, "r", encoding = "raw_unicode_escape")
-                else:
-                    f = open(mykeypath, "rb")
-                metadata[key] = f.readline().strip()
-                f.close()
+                with codecs.open(mykeypath, "r", encoding=enc) as f:
+                    metadata[key] = f.readline().strip()
 
         ### END SETUP ENVIRONMENT
 
@@ -1812,7 +1813,8 @@ class PortagePlugin(SpmPlugin):
         mysettings['EMERGE_FROM'] = "binary"
 
         # we already do this early
-        mysettings["ACCEPT_LICENSE"] = str(' '.join(licenses))
+        mysettings["ACCEPT_LICENSE"] = const_convert_to_unicode(
+            " ".join(licenses))
         mysettings.backup_changes("ACCEPT_LICENSE")
         mysettings.regenerate()
 
@@ -1878,8 +1880,8 @@ class PortagePlugin(SpmPlugin):
             lic_path = os.path.join(portdir_lic, lic)
             if os.access(portdir_lic, os.W_OK | os.R_OK) and \
                 os.path.isdir(portdir_lic):
-                lic_f = open(lic_path, "wb")
-                lic_f.close()
+                with codecs.open(lic_path, "w", encoding=enc) as lic_f:
+                    pass
 
         cpv = str(cpv)
         mydbapi = self._portage.fakedbapi(settings=mysettings)
@@ -2004,16 +2006,15 @@ class PortagePlugin(SpmPlugin):
         if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
             envfile = entropy.tools.unpack_bzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile, "w")
-            f = open(envfile, "rb")
-            line = f.readline()
-            root_tag = const_convert_to_rawstring("ROOT=")
-            while line:
-                if line.startswith(root_tag):
-                    line = const_convert_to_rawstring("ROOT=%s\n" % (myroot,))
-                bzf.write(line)
+            with open(envfile, "rb") as f:
                 line = f.readline()
-
-            f.close()
+                root_tag = const_convert_to_rawstring("ROOT=")
+                while line:
+                    if line.startswith(root_tag):
+                        line = const_convert_to_rawstring(
+                            "ROOT=%s\n" % (myroot,))
+                    bzf.write(line)
+                    line = f.readline()
             bzf.close()
             os.remove(envfile)
 
@@ -2470,22 +2471,21 @@ class PortagePlugin(SpmPlugin):
 
         update_actions = []
         sorted_ids = PortageMetaphor.sort_update_files(list(updates_map.keys()))
+        enc = etpConst['conf_encoding']
         for update_id in sorted_ids:
             update_files = updates_map[update_id]
 
             # now load actions from files
             for update_file in update_files:
-                f = open(update_file, "r")
-                mycontent = f.readlines()
-                f.close()
+                with codecs.open(update_file, "r", encoding=enc) as f:
+                    mycontent = f.readlines()
                 lines = [x.strip() for x in mycontent if x.strip()]
                 update_actions.extend(lines)
 
         # add entropy packages.db.repo_updates content
         if os.path.isfile(repo_updates_file):
-            f = open(repo_updates_file, "r")
-            mycontent = f.readlines()
-            f.close()
+            with codecs.open(repo_updates_file, "r", encoding=enc) as f:
+                mycontent = f.readlines()
             lines = [x.strip() for x in mycontent if x.strip() and \
                 not x.strip().startswith("#")]
             update_actions.extend(lines)
@@ -2641,18 +2641,17 @@ class PortagePlugin(SpmPlugin):
 
     def __splitdebug_update_features_file(self, features_path):
 
-        with open(features_path, "r") as feat_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(features_path, "r", encoding=enc) as feat_f:
             feat_content = feat_f.read().split(" ")
 
         if "splitdebug" in feat_content:
-
             feat_content.remove("splitdebug")
-
-            with open(features_path+".tmp", "w") as feat_f:
-                feat_f.write(" ".join(feat_content) + "\n")
-                feat_f.flush()
-
-            os.rename(features_path+".tmp", features_path)
+            entropy.tools.atomic_write(
+                features_path,
+                const_convert_to_unicode(" ").join(feat_content) + \
+                    const_convert_to_unicode("\n"),
+                enc)
 
     def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
 
@@ -2660,8 +2659,10 @@ class PortagePlugin(SpmPlugin):
             os.access(contents_path, os.R_OK)):
             return
 
-        with open(contents_path, "r") as cont_f:
-            with open(contents_path+".tmp", "w") as cont_new_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(contents_path, "r", encoding=enc) as cont_f:
+            with codecs.open(contents_path+".tmp", "w", encoding=enc) \
+                    as cont_new_f:
                 line = cont_f.readline()
                 while line:
                     do_skip = False
@@ -2747,7 +2748,8 @@ class PortagePlugin(SpmPlugin):
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
         self._bump_vartree_mtime(portage_cpv)
 
-        with open(cont_path, "w") as cont_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(cont_path, "w", encoding=enc) as cont_f:
             utf_sys_root = etpConst['systemroot'] + os.path.sep
             # NOTE: content_meta contains paths with ROOT prefix, it's ok
             write_contents(content_meta, utf_sys_root, cont_f)
@@ -2983,6 +2985,7 @@ class PortagePlugin(SpmPlugin):
         world_file = self.get_user_installed_packages_file()
         world_dir = os.path.dirname(world_file)
         world_atoms = set()
+        enc = etpConst['conf_encoding']
 
 
         try:
@@ -2992,7 +2995,8 @@ class PortagePlugin(SpmPlugin):
                 if os.access(world_file, os.R_OK) and \
                     os.path.isfile(world_file):
 
-                    with open(world_file, "rb") as world_f:
+                    with codecs.open(world_file, "r", encoding=enc) \
+                            as world_f:
                         world_atoms |= set((x.strip() for x in \
                             world_f.readlines() if x.strip()))
 
@@ -3004,11 +3008,11 @@ class PortagePlugin(SpmPlugin):
                     world_atoms.add(keyslot)
                     world_file_tmp = world_file+".entropy_inst"
 
-                    newline = const_convert_to_rawstring("\n")
-                    with open(world_file_tmp, "wb") as world_f:
+                    newline = const_convert_to_unicode("\n")
+                    with codecs.open(world_file_tmp, "w", encoding=enc) \
+                            as world_f:
                         for item in sorted(world_atoms):
-                            world_f.write(
-                                const_convert_to_rawstring(item + newline))
+                            world_f.write(item + newline)
                         world_f.flush()
 
                     os.rename(world_file_tmp, world_file)
@@ -3107,28 +3111,24 @@ class PortagePlugin(SpmPlugin):
             # otherwise update Portage world file
             world_file = self.get_user_installed_packages_file()
             world_file_tmp = world_file + ".entropy.tmp"
+            enc = etpConst['conf_encoding']
             if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
-
-                new = open(world_file_tmp, "wb")
-                old = open(world_file, "rb")
-                line = old.readline()
-                key_raw = const_convert_to_rawstring(key)
-                keyslot = const_convert_to_rawstring(key+":"+slot)
-
-                while line:
-
-                    if line.find(key_raw) != -1:
+                with codecs.open(world_file_tmp, "w", encoding=enc) as new:
+                    with codecs.open(world_file, "r", encoding=enc) as old:
                         line = old.readline()
-                        continue
-                    if line.find(keyslot) != -1:
-                        line = old.readline()
-                        continue
-                    new.write(line)
-                    line = old.readline()
+                        sep = const_convert_to_unicode(":")
+                        keyslot = key+sep+slot
+                        while line:
+                            if line.find(key) != -1:
+                                line = old.readline()
+                                continue
+                            if line.find(keyslot) != -1:
+                                line = old.readline()
+                                continue
+                            new.write(line)
+                            line = old.readline()
 
-                new.flush()
-                new.close()
-                old.close()
+                    new.flush()
                 os.rename(world_file_tmp, world_file)
 
         return 0
@@ -3272,6 +3272,7 @@ class PortagePlugin(SpmPlugin):
         repo_dbpath = avail_data[repo]['dbpath']
         repo_make_conf = os.path.join(repo_dbpath,
             os.path.basename(system_make_conf))
+        enc = etpConst['conf_encoding']
 
         if not (os.path.isfile(repo_make_conf) and \
             os.access(repo_make_conf, os.R_OK)):
@@ -3299,12 +3300,10 @@ class PortagePlugin(SpmPlugin):
 
         elif os.access(system_make_conf, os.W_OK):
 
-            repo_f = open(repo_make_conf, "r")
-            sys_f = open(system_make_conf, "r")
-            repo_make_c = [x.strip() for x in repo_f.readlines()]
-            sys_make_c = [x.strip() for x in sys_f.readlines()]
-            repo_f.close()
-            sys_f.close()
+            with codecs.open(repo_make_conf, "r", encoding=enc) as repo_f:
+                repo_make_c = [x.strip() for x in repo_f.readlines()]
+            with codecs.open(system_make_conf, "r", encoding=enc) as sys_f:
+                sys_make_c = [x.strip() for x in sys_f.readlines()]
 
             # read repository settings
             repo_data = {}
@@ -3367,11 +3366,11 @@ class PortagePlugin(SpmPlugin):
                 )
                 # write to disk, safely
                 tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
-                f = open(tmp_make_conf, "w")
-                for line in sys_make_c:
-                    f.write(line+"\n")
-                f.flush()
-                f.close()
+                with codecs.open(tmp_make_conf, "w", encoding=enc) as f:
+                    for line in sys_make_c:
+                        f.write(line)
+                        f.write("\n")
+                    f.flush()
                 shutil.move(tmp_make_conf, system_make_conf)
 
             # update environment
@@ -3405,9 +3404,9 @@ class PortagePlugin(SpmPlugin):
         system_make_profile = \
             PortagePlugin._config_files_map['global_make_profile']
 
-        f = open(repo_make_profile, "r")
-        repo_profile_link_data = f.readline().strip()
-        f.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(repo_make_profile, "r", encoding=enc) as f:
+            repo_profile_link_data = f.readline().strip()
         current_profile_link = ''
         if os.path.islink(system_make_profile) and \
             os.access(system_make_profile, os.R_OK):
@@ -4168,10 +4167,9 @@ class PortagePlugin(SpmPlugin):
         lines = []
 
         try:
-            f = open(needed_file, "rb")
-            lines = [x.strip() for x in f.readlines() if x.strip()]
-            lines = [const_convert_to_unicode(x) for x in lines]
-            f.close()
+            with open(needed_file, "rb") as f:
+                lines = [x.strip() for x in f.readlines() if x.strip()]
+                lines = [const_convert_to_unicode(x) for x in lines]
         except IOError:
             return tuple()
 
@@ -4247,12 +4245,13 @@ class PortagePlugin(SpmPlugin):
 
         desktop_mime = []
         provided_mime = set()
+        enc = etpConst['conf_encoding']
 
         for desktop_path in sorted(valid_paths):
             if not (os.path.isfile(desktop_path) and \
                 os.access(desktop_path, os.R_OK)):
                 continue
-            with open(desktop_path, "r") as desk_f:
+            with codecs.open(desktop_path, "r", encoding=enc) as desk_f:
                 desk_data = [x.strip().split("=", 1) for x in \
                     desk_f.readlines() if len(x.strip().split("=", 1)) == 2]
                 raw_desk_meta = dict(desk_data)
@@ -4352,11 +4351,10 @@ responsible in any way.""" % (mylicense, mylicense,)
         if ebuild_tag:
             return ebuild_tag
 
-        # open in unicode fmt
-        f = open(ebuild, "r")
-        tags = [const_convert_to_unicode(x.strip()) for x in f.readlines() \
-            if x.strip() and x.strip().startswith(search_tag)]
-        f.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(ebuild, "r", encoding=enc) as f:
+            tags = [x.strip() for x in f.readlines() \
+                        if x.strip() and x.strip().startswith(search_tag)]
         if not tags:
             return ebuild_tag
         tag = tags[-1]
