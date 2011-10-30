@@ -2549,16 +2549,8 @@ class MatchMixin:
             with codecs.open(m_file, "r", encoding=enc) as f:
                 content = [x.strip() for x in f.readlines()]
         content.append(keyword)
-        m_file_tmp = m_file+".tmp"
-        with codecs.open(m_file_tmp, "w", encoding=enc) as f:
-            for line in content:
-                f.write(line+"\n")
-            f.flush()
-        try:
-            os.rename(m_file_tmp, m_file)
-        except OSError:
-            shutil.copy2(m_file_tmp, m_file)
-            os.remove(m_file_tmp)
+
+        entropy.tools.atomic_write(m_file, "\n".join(content) + "\n", enc)
         return True
 
     def _clear_package_mask(self, package_match, dry_run = False):
