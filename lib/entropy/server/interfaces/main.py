@@ -184,10 +184,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         # taint the database status
         taint_file = self._server._get_local_repository_taint_file(repo)
-        f = open(taint_file, "w")
-        f.write(etpConst['currentarch']+" repository tainted\n")
-        f.flush()
-        f.close()
+        enc = etpConst['conf_encoding']
+        with codecs.open(taint_file, "w", encoding=enc) as f:
+            f.write("repository tainted\n")
+            f.flush()
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         dbs.set_tainted(dbfile)
 
@@ -202,15 +202,16 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             """
             revision_file = self._server._get_local_repository_revision_file(
                 repo)
+            enc = etpConst['conf_encoding']
             if not os.path.isfile(revision_file):
                 revision = 1
             else:
-                with open(revision_file, "r") as rev_f:
+                with codecs.open(revision_file, "r", encoding=enc) as rev_f:
                     revision = int(rev_f.readline().strip())
                     revision += 1
 
             tmp_revision_file = revision_file + ".tmp"
-            with open(tmp_revision_file, "w") as rev_fw:
+            with codecs.open(tmp_revision_file, "w", encoding=enc) as rev_fw:
                 rev_fw.write(str(revision)+"\n")
                 rev_fw.flush()
             # atomic !
@@ -1547,13 +1548,15 @@ class Server(Client):
 
     def _create_local_repository_download_lockfile(self, repository_id):
         lock_file = self._get_repository_download_lockfile(repository_id)
-        with open(lock_file, "w") as f_lock:
+        enc = etpConst['conf_encoding']
+        with codecs.open(lock_file, "w", encoding=enc) as f_lock:
             f_lock.write("download locked")
             f_lock.flush()
 
     def _create_local_repository_lockfile(self, repository_id):
         lock_file = self._get_repository_lockfile(repository_id)
-        with open(lock_file, "w") as f_lock:
+        enc = etpConst['conf_encoding']
+        with codecs.open(lock_file, "w", encoding=enc) as f_lock:
             f_lock.write("database locked")
             f_lock.flush()
 
@@ -1645,7 +1648,8 @@ class Server(Client):
         if not os.path.isfile(dbrev_file):
             return 0
 
-        with open(dbrev_file, "r") as f_rev:
+        enc = etpConst['conf_encoding']
+        with codecs.open(dbrev_file, "r", encoding=enc) as f_rev:
             rev = f_rev.readline().strip()
         try:
             rev = int(rev)
@@ -5095,31 +5099,33 @@ class Server(Client):
             atom = entropy_repository.retrieveAtom(pkg_id)
             slot = entropy_repository.retrieveSlot(pkg_id)
             line = "## %s %s => %s:%s" % (pkg_id, pkg_repo, atom, slot)
-            editor_lines.append(line)
+            editor_lines.append(const_convert_to_unicode(line))
 
             for lib_match, dep_list in missing_extended.items():
                 library, elf = lib_match
                 line = "# %s, %s" % (library, elf)
-                editor_lines.append(line)
+                editor_lines.append(const_convert_to_unicode(line))
                 for dep in sorted(dep_list):
                     editor_lines.append(dep)
-            editor_lines.append("")
-            editor_lines.append("")
+            editor_lines.append(const_convert_to_unicode(""))
+            editor_lines.append(const_convert_to_unicode(""))
 
         if not editor_lines:
             # wtf!?
             return {}
 
+        enc = etpConst['conf_encoding']
         tmp_path = None
         while True:
 
             if tmp_path is None:
                 tmp_fd, tmp_path = tempfile.mkstemp(prefix = 'entropy.server',
                     suffix = ".conf")
-                with os.fdopen(tmp_fd, "w") as tmp_f:
+                with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
                     tmp_f.write(header_txt)
                     for editor_line in editor_lines:
-                        tmp_f.write(editor_line + "\n")
+                        tmp_f.write(editor_line)
+                        tmp_f.write("\n")
                     tmp_f.flush()
 
             success = self.edit_file(tmp_path)
@@ -5132,7 +5138,7 @@ class Server(Client):
             # parse the file back, build missing_deps
             all_good = True
             missing_deps = {}
-            with codecs.open(tmp_path, "r", encoding="utf-8") as tmp_f:
+            with codecs.open(tmp_path, "r", encoding=enc) as tmp_f:
                 pkg_match = None
                 for line in tmp_f.readlines():
                     line = line.strip()
@@ -5617,10 +5623,9 @@ class Server(Client):
         # taint the database status
         db_file = self._get_local_repository_file(repository_id)
         taint_file = self._get_local_repository_taint_file(repository_id)
-        f = open(taint_file, "w")
-        f.write("repository tainted\n")
-        f.flush()
-        f.close()
+        with codecs.open(taint_file, "w") as f:
+            f.write("repository tainted\n")
+            f.flush()
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         ServerRepositoryStatus().set_tainted(db_file)
 
@@ -5807,7 +5812,7 @@ class Server(Client):
             branch = branch)
         wl_data = []
         if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
-            f_wl = open(wl_file, "r")
+            f_wl = codecs.open(wl_file, "r", encoding=etpConst['conf_encoding'])
             wl_data = [x.strip() for x in f_wl.readlines() if x.strip() and \
                 not x.strip().startswith("#")]
             f_wl.close()
