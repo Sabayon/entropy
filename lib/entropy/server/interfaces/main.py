@@ -25,7 +25,7 @@ import codecs
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, etpUi, \
+    const_create_working_dirs, etpUi, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
     const_convert_to_rawstring
 from entropy.output import purple, red, darkgreen, \
@@ -682,11 +682,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         data = {
             'repositories': ServerSystemSettingsPlugin.REPOSITORIES.copy(),
             'community_mode': False,
-            'qa_langs': ["en_US", "C"],
-            'default_repository_id': etpConst['defaultserverrepositoryid'],
+            'qa_langs': [const_convert_to_unicode("en_US"),
+                         const_convert_to_unicode("C")],
+            'default_repository_id': const_convert_to_unicode(
+                etpConst['defaultserverrepositoryid']),
             'base_repository_id': None,
             'packages_expiration_days': etpConst['packagesexpirationdays'],
-            'database_file_format': etpConst['etpdatabasefileformat'],
+            'database_file_format': const_convert_to_unicode(
+                etpConst['etpdatabasefileformat']),
             'disabled_eapis': set(),
             'broken_revdeps_qa_check': True,
             'exp_based_scope': etpConst['expiration_based_scope'],
@@ -696,11 +699,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'changelog': True,
             'rss': {
                 'enabled': etpConst['rss-feed'],
-                'name': etpConst['rss-name'],
-                'light_name': etpConst['rss-light-name'],
-                'base_url': etpConst['rss-base-url'],
-                'website_url': etpConst['rss-website-url'],
-                'editor': etpConst['rss-managing-editor'],
+                'name': const_convert_to_unicode(etpConst['rss-name']),
+                'light_name': const_convert_to_unicode(
+                    etpConst['rss-light-name']),
+                'base_url': const_convert_to_unicode(etpConst['rss-base-url']),
+                'website_url': const_convert_to_unicode(
+                    etpConst['rss-website-url']),
+                'editor': const_convert_to_unicode(
+                    etpConst['rss-managing-editor']),
                 'max_entries': etpConst['rss-max-entries'],
                 'light_max_entries': etpConst['rss-light-max-entries'],
             },
@@ -889,7 +895,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             client_repository_id = etpConst['clientserverrepoid']
             data['repositories'][client_repository_id] = {}
             mydata = {}
-            mydata['description'] = "Community Repositories System Repository"
+            mydata['description'] = const_convert_to_unicode(
+                "Community Repositories System Repository")
             mydata['pkg_mirrors'] = []
             mydata['repo_mirrors'] = []
             mydata['community'] = False
