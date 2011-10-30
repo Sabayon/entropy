@@ -18,13 +18,14 @@ import os
 import base64
 import hashlib
 import time
+import codecs
 if sys.hexversion >= 0x3000000:
     from io import StringIO
 else:
     from cStringIO import StringIO
 
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_convert_to_unicode
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
 
@@ -909,11 +910,13 @@ class ClientWebService(WebService):
             not available (user interface should raise a login form, validate
             the credentials and retry the function call here)
         """
+        enc = etpConst['conf_encoding']
         try:
-            with open(etpConst['systemreleasefile'], "r") as rel_f:
+            with codecs.open(etpConst['systemreleasefile'], "r", encoding=enc) \
+                    as rel_f:
                 release_string = rel_f.readline().strip()
         except (IOError, OSError):
-            release_string = '--N/A--'
+            release_string = const_convert_to_unicode('--N/A--')
 
         hw_hash = self._settings['hw_hash']
         if not hw_hash:

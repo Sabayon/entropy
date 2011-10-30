@@ -239,26 +239,24 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         old_branch_path = etpConst['etp_previous_branch_file']
         in_branch_upgrade_path = etpConst['etp_in_branch_upgrade_file']
         current_branch = sys_settings_instance['repositories']['branch']
+        enc = etpConst['conf_encoding']
 
         def write_current_branch(branch):
-            old_brf = open(old_branch_path, "w")
-            old_brf.write(branch)
-            old_brf.flush()
-            old_brf.close()
+            with codecs.open(old_branch_path, "w", encoding=enc) as old_brf:
+                old_brf.write(branch)
+                old_brf.flush()
 
         def write_in_branch_upgrade(branch):
-            brf = open(in_branch_upgrade_path, "w")
-            brf.write("in branch upgrade: %s" % (branch,))
-            brf.flush()
-            brf.close()
+            with codecs.open(in_branch_upgrade_path, "w", encoding=enc) as brf:
+                brf.write("in branch upgrade: %s" % (branch,))
+                brf.flush()
 
         if not os.path.isfile(old_branch_path):
             write_current_branch(current_branch)
             return
 
-        old_f = open(old_branch_path, "r")
-        old_branch = old_f.readline().strip()
-        old_f.close()
+        with codecs.open(old_branch_path, "r", encoding=enc) as old_f:
+            old_branch = old_f.readline().strip()
 
         if old_branch == current_branch: # all fine, no need to run
             return

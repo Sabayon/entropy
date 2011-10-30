@@ -16,6 +16,7 @@ import stat
 import shutil
 import tempfile
 import time
+import codecs
 
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_isunicode, const_convert_to_unicode, const_debug_write, \
@@ -1088,7 +1089,8 @@ class Package:
                 os.access(pkg_disk_path, os.R_OK)):
                 return 2
 
-            with open(pkg_disk_path_mtime, "r") as mt_f:
+            enc = etpConst['conf_encoding']
+            with codecs.open(pkg_disk_path_mtime, "r", encoding=enc) as mt_f:
                 stored_mtime = mt_f.read().strip()
 
             # get pkg mtime
@@ -1101,7 +1103,8 @@ class Package:
             if not (os.path.isfile(pkg_disk_path) and \
                 os.access(pkg_disk_path, os.R_OK)):
                 return
-            with open(pkg_disk_path_mtime, "w") as mt_f:
+            enc = etpConst['conf_encoding']
+            with codecs.open(pkg_disk_path_mtime, "w", encoding=enc) as mt_f:
                 cur_mtime = str(os.path.getmtime(pkg_disk_path))
                 mt_f.write(cur_mtime)
                 mt_f.flush()
@@ -4276,7 +4279,7 @@ class Package:
             else:
                 down_path = self.__get_fetch_disk_path(download)
                 if os.path.isfile(down_path):
-                    with open(down_path, "r") as f:
+                    with open(down_path, "rb") as f:
                         f.seek(0, os.SEEK_END)
                         disk_size = f.tell()
                     if size == disk_size:

@@ -13,6 +13,7 @@ import sys
 import os
 import subprocess
 import tempfile
+import codecs
 
 from entropy.client.interfaces.client import Client
 from entropy.const import etpConst, const_isunicode, etpSys, etpUi, \
@@ -431,8 +432,9 @@ class Trigger:
         def run(self, stage, pkgdata, trigger_file):
             globalz = globals()
             local = locals()
+            enc = etpConst['conf_encoding']
             if os.path.isfile(trigger_file):
-                with open(trigger_file) as trig_f:
+                with codecs.open(trigger_file, "r", encoding=enc) as trig_f:
                     exec(compile(trig_f.read(), trigger_file, 'exec'),
                         globalz, local)
             if os.path.isfile(trigger_file):

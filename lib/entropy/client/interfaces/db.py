@@ -16,6 +16,7 @@ import tempfile
 import threading
 import shutil
 import time
+import codecs
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     etpUi, const_set_nice_level, const_setup_file
@@ -562,7 +563,8 @@ class AvailablePackagesRepositoryUpdater(object):
         return db_down_status
 
     def __verify_file_checksum(self, file_path, md5_checksum_path):
-        with open(md5_checksum_path, "r") as ck_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(md5_checksum_path, "r", encoding=enc) as ck_f:
             md5hash = ck_f.readline().strip()
             if not md5hash: # invalid !! => [] would cause IndexError
                 return False
@@ -685,7 +687,9 @@ class AvailablePackagesRepositoryUpdater(object):
         # self._last_revs
         rev_file = os.path.join(db_data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
-        with open(rev_file, "w") as rev_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(rev_file, "w", encoding=enc) as rev_f:
+            # safe anyway
             rev_f.write(str(self._last_rev) + "\n")
             rev_f.flush()
 
@@ -1000,6 +1004,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
             tmpdir = tempfile.mkdtemp()
             repo_dir = repo_data['dbpath']
+            enc = etpConst['conf_encoding']
             try:
                 done = entropy.tools.universal_uncompress(mypath, tmpdir,
                     catch_empty = True)
@@ -1019,7 +1024,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
                     if os.path.isfile(fnf_path) and \
                         os.access(fnf_path, os.R_OK):
-                        with open(fnf_path, "r") as f:
+                        with codecs.open(fnf_path, "r", encoding=enc) as f:
                             f_nf = [x.strip() for x in f.readlines()]
 
                         for myfile in f_nf:
@@ -2463,8 +2468,9 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
             etpConst['etpdatabaserevisionfile'])
         revision = -1
 
+        enc = etpConst['conf_encoding']
         if os.path.isfile(fname) and os.access(fname, os.R_OK):
-            with open(fname, "r") as f:
+            with codecs.open(fname, "r", encoding=enc) as f:
                 try:
                     read_data = f.readline().strip()
                     revision = int(read_data)

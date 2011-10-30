@@ -13,6 +13,7 @@
 
 """
 import os
+import codecs
 
 from entropy.i18n import _
 from entropy.const import etpConst, const_setup_perms, \
@@ -247,9 +248,11 @@ class Sets:
         if not os.access(os.path.dirname(set_file), os.W_OK):
             raise InvalidPackageSet(_("Cannot create the element"))
 
-        with open(set_file, "w") as f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(set_file, "w", encoding=enc) as f:
             for x in set_atoms:
-                f.write("%s\n" % (x,))
+                f.write(x)
+                f.write("\n")
             f.flush()
         self._settings['system_package_sets'][set_name] = set(set_atoms)
 
