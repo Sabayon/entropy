@@ -1701,7 +1701,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             if (os.path.isfile(mirrors_file) and \
                 os.access(mirrors_file, os.R_OK)):
                 raw_mirrors = entropy.tools.generic_file_content_parser(
-                    mirrors_file)
+                    mirrors_file, encoding = etpConst['conf_encoding'])
 
             mirrors_data = []
             for mirror in raw_mirrors:
@@ -1726,7 +1726,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             if os.path.isfile(fallback_mirrors_file) and \
                 os.access(fallback_mirrors_file, os.R_OK):
                 fallback_mirrors = entropy.tools.generic_file_content_parser(
-                    fallback_mirrors_file)
+                    fallback_mirrors_file, encoding = etpConst['conf_encoding'])
 
             pkgs_map = {}
             if fallback_mirrors:
