@@ -176,8 +176,8 @@ class SpmTest(unittest.TestCase):
         =sys-devel/automake-1.11* =sys-devel/autoconf-2.1*
         >=sys-devel/libtool-2.2.6b""".replace("\n", " ")
         rdepend = """>=mail-client/thunderbird-3.1.1-r1[system-sqlite=] ||
-        ( ( >=app-crypt/gnupg-2.0 || ( app-crypt/pinentry[gtk]
-        app-crypt/pinentry[qt4] ) ) =app-crypt/gnupg-1.4* ) x11-libs/libXrender
+        ( ( >=app-crypt/gnupg-2.0 || ( app-crypt/pinentry
+        app-crypt/pinentry-base ) ) =app-crypt/gnupg-1.4* ) x11-libs/libXrender
         x11-libs/libXt x11-libs/libXmu >=sys-libs/zlib-1.1.4 x11-libs/libXrender
         x11-libs/libXt x11-libs/libXmu virtual/jpeg dev-libs/expat app-arch/zip
         app-arch/unzip >=x11-libs/gtk+-2.8.6 >=dev-libs/glib-2.8.2
@@ -193,7 +193,7 @@ class SpmTest(unittest.TestCase):
             depend, rdepend, pdepend, provide, sources, eapi)
 
         resolved_deps = ['>=mail-client/thunderbird-3.1.1-r1[-system-sqlite]',
-            '>=app-crypt/gnupg-2.0', 'app-crypt/pinentry[gtk]',
+            '>=app-crypt/gnupg-2.0', 'app-crypt/pinentry-base',
             'x11-libs/libXrender', 'x11-libs/libXt', 'x11-libs/libXmu',
             '>=sys-libs/zlib-1.1.4', 'x11-libs/libXrender', 'x11-libs/libXt',
             'x11-libs/libXmu', 'virtual/jpeg', 'dev-libs/expat', 'app-arch/zip',
@@ -201,8 +201,8 @@ class SpmTest(unittest.TestCase):
             '>=x11-libs/pango-1.10.1', '>=dev-libs/libIDL-0.8.0',
             '>=dev-libs/dbus-glib-0.72', '>=x11-libs/startup-notification-0.8',
             '!<x11-base/xorg-x11-6.7.0-r2', '>=x11-libs/cairo-1.6.0']
-        self.assertEqual(portage_metadata['RDEPEND'].split(),
-            resolved_deps)
+        rdepend_split = portage_metadata['RDEPEND'].split()
+        self.assertEqual(rdepend_split, resolved_deps)
 
     def test_portage_or_selector(self):
         spm_class = self.Client.Spm_class()
