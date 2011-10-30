@@ -14,6 +14,7 @@ import shutil
 import warnings
 import hashlib
 import tempfile
+import codecs
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
@@ -1571,48 +1572,54 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
             return line
 
+        enc = etpConst['conf_encoding']
         for file_path in files:
             if not (os.path.isfile(file_path) and \
                 os.access(file_path, os.W_OK)):
                 continue
             tmp_fd, tmp_path = None, None
             try:
-                with open(file_path, "r") as source_f:
+                with codecs.open(file_path, "r", encoding=enc) as source_f:
                     tmp_fd, tmp_path = tempfile.mkstemp(
                         prefix="entropy.db._runConfigurationFilesUpdate",
                         dir=os.path.dirname(file_path))
-                    with os.fdopen(tmp_fd, "w") as dest_f:
+                    with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) \
+                            as dest_f:
                         line = source_f.readline()
                         while line:
                             dest_f.write(_workout_line(line))
                             line = source_f.readline()
-                    if protect_overwrite:
-                        new_file_path, prot_status = \
-                            spm_class.allocate_protected_file(
-                                tmp_path, file_path)
-                        if prot_status:
-                            # it has been replaced
-                            os.rename(tmp_path, new_file_path)
-                            updated_files.add(new_file_path)
-                        else:
-                            os.remove(tmp_path)
+
+                if protect_overwrite:
+                    new_file_path, prot_status = \
+                        spm_class.allocate_protected_file(
+                            tmp_path, file_path)
+                    if prot_status:
+                        # it has been replaced
+                        os.rename(tmp_path, new_file_path)
+                        updated_files.add(new_file_path)
                     else:
-                        os.rename(tmp_path, file_path)
-                    tmp_path = None
-                    tmp_fd = None
+                        os.remove(tmp_path)
+                else:
+                    os.rename(tmp_path, file_path)
+
+                tmp_path = None
+                tmp_fd = None
+
             except (OSError, IOError,) as err:
                 const_debug_write(__name__, "error: %s" % (err,))
-                if tmp_path is not None:
-                    try:
-                        os.remove(tmp_path)
-                    except (OSError, IOError):
-                        pass
+                continue
+            finally:
                 if tmp_fd is not None:
                     try:
                         os.close(tmp_fd)
                     except (OSError, IOError):
                         pass
-                continue
+                if tmp_path is not None:
+                    try:
+                        os.remove(tmp_path)
+                    except (OSError, IOError):
+                        pass
 
         return updated_files
 
