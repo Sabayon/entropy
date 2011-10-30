@@ -2256,7 +2256,8 @@ class Server(Client):
                     os.rename(package_path, new_package_path)
                 except OSError as err:
                     if err.errno != errno.EXDEV:
-                        shutil.move(package_path, new_package_path)
+                        raise
+                    shutil.move(package_path, new_package_path)
 
                 # update database
                 dbconn.setDownloadURL(idpackage, download_url)
