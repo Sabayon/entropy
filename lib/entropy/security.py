@@ -511,7 +511,9 @@ class System:
             to_file = os.path.join(System.SECURITY_DIR, advfile)
             try:
                 os.rename(from_file, to_file)
-            except OSError:
+            except OSError as err:
+                if err.errno != errno.EXDEV:
+                    raise
                 shutil.move(from_file, to_file)
 
     def __cleanup_garbage(self):
@@ -1208,7 +1210,9 @@ class System:
             try:
                 os.rename(self.download_package_checksum,
                     self.old_download_package_checksum)
-            except OSError:
+            except OSError as err:
+                if err.errno != errno.EXDEV:
+                    raise
                 shutil.copy2(self.download_package_checksum,
                     self.old_download_package_checksum)
             const_setup_file(self.old_download_package_checksum,
