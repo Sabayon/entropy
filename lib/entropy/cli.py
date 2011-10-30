@@ -15,6 +15,7 @@ import sys
 import os
 import time
 import subprocess
+import codecs
 
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.output import print_info, print_generic, writechar, blue, \
@@ -342,7 +343,9 @@ def read_equo_release():
     if os.path.isfile(revision_file) and \
         os.access(revision_file, os.R_OK):
 
-        with open(revision_file, "r") as rev_f:
+        enc = etpConst['conf_encoding']
+        with codecs.open(revision_file, "r", encoding=enc) \
+                as rev_f:
             myrev = rev_f.readline().strip()
             return myrev
 
