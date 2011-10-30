@@ -47,6 +47,7 @@ from _emerge.stdout_spinner import stdout_spinner
 from _emerge.Scheduler import Scheduler
 from _emerge.clear_caches import clear_caches
 from _emerge.unmerge import unmerge
+from _emerge.Blocker import Blocker
 
 import portage.versions
 import portage
@@ -860,12 +861,19 @@ class PackageBuilder(object):
 
         # list of _emerge.Package.Package objects
         package_queue = graph.altlist()
+        # filter out blockers
+        real_queue = [x for x in package_queue if not isinstance(x, Blocker)]
+
         # package_queue can also contain _emerge.Blocker.Blocker objects
         # not exposing .cpv field (but just .cp).
         dep_list = []
         for pobj in package_queue:
-            cpv = getattr(pobj, "cpv", pobj.cp)
-            repo = getattr(pobj, "repo", "")
+            if isinstance(pobj, Blocker):
+                # blocker, list full atom
+                dep_list.append("!" + pobj.atom)
+                continue
+            cpv = pobj.cpv
+            repo = pobj.repo
             if repo:
                 repo = "::" + repo
             dep_list.append(cpv+repo)
@@ -890,7 +898,7 @@ class PackageBuilder(object):
         use_flags_give_up = False
         if (not allow_new_useflags) or (not allow_removed_useflags):
             # checking for use flag changes
-            for pkg in package_queue:
+            for pkg in real_queue:
                 # frozenset
                 enabled_flags = pkg.use.enabled
                 inst_atom = portage.best(vardb.match(pkg.slot_atom))
@@ -919,7 +927,7 @@ class PackageBuilder(object):
         # check the whole queue against downgrade directive
         if not allow_downgrade:
             allow_downgrade_give_ups = []
-            for pkg in package_queue:
+            for pkg in real_queue:
                 inst_atom = portage.best(vardb.match(pkg.slot_atom))
                 cmp_res = -1
                 if inst_atom:
@@ -941,7 +949,7 @@ class PackageBuilder(object):
                 return 0
 
         changing_repo_pkgs = []
-        for pkg in package_queue:
+        for pkg in real_queue:
             wanted_repo = pkg.repo
             inst_atom = portage.best(vardb.match(pkg.slot_atom))
             current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
@@ -980,7 +988,7 @@ class PackageBuilder(object):
         retval = mergetask.merge()
 
         not_merged = []
-        package_queue_map = dict((pkg.cpv, pkg) for pkg in package_queue)
+        real_queue_map = dict((pkg.cpv, pkg) for pkg in real_queue)
         failed_package = None
         if retval != 0:
             merge_list = mtimedb.get("resume", {}).get("mergelist")
@@ -991,11 +999,11 @@ class PackageBuilder(object):
                     # serially as of today.
                     # Also, the package object must be available in our
                     # package queue, so grab it from there.
-                    failed_package = package_queue_map.get(merge_atom)
+                    failed_package = real_queue_map.get(merge_atom)
                 not_merged.append(merge_atom)
                 self._not_merged_packages.append(merge_atom)
 
-        for pkg in package_queue:
+        for pkg in real_queue:
             cpv = pkg.cpv
             if cpv not in not_merged:
                 # add to build queue
