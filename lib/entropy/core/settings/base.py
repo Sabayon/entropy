@@ -1013,12 +1013,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: 
         @rtype: 
         """
+        enc = etpConst['conf_encoding']
         f = None
         try:
-            if sys.hexversion >= 0x3000000:
-                f = open(filepath, "r", encoding = 'raw_unicode_escape')
-            else:
-                f = open(filepath, "r")
+            f = codecs.open(filepath, "r", encoding=enc)
             items = set()
             line = f.readline()
             while line:
@@ -1890,8 +1888,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 # useless to continue
                 return
 
+        enc = etpConst['conf_encoding']
         try:
-            mtime_f = open(tosaveinto, "w")
+            mtime_f = codecs.open(tosaveinto, "w", encoding=enc)
         except IOError as e: # unable to write?
             if e.errno == errno.EROFS: # readonly filesystem
                 etpUi['pretend'] = True
@@ -1937,8 +1936,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             return
 
         # check mtime
+        enc = etpConst['conf_encoding']
         try:
-            with open(mtimefile, "r") as mtime_f:
+            with codecs.open(mtimefile, "r", encoding=enc) as mtime_f:
                 mtime = str(mtime_f.readline().strip())
         except (OSError, IOError,):
             mtime = "0.0"
