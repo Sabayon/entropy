@@ -1843,8 +1843,8 @@ class Server(Client):
 
     def unmask_packages(self, repository_id, packages):
         """
-        Unmask given package dependencies for given repository, if any (otherwise
-        use default one).
+        Unmask given package dependencies for given repository, if any
+        (otherwise use default one).
 
         @param repository_id: repository identifier
         @type repository_id: string
@@ -5875,7 +5875,7 @@ class Server(Client):
             found = False
             for server_repo in server_repos:
                 installed_counters.add(spm_counter)
-                server_dbconn = self.open_server_repository(server_repo, 
+                server_dbconn = self.open_server_repository(server_repo,
                     read_only = True, no_upload = True)
                 counter = server_dbconn.isSpmUidAvailable(spm_counter)
                 if counter:
