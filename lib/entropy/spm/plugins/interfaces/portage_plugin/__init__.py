@@ -120,7 +120,7 @@ class PortagePackageGroups(dict):
             'security': {
                 'name': _("Security"),
                 'description': \
-                    _("Security orientend applications"),
+                    _("Security oriented applications"),
                 'categories': ['app-antivirus', 'net-analyzer', 'net-firewall'],
             },
             'x11': {
