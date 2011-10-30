@@ -13,8 +13,9 @@ import sys
 import os
 import argparse
 import tempfile
+import codecs
 
-from entropy.const import etpConst
+from entropy.const import etpConst, const_convert_to_unicode
 from entropy.exceptions import OnlineMirrorError
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
@@ -22,6 +23,8 @@ from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
 from entropy.transceivers import EntropyTransceiver
 from entropy.server.interfaces import ServerSystemSettingsPlugin
 from entropy.server.interfaces.rss import ServerRssMetadata
+
+import entropy.tools
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -34,11 +37,11 @@ class EitPush(EitCommand):
 
     NAME = "push"
     ALIASES = ["pull","sync"]
-    DEFAULT_REPO_COMMIT_MSG = """
+    DEFAULT_REPO_COMMIT_MSG = const_convert_to_unicode("""
 # This is Entropy Server repository commit message handler.
 # Please friggin' enter the commit message for your changes. Lines starting
 # with '#' will be ignored. To avoid encoding issue, write stuff in plain ASCII.
-"""
+""")
 
     def __init__(self, args):
         EitCommand.__init__(self, args)
@@ -166,14 +169,17 @@ class EitPush(EitCommand):
         Ask user to enter the commit message for data being pushed.
         Store inside rss metadata object.
         """
+        enc = etpConst['conf_encoding']
         tmp_fd, tmp_commit_path = tempfile.mkstemp(
             prefix="eit._push", suffix=".COMMIT_MSG")
-        with os.fdopen(tmp_fd, "w") as tmp_f:
+        with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
             tmp_f.write(EitPush.DEFAULT_REPO_COMMIT_MSG)
             if successfull_mirrors:
-                tmp_f.write("# Changes to be committed:\n")
+                tmp_f.write(const_convert_to_unicode(
+                        "# Changes to be committed:\n"))
             for sf_mirror in sorted(successfull_mirrors):
-                tmp_f.write("#\t updated:   %s\n" % (sf_mirror,))
+                tmp_f.write(const_convert_to_unicode(
+                        "#\t updated:   %s\n" % (sf_mirror,)))
 
         # spawn editor
         cm_msg_rc = entropy_server.edit_file(tmp_commit_path)
@@ -189,10 +195,10 @@ class EitPush(EitCommand):
                 _("Enter the commit message"),
                 input_params, cancel_button = True)
             if commit_data:
-                commit_msg = commit_data['message']
+                commit_msg = const_convert_to_unicode(commit_data['message'])
         else:
-            commit_msg = ''
-            with open(tmp_commit_path, "r") as tmp_f:
+            commit_msg = const_convert_to_unicode("")
+            with codecs.open(tmp_commit_path, "r", encoding=enc) as tmp_f:
                 for line in tmp_f.readlines():
                     if line.strip().startswith("#"):
                         continue
@@ -262,13 +268,14 @@ class EitPush(EitCommand):
 
             commit_msg = None
             if self._ask and rss_enabled:
+                # expected unicode out of here
                 commit_msg = self._commit_message(entropy_server,
                                                successfull_mirrors)
             elif rss_enabled:
-                commit_msg = "Automatic update"
+                commit_msg = const_convert_to_unicode("Automatic update")
 
             if commit_msg is None:
-                commit_msg = "no commit message"
+                commit_msg = const_convert_to_unicode("no commit message")
             ServerRssMetadata()['commitmessage'] = commit_msg
 
         if self._as_repository_id is not None:
