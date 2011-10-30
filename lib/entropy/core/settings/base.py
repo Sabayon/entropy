@@ -1297,7 +1297,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         return data
 
     def _analyze_client_repo_string(self, repostring, branch = None,
-        product = None):
+        product = None, _skip_repository_validation = False):
         """
         Extract repository information from the provided repository string,
         usually contained in the repository settings file, repositories.conf.
@@ -1324,9 +1324,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             raise AttributeError("invalid repostring passed (2)")
 
         reponame = repo_split[0].strip()
-        # validate repository id string
-        if not entropy.tools.validate_repository_id(reponame):
-            raise AttributeError("invalid repository identifier")
+        if not _skip_repository_validation:
+            # validate repository id string
+            if not entropy.tools.validate_repository_id(reponame):
+                raise AttributeError("invalid repository identifier")
 
         repodesc = repo_split[1].strip()
         repopackages = repo_split[2].strip()
