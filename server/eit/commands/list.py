@@ -133,5 +133,5 @@ EitCommandDescriptor.register(
     EitCommandDescriptor(
         EitList,
         EitList.NAME,
-        _("show repository status"))
+        _("show repository content (packages)"))
     )
