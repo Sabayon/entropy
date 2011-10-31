@@ -4,6 +4,7 @@ Backlog (raw)
 
     - eit man page
 
+
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
           then packages.
