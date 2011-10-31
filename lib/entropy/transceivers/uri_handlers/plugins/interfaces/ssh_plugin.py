@@ -14,6 +14,7 @@ import errno
 import time
 import tempfile
 import shutil
+import codecs
 
 from entropy.const import const_isnumber, const_debug_write
 from entropy.output import brown, darkgreen, teal
@@ -191,9 +192,10 @@ class EntropySshUriHandler(EntropyUriHandler):
                     proc = self._subprocess.Popen(args, stdout = std_f,
                         stderr = std_f_err)
                     exec_rc = proc.wait()
-            with open(tmp_path, "rb") as std_f:
+            enc = etpConst['conf_encoding']
+            with codecs.open(tmp_path, "r", encoding=enc) as std_f:
                 output = std_f.read()
-            with open(tmp_path_err, "rb") as std_f:
+            with codecs.open(tmp_path_err, "r", encoding=enc) as std_f:
                 error = std_f.read()
         finally:
             os.remove(tmp_path)
