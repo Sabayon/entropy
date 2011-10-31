@@ -58,22 +58,22 @@ msgstr "ВНИМАНИЕ"
 #: ../../lib/entropy/db/__init__.py:5821
 #, fuzzy
 msgid "Spm error occured"
-msgstr "зеркало разблокировано"
+msgstr "Произошла SPM ошибка"
 
 #: ../../lib/entropy/db/__init__.py:5834
 #, fuzzy
 msgid "Spm Unique Identifier not found for"
-msgstr "Путь к счётчику Spm не найден"
+msgstr "Уникальный идентификатор SPM не найден для"
 
 #: ../../lib/entropy/db/__init__.py:5989
 #, fuzzy
 msgid "updating repository metadata layout, please wait!"
-msgstr "Генерация мета-информации. Пожалуйста, подождите."
+msgstr "обновление метаинформации репозитория. Пожалуйста, подождите."
 
 #: ../../lib/entropy/db/__init__.py:6095
 #, fuzzy
 msgid "generating provided_libs metadata, please wait!"
-msgstr "Генерация мета-информации. Пожалуйста, подождите."
+msgstr "создание метаинформации репозитория. Пожалуйста, подождите."
 
 #: ../../lib/entropy/db/skel.py:1632 ../../lib/entropy/db/skel.py:1979
 msgid "SPM"
@@ -82,7 +82,7 @@ msgstr "SPM"
 #: ../../lib/entropy/db/skel.py:1633
 #, fuzzy
 msgid "Running packages metadata update"
-msgstr "принуждение к обновлению мета-информации пакетов"
+msgstr "Запуск обновления метаинформации пакетов"
 
 #: ../../lib/entropy/db/skel.py:1634
 msgid "it could take a while"
@@ -99,7 +99,7 @@ msgstr "действие"
 
 #: ../../lib/entropy/db/skel.py:1680
 msgid "package move actions complete"
-msgstr "совершение действий по перемещению пакета"
+msgstr "перемещение пакета завершено"
 
 #: ../../lib/entropy/db/skel.py:1694
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2386
@@ -231,7 +231,7 @@ msgstr "Безопасность"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:123
 #, fuzzy
 msgid "Security orientend applications"
-msgstr "Показать установленные пакеты"
+msgstr "Нацеленные на безопасность пакеты"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:127
 msgid "X11"
@@ -387,7 +387,7 @@ msgstr "Внимание"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3151
 msgid "preserved libraries have been found on system"
-msgstr ""
+msgstr "в системе найдены устаревшие библиотеки"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3285
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3437
@@ -411,7 +411,7 @@ msgstr "Обновление"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3348
 msgid "updating critical variables"
-msgstr "Обновление критических вариаций"
+msgstr "Обновление критических переменных"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3422
 msgid "differs"
@@ -423,7 +423,7 @@ msgstr "Возвращение"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3452
 msgid "Skipping configuration files update, you are not root."
-msgstr "Пропуск обновления файлов конфигурации, Вы не root"
+msgstr "Пропуск обновления файлов конфигурации, Вы не root."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3714
 msgid "Error calculating dependencies"
@@ -441,7 +441,7 @@ msgstr "Возможно, был изменен API портеджа"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4221
 #, fuzzy
 msgid "IOError while reading"
-msgstr "Ошибка при создании пакета для"
+msgstr "IOError во время чтения"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4368
 #, fuzzy
@@ -456,7 +456,7 @@ msgstr "проверка закачки (если поддерживается)"
 #: ../../lib/entropy/server/transceivers.py:131
 #: ../../lib/entropy/server/transceivers.py:146
 msgid "digest verification"
-msgstr "проверка списков"
+msgstr "проверка подписей"
 
 #: ../../lib/entropy/server/transceivers.py:115
 msgid "so far, so good!"
@@ -502,12 +502,12 @@ msgstr "Загружен интерфейс зеркал сервера Entropy"
 #: ../../lib/entropy/server/interfaces/mirrors.py:66
 #, fuzzy
 msgid "repository mirror"
-msgstr "репозиторий"
+msgstr "зеркало репозитория"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:75
 #, fuzzy
 msgid "packages mirror"
-msgstr "Зеркало пакетов"
+msgstr "зеркало пакетов"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:113
 msgid "looking for file in mirror"
@@ -1327,7 +1327,7 @@ msgstr "успешно обслуженный атом"
 
 #: ../../lib/entropy/server/interfaces/main.py:2684
 msgid "Injecting entropy metadata into built packages"
-msgstr "Добавление мета-информации entropy в собранные пакеты"
+msgstr "Добавление метаинформации entropy в собранные пакеты"
 
 #: ../../lib/entropy/server/interfaces/main.py:2700
 msgid "JFYI, GPG infrastructure failed to load"
@@ -1335,7 +1335,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2754
 msgid "injecting entropy metadata"
-msgstr "добавление meta-информации entropy"
+msgstr "добавление метаинформации entropy"
 
 #: ../../lib/entropy/server/interfaces/main.py:2802
 msgid "injection complete"
@@ -1733,7 +1733,7 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/main.py:5249
 #, fuzzy
 msgid "metadata QA hook"
-msgstr "Определяется Meta-информация"
+msgstr "Определяется метаинформация"
 
 #: ../../lib/entropy/server/interfaces/main.py:5251
 msgid "not owned by uid and gid = 0"
@@ -1742,7 +1742,7 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/main.py:5264
 #, fuzzy
 msgid "using metadata QA hook"
-msgstr "Определяется Meta-информация"
+msgstr "Определяется метаинформация"
 
 #: ../../lib/entropy/server/interfaces/main.py:5291
 #, fuzzy
@@ -1752,7 +1752,7 @@ msgstr "Блокировка баз данных завершена"
 #: ../../lib/entropy/server/interfaces/main.py:5340
 #, fuzzy
 msgid "cannot execute metadata QA hook for"
-msgstr "Определяется Meta-информация"
+msgstr "Определяется метаинформация"
 
 #: ../../lib/entropy/server/interfaces/main.py:5366
 msgid "attention, QA hook returned a warning"
@@ -1804,7 +1804,7 @@ msgstr "Актуально сконфигурированные репозито
 #: ../../lib/entropy/server/interfaces/main.py:5663
 #, fuzzy
 msgid "GPG key expired"
-msgstr "просрочено"
+msgstr "GPG ключ просрочен"
 
 #: ../../lib/entropy/server/interfaces/main.py:5665
 #, fuzzy
@@ -1905,7 +1905,7 @@ msgstr ""
 #: ../../lib/entropy/client/services/interfaces.py:64
 #, fuzzy
 msgid "Unknown document"
-msgstr "Добавить документ"
+msgstr "Неизвестный документ"
 
 #: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Comment"
@@ -1944,7 +1944,7 @@ msgstr "Невозможно автоматически объединить ф�
 
 #: ../../lib/entropy/client/interfaces/client.py:947
 msgid "forcing packages metadata update"
-msgstr "принуждение к обновлению мета-информации пакетов"
+msgstr "принуждение к обновлению метаинформации пакетов"
 
 #: ../../lib/entropy/client/interfaces/client.py:956
 msgid "Updating system database using repository"
@@ -1993,7 +1993,7 @@ msgstr "Аггрегированная скорость передачи"
 #: ../../lib/entropy/client/interfaces/package.py:997
 #: ../../lib/entropy/client/interfaces/package.py:2872
 msgid "second"
-msgstr "сек"
+msgstr "сек."
 
 #: ../../lib/entropy/client/interfaces/package.py:371
 #: ../../lib/entropy/client/interfaces/package.py:1013
@@ -2496,16 +2496,16 @@ msgstr "Репозиторий обновляется"
 
 #: ../../lib/entropy/client/interfaces/db.py:718
 msgid "Indexing Repository metadata"
-msgstr "Индексирование мета-информации репозитория"
+msgstr "Индексирование метаинформации репозитория"
 
 #: ../../lib/entropy/client/interfaces/db.py:906
 msgid "Downloading repository metafile"
-msgstr "Скачивание мета-файла репозитория"
+msgstr "Скачивание метафайла репозитория"
 
 #: ../../lib/entropy/client/interfaces/db.py:916
 #, fuzzy
 msgid "Downloading GPG signature of repository metafile"
-msgstr "Скачивание мета-файла репозитория"
+msgstr "Скачивание метафайла репозитория"
 
 #: ../../lib/entropy/client/interfaces/db.py:926
 msgid "Downloading Notice Board"
@@ -2691,7 +2691,7 @@ msgstr "Статус службы Web"
 
 #: ../../lib/entropy/client/interfaces/db.py:1596
 msgid "cannot fetch repository metadata"
-msgstr "невозможно загрузить мета-информацию репозитория"
+msgstr "невозможно загрузить метаинформацию репозитория"
 
 #: ../../lib/entropy/client/interfaces/db.py:1615
 msgid "cannot update treeupdates data"
@@ -4771,7 +4771,7 @@ msgid ""
 "Keep in mind that virtual packages couldn't be matched. They don't own any "
 "files."
 msgstr ""
-"Имейте в виду, что виртуальные/мета-пакеты не могут быть подсчитаны. Они не "
+"Имейте в виду, что виртуальные/метапакеты не могут быть подсчитаны. Они не "
 "содержат каких-либо файлов."
 
 #: ../../client/text_rescue.py:385
@@ -4997,11 +4997,11 @@ msgstr "Сжатый пакет"
 
 #: ../../client/text_smart.py:278
 msgid "Extracting Entropy metadata from"
-msgstr "Распаковка мета-информации Entropy из"
+msgstr "Распаковка метаинформации Entropy из"
 
 #: ../../client/text_smart.py:287
 msgid "Extracted Entropy metadata from"
-msgstr "Распакована мета-информация Entropy из"
+msgstr "Распакована метаинформация Entropy из"
 
 #. print the list
 #: ../../client/text_smart.py:314
@@ -5018,7 +5018,7 @@ msgstr "Создание объединенного Smart-пакета"
 
 #: ../../client/text_smart.py:373
 msgid "collecting Entropy metadata"
-msgstr "Сбор мета-информации Entropy"
+msgstr "Сбор метаинформации Entropy"
 
 #: ../../client/text_smart.py:408
 msgid "Unpack failed due to unknown reasons"
@@ -5601,11 +5601,11 @@ msgstr ""
 #: ../../client/equo.py:251
 #, fuzzy
 msgid "extract Entropy metadata from provided Entropy package files"
-msgstr "распаковать мета-информацию Entropy из предоставленных пакетов .tbz2"
+msgstr "распаковать метаинформацию Entropy из предоставленных пакетов .tbz2"
 
 #: ../../client/equo.py:252
 msgid "save new metadata into the specified directory"
-msgstr "сохранить новую мета-информацию в выбранную директорию"
+msgstr "сохранить новую метаинформацию в выбранную директорию"
 
 #: ../../client/equo.py:254
 msgid "contains System rescue tools"
@@ -6546,7 +6546,7 @@ msgstr "Пакетов не найдено"
 #: ../../server/eit/commands/query.py:355
 #, fuzzy
 msgid "miscellaneous package metadata queries"
-msgstr "принуждение к обновлению мета-информации пакетов"
+msgstr "принуждение к обновлению метаинформации пакетов"
 
 #: ../../server/eit/commands/status.py:90
 #, fuzzy
@@ -7905,7 +7905,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1416
 msgid "Generating metadata. Please wait."
-msgstr "Генерация мета-информации. Пожалуйста, подождите."
+msgstr "Генерация метаинформации. Пожалуйста, подождите."
 
 #: ../../sulfur/src/sulfur/__init__.py:1424
 msgid "Error during list population"
@@ -11151,7 +11151,7 @@ msgstr "_Загрузить пакетный менеджер"
 #~ msgid ""
 #~ "Get idpackage metadata using its idpackage in the specified repository"
 #~ msgstr ""
-#~ "Получить мета-информацию по idpackage, используя idpackage в указанном "
+#~ "Получить метаинформацию по idpackage, используя idpackage в указанном "
 #~ "репозитрии"
 
 #~ msgid "Package Identifier"
@@ -11653,7 +11653,7 @@ msgstr "_Загрузить пакетный менеджер"
 #~ msgstr "изменений не сделано"
 
 #~ msgid "Generating Metadata, please wait."
-#~ msgstr "Генерация мета-информации. Пожалуйста, подождите."
+#~ msgstr "Генерация метаинформации. Пожалуйста, подождите."
 
 #~ msgid "Entropy is indexing the repositories. It will take a few seconds"
 #~ msgstr "Entropy индексирует репозитории. Это может занять пару секунд."
@@ -12210,7 +12210,7 @@ msgstr "_Загрузить пакетный менеджер"
 #~ msgstr "замена пути к базе данных с"
 
 #~ msgid "repository metadata is malformed"
-#~ msgstr "мета-информация репозитория испорчена"
+#~ msgstr "метаинформация репозитория испорчена"
 
 #~ msgid "cannot update library data"
 #~ msgstr "невозможно обновить информацию библиотеки"
