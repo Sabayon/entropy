@@ -1,3 +1,243 @@
+commit 250f8fb9a584a9c18c1c83c51b4b7c9f701cb922
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 10:36:34 2011 +0100
+
+    Release Entropy 1.0_rc71
+
+commit bdd48be87e81db6b1e6adab90605537b64ecdf09
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 23:07:46 2011 +0100
+
+    [todo] update TODO
+
+commit 49bb75b272532fdabbb77f984a3f941dc88d2434
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:09:17 2011 +0100
+
+    [entropy.client] use codecs.open()
+
+commit e72fb45ffe0b7354486f1700bcd8ff86af594d18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:07:55 2011 +0100
+
+    [entropy.server] always use codecs.open()
+
+commit b3e9667e047c9917012f6df264a27b27a9d674ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:07:02 2011 +0100
+
+    [entropy.core] use codecs.open()
+
+commit 61dd3845b9935234066abe3aec082cb4707f5486
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:06:48 2011 +0100
+
+    [entropy.misc] use codecs.open()
+
+commit 24eb74d6245084b24b3f2f2c3b89a158bd4757e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:06:29 2011 +0100
+
+    [entropy.qa] use codecs.open()
+
+commit 5913f4e4ff00d2ba1d6ae839592ab272c2f8d039
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:06:07 2011 +0100
+
+    [entropy.const] use codecs.open()
+
+commit c76b168c01033a78709e0f70a59434389a13fb0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 22:05:48 2011 +0100
+
+    [entropy.cli] use codecs.open()
+
+commit 4b53ea77009ddf776fbb45ad66eeae7d59408657
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:32:38 2011 +0100
+
+    [entropy.security] use codecs.open()
+
+commit 3dd527ec11dbef923848bca7c1cfc0feb56119d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:30:38 2011 +0100
+
+    [entropy.security] catch EXDEV exceptions only for os.rename()
+
+commit 2674291f1ecac5b705a1e7adc673481a9706aa41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:23:29 2011 +0100
+
+    [entropy.tools] use codecs.open() where possible (2), and with statement as well
+
+commit 649dcf5b6cb5ab5d3c9f7c46441921fe3014b57d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:22:00 2011 +0100
+
+    [entropy.tools] use codecs.open() where possible
+
+commit ddcb746689a4bf3ff9f580f8794bc51c306aae9d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:21:42 2011 +0100
+
+    [entropy.server] use generic_file_content_parser() with encoding= argument
+
+commit 1a9026f969f08e56e67528caa08065f024ea58bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:21:24 2011 +0100
+
+    [entropy.core] use generic_file_content_parser() with encoding= argument
+
+commit 2335e35d4a14459ab852105f6801799eb26d7f8b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:08:09 2011 +0100
+
+    [entropy.spm] PortagePlugin: use codecs.open() where needed
+
+commit 890de38fe218faa01a76798ccba918383b7afdaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 21:07:06 2011 +0100
+
+    [tests] spm: fix test_dependencies_calculation() test
+
+commit 055c0c89b0a546f9d8e0a9c334f617043c019b53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:37:15 2011 +0100
+
+    [entropy.spm] use 0o664 instead of 0o644
+
+commit 213b7f01acacbb4c1791e2309ed0754f2ad06f0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:36:04 2011 +0100
+
+    [entropy.spm] fix typo in i18n string
+
+commit 6fa1a9e0e6b8abeedcfc38735c0c71e5313b8e3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:35:05 2011 +0100
+
+    [entropy.server] kill whitespaces
+
+commit 484f8277abf31ee00f5cd047be1051669ffde58f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:34:39 2011 +0100
+
+    [entropy.server] use codecs.open() and entropy.tools.codecs_fdopen()
+
+commit a700962ff4e62ccf025155ceb0b845bbbf4dbd26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:33:38 2011 +0100
+
+    [entropy.server] always makedirs() with 0o775 (gid=entropy)
+
+commit 6aed62012c4eb9aec0ab84f3507ecc83f22ea165
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 19:31:37 2011 +0100
+
+    [entropy.server] fix typo in rename() logic, call shutil.move() only if -EXDEV
+
+commit 9647d67af240c40329913bdc68b17649e54400ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 16:56:26 2011 +0100
+
+    [entropy.server] unicodify several SystemSettings metadata
+
+commit 29d8b565b52bbc99ea0cc24eaf7681dd158897a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 16:55:52 2011 +0100
+
+    [entropy.server.interfaces.db] _update_feeds: understand only unicode
+
+commit b165633c44ef8757f83a2f187a38e16d03a2945e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 16:50:36 2011 +0100
+
+    [eit.commands.push] read the commit file using codecs.open() and always generate unicode strings
+
+commit d4119219cf9e57e60e8efc2d582e1e685e6a840f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 10:40:45 2011 +0100
+
+    [entropy.server] space space space
+
+commit 622c61d2759c787f77e8be14f4698e31df978667
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 10:40:20 2011 +0100
+
+    [entropy.server] skip repository validation during fake Entropy Client repository metadata setup
+
+commit 6df557d9f44973c50565c83e40b4b110f57ef7ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 10:39:47 2011 +0100
+
+    [entropy.server] make sure to list __system__ repository inside ServerSystemSettingsPlugin.REPOSITORIES
+
+commit f1bd775f3b864392810ce82ba3621fdfb969def4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 10:37:59 2011 +0100
+
+    [entropy.core] add _skip_repository_validation argument to _analyze_client_repo_string, for Entropy Server consumption
+
+commit 54681062f1dd11132672fe2396fcfa741f53937b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 10:26:00 2011 +0100
+
+    [matter] properly handle Blocker objects in graph.altlist() outcome
+
+commit 1275e1e80e5ea83dfa6900148bf876b4d0300d0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 09:05:12 2011 +0100
+
+    [entropy.server] use codecs.open() with ChangeLog, set saner permissions
+
+commit 6c02243c6d2df54e495cead86411f64b5455f828
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 09:03:05 2011 +0100
+
+    [entropy.misc] FastRSS: use atomic_write() for writing the xml content back, also setup saner permissions
+
+commit c5a80890c5850b39994fe0378b6fcfdb497cdb1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 08:38:36 2011 +0100
+
+    [entropy.client] use entropy.tools.atomic_write() when needed
+
+commit 80938280cd74dec918a057319f5b1ba94e276961
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 08:37:54 2011 +0100
+
+    [entropy.db] _runConfigurationFilesUpdate: use codecs.open() for opening config files, improve code robustness
+
+commit f638b550f72996dea134030b66b7dd3b6e70f3d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 08:29:46 2011 +0100
+
+    [entropy.client] make sure to append "\n" to string when using atomic_write()
+
+commit 8ce8a837b1d0f4618b4beeacc7722e1a9dd958a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 30 07:19:06 2011 +0100
+
+    [matter] fix undefined reference (argh!)
+
+commit 359a9b0c81abacae842634bbcc8551c20d339837
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Sat Oct 29 20:38:05 2011 +0100
+
+    [i18n] update ru translation
+
+commit a77c4e832ae708f9fbdbb49cd05eaf429653c26a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 14:22:39 2011 +0200
+
+    [eit.commands.pkgmove] sort entries by unix time
+
+commit de4cb690a279e4f7f23acb18f0c73a0cdda82e00
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 29 13:21:20 2011 +0200
+
+    Tagging Entropy version 1.0_rc70
+
 commit b65a27bd5941c7c6b9d021369e7edaa8451522da
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Oct 29 13:21:07 2011 +0200
