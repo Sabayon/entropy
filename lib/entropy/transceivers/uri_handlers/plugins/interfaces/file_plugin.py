@@ -14,8 +14,10 @@ import os
 import pwd
 import grp
 import shutil
+import errno
+import fcntl
 
-from entropy.const import const_setup_perms, etpConst
+from entropy.const import const_setup_perms, etpConst, const_debug_write
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 from entropy.tools import md5sum
 
@@ -91,7 +93,7 @@ class EntropyFileUriHandler(EntropyUriHandler):
     EntropyUriHandler based FILE (local) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 3
+    PLUGIN_API_VERSION = 4
 
     @staticmethod
     def approve_uri(uri):
@@ -149,6 +151,45 @@ class EntropyFileUriHandler(EntropyUriHandler):
         shutil.copyfile(load_path, tmp_remote_str)
         os.rename(tmp_remote_str, remote_str)
         return True
+
+    def lock(self, remote_path):
+        remote_str = self._setup_remote_path(remote_path)
+        remote_str_lock = os.path.join(
+            os.path.dirname(remote_str),
+            "." + os.path.basename(remote_str) + ".lock")
+        const_debug_write(__name__,
+            "lock(): remote_str: %s, lock: %s" % (
+                remote_str, remote_str_lock,))
+
+        # Use low level IO because Python open() and with stmt
+        # do unwanted things like creating the file on close() or
+        # context exit. I didn't investigate nor I do care actually.
+        lock_fd = None
+        try:
+            lock_fd = os.open(remote_str_lock, os.O_RDWR | os.O_CREAT)
+            try:
+                fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except IOError as err:
+                if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                    # ouch, wtf?
+                    raise
+                return False
+            # create file
+            if os.path.isfile(remote_str):
+                # locked, ouch
+                return False
+            # we run in mutual exclusion, so it's safe
+            # to do test-and-set here
+            with open(remote_str, "wb") as remote_f:
+                pass
+            # cleanup the lock file
+            os.remove(remote_str_lock)
+            # release the resource
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            return True
+        finally:
+            if lock_fd is not None:
+                os.close(lock_fd)
 
     def upload_many(self, load_path_list, remote_dir):
         for load_path in load_path_list:

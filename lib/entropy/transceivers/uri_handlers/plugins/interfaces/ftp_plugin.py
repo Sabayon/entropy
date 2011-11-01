@@ -12,7 +12,9 @@
 import os
 import time
 import socket
+import tempfile
 
+from entropy.const import const_debug_write
 from entropy.tools import print_traceback, get_file_size, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl
 from entropy.output import blue, brown, darkgreen, red
@@ -27,7 +29,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     EntropyUriHandler based FTP transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 3
+    PLUGIN_API_VERSION = 4
 
     _DEFAULT_TIMEOUT = 60
 
@@ -331,6 +333,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def _mkdir(self, directory):
         return self.__ftpconn.mkd(directory)
 
+    def _rmdir(self, directory):
+        return self.__ftpconn.rmd(directory)
+
     def download(self, remote_path, save_path):
 
         self.__connect_if_not()
@@ -464,6 +469,53 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self._reconnect() # reconnect
                 self.delete(tmp_path)
                 self.delete(path)
+
+    def lock(self, remote_path):
+        # The only atomic operation on FTP seems to be mkdir()
+        # But there is no actual guarantee because it really depends
+        # on the server implementation.
+        # FTP is very old, got to live with it.
+        self.__connect_if_not()
+
+        remote_path_lock = os.path.join(
+            os.path.dirname(remote_path),
+            "." + os.path.basename(remote_path) + ".lock")
+        remote_ptr = os.path.join(self.__ftpdir, remote_path)
+        remote_ptr_lock = os.path.join(self.__ftpdir, remote_path_lock)
+
+        const_debug_write(__name__,
+            "lock(): remote_ptr: %s, lock: %s" % (
+                remote_ptr, remote_ptr_lock,))
+
+        try:
+            self._mkdir(remote_ptr_lock)
+        except self.ftplib.error_perm as e:
+            return False
+
+        # now we can create the lock file reliably
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.txc.ftp.lock")
+            # check if remote_ptr is already there
+            if self._is_path_available(remote_ptr):
+                return False
+            with open(tmp_path, "rb") as f:
+                rc = self.__ftpconn.storbinary(
+                    "STOR " + remote_ptr, f)
+            done = rc.find("226") != -1
+            if not done:
+                # wtf?
+                return False
+            return True
+        finally:
+            if tmp_fd is not None:
+                os.close(tmp_fd)
+            if tmp_path is not None:
+                os.remove(tmp_path)
+            # and always remove the directory created with _mkdir()
+            # we hope that, if we were able to create it, we're also
+            # able to remove it.
+            self._rmdir(remote_ptr_lock)
 
     def upload_many(self, load_path_list, remote_dir):
         for load_path in load_path_list:

@@ -19,11 +19,11 @@ class EntropyUriHandler(TextInterface):
     a common API for implementing custom URI handlers.
 
     To add your URI handler to EntropyTransceiver, do the following:
-    >>> EntropyTransceiver.add_uri_handler(my_entropy_transceiver_based_instance)
+    >>> EntropyTransceiver.add_uri_handler(entropy_transceiver_based_instance)
     "add_uri_handler" is a EntropyTransceiver static method.
     """
 
-    BASE_PLUGIN_API_VERSION = 3
+    BASE_PLUGIN_API_VERSION = 4
 
     TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
 
@@ -205,6 +205,22 @@ class EntropyUriHandler(TextInterface):
         @return: execution status, True if done
         @rtype: bool
         @raise TransceiverConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
+    def lock(self, remote_path):
+        """
+        Create remote "lock" file atomically.
+        To drop a lock, just call remove().
+        The goal here is just being able to create a remote file
+        in mutual exclusion between other Entropy Server instances.
+        Please note: the locking mechanism is guaranteed to work
+        only when callers share the same transceiver plugin.
+
+        @param remote_path: remote path to file lock
+        @type remote_path: string
+        @return: True, if lock has been created, False otherwise
+        @rtype: bool
         """
         raise NotImplementedError()
 

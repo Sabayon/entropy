@@ -9,6 +9,7 @@
     B{EntropyTransceiver SSH URI Handler module}.
 
 """
+import re
 import os
 import errno
 import time
@@ -16,7 +17,8 @@ import tempfile
 import shutil
 import codecs
 
-from entropy.const import const_isnumber, const_debug_write
+from entropy.const import const_isnumber, const_debug_write, \
+    etpConst
 from entropy.output import brown, darkgreen, teal
 from entropy.i18n import _
 from entropy.transceivers.exceptions import TransceiverConnectionError
@@ -28,7 +30,7 @@ class EntropySshUriHandler(EntropyUriHandler):
     EntropyUriHandler based SSH (with pubkey) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 3
+    PLUGIN_API_VERSION = 4
 
     _DEFAULT_TIMEOUT = 60
     _DEFAULT_PORT = 22
@@ -290,6 +292,37 @@ class EntropySshUriHandler(EntropyUriHandler):
 
         # atomic rename
         return self.rename(tmp_remote_path, remote_path)
+
+    valid_lock_path = re.compile("^([A-Za-z0-9/\.:\-_~]+)$")
+    def lock(self, remote_path):
+
+        # we trust dir but not remote_path, because we do
+        # shell code below.
+        reg = EntropySshUriHandler.valid_lock_path
+        if not reg.match(remote_path):
+            raise ValueError("illegal lock path")
+        remote_ptr = os.path.join(self.__dir, remote_path)
+
+        remote_ptr_lock = os.path.join(
+            self.__dir, os.path.dirname(remote_path),
+            "." + os.path.basename(remote_path))
+        remote_ptr_lock += ".lock"
+        const_debug_write(__name__,
+            "lock(): remote_ptr: %s, lock: %s" % (
+                remote_ptr, remote_ptr_lock,))
+
+        args, remote_str = self._setup_fs_args()
+        lock_cmd = '( flock -x -n 9; if [ "${?}" != "0" ]; ' + \
+            'then echo -n "FAIL"; else if [ -f ' + remote_ptr + ' ]; then ' + \
+            'echo -n "FAIL"; else touch ' + remote_ptr + ' && ' + \
+            'rm ' + remote_ptr_lock + ' && echo -n "OK"; fi; fi ) 9> ' \
+            + remote_ptr_lock
+        args += [remote_str, lock_cmd]
+        exec_rc, output, error = self._exec_cmd(args)
+        const_debug_write(__name__,
+            "lock(), outcome: lock: %s, rc: %s, out: %s, err: %s" % (
+                remote_ptr_lock, exec_rc, output, error,))
+        return output == "OK"
 
     def upload_many(self, load_path_list, remote_dir):
 
