@@ -233,34 +233,6 @@ class Server(object):
 
             with txc as handler:
 
-                if lock and handler.is_file(lock_file):
-                    if not quiet:
-                        self._entropy.output(
-                            "[%s|%s] %s" % (
-                                brown(repository_id),
-                                darkgreen(crippled_uri),
-                                blue(_("mirror already locked")),
-                            ),
-                            importance = 1,
-                            level = "info",
-                            header = darkgreen(" * ")
-                        )
-                    continue
-
-                elif not lock and not handler.is_file(lock_file):
-                    if not quiet:
-                        self._entropy.output(
-                            "[%s|%s] %s" % (
-                                brown(repository_id),
-                                darkgreen(crippled_uri),
-                                blue(_("mirror already unlocked")),
-                            ),
-                            importance = 1,
-                            level = "info",
-                            header = darkgreen(" * ")
-                        )
-                    continue
-
                 if lock:
                     rc_lock = self._do_mirror_lock(
                         repository_id, uri, handler, quiet = quiet)
@@ -420,8 +392,8 @@ class Server(object):
 
         remote_path = os.path.join(my_path, os.path.basename(lock_file))
 
-        rc_upload = txc_handler.upload(lock_file, remote_path)
-        if rc_upload:
+        rc_lock = txc_handler.lock(remote_path)
+        if rc_lock:
             if not quiet:
                 self._entropy.output(
                     "[%s|%s] %s %s" % (
@@ -437,11 +409,10 @@ class Server(object):
         else:
             if not quiet:
                 self._entropy.output(
-                    "[%s|%s] %s: %s - %s %s" % (
+                    "[%s|%s] %s: %s %s" % (
                         blue(repository_id),
                         red(crippled_uri),
                         blue("lock error"),
-                        rc_upload,
                         blue(_("mirror not locked")),
                         blue(lock_string),
                     ),
@@ -451,7 +422,7 @@ class Server(object):
                 )
             self._entropy._remove_local_repository_lockfile(repository_id)
 
-        return rc_upload
+        return rc_lock
 
 
     def _do_mirror_unlock(self, repository_id, uri, txc_handler,
@@ -477,7 +448,13 @@ class Server(object):
         # make sure
         remote_path = os.path.join(my_path, os.path.basename(dbfile))
 
-        rc_delete = txc_handler.delete(remote_path)
+        if not txc_handler.is_file(remote_path):
+            # once we locked a mirror, we're in a mutually exclusive
+            # region. If we call unlock on a mirror already unlocked
+            # that's fine for our semantics.
+            rc_delete = True
+        else:
+            rc_delete = txc_handler.delete(remote_path)
         if rc_delete:
             if not quiet:
                 self._entropy.output(
