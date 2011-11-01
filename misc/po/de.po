@@ -8545,7 +8545,7 @@ msgstr "Prüfe auf _Aktualisierungen"
 
 #: ../../magneto/src/magneto/core/interfaces.py:145
 msgid "Check for updates"
-msgstr "Prüfe aus Aktualisierungen"
+msgstr "Prüfe auf Aktualisierungen"
 
 #: ../../magneto/src/magneto/core/interfaces.py:146
 msgid "_Launch Package Manager"
@@ -8603,7 +8603,7 @@ msgstr ""
 #: ../../magneto/src/magneto/core/interfaces.py:227
 #: ../../magneto/src/magneto/core/interfaces.py:235
 msgid "updates available"
-msgstr "Aktualisiserungen sind verfügbar"
+msgstr "verfügbare Aktualisierungen"
 
 #: ../../magneto/src/magneto/core/interfaces.py:231
 msgid "Sabayon updates available"
@@ -8706,11 +8706,11 @@ msgstr "Sabayon Linux Kernelumschalter BETA"
 #: ../../services/kernel-switcher:222
 #, fuzzy
 msgid "switch kernel"
-msgstr "Wechsle kernel"
+msgstr "Wechsle den Kernel"
 
 #: ../../services/kernel-switcher:224
 msgid "list kernels"
-msgstr ""
+msgstr "Liste die verfügbaren Kernel auf"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:1
 msgid "0 = no limit; 100 = 100kB/sec"
@@ -8725,8 +8725,8 @@ msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
 msgstr ""
-"<small>Mit diesem Programm bist du in der Lage, die Paketdatenbank des "
-"Betriebssystems zu sichern und wieder herzustellen</small>"
+"<small>Mit diesem Werkzeug kannst du die Paketdatenbank des "
+"Betriebssystems sichern und wiederherstellen</small>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:4
 msgid "Add Document"
