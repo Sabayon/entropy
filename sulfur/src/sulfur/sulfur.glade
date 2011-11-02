@@ -3758,7 +3758,7 @@ Relaxed</property>
                                   <widget class="GtkLabel" id="label102">
                                     <property name="visible">True</property>
                                     <property name="xalign">0.98000001907348633</property>
-                                    <property name="label" translatable="yes">Successful mesage</property>
+                                    <property name="label" translatable="yes">Successful message</property>
                                   </widget>
                                   <packing>
                                     <property name="position">0</property>
