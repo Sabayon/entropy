@@ -1000,6 +1000,8 @@ def match_package(packages, entropy_client, multi_match = False,
 
     if get_results:
         return rc_results
+    if not found:
+        return 1
     return 0
 
 def search_slotted_packages(slots, entropy_client):
