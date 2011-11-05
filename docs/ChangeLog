@@ -1,3 +1,92 @@
+commit 6d1ff06c9cb24bbd4abe062d82b97b34f419bf82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 5 11:27:00 2011 +0100
+
+    Release Entropy 1.0_rc72
+
+commit b43adff637efe29ddafcc5d63a3e51733f5d944f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 5 10:59:37 2011 +0100
+
+    [entropy.client.interfaces.dep] introduce the "Slot intersection" feature
+    
+    Certain dependency strings could have
+    cross-SLOT scope (multiple slots for same package are valid)
+    causing unwanted dependencies to be pulled in.
+    For example: if dependency is "dev-lang/python"
+    and we have dev-lang/python-2 installed, python-3
+    should be filtered out (if possible) by checking if
+    the installed best dependency match slot is still
+    available in repositories.
+    If it is, restrict the dependency scope to the intersection
+    between available SLOTs and installed SLOT.
+
+commit 7b7ff9c82e12e1ecf3a481cc4134e7cc1096689f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 3 14:24:30 2011 +0100
+
+    [equo] if equo match finds nothing, return exit status 1
+
+commit d5adabcb55ea11f1e65bb146d5c043f07c3fbeeb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 2 09:43:12 2011 +0100
+
+    [sulfur] fix typo, thanks to Andrey Esin
+
+commit 659f2903197f9d642795add8e3db750d646245bc
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Tue Nov 1 13:48:07 2011 +0000
+
+    [i18n] update de translation
+
+commit 039fea49c04463bdc6c7eb99c720e0969d0d72b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 1 13:41:37 2011 +0100
+
+    [entropy.server.mirrors] use atomic lock()-ing mechanism when locking a mirror
+
+commit a90e450433864e2ab044aba992c90b8a5da6f9ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 1 13:26:52 2011 +0100
+
+    [entropy.transceivers] add lock() method, bumpi API rev
+
+commit 3b1a1fd6e60c5c07bfda40fad7056f43151c4654
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 23:00:49 2011 +0100
+
+    [entropy.transceivers] EntropySshUriHandler: provide stdout, stderr in unicode format
+
+commit 33cec7d102359c92cb8cc2c946ce8092ae08041a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 19:15:24 2011 +0100
+
+    [eit.commands.list] fix command description
+
+commit cd3a53c1e5b80cb9378c8c849f64a53bac5e64cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 19:09:14 2011 +0100
+
+    [conf] server.conf: update config file title
+
+commit 30a7d565c6bad404374b9d6040886e75b17b0a33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 16:13:37 2011 +0100
+
+    [todo] update TODO (test)
+
+commit 623e66004f615cbb1f7134aafa80f25cc3f58874
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 10:56:38 2011 +0100
+
+    [po] update Russian translation, thanks to Andrey Esin
+
+commit e59d58323f9daf5d5b7cfd5195b00a6eba116d3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 31 10:36:44 2011 +0100
+
+    Tagging Entropy version 1.0_rc71
+
 commit 250f8fb9a584a9c18c1c83c51b4b7c9f701cb922
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 31 10:36:34 2011 +0100
