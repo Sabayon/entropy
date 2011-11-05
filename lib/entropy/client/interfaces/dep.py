@@ -361,6 +361,8 @@ class CalculatorsMixin:
 
         return dbpkginfo
 
+    DISABLE_SLOT_INTERSECTION = os.getenv("ETP_DISABLE_SLOT_INTERSECTION")
+
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None, match_repo = None):
 
@@ -582,6 +584,59 @@ class CalculatorsMixin:
                     const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
+
+            # Slot intersection support:
+            # certain dependency strings could have
+            # cross-SLOT scope (multiple slots for same package are valid)
+            # causing unwanted dependencies to be pulled in.
+            # For example: if dependency is "dev-lang/python"
+            # and we have dev-lang/python-2 installed, python-3
+            # should be filtered out (if possible) by checking if
+            # the installed best dependency match slot is still
+            # available in repositories.
+            # If it is, restrict the dependency scope to the intersection
+            # between available SLOTs and installed SLOT.
+            multi_repo = False
+            if match_repo is None:
+                multi_repo = True
+
+            available_slots = set()
+            if not self.DISABLE_SLOT_INTERSECTION:
+                r_matches, r_rcs = self.atom_match(
+                    dependency, match_repo = match_repo,
+                    multi_match = True, multi_repo = multi_repo)
+                available_slots |= set(self.open_repository(x[1]).retrieveSlot(
+                        x[0]) for x in r_matches)
+            if len(available_slots) > 1:
+                # more than one slot available
+                # pick the best one by calling atomMatch() without multiMatch
+                c_id, c_rc = self._installed_repository.atomMatch(
+                    dependency)
+                installed_slot = None
+                if c_id != -1:
+                    installed_slot = self._installed_repository.retrieveSlot(
+                            c_id)
+                if installed_slot in available_slots:
+                    # restrict my matching to installed_slot, rewrite
+                    # r_id r_repo
+                    old_r_id = r_id
+                    old_r_repo = r_repo
+                    r_id, r_repo = self.atom_match(
+                        dependency, match_slot = installed_slot)
+                    if const_debug_enabled():
+                        from_atom = self.open_repository(
+                            old_r_repo).retrieveAtom(old_r_id)
+                        to_atom = self.open_repository(
+                            r_repo).retrieveAtom(r_id)
+                        const_debug_write(
+                            __name__,
+                            "_get_unsatisfied_dependencies "
+                            " SLOT intersection: installed: "
+                            "%s, available: %s, from: %s [%s], to: %s [%s]" % (
+                                installed_slot, available_slots,
+                                (old_r_id, old_r_repo),
+                                from_atom, (r_id, r_repo),
+                                to_atom,))
 
             # satisfied dependencies filter support
             # package.satisfied file support
