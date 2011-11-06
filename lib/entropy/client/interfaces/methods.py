@@ -1735,7 +1735,13 @@ class MiscMixin:
         else:
             flags = fcntl.LOCK_EX | fcntl.LOCK_NB
 
-        pid_f = open(pidfile, "a+")
+        try:
+            pid_f = open(pidfile, "a+")
+        except IOError as err:
+            if err.errno in (errno.ENOENT, errno.EACCES):
+                # cannot get lock or dir doesn't exist
+                return False
+            raise
         try:
             fcntl.flock(pid_f.fileno(), flags)
         except IOError as err:
