@@ -137,7 +137,7 @@
     <property name="icon_name">sulfur-icon</property>
     <property name="urgency_hint">True</property>
     <property name="gravity">center</property>
-    <signal name="delete_event" handler="on_addRepoWin_delete_event" swapped="no"/>
+    <signal name="delete_event" handler="on_addRepoWin_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox82">
         <property name="visible">True</property>
@@ -392,7 +392,7 @@ gz</property>
                                             <property name="receives_default">False</property>
                                             <property name="use_action_appearance">False</property>
                                             <property name="use_stock">True</property>
-                                            <signal name="clicked" handler="on_repoMirrorEdit_clicked" swapped="no"/>
+                                            <signal name="clicked" handler="on_repoMirrorEdit_clicked"/>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
@@ -409,7 +409,7 @@ gz</property>
                                             <property name="receives_default">False</property>
                                             <property name="use_action_appearance">False</property>
                                             <property name="use_stock">True</property>
-                                            <signal name="clicked" handler="on_repoMirrorRemove_clicked" swapped="no"/>
+                                            <signal name="clicked" handler="on_repoMirrorRemove_clicked"/>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
@@ -426,7 +426,7 @@ gz</property>
                                             <property name="receives_default">False</property>
                                             <property name="use_action_appearance">False</property>
                                             <property name="use_stock">True</property>
-                                            <signal name="clicked" handler="on_repoMirrorAdd_clicked" swapped="no"/>
+                                            <signal name="clicked" handler="on_repoMirrorAdd_clicked"/>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
@@ -458,7 +458,7 @@ gz</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_mirrorUp_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_mirrorUp_clicked"/>
                                         <child>
                                           <widget class="GtkImage" id="image225">
                                             <property name="visible">True</property>
@@ -479,7 +479,7 @@ gz</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_mirrorDown_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_mirrorDown_clicked"/>
                                         <child>
                                           <widget class="GtkImage" id="image226">
                                             <property name="visible">True</property>
@@ -563,7 +563,7 @@ gz</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_repoInsert_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_repoInsert_clicked"/>
                 <child>
                   <widget class="GtkAlignment" id="alignment79">
                     <property name="visible">True</property>
@@ -620,7 +620,7 @@ gz</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_repoCancel_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_repoCancel_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -639,7 +639,7 @@ gz</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_repoSubmit_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_repoSubmit_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -656,7 +656,7 @@ gz</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_repoSubmitEdit_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_repoSubmitEdit_clicked"/>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -2175,7 +2175,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_installPackageItem_activate" swapped="no"/>
+                        <signal name="activate" handler="on_installPackageItem_activate"/>
                       </widget>
                     </child>
                     <child>
@@ -2186,7 +2186,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">Advanced Mode</property>
                         <property name="use_underline">True</property>
-                        <signal name="toggled" handler="on_advancedMode_toggled" swapped="no"/>
+                        <signal name="toggled" handler="on_advancedMode_toggled"/>
                       </widget>
                     </child>
                     <child>
@@ -2197,7 +2197,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_FileQuit" swapped="no"/>
+                        <signal name="activate" handler="on_FileQuit"/>
                       </widget>
                     </child>
                   </widget>
@@ -2222,7 +2222,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="label" translatable="yes">R_epositories Notice Board</property>
                         <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_noticeBoardMenuItem_activate" swapped="no"/>
+                        <signal name="activate" handler="on_noticeBoardMenuItem_activate"/>
                       </widget>
                     </child>
                   </widget>
@@ -2247,7 +2247,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="tooltip" translatable="yes">Show Sulfur tips and tricks</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">False</property>
-                        <signal name="activate" handler="on_HelpTips" swapped="no"/>
+                        <signal name="activate" handler="on_HelpTips"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="image4">
                             <property name="visible">True</property>
@@ -2265,7 +2265,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
-                        <signal name="activate" handler="on_HelpAbout" swapped="no"/>
+                        <signal name="activate" handler="on_HelpAbout"/>
                       </widget>
                     </child>
                   </widget>
@@ -2285,9 +2285,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
             <property name="can_focus">True</property>
             <property name="border_width">2</property>
             <property name="show_border">False</property>
-            <signal name="change_current_page" handler="on_notebook_change_current_page" swapped="no"/>
-            <signal name="switch_page" handler="on_notebook_switch_page" swapped="no"/>
-            <signal name="select_page" handler="on_notebook_select_page" swapped="no"/>
+            <signal name="change_current_page" handler="on_notebook_change_current_page"/>
+            <signal name="switch_page" handler="on_notebook_switch_page"/>
+            <signal name="select_page" handler="on_notebook_select_page"/>
             <child>
               <widget class="GtkVBox" id="packagesVbox">
                 <property name="visible">True</property>
@@ -2310,7 +2310,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="tooltip" translatable="yes">Download updated repositories containing new applications</property>
                             <property name="use_action_appearance">False</property>
                             <property name="image_position">top</property>
-                            <signal name="clicked" handler="on_repoRefreshButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_repoRefreshButton_clicked"/>
                             <child>
                               <widget class="GtkVBox" id="vbox23">
                                 <property name="visible">True</property>
@@ -2911,8 +2911,8 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="primary_icon_sensitive">True</property>
                                 <property name="secondary_icon_sensitive">True</property>
                                 <property name="primary_icon_tooltip_text">Clear filter bar</property>
-                                <signal name="changed" handler="on_pkg_search_change" swapped="no"/>
-                                <signal name="icon_release" handler="on_pkgFilter_icon_release" swapped="no"/>
+                                <signal name="changed" handler="on_pkg_search_change"/>
+                                <signal name="icon_release" handler="on_pkgFilter_icon_release"/>
                               </widget>
                               <packing>
                                 <property name="expand">True</property>
@@ -2925,7 +2925,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                               <widget class="GtkComboBox" id="pkgSorter">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <signal name="changed" handler="on_pkgSorter_changed" swapped="no"/>
+                                <signal name="changed" handler="on_pkgSorter_changed"/>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -3007,7 +3007,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_focus">True</property>
                         <property name="rules_hint">True</property>
                         <property name="rubber_banding">True</property>
-                        <signal name="cursor_changed" handler="on_pkg_click" swapped="no"/>
+                        <signal name="cursor_changed" handler="on_pkg_click"/>
                       </widget>
                     </child>
                   </widget>
@@ -3062,7 +3062,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="can_default">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_select_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_select_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment23">
                                     <property name="visible">True</property>
@@ -3117,7 +3117,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="can_default">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_deselect_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_deselect_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment40">
                                     <property name="visible">True</property>
@@ -3185,7 +3185,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="has_default">True</property>
                                 <property name="receives_default">False</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_repoRefresh_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_repoRefresh_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment32">
                                     <property name="visible">True</property>
@@ -3266,7 +3266,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_stock">True</property>
-                                <signal name="clicked" handler="on_queueSave_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_queueSave_clicked"/>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -3283,7 +3283,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
                                 <property name="use_stock">True</property>
-                                <signal name="clicked" handler="on_queueOpen_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_queueOpen_clicked"/>
                               </widget>
                               <packing>
                                 <property name="expand">False</property>
@@ -3297,7 +3297,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_queueClean_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_queueClean_clicked"/>
                                 <child>
                                   <widget class="GtkHBox" id="hbox129">
                                     <property name="visible">True</property>
@@ -3401,7 +3401,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="can_default">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_queueProcess_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_queueProcess_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment53">
                                     <property name="visible">True</property>
@@ -3476,7 +3476,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_pkgsetAddButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_pkgsetAddButton_clicked"/>
                             <child>
                               <widget class="GtkAlignment" id="alignment29">
                                 <property name="visible">True</property>
@@ -3532,7 +3532,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_pkgsetRemoveButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_pkgsetRemoveButton_clicked"/>
                             <child>
                               <widget class="GtkAlignment" id="alignment30">
                                 <property name="visible">True</property>
@@ -3587,7 +3587,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_pkgsetEditButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_pkgsetEditButton_clicked"/>
                             <child>
                               <widget class="GtkHBox" id="hbox3">
                                 <property name="visible">True</property>
@@ -3897,7 +3897,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="receives_default">False</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_advInfoButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_advInfoButton_clicked"/>
                         <child>
                           <widget class="GtkVBox" id="vbox39">
                             <property name="visible">True</property>
@@ -4066,7 +4066,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_focus">True</property>
                             <property name="reorderable">True</property>
                             <property name="rubber_banding">True</property>
-                            <signal name="row_activated" handler="on_adv_doubleclick" swapped="no"/>
+                            <signal name="row_activated" handler="on_adv_doubleclick"/>
                           </widget>
                         </child>
                       </widget>
@@ -4096,7 +4096,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_updateAdvSelected_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_updateAdvSelected_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment13">
                             <property name="visible">True</property>
@@ -4151,7 +4151,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_updateAdvAll_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_updateAdvAll_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment14">
                             <property name="visible">True</property>
@@ -4270,7 +4270,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="reorderable">True</property>
-                            <signal name="button_press_event" handler="on_viewRepo_button_press_event" swapped="no"/>
+                            <signal name="button_press_event" handler="on_viewRepo_button_press_event"/>
                           </widget>
                         </child>
                       </widget>
@@ -4292,7 +4292,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_shiftUp_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_shiftUp_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image223">
                                 <property name="visible">True</property>
@@ -4313,7 +4313,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_shiftDown_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_shiftDown_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image224">
                                 <property name="visible">True</property>
@@ -4454,7 +4454,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_addRepo_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_addRepo_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4471,7 +4471,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_removeRepo_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_removeRepo_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4488,7 +4488,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_repoEdit_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_repoEdit_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4522,7 +4522,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_cacheButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_cacheButton_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment80">
                             <property name="visible">True</property>
@@ -4579,7 +4579,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="has_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_repoRefresh_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_repoRefresh_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment81">
                             <property name="visible">True</property>
@@ -4699,7 +4699,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_filesViewChanges_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_filesViewChanges_clicked"/>
                             <child>
                               <widget class="GtkAlignment" id="alignment85">
                                 <property name="visible">True</property>
@@ -4756,7 +4756,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_filesEdit_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_filesEdit_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4771,7 +4771,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_filesMerge_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_filesMerge_clicked"/>
                             <child>
                               <widget class="GtkAlignment" id="alignment84">
                                 <property name="visible">True</property>
@@ -4828,7 +4828,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="receives_default">False</property>
                             <property name="use_action_appearance">False</property>
                             <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_filesDelete_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_filesDelete_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4854,7 +4854,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                           <widget class="GtkTreeView" id="filesView">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <signal name="row_activated" handler="on_filesView_row_activated" swapped="no"/>
+                            <signal name="row_activated" handler="on_filesView_row_activated"/>
                           </widget>
                         </child>
                       </widget>
@@ -4884,7 +4884,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_deleteFiles_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_deleteFiles_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment86">
                             <property name="visible">True</property>
@@ -4939,7 +4939,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="can_default">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_mergeFiles_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_mergeFiles_clicked"/>
                         <child>
                           <widget class="GtkAlignment" id="alignment87">
                             <property name="visible">True</property>
@@ -4995,7 +4995,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_filesViewRefresh_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_filesViewRefresh_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -5064,7 +5064,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="show_border">False</property>
-                    <signal name="switch_page" handler="on_notebook1_switch_page" swapped="no"/>
+                    <signal name="switch_page" handler="on_notebook1_switch_page"/>
                     <child>
                       <widget class="GtkVBox" id="vbox31">
                         <property name="visible">True</property>
@@ -5109,7 +5109,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                             <property name="items" translatable="yes">Disabled
 Removal only
 Install+Removal</property>
-                                            <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                            <signal name="changed" handler="on_Preferences_toggled"/>
                                           </widget>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -5148,7 +5148,7 @@ Install+Removal</property>
                                             <property name="adjustment">1 -19 19 1 10 0</property>
                                             <property name="climb_rate">1</property>
                                             <property name="numeric">True</property>
-                                            <signal name="value_changed" handler="on_Preferences_toggled" swapped="no"/>
+                                            <signal name="value_changed" handler="on_Preferences_toggled"/>
                                           </widget>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -5178,7 +5178,7 @@ Install+Removal</property>
                                             <property name="tooltip" translatable="yes">Entropy can keep a backup of your updated configuration files</property>
                                             <property name="use_action_appearance">False</property>
                                             <property name="draw_indicator">True</property>
-                                            <signal name="toggled" handler="on_Preferences_toggled" swapped="no"/>
+                                            <signal name="toggled" handler="on_Preferences_toggled"/>
                                           </widget>
                                           <packing>
                                             <property name="right_attach">2</property>
@@ -5210,7 +5210,7 @@ Install+Removal</property>
                                             <property name="tooltip" translatable="yes">Prevents files belonging to a package being overwritten by another</property>
                                             <property name="items" translatable="yes">Reliable
 Relaxed</property>
-                                            <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                            <signal name="changed" handler="on_Preferences_toggled"/>
                                           </widget>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -5287,8 +5287,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectSkipNew_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectSkipNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image23">
                                                         <property name="visible">True</property>
@@ -5311,7 +5311,7 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="clicked" handler="on_configProtectSkipEdit_clicked" swapped="no"/>
+                                                    <signal name="clicked" handler="on_configProtectSkipEdit_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image30">
                                                         <property name="visible">True</property>
@@ -5334,8 +5334,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectSkipDelete_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectSkipDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image36">
                                                         <property name="visible">True</property>
@@ -5429,8 +5429,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectMaskNew_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image15">
                                                         <property name="visible">True</property>
@@ -5453,8 +5453,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectMaskEdit_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskEdit_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image29">
                                                         <property name="visible">True</property>
@@ -5477,8 +5477,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectMaskDelete_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image35">
                                                         <property name="visible">True</property>
@@ -5572,8 +5572,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectNew_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image13">
                                                         <property name="visible">True</property>
@@ -5596,8 +5596,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectEdit_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectEdit_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image27">
                                                         <property name="visible">True</property>
@@ -5620,8 +5620,8 @@ Relaxed</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <property name="use_action_appearance">False</property>
-                                                    <signal name="released" handler="on_Preferences_toggled" swapped="no"/>
-                                                    <signal name="clicked" handler="on_configProtectDelete_clicked" swapped="no"/>
+                                                    <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image33">
                                                         <property name="visible">True</property>
@@ -5726,7 +5726,7 @@ Relaxed</property>
                                         <property name="secondary_icon_activatable">False</property>
                                         <property name="primary_icon_sensitive">True</property>
                                         <property name="secondary_icon_sensitive">True</property>
-                                        <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                        <signal name="changed" handler="on_Preferences_toggled"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -5746,7 +5746,7 @@ Relaxed</property>
                                         <property name="secondary_icon_activatable">False</property>
                                         <property name="primary_icon_sensitive">True</property>
                                         <property name="secondary_icon_sensitive">True</property>
-                                        <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                        <signal name="changed" handler="on_Preferences_toggled"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -5812,7 +5812,7 @@ Relaxed</property>
                                         <property name="primary_icon_sensitive">True</property>
                                         <property name="secondary_icon_sensitive">True</property>
                                         <property name="adjustment">0 0 99999 1 100 0</property>
-                                        <signal name="value_changed" handler="on_Preferences_toggled" swapped="no"/>
+                                        <signal name="value_changed" handler="on_Preferences_toggled"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -5846,7 +5846,7 @@ Relaxed</property>
                                         <property name="secondary_icon_activatable">False</property>
                                         <property name="primary_icon_sensitive">True</property>
                                         <property name="secondary_icon_sensitive">True</property>
-                                        <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                        <signal name="changed" handler="on_Preferences_toggled"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -5866,7 +5866,7 @@ Relaxed</property>
                                         <property name="secondary_icon_activatable">False</property>
                                         <property name="primary_icon_sensitive">True</property>
                                         <property name="secondary_icon_sensitive">True</property>
-                                        <signal name="changed" handler="on_Preferences_toggled" swapped="no"/>
+                                        <signal name="changed" handler="on_Preferences_toggled"/>
                                       </widget>
                                       <packing>
                                         <property name="left_attach">1</property>
@@ -5985,7 +5985,7 @@ Relaxed</property>
                                         <property name="receives_default">True</property>
                                         <property name="tooltip" translatable="yes">Generate login information</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_ugcLoginButton_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_ugcLoginButton_clicked"/>
                                         <child>
                                           <widget class="GtkImage" id="image3">
                                             <property name="visible">True</property>
@@ -6007,7 +6007,7 @@ Relaxed</property>
                                         <property name="receives_default">True</property>
                                         <property name="tooltip" translatable="yes">Discard login information</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_ugcClearLoginButton_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_ugcClearLoginButton_clicked"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox44">
                                             <property name="visible">True</property>
@@ -6052,7 +6052,7 @@ Relaxed</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_ugcClearCredentialsButton_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_ugcClearCredentialsButton_clicked"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox45">
                                             <property name="visible">True</property>
@@ -6152,7 +6152,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image78">
                                         <property name="visible">True</property>
@@ -6174,7 +6174,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6207,7 +6207,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image87">
                                         <property name="visible">True</property>
@@ -6229,7 +6229,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6266,7 +6266,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image86">
                                         <property name="visible">True</property>
@@ -6288,7 +6288,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6325,7 +6325,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image91">
                                         <property name="visible">True</property>
@@ -6347,7 +6347,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6386,7 +6386,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image90">
                                         <property name="visible">True</property>
@@ -6408,7 +6408,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6445,7 +6445,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image93">
                                         <property name="visible">True</property>
@@ -6467,7 +6467,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6506,7 +6506,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image92">
                                         <property name="visible">True</property>
@@ -6528,7 +6528,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6565,7 +6565,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image94">
                                         <property name="visible">True</property>
@@ -6587,7 +6587,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6626,7 +6626,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image95">
                                         <property name="visible">True</property>
@@ -6648,7 +6648,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6708,7 +6708,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image79">
                                         <property name="visible">True</property>
@@ -6730,7 +6730,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6763,7 +6763,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image81">
                                         <property name="visible">True</property>
@@ -6785,7 +6785,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6822,7 +6822,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image82">
                                         <property name="visible">True</property>
@@ -6844,7 +6844,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6881,7 +6881,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image80">
                                         <property name="visible">True</property>
@@ -6903,7 +6903,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6942,7 +6942,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image83">
                                         <property name="visible">True</property>
@@ -6964,7 +6964,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7001,7 +7001,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image85">
                                         <property name="visible">True</property>
@@ -7023,7 +7023,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7062,7 +7062,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image88">
                                         <property name="visible">True</property>
@@ -7084,7 +7084,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7121,7 +7121,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image89">
                                         <property name="visible">True</property>
@@ -7143,7 +7143,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7182,7 +7182,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image96">
                                         <property name="visible">True</property>
@@ -7204,7 +7204,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7241,7 +7241,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_color_reset" swapped="no"/>
+                                    <signal name="clicked" handler="on_color_reset"/>
                                     <child>
                                       <widget class="GtkImage" id="image1">
                                         <property name="visible">True</property>
@@ -7263,7 +7263,7 @@ Relaxed</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
                                     <property name="color">#000000000000</property>
-                                    <signal name="color_set" handler="on_ui_color_set" swapped="no"/>
+                                    <signal name="color_set" handler="on_ui_color_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -7409,7 +7409,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_dbBackupButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_dbBackupButton_clicked"/>
                                     <child>
                                       <widget class="GtkVBox" id="vbox105">
                                         <property name="visible">True</property>
@@ -7453,7 +7453,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_dbRestoreButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_dbRestoreButton_clicked"/>
                                     <child>
                                       <widget class="GtkVBox" id="vbox106">
                                         <property name="visible">True</property>
@@ -7497,7 +7497,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_dbDeleteButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_dbDeleteButton_clicked"/>
                                     <child>
                                       <widget class="GtkVBox" id="vbox107">
                                         <property name="visible">True</property>
@@ -7586,7 +7586,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_deptestButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_deptestButton_clicked"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox118">
                                         <property name="visible">True</property>
@@ -7630,7 +7630,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_libtestButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_libtestButton_clicked"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox119">
                                         <property name="visible">True</property>
@@ -7716,7 +7716,7 @@ Relaxed</property>
                         <property name="receives_default">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_preferencesRestoreButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_preferencesRestoreButton_clicked"/>
                         <child>
                           <widget class="GtkHBox" id="hbox16">
                             <property name="visible">True</property>
@@ -7765,7 +7765,7 @@ Relaxed</property>
                         <property name="receives_default">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="use_action_appearance">False</property>
-                        <signal name="clicked" handler="on_preferencesSaveButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_preferencesSaveButton_clicked"/>
                         <child>
                           <widget class="GtkHBox" id="hbox15">
                             <property name="visible">True</property>
@@ -7965,7 +7965,7 @@ Relaxed</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_skipMirror_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_skipMirror_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment52">
                                     <property name="visible">True</property>
@@ -8018,7 +8018,7 @@ Relaxed</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="use_action_appearance">False</property>
-                                <signal name="clicked" handler="on_abortQueue_clicked" swapped="no"/>
+                                <signal name="clicked" handler="on_abortQueue_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment6">
                                     <property name="visible">True</property>
@@ -8354,7 +8354,7 @@ Relaxed</property>
     <property name="window_position">center-always</property>
     <property name="default_width">500</property>
     <property name="default_height">310</property>
-    <signal name="delete_event" handler="on_noticeBoardWindow_delete_event" swapped="no"/>
+    <signal name="delete_event" handler="on_noticeBoardWindow_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox101">
         <property name="visible">True</property>
@@ -8431,7 +8431,7 @@ Relaxed</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                         <property name="reorderable">True</property>
                         <property name="rubber_banding">True</property>
-                        <signal name="row_activated" handler="on_noticeView_row_activated" swapped="no"/>
+                        <signal name="row_activated" handler="on_noticeView_row_activated"/>
                       </widget>
                     </child>
                   </widget>
@@ -8467,7 +8467,7 @@ Relaxed</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
                 <property name="draw_indicator">True</property>
-                <signal name="toggled" handler="on_noticeBoardStfu_toggled" swapped="no"/>
+                <signal name="toggled" handler="on_noticeBoardStfu_toggled"/>
               </widget>
               <packing>
                 <property name="expand">True</property>
@@ -8488,7 +8488,7 @@ Relaxed</property>
                     <property name="receives_default">True</property>
                     <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
-                    <signal name="clicked" handler="on_closeNoticeBoardButton_clicked" swapped="no"/>
+                    <signal name="clicked" handler="on_closeNoticeBoardButton_clicked"/>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -8525,7 +8525,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_install_activate" swapped="no"/>
+        <signal name="activate" handler="on_install_activate"/>
       </widget>
     </child>
     <child>
@@ -8537,7 +8537,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoinstall_activate"/>
       </widget>
     </child>
     <child>
@@ -8549,7 +8549,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_maskinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_maskinstall_activate"/>
       </widget>
     </child>
   </widget>
@@ -8564,7 +8564,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_reinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_reinstall_activate"/>
       </widget>
     </child>
     <child>
@@ -8576,7 +8576,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoreinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoreinstall_activate"/>
       </widget>
     </child>
     <child>
@@ -8588,7 +8588,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_remove_activate" swapped="no"/>
+        <signal name="activate" handler="on_remove_activate"/>
       </widget>
     </child>
     <child>
@@ -8600,7 +8600,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoremove_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoremove_activate"/>
       </widget>
     </child>
     <child>
@@ -8612,7 +8612,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_purge_activate" swapped="no"/>
+        <signal name="activate" handler="on_purge_activate"/>
       </widget>
     </child>
     <child>
@@ -8624,7 +8624,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undopurge_activate" swapped="no"/>
+        <signal name="activate" handler="on_undopurge_activate"/>
       </widget>
     </child>
     <child>
@@ -8637,7 +8637,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_unmask_activate" swapped="no"/>
+        <signal name="activate" handler="on_unmask_activate"/>
       </widget>
     </child>
     <child>
@@ -8649,7 +8649,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_mask_activate" swapped="no"/>
+        <signal name="activate" handler="on_mask_activate"/>
       </widget>
     </child>
     <child>
@@ -8659,7 +8659,7 @@ Relaxed</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_updateinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_updateinstall_activate"/>
         <child internal-child="image">
           <widget class="GtkImage" id="image1">
             <property name="visible">True</property>
@@ -8676,7 +8676,7 @@ Relaxed</property>
         <property name="can_focus">False</property>
         <property name="use_action_appearance">False</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoupdateinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoupdateinstall_activate"/>
         <child internal-child="image">
           <widget class="GtkImage" id="image2">
             <property name="visible">True</property>
@@ -8697,8 +8697,8 @@ Relaxed</property>
     <property name="default_height">300</property>
     <property name="destroy_with_parent">True</property>
     <property name="urgency_hint">True</property>
-    <signal name="destroy_event" handler="on_packageMaskWindow_destroy_event" swapped="no"/>
-    <signal name="delete_event" handler="on_packageMaskWindow_delete_event" swapped="no"/>
+    <signal name="destroy_event" handler="on_packageMaskWindow_destroy_event"/>
+    <signal name="delete_event" handler="on_packageMaskWindow_delete_event"/>
     <child>
       <widget class="GtkAlignment" id="alignment24">
         <property name="visible">True</property>
@@ -9013,7 +9013,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_pkgsetInstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_pkgsetInstall_activate"/>
       </widget>
     </child>
     <child>
@@ -9025,7 +9025,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_pkgsetUndoinstall_activate" swapped="no"/>
+        <signal name="activate" handler="on_pkgsetUndoinstall_activate"/>
       </widget>
     </child>
     <child>
@@ -9037,7 +9037,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_pkgsetRemove_activate" swapped="no"/>
+        <signal name="activate" handler="on_pkgsetRemove_activate"/>
       </widget>
     </child>
     <child>
@@ -9049,7 +9049,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_pkgsetUndoremove_activate" swapped="no"/>
+        <signal name="activate" handler="on_pkgsetUndoremove_activate"/>
       </widget>
     </child>
   </widget>
@@ -9064,7 +9064,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_update_activate" swapped="no"/>
+        <signal name="activate" handler="on_update_activate"/>
       </widget>
     </child>
     <child>
@@ -9076,7 +9076,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoupdate_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoupdate_activate"/>
       </widget>
     </child>
     <child>
@@ -9087,7 +9087,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_remove_activate" swapped="no"/>
+        <signal name="activate" handler="on_remove_activate"/>
       </widget>
     </child>
     <child>
@@ -9098,7 +9098,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undoremove_activate" swapped="no"/>
+        <signal name="activate" handler="on_undoremove_activate"/>
       </widget>
     </child>
     <child>
@@ -9109,7 +9109,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_purge_activate" swapped="no"/>
+        <signal name="activate" handler="on_purge_activate"/>
       </widget>
     </child>
     <child>
@@ -9120,7 +9120,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_undopurge_activate" swapped="no"/>
+        <signal name="activate" handler="on_undopurge_activate"/>
       </widget>
     </child>
     <child>
@@ -9132,7 +9132,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
-        <signal name="activate" handler="on_updateMask_activate" swapped="no"/>
+        <signal name="activate" handler="on_updateMask_activate"/>
       </widget>
     </child>
   </widget>
@@ -9142,7 +9142,7 @@ Relaxed</property>
     <property name="title" translatable="yes">Package Information</property>
     <property name="window_position">center-always</property>
     <property name="default_width">630</property>
-    <signal name="delete_event" handler="on_pkgInfo_delete_event" swapped="no"/>
+    <signal name="delete_event" handler="on_pkgInfo_delete_event"/>
     <child>
       <widget class="GtkFrame" id="frame6">
         <property name="visible">True</property>
@@ -9190,8 +9190,8 @@ Relaxed</property>
                           <widget class="GtkEventBox" id="starsEvent">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <signal name="leave_notify_event" handler="on_starsEvent_leave_notify_event" swapped="no"/>
-                            <signal name="enter_notify_event" handler="on_starsEvent_enter_notify_event" swapped="no"/>
+                            <signal name="leave_notify_event" handler="on_starsEvent_leave_notify_event"/>
+                            <signal name="enter_notify_event" handler="on_starsEvent_enter_notify_event"/>
                             <child>
                               <widget class="GtkHBox" id="hbox36">
                                 <property name="visible">True</property>
@@ -9200,9 +9200,9 @@ Relaxed</property>
                                   <widget class="GtkEventBox" id="starEvent1">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="leave_notify_event" handler="on_star1_leave_notify_event" swapped="no"/>
-                                    <signal name="button_release_event" handler="on_starEvent1_button_release_event" swapped="no"/>
-                                    <signal name="enter_notify_event" handler="on_star1_enter_notify_event" swapped="no"/>
+                                    <signal name="leave_notify_event" handler="on_star1_leave_notify_event"/>
+                                    <signal name="button_release_event" handler="on_starEvent1_button_release_event"/>
+                                    <signal name="enter_notify_event" handler="on_star1_enter_notify_event"/>
                                     <child>
                                       <widget class="GtkImage" id="vote1">
                                         <property name="visible">True</property>
@@ -9222,9 +9222,9 @@ Relaxed</property>
                                   <widget class="GtkEventBox" id="starEvent2">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="leave_notify_event" handler="on_star2_leave_notify_event" swapped="no"/>
-                                    <signal name="button_release_event" handler="on_starEvent2_button_release_event" swapped="no"/>
-                                    <signal name="enter_notify_event" handler="on_star2_enter_notify_event" swapped="no"/>
+                                    <signal name="leave_notify_event" handler="on_star2_leave_notify_event"/>
+                                    <signal name="button_release_event" handler="on_starEvent2_button_release_event"/>
+                                    <signal name="enter_notify_event" handler="on_star2_enter_notify_event"/>
                                     <child>
                                       <widget class="GtkImage" id="vote2">
                                         <property name="visible">True</property>
@@ -9244,9 +9244,9 @@ Relaxed</property>
                                   <widget class="GtkEventBox" id="starEvent3">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="leave_notify_event" handler="on_star3_leave_notify_event" swapped="no"/>
-                                    <signal name="button_release_event" handler="on_starEvent3_button_release_event" swapped="no"/>
-                                    <signal name="enter_notify_event" handler="on_star3_enter_notify_event" swapped="no"/>
+                                    <signal name="leave_notify_event" handler="on_star3_leave_notify_event"/>
+                                    <signal name="button_release_event" handler="on_starEvent3_button_release_event"/>
+                                    <signal name="enter_notify_event" handler="on_star3_enter_notify_event"/>
                                     <child>
                                       <widget class="GtkImage" id="vote3">
                                         <property name="visible">True</property>
@@ -9266,9 +9266,9 @@ Relaxed</property>
                                   <widget class="GtkEventBox" id="starEvent4">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="leave_notify_event" handler="on_star4_leave_notify_event" swapped="no"/>
-                                    <signal name="button_release_event" handler="on_starEvent4_button_release_event" swapped="no"/>
-                                    <signal name="enter_notify_event" handler="on_star4_enter_notify_event" swapped="no"/>
+                                    <signal name="leave_notify_event" handler="on_star4_leave_notify_event"/>
+                                    <signal name="button_release_event" handler="on_starEvent4_button_release_event"/>
+                                    <signal name="enter_notify_event" handler="on_star4_enter_notify_event"/>
                                     <child>
                                       <widget class="GtkImage" id="vote4">
                                         <property name="visible">True</property>
@@ -9288,16 +9288,16 @@ Relaxed</property>
                                   <widget class="GtkEventBox" id="starEvent5">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="leave_notify_event" handler="on_star5_leave_notify_event" swapped="no"/>
-                                    <signal name="button_release_event" handler="on_starEvent5_button_release_event" swapped="no"/>
-                                    <signal name="enter_notify_event" handler="on_star5_enter_notify_event" swapped="no"/>
+                                    <signal name="leave_notify_event" handler="on_star5_leave_notify_event"/>
+                                    <signal name="button_release_event" handler="on_starEvent5_button_release_event"/>
+                                    <signal name="enter_notify_event" handler="on_star5_enter_notify_event"/>
                                     <child>
                                       <widget class="GtkImage" id="vote5">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="events"></property>
                                         <property name="stock">gtk-missing-image</property>
-                                        <signal name="enter_notify_event" handler="on_vote_event" swapped="no"/>
+                                        <signal name="enter_notify_event" handler="on_vote_event"/>
                                       </widget>
                                     </child>
                                   </widget>
@@ -9417,8 +9417,8 @@ Relaxed</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="delete_event" handler="on_closeInfo_delete_event" swapped="no"/>
-                            <signal name="clicked" handler="on_closeInfo_clicked" swapped="no"/>
+                            <signal name="delete_event" handler="on_closeInfo_delete_event"/>
+                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image14">
                                 <property name="visible">True</property>
@@ -9449,7 +9449,7 @@ Relaxed</property>
                     <property name="can_focus">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <property name="scrollable">True</property>
-                    <signal name="switch_page" handler="on_infoBook_switch_page" swapped="no"/>
+                    <signal name="switch_page" handler="on_infoBook_switch_page"/>
                     <child>
                       <widget class="GtkVBox" id="vbox12">
                         <property name="visible">True</property>
@@ -9913,7 +9913,7 @@ Relaxed</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="use_action_appearance">False</property>
-                                    <signal name="clicked" handler="on_showChangeLogButton_clicked" swapped="no"/>
+                                    <signal name="clicked" handler="on_showChangeLogButton_clicked"/>
                                     <child>
                                       <widget class="GtkHBox" id="hbox134">
                                         <property name="visible">True</property>
@@ -10167,7 +10167,7 @@ Relaxed</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <signal name="row_activated" handler="on_license_double_clicked" swapped="no"/>
+                                    <signal name="row_activated" handler="on_license_double_clicked"/>
                                   </widget>
                                 </child>
                               </widget>
@@ -10514,7 +10514,7 @@ Relaxed</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="level_indentation">2</property>
-                                        <signal name="row_activated" handler="on_ugc_doubleclick" swapped="no"/>
+                                        <signal name="row_activated" handler="on_ugc_doubleclick"/>
                                       </widget>
                                     </child>
                                   </widget>
@@ -10553,7 +10553,7 @@ Relaxed</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
                                             <property name="use_action_appearance">False</property>
-                                            <signal name="clicked" handler="on_ugcAddButton_clicked" swapped="no"/>
+                                            <signal name="clicked" handler="on_ugcAddButton_clicked"/>
                                             <child>
                                               <widget class="GtkHBox" id="hbox34">
                                                 <property name="visible">True</property>
@@ -10597,7 +10597,7 @@ Relaxed</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
                                             <property name="use_action_appearance">False</property>
-                                            <signal name="released" handler="on_ugcRemoveButton_released" swapped="no"/>
+                                            <signal name="released" handler="on_ugcRemoveButton_released"/>
                                             <child>
                                               <widget class="GtkHBox" id="hbox35">
                                                 <property name="visible">True</property>
@@ -10653,7 +10653,7 @@ Relaxed</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">True</property>
                                             <property name="use_action_appearance">False</property>
-                                            <signal name="clicked" handler="on_ugcShowButton_clicked" swapped="no"/>
+                                            <signal name="clicked" handler="on_ugcShowButton_clicked"/>
                                             <child>
                                               <widget class="GtkHBox" id="hbox37">
                                                 <property name="visible">True</property>
@@ -10706,7 +10706,7 @@ Relaxed</property>
                                         <property name="has_tooltip">True</property>
                                         <property name="tooltip" translatable="yes">Load User Generated Content</property>
                                         <property name="use_action_appearance">False</property>
-                                        <signal name="clicked" handler="on_loadUgcButton_clicked" swapped="no"/>
+                                        <signal name="clicked" handler="on_loadUgcButton_clicked"/>
                                         <child>
                                           <widget class="GtkImage" id="refreshImage">
                                             <property name="visible">True</property>
@@ -10988,7 +10988,7 @@ Relaxed</property>
                 <property name="has_tooltip">True</property>
                 <property name="tooltip" translatable="yes">Mark as read</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_rmNoticeBoardMarkRead_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_rmNoticeBoardMarkRead_clicked"/>
                 <child>
                   <widget class="GtkImage" id="image2">
                     <property name="visible">True</property>
@@ -11011,7 +11011,7 @@ Relaxed</property>
                 <property name="has_tooltip">True</property>
                 <property name="tooltip" translatable="yes">Close notice</property>
                 <property name="use_action_appearance">False</property>
-                <signal name="clicked" handler="on_rmNoticeBoardCloseButton_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_rmNoticeBoardCloseButton_clicked"/>
                 <child>
                   <widget class="GtkImage" id="image3">
                     <property name="visible">True</property>
@@ -11044,7 +11044,7 @@ Relaxed</property>
     <property name="title" translatable="yes">Tips 'n tricks</property>
     <property name="window_position">center-on-parent</property>
     <property name="icon_name">dialog-information</property>
-    <signal name="delete_event" handler="on_sulfurTips_delete_event" swapped="no"/>
+    <signal name="delete_event" handler="on_sulfurTips_delete_event"/>
     <child>
       <widget class="GtkAlignment" id="alignment1">
         <property name="visible">True</property>
@@ -11142,7 +11142,7 @@ Relaxed</property>
                     <property name="use_action_appearance">False</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_sulfurTipShowStartup_toggled" swapped="no"/>
+                    <signal name="toggled" handler="on_sulfurTipShowStartup_toggled"/>
                   </widget>
                   <packing>
                     <property name="expand">True</property>
@@ -11164,7 +11164,7 @@ Relaxed</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_sulfurTipsPrevButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_sulfurTipsPrevButton_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -11180,7 +11180,7 @@ Relaxed</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_sulfurTipsNextButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_sulfurTipsNextButton_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -11196,7 +11196,7 @@ Relaxed</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_sulfurTipsCloseButton_clicked" swapped="no"/>
+                        <signal name="clicked" handler="on_sulfurTipsCloseButton_clicked"/>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -11234,7 +11234,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <signal name="activate" handler="on_terminal_copy_activate" swapped="no"/>
+        <signal name="activate" handler="on_terminal_copy_activate"/>
       </widget>
     </child>
     <child>
@@ -11245,7 +11245,7 @@ Relaxed</property>
         <property name="use_action_appearance">False</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
-        <signal name="activate" handler="on_terminal_clear_activate" swapped="no"/>
+        <signal name="activate" handler="on_terminal_clear_activate"/>
       </widget>
     </child>
   </widget>
@@ -11472,7 +11472,7 @@ Relaxed</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_closeAdd_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_closeAdd_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image26">
                                 <property name="visible">True</property>
@@ -11513,7 +11513,7 @@ Relaxed</property>
                           <widget class="GtkComboBox" id="ugcAddTypeCombo">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <signal name="changed" handler="on_ugcAddTypeCombo_changed" swapped="no"/>
+                            <signal name="changed" handler="on_ugcAddTypeCombo_changed"/>
                           </widget>
                           <packing>
                             <property name="left_attach">1</property>
@@ -11645,7 +11645,7 @@ Relaxed</property>
                                   <widget class="GtkFileChooserButton" id="ugcAddFileChooser">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <signal name="file_set" handler="on_ugcAddFileChooser_file_set" swapped="no"/>
+                                    <signal name="file_set" handler="on_ugcAddFileChooser_file_set"/>
                                   </widget>
                                   <packing>
                                     <property name="expand">True</property>
@@ -11726,7 +11726,7 @@ Relaxed</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_submitButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_submitButton_clicked"/>
                             <child>
                               <widget class="GtkHBox" id="hbox41">
                                 <property name="visible">True</property>
@@ -11941,8 +11941,8 @@ Relaxed</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="delete_event" handler="on_closeInfo_clicked" swapped="no"/>
-                            <signal name="clicked" handler="on_closeInfo_clicked" swapped="no"/>
+                            <signal name="delete_event" handler="on_closeInfo_clicked"/>
+                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image20">
                                 <property name="visible">True</property>
@@ -12173,7 +12173,7 @@ Relaxed</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="use_action_appearance">False</property>
-                            <signal name="clicked" handler="on_getButton_clicked" swapped="no"/>
+                            <signal name="clicked" handler="on_getButton_clicked"/>
                             <child>
                               <widget class="GtkHBox" id="hbox38">
                                 <property name="visible">True</property>
