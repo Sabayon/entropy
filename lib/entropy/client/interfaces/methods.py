@@ -526,6 +526,7 @@ class RepositoryMixin:
             if err.errno != errno.ENOENT:
                 raise
 
+        accomplished = False
         new_content = []
         for line in content:
             key, value = entropy.tools.extract_setting(line)
