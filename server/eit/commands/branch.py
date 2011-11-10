@@ -14,7 +14,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import bold, purple, darkgreen, blue
+from entropy.output import bold, purple, darkgreen, blue, teal
 
 import entropy.tools
 
@@ -37,6 +37,7 @@ class EitBranch(EitCommand):
         self._to_branch = None
         self._repository_id = None
         self._ask = True
+        self._copy = True
 
     def _get_parser(self):
         """ Overridden from EitCommand """
@@ -59,7 +60,29 @@ class EitBranch(EitCommand):
         parser.add_argument("--from", metavar="<branch>",
                             help=_("from branch"),
                             dest="frombranch", default=None)
+        parser.add_argument("--no-copy", action="store_true",
+                            default=not self._copy, dest="nocopy",
+                            help=_("don't copy packages from branch"))
         return parser
+
+    INTRODUCTION = """\
+Switch to given branch. This will cause the creation of a
+separate repository database on disk and remotely, taking the
+name of the branch argument passed.
+Only one branch should be used at the same time, but nothing
+will prevent you from interleaving them.
+Generally, this feature is used to switch the repository to a
+new branch, copying all the packages over (default behaviour).
+To just switch to an empty branch without copying the packages
+over just use the *--no-copy* switch.
+"""
+    SEE_ALSO = ""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
 
     def parse(self):
         """ Overridden from EitCommand """
@@ -73,6 +96,7 @@ class EitBranch(EitCommand):
         self._to_branch = nsargs.branch
         self._repository_id = nsargs.repo
         self._ask = not nsargs.quick
+        self._copy = not nsargs.nocopy
         return self._call_locked, [self._branch, self._repository_id]
 
     def _branch(self, entropy_server):
@@ -111,21 +135,22 @@ class EitBranch(EitCommand):
         pkglist = dbconn_old.listAllPackageIds()
 
         if not pkglist:
-            entropy_server.output(
-                purple(_("No packages found")),
-                importance=1, level="error")
-            return 1
+            if self._copy:
+                entropy_server.output(
+                    purple(_("No packages to copy")),
+                    importance=1, level="error")
+        else:
+            if self._copy:
+                entropy_server.output(
+                    "%s %s %s: %s" % (
+                        len(pkglist),
+                        darkgreen(_("packages")),
+                        blue(_("would be copied to branch")),
+                        bold(self._to_branch),
+                        ),
+                    header=darkgreen(" @@ "))
 
-        entropy_server.output(
-            "%s %s %s: %s" % (
-                len(pkglist),
-                darkgreen(_("packages")),
-                blue(_("would be copied to branch")),
-                bold(self._to_branch),
-            ),
-            header=darkgreen(" @@ "))
-
-        if self._ask:
+        if self._ask and pkglist and self._copy:
             resp = entropy_server.ask_question(
                 _("Would you like to continue ?"))
             if resp == _("No"):
@@ -133,6 +158,16 @@ class EitBranch(EitCommand):
 
         # set branch to new branch first
         entropy_server.set_branch(self._to_branch)
+        if (not pkglist) or (not self._copy):
+            entropy_server.output(
+                "[%s] %s: %s" % (
+                    blue(entropy_server.repository()),
+                    teal(_("switched to branch")),
+                    purple(self._to_branch),
+                    ),
+                header=darkgreen(" @@ "))
+            return 0
+
         status = None
         try:
             status = entropy_server._switch_packages_branch(
