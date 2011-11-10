@@ -47,7 +47,7 @@ class EitHelp(EitCommand):
             if name == EitHelp.NAME:
                 # do not add self
                 continue
-            outcome.append(descriptor.get_name())
+            outcome.append(name)
             aliases = descriptor.get_class().ALIASES
             outcome.extend(aliases)
 

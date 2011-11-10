@@ -2,4 +2,5 @@
 *.pyo
 misc/po/*.mo
 *.directory
+server/doc/man/*.1
 #*#

@@ -26,6 +26,14 @@ class EitRepack(EitCommit):
     NAME = "repack"
     ALIASES = ["rp"]
 
+    INTRODUCTION = """\
+Recrate the whole Entropy package from live system through
+the Source Package Manager. This allows the latter to regenerate
+its metadata (useful in case of dependency changes).
+The package must be already available in the queried repository.
+"""
+    SEE_ALSO = "eit-add(1), eit-commit(1)"
+
     def _get_parser(self):
         """ Overridden from EitCommit """
         descriptor = EitCommandDescriptor.obtain_descriptor(

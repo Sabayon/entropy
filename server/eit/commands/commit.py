@@ -95,6 +95,67 @@ class EitCommit(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Committing to a repository means adding all the unstaged packages
+to the same. Unstaged packages are those packages that have just
+been compiled but not yet added to any repository.
+If you are familiar with git, this maps to *git commit -a*.
+If you would like to selectively add certain packages, please see
+*eit-add*(1).
+"""
+    SEE_ALSO = "eit-add(1), eit-repack(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        parser = self._get_parser()
+        prog = "%s %s" % ("eit", self.NAME)
+        formatter = parser.formatter_class(prog=prog)
+        usage = formatter._format_usage(parser.usage,
+                            parser._actions,
+                            parser._mutually_exclusive_groups,
+                            "").rstrip()
+
+        options_txt = []
+        action_groups = parser._action_groups
+        if action_groups:
+            options_header = "\"eit " + self.NAME + "\" "
+            options_header += "supports the following options which "
+            options_header += "alters its behaviour.\n\n"
+            options_txt.append(options_header)
+
+        for group in action_groups:
+            options_txt.append(group.title.upper())
+            options_txt.append("~" * len(group.title))
+            for action in group._group_actions:
+                action_name = action.metavar
+
+                option_strings = action.option_strings
+                if not option_strings:
+                    # positional args
+                    action_str = "*" + action_name + "*::\n"
+                    action_str += "    " + action.help + "\n"
+                else:
+                    action_str = ""
+                    for option_str in option_strings:
+                        action_str = "*" + option_str + "*"
+                        if action_name:
+                            action_str += "=" + action_name
+                        action_str += "::\n"
+                        action_str += "    " + action.help + "\n"
+                options_txt.append(action_str)
+
+        data = {
+            'name': self.NAME,
+            'description': parser.description,
+            'introduction': self.INTRODUCTION,
+            'seealso': self.SEE_ALSO,
+            'synopsis': usage,
+            'options': "\n".join(options_txt),
+        }
+        return data
+
     def parse(self):
         parser = self._get_parser()
         try:

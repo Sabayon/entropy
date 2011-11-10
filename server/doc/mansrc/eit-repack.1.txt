@@ -1,0 +1,61 @@
+eit-repack(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-repack - rebuild packages in repository
+
+
+SYNOPSIS
+--------
+eit repack [-h] [--in <repository>] <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Recrate the whole Entropy package from live system through
+the Source Package Manager. This allows the latter to regenerate
+its metadata (useful in case of dependency changes).
+The package must be already available in the queried repository.
+
+
+
+OPTIONS
+-------
+"eit repack" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package names
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--in*=<repository>::
+    repack to given repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-add(1), eit-commit(1)

@@ -67,6 +67,16 @@ class EitCommand(object):
         """
         raise NotImplementedError()
 
+    def man(self):
+        """
+        Return a dictionary containing the following man
+        entries (in a2x format), excluding the entry title:
+        name, synopsis, introduction, options.
+        Optional keys are: seealso.
+        All of them are mandatory.
+        """
+        raise NotImplementedError()
+
     def _entropy(self, *args, **kwargs):
         """
         Return the Entropy Server object.

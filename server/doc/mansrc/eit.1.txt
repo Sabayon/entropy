@@ -1,0 +1,165 @@
+EIT(1)
+======
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit - Entropy Infrastructure Toolkit.
+
+
+SYNOPSIS
+--------
+*eit* [command] [command options]
+
+
+INTRODUCTION
+------------
+Eit is a tool for creating, managing and tracking Entropy repositories.
+It is highly inspired to the "Git" way of doing things (add, commit,
+checkout, etc) and puts ease of use on top of its priorities.
+With this tool, anybody can create his/her own repository and serve
+users custom packages or even a whole full-featured repository living
+inside a dedicated chroot!
+
+
+USAGE
+-----
+Eit has a modular design, commands can be added and removed in a pluggable
+way. There are however a set of built-in commands that are shipped with
+the default Eit distribution.
+
+
+OPTIONS
+-------
+*--help*::
+    Show Eit Help, listing all the runtime available commands.
+
+
+COMMANDS
+--------
+*add*::
+    commit to repository the provided packages
+
+*branch*::
+    manage repository branches
+
+*bump*::
+    bump repository revision, force push
+
+*checkout [co]*::
+    switch from a repository to another
+
+*cleanup [cn, clean]*::
+    clean expired packages from a repository
+
+*commit [ci]*::
+    commit changes to repository
+
+*cp*::
+    copy packages from a repository to another
+
+*deps*::
+    edit dependencies for packages in repository
+
+*files [f]*::
+    show files owned by packages
+
+*graph*::
+    show dependency graph for packages
+
+*help [-h, --help]*::
+    this help
+
+*init*::
+    initialize repository (erasing all its content)
+
+*inject [fit]*::
+    inject package files into repository
+
+*key*::
+    manage repository GPG keys
+
+*list*::
+    show repository content (packages)
+
+*lock*::
+    lock repository
+
+*log*::
+    show log for repository
+
+*match*::
+    match packages in repositories
+
+*merge*::
+    merge branch into current
+
+*mv*::
+    move packages from a repository to another
+
+*notice*::
+    manage repository notice-board
+
+*own*::
+    search packages owning paths
+
+*pkgmove*::
+    edit automatic package moves for repository
+
+*push [pull, sync]*::
+    push (or pull) repository packages and metadata
+
+*query [q]*::
+    miscellaneous package metadata queries
+
+*remove [rm]*::
+    remove packages from repository
+
+*repack [rp]*::
+    rebuild packages in repository
+
+*repo*::
+    show current repository
+
+*reset*::
+    reset repository to remote status
+
+*revgraph*::
+    show reverse dependency graph for packages
+
+*search*::
+    search packages in repositories
+
+*status [st]*::
+    show repository status
+
+*test*::
+    run QA tests
+
+*unlock*::
+    unlock repository
+
+*vacuum*::
+    clean expired/removed packages from repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit-add(1), eit-commit(1), eit-repack(1)
+    

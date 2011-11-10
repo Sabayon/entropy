@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = magneto misc/po sulfur
+SUBDIRS = server magneto misc/po sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py server_query.py
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
@@ -48,21 +48,6 @@ entropy-install:
 
 	install -m 644 docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
 
-entropy-server-install:
-
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/server
-	mkdir -p $(DESTDIR)/etc/entropy
-	mkdir -p $(DESTDIR)$(PREFIX)/sbin
-	mkdir -p $(DESTDIR)$(BINDIR)
-
-	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
-
-	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
-	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
-	cp server/eit $(DESTDIR)/$(LIBDIR)/entropy/server/ -Ra
-	mv $(DESTDIR)/$(LIBDIR)/entropy/server/eit.py $(DESTDIR)$(BINDIR)/eit
-	install -m 755 services/matter $(DESTDIR)$(PREFIX)/sbin
-
 equo-install:
 
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/client
@@ -101,5 +86,5 @@ updates-daemon-install:
 	install -m 644 misc/dbus/system-services/org.entropy.Client.service $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/
 	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/
 
-install: all entropy-install entropy-server-install equo-install updates-daemon-install
+install: all entropy-install equo-install updates-daemon-install
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done

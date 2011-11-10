@@ -27,6 +27,16 @@ class EitAdd(EitCommit):
     NAME = "add"
     ALIASES = []
 
+    INTRODUCTION = """\
+Selectively add unstaged packages to repository.
+If you are familiar with git, this maps to *git commit <path>*.
+Packages in the repository sharing the same scope are going to
+be replaced, unless marked as (manually) injected.
+Entropy package scope is given by the following tuple:
+    (*package key*, *package slot*, *package tag*)
+"""
+    SEE_ALSO = "eit-commit(1), eit-repack(1)"
+
     def _get_parser(self):
         """ Overridden from EitCommit """
         descriptor = EitCommandDescriptor.obtain_descriptor(

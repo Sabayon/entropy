@@ -1,0 +1,66 @@
+eit-add(1)
+==========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-add - commit to repository the provided packages
+
+
+SYNOPSIS
+--------
+eit add [-h] [--to <repository>] [--quick] <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Selectively add unstaged packages to repository.
+If you are familiar with git, this maps to *git commit <path>*.
+Packages in the repository sharing the same scope are going to
+be replaced, unless marked as (manually) injected.
+Entropy package scope is given by the following tuple:
+    (*package key*, *package slot*, *package tag*)
+
+
+
+OPTIONS
+-------
+"eit add" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package names
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--to*=<repository>::
+    add to given repository
+
+*--quick*::
+    no stupid questions
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-commit(1), eit-repack(1)

@@ -1,0 +1,184 @@
+#!/usr/bin/python2
+import sys
+import os
+os.environ['LANGUAGE'] = "en_US.UTF-8"
+os.environ['LC_ALL'] = "en_US.UTF-8"
+os.environ['LANG'] = "en_US.UTF-8"
+import codecs
+
+sys.path.insert(0, "../")
+
+from eit.commands.descriptor import EitCommandDescriptor
+
+MAN_HEADER="""\
+EIT(1)
+======
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit - Entropy Infrastructure Toolkit.
+
+
+SYNOPSIS
+--------
+*eit* [command] [command options]
+
+
+INTRODUCTION
+------------
+Eit is a tool for creating, managing and tracking Entropy repositories.
+It is highly inspired to the "Git" way of doing things (add, commit,
+checkout, etc) and puts ease of use on top of its priorities.
+With this tool, anybody can create his/her own repository and serve
+users custom packages or even a whole full-featured repository living
+inside a dedicated chroot!
+
+
+USAGE
+-----
+Eit has a modular design, commands can be added and removed in a pluggable
+way. There are however a set of built-in commands that are shipped with
+the default Eit distribution.
+
+
+OPTIONS
+-------
+*--help*::
+    Show Eit Help, listing all the runtime available commands.
+
+
+COMMANDS
+--------
+---commands---
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+---also_commands---
+"""
+
+SPLIT_MAN="""\
+%(name)s(1)
+%(title)s
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+%(name)s - %(description)s
+
+
+SYNOPSIS
+--------
+%(synopsis)s
+
+
+INTRODUCTION
+------------
+%(introduction)s
+
+
+OPTIONS
+-------
+%(options)s
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)%(seealso)s
+"""
+
+
+descriptors = EitCommandDescriptor.obtain()
+descriptors.sort(key = lambda x: x.get_name())
+
+commands_txt = []
+see_also_txt = []
+split_mans = []
+for descriptor in descriptors:
+    klass = descriptor.get_class()
+    name = descriptor.get_name()
+    aliases = klass.ALIASES
+    aliases_str = ", ".join(aliases)
+    if aliases_str:
+        aliases_str = " [%s]" % (aliases_str,)
+    command_txt = "%s%s%s%s" % ("*", name, aliases_str, "*::")
+    desc = descriptor.get_description()
+    command_txt += "\n    %s\n" % (desc,)
+    commands_txt.append(command_txt)
+    try:
+        man = klass([]).man()
+    except NotImplementedError:
+        man = None
+    if man is not None:
+        man['name'] = "eit-" + man['name']
+        see_also_txt.append("%s(1)" % (man['name'],))
+        man['title'] = "="*(len(man['name']) + 3)
+        if "seealso" not in man:
+            man['seealso'] = ""
+        else:
+            man['seealso'] = ", " + man['seealso']
+        man_txt = SPLIT_MAN % man
+        split_mans.append((man['name'], man_txt))
+
+if not see_also_txt:
+    see_also_txt.append("Nothing")
+man_txt = MAN_HEADER[:]
+man_txt = man_txt.replace("---commands---", "\n".join(commands_txt))
+
+see_also = ""
+orig_count = 5
+count = orig_count
+see_also_buf = []
+for entry in see_also_txt:
+    if count == 0:
+        count = orig_count
+        see_also += ", ".join(see_also_buf)
+        see_also += "\n    "
+        del see_also_buf[:]
+    count -= 1
+    see_also_buf.append(entry)
+if see_also_buf:
+    see_also += ", ".join(see_also_buf)
+    see_also += "\n    "
+
+man_txt = man_txt.replace("---also_commands---", "    " + see_also)
+sys.stdout.write("generating mansrc/eit.1.txt\n")
+with codecs.open("mansrc/eit.1.txt", "w", encoding="UTF-8") as man_f:
+    man_f.write(man_txt)
+
+for man_name, man_txt in split_mans:
+    sys.stdout.write("generating mansrc/%s.1.txt\n" % (man_name,))
+    with codecs.open("mansrc/%s.1.txt" % (man_name,), "w",
+         encoding="UTF-8") as man_f:
+         man_f.write(man_txt)
