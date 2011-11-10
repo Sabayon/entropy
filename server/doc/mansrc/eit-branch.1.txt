@@ -1,0 +1,75 @@
+eit-branch(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-branch - manage repository branches
+
+
+SYNOPSIS
+--------
+eit branch [-h] [--quick] [--from <branch>] [--no-copy] [<branch>] [<repo>]
+
+
+INTRODUCTION
+------------
+Switch to given branch. This will cause the creation of a
+separate repository database on disk and remotely, taking the
+name of the branch argument passed.
+Only one branch should be used at the same time, but nothing
+will prevent you from interleaving them.
+Generally, this feature is used to switch the repository to a
+new branch, copying all the packages over (default behaviour).
+To just switch to an empty branch without copying the packages
+over just use the *--no-copy* switch.
+
+
+
+OPTIONS
+-------
+"eit branch" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<branch>*::
+    switch to given branch
+
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--quick*::
+    no stupid questions
+
+*--from*=<branch>::
+    from branch
+
+*--no-copy*::
+    don't copy packages from branch
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), 
