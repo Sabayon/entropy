@@ -1544,7 +1544,8 @@ def _locate_edb(fileobj):
     raw_db_tag = const_convert_to_rawstring(db_tag)
     db_tag_len = len(db_tag)
     # NOTE: it was 30Mb, but app-doc/php-docs db size was 31MB
-    give_up_threshold = 1024000 * 90 # 90Mb
+    # xonotic-data wants more, raise to 500Mb and forget
+    give_up_threshold = 1024000 * 500 # 500Mb
     # cannot index a bytes object in Python3, it returns int !
     entry_point = const_convert_to_rawstring(db_tag[::-1][0])
     max_read_len = 8
