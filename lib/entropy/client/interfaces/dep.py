@@ -2604,13 +2604,6 @@ class CalculatorsMixin:
                 mask_filter = False, match_repo = match_repos)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
-                # look for packages that would match key
-                # with any slot (for eg: gcc, kernel updates)
-                matchresults = self.atom_match(cl_pkgkey)
-                if matchresults[0] != -1:
-                    m_action = self.get_package_action(matchresults)
-                    if m_action > 0 and (matchresults not in update):
-                        update.append(matchresults)
 
         # validate remove, do not return installed packages that are
         # still referenced by others as "removable"
