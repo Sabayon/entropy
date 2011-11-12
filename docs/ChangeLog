@@ -1,3 +1,33 @@
+commit c5bbde02f6e93c0fead61e0e98d5ac340e49e6a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 22:22:42 2011 +0100
+
+    Release Entropy 1.0_rc75
+
+commit 2f02cf0672ca1934c34c7442d025aded45205172
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 22:21:56 2011 +0100
+
+    [server] fix installation of eit modules
+
+commit c8343a356d724739b1f58cbe88bbe40b81adbc5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 22:16:04 2011 +0100
+
+    [server/doc] Makefile: create man/ if it doesn't exist
+
+commit 63c0881277538e6553b508519c49966a9cb4b4a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 22:07:33 2011 +0100
+
+    [eit] move eit bash completion script to server/
+
+commit 7d3515ddaffc35b8754f0e1aef292901a10f2586
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 20:49:31 2011 +0100
+
+    Tagging Entropy version 1.0_rc74
+
 commit 8f98f3502201e1c3a08e81501644d36f4ce221e3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 12 20:49:02 2011 +0100
