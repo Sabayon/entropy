@@ -1767,10 +1767,14 @@ class MiscMixin:
     def another_entropy_running(self):
         """
         Check if another Entropy instance is running.
+        TODO: drop method.
 
+        @deprecated: use Entropy resources methods! This will be removed SOON.
         @return: True if another Entropy instance is running, False otherwise.
         @rtype: bool
         """
+        import warnings
+        warnings.warn("attention, deprecated, update your code")
         acquired, locked = const_setup_entropy_pid(just_read = True)
         return locked
 

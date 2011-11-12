@@ -49,18 +49,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client.destroy()
         self.Client.shutdown()
 
-    def test_another_instance(self):
-        pid = os.fork()
-        if pid == 0:
-            # child
-            locked = self.Client.another_entropy_running()
-            if locked:
-                os._exit(1)
-            os._exit(0)
-        else:
-            rc = os.waitpid(pid, 0)[1]
-            self.assertNotEqual(rc, 0)
-
     def test_singleton(self):
         myclient = Client(installed_repo = -1)
         self.assertTrue(myclient is self.Client)

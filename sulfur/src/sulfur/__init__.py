@@ -96,10 +96,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         else:
             # we don't want to interleave equo or entropy services with
             # sulfur. People just cannot deal with it.
-            locked = self._entropy.another_entropy_running()
-            if not locked:
-                locked = not entropy.tools.acquire_entropy_locks(self._entropy,
-                    max_tries = 5)
+            locked = not entropy.tools.acquire_entropy_locks(
+                self._entropy, max_tries = 5)
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()
@@ -1549,17 +1547,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         with self._privileges:
 
-            # preventive check against other instances
-            locked = self._entropy.another_entropy_running()
-            if locked or not entropy.tools.is_root():
-                okDialog(self.ui.main,
-                    _("Another Entropy instance is running. Cannot process queue."))
-                self.progress.reset_progress()
-                self.switch_notebook_page('packages')
-                return False
-
             self.disable_ugc = True
             # acquire Entropy resources here to avoid surpises afterwards
+            # this might be superfluous
             acquired = self._entropy.lock_resources()
             if not acquired:
                 okDialog(self.ui.main,
@@ -2367,17 +2357,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
 
         with self._privileges:
-            # preventive check against other instances
-            locked = self._entropy.another_entropy_running()
-            if locked or not entropy.tools.is_root():
-                okDialog(self.ui.main,
-                    _("Another Entropy instance is running. Cannot process queue."))
-                self.progress.reset_progress()
-                self.switch_notebook_page('packages')
-                return False
 
             self.disable_ugc = True
             # acquire Entropy resources here to avoid surpises afterwards
+            # this might be superfluous
             acquired = self._entropy.lock_resources()
             if not acquired:
                 okDialog(self.ui.main,

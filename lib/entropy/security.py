@@ -1034,16 +1034,6 @@ class System:
             header = red(" @@ ")
         )
 
-        locked = self._entropy.another_entropy_running()
-        if locked:
-            self._entropy.output(
-                red(_("Another Entropy is currently running.")),
-                importance = 1,
-                level = "error",
-                header = darkred(" @@ ")
-            )
-            return 4
-
         gave_up = self._entropy.wait_resources()
         if gave_up:
             return 7
