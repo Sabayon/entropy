@@ -16,8 +16,8 @@ install:
 
 	install -m 644 ../conf/server.conf.example $(DESTDIR)/etc/entropy/
 
-	install -m 755 *.py $(DESTDIR)/$(LIBDIR)/entropy/server/
-	mv $(DESTDIR)/$(LIBDIR)/entropy/server/eit.py $(DESTDIR)$(BINDIR)/eit
+	cp eit $(DESTDIR)$(LIBDIR)/entropy/server/ -Ra
+	install -m 755 eit.py $(DESTDIR)$(BINDIR)/eit
 	install -m 755 matter $(DESTDIR)$(PREFIX)/sbin
 
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
