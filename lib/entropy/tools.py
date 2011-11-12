@@ -1499,6 +1499,7 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
                 return False
             # avoid security flaw caused by file size growing race condition
             # we conside the file size static
+            start_position = None
             if f_size < mmap_size_th:
                 # use mmap
                 try:
@@ -1512,7 +1513,7 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
 
             if old_mmap is None:
                 start_position = _locate_edb(old)
-            if not start_position:
+            if start_position is None:
                 return False
 
             with open(entropy_metadata_file, "wb") as db:
