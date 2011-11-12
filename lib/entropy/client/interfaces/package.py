@@ -1374,7 +1374,23 @@ class Package:
             if not os.path.isdir(pkg_dbdir):
                 os.makedirs(pkg_dbdir, 0o755)
             # extract edb
-            entropy.tools.dump_entropy_metadata(package_path, pkg_dbpath)
+            dump_rc = entropy.tools.dump_entropy_metadata(
+                package_path, pkg_dbpath)
+            if not dump_rc:
+                # error during entropy db extraction from package file
+                # might be because edb entry point is not found or
+                # because there is not enough space for it
+                self._entropy.logger.log(
+                    "[Package]", etpConst['logging']['normal_loglevel_id'],
+                    "Unable to dump edb for: " + pkg_dbpath
+                )
+                self._entropy.output(
+                    brown(_("Unable to find Entropy metadata in package")),
+                    importance = 1,
+                    level = "error",
+                    header = red("   ## ")
+                )
+                return 1
 
         unpack_tries = 3
         while True:
