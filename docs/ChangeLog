@@ -1,3 +1,105 @@
+commit 8f98f3502201e1c3a08e81501644d36f4ce221e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 20:49:02 2011 +0100
+
+    Release Entropy 1.0_rc74
+
+commit 4d343233dcd86913b59f1744a615f86b1d1802c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 16:10:33 2011 +0100
+
+    [entropy.*] drop usage of another_entropy_running(), wait_resources() or similar methods should be used
+
+commit 032fb247407a6d4a65f990457142674c6abbf843
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 13:05:54 2011 +0100
+
+    [entropy.client.interfaces.package] handle dump_entropy_metadata() errors properly
+
+commit bda1c3c4ccd8b625db2871ae608d11ca91abbd8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 13:05:25 2011 +0100
+
+    [entropy.tools] dump_entropy_metadata: check against None rather than using "not"
+
+commit e29e5c64245ef2dee8e3de42b68fe125c5262b55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 12:00:40 2011 +0100
+
+    [conf] uncomment sabayon-limbo entries by default (repo is still not available ootb btw)
+
+commit d123f7c58a784d4c41bcb870f18850aad1ddbfc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 11 18:04:38 2011 +0100
+
+    [entropy.tools] raise _locate_edb() size threshold to 500Mb (due to xonotic-data)
+
+commit 389c30ed24368b5caa0e22a73f3216ae9fbf5c58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 11 14:57:38 2011 +0100
+
+    [entropy.client.interfaces.dep] do not pull in a random package only matched by the key if key+slot is not available in repos
+
+commit a84a304070ce2e56ed2f11e5bbf96a59c820f420
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 16:37:39 2011 +0100
+
+    [todo] update TODO
+
+commit 396f8714a07f708a87b4e49adcf2f1e5d0125f94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 16:22:58 2011 +0100
+
+    [server/doc] add eit-branch man page
+
+commit 2c1e69fcf4cf62350100d998d53434817a1eac4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 16:22:44 2011 +0100
+
+    [eit.commands.branch] add --no-copy argument, add man support
+
+commit e5d6980267747de39e62381e7d2ba1513e52365f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 16:22:03 2011 +0100
+
+    [eit.commands.command] move man() from eit.commands.commit to eit.commands.command (rename to _eit())
+
+commit 3e85e43daf7b259153347a71d0ddf2e2062c2524
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 15:36:02 2011 +0100
+
+    [eit] cleanup doc/ directory
+
+commit 44471c5ba3fbf683a7a77fc1e20ed578c08b66db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 10 15:32:17 2011 +0100
+
+    [entropy.server] move Makefile logic to server/, add man support to eit, move matter to server/
+
+commit 7bd5694b91c7e606ca3df6541bd0f27595b1e426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 9 10:31:04 2011 +0100
+
+    [entropy.client.interfaces.methods] fix undefined reference "accomplished"
+
+commit 83038666a5994bd5d13594f135846ced1f4e1a9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 8 10:24:12 2011 +0100
+
+    [sulfur] drop libglade warnings caused by editing sulfur.glade with latest Glade-3
+
+commit 8e01786474c9a6903786f4cca291f29d455ccb0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 8 10:22:14 2011 +0100
+
+    [sulfur] cleanup sulfur.glade xml (drop dead code)
+
+commit 929eca46bafdd71d82cd09c979413788ec7b09db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 6 19:09:52 2011 +0100
+
+    Tagging Entropy version 1.0_rc73
+
 commit cc72585bab6a4745d8f71438005f0f1718d16f7e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 6 19:09:35 2011 +0100
