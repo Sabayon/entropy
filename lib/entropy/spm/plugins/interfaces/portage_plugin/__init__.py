@@ -1927,11 +1927,11 @@ class PortagePlugin(SpmPlugin):
 
             try:
                 rc = self._portage.doebuild(
-                    myebuild = str(myebuild),
-                    mydo = str(mydo),
-                    myroot = root,
+                    str(myebuild),
+                    str(mydo),
+                    root,
+                    mysettings,
                     tree = tree,
-                    mysettings = mysettings,
                     mydbapi = mydbapi,
                     vartree = vartree,
                     use_cache = 0,
