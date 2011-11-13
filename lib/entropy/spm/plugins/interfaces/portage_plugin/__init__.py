@@ -1934,7 +1934,6 @@ class PortagePlugin(SpmPlugin):
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
-                    use_cache = 0,
                     debug = etpUi['debug']
                 )
             except:
