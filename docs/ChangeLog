@@ -1,3 +1,33 @@
+commit f41ee1e41356e4a5b89efc8ad75614609dbcc68e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 07:52:00 2011 +0100
+
+    Release Entropy 1.0_rc76
+
+commit 1e60fa9890ef8a2216fd89b147d9da829e191184
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 07:43:35 2011 +0100
+
+    [entropy.spm] PortagePlugin: do not pass use_cache to doebuild()
+
+commit ccb18bcb6f83da0a082989088ce8a5874bd58c88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 07:43:10 2011 +0100
+
+    [entropy.spm] fixup doebuild() call
+
+commit c1e1dd656fc8ad98461ce05db19251cc435c6f1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 07:38:05 2011 +0100
+
+    [matter] make possible to disable the "preserved libraries" QA check using --disable-preserved-libs
+
+commit 9ef0a016382ebc01d4454c2a45e775536874844c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 12 22:22:52 2011 +0100
+
+    Tagging Entropy version 1.0_rc75
+
 commit c5bbde02f6e93c0fead61e0e98d5ac340e49e6a3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 12 22:22:42 2011 +0100
