@@ -1155,9 +1155,9 @@ class PkgInfoMenu(MenuSkel):
         # dependencies view
         self.dependenciesModel.clear()
         self.dependenciesView.set_model(self.dependenciesModel)
-        deps = sorted(self._pkg_meta['dependencies'],
+        deps = sorted(self._pkg_meta.get('dependencies', []),
             key = lambda x: entropy.dep.dep_getkey(x))
-        conflicts = sorted(self._pkg_meta['conflicts'],
+        conflicts = sorted(self._pkg_meta.get('conflicts', []),
             key = lambda x: entropy.dep.dep_getkey(x))
         for x in conflicts:
             self.dependenciesModel.append(None, [cleanMarkupString("!"+x)])
@@ -1211,8 +1211,9 @@ class PkgInfoMenu(MenuSkel):
         if self._pkg_meta is None:
             return True
         # compile flags
-        chost, cflags, cxxflags = self._pkg_meta['chost'], \
-            self._pkg_meta['cflags'], self._pkg_meta['cxxflags']
+        chost, cflags, cxxflags = self._pkg_meta.get('chost', "N/A"), \
+            self._pkg_meta.get('cflags', "N/A"), \
+            self._pkg_meta.get('cxxflags', "N/A")
         self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
         self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
         self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
@@ -1228,7 +1229,7 @@ class PkgInfoMenu(MenuSkel):
         # license view
         self.licenseModel.clear()
         self.licenseView.set_model(self.licenseModel)
-        licenses = self._pkg_meta['license']
+        licenses = self._pkg_meta.get('license', "")
         licenses = licenses.split()
         for x in sorted(licenses):
             self.licenseModel.append(None, [x])
@@ -1242,14 +1243,14 @@ class PkgInfoMenu(MenuSkel):
         # keywords view
         self.keywordsModel.clear()
         self.keywordsView.set_model(self.keywordsModel)
-        for x in sorted(self._pkg_meta['keywords'],
+        for x in sorted(self._pkg_meta.get('keywords', []),
             key = lambda x: x.lstrip("~")):
             self.keywordsModel.append(None, [x])
 
         # useflags view
         self.useflagsModel.clear()
         self.useflagsView.set_model(self.useflagsModel)
-        for x in sorted(self._pkg_meta['useflags']):
+        for x in sorted(self._pkg_meta.get('useflags', [])):
             self.useflagsModel.append([cleanMarkupString(x)])
 
         return True
@@ -1263,12 +1264,13 @@ class PkgInfoMenu(MenuSkel):
             return
         mybuffer = gtk.TextBuffer()
         mybuffer.set_text(changelog)
-        xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow', domain="entropy" )
+        xml_clread = gtk.glade.XML(const.GLADE_FILE, 'textReadWindow',
+                                   domain="entropy")
         read_dialog = xml_clread.get_widget( "textReadWindow" )
         okReadButton = xml_clread.get_widget( "okReadButton" )
         self.changelog_read_dialog = read_dialog
-        okReadButton.connect( 'clicked', self.destroy_changelog_read_dialog )
-        clView = xml_clread.get_widget( "readTextView" )
+        okReadButton.connect('clicked', self.destroy_changelog_read_dialog)
+        clView = xml_clread.get_widget("readTextView")
         clView.set_buffer(mybuffer)
         read_dialog.set_title(_("Package ChangeLog"))
         read_dialog.set_transient_for(self.pkginfo_ui.pkgInfo)
