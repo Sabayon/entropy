@@ -1237,12 +1237,13 @@ def matter_main(entropy_server, nsargs, cwd, specs):
     exit_st = 0
 
     emerge_config = load_emerge_config()
-    preserved_libs = PackageBuilder.check_preserved_libraries(
-        emerge_config)
-    if preserved_libs:
-        print_error(
-            "preserved libraries are found on system, aborting.")
-        raise SystemExit(7)
+    if not nsargs.disable_preserved_libs:
+        preserved_libs = PackageBuilder.check_preserved_libraries(
+            emerge_config)
+        if preserved_libs:
+            print_error(
+                "preserved libraries are found on system, aborting.")
+            raise SystemExit(7)
 
     if nsargs.gentle:
         # check if there is something to do
@@ -1310,12 +1311,13 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                     preserved_libs = \
                         PackageBuilder.check_preserved_libraries(emerge_config)
                     if preserved_libs:
-                        # abort, library breakages detected
-                        exit_st = 1
-                        print_error(
-                            "preserved libraries detected, aborting")
                         preserved_libs_error = True
-                        break
+                        if not nsargs.disable_preserved_libs:
+                            # abort, library breakages detected
+                            exit_st = 1
+                            print_error(
+                                "preserved libraries detected, aborting")
+                            break
 
                     if rc == 0:
                         built_packages = builder.get_built_packages()
@@ -1340,7 +1342,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                 # run it unconditionally
                 PackageBuilder.post_build(emerge_config)
 
-                if preserved_libs_error:
+                if preserved_libs_error and not nsargs.disable_preserved_libs:
                     # completely abort
                     break
 
@@ -1356,13 +1358,16 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                         if not keep_going:
                             break
 
-            if tainted_repositories and nsargs.push and nsargs.commit \
-                    and not preserved_libs_error:
-                for repository in tainted_repositories:
-                    rc = PackageBuilder.push(entropy_server,
-                        repository)
-                    if exit_st == 0 and rc != 0:
-                        exit_st = rc
+            if tainted_repositories and nsargs.push and nsargs.commit:
+                if preserved_libs_error and nsargs.disable_preserved_libs:
+                    # cannot push anyway
+                    print_warning("Preserved libraries detected, cannot push !")
+                elif not preserved_libs_error:
+                    for repository in tainted_repositories:
+                        rc = PackageBuilder.push(
+                            entropy_server, repository)
+                        if exit_st == 0 and rc != 0:
+                            exit_st = rc
 
             # print summary
             print_info("")
@@ -1375,6 +1380,8 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                 " ".join(not_found),))
             print_info("Packages not installed: %s" % (
                 " ".join(not_installed),))
+            print_info("Preserved libs: %s" % (
+                preserved_libs_error,))
             print_info("")
 
     if nsargs.post:
@@ -1458,6 +1465,11 @@ Matter Resources Lock file you can use to detect if matter is running:
 
     parser.add_argument("--sync",
         help="sync Portage tree, and attached overlays, before starting",
+        action="store_true")
+
+    parser.add_argument("--disable-preserved-libs",
+        dest="disable_preserved_libs", default=False,
+        help="disable prerserved libraries check",
         action="store_true")
 
     try:
