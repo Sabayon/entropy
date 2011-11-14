@@ -4235,7 +4235,7 @@ class Server(Client):
                 new_content.append("default-repository = %s" % (repoid,))
 
             tmp_fd, tmp_path = tempfile.mkstemp()
-            with entropy.tools.codecs_fdopen(tmp_path, "w", enc) as f_srv_t:
+            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as f_srv_t:
                 for line in new_content:
                     f_srv_t.write(line+"\n")
                 f_srv_t.flush()
