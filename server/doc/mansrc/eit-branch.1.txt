@@ -72,4 +72,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1), 
+    eit(1)

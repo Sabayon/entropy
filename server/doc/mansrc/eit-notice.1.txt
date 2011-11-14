@@ -1,0 +1,64 @@
+eit-notice(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-notice - manage repository notice-board
+
+
+SYNOPSIS
+--------
+eit notice [-h] {add,remove,show} ...
+
+
+INTRODUCTION
+------------
+Notice-board is the way to communicate news or other misc info to your users
+through repositories. The repository notice-board is downloaded (if available)
+whenever the user updates the local repositories. The Entropy Client is going to
+list notice-board titles for user consumption.
+
+
+
+OPTIONS
+-------
+"eit notice" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*add*::
+    add notice-board entry
+
+*remove*::
+    remove notice-board entry
+
+*show*::
+    show notice-board
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

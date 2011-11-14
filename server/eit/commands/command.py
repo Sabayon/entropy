@@ -106,16 +106,26 @@ class EitCommand(object):
             options_txt.append(options_header)
 
         for group in action_groups:
-            options_txt.append(group.title.upper())
-            options_txt.append("~" * len(group.title))
+            if group._group_actions:
+                options_txt.append(group.title.upper())
+                options_txt.append("~" * len(group.title))
             for action in group._group_actions:
                 action_name = action.metavar
 
                 option_strings = action.option_strings
                 if not option_strings:
                     # positional args
-                    action_str = "*" + action_name + "*::\n"
-                    action_str += "    " + action.help + "\n"
+                    if action_name is None:
+                        # SubParsers
+                        action_lst = []
+                        for sub_action in action._get_subactions():
+                            sub_action_str = "*" + sub_action.dest + "*::\n"
+                            sub_action_str += "    " + sub_action.help + "\n"
+                            action_lst.append(sub_action_str)
+                        action_str = "\n".join(action_lst)
+                    else:
+                        action_str = "*" + action_name + "*::\n"
+                        action_str += "    " + action.help + "\n"
                 else:
                     action_str = ""
                     for option_str in option_strings:

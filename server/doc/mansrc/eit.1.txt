@@ -161,5 +161,5 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit-add(1), eit-branch(1), eit-commit(1), eit-repack(1)
+    eit-add(1), eit-branch(1), eit-commit(1), eit-notice(1), eit-repack(1)
     

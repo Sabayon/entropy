@@ -144,7 +144,7 @@ for descriptor in descriptors:
         man['name'] = "eit-" + man['name']
         see_also_txt.append("%s(1)" % (man['name'],))
         man['title'] = "="*(len(man['name']) + 3)
-        if "seealso" not in man:
+        if not man.get("seealso"):
             man['seealso'] = ""
         else:
             man['seealso'] = ", " + man['seealso']

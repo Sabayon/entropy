@@ -68,6 +68,19 @@ class EitNotice(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Notice-board is the way to communicate news or other misc info to your users
+through repositories. The repository notice-board is downloaded (if available)
+whenever the user updates the local repositories. The Entropy Client is going to
+list notice-board titles for user consumption.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:
