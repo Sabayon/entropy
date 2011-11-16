@@ -1,0 +1,60 @@
+eit-bump(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-bump - bump repository revision, force push
+
+
+SYNOPSIS
+--------
+eit bump [-h] [--sync] [<repo>]
+
+
+INTRODUCTION
+------------
+Bump repository revision, locking remote mirrors.
+This way, further repository synchronizations (*eit push*)
+will be accepted and new repository data will be uploaded.
+
+
+
+OPTIONS
+-------
+"eit bump" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--sync*::
+    sync with remote repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-push(1)

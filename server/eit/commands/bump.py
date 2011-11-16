@@ -81,6 +81,19 @@ class EitBump(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Bump repository revision, locking remote mirrors.
+This way, further repository synchronizations (*eit push*)
+will be accepted and new repository data will be uploaded.
+"""
+    SEE_ALSO = "eit-push(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()
