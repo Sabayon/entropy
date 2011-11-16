@@ -396,7 +396,7 @@ def _do_dbus_sync():
 
     def bail_out(err):
         print_error(darkred(" @@ ")+brown("%s" % (
-            _("sys-apps/entropy-client-services not installed or configured. Update not allowed."),) ))
+            _("sys-apps/entropy-client-services not installed?. Update not allowed, please run as root."),) ))
         if err:
             print_error(str(err))
 
