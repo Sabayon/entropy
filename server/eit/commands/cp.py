@@ -95,6 +95,17 @@ class EitCp(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Copy packages from source repository to destination repository.
+"""
+    SEE_ALSO = "eit-mv(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCp """
         parser = self._get_parser()

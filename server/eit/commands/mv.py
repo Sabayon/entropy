@@ -49,6 +49,19 @@ class EitMv(EitCp):
 
         return parser
 
+    INTRODUCTION = """\
+Move packages from source repository to destination repository.
+The operation is transactional, first package is copied to destination,
+then is removed from source.
+"""
+    SEE_ALSO = "eit-cp(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

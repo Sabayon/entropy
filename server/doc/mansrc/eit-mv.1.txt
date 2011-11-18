@@ -1,0 +1,66 @@
+eit-mv(1)
+=========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-mv - move packages from a repository to another
+
+
+SYNOPSIS
+--------
+eit mv [-h] [--deps] <source> <dest> [<package> [<package> ...]]
+
+
+INTRODUCTION
+------------
+Move packages from source repository to destination repository.
+The operation is transactional, first package is copied to destination,
+then is removed from source.
+
+
+
+OPTIONS
+-------
+"eit mv" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<source>*::
+    source repository
+
+*<dest>*::
+    destination repository
+
+*<package>*::
+    package names (all if none)
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--deps*::
+    include dependencies
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-cp(1)

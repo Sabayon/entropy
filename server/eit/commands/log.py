@@ -42,6 +42,17 @@ class EitLog(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Show log for given repository (if any, otherwise the current working one).
+This commands opens repository ChangeLog.bz2 using *bzless*.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:
@@ -64,9 +75,7 @@ class EitLog(EitCommand):
                 importance=1, level="error")
             return 1
 
-        proc = subprocess.Popen(
-            "/bin/bzcat \"%s\" | ${PAGER:-/usr/bin/less}" % (
-                changelog_path,), shell = True)
+        proc = subprocess.Popen(["/bin/bzless", changelog_path])
         return proc.wait()
 
 
