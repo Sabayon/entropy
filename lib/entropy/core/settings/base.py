@@ -1824,8 +1824,23 @@ class SystemSettings(Singleton, EntropyPluginStore):
         cache_obj = {'mtime': mtime,}
 
         enc = etpConst['conf_encoding']
-        lines = entropy.tools.generic_file_content_parser(filepath,
-            comment_tag = comment_tag, encoding = enc)
+        lines = []
+        try:
+            lines += entropy.tools.generic_file_content_parser(
+                filepath, comment_tag = comment_tag, encoding = enc)
+            data = SystemSettings.CachingList(lines)
+        except IOError as err:
+            const_debug_write(__name__, "IOError __generic_parser, %s: %s" % (
+                    filepath, err,))
+        except OSError as err:
+            const_debug_write(__name__, "OSError __generic_parser, %s: %s" % (
+                    filepath, err,))
+        except UnicodeEncodeError as err:
+            const_debug_write(__name__, "UEE __generic_parser, %s: %s" % (
+                    filepath, err,))
+        except UnicodeDecodeError as err:
+            const_debug_write(__name__, "UDE __generic_parser, %s: %s" % (
+                    filepath, err,))
         data = SystemSettings.CachingList(lines)
         # do not cache CachingList, because it contains cache that
         # shouldn't survive a clear()
