@@ -74,6 +74,20 @@ class EitCheckout(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Change the current working repository. Unlike *git checkout* this
+doesn't work with package names or whatever. Current functionalities
+are just limited to repository hopping. If you want to switch to
+another branch, iuse *eit branch*.
+"""
+    SEE_ALSO = "eit-branch(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

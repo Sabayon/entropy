@@ -44,6 +44,24 @@ class EitCleanup(EitCommand):
                             help=_("no stupid questions"))
         return parser
 
+    INTRODUCTION = """\
+Clean expired packages from remote mirrors. Usually, packages
+have a default expiration timeout set to 15 days (entropy.const),
+overridable via *ETP_EXPIRATION_DAYS* env variable.
+Expiration date starts from when packages are removed from a repository
+due to a version bump or simple removal.
+During the final part of packages sync, expired ones are automatically
+removed from remote mirrors.
+This commands makes possible to manually force a cleanup.
+"""
+    SEE_ALSO = "eit-vacuum(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

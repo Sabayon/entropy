@@ -1,0 +1,65 @@
+eit-cleanup(1)
+==============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-cleanup - clean expired packages from a repository
+
+
+SYNOPSIS
+--------
+eit cleanup [-h] [--quick] [<repo>]
+
+
+INTRODUCTION
+------------
+Clean expired packages from remote mirrors. Usually, packages
+have a default expiration timeout set to 15 days (entropy.const),
+overridable via *ETP_EXPIRATION_DAYS* env variable.
+Expiration date starts from when packages are removed from a repository
+due to a version bump or simple removal.
+During the final part of packages sync, expired ones are automatically
+removed from remote mirrors.
+This commands makes possible to manually force a cleanup.
+
+
+
+OPTIONS
+-------
+"eit cleanup" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--quick*::
+    no stupid questions
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-vacuum(1)
