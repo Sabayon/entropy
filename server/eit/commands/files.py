@@ -50,6 +50,22 @@ class EitFiles(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+List files owned by given package dependencies. The same, are matched against
+the repositories.
+For example: *>=app-foo/bar-1.2.3::repo* is asking the *bar* package, which
+version at least *1.2.3*, available inside the *repo* repository.
+If you want to do the inverse operation (matching a file searching for
+package owners), please use *eit own*.
+"""
+    SEE_ALSO = "eit-own(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

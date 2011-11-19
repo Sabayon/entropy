@@ -1,0 +1,63 @@
+eit-files(1)
+============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-files - show files owned by packages
+
+
+SYNOPSIS
+--------
+eit files [-h] [--quiet] <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+List files owned by given package dependencies. The same, are matched against
+the repositories.
+For example: *>=app-foo/bar-1.2.3::repo* is asking the *bar* package, which
+version at least *1.2.3*, available inside the *repo* repository.
+If you want to do the inverse operation (matching a file searching for
+package owners), please use *eit own*.
+
+
+
+OPTIONS
+-------
+"eit files" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package names
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-q*::
+    quiet output, for scripting purposes
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-own(1)
