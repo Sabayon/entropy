@@ -57,6 +57,19 @@ class EitGraph(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Show direct dependency graph (printed as tree, actually) for given
+package dependencies.
+For a reverse dependency graph, please see *eit revgraph*.
+"""
+    SEE_ALSO = "eit-revgraph(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

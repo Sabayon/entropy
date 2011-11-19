@@ -1,0 +1,67 @@
+eit-graph(1)
+============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-graph - show dependency graph for packages
+
+
+SYNOPSIS
+--------
+eit graph [-h] [--in <repository>] [--complete] [--quiet]
+          <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Show direct dependency graph (printed as tree, actually) for given
+package dependencies.
+For a reverse dependency graph, please see *eit revgraph*.
+
+
+
+OPTIONS
+-------
+"eit graph" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package name
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--in*=<repository>::
+    search packages in given repository
+
+*--complete*::
+    show system packages, build deps, circular deps
+
+*-q*::
+    quiet output, for scripting purposes
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-revgraph(1)
