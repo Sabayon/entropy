@@ -60,6 +60,22 @@ class EitOwn(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+List packages owning given file paths.
+Paths are searched through all the currently available repositories,
+even though you can restrict the search to a certain repository by using
+the *--in* argument.
+If you want to do the inverse operation (listing files owned by packages),
+please use *eit files*.
+"""
+    SEE_ALSO = "eit-files(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

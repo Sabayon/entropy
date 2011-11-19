@@ -1,0 +1,69 @@
+eit-own(1)
+==========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-own - search packages owning paths
+
+
+SYNOPSIS
+--------
+eit own [-h] [--quiet] [--verbose] [--in <repository>] <path> [<path> ...]
+
+
+INTRODUCTION
+------------
+List packages owning given file paths.
+Paths are searched through all the currently available repositories,
+even though you can restrict the search to a certain repository by using
+the *--in* argument.
+If you want to do the inverse operation (listing files owned by packages),
+please use *eit files*.
+
+
+
+OPTIONS
+-------
+"eit own" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<path>*::
+    path
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-q*::
+    quiet output, for scripting purposes
+
+*-v*::
+    output more package info
+
+*--in*=<repository>::
+    search packages in given repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-files(1)
