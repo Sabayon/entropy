@@ -162,6 +162,7 @@ lxnay@sabayon.org.
 SEE ALSO
 --------
     eit-add(1), eit-branch(1), eit-bump(1), eit-checkout(1), eit-cleanup(1)
-    eit-commit(1), eit-cp(1), eit-files(1), eit-graph(1), eit-log(1)
-    eit-mv(1), eit-notice(1), eit-own(1), eit-repack(1), eit-revgraph(1)
+    eit-commit(1), eit-cp(1), eit-deps(1), eit-files(1), eit-graph(1)
+    eit-init(1), eit-log(1), eit-mv(1), eit-notice(1), eit-own(1)
+    eit-repack(1), eit-revgraph(1)
     

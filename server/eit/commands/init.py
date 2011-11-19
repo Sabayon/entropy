@@ -83,6 +83,18 @@ class EitInit(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Initialize a given repository. The same must be already configured
+in */etc/entropy/server.conf* for this tool to work as expected.
+So, please setup your repository there and only then run *eit init <repo>*.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitInit """
         parser = self._get_parser()

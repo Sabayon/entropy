@@ -1,0 +1,65 @@
+eit-deps(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-deps - edit dependencies for packages in repository
+
+
+SYNOPSIS
+--------
+eit deps [-h] [--in <repository>] <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Through this tool it's possible to add, remove and edit dependencies of
+any package.
+This might be helpful for small tweaks or trivial changes in order to
+avoid a complete repackage.
+Please do not abuse it, package file metadata are not updated accordingly,
+and the same is for Source Package Manager metadata.
+Consider this a last resort for updating package dependencies in a
+non-permanent way.
+
+
+
+OPTIONS
+-------
+"eit deps" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package name
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--in*=<repository>::
+    inject into given repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

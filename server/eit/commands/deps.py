@@ -48,6 +48,23 @@ class EitDeps(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Through this tool it's possible to add, remove and edit dependencies of
+any package.
+This might be helpful for small tweaks or trivial changes in order to
+avoid a complete repackage.
+Please do not abuse it, package file metadata are not updated accordingly,
+and the same is for Source Package Manager metadata.
+Consider this a last resort for updating package dependencies in a
+non-permanent way.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:
