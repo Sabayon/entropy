@@ -372,6 +372,17 @@ If you would like to selectively add certain packages, please see
             header=brown(" @@ "))
         store_dir = entropy_server._get_local_store_directory(
             repository_id)
+        # user could have removed it. Oh dear lord!
+        if not os.path.isdir(store_dir):
+            try:
+                os.makedirs(store_dir)
+            except (IOError, OSError) as err:
+                entropy_server.output(
+                    "%s: %s" % (_("Cannot create store directory"), err),
+                    header=brown(" !!! "),
+                    importance=1,
+                    level="error")
+                return 1
         for x in sorted(to_be_added):
             entropy_server.output(teal(x[0]),
                                   header=brown("    # "))
