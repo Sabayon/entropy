@@ -841,7 +841,12 @@ class EntropyPackageView:
                 elif obj.is_pkgset_cat:
                     break
                 else:
-                    self.set_filtering_string(obj.onlyname + "/")
+                    try:
+                        s = obj.onlyname + "/"
+                    except TypeError:
+                        # might be tuple or whatever!
+                        break
+                    self.set_filtering_string(s)
                 break
 
             mymenu = PkgInfoMenu(self._entropy, obj, self.ui.main)
