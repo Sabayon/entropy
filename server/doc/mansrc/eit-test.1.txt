@@ -1,0 +1,70 @@
+eit-test(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-test - run QA tests
+
+
+SYNOPSIS
+--------
+eit test [-h] {deps,libs,links,pkglibs,local,remote} ...
+
+
+INTRODUCTION
+------------
+Toolset containing all the Entropy Server built-in QA tests available.
+
+
+
+OPTIONS
+-------
+"eit test" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+TEST
+~~~~
+*deps*::
+    dependencies test
+
+*libs*::
+    libraries test
+
+*links*::
+    library linking test (using repository metadata)
+
+*pkglibs*::
+    library linking test (using live system)
+
+*local*::
+    verify local packages integrity
+
+*remote*::
+    verify remote packages integrity
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

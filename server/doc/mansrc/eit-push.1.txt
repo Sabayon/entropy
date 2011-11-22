@@ -1,0 +1,65 @@
+eit-push(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-push - push (or pull) repository packages and metadata
+
+
+SYNOPSIS
+--------
+eit push [-h] [--quick] [--all | --as <repo>] [<repo>]
+
+
+INTRODUCTION
+------------
+Synchronize remote mirrors with local repository content (packages and
+repository).
+
+
+
+OPTIONS
+-------
+"eit push" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--quick*::
+    no stupid questions
+
+*--all*::
+    push all the repositories
+
+*--as*=<repo>::
+    push as fake repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

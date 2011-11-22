@@ -86,6 +86,17 @@ class EitReset(EitPush):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Discard all the changes made to the local repository by completely
+re-fetching the remote version available on mirrors.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitPush """
         parser = self._get_parser()

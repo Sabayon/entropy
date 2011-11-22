@@ -49,6 +49,23 @@ class EitPkgmove(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Packages can be renamed or get their SLOT changed over time (say
+thanks to Source Package Managers like Portage :-/).
+To ensure that Entropy Clients do update their metadata accordingly,
+any change done server-side is recorded into the repository itself.
+This tool makes possible to edit such "raw" metadata.
+The risk of completely disrupting Entropy Clients (and distro installs)
+is very high, use this tool *only, and only if* you know what you're
+doing.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def bashcomp(self, last_arg):
         """
         Overridden from EitCommand

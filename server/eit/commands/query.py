@@ -127,6 +127,17 @@ class EitQuery(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Toolset containing all the Entropy Server built-in repository query
+tools.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

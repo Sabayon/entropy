@@ -1,0 +1,67 @@
+eit-merge(1)
+============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-merge - merge packages on other branches into current
+
+
+SYNOPSIS
+--------
+eit merge [-h] [--in <repository>] [--quick] <branch>
+
+
+INTRODUCTION
+------------
+When a repository is switched to a new branch, remote packages,
+for mirror size optimization reasons, are kept in current folders exposing
+the old branch as sub-directory and referenced from there until
+they get replaced into the repository. At some point in the future btw,
+older branches would be dismissed and packages in repository on the
+current branch referencing packages in older branches should be merged
+back in. This tool does exactly this.
+
+
+
+OPTIONS
+-------
+"eit merge" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<branch>*::
+    repository branch
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--in*=<repository>::
+    work inside given repository
+
+*--quick*::
+    no stupid questions
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

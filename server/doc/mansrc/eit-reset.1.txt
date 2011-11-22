@@ -1,0 +1,62 @@
+eit-reset(1)
+============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-reset - reset repository to remote status
+
+
+SYNOPSIS
+--------
+eit reset [-h] [--quick] [--local] [<repo>]
+
+
+INTRODUCTION
+------------
+Discard all the changes made to the local repository by completely
+re-fetching the remote version available on mirrors.
+
+
+
+OPTIONS
+-------
+"eit reset" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--quick*::
+    no stupid questions
+
+*--local*::
+    do not pull the remote repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

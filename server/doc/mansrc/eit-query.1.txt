@@ -1,0 +1,68 @@
+eit-query(1)
+============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-query - miscellaneous package metadata queries
+
+
+SYNOPSIS
+--------
+eit query [-h] {tags,needed,revdeps,sets,desc} ...
+
+
+INTRODUCTION
+------------
+Toolset containing all the Entropy Server built-in repository query
+tools.
+
+
+
+OPTIONS
+-------
+"eit query" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*tags*::
+    search package tags
+
+*needed*::
+    show libraries (.so) required by matched packages
+
+*revdeps*::
+    show reverse dependencies of packages
+
+*sets*::
+    search through package sets
+
+*desc*::
+    search packages through their description
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

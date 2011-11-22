@@ -39,6 +39,17 @@ class EitRepo(EitCommand):
             prog="%s %s" % (sys.argv[0], EitRepo.NAME))
         return parser
 
+    INTRODUCTION = """\
+Show current repository, its branch and configured mirrors.
+"""
+    SEE_ALSO = "eit-status(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

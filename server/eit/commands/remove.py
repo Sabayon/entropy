@@ -56,6 +56,17 @@ class EitRemove(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Remove a package from repository. It's no-brainer actually.
+"""
+    SEE_ALSO = "eit-add(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

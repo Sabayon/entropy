@@ -52,6 +52,22 @@ class EitMerge(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+When a repository is switched to a new branch, remote packages,
+for mirror size optimization reasons, are kept in current folders exposing
+the old branch as sub-directory and referenced from there until
+they get replaced into the repository. At some point in the future btw,
+older branches would be dismissed and packages in repository on the
+current branch referencing packages in older branches should be merged
+back in. This tool does exactly this.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommit """
         parser = self._get_parser()
@@ -77,5 +93,5 @@ EitCommandDescriptor.register(
     EitCommandDescriptor(
         EitMerge,
         EitMerge.NAME,
-        _('merge branch into current'))
+        _('merge packages on other branches into current'))
     )
