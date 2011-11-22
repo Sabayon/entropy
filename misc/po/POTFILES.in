@@ -104,7 +104,6 @@
 ../server/eit/commands/lock.py
 ../server/eit/commands/revgraph.py
 ../server/eit/commands/cleanup.py
-../server/eit/commands/vacuum.py
 ../server/eit/commands/files.py
 ../server/eit/commands/descriptor.py
 ../server/eit/commands/remove.py
