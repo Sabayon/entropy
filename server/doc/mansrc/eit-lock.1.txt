@@ -1,0 +1,76 @@
+eit-lock(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-lock - lock repository
+
+
+SYNOPSIS
+--------
+eit lock [-h] [--client | --status] [--quiet] <repo>
+
+
+INTRODUCTION
+------------
+Locking a repository is a way to prevent other Entropy Server
+or Entropy Client instances (depending on given switches) from
+accessing the remote repository.
+In case of Entropy Server locking (default, --client switch not
+provided), *eit lock* tries to acquire a remote lock on each configured
+mirror that only involves other Entropy Server instances (you won't
+be able to update your repositories if you don't own the remote lock).
+
+When --client is provided instead, *eit lock* places a lock on remote
+mirrors that prevents Entropy Clients from downloading the repository:
+this is just a band aid that avoids users to get broken packages or
+repositories.
+*eit unlock* does the symmetrical job.
+
+
+
+OPTIONS
+-------
+"eit lock" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--client*::
+    affect entropy clients only
+
+*--status*::
+    show current status
+
+*-q*::
+    quiet output, for scripting purposes
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-unlock(1)

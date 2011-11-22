@@ -1,35 +1,28 @@
-eit-cleanup(1)
-==============
+eit-vacuum(1)
+=============
 :man source:   eit {eitversion}
 :man manual:   eit {eitversion}
 
 
 NAME
 ----
-eit-cleanup - clean expired packages from a repository
+eit-vacuum - clean expired packages from a repository
 
 
 SYNOPSIS
 --------
-eit cleanup [-h] [--quick] [--days DAYS] [<repo>]
+eit vacuum [-h] [--quick] [--days DAYS] [<repo>]
 
 
 INTRODUCTION
 ------------
-Clean expired packages from remote mirrors. Usually, packages
-have a default expiration timeout set to 15 days (entropy.const),
-overridable via *ETP_EXPIRATION_DAYS* env variable.
-Expiration date starts from when packages are removed from a repository
-due to a version bump or simple removal.
-During the final part of packages sync, expired ones are automatically
-removed from remote mirrors.
-This commands makes possible to manually force a cleanup.
+This is deprecated, please see *eit-cleanup(1)*.
 
 
 
 OPTIONS
 -------
-"eit cleanup" supports the following options which alters its behaviour.
+"eit vacuum" supports the following options which alters its behaviour.
 
 
 POSITIONAL ARGUMENTS
@@ -65,4 +58,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1)
+    eit(1), eit-cleanup(1)

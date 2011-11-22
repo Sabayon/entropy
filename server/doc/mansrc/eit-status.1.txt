@@ -1,0 +1,56 @@
+eit-status(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-status - show repository status
+
+
+SYNOPSIS
+--------
+eit status [-h] [<repo>]
+
+
+INTRODUCTION
+------------
+Show repository status (such as: *configured mirrors*,
+*current branch*, *unstaged packages*, *packages ready for upload*, etc).
+
+
+
+OPTIONS
+-------
+"eit status" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

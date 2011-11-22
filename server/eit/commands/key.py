@@ -105,6 +105,12 @@ class EitKey(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Toolset for handling repository GPG keys.
+Entropy Server offers *built-in* support for digitally signing
+package and repository files through *gnupg*.
+"""
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

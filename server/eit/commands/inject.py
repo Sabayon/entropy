@@ -48,6 +48,28 @@ class EitInject(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+A Source Package Manager (Portage, for example) can produce
+tarballs containing package metadata and the actual content.
+If that's the case, Entropy Server can scan the file and extract
+all the information needed to add the same to its repository.
+In the Entropy world, this is called "*package injection*",
+meaning that you're actually "injecting" a SPM package into
+an Entropy repository.
+Injected packages are "special", because they're not mapped
+to an installed SPM package on the currently running system
+(or chroot). This has the side effect of Entropy not being
+automatically able to detect library breakages, for example.
+So please limit the amount of *injected* packages in your
+repositories as much as you can.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

@@ -56,6 +56,21 @@ class EitSearch(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Search a package into available repositories (unless *--in* is provided).
+For example: *eit search app-foo/bar* will search any package name
+containing the given string in its name.
+If you are interested in dependency string matching, please see
+*eit match*.
+"""
+    SEE_ALSO = "eit-match(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

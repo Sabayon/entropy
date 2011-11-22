@@ -59,6 +59,17 @@ class EitList(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+List packages in given repositories.
+If you wonder what's inside a repository, you've found the right tool.
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

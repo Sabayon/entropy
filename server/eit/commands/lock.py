@@ -95,6 +95,29 @@ class EitLock(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Locking a repository is a way to prevent other Entropy Server
+or Entropy Client instances (depending on given switches) from
+accessing the remote repository.
+In case of Entropy Server locking (default, --client switch not
+provided), *eit lock* tries to acquire a remote lock on each configured
+mirror that only involves other Entropy Server instances (you won't
+be able to update your repositories if you don't own the remote lock).
+
+When --client is provided instead, *eit lock* places a lock on remote
+mirrors that prevents Entropy Clients from downloading the repository:
+this is just a band aid that avoids users to get broken packages or
+repositories.
+*eit unlock* does the symmetrical job.
+"""
+    SEE_ALSO = "eit-unlock(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:
@@ -209,6 +232,18 @@ class EitUnlock(EitLock):
         self._repository_id = None
         self._action_lock = False
         self._name = EitUnlock.NAME
+
+    INTRODUCTION = """\
+Unlocks previously locked repository.
+See *eit lock* man page (SEE ALSO section) for more information.
+"""
+    SEE_ALSO = "eit-lock(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(

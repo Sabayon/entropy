@@ -1,0 +1,65 @@
+eit-list(1)
+===========
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-list - show repository content (packages)
+
+
+SYNOPSIS
+--------
+eit list [-h] [--quiet] [--verbose] [--injected] <repo> [<repo> ...]
+
+
+INTRODUCTION
+------------
+List packages in given repositories.
+If you wonder what's inside a repository, you've found the right tool.
+
+
+
+OPTIONS
+-------
+"eit list" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-q*::
+    quiet output, for scripting purposes
+
+*-v*::
+    output more package info
+
+*--injected*::
+    only list injected packages
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

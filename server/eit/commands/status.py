@@ -80,6 +80,17 @@ class EitStatus(EitCommand):
         sys.stdout.write(" ".join(outcome) + "\n")
         sys.stdout.flush()
 
+    INTRODUCTION = """\
+Show repository status (such as: *configured mirrors*,
+*current branch*, *unstaged packages*, *packages ready for upload*, etc).
+"""
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         """ Overridden from EitCommand """
         parser = self._get_parser()

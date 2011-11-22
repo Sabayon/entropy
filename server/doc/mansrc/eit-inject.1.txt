@@ -1,0 +1,70 @@
+eit-inject(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-inject - inject package files into repository
+
+
+SYNOPSIS
+--------
+eit inject [-h] [--to <repository>] <path> [<path> ...]
+
+
+INTRODUCTION
+------------
+A Source Package Manager (Portage, for example) can produce
+tarballs containing package metadata and the actual content.
+If that's the case, Entropy Server can scan the file and extract
+all the information needed to add the same to its repository.
+In the Entropy world, this is called "*package injection*",
+meaning that you're actually "injecting" a SPM package into
+an Entropy repository.
+Injected packages are "special", because they're not mapped
+to an installed SPM package on the currently running system
+(or chroot). This has the side effect of Entropy not being
+automatically able to detect library breakages, for example.
+So please limit the amount of *injected* packages in your
+repositories as much as you can.
+
+
+
+OPTIONS
+-------
+"eit inject" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<path>*::
+    package paths
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--to*=<repository>::
+    inject into given repository
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

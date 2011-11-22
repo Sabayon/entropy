@@ -51,6 +51,20 @@ class EitMatch(EitCommand):
 
         return parser
 
+    INTRODUCTION = """\
+Match a dependency string against the available repositories.
+For example: *eit match app-foo/bar:2::repo* will match any version
+of app-foo/bar having SLOT=2 in the "repo" repository.
+If you are interested in a simple text search, please see *eit search*.
+"""
+    SEE_ALSO = "eit-search(1)"
+
+    def man(self):
+        """
+        Overridden from EitCommand.
+        """
+        return self._man()
+
     def parse(self):
         parser = self._get_parser()
         try:

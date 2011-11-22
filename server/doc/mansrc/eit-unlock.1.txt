@@ -1,0 +1,65 @@
+eit-unlock(1)
+=============
+:man source:   eit {eitversion}
+:man manual:   eit {eitversion}
+
+
+NAME
+----
+eit-unlock - lock repository
+
+
+SYNOPSIS
+--------
+eit unlock [-h] [--client | --status] [--quiet] <repo>
+
+
+INTRODUCTION
+------------
+Unlocks previously locked repository.
+See *eit lock* man page (SEE ALSO section) for more information.
+
+
+
+OPTIONS
+-------
+"eit unlock" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--client*::
+    affect entropy clients only
+
+*--status*::
+    show current status
+
+*-q*::
+    quiet output, for scripting purposes
+
+
+
+AUTHORS
+-------
+Eit has been accidentally prototyped during a rainy Sunday by Fabio
+Erculiani who was looking for innovative ways of handling package
+bumps in Sabayon Entropy repositories.
+A few months later, Eit saw the light.
+
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), eit-lock(1)
