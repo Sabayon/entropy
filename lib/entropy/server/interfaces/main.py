@@ -1931,6 +1931,32 @@ class Server(Client):
         dbconn.initializeRepository()
         dbconn.commit()
 
+        # create the store directory
+        store_dir = self._get_local_store_directory(repository_id)
+        if not os.path.isdir(store_dir):
+            try:
+                os.makedirs(store_dir)
+            except (IOError, OSError) as err:
+                self.output(
+                    "%s: %s" % (_("Cannot create store directory"), err),
+                    header=brown(" !!! "),
+                    importance=1,
+                    level="error")
+                return 1
+
+        # create the upload directory
+        upload_dir = self._get_local_upload_directory(repository_id)
+        if not os.path.isdir(upload_dir):
+            try:
+                os.makedirs(upload_dir)
+            except (IOError, OSError) as err:
+                self.output(
+                    "%s: %s" % (_("Cannot create upload directory"), err),
+                    header=brown(" !!! "),
+                    importance=1,
+                    level="error")
+                return 1
+
         return 0
 
     def tag_packages(self, package_matches, package_tag, ask = True):
