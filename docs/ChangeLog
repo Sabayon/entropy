@@ -1,3 +1,158 @@
+commit 5dec2edb5db664dc80380f88ac27ab3bcdc67f40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 23 22:37:50 2011 +0100
+
+    Release Entropy 1.0_rc77
+
+commit 1d46c240e316b69cc4fb09e19e28ad83ab177b17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 23 22:35:08 2011 +0100
+
+    [entropy.server] initialize_repository: make sure to have all the repository directories in place
+
+commit ae48fea5a9334f32aff405bd9777f3791c912f29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 23 14:50:15 2011 +0100
+
+    [sulfur] if exit status is > 255, pass it through the mod operator (this fixes Sulfur respawns with kdesu)
+
+commit d97bc5834628cda2a7b0913d8a5c876c4d241641
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 22 19:40:00 2011 +0100
+
+    [po] update translations
+
+commit 01d09ecfcee7de3f250cb66c0350d4dd89567c8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 22 19:32:40 2011 +0100
+
+    [eit] add more man pages
+    
+    - eit merge
+    - eit pkgmove
+    - eit push
+    - eit query
+    - eit remove
+    - eit repo
+    - eit reset
+    - eit test
+
+commit 27de6bea4665129cfe06dc9e09d37820a403df80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 22 19:32:17 2011 +0100
+
+    [todo] update TODO
+
+commit e46999556aef196992f619baa33a8564fe574d6f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 22 19:03:07 2011 +0100
+
+    [po] remove vacuum.py from POTFILES.in
+
+commit 7195ca4d8e6a844b4b08a7a7fb24efecce2ffd4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 22 19:01:46 2011 +0100
+
+    [eit] add more man pages
+    
+    - eit cleanup
+    - eit inject
+    - eit key
+    - eit list
+    - eit lock
+    - eit unlock
+    - eit match
+
+commit 16ea86b711e6f86628af0abe9dbfc3b9879b07bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 21 18:42:31 2011 +0100
+
+    [sulfur.views] catch TypeError in case of concatenation failure
+
+commit 65aaad61d99098b41ea00a9c4a9929ec44eda25a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 21 18:34:50 2011 +0100
+
+    [eit.commands.commit] make sure that store_dir exists
+
+commit c44cb0195d012a4477fab642a87d88c735f29eef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 18:13:34 2011 +0100
+
+    [eit] add "eit init", "eit deps" man pages
+
+commit 4e7a895938a92ac29b7b923e958fd256f6eef6ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 18:01:45 2011 +0100
+
+    [eit] add "eit graph", "eit revgraph" man pages
+
+commit 6c39444d75d950e99845b55c2c65e41079397b3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 17:58:32 2011 +0100
+
+    [eit] add "eit own" man page
+
+commit 2aae56dbe865454d962328b123cc01d9cc72e51a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 19 17:43:22 2011 +0100
+
+    [eit] add "eit files" man page
+
+commit 5ea5915b47223a00aba3f86cded0597d131e3a4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 18 20:52:30 2011 +0100
+
+    [eit] add man page for "eit cp", "eit log", "eit mv"
+
+commit c371785a96c37736e3f9ab7dd25c02076ea5f07b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 18 16:40:21 2011 +0100
+
+    [eit] add "eit-checkout" and "eit-cleanup" man pages
+
+commit 98f33451b4dbe17f292ecb9517cafde478001c9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 18 16:27:18 2011 +0100
+
+    [entropy.core.settings.base] catch any possible exception when calling generic_file_content_parser
+
+commit dd5855df2532d2e85f354975a73958d95d074ad6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 16 17:27:43 2011 +0100
+
+    [eit.commands.bump] add man page
+
+commit cf01429b791b24b1562ba5a8a93bfe03ba0bcfb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 16 12:35:10 2011 +0100
+
+    [equo] make clear that running "equo update" as user without the dbus service is not possible and should be then done as root.
+
+commit 6a69307f4c26cb7e498809d37b8cc17064e7a592
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 14 23:34:37 2011 +0100
+
+    [eit] add eit-notice man page (and improve automatic man generation functions)
+
+commit f436f65f53f6342a113e538727317128eb35c521
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 14 12:02:48 2011 +0100
+
+    [entropy.server] fix typo in codecs_fdopen() usage
+
+commit 87f5ae732a493c7d10abec9c0df8ba70a5e8cd17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 10:10:47 2011 +0100
+
+    [sulfur] PkgInfoMenu: some metadata can be not available at load time
+
+commit 9025ba68b5448e2f4471fbf87e4808e7df98dc0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 13 07:52:11 2011 +0100
+
+    Tagging Entropy version 1.0_rc76
+
 commit f41ee1e41356e4a5b89efc8ad75614609dbcc68e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 13 07:52:00 2011 +0100
