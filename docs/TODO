@@ -9,6 +9,7 @@ Backlog (raw)
           local repo is older than remote.
         - or simply: pull cmd == do not push; push cmd == do not pull
 
+    - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
 
