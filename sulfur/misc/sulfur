@@ -74,5 +74,8 @@ while rc in (99, 98):
         rc = os.system(sulfur_path)
     else:
         rc = os.system(su_cmd)
+    if rc > 255:
+        # kdesu is idiotic
+        rc = rc % 255
 
 raise SystemExit(rc)
