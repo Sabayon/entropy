@@ -1,3 +1,41 @@
+commit 2c55308018da0b3b155181001da70e4d2a06582b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 24 16:33:38 2011 +0100
+
+    Release Entropy 1.0_rc78
+
+commit fd96d36a71cbc2ae299630860c874ed5938126f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 24 16:09:30 2011 +0100
+
+    [entropy.client.interfaces.dep] fix dependency calculation when ASAP scheduling is enabled (default)
+    
+    internal levels dict must be reinitialized every time deptree object
+    is actually modified. At the same time, when making room on a certain
+    deptree key (moving the entries to another key), make sure to always
+    drop the dep item that is going to be written back.
+    
+    "equo install --empty --pretend lighttpd" triggered the issue.
+    Thanks to micia for reporting.
+
+commit 563cf65ed698c4cea7d53a94b129121afd1c04d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 24 16:08:05 2011 +0100
+
+    [entropy.client.interface.dep] fix typo in comment
+
+commit 46f9819f5658b97bde31f179eec25690ac567c28
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 23 22:45:03 2011 +0100
+
+    [todo] update TODO
+
+commit 6d39dfb28430d4feaf9aaa4659e84e9f791aea1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 23 22:38:03 2011 +0100
+
+    Tagging Entropy version 1.0_rc77
+
 commit 5dec2edb5db664dc80380f88ac27ab3bcdc67f40
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Nov 23 22:37:50 2011 +0100
