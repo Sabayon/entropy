@@ -1593,9 +1593,14 @@ class CalculatorsMixin:
                     # rewrite
                     deptree[level] = tuple((x for x in deptree[level] \
                         if x != post_dep))
+                    deptree[stick_level] = tuple((x for x in \
+                        deptree[stick_level] if x != post_dep))
+
                     if deptree[stick_level]:
                         _make_room(stick_level)
+
                     deptree[stick_level] = (post_dep,)
+                    _setup_levels()
 
     def _get_required_packages(self, package_matches, empty_deps = False,
         deep_deps = False, relaxed_deps = False, build_deps = False,
