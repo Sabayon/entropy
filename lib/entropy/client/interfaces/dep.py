@@ -1578,7 +1578,7 @@ class CalculatorsMixin:
             for post_dep in post_deps:
                 level = levels[post_dep]
                 first_requiring = _find_first_requiring(post_dep, level)
-                # NOTE: this herustic only works if nothing is requiring
+                # NOTE: this heuristic only works if nothing is requiring
                 # post dependency
                 if first_requiring is None:
                     # add it right after
