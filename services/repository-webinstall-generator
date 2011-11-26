@@ -173,6 +173,20 @@ exit ${?}
                         local_etp_path))
                     work_queue_cache.add(rev_pkg_id)
 
+        # collect really expired .etp files
+        ext = etpConst['packagesext_webinstall']
+        for package_dir in self._package_dirs:
+            if not os.path.isdir(package_dir):
+                continue
+            for cur_dir, sub_dirs, files in os.walk(package_dir):
+                for etp_file in files:
+                    if not etp_file.endswith(ext):
+                        continue
+                    pkg_file = etp_file[:-len(ext)] + etpConst['packagesext']
+                    if not os.path.isfile(pkg_file):
+                        # we can drop our .etp
+                        expired_webinstall_files.add(etp_file)
+
         return work_queue, expired_webinstall_files
 
     def _cleanup_expired_files(self, expired_webinstall_files):
