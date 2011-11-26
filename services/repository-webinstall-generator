@@ -489,7 +489,7 @@ def _generate(args):
 
     if not mirror_urls:
         # coupled with ETP_REPOSITORIES_CONF
-        print_warning(brown(_("Using repositories.conf settings for mirrors")))
+        print_info(brown(_("Using repositories.conf settings for mirrors")))
         sys_set = SystemSettings()
         mirror_urls = sys_set['repositories']['available'].get(
             repository_id, {}).get('plain_packages', [])
