@@ -367,16 +367,17 @@ exit ${?}
         work_queue, expired_webinstall_files = \
             self._calculate_required_actions()
 
-        if not work_queue:
+        if not (work_queue or expired_webinstall_files):
             # nothing to do
             self.output(purple("Nothing to do."),
                 header = teal(" @@ "),
                 importance = 1)
             return True
 
-        self.output(purple("Generating web-install packages..."),
-            header = teal(" @@ "),
-            importance = 1)
+        if work_queue:
+            self.output(purple("Generating web-install packages..."),
+                header = teal(" @@ "),
+                importance = 1)
 
         tmp_repo_orig_path = self._prepare_base_package_repository()
         pkg_data_cache = {}
@@ -412,7 +413,8 @@ exit ${?}
             pkg_data_cache.clear()
             del pkg_data_cache
 
-        self._cleanup_expired_files(expired_webinstall_files)
+        if expired_webinstall_files:
+            self._cleanup_expired_files(expired_webinstall_files)
 
         return True
 
