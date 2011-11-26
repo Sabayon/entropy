@@ -182,6 +182,7 @@ exit ${?}
                 for etp_file in files:
                     if not etp_file.endswith(ext):
                         continue
+                    etp_file = os.path.join(package_dir, etp_file)
                     pkg_file = etp_file[:-len(ext)] + etpConst['packagesext']
                     if not os.path.isfile(pkg_file):
                         # we can drop our .etp
@@ -199,7 +200,7 @@ exit ${?}
             except OSError as err:
                 self.output("%s %s: %s" % (
                         teal("cannot remove"),
-                        path,
+                        expired_file,
                         repr(err),
                     ),
                     header = brown(" @@ "),
