@@ -915,6 +915,8 @@ class ServerPackagesRepositoryUpdater(object):
 
                 if removed_items:
                     for atom in sorted(removed_items):
+                        mylink = link + entropy.dep.remove_entropy_revision(
+                            atom)
                         description = atom
                         description += const_convert_to_unicode(": ")
                         description += const_convert_to_unicode(
