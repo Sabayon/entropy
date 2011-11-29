@@ -1812,6 +1812,11 @@ class PortagePlugin(SpmPlugin):
         mysettings['EBUILD_PHASE'] = mydo
         mysettings['EMERGE_FROM'] = "binary"
 
+        # Always turn off FEATURES=noauto as it breaks the phase
+        # execution. This has been also fixed in Portage in
+        # commit 10017a62b227558ed446419a2133c1584676c01c
+        mysettings.features.discard("noauto")
+
         # we already do this early
         mysettings["ACCEPT_LICENSE"] = const_convert_to_unicode(
             " ".join(licenses))
