@@ -141,10 +141,11 @@ def _add_repository(entropy_client, repo_strings):
         try:
             repoid, repodata = SystemSettings._analyze_client_repo_string(
                 repo_string, current_branch, current_product)
-        except AttributeError:
-            print_warning("[%s] %s" % (
+        except AttributeError as err:
+            print_warning("[%s] %s: %s" % (
                 purple(repo_string),
-                blue(_("invalid repository string, skipping")),)
+                blue(_("invalid repository string")),
+                err,)
             )
             continue
 
