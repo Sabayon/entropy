@@ -1,3 +1,69 @@
+commit 7c4a7a2cc64c3248fc37df92724001c12487c3dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 30 19:11:18 2011 +0100
+
+    Release Entropy 1.0_rc79
+
+commit 906e7781ea2e3a4f02204d6a8ef186800bd46899
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 29 17:42:16 2011 +0100
+
+    [entropy.spm] PortagePlugin: make sure to always filter out FEATURES=noauto before calling doebuild()
+
+commit 522bb22abac2364a96a8289051b516e608a56322
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 29 10:10:33 2011 +0100
+
+    [equo] text_repositories: improve error messages, apply David Narvaez patches
+
+commit 54de55922481a6d871a5eff8713bfe6255db6b57
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 28 23:13:13 2011 +0100
+
+    [entropy.server] fix undefined reference in _update_rss
+
+commit 2d57e507db0e6c79428e71025302208326414288
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 19:11:44 2011 +0100
+
+    [services] repository-webinstall-generator: trivial code fix
+
+commit 83a5bfbc10ccbbb407fd6226a116a9299b102230
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 19:03:42 2011 +0100
+
+    [services] repository-webinstall-generator: actually remove ancient .etp files
+
+commit a67e30c04e64d6fae7d45b86a0737fcece120549
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 18:13:03 2011 +0100
+
+    [services] repository-webinstall-generator: use print_info instead of print_warning
+
+commit 11f1eee75ab9a8895c51d0e9ff0c2e95fe37bb19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 18:11:46 2011 +0100
+
+    [services] entropy-pkgdelta-generator: write to stdout
+
+commit 5d39b4c423eeab0bcdcdb1f41124dc9b9d1a1e40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 18:09:51 2011 +0100
+
+    [services] repository-webinstall-generator: execute cleanup even if no new .etp files have to be created
+
+commit a03536bb1894a59610872b8ea5a31f24c1ca9e9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 26 17:55:24 2011 +0100
+
+    [services] fix $@ usage
+
+commit 4c0008f62810e9599abcc612c8d8a53a4b45aca6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 24 16:33:43 2011 +0100
+
+    Tagging Entropy version 1.0_rc78
+
 commit 2c55308018da0b3b155181001da70e4d2a06582b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Nov 24 16:33:38 2011 +0100
