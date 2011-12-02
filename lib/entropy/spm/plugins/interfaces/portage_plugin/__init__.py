@@ -294,6 +294,7 @@ class PortagePlugin(SpmPlugin):
         'rdepend': "RDEPEND",
         'pdepend': "PDEPEND",
         'needed': "NEEDED",
+        'needed.elf.2': "NEEDED.ELF.2",
         'inherited': "INHERITED",
         'keywords': "KEYWORDS",
         'contents': "CONTENTS",
@@ -1122,10 +1123,18 @@ class PortagePlugin(SpmPlugin):
             data['keywords'].insert(0, "**")
 
         data['keywords'] = set(data['keywords'])
+        needed_elf_file = os.path.join(meta_dir,
+            PortagePlugin.xpak_entries['needed.elf.2'])
         needed_file = os.path.join(meta_dir,
             PortagePlugin.xpak_entries['needed'])
 
-        data['needed'] = self._extract_pkg_metadata_needed(needed_file)
+        if os.path.isfile(needed_elf_file):
+            data['needed'] = self._extract_pkg_metadata_needed_elf_2(
+                needed_elf_file)
+        else:
+            # fallback to old NEEDED file, no need to check if it exists
+            data['needed'] = self._extract_pkg_metadata_needed(
+                needed_file)
 
         content_file = os.path.join(meta_dir,
             PortagePlugin.xpak_entries['contents'])
@@ -4146,6 +4155,29 @@ class PortagePlugin(SpmPlugin):
                         pkg_content[item[tmpdir_len:]] = obj_t
 
         return pkg_content
+
+    def _extract_pkg_metadata_needed_elf_2(self, needed_file):
+
+        pkg_needed = set()
+        lines = []
+
+        try:
+            with open(needed_file, "rb") as f:
+                lines = [x.strip() for x in f.readlines() if x.strip()]
+                lines = [const_convert_to_unicode(x) for x in lines]
+        except IOError:
+            return tuple()
+
+        for line in lines:
+            needed = line.split(";")
+            ownlib = needed[1]
+            ownelf = -1
+            if os.access(ownlib, os.R_OK):
+                ownelf = entropy.tools.read_elf_class(ownlib)
+            for lib in needed[4].split(","):
+                pkg_needed.add((lib, ownelf))
+
+        return tuple(sorted(pkg_needed))
 
     def _extract_pkg_metadata_needed(self, needed_file):
 
