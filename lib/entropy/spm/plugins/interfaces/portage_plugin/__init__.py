@@ -302,7 +302,6 @@ class PortagePlugin(SpmPlugin):
         'repository': "repository",
         'pf': "PF",
         'eapi': "EAPI",
-        'features': "FEATURES",
     }
 
     _xpak_const = {
@@ -2643,20 +2642,6 @@ class PortagePlugin(SpmPlugin):
         if hasattr(vartree.dbapi, '_bump_mtime'):
             vartree.dbapi._bump_mtime(portage_cpv)
 
-    def __splitdebug_update_features_file(self, features_path):
-
-        enc = etpConst['conf_encoding']
-        with codecs.open(features_path, "r", encoding=enc) as feat_f:
-            feat_content = feat_f.read().split(" ")
-
-        if "splitdebug" in feat_content:
-            feat_content.remove("splitdebug")
-            entropy.tools.atomic_write(
-                features_path,
-                const_convert_to_unicode(" ").join(feat_content) + \
-                    const_convert_to_unicode("\n"),
-                enc)
-
     def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
 
         if not (os.path.isfile(contents_path) and \
@@ -2894,11 +2879,7 @@ class PortagePlugin(SpmPlugin):
 
             splitdebug = package_metadata.get("splitdebug", False)
             splitdebug_dirs = package_metadata.get("splitdebug_dirs", tuple())
-            if splitdebug:
-                features_path = os.path.join(copypath,
-                    PortagePlugin.xpak_entries['features'])
-                self.__splitdebug_update_features_file(features_path)
-            elif not splitdebug and splitdebug_dirs:
+            if not splitdebug and splitdebug_dirs:
                 contents_path = os.path.join(copypath,
                     PortagePlugin.xpak_entries['contents'])
                 self.__splitdebug_update_contents_file(contents_path,
