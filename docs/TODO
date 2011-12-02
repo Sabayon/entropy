@@ -31,7 +31,7 @@ Backlog (raw)
   1.1:
 
     - pkgcore spm plugin
-        PF CATEGORY CFLAGS CXXFLAGS NEEDED FEATURES INHERITED are missing
+        PF CATEGORY CFLAGS CXXFLAGS NEEDED INHERITED are missing
     - ditch close_repositories() for commit_repositories() when possible
     - python 3.x support -> more tests
     - sulfur: rewrite using pygtk3
