@@ -294,6 +294,7 @@ class PortagePlugin(SpmPlugin):
         'rdepend': "RDEPEND",
         'pdepend': "PDEPEND",
         'needed': "NEEDED",
+        'inherited': "INHERITED",
         'keywords': "KEYWORDS",
         'contents': "CONTENTS",
         'counter': "COUNTER",
@@ -301,6 +302,7 @@ class PortagePlugin(SpmPlugin):
         'repository': "repository",
         'pf': "PF",
         'eapi': "EAPI",
+        'features': "FEATURES",
     }
 
     _xpak_const = {
