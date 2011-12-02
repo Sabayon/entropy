@@ -294,7 +294,6 @@ class PortagePlugin(SpmPlugin):
         'rdepend': "RDEPEND",
         'pdepend': "PDEPEND",
         'needed': "NEEDED",
-        'inherited': "INHERITED",
         'keywords': "KEYWORDS",
         'contents': "CONTENTS",
         'counter': "COUNTER",
