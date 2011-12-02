@@ -1315,11 +1315,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         repo_key, repostring = entropy.tools.extract_setting(repostring)
         if repo_key != "repository":
-            raise AttributeError("invalid repostring passed")
+            raise AttributeError("repostring must start with 'repository|'")
 
         repo_split = repostring.split("|")
         if len(repo_split) < 4:
-            raise AttributeError("invalid repostring passed (2)")
+            raise AttributeError("repostring must have at least 5 pipe separated parts")
 
         reponame = repo_split[0].strip()
         if not _skip_repository_validation:
