@@ -229,7 +229,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         args.extend(c_args)
         args += ["-B", "-P", str(self.__port), remote_str, tmp_save_path]
 
-        down_sts = self._fork_cmd(args) == 0
+        down_sts = self._fork_cmd(args) == os.EX_OK
         if not down_sts:
             try:
                 os.remove(tmp_save_path)
@@ -260,7 +260,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         args += [remote_str] + [self._setup_common_args(x)[1] for x in \
             remote_paths] + [tmp_dir]
 
-        down_sts = self._fork_cmd(args) == 0
+        down_sts = self._fork_cmd(args) == os.EX_OK
         if not down_sts:
             do_rmdir(tmp_dir)
             return False
@@ -285,7 +285,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         args.extend(c_args)
         args += ["-B", "-P", str(self.__port), load_path, remote_str]
 
-        upload_sts = self._fork_cmd(args) == 0
+        upload_sts = self._fork_cmd(args) == os.EX_OK
         if not upload_sts:
             self.delete(tmp_remote_path)
             return False
@@ -351,7 +351,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             args += sorted(tmp_file_map.keys())
             args += [remote_str]
 
-            upload_sts = self._fork_cmd(args) == 0
+            upload_sts = self._fork_cmd(args) == os.EX_OK
             if not upload_sts:
                 return False
 
@@ -393,7 +393,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         remote_ptr_old = os.path.join(self.__dir, remote_path_old)
         remote_ptr_new = os.path.join(self.__dir, remote_path_new)
         args += [remote_str, "mv", remote_ptr_old, remote_ptr_new]
-        return self._exec_cmd(args)[0] == 0
+        return self._exec_cmd(args)[0] == os.EX_OK
 
     def copy(self, remote_path_old, remote_path_new):
         args, remote_str = self._setup_fs_args()
@@ -415,7 +415,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         args, remote_str = self._setup_fs_args()
         remote_ptr = os.path.join(self.__dir, remote_path)
         args += [remote_str, "rm", remote_ptr]
-        return self._exec_cmd(args)[0] == 0
+        return self._exec_cmd(args)[0] == os.EX_OK
 
     def delete_many(self, remote_paths):
         remote_ptrs = []
@@ -424,7 +424,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             remote_ptr = os.path.join(self.__dir, remote_path)
             remote_ptrs.append(remote_ptr)
         args += [remote_str, "rm"] + remote_ptrs
-        return self._exec_cmd(args)[0] == 0
+        return self._exec_cmd(args)[0] == os.EX_OK
 
     def get_md5(self, remote_path):
         args, remote_str = self._setup_fs_args()
@@ -467,28 +467,28 @@ class EntropySshUriHandler(EntropyUriHandler):
         remote_ptr = os.path.join(self.__dir, remote_path)
         args += [remote_str, "test", "-d", remote_ptr]
         exec_rc, output, error = self._exec_cmd(args)
-        return exec_rc == 0
+        return exec_rc == os.EX_OK
 
     def is_file(self, remote_path):
         args, remote_str = self._setup_fs_args()
         remote_ptr = os.path.join(self.__dir, remote_path)
         args += [remote_str, "test", "-f", remote_ptr]
         exec_rc, output, error = self._exec_cmd(args)
-        return exec_rc == 0
+        return exec_rc == os.EX_OK
 
     def is_path_available(self, remote_path):
         args, remote_str = self._setup_fs_args()
         remote_ptr = os.path.join(self.__dir, remote_path)
         args += [remote_str, "stat", remote_ptr]
         exec_rc, output, error = self._exec_cmd(args)
-        return exec_rc == 0
+        return exec_rc == os.EX_OK
 
     def makedirs(self, remote_path):
         args, remote_str = self._setup_fs_args()
         remote_ptr = os.path.join(self.__dir, remote_path)
         args += [remote_str, "mkdir", "-p", remote_ptr]
         exec_rc, output, error = self._exec_cmd(args)
-        return exec_rc == 0
+        return exec_rc == os.EX_OK
 
     def keep_alive(self):
         return
