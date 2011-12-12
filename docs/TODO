@@ -2,7 +2,8 @@ Backlog (raw)
 
   1.0:
 
-    - migrate PortagePlugin to NEEDED.ELF.2
+    - entropy.const: move arch detection to repositories.conf
+           this will override the default value (if possible)
 
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
