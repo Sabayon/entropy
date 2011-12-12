@@ -84,9 +84,15 @@ for arches, arch in ETP_ARCH_MAP.items():
     if _uname_m in arches:
         ETP_ARCH_CONST = arch
         break
+
+_more_keywords = None
 if ETP_ARCH_CONST is None:
     if _uname_m.startswith("arm"):
-        ETP_ARCH_CONST = "arm"
+        # ARM is "special", multiple subarches
+        # ahead, better use the full uname value
+        # and account "arm" to etpSys['keywords']
+        ETP_ARCH_CONST = _uname_m
+        _more_keywords = set(["arm", "~arm"])
     else:
         ETP_ARCH_CONST = "UNKNOWN"
 
@@ -101,6 +107,8 @@ etpSys = {
     'serverside': False,
     'unittest': False,
 }
+if _more_keywords is not None:
+    etpSys['keywords'] |= _more_keywords
 
 etpUi = {
     'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
