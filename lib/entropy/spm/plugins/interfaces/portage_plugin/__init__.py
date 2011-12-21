@@ -3138,6 +3138,10 @@ class PortagePlugin(SpmPlugin):
         root = etpConst['systemroot'] + os.path.sep
         mytree = portage.vartree(root=root)
         vardb = mytree.dbapi
+        if vardb._plib_registry is None:
+            # unsupported in current Portage version
+            return 0, None
+
         vardb._plib_registry.load()
         if vardb._plib_registry.hasEntries():
             # just warn for now
