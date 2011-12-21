@@ -1,3 +1,85 @@
+commit 769638eb609ef647807eaa584c31310ebfaf9a6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 21 13:54:25 2011 +0100
+
+    Release Entropy 1.0_rc80
+
+commit 938b6bcf712793873aec9f6eddb7b208cbccbebd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 12 15:24:03 2011 +0100
+
+    [todo] update TODO
+
+commit 8958f947d58b7de20f0abaf95c6e6ca376d6d46a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 12 15:21:52 2011 +0100
+
+    [entropy.const] rework automatic ARM architecture and keywords detection (will be moved to repositories.conf)
+
+commit 86db7bc8f5f63e47c088bd10054920e1f8f9b04d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 17:54:33 2011 +0100
+
+    [entropy.spm] PortagePlugin: add support for NEEDED.ELF.2
+
+commit 790fe3b1e146f713f44787621e3419575ecc9c87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 17:39:47 2011 +0100
+
+    [entropy.spm] PortagePlugin: keep INHERITED and FEATURES metadata entries (used by portage-repository-converter)
+
+commit 384f281f47fe6dfd52569ec233a9b3bd1e073727
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 12:06:35 2011 +0100
+
+    [todo] update TODO
+
+commit e5da3c306321a3565c8608eed77b376716aa4fc6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 12:06:10 2011 +0100
+
+    [entropy.spm] PortagePlugin: INHERITED is not used
+
+commit c80fb76ab98e42cd94c6635c12009806cc202d0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 12:04:43 2011 +0100
+
+    [todo] update TODO
+
+commit 5fa3e58679bdbd68feabcaa9a524f6253d281d6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 12:03:18 2011 +0100
+
+    [entropy.spm] PortagePlugin: drop FEATURES usage completely
+    
+    Removing "splitdebug" from FEATURES if splitdebug is disabled is
+    pointless and not really needed. Better leave FEATURES untouched.
+    Moreover, pkgcore doesn't provide FEATURES at all.
+
+commit 104fb3b15199036a720ff433201d05bf96f8d425
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 11:36:55 2011 +0100
+
+    [todo] update TODO
+
+commit 6e0396aa03a3bf4f8a19dbf8742a95a87faba701
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 11:36:35 2011 +0100
+
+    [entropy.core.settings.base] spit more user-friendly error messages
+
+commit 8756ccc65f9b5cbaab36d0eda9518e95b3307abb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 2 11:36:19 2011 +0100
+
+    [entropy.transceivers] use os.EX_OK
+
+commit 27d3e3a71bb3d1f6dd4badbf88a793d8cb22fbc0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 30 19:11:45 2011 +0100
+
+    Tagging Entropy version 1.0_rc79
+
 commit 7c4a7a2cc64c3248fc37df92724001c12487c3dd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Nov 30 19:11:18 2011 +0100
