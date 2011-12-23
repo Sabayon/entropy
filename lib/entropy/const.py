@@ -103,7 +103,7 @@ etpSys = {
     'keywords': set([ETP_ARCH_CONST, "~"+ETP_ARCH_CONST]),
     'api': '3',
     'arch': ETP_ARCH_CONST,
-    'rootdir': "",
+    'rootdir': os.getenv("ETP_ROOT", "").rstrip("/"),
     'serverside': False,
     'unittest': False,
 }
