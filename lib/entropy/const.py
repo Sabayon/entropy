@@ -62,6 +62,7 @@ import gzip
 import bz2
 import grp
 import pwd
+import traceback
 import threading
 try:
     import thread
@@ -70,6 +71,37 @@ except ImportError:
     import _thread as thread
 from entropy.i18n import _
 
+# Setup debugger hook on SIGUSR1
+def debug_signal(signum, frame):
+    import pdb
+    pdb.set_trace()
+if os.getuid() == 0:
+    signal.signal(signal.SIGUSR1, debug_signal)
+
+# Setup thread dump hook on SIGQUIT
+def dump_signal(signum, frame):
+
+    def _std_print_err(msg):
+        sys.stderr.write(msg + '\n')
+
+    _std_print_err("")
+    _std_print_err("")
+    _std_print_err("---- DUMP START [cut here] ----")
+    for thread_id, stack in sys._current_frames().items():
+        _std_print_err("Thread: %s" % (thread_id,))
+        for filename, lineno, name, line in traceback.extract_stack(stack):
+            _std_print_err("File: '%s', line %d, in %s'" % (
+                    filename, lineno, name,))
+            if line:
+                _std_print_err("  %s" % (line.rstrip(),))
+            else:
+                _std_print_err("  ???")
+        _std_print_err("--")
+        _std_print_err("")
+    _std_print_err("---- DUMP END [cut here] ----")
+    _std_print_err("")
+if os.getuid() == 0:
+    signal.signal(signal.SIGQUIT, dump_signal)
 
 # ETP_ARCH_CONST setup
 # add more arches here
