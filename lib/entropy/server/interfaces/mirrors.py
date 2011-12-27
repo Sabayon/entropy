@@ -1582,25 +1582,7 @@ class Server(object):
         my_qa = self._entropy.QA()
         qa_total = len(packages_list)
         qa_count = 0
-
-        max_threads = const_get_cpus()
-        if max_threads > 2:
-            max_threads = 2
         qa_some_faulty = []
-        threads = []
-        qa_sts_map = {
-            'sem': threading.Semaphore(max_threads),
-            'lock': threading.Lock(),
-        }
-
-        def _qa_check(upload_package):
-            try:
-                result = my_qa.entropy_package_checks(upload_package)
-                if not result:
-                    with qa_sts_map['lock']:
-                        qa_some_faulty.append(os.path.basename(upload_package))
-            finally:
-                qa_sts_map['sem'].release()
 
         for upload_package in packages_list:
             qa_count += 1
@@ -1616,15 +1598,9 @@ class Server(object):
                 back = True,
                 count = (qa_count, qa_total,)
             )
-
-            qa_sts_map['sem'].acquire()
-            th = ParallelTask(_qa_check, upload_package)
-            th.daemon = True
-            threads.append(th)
-            th.start()
-
-        for th in threads:
-            th.join()
+            result = my_qa.entropy_package_checks(upload_package)
+            if not result:
+                qa_some_faulty.append(os.path.basename(upload_package))
 
         if qa_some_faulty:
 
