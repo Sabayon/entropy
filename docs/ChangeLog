@@ -1,3 +1,39 @@
+commit 217ae143457b53271bb3789c608b92fc0edc0766
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 28 10:07:06 2011 +0100
+
+    Release Entropy 1.0_rc81
+
+commit e6ecf02ee3cbf35dce33f75104ba349fe7ca8334
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 27 08:23:09 2011 +0100
+
+    [entropy.server] _run_package_files_qa_checks is I/O bound, no need for parallelization
+
+commit bf327ce01e4a64e30a61cc4214da616a58da8340
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 27 08:03:05 2011 +0100
+
+    [entropy.const] install debug signal handler on SIGUSR1, thread dump on SIGQUIT
+
+commit 146343107d417da403dfa5906c78f4ee155341e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 23 16:21:16 2011 +0100
+
+    [entropy.const] make possible to override ROOT from env using ETP_ROOT
+
+commit bb008eaa227414843925c43023b3a94b0af82799
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 21 21:58:09 2011 +0100
+
+    [entropy.spm] PortagePlugin: vardb._plib_registry might be None (Portage 2.1)
+
+commit d76aba5c9edf285762a1c7e91177b7b7c3042e9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 21 13:54:48 2011 +0100
+
+    Tagging Entropy version 1.0_rc80
+
 commit 769638eb609ef647807eaa584c31310ebfaf9a6d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 21 13:54:25 2011 +0100
