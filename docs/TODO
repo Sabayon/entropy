@@ -4,6 +4,7 @@ Backlog (raw)
 
     - entropy.const: move arch detection to repositories.conf
            this will override the default value (if possible)
+    - use CNAMEs instead of hardcoding random urls into repositories.conf
 
     - entropy server:
         - if local repo < remote repo, repo should be downloaded first
