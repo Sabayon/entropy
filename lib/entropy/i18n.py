@@ -35,11 +35,13 @@ try:
     if envdir is not None:
         localedir = envdir
     kwargs = {"localedir": localedir}
+    kwargs['names'] = ["ngettext"]
     if sys.hexversion < 0x3000000:
         kwargs['unicode'] = True
     gettext.install('entropy', **kwargs)
     # do not use gettext.gettext because it returns str instead of unicode
     _ = _
+    P_ = ngettext
 
 except (ImportError, OSError,):
     def _(raw_string):
@@ -54,6 +56,24 @@ except (ImportError, OSError,):
         @rtype: string
         """
         return raw_string
+
+    def P_(singular, plural, n):
+        """
+        Plural aware version of _(). Fallback function in case
+        gettext is not available, same syntax as gettext.ngettext.
+
+        @param singular: the singular version of the string
+        @type singular: string
+        @param plural: the plural version of the string
+        @type plural: string
+        @param n: the number of elements
+        @type n: int
+        @return: translated string, either singular or plural
+        basin on n
+        """
+        if n < 2:
+            return singular
+        return plural
 
 def change_language(lang):
     """
