@@ -10,8 +10,7 @@ import tempfile
 import subprocess
 import errno
 import fcntl
-from Queue import Empty as EmptyQueue
-from multiprocessing import Queue, Lock
+from threading import Lock
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/lib')
