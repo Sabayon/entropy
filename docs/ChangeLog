@@ -1,3 +1,60 @@
+commit 52640c1be3b7d7247842a7aa1a517268dd5220b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 12 11:08:00 2012 +0100
+
+    Release Entropy 1.0_rc82
+
+commit c6795d3cf8933806e73bed4a564b48f0a7fbae40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 12 10:54:18 2012 +0100
+
+    [entropy.spm] PortagePlugin: always discard FEATURES=ccache when calling doebuild()
+
+commit 5773450f9a2a94cacc804dfae31dc8f285b54a78
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 11 22:44:44 2012 +0100
+
+    [matter] use threading Lock instead of multiprocessing, make it work under qemu-user
+
+commit d70ef7121b7290efc0c59cae274ca0c2d53e8e5a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 2 21:12:34 2012 +0100
+
+    [todo] update TODO
+
+commit 38bd3c8fbe8fe2e83e86133fe04df1757b9ae87d
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Jan 2 20:58:23 2012 +0100
+
+    [po] add plural forms settings for Polish
+
+commit 970978ee976f1916c6bbe132315c7b568d8d1a41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 2 19:45:11 2012 +0100
+
+    [entropy.i18n] add P_(), for supporting gettext plural forms
+
+commit 926107dd5e3c5134720c1eb4c0abf576300abf04
+Author: Sławomir Nizio <poczta-sn@gazeta.pl>
+Date:   Sun Jan 1 23:26:04 2012 +0100
+
+    [po] update Polish translation
+
+commit 75a48ee85f23c3f7f22f249ef408b1880d402d17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 30 23:04:27 2011 +0100
+
+    [services] entropy-updates-services: avoid loading/unloading Entropy but rather keep an instance alive
+    
+    This hopefully fixes GC related memleaks exposed here:
+    https://forum.sabayon.org/viewtopic.php?f=24&t=26171
+
+commit 82526282512529841032cbea9293193bc54c375f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 28 10:07:36 2011 +0100
+
+    Tagging Entropy version 1.0_rc81
+
 commit 217ae143457b53271bb3789c608b92fc0edc0766
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 28 10:07:06 2011 +0100
