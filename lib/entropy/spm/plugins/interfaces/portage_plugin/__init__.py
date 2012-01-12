@@ -1826,6 +1826,10 @@ class PortagePlugin(SpmPlugin):
         # commit 10017a62b227558ed446419a2133c1584676c01c
         mysettings.features.discard("noauto")
 
+        # Turn off ccache if it's set, pointless and might
+        # generate warnings
+        mysettings.features.discard("ccache")
+
         # we already do this early
         mysettings["ACCEPT_LICENSE"] = const_convert_to_unicode(
             " ".join(licenses))
