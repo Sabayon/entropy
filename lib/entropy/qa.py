@@ -661,18 +661,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
             myroot = os.path.sep
 
         # run ldconfig first
-        subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
-        # open /etc/ld.so.conf
-        ld_conf = etpConst['systemroot'] + "/etc/ld.so.conf"
-
-        if not os.path.isfile(ld_conf):
-            self.output(
-                blue(_("Cannot find "))+red(ld_conf),
-                importance = 1,
-                level = "error",
-                header = red(" @@ ")
-            )
-            return {}, set(), -1
+        subprocess.call("ldconfig -r '%s' &> /dev/null" % (myroot,),
+                        shell = True)
 
         reverse_symlink_map = self._settings['system_rev_symlinks']
         broken_syms_list = self._settings['broken_syms']
