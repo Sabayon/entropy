@@ -1354,7 +1354,8 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                     # completely abort
                     break
 
-                completed.extend(local_completed)
+                completed.extend([x for x in local_completed \
+                    if x not in completed])
                 # portage calls setcwd()
                 os.chdir(cwd)
 
