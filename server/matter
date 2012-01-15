@@ -862,6 +862,8 @@ class PackageBuilder(object):
         package_queue = graph.altlist()
         # filter out blockers
         real_queue = [x for x in package_queue if not isinstance(x, Blocker)]
+        # filter out broken or corrupted objects
+        real_queue = [x for x in package_queue if x.cpv]
 
         # package_queue can also contain _emerge.Blocker.Blocker objects
         # not exposing .cpv field (but just .cp).
@@ -875,7 +877,11 @@ class PackageBuilder(object):
             repo = pobj.repo
             if repo:
                 repo = "::" + repo
-            dep_list.append(cpv+repo)
+            if cpv:
+                dep_list.append(cpv+repo)
+            else:
+                print_warning("attention, %s has broken cpv: '%s', ignoring" % (
+                        pobj, cpv,))
 
         # calculate dependencies, if --dependencies is not enabled
         # because we have to validate it
@@ -1004,7 +1010,10 @@ class PackageBuilder(object):
 
         for pkg in real_queue:
             cpv = pkg.cpv
-            if cpv not in not_merged:
+            if not cpv:
+                print_warning("package: %s, has broken cpv: '%s', ignoring" % (
+                        pkg, cpv,))
+            elif cpv not in not_merged:
                 # add to build queue
                 print_info("package: %s, successfully built" % (cpv,))
                 self._built_packages.append(cpv)
