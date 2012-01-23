@@ -464,7 +464,7 @@ class Graph(object):
         @rtype: dict
         """
         if self.__graph_map_cache is not None:
-            return self.__graph_map_cache
+            return self.__graph_map_cache.copy()
 
         graph_map = {}
         for node_item in self.__graph.values():
@@ -476,7 +476,7 @@ class Graph(object):
 
             graph_map[node_item] = my_graph_map
 
-        self.__graph_map_cache = graph_map
+        self.__graph_map_cache = graph_map.copy()
         return graph_map
 
     def solve_nodes(self):
