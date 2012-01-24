@@ -5913,9 +5913,10 @@ class EntropyRepository(EntropyRepositoryBase):
             importance = 1,
             level = "warning")
 
+        self.dropAllIndexes()
+        self._cursor().execute("pragma foreign_keys = OFF").fetchall()
         self._cursor().executescript("""
             BEGIN TRANSACTION;
-            PRAGMA foreign_keys = OFF;
 
             DROP TABLE IF EXISTS baseinfo_new_temp;
             CREATE TABLE baseinfo_new_temp (
@@ -5965,9 +5966,9 @@ class EntropyRepository(EntropyRepositoryBase):
             ALTER TABLE extrainfo_new_temp RENAME TO extrainfo;
             DROP TABLE flags;
 
-            PRAGMA foreign_keys = ON;
             COMMIT;
         """)
+        self._cursor().execute("pragma foreign_keys = ON").fetchall()
 
         self._setSetting("_baseinfo_extrainfo_2010", "1")
 
