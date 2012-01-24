@@ -213,12 +213,12 @@ class ServerPackagesRepository(CachedRepository):
         return srv.remote_repository_revision(repository_id)
 
     @staticmethod
-    def update(entropy_client, repository_id, force, gpg):
+    def update(entropy_client, repository_id, enable_upload, enable_download):
         """
         Reimplemented from EntropyRepository
         """
         return ServerPackagesRepositoryUpdater(entropy_client, repository_id,
-            force).update()
+            enable_upload, enable_download).update()
 
     def _runConfigurationFilesUpdate(self, actions, files,
         protect_overwrite = False):
@@ -304,21 +304,25 @@ class ServerPackagesRepositoryUpdater(object):
     inside ServerPackagesRepository class.
     """
 
-    def __init__(self, entropy_server, repository_id, force):
+    def __init__(self, entropy_server, repository_id, enable_upload, enable_download):
         """
         ServerPackagesRepositoryUpdater constructor, called by
         ServerPackagesRepository.
 
-        @param force: if True, repository will be uploaded for syncing if
+        @param enable_upload: if True, repository will be uploaded for syncing if
             required
-        @type force: bool
+        @type enable_upload: bool
+        @param enable_download: if True, repository will be downloaded for syncing
+            if required
+        @type enable_download: bool
         """
         self._entropy = entropy_server
         self._mirrors = self._entropy.Mirrors
         self._settings = self._entropy.Settings()
         self._cacher = EntropyCacher()
         self._repository_id = repository_id
-        self._force = force
+        self._enable_upload = enable_upload
+        self._enable_download = enable_download
 
     def __get_repo_security_intf(self):
         try:
@@ -1640,7 +1644,20 @@ Name:    %s
             )
             return 0, set(), set()
 
-        if download_latest:
+        if download_latest and not self._enable_download:
+            self._entropy.output(
+                "[repo:%s|%s] %s" % (
+                    brown(self._repository_id),
+                    red(_("sync")), # something short please
+                    blue(_("remote repository newer than local, please pull.")),
+                ),
+                importance = 1,
+                level = "error",
+                header = darkred(" @@ ")
+            )
+            return 1, set(), set([download_latest[0]])
+
+        if download_latest and self._enable_download:
             # close all the currently open repos
             self._entropy.close_repositories()
             download_uri = download_latest[0]
@@ -1655,11 +1672,24 @@ Name:    %s
                     ),
                     importance = 1,
                     level = "error",
-                    header = darkred(" !!! ")
+                    header = darkred(" @@ ")
                 )
                 return 1, set(), set([download_uri])
 
-        if upload_queue and self._force:
+        if upload_queue and not self._enable_upload:
+            self._entropy.output(
+                "[repo:%s|%s] %s" % (
+                    brown(self._repository_id),
+                    red(_("sync")), # something short please
+                    blue(_("local repository newer than remote, please push.")),
+                ),
+                importance = 1,
+                level = "error",
+                header = darkred(" @@ ")
+            )
+            return 1, set(), set(upload_queue)
+
+        elif upload_queue and self._enable_upload:
 
             # Some internal QA checks, make sure everything is fine
             # on the repo
@@ -1802,7 +1832,7 @@ Name:    %s
             "[repo:%s|%s] %s" % (
                 brown(self._repository_id),
                 red(_("sync")),
-                blue(_("repository sync completed successfully")),
+                blue(_("repository sync completed")),
             ),
             importance = 1,
             level = "info",

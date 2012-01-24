@@ -1619,7 +1619,8 @@ class Server(object):
             raise EntropyPackageException(
                 'EntropyPackageException: cannot continue')
 
-    def sync_repository(self, repository_id, enable_upload = True):
+    def sync_repository(self, repository_id, enable_upload = True,
+                        enable_download = True):
         """
         Synchronize the given repository identifier.
 
@@ -1628,11 +1629,14 @@ class Server(object):
         @keyword enable_upload: enable upload in case it's required to push
             the repository remotely
         @type enable_upload: bool
+        @keyword enable_download: enable download in case it's required to
+            pull the repository remotely
+        @type enable_download: bool
         @return: status code, 0 means all fine, non zero values mean error
         @rtype: int
         """
         return ServerPackagesRepository.update(self._entropy, repository_id,
-            enable_upload, None)
+            enable_upload, enable_download)
 
     def sync_packages(self, repository_id, ask = True, pretend = False,
         packages_check = False):

@@ -36,7 +36,7 @@ class EitPush(EitCommand):
     """
 
     NAME = "push"
-    ALIASES = ["pull","sync"]
+    ALIASES = ["sync"]
     DEFAULT_REPO_COMMIT_MSG = const_convert_to_unicode("""
 # This is Entropy Server repository commit message handler.
 # Please friggin' enter the commit message for your changes. Lines starting
@@ -53,6 +53,7 @@ class EitPush(EitCommand):
         self._as_repository_id = None
 
     def _get_parser(self):
+        self._real_command = sys.argv[0]
         descriptor = EitCommandDescriptor.obtain_descriptor(
             EitPush.NAME)
         parser = argparse.ArgumentParser(
@@ -71,7 +72,8 @@ class EitPush(EitCommand):
                             default=False,
                             help=_("push all the repositories"))
         group.add_argument("--as", metavar="<repo>", default=None,
-            help=_("push as fake repository"), dest="asrepo")
+                           help=_("push as fake repository"),
+                           dest="asrepo")
 
         return parser
 
@@ -112,7 +114,7 @@ class EitPush(EitCommand):
 
     INTRODUCTION = """\
 Synchronize remote mirrors with local repository content (packages and
-repository).
+repository) by pushing updated data.
 """
 
     def man(self):
@@ -159,21 +161,12 @@ repository).
 
     def _push_repo(self, entropy_server, repository_id):
         """
-        Push (actually sync) the repository.
+        Push the damn repository.
         """
-        done = True
+        rc = 0
         if not self._cleanup_only:
             rc = self.__push_repo(entropy_server, repository_id)
-            if rc != 0:
-                done = False
-
-        if done:
-            done = entropy_server.Mirrors.tidy_mirrors(repository_id,
-                ask = self._ask, pretend = self._pretend)
-
-        if done:
-            return 0
-        return 1
+        return rc
 
     def _commit_message(self, entropy_server, successfull_mirrors):
         """
@@ -219,7 +212,8 @@ repository).
         os.remove(tmp_commit_path)
         return commit_msg
 
-    def __print_repository_status(self, entropy_server, repository_id):
+    @staticmethod
+    def print_repository_status(entropy_server, repository_id):
         remote_db_status = entropy_server.Mirrors.remote_repository_status(
             repository_id)
 
@@ -243,17 +237,19 @@ repository).
             "%s: %s" % (brown(_("Local")), teal(str(local_revision))),
             header="    ")
 
-    def __sync_remote_database(self, entropy_server, repository_id):
-        self.__print_repository_status(entropy_server, repository_id)
+    def __sync_repo(self, entropy_server, repository_id):
+        EitPush.print_repository_status(entropy_server, repository_id)
         # do the actual sync
         try:
-            sts = entropy_server.Mirrors.sync_repository(repository_id)
+            sts = entropy_server.Mirrors.sync_repository(
+                repository_id, enable_upload = True,
+                enable_download = False)
         except OnlineMirrorError as err:
             entropy_server.output(
                 "%s: %s" % (darkred(_("Error")), err.value),
                 importance=1, level="error")
             return 1
-        self.__print_repository_status(entropy_server, repository_id)
+        EitPush.print_repository_status(entropy_server, repository_id)
         return sts
 
     def __push_repo(self, entropy_server, repository_id):
@@ -294,28 +290,33 @@ repository).
             ServerSystemSettingsPlugin.set_override_remote_repository(
                 self._settings(), repository_id, self._as_repository_id)
 
-        sts = self.__sync_remote_database(entropy_server, repository_id)
+        sts = self.__sync_repo(entropy_server, repository_id)
         if sts == 0:
             # do not touch locking
             entropy_server.Mirrors.lock_mirrors(repository_id, False,
                 unlock_locally = (self._as_repository_id is None))
 
-        if (sts == 0) and self._ask:
-            q_rc = entropy_server.ask_question(
-                _("Should I cleanup old packages on mirrors ?"))
-            if q_rc == _("No"):
-                return 0
-        elif sts != 0:
+        if sts != 0:
             entropy_server.output(red(_("Aborting !")),
                 importance=1, level="error", header=darkred(" !!! "))
             return sts
 
-        return 0
+        if self._ask:
+            q_rc = entropy_server.ask_question(
+                _("Should I cleanup old packages on mirrors ?"))
+            if q_rc == _("No"):
+                return 0
+            # fall through
 
+        done = entropy_server.Mirrors.tidy_mirrors(
+            repository_id, ask = self._ask, pretend = self._pretend)
+        if not done:
+            return 1
+        return 0
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
         EitPush,
         EitPush.NAME,
-        _('push (or pull) repository packages and metadata'))
+        _('push repository packages and metadata'))
     )
