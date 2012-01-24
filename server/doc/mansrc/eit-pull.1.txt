@@ -1,4 +1,4 @@
-eit-push(1)
+eit-pull(1)
 ===========
 :man source:   eit {eitversion}
 :man manual:   eit {eitversion}
@@ -6,24 +6,24 @@ eit-push(1)
 
 NAME
 ----
-eit-push - push repository packages and metadata
+eit-pull - pull repository packages and metadata
 
 
 SYNOPSIS
 --------
-eit push [-h] [--quick] [--all | --as <repo>] [<repo>]
+eit pull [-h] [--quick] [--all] [<repo>]
 
 
 INTRODUCTION
 ------------
 Synchronize remote mirrors with local repository content (packages and
-repository) by pushing updated data.
+repository) by pulling updated data.
 
 
 
 OPTIONS
 -------
-"eit push" supports the following options which alters its behaviour.
+"eit pull" supports the following options which alters its behaviour.
 
 
 POSITIONAL ARGUMENTS
@@ -40,10 +40,7 @@ OPTIONAL ARGUMENTS
     no stupid questions
 
 *--all*::
-    push all the repositories
-
-*--as*=<repo>::
-    push as fake repository
+    pull all the repositories
 
 
 
