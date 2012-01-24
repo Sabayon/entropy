@@ -2,17 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.const: move arch detection to repositories.conf
-           this will override the default value (if possible)
-    - use CNAMEs instead of hardcoding random urls into repositories.conf
-
-    - entropy server:
-        - if local repo < remote repo, repo should be downloaded first
-          then packages.
-        - do not use implicit pull when push is selected, block push if
-          local repo is older than remote.
-        - or simply: pull cmd == do not push; push cmd == do not pull
-
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
