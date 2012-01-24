@@ -614,14 +614,18 @@ def _database_generate(entropy_client):
     # clean caches
     entropy_client.clear_cache()
 
+    inst_repo = entropy_client.installed_repository()
+
     # try to collect current installed revisions if possible
+    # and do the same for digest
     revisions_match = {}
+    digest_match = {}
     try:
-        myids = entropy_client.installed_repository().listAllPackageIds()
+        myids = inst_repo.listAllPackageIds()
         for myid in myids:
-            myatom = entropy_client.installed_repository().retrieveAtom(myid)
-            myrevision = entropy_client.installed_repository().retrieveRevision(myid)
-            revisions_match[myatom] = myrevision
+            myatom = inst_repo.retrieveAtom(myid)
+            revisions_match[myatom] = inst_repo.retrieveRevision(myid)
+            digest_match[myatom] = inst_repo.retrieveDigest(myid)
     except:
         pass
 
@@ -698,6 +702,12 @@ def _database_generate(entropy_client):
         if saved_rev is not None:
             saved_rev = saved_rev
             mydata['revision'] = saved_rev
+
+        # set digest to "0" to disable entropy dependencies
+        # calculation check that forces the pkg to
+        # be pulled in if digest differs from the one on the repo
+        saved_digest = digest_match.get(myatom, "0")
+        mydata['digest'] = saved_digest
 
         idpk = entropy_client.installed_repository().addPackage(mydata,
             revision = mydata['revision'], do_commit = False)
