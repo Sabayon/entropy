@@ -5709,13 +5709,18 @@ class EntropyRepository(EntropyRepositoryBase):
             ON baseinfo ( atom );
         CREATE INDEX IF NOT EXISTS baseindex_branch_name
             ON baseinfo ( name,branch );
-        CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
-            ON baseinfo ( name,idcategory,branch );
         """)
         if self._isBaseinfoExtrainfo2010():
             self._cursor().executescript("""
+            CREATE INDEX IF NOT EXISTS baseindex_branch_name_category
+                ON baseinfo ( name, category, branch );
             CREATE INDEX IF NOT EXISTS baseindex_category
                 ON baseinfo ( category );
+            """)
+        else:
+            self._cursor().executescript("""
+            CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
+                ON baseinfo ( name,idcategory,branch );
             """)
 
     def _createLicensedataIndex(self):
@@ -5897,6 +5902,16 @@ class EntropyRepository(EntropyRepositoryBase):
             return
         if self._isBaseinfoExtrainfo2010():
             return
+
+        mytxt = "%s: [%s] %s" % (
+            bold(_("ATTENTION")),
+            purple(self.name),
+            red(_("updating repository metadata layout, please wait!")),
+        )
+        self.output(
+            mytxt,
+            importance = 1,
+            level = "warning")
 
         self._cursor().executescript("""
             BEGIN TRANSACTION;
