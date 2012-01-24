@@ -1,3 +1,56 @@
+commit e480256b33e7f898eecc2fe4a135d19d0e03450f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 16:40:57 2012 +0100
+
+    Release Entropy 1.0_rc84
+
+commit 4175177430e801f9fbd5dc126bc77678a41f4be7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 15:12:18 2012 +0100
+
+    [todo] update TODO
+
+commit d08812879caa9cde2bddc5f7f8992837951e3fd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 15:12:09 2012 +0100
+
+    [eit] update man pages
+
+commit 9e7055f6be995ae98dbbf135ad0869f309994e39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 15:08:32 2012 +0100
+
+    [entropy.server,eit] split push from pull (in repo sync)
+    
+    From now on, any push request will not have the side effect of
+    pulling new repo metadata if required, and vice versa.
+
+commit c169f0e4b2207803c6737e8d5c9d492f71a098c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 23 12:50:26 2012 +0100
+
+    [entropy.graph] Graph.get_adjacency_map: hold the original data
+    
+    Graph caching must hold copies of cache objects instead of giving
+    them away for free and risk of having them polluted or even completely
+    cleared out under its own chair.
+    
+    Example:
+    $ equo remove linux-sabayon:3.1 [--deep]
+    
+    The --deep version doesn't pull in all the reverse deps due to
+    Graph.solve() being called twice in
+    entropy.client.interfaces.dep's _generate_reverse_dependency_tree()
+    when deep = True.
+    
+    Fixes bug #2989
+
+commit 71d150f670d12f3c5134bcf2b01e9bdce7f3487e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 15 18:25:29 2012 +0100
+
+    Tagging Entropy version 1.0_rc83
+
 commit 1a83081f0d291308b30dcc71f77419432d61a8b1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 15 18:25:07 2012 +0100
