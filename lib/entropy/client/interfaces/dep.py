@@ -718,7 +718,9 @@ class CalculatorsMixin:
                 # check if both pkgs share the same branch and digest, this must
                 # be done to avoid system inconsistencies across branch upgrades
                 if vcmp == 0:
-                    if cdigest != repo_digest:
+                    # cdigest == "0" if repo has been manually (user-side)
+                    # generated
+                    if (cdigest != repo_digest) and (cdigest != "0"):
                         vcmp = 1
 
                 # check against SPM downgrades and ignore_spm_downgrades
@@ -2589,16 +2591,20 @@ class CalculatorsMixin:
                     # first check branch
                     if idpackage is not None:
 
-                        c_repodb = self.open_repository(repoid)
                         c_digest = self._installed_repository.retrieveDigest(
                             idpackage)
-                        r_digest = c_repodb.retrieveDigest(m_idpackage)
+                        # If the repo has been manually (user-side)
+                        # regenerated, digest == "0". In this case
+                        # skip the check.
+                        if c_digest != "0":
+                            c_repodb = self.open_repository(repoid)
+                            r_digest = c_repodb.retrieveDigest(m_idpackage)
 
-                        if (r_digest != c_digest) and (r_digest is not None) \
-                            and (c_digest is not None):
-                            if (m_idpackage, repoid) not in update:
-                                update.append((m_idpackage, repoid))
-                            continue
+                            if (r_digest != c_digest) and (r_digest is not None) \
+                                    and (c_digest is not None):
+                                if (m_idpackage, repoid) not in update:
+                                    update.append((m_idpackage, repoid))
+                                continue
 
                     # no difference
                     fine.append(cl_atom)
