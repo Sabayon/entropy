@@ -5869,6 +5869,9 @@ class Server(Client):
     def scan_package_changes(self):
         """
         Scan, using Source Package Manager, for added/removed/updated packages.
+        Please note that in order to trigger SPM level package moves, it is better
+        to also call Spm().package_names_update() before this, or opening all the repos
+        in read/write (read_only=False).
 
         @return: tuple composed of (1) list of spm package name and spm package
         id, (2) list of entropy package matches for packages to be removed (3)
