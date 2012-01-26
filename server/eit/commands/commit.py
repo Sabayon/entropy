@@ -125,6 +125,7 @@ If you would like to selectively add certain packages, please see
         return self._call_locked, [self._commit, nsargs.repo]
 
     def _commit(self, entropy_server):
+
         to_be_added = set()
         to_be_removed = set()
         to_be_injected = set()
@@ -133,6 +134,13 @@ If you would like to selectively add certain packages, please see
             entropy_server.open_repository(x[1]).retrieveAtom(x[0])
         repository_id = entropy_server.repository()
         generated_packages = []
+
+        # First of all, open the repository in write mode
+        # in order to trigger package name updates on SPM.
+        # Failing to do so would cause false positives on the
+        # removal list.
+        entropy_server.open_server_repository(
+            repository_id, read_only=False, no_upload=True)
 
         if self._repackage:
 
