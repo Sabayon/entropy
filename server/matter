@@ -863,7 +863,7 @@ class PackageBuilder(object):
         # filter out blockers
         real_queue = [x for x in package_queue if not isinstance(x, Blocker)]
         # filter out broken or corrupted objects
-        real_queue = [x for x in package_queue if x.cpv]
+        real_queue = [x for x in real_queue if x.cpv]
 
         # package_queue can also contain _emerge.Blocker.Blocker objects
         # not exposing .cpv field (but just .cp).
