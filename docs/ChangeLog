@@ -1,3 +1,72 @@
+commit 0594b8df4a1874d21f0c314d5e08e81799471bae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 29 12:11:17 2012 +0100
+
+    Release Entropy 1.0_rc85
+
+commit 28ee430fc3911b377f509affd0ed03f369d650de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 29 12:06:55 2012 +0100
+
+    [matter] fix typo in list comprehension, use real_queue, not package_queue
+
+commit c7253fdab2c316ce576ecf87dd4235e7019f6c58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 26 20:24:57 2012 +0100
+
+    [eit.commands.commit] open repository in write mode to force treeupdates
+
+commit ea26cfb1dae204301aa8667c1e5356435df97764
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 26 20:24:15 2012 +0100
+
+    [entropy.server] document pitfalls in scan_package_changes() usage
+
+commit 898294d0f27d062fe9e86bc99b41868fe4927afe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 20:47:54 2012 +0100
+
+    [equo] force digest = "0" when regenerating packages
+    
+    During installed packages repository generation, try to use older
+    digest value (from previous repo db) or force it to "0".
+    This way, packages with invalid digest will not be considered
+    during dependency calculation if they're already up-to-date.
+
+commit 45bd00aff91a7c0bd80702f99748e81169efe0c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 20:45:48 2012 +0100
+
+    [entropy.client] do not pull in packages already up-to-date if digest == "0"
+    
+    If the installed packages repository has been regenerated manually,
+    some entries may contain invalid digest values. Given this, the same
+    value is forced to be equal to "0" so that we can skip the check during
+    dep calculation if an entry like that is found.
+
+commit a7b2ff1301bf151e05cd67f209668dd1b5855a2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 18:33:33 2012 +0100
+
+    [entropy.db] _migrateBaseinfoExtrainfo: fix foreign_keys usage, and drop all indexes
+    
+    Using pragma inside executescript() won't work and foreign_keys were
+    kept enabled, resulting in extrainfo table being wiped.
+    At the same time, dropping all the indexes before starting dramatically
+    improves the execution speed.
+
+commit 7170a1e13cc6082f8425a48e70adbd417fe64fca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 17:10:07 2012 +0100
+
+    [entropy.db] fix baseinfo indexes creation for baseinfo_extrainfo_2010 schema
+
+commit 97b45b1fc3c799477de8a185efb4f84c55135d84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 24 16:41:14 2012 +0100
+
+    Tagging Entropy version 1.0_rc84
+
 commit e480256b33e7f898eecc2fe4a135d19d0e03450f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 24 16:40:57 2012 +0100
