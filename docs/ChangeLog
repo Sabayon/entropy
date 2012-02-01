@@ -1,3 +1,21 @@
+commit b2a00296552514820f8a2c9d5e03146ea6c39ca4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 1 19:57:15 2012 +0100
+
+    Release Entropy 1.0_rc86
+
+commit 95ddc907a770821a3780a5d12c003a107c0542ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 1 19:56:12 2012 +0100
+
+    [entropy.const] make possible to override the default arch using /etc/entropy/.arch
+
+commit 0eb3b67ea5e10db20b40f1b75bd59ed0fd0d5446
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 29 12:11:36 2012 +0100
+
+    Tagging Entropy version 1.0_rc85
+
 commit 0594b8df4a1874d21f0c314d5e08e81799471bae
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 29 12:11:17 2012 +0100
