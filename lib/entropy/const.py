@@ -103,6 +103,20 @@ def dump_signal(signum, frame):
 if os.getuid() == 0:
     signal.signal(signal.SIGQUIT, dump_signal)
 
+_uname_m = os.uname()[4]
+_rootdir = os.getenv("ETP_ROOT", "").rstrip("/")
+_arch_override_file = os.path.join("/", _rootdir, "etc/entropy/.arch")
+ETP_ARCH_CONST = None
+if os.path.isfile(_arch_override_file):
+    try:
+        with codecs.open(_arch_override_file, "r", encoding=_ENCODING) \
+                as arch_f:
+            _arch_const = arch_f.readline().strip()
+            if _arch_const:
+                ETP_ARCH_CONST = _arch_const
+    except (IOError, OSError) as err:
+        const_debug_write("_init_", repr(err))
+
 # ETP_ARCH_CONST setup
 # add more arches here
 ETP_ARCH_MAP = {
@@ -110,12 +124,12 @@ ETP_ARCH_MAP = {
     ("x86_64",): "amd64",
     ("mips", "mips64",): "mips",
 }
-_uname_m = os.uname()[4]
-ETP_ARCH_CONST = None
-for arches, arch in ETP_ARCH_MAP.items():
-    if _uname_m in arches:
-        ETP_ARCH_CONST = arch
-        break
+
+if ETP_ARCH_CONST is None:
+    for arches, arch in ETP_ARCH_MAP.items():
+        if _uname_m in arches:
+            ETP_ARCH_CONST = arch
+            break
 
 _more_keywords = None
 if ETP_ARCH_CONST is None:
@@ -135,7 +149,7 @@ etpSys = {
     'keywords': set([ETP_ARCH_CONST, "~"+ETP_ARCH_CONST]),
     'api': '3',
     'arch': ETP_ARCH_CONST,
-    'rootdir': os.getenv("ETP_ROOT", "").rstrip("/"),
+    'rootdir': _rootdir,
     'serverside': False,
     'unittest': False,
 }
