@@ -4180,6 +4180,9 @@ class PortagePlugin(SpmPlugin):
             needed = line.split(";")
             ownlib = needed[1]
             ownelf = -1
+            if not os.path.isfile(ownlib):
+                # wtf? how can this be a dir or something else ??
+                continue
             if os.access(ownlib, os.R_OK):
                 ownelf = entropy.tools.read_elf_class(ownlib)
             for lib in needed[4].split(","):
