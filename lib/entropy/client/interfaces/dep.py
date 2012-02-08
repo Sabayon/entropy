@@ -263,6 +263,7 @@ class CalculatorsMixin:
                     # ouch, repository not available or corrupted !
                     continue
                 xuse_cache = use_cache
+
                 while True:
                     try:
                         query_data, query_rc = dbconn.atomMatch(
@@ -360,6 +361,74 @@ class CalculatorsMixin:
             self._cacher.push(c_hash, dbpkginfo)
 
         return dbpkginfo
+
+    def atom_search(self, atom, repositories = None, use_cache = True):
+        """
+        Search packages inside all the available repositories, including the
+        installed packages one.
+        Results are returned in random order by default, and as a list of
+        package matches (pkg_id_int, repo_string).
+
+        @param atom: string to search
+        @type atom: string
+        @keyword repositories: list of repository identifiers to search
+            packages into
+        @type repositories: string
+        @keyword use_cache: if True, on-disk caching is used
+        @type use_cache: bool
+        """
+        if repositories is None:
+            repositories = self.repositories()[:]
+            repositories.insert(0, etpConst['clientdbid'])
+
+        u_hash = ""
+        if isinstance(repositories, (list, tuple, set)):
+            u_hash = hash(tuple(repositories))
+        repos_ck = self._all_repositories_hash()
+
+        c_hash = "%s|%s|%s|%s|%s" % (
+            repos_ck,
+            atom,
+            str(tuple(repositories)),
+            str(tuple(self._settings['repositories']['available'])),
+            u_hash
+        )
+        c_hash = "%s%s" % (
+            EntropyCacher.CACHE_IDS['atom_search'],
+            hash(c_hash),)
+
+        if self.xcache and use_cache:
+            cached = self._cacher.pop(c_hash)
+            if cached is not None:
+                return cached
+
+        match_slot = entropy.dep.dep_getslot(atom)
+        if match_slot:
+            atom = entropy.dep.remove_slot(atom)
+        search_tag = entropy.dep.dep_gettag(atom)
+        if search_tag:
+            atom = entropy.dep.remove_tag(atom)
+
+        matches = []
+        for repository in repositories:
+
+            try:
+                repo = self.open_repository(repository)
+            except (RepositoryError, SystemDatabaseError):
+                # ouch, repository not available or corrupted !
+                continue
+
+            pkg_ids = repo.searchPackages(
+                atom, slot = match_slot,
+                tag = search_tag,
+                just_id = True)
+
+            matches.extend((pkg_id, repository) for pkg_id in pkg_ids)
+
+        if self.xcache and use_cache:
+            self._cacher.push(c_hash, matches)
+
+        return matches
 
     DISABLE_SLOT_INTERSECTION = os.getenv("ETP_DISABLE_SLOT_INTERSECTION")
 

@@ -38,6 +38,7 @@ class EntropyCacher(Singleton):
             'db_match': 'match/db',
             'dep_tree': 'deptree/dep_tree_',
             'atom_match': 'atom_match/atom_match_',
+            'atom_search': 'atom_search/atom_search_',
             'world_update': 'world_update/world_cache_',
             'critical_update': 'critical_update/critical_cache_',
             'world_available': 'world_available/available_cache_',
