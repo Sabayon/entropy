@@ -583,7 +583,7 @@ class UrlFetcher(TextInterface):
 
         try:
             self.__remotesize = int(self.__remotefile.headers.get(
-                "content-length"))
+                "content-length", -1))
             self.__remotefile.close()
         except KeyboardInterrupt:
             self.__urllib_close(False)
@@ -634,6 +634,9 @@ class UrlFetcher(TextInterface):
 
         if self.__remotesize > 0:
             self.__remotesize = float(int(self.__remotesize))/1024
+        else:
+            # this means we were not able to get Content-Length
+            self.__remotesize = 0
 
         if url_protocol not in ("file", "ftp", "ftps"):
             if self.__disallow_redirect and \
