@@ -2223,6 +2223,20 @@ class PortagePlugin(SpmPlugin):
             )
             return 0
 
+        except OSError as e:
+            # this means something really bad
+            # but for now we just push out a warning
+            self.__output.output(
+                "%s: %s" % (
+                    darkred("!!! Ebuild: pkg_" + phase + "(), OSError: "),
+                    repr(e),),
+                importance = 1,
+                level = "warning",
+                header = red("   ## ")
+            )
+            return 0
+
+
         except ImportError as e:
             # stuff on system is broken, ignore it
             self.__output.output(
