@@ -305,7 +305,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         eapi_env = os.getenv("FORCE_EAPI")
         sqlite3_access = os.access("/usr/bin/sqlite3", os.X_OK)
-        sqlite3_rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null",
+        sqlite3_rc = subprocess.call("/usr/bin/sqlite3 -version > /dev/null",
             shell = True)
         try:
             eapi_env_clear = int(eapi_env)
