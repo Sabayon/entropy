@@ -2030,6 +2030,10 @@ class EntropyPackageView:
             webserv.add_credentials(username, password)
             try:
                 webserv.validate_credentials()
+            except WebService.MethodNotAvailable:
+                okDialog(self.ui.main,
+                    _("Web Service is currently unavailable."))
+                return False
             except WebService.AuthenticationFailed:
                 webserv.remove_credentials()
                 okDialog(self.ui.main,
