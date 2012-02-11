@@ -2,6 +2,11 @@ Backlog (raw)
 
   1.0:
 
+    rigo:
+    - requires pygobject[cairo]
+    - uniform license header
+    - who clears the vote cache (and document cache) at some point?
+
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
@@ -25,7 +30,6 @@ Backlog (raw)
         PF CATEGORY CFLAGS CXXFLAGS NEEDED are missing
     - ditch close_repositories() for commit_repositories() when possible
     - python 3.x support -> more tests
-    - sulfur: rewrite using pygtk3
 
   break backward compat:
       - deprecate "repository =" statements from repositories.conf
