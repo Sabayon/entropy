@@ -274,6 +274,7 @@ class NotificationController(object):
         GLib.idle_add(self._notify_updates_safe)
 
     def _notify_updates_safe(self):
+        # FIXME, use ngettext here
         msg = _("There are <b>%d</b> updates available, want to <u>update now</u>?")
         msg = msg % (len(self._updates),)
         box = NotificationBox(msg)
