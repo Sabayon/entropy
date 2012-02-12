@@ -12,22 +12,21 @@ sys.path.insert(5, "/usr/lib/entropy/rigo")
 from threading import Lock
 
 
-from gi.repository import Gtk, Gdk, Gio, GLib, GObject
+from gi.repository import Gtk, Gdk, Gio, GLib, GObject, GdkPixbuf
 
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
-from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
+from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme, \
+    resize_image
 
-from entropy.const import etpUi
+from entropy.const import etpUi, const_debug_write, const_debug_enabled
 from entropy.tools import kill_threads
 from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _
-
-etpUi['debug'] = True
 
 class EntropyWebService(object):
 
@@ -105,56 +104,95 @@ class AppListStore(Gtk.ListStore):
     # column id
     COL_ROW_DATA = 0
 
-    # default icon size displayed in the treeview
-    ICON_SIZE = 32
+    # default icon size returned by Application.get_icon()
+    ICON_SIZE = 48
+    _MISSING_ICON = None
+    _MISSING_ICON_MUTEX = Lock()
+    _ICON_CACHE = {}
 
-    def __init__(self, entropy_client, view, icons, icon_size=48):
+    def __init__(self, entropy_client, view, icons):
         Gtk.ListStore.__init__(self)
         self._view = view
         self._entropy = entropy_client
         self._icons = icons
-        self._icon_size = icon_size
-        self._icon_cache = {}
-        self._missing_icon = self._icons.load_icon(
-            Icons.MISSING_APP, icon_size, 0)
         self.set_column_types(self.COL_TYPES)
 
         # Startup Entropy Package Metadata daemon
         ApplicationMetadata.start()
 
+    def clear(self):
+        """
+        Clear ListStore content (and Icon Cache).
+        """
+        outcome = Gtk.ListStore.clear(self)
+        AppListStore._ICON_CACHE.clear()
+        return outcome
+
     def _ui_redraw_callback(self, *args):
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                              "_ui_redraw_callback()")
         GLib.idle_add(self._view.queue_draw)
 
+    @property
+    def _missing_icon(self):
+        """
+        Return the missing icon Gtk.Image() if needed.
+        """
+        if AppListStore._MISSING_ICON is not None:
+            return AppListStore._MISSING_ICON
+        with AppListStore._MISSING_ICON_MUTEX:
+            if AppListStore._MISSING_ICON is not None:
+                return AppListStore._MISSING_ICON
+            _missing_icon = self._icons.load_icon(
+            Icons.MISSING_APP, AppListStore.ICON_SIZE, 0)
+            AppListStore._MISSING_ICON = _missing_icon
+            return _missing_icon
+
     def get_icon(self, pkg_match):
-        # FIXME, parallel load from UGC?
-        # or run UGC on separate task?
+        cached = AppListStore._ICON_CACHE.get(pkg_match)
+        if cached is not None:
+            return cached
+
         app = Application(self._entropy, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
-        name = app.name
-        icon = self._icon_cache.get(name)
-        if icon == -1:
-            # icon not available
+        icon_path = app.get_details().icon
+        if icon_path is None:
             return self._missing_icon
-        if icon is not None:
-            return icon
 
-        if self._icons.has_icon(name):
+        if not os.path.isfile(icon_path):
+            return self._missing_icon
+
+        # FIXME, parallelize this?
+        # get current image size
+        # expensive?
+        img = Gtk.Image()
+        img.set_from_file(icon_path)
+        img_buf = img.get_pixbuf()
+        if img_buf is None:
+            # wth, invalid crap
+            return self._missing_icon
+        w, h = img_buf.get_width(), img_buf.get_height()
+        del img_buf
+        del img
+        if w < 1:
+            # not legit
+            return self._missing_icon
+        width = AppListStore.ICON_SIZE
+        height = width * h / w
+
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, width, height)
+        except GObject.GError:
             try:
-                icon = self._icons.load_icon(
-                    name, self._icon_size, 0)
-            except (Gio.Error, GObject.GError):
-                # no such file or directory (gio.Error)
-                # unrecognized file format (gobject.GError)
-                icon = None
-            if icon:
-                self._icon_cache[name] = icon
-            else:
-                self._icon_cache[name] = -1
-                icon = self._missing_icon
-        else:
-            self._icon_cache[name] = -1
-            icon = self._missing_icon
-        return icon
+                os.remove(icon_path)
+            except OSError:
+                pass
+            return self._missing_icon
+
+        AppListStore._ICON_CACHE[pkg_match] = pixbuf
+        return pixbuf
 
     def is_installed(self, pkg_match):
         app = Application(self._entropy, pkg_match,
@@ -279,7 +317,7 @@ class WelcomeBox(Gtk.VBox):
         image = Gtk.Image.new_from_file(self._image_path)
         label = Gtk.Label()
         label.set_markup(_("<i>Browse <b>Applications</b> with ease</i>"))
-        self.pack_start(image, False, False, False)
+        self.pack_start(image, False, False, 0)
         self.pack_start(label, False, False, 0)
         label.show()
         image.show()

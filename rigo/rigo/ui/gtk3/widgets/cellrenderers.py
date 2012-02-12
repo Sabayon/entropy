@@ -212,7 +212,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         sr.render_star(context, cr, x, y)
 
         # and nr-reviews in parenthesis to the right of the title
-        nreviews = stats.ratings_total
+        nreviews = stats.downloads_total
         s = "(%i)" % nreviews
 
         layout.set_markup("<small>%s</small>" % s, -1)

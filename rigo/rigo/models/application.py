@@ -30,8 +30,11 @@ from entropy.const import const_debug_write, const_debug_enabled
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
+from entropy.client.services.interfaces import ClientWebService
 
 from rigo.utils import get_entropy_webservice
+from rigo.enums import Icons
+
 
 LOG = logging.getLogger(__name__)
 
@@ -42,14 +45,14 @@ class ReviewStats(object):
     def __init__(self, app):
         self.app = app
         self.ratings_average = None
-        self.ratings_total = 0
+        self.downloads_total = 0
         self.rating_spread = [0,0,0,0,0]
         self.dampened_rating = 3.00
 
     def __repr__(self):
-        return ("<ReviewStats '%s' ratings_average='%s' ratings_total='%s'"
+        return ("<ReviewStats '%s' ratings_average='%s' downloads_total='%s'"
                 " rating_spread='%s' dampened_rating='%s'>" %
-                (self.app, self.ratings_average, self.ratings_total,
+                (self.app, self.ratings_average, self.downloads_total,
                 self.rating_spread, self.dampened_rating))
 
 class CategoryRowReference:
@@ -94,32 +97,63 @@ class ApplicationMetadata(object):
         Start asynchronous Entropy Metadata retrieveal.
         """
         ApplicationMetadata._RATING_THREAD.start()
+        ApplicationMetadata._ICON_THREAD.start()
 
     @staticmethod
     def _rating_thread_body():
         """
         Thread executing package rating remote data retrieval.
         """
+        request_list = ["vote", "down"]
+        return ApplicationMetadata._generic_thread_body(
+            "RatingThread", ApplicationMetadata._RATING_SEM,
+            ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL,
+            ApplicationMetadata._RATING_THREAD_SLEEP_SECS,
+            ApplicationMetadata._RATING_QUEUE,
+            ApplicationMetadata._RATING_LOCK,
+            ApplicationMetadata._RATING_IN_FLIGHT,
+            request_list)
+
+    @staticmethod
+    def _icon_thread_body():
+        """
+        Thread executing package icon remote data retrieval.
+        """
+        request_list = ["icon"]
+        return ApplicationMetadata._generic_thread_body(
+            "IconThread", ApplicationMetadata._ICON_SEM,
+            ApplicationMetadata._ICON_THREAD_DISCARD_SIGNAL,
+            ApplicationMetadata._ICON_THREAD_SLEEP_SECS,
+            ApplicationMetadata._ICON_QUEUE,
+            ApplicationMetadata._ICON_LOCK,
+            ApplicationMetadata._ICON_IN_FLIGHT,
+            request_list)
+
+    @staticmethod
+    def _generic_thread_body(name, sem, discard_signal, sleep_secs,
+                             queue, mutex, in_flight, request_list):
+        """
+        Thread executing generic (both rating and doc) metadata retrieval.
+        """
         while True:
-            ApplicationMetadata._RATING_SEM.acquire()
-            ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL = False
+            sem.acquire()
+            discard_signal.set(False)
             const_debug_write(__name__,
-                "_rating_thread_body, waking up")
+                "%s, waking up" % (name,))
             # sleep a bit in order to catch more flies
-            time.sleep(ApplicationMetadata._RATING_THREAD_SLEEP_SECS)
+            time.sleep(sleep_secs)
             # now catch the flies
             local_queue = []
             while True:
                 try:
-                    local_queue.append(
-                        ApplicationMetadata._RATING_QUEUE.popleft())
+                    local_queue.append(queue.popleft())
                 except IndexError:
                     # no more items
                     break
 
             if const_debug_enabled():
                 const_debug_write(__name__,
-                    "_rating_thread_body, got: %s" % (local_queue,))
+                    "%s, got: %s" % (name, local_queue,))
             if not local_queue:
                 continue
 
@@ -136,8 +170,7 @@ class ApplicationMetadata(object):
                 obj = repo_map.setdefault(repo_id, set())
                 obj.add(key)
 
-            votes_map = {}
-            downloads_map = {}
+            request_outcome = {}
             # issue requests
             for repo_id, keys in repo_map.items():
 
@@ -146,65 +179,63 @@ class ApplicationMetadata(object):
                 if webserv is None:
                     continue
 
+                request_map = {
+                    "vote": webserv.get_votes,
+                    "down": webserv.get_downloads,
+                    "icon": webserv.get_icons,
+                }
+
                 # FIXME: lxnay, who validates this cache?
 
-                uncached_keys = []
-                for key in keys:
-                    try:
-                        votes_map[(key, repo_id)] = webserv.get_votes(
-                            [key], cache=True, cached=True)[key]
-                    except WebService.CacheMiss:
-                        uncached_keys.append(key)
+                for request in request_list:
+                    outcome = {}
 
-                for key in uncached_keys:
-                    if ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL:
-                        break
-                    try:
-                        # FIXME, lxnay: work more instances in parallel?
-                        votes_map[(key, repo_id)] = webserv.get_votes(
-                            [key], cache = True)[key]
-                    except WebService.WebServiceException as wse:
-                        const_debug_write(
-                            __name__,
-                            "_rating_thread_body, WebServiceExc: %s" % (wse,))
-                        votes_map[(key, repo_id)] = None
+                    uncached_keys = []
+                    for key in keys:
+                        try:
+                            outcome[(key, repo_id)] = request_map[request](
+                                [key], cache=True, cached=True)[key]
+                        except WebService.CacheMiss:
+                            uncached_keys.append(key)
 
-                uncached_keys = []
-                for key in keys:
-                    try:
-                        downloads_map[(key, repo_id)] = webserv.get_downloads(
-                            [key], cache=True, cached=True)[key]
-                    except WebService.CacheMiss:
-                        uncached_keys.append(key)
+                    for key in uncached_keys:
+                        if discard_signal.get():
+                            break
+                        try:
+                            # FIXME, lxnay: work more instances in parallel?
+                            outcome[(key, repo_id)] = request_map[request](
+                                [key], cache = True)[key]
+                        except WebService.WebServiceException as wse:
+                            const_debug_write(
+                                __name__,
+                                "%s, WebServiceExc: %s" % (name, wse,)
+                                )
+                            outcome[(key, repo_id)] = None
 
-                for key in uncached_keys:
-                    if ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL:
-                        break
-                    try:
-                        # FIXME, lxnay: work more instances in parallel?
-                        downloads_map[(key, repo_id)] = webserv.get_downloads(
-                            [key], cache = True)[key]
-                    except WebService.WebServiceException as wse:
-                        const_debug_write(
-                            __name__,
-                            "_rating_thread_body, WebServiceExc: %s" % (wse,))
-                        downloads_map[(key, repo_id)] = None
+                    request_outcome[request] = outcome
 
-            if ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL:
-                ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL = False
+            # don't worry about races
+            if discard_signal.get():
+                const_debug_write(
+                    __name__,
+                    "%s, discard signal received." % (name,)
+                )
+                discard_signal.set(False)
+                request_outcome.clear()
                 continue
 
             # dispatch results
             for (key, repo_id), cb_ts_list in pkg_key_map.items():
                 for (cb, ts) in cb_ts_list:
-                    with ApplicationMetadata._RATING_LOCK:
-                        ApplicationMetadata._RATING_IN_FLIGHT.discard(
-                            (key, repo_id))
+                    with mutex:
+                        in_flight.discard((key, repo_id))
                     if cb is not None:
-                        vote = votes_map.get((key, repo_id))
-                        down = downloads_map.get((key, repo_id))
-                        task = ParallelTask(cb, (vote, down), ts)
-                        task.name = "RatingThreadCb{%s, %s}" % (repo_id, key)
+                        outcome_values = []
+                        for request in request_list:
+                            outcome_values.append(
+                                request_outcome[request].get((key, repo_id)))
+                        task = ParallelTask(cb, outcome_values, ts)
+                        task.name = "%sCb{%s, %s}" % (name, repo_id, key)
                         task.start()
 
     @staticmethod
@@ -213,19 +244,26 @@ class ApplicationMetadata(object):
         Get Entropy WebService object for repository
         """
         webserv = ApplicationMetadata._WEBSERV_CACHE.get(repository_id)
-
         if webserv == -1:
             return None # not available
         if webserv is not None:
             return webserv
 
-        try:
-            webserv = get_entropy_webservice(entropy_client, repository_id)
-        except WebService.UnsupportedService:
-            ApplicationMetadata._WEBSERV_CACHE[repository_id] = -1
-            return None
+        with ApplicationMetadata._WEBSERV_MUTEX:
+            webserv = ApplicationMetadata._WEBSERV_CACHE.get(repository_id)
+            if webserv == -1:
+                return None # not available
+            if webserv is not None:
+                return webserv
 
-        ApplicationMetadata._WEBSERV_CACHE[repository_id] = webserv
+            try:
+                webserv = get_entropy_webservice(entropy_client, repository_id)
+            except WebService.UnsupportedService:
+                ApplicationMetadata._WEBSERV_CACHE[repository_id] = -1
+                return None
+
+            ApplicationMetadata._WEBSERV_CACHE[repository_id] = webserv
+
         return webserv
 
     @staticmethod
@@ -234,34 +272,88 @@ class ApplicationMetadata(object):
         Discard all the queued requests. No longer needed.
         """
         const_debug_write(__name__,
-            "!!! ApplicationMetadata.discard() called !!!")
-        while True:
-            try:
-                ApplicationMetadata._RATING_QUEUE.popleft()
-                # we could use blocking mode, but no actual need
-                ApplicationMetadata._RATING_SEM.acquire(False)
-            except IndexError:
-                break
-        with ApplicationMetadata._RATING_LOCK:
-            ApplicationMetadata._RATING_IN_FLIGHT.clear()
-        ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL = True
+            "ApplicationMetadata.discard() called")
+        for th_info in ApplicationMetadata._REGISTERED_THREAD_INFO:
+            th, queue, sem, lock, \
+                discard_signal, in_flight = th_info
+            while True:
+                try:
+                    queue.popleft()
+                    # we could use blocking mode, but no actual need
+                    sem.acquire(False)
+                except IndexError:
+                    break
+            with lock:
+                in_flight.clear()
+            discard_signal.set(True)
 
     @staticmethod
-    def enqueue_rating(entropy_client, package_key, repository_id, callback):
+    def _download_document(entropy_ws, document, cache=True):
         """
-        Enqueue the Rating (stars) for package key in given repository.
+        Dowload Document (Icon, File, Image, etc) through the Entropy
+        WebService interface.
+        Return path to just downloaded Document if success, None otherwise.
+        """
+        local_path = None
+        try:
+            local_path = entropy_ws.get_document_url(document,
+                cache=cache)
+        except ClientWebService.DocumentError as err:
+            const_debug_write(__name__,
+                "_download_document: document error: %s" % (
+                    err,))
+        return local_path
+
+    @staticmethod
+    def _enqueue_rating(entropy_client, package_key, repository_id, callback):
+        """
+        Enqueue the retriveal of the Rating for package key in given repository.
         Once the data is ready, callback() will be called passing the
         payload.
         This method is asynchronous and returns as soon as possible.
         callback() signature is: callback(payload, request_timestamp_float).
         If data is not available, payload will be None.
         callback argument can be None.
+        _RATING_LOCK must be acquired by caller.
         """
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "_enqueue_rating: %s, %s" % (package_key, repository_id))
         request_time = time.time()
-        ApplicationMetadata._RATING_IN_FLIGHT.add((package_key, repository_id))
-        ApplicationMetadata._RATING_QUEUE.append((entropy_client, package_key,
+        in_flight = ApplicationMetadata._RATING_IN_FLIGHT
+        queue = ApplicationMetadata._RATING_QUEUE
+        sem = ApplicationMetadata._RATING_SEM
+        in_flight.add((package_key, repository_id))
+        queue.append((entropy_client, package_key,
                              repository_id, callback, request_time))
-        ApplicationMetadata._RATING_SEM.release()
+        sem.release()
+
+    @staticmethod
+    def _enqueue_icon(entropy_client, package_key, repository_id, callback):
+        """
+        Enqueue the retrieval of the Icon for package key in given repository.
+        Once the data is ready, callback() will be called passing the
+        payload.
+        This method is asynchronous and returns as soon as possible.
+        callback() signature is: callback(payload, request_timestamp_float).
+        If data is not available, payload will be None.
+        callback argument can be None.
+        _ICON_LOCK must be acquired by caller.
+        """
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "_enqueue_icon: %s, %s" % (package_key, repository_id))
+
+        request_time = time.time()
+        in_flight = ApplicationMetadata._ICON_IN_FLIGHT
+        queue = ApplicationMetadata._ICON_QUEUE
+        sem = ApplicationMetadata._ICON_SEM
+        in_flight.add((package_key, repository_id))
+        queue.append((entropy_client, package_key,
+                             repository_id, callback, request_time))
+        sem.release()
 
     @staticmethod
     def lazy_get_rating(entropy_client, package_key, repository_id,
@@ -284,12 +376,16 @@ class ApplicationMetadata(object):
             down = webserv.get_downloads(
                 [package_key], cache=True, cached=True)[package_key]
         except WebService.CacheMiss:
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "lazy_get_rating: cache miss for: %s, %s" % (
+                        package_key, repository_id))
             # not in cache
             flight_key = (package_key, repository_id)
             with ApplicationMetadata._RATING_LOCK:
                 if flight_key not in ApplicationMetadata._RATING_IN_FLIGHT:
                     # enqueue a new rating then
-                    ApplicationMetadata.enqueue_rating(
+                    ApplicationMetadata._enqueue_rating(
                         entropy_client, package_key,
                         repository_id, callback)
             vote = None
@@ -297,20 +393,124 @@ class ApplicationMetadata(object):
 
         return vote, down
 
+    @staticmethod
+    def lazy_get_icon(entropy_client, package_key, repository_id,
+                        callback=None):
+        """
+        Return a DocumentList of Icons for given package key, if it's available
+        in local cache. At the same time, if not available and not already
+        enqueued for download, do it, atomically.
+        Return None if not available, or DocumentList (see Entropy Services
+        API) otherwise. DocumentList contains a list of Document objects,
+        and calling Document.local_document() would give you the image path.
+        """
+        webserv = ApplicationMetadata._get_webservice(
+            entropy_client, repository_id)
+        if webserv is None:
+            return None
 
+        def _pick_icon(icons):
+            return icons[0]
+
+        def _icon_callback(outcomes, ts):
+            icons = outcomes[0]
+            if not icons:
+                # sadly, no icons
+                return
+            local_path = ApplicationMetadata._download_document(
+                webserv, _pick_icon(icons))
+            if local_path:
+                # only if successful, otherwise we fall into
+                # infinite loop
+                callback(icons)
+
+        try:
+            icons = webserv.get_icons(
+                [package_key], cache=True, cached=True)[package_key]
+        except WebService.CacheMiss:
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "lazy_get_icon: cache miss for: %s, %s" % (
+                        package_key, repository_id))
+            # not in cache
+            flight_key = (package_key, repository_id)
+            with ApplicationMetadata._ICON_LOCK:
+                if flight_key not in ApplicationMetadata._ICON_IN_FLIGHT:
+                    # enqueue a new rating then
+                    ApplicationMetadata._enqueue_icon(
+                        entropy_client, package_key,
+                        repository_id, _icon_callback)
+            icons = None
+
+        if not icons:
+            return None
+
+        # pick the first icon as document icon
+        icon = _pick_icon(icons)
+        # check if we have the file on-disk, otherwise
+        # spawn the fetch in parallel.
+        icon_path = icon.local_document()
+        if not os.path.isfile(icon_path):
+            task = ParallelTask(_icon_callback, [icons], time.time())
+            task.daemon = True
+            task.name = "FetchIconCb{(%s, %s)}" % ((package_key, repository_id))
+            task.start()
+
+        return icon
+
+    class SignalBoolean(object):
+
+        def __init__(self, val):
+            self.__val = val
+
+        def set(self, val):
+            self.__val = val
+
+        def get(self):
+            return self.__val
+
+    # Application Rating logic
     _RATING_QUEUE = deque()
     def _rating_thread_body_wrapper():
         return ApplicationMetadata._rating_thread_body()
     _RATING_THREAD = ParallelTask(_rating_thread_body_wrapper)
     _RATING_THREAD.daemon = True
     _RATING_THREAD.name = "RatingThread"
-    _RATING_THREAD_SLEEP_SECS = 1.5
-    _RATING_THREAD_DISCARD_SIGNAL = False
+    _RATING_THREAD_SLEEP_SECS = 1.0
+    _RATING_THREAD_DISCARD_SIGNAL = SignalBoolean(False)
     _RATING_SEM = Semaphore(0)
     _RATING_LOCK = Lock()
     _RATING_IN_FLIGHT = set()
 
+    # Application Documents logic
+    _ICON_QUEUE = deque()
+    def _icon_thread_body_wrapper():
+        return ApplicationMetadata._icon_thread_body()
+    _ICON_THREAD = ParallelTask(_icon_thread_body_wrapper)
+    _ICON_THREAD.daemon = True
+    _ICON_THREAD.name = "IconThread"
+    _ICON_THREAD_SLEEP_SECS = 0.5
+    _ICON_THREAD_DISCARD_SIGNAL = SignalBoolean(False)
+    _ICON_SEM = Semaphore(0)
+    _ICON_LOCK = Lock()
+    _ICON_IN_FLIGHT = set()
+
+    _REGISTERED_THREAD_INFO = [
+        # rating
+        (_RATING_THREAD, _RATING_QUEUE,
+         _RATING_SEM, _RATING_LOCK,
+         _RATING_THREAD_DISCARD_SIGNAL,
+         _RATING_IN_FLIGHT),
+        # icon
+        (_ICON_THREAD, _ICON_QUEUE,
+         _ICON_SEM, _ICON_LOCK,
+         _ICON_THREAD_DISCARD_SIGNAL,
+         _ICON_IN_FLIGHT),
+    ]
+
+    # WebService object cache
     _WEBSERV_CACHE = {}
+    _WEBSERV_MUTEX = Lock()
 
 
 # this is a very lean class as its used in the main listview
@@ -354,7 +554,7 @@ class Application(object):
 
     def get_markup(self):
         repo = self._entropy.open_repository(self._repo_id)
-        name = self.name
+        name = repo.retrieveName(self._pkg_id)
         version = repo.retrieveVersion(self._pkg_id)
         if version is None:
             version = "N/A"
@@ -370,6 +570,13 @@ class Application(object):
         return text
 
     def get_review_stats(self):
+        """
+        Return ReviewStats object containing user review
+        information about this Application, like
+        votes and number of downloads.
+        FIXME, lxnay: move to AppDetails()
+        """
+        
         stat = ReviewStats(self)
         stat.ratings_average = ReviewStats.NO_RATING
 
@@ -389,13 +596,16 @@ class Application(object):
             stat.ratings_average = vote
         if down is not None:
             # otherwise 0 is shown
-            stat.ratings_total = down
+            stat.downloads_total = down
         return stat
 
     # get a AppDetails object for this Applications
     def get_details(self):
-        """ return a new AppDetails object for this application """
-        return AppDetails(self._entropy, self._pkg_match, self)
+        """
+        Return a new AppDetails object for this application
+        """
+        return AppDetails(self._entropy, self._pkg_match, self,
+                          redraw_callback=self._redraw_callback)
 
     def __str__(self):
         repo = self._entropy.open_repository(self._repo_id)
@@ -413,7 +623,8 @@ class AppDetails(object):
     we have available like website etc
     """
 
-    def __init__(self, entropy_client, package_match, app):
+    def __init__(self, entropy_client, package_match, app,
+                 redraw_callback=None):
         """
         Create a new AppDetails object.
         """
@@ -421,6 +632,7 @@ class AppDetails(object):
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
         self._app = app
+        self._redraw_callback = redraw_callback
 
     @property
     def channelname(self):
@@ -447,9 +659,30 @@ class AppDetails(object):
 
     @property
     def icon(self):
-        """Return icon name, as it should be searched through fd.o dbs"""
-        # FIXME, we have it
-        return Icons.MISSING_PKG
+        """
+        Return Application Icon image path.
+        In case of missing icon, None is returned.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        key_slot = repo.retrieveKeySlot(self._pkg_id)
+        if key_slot is None:
+            return None
+
+        key, slot = key_slot
+        icon = ApplicationMetadata.lazy_get_icon(
+            self._entropy, key, self._repo_id,
+            callback=self._redraw_callback)
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "AppDetails{%s}.icon: icon: %s" % (
+                    self._pkg_match,
+                    icon))
+
+        if not icon:
+            return None
+        # pick the first one
+        icon_path = icon.local_document()
+        return icon_path
 
     @property
     def icon_file_name(self):

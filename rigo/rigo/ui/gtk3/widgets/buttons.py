@@ -220,7 +220,7 @@ class FeaturedTile(TileButton):
             self.rating_box.pack_start(self.stars, False, False, 0)
             self.n_ratings = Gtk.Label.new(
                 '<span font_desc="%i"> (%i)</span>' %  (
-                    em(0.45), stats.ratings_total))
+                    em(0.45), stats.downloads_total))
             self.n_ratings.set_use_markup(True)
             self.n_ratings.set_name("subtle-label")
             self.n_ratings.set_alignment(0.0, 0.5)
@@ -229,7 +229,8 @@ class FeaturedTile(TileButton):
             # TRANSLATORS: this is an accessibility description for eg orca and
             # is not visible in the ui
             stats_a11y = _('%(stars)d stars - %(reviews)d reviews') % {
-                'stars': stats.ratings_average, 'reviews': stats.ratings_total}
+                'stars': stats.ratings_average,
+                'reviews': stats.downloads_total}
         
             #work out width tile needs to be to ensure ratings text is all visible
             req_width = (self.stars.size_request().width +

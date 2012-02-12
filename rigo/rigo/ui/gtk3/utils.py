@@ -20,8 +20,10 @@
 #gi.require_version("Gtk", "3.0")
 import os
 import logging
+import shutil
+import tempfile
 
-from gi.repository import Gtk
+from gi.repository import Gtk, GdkPixbuf, GObject
 
 from rigo.paths import ICON_PATH
 
@@ -85,3 +87,54 @@ def get_sc_icon_theme(datadir):
 
     return icons
 
+def resize_image(max_width, image_path, final_image_path):
+    dirname = os.path.dirname(final_image_path)
+    tmp_fd, new_image_path = tempfile.mkstemp(
+        dir=dirname, prefix="resize_image")
+    os.close(tmp_fd)
+
+    shutil.copy2(image_path, new_image_path)
+    img = Gtk.Image()
+    img.set_from_file(new_image_path)
+    img_buf = img.get_pixbuf()
+    w, h = img_buf.get_width(), img_buf.get_height()
+    if w > max_width:
+        # resize pix
+        new_w = max_width
+        new_h = new_w * h / w
+        img_buf = img_buf.scale_simple(int(new_w),
+            int(new_h), GdkPixbuf.InterpType.BILINEAR)
+        try:
+            img_buf.save(new_image_path, "png")
+        except GObject.GError:
+            # libpng issue? try jpeg
+            img_buf.save(new_image_path, "jpeg")
+        del img_buf
+    del img
+    os.rename(new_image_path, final_image_path)
+
+def resize_image_height(max_height, image_path, final_image_path):
+    dirname = os.path.dirname(final_image_path)
+    tmp_fd, new_image_path = tempfile.mkstemp(
+        dir=dirname, prefix="resize_image")
+    os.close(tmp_fd)
+
+    shutil.copy2(image_path, new_image_path)
+    img = Gtk.Image()
+    img.set_from_file(new_image_path)
+    img_buf = img.get_pixbuf()
+    w, h = img_buf.get_width(), img_buf.get_height()
+    if h > max_height:
+        # resize pix
+        new_h = max_height
+        new_w = new_h*w/h
+        img_buf = img_buf.scale_simple(int(new_w),
+            int(new_h), GdkPixbuf.InterpType.BILINEAR)
+        try:
+            img_buf.save(new_image_path, "png")
+        except GObject.GError:
+            # libpng issue? try jpeg
+            img_buf.save(new_image_path, "jpeg")
+        del img_buf
+    del img
+    os.rename(new_image_path, final_image_path)
