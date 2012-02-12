@@ -23,7 +23,7 @@ from entropy.output import nocolor
 from entropy.client.interfaces import Client
 from entropy.const import etpConst
 import entropy.tools
-from entropy.i18n import _
+from entropy.i18n import _, P_
 
 # Magneto imports
 from magneto.core import config
@@ -221,19 +221,16 @@ class MagnetoCore(MagnetoCoreUI):
         upd_len = len(updates)
 
         if upd_len:
-            self.update_tooltip("%s %s %s" % (
-                _("There are"),
-                upd_len,
-                _("updates available"),)
+            self.update_tooltip(P_("There is %s update available",
+                "There are %s updates available",
+                upd_len) % (upd_len,)
             )
             self.set_state("CRITICAL")
             self.show_alert(
                 _("Sabayon updates available"),
-                "%s %s %s" % (
-                    _("There are"),
-                    "<b>%s</b>" % (upd_len,),
-                    _("updates available"),
-                ),
+                P_("There is <b>%s</b> update available",
+                    "There are <b>%s</b> updates available",
+                    upd_len) % (upd_len,),
                 urgency = "critical",
                 force = self.manual_check_triggered
             )

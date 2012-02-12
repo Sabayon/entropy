@@ -30,7 +30,7 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
-from entropy.i18n import _
+from entropy.i18n import _, P_
 from entropy.services.client import WebService
 from entropy.cli import countdown, enlightenatom, get_entropy_webservice
 
@@ -315,11 +315,9 @@ def show_config_files_to_update(entropy_client):
 
     if len(scandata) > 0: # strict check
         if not etpUi['quiet']:
-            mytxt = "%s %s %s." % (
-                _("There are"),
-                len(scandata),
-                _("configuration file(s) needing update"),
-            )
+            mytxt = P_("There is %s configuration file needing update",
+                "There are %s configuration files needing update",
+                len(scandata)) % len(scandata)
             print_warning(darkgreen(mytxt))
             mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
             print_warning(mytxt)
@@ -1136,7 +1134,8 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
 
             xterm_header = "equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
+                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+ \
+                           P_("package", "packages", len(matches)))
 
             rc = Package.run(xterm_header = xterm_header)
             if rc != 0:

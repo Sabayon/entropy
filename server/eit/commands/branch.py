@@ -13,7 +13,7 @@ import os
 import sys
 import argparse
 
-from entropy.i18n import _
+from entropy.i18n import _, P_
 from entropy.output import bold, purple, darkgreen, blue, teal
 
 import entropy.tools
@@ -144,7 +144,7 @@ over just use the *--no-copy* switch.
                 entropy_server.output(
                     "%s %s %s: %s" % (
                         len(pkglist),
-                        darkgreen(_("packages")),
+                        darkgreen(P_("package", "packages", len(pkglist))),
                         blue(_("would be copied to branch")),
                         bold(self._to_branch),
                         ),
