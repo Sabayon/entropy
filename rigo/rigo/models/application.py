@@ -333,7 +333,10 @@ class Application(object):
     def name(self):
         """Show user visible name"""
         repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveName(self._pkg_id)
+        name = repo.retrieveName(self._pkg_id)
+        if name is None:
+            return _("N/A")
+        return name.capitalize()
 
     def is_installed(self):
         inst_repo = self._entropy.installed_repository()
@@ -351,9 +354,7 @@ class Application(object):
 
     def get_markup(self):
         repo = self._entropy.open_repository(self._repo_id)
-        name = repo.retrieveName(self._pkg_id)
-        if name is None:
-            name = "N/A"
+        name = self.name
         version = repo.retrieveVersion(self._pkg_id)
         if version is None:
             version = "N/A"

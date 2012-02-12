@@ -6,15 +6,12 @@ Backlog (raw)
     - requires pygobject[cairo]
     - uniform license header
     - who clears the vote cache (and document cache) at some point?
+    - redesign entropy locking: use readers/writer file lock
+      - update equo, sulfur, magneto, eit code to use it
 
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
-
-    - fine grained locking support
-      (acquire entropy resources lock only when really needed
-        [eit add vs eit graph --> needed? pkg_id no more avail])
-      kill the Big Entropy Lock :-)
 
     - conditional deps support, implement in entropy.spm,
       class is there (add unit test)

@@ -9,6 +9,9 @@ sys.path.insert(3, "/usr/lib/entropy/lib")
 sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
 
+from threading import Lock
+
+
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
 from rigo.paths import DATA_DIR
@@ -176,12 +179,27 @@ class AppListStore(Gtk.ListStore):
 
 class PackagesViewController(object):
 
-    def __init__(self, entropy_client, icons, entropy_ws, search_entry, view):
+    def __init__(self, entropy_client, icons, entropy_ws, rigo_sm,
+                 search_entry, view):
         self._entropy = entropy_client
         self._icons = icons
+        self._rigo_sm = rigo_sm
         self._entropy_ws = entropy_ws
         self._search_entry = search_entry
         self._view = view
+
+    def _search_icon_release(self, search_entry, icon_pos, _other):
+        """
+        Event associated to the Search bar icon click.
+        Here we catch secondary icon click to reset the search entry text.
+        """
+        if search_entry is not self._search_entry:
+            return
+        if icon_pos != Gtk.EntryIconPosition.SECONDARY:
+            return
+        search_entry.set_text("")
+        self.clear()
+        search_entry.emit("changed")
 
     def _search_changed(self, search_entry):
         GLib.timeout_add(700, self._search, search_entry.get_text())
@@ -208,34 +226,63 @@ class PackagesViewController(object):
     def setup(self):
         self._store = AppListStore(self._entropy, self._view,
                                    self._icons)
-        #Gtk.ListStore(GObject.TYPE_PYOBJECT)
         self._view.set_model(self._store)
 
         # setup searchEntry event
         self._search_entry.connect(
             "changed", self._search_changed)
+        # connect icon click event
+        self._search_entry.connect("icon-release",
+            self._search_icon_release)
         self._view.show()
 
     def clear(self):
+        self._rigo_sm.change_view_state(
+            Rigo.STATIC_VIEW_STATE)
         self._store.clear()
         ApplicationMetadata.discard()
 
     def append(self, opaque):
         self._store.append([opaque])
+        self._rigo_sm.change_view_state(
+            Rigo.BROWSER_VIEW_STATE)
 
     def append_many(self, opaque_list):
         for opaque in opaque_list:
             self._store.append([opaque])
+        self._rigo_sm.change_view_state(
+            Rigo.BROWSER_VIEW_STATE)
 
     def clear_safe(self):
         ApplicationMetadata.discard()
+        self._rigo_sm.change_view_state_safe(
+            Rigo.STATIC_VIEW_STATE)
         GLib.idle_add(self._store.clear)
 
     def append_safe(self, opaque):
         GLib.idle_add(self.append, opaque)
+        self._rigo_sm.change_view_state_safe(
+            Rigo.BROWSER_VIEW_STATE)
 
     def append_many_safe(self, opaque_list):
         GLib.idle_add(self.append_many, opaque_list)
+        self._rigo_sm.change_view_state_safe(
+            Rigo.BROWSER_VIEW_STATE)
+
+class WelcomeBox(Gtk.VBox):
+
+    def __init__(self):
+        Gtk.VBox.__init__(self)
+        self._image_path = os.path.join(DATA_DIR, "ui/gtk3/art/rigo.png")
+
+    def render(self):
+        image = Gtk.Image.new_from_file(self._image_path)
+        label = Gtk.Label()
+        label.set_markup(_("<i>Browse <b>Applications</b> with ease</i>"))
+        self.pack_start(image, False, False, False)
+        self.pack_start(label, False, False, 0)
+        label.show()
+        image.show()
 
 
 class NotificationBox(Gtk.VBox):
@@ -247,7 +294,7 @@ class NotificationBox(Gtk.VBox):
     def render(self):
         label = Gtk.Label()
         label.set_markup(self._message)
-        self.pack_start(label, False, False, False)
+        self.pack_start(label, False, False, 0)
         label.show()
 
 
@@ -291,7 +338,6 @@ class Rigo(Gtk.Application):
         def onDeleteWindow(self, *args):
             Gtk.main_quit(*args)
 
-
     def __init__(self):
         self._builder = Gtk.Builder()
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
@@ -300,10 +346,13 @@ class Rigo(Gtk.Application):
         self._app_vbox = self._builder.get_object("appVbox")
         self._search_entry = self._builder.get_object("searchEntry")
         self._scrolled_view = self._builder.get_object("scrolledView")
+        self._static_view = self._builder.get_object("staticViewVbox")
         icons = get_sc_icon_theme(DATA_DIR)
         self._view = AppTreeView(self._app_vbox, icons, True, store=None)
         self._scrolled_view.add(self._view)
+
         self._notification = self._builder.get_object("notificationBox")
+        self._welcome_box = WelcomeBox()
 
         settings = Gtk.Settings.get_default()
         settings.set_property("gtk-error-bell", False)
@@ -320,17 +369,70 @@ class Rigo(Gtk.Application):
 
         self._entropy_ws = EntropyWebService(self._entropy)
 
-        # Setup Packages View Controller class
+        self._state_mutex = Lock()
+        self._current_state = Rigo.STATIC_VIEW_STATE
         self._pvc = PackagesViewController(
             self._entropy, icons, self._entropy_ws,
-            self._search_entry, self._view)
+            self, self._search_entry, self._view)
         self._nc = NotificationController(
             self._entropy, self._notification)
+
+    BROWSER_VIEW_STATE = 1
+    STATIC_VIEW_STATE = 2
+
+    def change_view_state(self, state, child_widget=None):
+        """
+        Change Rigo Application UI state.
+        You can pass a custom widget that will be shown in case
+        of static view state.
+        """
+        with self._state_mutex:
+            if state == Rigo.BROWSER_VIEW_STATE:
+                self._static_view.set_visible(False)
+                # release all the childrens of static_view
+                for child in self._static_view.get_children():
+                    self._static_view.remove(child)
+                self._scrolled_view.set_visible(True)
+                self._scrolled_view.show()
+
+            elif state == Rigo.STATIC_VIEW_STATE:
+                self._scrolled_view.set_visible(False)
+                if child_widget is not None:
+                    for child in self._static_view.get_children():
+                        self._static_view.remove(child)
+                    self._static_view.pack_start(child_widget,
+                                                 False, False, 0)
+                    child_widget.show()
+                else:
+                    # keep the current widget if any, or add the
+                    # welcome widget
+                    if not self._static_view.get_children():
+                        self._welcome_box.show()
+                        self._static_view.pack_start(self._welcome_box,
+                                                     False, False, 0)
+
+                self._static_view.set_visible(True)
+                self._static_view.show()
+
+            else:
+                raise AttributeError("wrong view state")
+
+            self._current_state = state
+
+    def change_view_state_safe(self, state, child_widget=None):
+        """
+        Thread-safe version of change_view_state().
+        """
+        def _do_change():
+            return self.change_view_state(state, child_widget=child_widget)
+        GLib.idle_add(_do_change)
 
     def _on_style_updated(self, widget, init_css_callback, *args):
         init_css_callback(widget, *args)
 
     def run(self):
+        self._welcome_box.render()
+        self.change_view_state(self._current_state)
         self._pvc.setup()
         self._nc.setup()
         self._window.show()
