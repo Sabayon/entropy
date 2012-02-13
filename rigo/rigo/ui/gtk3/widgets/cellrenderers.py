@@ -19,9 +19,10 @@
 
 from gi.repository import Gtk, Gdk, GObject, Pango
 
+from entropy.const import const_convert_to_unicode
+
 from rigo.em import EM
 from rigo.models.application import CategoryRowReference
-from rigo.utils import utf8
 
 from stars import StarRenderer, StarSize
 
@@ -459,7 +460,8 @@ class CellButtonRenderer:
         max_size = (0,0)
 
         for k, variant in self.markup_variants.items():
-            safe_markup = GObject.markup_escape_text(utf8(variant))
+            safe_markup = GObject.markup_escape_text(
+                const_convert_to_unicode(variant))
             layout.set_markup(safe_markup, -1)
             size = layout.get_size()
             max_size = max(max_size, size)
