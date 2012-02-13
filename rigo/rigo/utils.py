@@ -47,22 +47,3 @@ def utf8(s):
     if isinstance(s, unicode):
         return s.encode("utf-8", "ignore")
     return unicode(s, "utf8", "ignore").encode("utf8")
-
-def get_entropy_webservice(entropy_client, repository_id, tx_cb = None):
-    """
-    Get Entropy Web Services service object (ClientWebService).
-
-    @param entropy_client: Entropy Client interface
-    @type entropy_client: entropy.client.interfaces.Client
-    @param repository_id: repository identifier
-    @type repository_id: string
-    @return: the ClientWebService instance
-    @rtype: entropy.client.services.interfaces.ClientWebService
-    @raise WebService.UnsupportedService: if service is unsupported by
-        repository
-    """
-    factory = entropy_client.WebServices()
-    webserv = factory.new(repository_id)
-    if tx_cb is not None:
-        webserv._set_transfer_callback(tx_cb)
-    return webserv

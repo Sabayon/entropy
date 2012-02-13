@@ -25,14 +25,22 @@ from entropy.const import etpUi, const_debug_write, const_debug_enabled
 from entropy.tools import kill_threads
 from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
+from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _
 
 class EntropyWebService(object):
 
-    def __init__(self, entropy_client):
+    # FIXME, here
+    WebService.CACHE_DIR
+    # FIXME, _get requires privileges??
+    
+
+    def __init__(self, entropy_client, tx_callback=None):
         self._entropy = entropy_client
         self._webserv_map = {}
+        self._tx_callback = tx_callback
+        self._mutex = Lock()
 
     def get(self, repository_id):
         """
@@ -52,16 +60,23 @@ class EntropyWebService(object):
         if webserv is not None:
             return webserv
 
-        # with Privileges():
-        try:
-            webserv = self._get(self._entropy, repository_id)
-        except WebService.UnsupportedService as err:
-            webserv = None
+        with self._mutex:
+            webserv = self._webserv_map.get(repository_id)
+            if webserv == -1:
+                # not available
+                return None
+            if webserv is not None:
+                return webserv
+
+            try:
+                webserv = self._get(self._entropy, repository_id)
+            except WebService.UnsupportedService as err:
+                webserv = None
 
         if webserv is None:
             self._webserv_map[repository_id] = -1
             # not available
-            return
+            return None
 
         try:
             available = webserv.service_available()
@@ -69,14 +84,17 @@ class EntropyWebService(object):
             available = False
 
         if not available:
-            self._webserv_map[repository_id] = -1
-            # not available
+            with self._mutex:
+                if repository_id not in self._webserv_map:
+                    self._webserv_map[repository_id] = -1
             return
 
-        self._webserv_map[repository_id] = webserv
+        with self._mutex:
+            if repository_id not in self._webserv_map:
+                self._webserv_map[repository_id] = webserv
         return webserv
 
-    def _get(self, entropy_client, repository_id, tx_cb = None):
+    def _get(self, entropy_client, repository_id):
         """
         Get Entropy Web Services service object (ClientWebService).
 
@@ -91,8 +109,8 @@ class EntropyWebService(object):
         """
         factory = entropy_client.WebServices()
         webserv = factory.new(repository_id)
-        if tx_cb is not None:
-            webserv._set_transfer_callback(tx_cb)
+        if self._tx_callback is not None:
+            webserv._set_transfer_callback(self._tx_callback)
         return webserv
 
 
@@ -110,10 +128,11 @@ class AppListStore(Gtk.ListStore):
     _MISSING_ICON_MUTEX = Lock()
     _ICON_CACHE = {}
 
-    def __init__(self, entropy_client, view, icons):
+    def __init__(self, entropy_client, entropy_ws, view, icons):
         Gtk.ListStore.__init__(self)
         self._view = view
         self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
         self._icons = icons
         self.set_column_types(self.COL_TYPES)
 
@@ -154,12 +173,18 @@ class AppListStore(Gtk.ListStore):
         if cached is not None:
             return cached
 
-        app = Application(self._entropy, pkg_match,
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
-        icon_path = app.get_details().icon
-        if icon_path is None:
+        icon, cache_hit = app.get_details().icon
+        if icon is None:
+            if cache_hit:
+                # this means that there is no icon for package
+                # and so we should not keep bugging underlying
+                # layers with requests
+                AppListStore._ICON_CACHE[pkg_match] = self._missing_icon
             return self._missing_icon
 
+        icon_path = icon.local_document()
         if not os.path.isfile(icon_path):
             return self._missing_icon
 
@@ -195,17 +220,17 @@ class AppListStore(Gtk.ListStore):
         return pixbuf
 
     def is_installed(self, pkg_match):
-        app = Application(self._entropy, pkg_match,
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
         return app.is_installed()
 
     def get_markup(self, pkg_match):
-        app = Application(self._entropy, pkg_match,
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
         return app.get_markup()
 
     def get_review_stats(self, pkg_match):
-        app = Application(self._entropy, pkg_match,
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
         return app.get_review_stats()
 
@@ -262,8 +287,9 @@ class PackagesViewController(object):
         self.append_many_safe(matches)
 
     def setup(self):
-        self._store = AppListStore(self._entropy, self._view,
-                                   self._icons)
+        self._store = AppListStore(
+            self._entropy, self._entropy_ws,
+            self._view, self._icons)
         self._view.set_model(self._store)
 
         # setup searchEntry event

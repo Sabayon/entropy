@@ -32,7 +32,6 @@ from entropy.misc import ParallelTask
 from entropy.services.client import WebService
 from entropy.client.services.interfaces import ClientWebService
 
-from rigo.utils import get_entropy_webservice
 from rigo.enums import Icons
 
 
@@ -157,28 +156,25 @@ class ApplicationMetadata(object):
             if not local_queue:
                 continue
 
-            entropy_client = local_queue[0][0]
             # setup dispatch map
             pkg_key_map = {}
             # and repository map
             repo_map = {}
+            ws_map = {}
             for item in local_queue:
-                _client, key, repo_id, cb, ts = item
+                webserv, key, repo_id, cb, ts = item
                 obj = pkg_key_map.setdefault((key, repo_id), [])
                 obj.append((cb, ts))
 
                 obj = repo_map.setdefault(repo_id, set())
                 obj.add(key)
+                ws_map[repo_id] = webserv
 
             request_outcome = {}
             # issue requests
             for repo_id, keys in repo_map.items():
 
-                webserv = ApplicationMetadata._get_webservice(
-                    entropy_client, repo_id)
-                if webserv is None:
-                    continue
-
+                webserv = ws_map[repo_id]
                 request_map = {
                     "vote": webserv.get_votes,
                     "down": webserv.get_downloads,
@@ -239,34 +235,6 @@ class ApplicationMetadata(object):
                         task.start()
 
     @staticmethod
-    def _get_webservice(entropy_client, repository_id):
-        """
-        Get Entropy WebService object for repository
-        """
-        webserv = ApplicationMetadata._WEBSERV_CACHE.get(repository_id)
-        if webserv == -1:
-            return None # not available
-        if webserv is not None:
-            return webserv
-
-        with ApplicationMetadata._WEBSERV_MUTEX:
-            webserv = ApplicationMetadata._WEBSERV_CACHE.get(repository_id)
-            if webserv == -1:
-                return None # not available
-            if webserv is not None:
-                return webserv
-
-            try:
-                webserv = get_entropy_webservice(entropy_client, repository_id)
-            except WebService.UnsupportedService:
-                ApplicationMetadata._WEBSERV_CACHE[repository_id] = -1
-                return None
-
-            ApplicationMetadata._WEBSERV_CACHE[repository_id] = webserv
-
-        return webserv
-
-    @staticmethod
     def discard():
         """
         Discard all the queued requests. No longer needed.
@@ -305,7 +273,7 @@ class ApplicationMetadata(object):
         return local_path
 
     @staticmethod
-    def _enqueue_rating(entropy_client, package_key, repository_id, callback):
+    def _enqueue_rating(webservice, package_key, repository_id, callback):
         """
         Enqueue the retriveal of the Rating for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -325,12 +293,12 @@ class ApplicationMetadata(object):
         queue = ApplicationMetadata._RATING_QUEUE
         sem = ApplicationMetadata._RATING_SEM
         in_flight.add((package_key, repository_id))
-        queue.append((entropy_client, package_key,
-                             repository_id, callback, request_time))
+        queue.append((webservice, package_key,
+                      repository_id, callback, request_time))
         sem.release()
 
     @staticmethod
-    def _enqueue_icon(entropy_client, package_key, repository_id, callback):
+    def _enqueue_icon(webservice, package_key, repository_id, callback):
         """
         Enqueue the retrieval of the Icon for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -351,12 +319,12 @@ class ApplicationMetadata(object):
         queue = ApplicationMetadata._ICON_QUEUE
         sem = ApplicationMetadata._ICON_SEM
         in_flight.add((package_key, repository_id))
-        queue.append((entropy_client, package_key,
-                             repository_id, callback, request_time))
+        queue.append((webservice, package_key,
+                      repository_id, callback, request_time))
         sem.release()
 
     @staticmethod
-    def lazy_get_rating(entropy_client, package_key, repository_id,
+    def lazy_get_rating(entropy_ws, package_key, repository_id,
                         callback=None):
         """
         Return the Rating (stars) for given package key, if it's available
@@ -365,8 +333,7 @@ class ApplicationMetadata(object):
         Return None if not available, the rating otherwise (tuple composed
         by (vote, number_of_downloads)).
         """
-        webserv = ApplicationMetadata._get_webservice(
-            entropy_client, repository_id)
+        webserv = entropy_ws.get(repository_id)
         if webserv is None:
             return None
 
@@ -375,7 +342,7 @@ class ApplicationMetadata(object):
                 [package_key], cache=True, cached=True)[package_key]
             down = webserv.get_downloads(
                 [package_key], cache=True, cached=True)[package_key]
-        except WebService.CacheMiss:
+        except WebService.CacheMiss as exc:
             if const_debug_enabled():
                 const_debug_write(__name__,
                     "lazy_get_rating: cache miss for: %s, %s" % (
@@ -386,15 +353,15 @@ class ApplicationMetadata(object):
                 if flight_key not in ApplicationMetadata._RATING_IN_FLIGHT:
                     # enqueue a new rating then
                     ApplicationMetadata._enqueue_rating(
-                        entropy_client, package_key,
+                        webserv, package_key,
                         repository_id, callback)
-            vote = None
-            down = None
+            # let caller handle this
+            raise exc
 
         return vote, down
 
     @staticmethod
-    def lazy_get_icon(entropy_client, package_key, repository_id,
+    def lazy_get_icon(entropy_ws, package_key, repository_id,
                         callback=None):
         """
         Return a DocumentList of Icons for given package key, if it's available
@@ -404,8 +371,7 @@ class ApplicationMetadata(object):
         API) otherwise. DocumentList contains a list of Document objects,
         and calling Document.local_document() would give you the image path.
         """
-        webserv = ApplicationMetadata._get_webservice(
-            entropy_client, repository_id)
+        webserv = entropy_ws.get(repository_id)
         if webserv is None:
             return None
 
@@ -427,7 +393,7 @@ class ApplicationMetadata(object):
         try:
             icons = webserv.get_icons(
                 [package_key], cache=True, cached=True)[package_key]
-        except WebService.CacheMiss:
+        except WebService.CacheMiss as exc:
             if const_debug_enabled():
                 const_debug_write(__name__,
                     "lazy_get_icon: cache miss for: %s, %s" % (
@@ -438,9 +404,10 @@ class ApplicationMetadata(object):
                 if flight_key not in ApplicationMetadata._ICON_IN_FLIGHT:
                     # enqueue a new rating then
                     ApplicationMetadata._enqueue_icon(
-                        entropy_client, package_key,
+                        webserv, package_key,
                         repository_id, _icon_callback)
-            icons = None
+            # let caller handle this
+            raise exc
 
         if not icons:
             return None
@@ -508,10 +475,6 @@ class ApplicationMetadata(object):
          _ICON_IN_FLIGHT),
     ]
 
-    # WebService object cache
-    _WEBSERV_CACHE = {}
-    _WEBSERV_MUTEX = Lock()
-
 
 # this is a very lean class as its used in the main listview
 # and there are a lot of application objects in memory
@@ -523,8 +486,10 @@ class Application(object):
     There is also a __cmp__ method and a name property
     """
 
-    def __init__(self, entropy_client, package_match, redraw_callback=None):
+    def __init__(self, entropy_client, entropy_ws, package_match,
+                 redraw_callback=None):
         self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
         self._redraw_callback = redraw_callback
@@ -575,8 +540,8 @@ class Application(object):
         information about this Application, like
         votes and number of downloads.
         FIXME, lxnay: move to AppDetails()
-        """
         
+        """
         stat = ReviewStats(self)
         stat.ratings_average = ReviewStats.NO_RATING
 
@@ -585,9 +550,14 @@ class Application(object):
         if key_slot is None:
             return stat # empty stats
         key, slot = key_slot
-        rating = ApplicationMetadata.lazy_get_rating(
-            self._entropy, key, self._repo_id,
-            callback=self._redraw_callback)
+        try:
+            rating = ApplicationMetadata.lazy_get_rating(
+                self._entropy_ws, key, self._repo_id,
+                callback=self._redraw_callback)
+        except WebService.CacheMiss:
+            # not in cache, return empty stats
+            return stat
+
         if rating is None:
             # not ready yet, return empty ratings
             return stat # empty stats
@@ -604,7 +574,8 @@ class Application(object):
         """
         Return a new AppDetails object for this application
         """
-        return AppDetails(self._entropy, self._pkg_match, self,
+        return AppDetails(self._entropy, self._entropy_ws,
+                          self._pkg_match, self,
                           redraw_callback=self._redraw_callback)
 
     def __str__(self):
@@ -623,12 +594,13 @@ class AppDetails(object):
     we have available like website etc
     """
 
-    def __init__(self, entropy_client, package_match, app,
+    def __init__(self, entropy_client, entropy_ws, package_match, app,
                  redraw_callback=None):
         """
         Create a new AppDetails object.
         """
         self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
         self._app = app
@@ -660,29 +632,34 @@ class AppDetails(object):
     @property
     def icon(self):
         """
-        Return Application Icon image path.
+        Return Application Icon image Entropy Document object.
         In case of missing icon, None is returned.
+        The actual outcome of this property is a tuple, composed
+        by the Document object (or None) and cache hit information
+        (True if got from local cache, False if not in local cache)
         """
         repo = self._entropy.open_repository(self._repo_id)
         key_slot = repo.retrieveKeySlot(self._pkg_id)
         if key_slot is None:
-            return None
+            return None, False
 
         key, slot = key_slot
-        icon = ApplicationMetadata.lazy_get_icon(
-            self._entropy, key, self._repo_id,
-            callback=self._redraw_callback)
+        cache_hit = True
+        try:
+            icon = ApplicationMetadata.lazy_get_icon(
+                self._entropy_ws, key, self._repo_id,
+                callback=self._redraw_callback)
+        except WebService.CacheMiss:
+            cache_hit = False
+            icon = None
+
         if const_debug_enabled():
             const_debug_write(__name__,
-                "AppDetails{%s}.icon: icon: %s" % (
+                "AppDetails{%s}.icon: icon: %s, cache hit: %s" % (
                     self._pkg_match,
-                    icon))
+                    icon, cache_hit))
 
-        if not icon:
-            return None
-        # pick the first one
-        icon_path = icon.local_document()
-        return icon_path
+        return icon, cache_hit
 
     @property
     def icon_file_name(self):
