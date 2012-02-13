@@ -25,7 +25,7 @@ class AppTreeView(Gtk.TreeView):
 
     ACTION_BTNS = (VARIANT_REMOVE, VARIANT_INSTALL)
 
-    def __init__(self, app_view, icons, show_ratings, store=None):
+    def __init__(self, app_view, icons, show_ratings, icon_size, store=None):
         Gtk.TreeView.__init__(self)
         self._logger = logging.getLogger(__name__)
 
@@ -56,7 +56,8 @@ class AppTreeView(Gtk.TreeView):
                                  self.create_pango_layout(""),
                                  show_ratings,
                                  Icons.INSTALLED_OVERLAY)
-        tr.set_pixbuf_width(32)
+        tr.set_pixbuf_width(icon_size)
+
         tr.set_button_spacing(em(0.3))
 
         # create buttons and set initial strings
