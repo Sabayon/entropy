@@ -192,9 +192,6 @@ class AppListStore(Gtk.ListStore):
         if not os.path.isfile(icon_path):
             return self._missing_icon
 
-        # FIXME, parallelize this?
-        # get current image size
-        # expensive?
         img = Gtk.Image()
         img.set_from_file(icon_path)
         img_buf = img.get_pixbuf()
@@ -228,6 +225,11 @@ class AppListStore(Gtk.ListStore):
                           redraw_callback=self._ui_redraw_callback)
         return app.is_installed()
 
+    def is_available(self, pkg_match):
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
+                          redraw_callback=self._ui_redraw_callback)
+        return app.is_available()
+
     def get_markup(self, pkg_match):
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
@@ -237,6 +239,11 @@ class AppListStore(Gtk.ListStore):
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=self._ui_redraw_callback)
         return app.get_review_stats()
+
+    def get_application(self, pkg_match):
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
+                          redraw_callback=self._ui_redraw_callback)
+        return app
 
     def get_transaction_progress(self, pkg_match):
         # TODO: complete
@@ -404,7 +411,12 @@ class Rigo(Gtk.Application):
     class RigoHandler:
 
         def onDeleteWindow(self, *args):
-            Gtk.main_quit(*args)
+            while True:
+                try:
+                    Gtk.main_quit(*args)
+                except KeyboardInterrupt:
+                    continue
+                break
 
     def __init__(self):
         self._builder = Gtk.Builder()
@@ -416,7 +428,8 @@ class Rigo(Gtk.Application):
         self._scrolled_view = self._builder.get_object("scrolledView")
         self._static_view = self._builder.get_object("staticViewVbox")
         icons = get_sc_icon_theme(DATA_DIR)
-        self._view = AppTreeView(self._app_vbox, icons, True, store=None)
+        self._view = AppTreeView(self._app_vbox, icons, True,
+                                 AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
 
         self._notification = self._builder.get_object("notificationBox")

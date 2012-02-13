@@ -504,6 +504,9 @@ class Application(object):
         return name.capitalize()
 
     def is_installed(self):
+        """
+        Return if Application is currently installed.
+        """
         inst_repo = self._entropy.installed_repository()
         repo = self._entropy.open_repository(self._repo_id)
         if repo is inst_repo:
@@ -516,6 +519,16 @@ class Application(object):
         if matches:
             return True
         return False
+
+    def is_available(self):
+        """
+        Return if Application is actually available in repos,
+        for cache reasons?
+        The actual semantics of this method in softwarecenter
+        seems quite ambiguous to me.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        return repo.isPackageIdAvailable(self._pkg_id)
 
     def get_markup(self):
         repo = self._entropy.open_repository(self._repo_id)
