@@ -95,6 +95,16 @@ class EntropyCacher(Singleton):
 
     """
 
+    class SemaphoreTimeScheduled(TimeScheduled):
+
+        def __init__(self, sem, *args, **kwargs):
+            self._sem = sem
+            TimeScheduled.__init__(self, *args, **kwargs)
+
+        def kill(self):
+            self._sem.release()
+            return TimeScheduled.kill(self)
+
     def init_singleton(self):
         """
         Singleton overloaded method. Equals to __init__.
@@ -111,6 +121,7 @@ class EntropyCacher(Singleton):
         self.__proc_pids = set()
         self.__proc_pids_lock = threading.Lock()
         self.__dump_data_lock = threading.Lock()
+        self.__worker_sem = threading.Semaphore(0)
         # this lock ensures that all the writes are hold while it's acquired
         self.__enter_context_lock = threading.RLock()
 
@@ -168,7 +179,7 @@ class EntropyCacher(Singleton):
             time.sleep(0.1)
             self.__clean_pids()
 
-    def __cacher(self, run_until_empty = False, sync = False):
+    def __cacher(self, run_until_empty = False, sync = False, _loop=False):
         """
         This is where the actual asynchronous copy takes
         place. __cacher runs on a different threads and
@@ -189,6 +200,14 @@ class EntropyCacher(Singleton):
         except AttributeError:
             # can be None
             pass
+
+        # sleep if there's nothing to do
+        if _loop:
+            try:
+                # CANBLOCK
+                self.__worker_sem.acquire()
+            except AttributeError:
+                pass
 
         while self.__alive or run_until_empty:
 
@@ -277,8 +296,9 @@ class EntropyCacher(Singleton):
             self.__exit_registered = True
 
         self.__cache_buffer.clear()
-        self.__cache_writer = TimeScheduled(EntropyCacher.WRITEBACK_TIMEOUT,
-            self.__cacher)
+        self.__cache_writer = EntropyCacher.SemaphoreTimeScheduled(
+            self.__worker_sem, EntropyCacher.WRITEBACK_TIMEOUT,
+            self.__cacher, _loop=True)
         self.__cache_writer.daemon = True
         self.__cache_writer.setName("EntropyCacher")
         self.__cache_writer.set_delay_before(True)
@@ -380,6 +400,7 @@ class EntropyCacher(Singleton):
             try:
                 obj_copy = self.__copy_obj(data)
                 self.__cache_buffer.push(((key, cache_dir,), obj_copy,))
+                self.__worker_sem.release()
                 self.__stashing_cache[(key, cache_dir)] = obj_copy
             except TypeError:
                 # sometimes, very rarely, copy.deepcopy() is unable
