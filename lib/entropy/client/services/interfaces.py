@@ -743,11 +743,25 @@ class ClientWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
+        packages_str = " ".join(package_names)
+        hash_obj = hashlib.sha1()
+        hash_obj.update(const_convert_to_rawstring(packages_str))
+        hash_str = hash_obj.hexdigest()
+        lcache_key = "get_downloads_" + hash_str
+        if cache:
+            live_cached = self._live_cache.get(lcache_key)
+            if live_cached is not None:
+                return live_cached
+        else:
+            self._clear_live_cache(lcache_key)
+
         params = {
-            "package_names": " ".join(package_names)
+            "package_names": packages_str,
         }
-        return self._method_getter("get_downloads", params, cache = cache,
+        outcome = self._method_getter("get_downloads", params, cache = cache,
             cached = cached, require_credentials = False)
+        self._live_cache[lcache_key] = outcome
+        return outcome
 
     def get_available_downloads(self, cache = True, cached = False):
         """
