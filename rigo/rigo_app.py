@@ -1,6 +1,8 @@
 import os
 import sys
 import copy
+import tempfile
+from threading import Lock
 
 sys.path.insert(0, "../lib")
 sys.path.insert(1, "../client")
@@ -8,8 +10,6 @@ sys.path.insert(2, "./")
 sys.path.insert(3, "/usr/lib/entropy/lib")
 sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
-
-from threading import Lock
 
 
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject, GdkPixbuf
@@ -31,12 +31,16 @@ from entropy.i18n import _
 
 class EntropyWebService(object):
 
-    # FIXME, here
-    WebService.CACHE_DIR
-    # FIXME, _get requires privileges??
-    
-
     def __init__(self, entropy_client, tx_callback=None):
+        # Install custom CACHE_DIR pointing it to our
+        # home directory. This way we don't need to mess
+        # with privileges, resulting in documents not
+        # downloadable.
+        home_dir = os.getenv("HOME")
+        if home_dir is None:
+            home_dir = tempfile.mkdtemp(prefix="EntropyWebService")
+        ws_cache_dir = os.path.join(home_dir, ".entropy", "ws_cache")
+        WebService.CACHE_DIR = ws_cache_dir
         self._entropy = entropy_client
         self._webserv_map = {}
         self._tx_callback = tx_callback
