@@ -44,7 +44,7 @@ import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants, const_convert_to_unicode, \
     const_debug_write
-from entropy.i18n import _, P_
+from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
@@ -1931,7 +1931,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             empty = True
 
         self.set_status_ticker("%s: %s %s" % (
-            _("Showing"), len(allpkgs), P_("item", "items", len(allpkgs)),))
+            _("Showing"), len(allpkgs), ngettext("item", "items", len(allpkgs)),))
 
         show_pkgsets = False
         if action == "pkgsets":

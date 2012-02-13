@@ -28,6 +28,7 @@ if _LOCALE_FULL:
     _LOCALE = _LOCALE.lower()
 
 try:
+    import __builtin__
     import gettext
     localedir = "/usr/share/locale"
     # support for ENV TEXTDOMAINDIR
@@ -40,8 +41,8 @@ try:
         kwargs['unicode'] = True
     gettext.install('entropy', **kwargs)
     # do not use gettext.gettext because it returns str instead of unicode
-    _ = _
-    P_ = ngettext
+    _ = __builtin__.__dict__['_']
+    ngettext = __builtin__.__dict__['ngettext']
 
 except (ImportError, OSError,):
     def _(raw_string):
@@ -57,7 +58,7 @@ except (ImportError, OSError,):
         """
         return raw_string
 
-    def P_(singular, plural, n):
+    def ngettext(singular, plural, n):
         """
         Plural aware version of _(). Fallback function in case
         gettext is not available, same syntax as gettext.ngettext.

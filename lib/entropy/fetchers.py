@@ -38,7 +38,7 @@ from entropy.const import etpConst, const_isfileobj, const_debug_write
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red
 
-from entropy.i18n import _, P_
+from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
 
@@ -1067,7 +1067,7 @@ class MultipleUrlFetcher(TextInterface):
             "%s: %s %s" % (
                 darkblue(_("Aggregated download")),
                 darkred(str(len(pl))),
-                darkblue(P_("item", "items", len(pl))),
+                darkblue(ngettext("item", "items", len(pl))),
             ),
             importance = 0,
             level = "info",

@@ -15,7 +15,7 @@ import sys
 import subprocess
 
 from entropy.const import const_debug_write, etpConst
-from entropy.i18n import _, P_
+from entropy.i18n import _, ngettext
 from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
     brown
@@ -189,9 +189,9 @@ class Repository:
                     human_size = entropy.tools.bytes_into_human(pkgs_size)
                     mytxt = "%s: %s %s %s." % (
                         teal("Packages"),
-                        purple(P_("there is", "there are", number_of_pkgs)),
+                        purple(ngettext("there is", "there are", number_of_pkgs)),
                         brown(str(number_of_pkgs)),
-                        purple(P_("package file that could be removed",
+                        purple(ngettext("package file that could be removed",
                             "package files that could be removed",
                             number_of_pkgs)),
                     )

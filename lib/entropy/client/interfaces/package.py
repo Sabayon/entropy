@@ -22,7 +22,7 @@ from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_isunicode, const_convert_to_unicode, const_debug_write, \
     const_convert_to_rawstring
 from entropy.exceptions import PermissionDenied, SPMError
-from entropy.i18n import _, P_
+from entropy.i18n import _, ngettext
 from entropy.output import brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, teal
 from entropy.client.interfaces.client import Client
@@ -2981,7 +2981,7 @@ class Package:
         mytxt = "%s: %s %s" % (
             blue(_("Downloading")),
             darkred(str(m_fetch_len)),
-            P_("archive", "archives", m_fetch_len),
+            ngettext("archive", "archives", m_fetch_len),
         )
 
         self._entropy.output(
@@ -3496,7 +3496,7 @@ class Package:
         def do_multi_fetch():
             m_fetch_len = len(self.pkgmeta['multi_fetch_list']) / 2
             self._xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
-                m_fetch_len, P_("package", "packages", m_fetch_len),)
+                m_fetch_len, ngettext("package", "packages", m_fetch_len),)
             self._entropy.set_title(self._xterm_title)
             return self._multi_fetch_step()
 
@@ -3516,7 +3516,7 @@ class Package:
         def do_multi_checksum():
             m_checksum_len = len(self.pkgmeta['multi_checksum_list'])
             self._xterm_title += ' %s: %s %s' % (_("Multi Verification"),
-                m_checksum_len, P_("package", "packages", m_checksum_len),)
+                m_checksum_len, ngettext("package", "packages", m_checksum_len),)
             self._entropy.set_title(self._xterm_title)
             return self._multi_checksum_step()
 

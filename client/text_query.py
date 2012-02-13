@@ -17,7 +17,7 @@ from entropy.output import darkgreen, darkred, red, blue, \
     print_warning, teal
 from entropy.exceptions import DependenciesNotRemovable
 from entropy.misc import Lifo
-from entropy.i18n import _, P_
+from entropy.i18n import _, ngettext
 from entropy.cli import show_dependencies_legend, print_package_info, \
     graph_packages, revgraph_packages
 import entropy.dep
@@ -239,7 +239,7 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(pkg_ids), brown(P_("entry", "entries", len(pkg_ids))),)))
+                len(pkg_ids), brown(ngettext("entry", "entries", len(pkg_ids))),)))
             print_table(toc)
 
     if (not pkg_data) and (not etpUi['quiet']):
@@ -305,7 +305,7 @@ def search_belongs(files, entropy_client, entropy_repository,
                 toc = []
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(xfile)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                    len(result), brown(P_("entry", "entries", len(result))),)))
+                    len(result), brown(ngettext("entry", "entries", len(result))),)))
                 print_table(toc)
 
     return 0
@@ -427,7 +427,7 @@ def search_reverse_dependencies(atoms, entropy_client, entropy_repository):
 
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s %s" % (
                     len(search_results),
-                    brown(P_("entry", "entries", len(search_results))), where,)))
+                    brown(ngettext("entry", "entries", len(search_results))), where,)))
 
                 print_table(toc)
 
@@ -490,7 +490,7 @@ def search_required_libraries(libraries, entropy_client, entropy_repository):
             toc = []
             toc.append(("%s:" % (blue(_("Library")),), purple(library)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(results), brown(P_("package", "packages", len(results))),)))
+                len(results), brown(ngettext("package", "packages", len(results))),)))
             print_table(toc)
 
     return 0
@@ -767,7 +767,7 @@ def search_removal_dependencies(packages, entropy_client, entropy_repository,
         toc.append(("%s:" % (blue(_("Keywords")),),
             purple(', '.join(packages))))
         toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-            atomscounter, brown(P_("entry", "entries", atomscounter)),)))
+            atomscounter, brown(ngettext("entry", "entries", atomscounter)),)))
         print_table(toc)
 
     return 0
@@ -885,7 +885,7 @@ def search_package(packages, entropy_client, get_results = False,
             purple(', '.join(packages))))
         toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
             len(search_data),
-            brown(P_("entry", "entries", len(search_data))),)))
+            brown(ngettext("entry", "entries", len(search_data))),)))
         print_table(toc)
 
     return 0
@@ -929,7 +929,7 @@ def search_mimetype(mimetypes, entropy_client, installed = False,
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(mimetype)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(matches), brown(P_("entry", "entries", len(matches))),)))
+                len(matches), brown(ngettext("entry", "entries", len(matches))),)))
             print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -995,7 +995,7 @@ def match_package(packages, entropy_client, multi_match = False,
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
                     len(matches),
-                    brown(P_("entry", "entries", len(matches))),)))
+                    brown(ngettext("entry", "entries", len(matches))),)))
                 print_table(toc)
 
     if not etpUi['quiet'] and not found and not get_results:
@@ -1040,7 +1040,7 @@ def search_slotted_packages(slots, entropy_client):
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(slot)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
                     len(results),
-                    brown(P_("entry", "entries", len(results))),)))
+                    brown(ngettext("entry", "entries", len(results))),)))
                 print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -1081,7 +1081,7 @@ def search_package_sets(items, entropy_client):
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(item)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                matchNumber, brown(P_("entry", "entries", matchNumber)),)))
+                matchNumber, brown(ngettext("entry", "entries", matchNumber)),)))
             print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -1121,7 +1121,7 @@ def search_tagged_packages(tags, entropy_client):
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(tag)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
                     len(results),
-                    brown(P_("entry", "entries", len(results))),)))
+                    brown(ngettext("entry", "entries", len(results))),)))
                 print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -1151,7 +1151,7 @@ def search_rev_packages(revisions, entropy_client):
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(revision)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(results), brown(P_("entry", "entries", len(results))),)))
+                len(results), brown(ngettext("entry", "entries", len(results))),)))
             print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -1196,7 +1196,7 @@ def search_licenses(licenses, entropy_client):
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(mylicense)))
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
                     len(results),
-                    brown(P_("entry", "entries", len(results))),)))
+                    brown(ngettext("entry", "entries", len(results))),)))
                 print_table(toc)
 
     if not etpUi['quiet'] and not found:
@@ -1252,7 +1252,7 @@ def search_descriptions(descriptions, entropy_client, entropy_repository):
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(desc)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(pkg_ids), brown(P_("entry", "entries", len(pkg_ids))),)))
+                len(pkg_ids), brown(ngettext("entry", "entries", len(pkg_ids))),)))
             print_table(toc)
 
     return found
