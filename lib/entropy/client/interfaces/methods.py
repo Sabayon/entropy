@@ -1761,20 +1761,6 @@ class MiscMixin:
         MiscMixin.RESOURCES_LOCK_F_REF = flock_f
         return True
 
-    def another_entropy_running(self):
-        """
-        Check if another Entropy instance is running.
-        TODO: drop method.
-
-        @deprecated: use Entropy resources methods! This will be removed SOON.
-        @return: True if another Entropy instance is running, False otherwise.
-        @rtype: bool
-        """
-        import warnings
-        warnings.warn("attention, deprecated, update your code")
-        acquired, locked = const_setup_entropy_pid(just_read = True)
-        return locked
-
     def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300):
         """
         Wait until resources are unlocked. Please note that this method doesn't
