@@ -15,6 +15,8 @@
 import os
 import sys
 import time
+import fcntl
+import errno
 import codecs
 if sys.hexversion >= 0x3000000:
     import urllib.request, urllib.error, urllib.parse
@@ -26,8 +28,10 @@ else:
 import logging
 import threading
 from collections import deque
+
 from entropy.const import etpConst, const_isunicode, \
     const_isfileobj, const_convert_log_level, const_setup_file
+from entropy.exceptions import EntropyException
 
 import entropy.tools
 
@@ -538,6 +542,81 @@ class MasterSlaveLock(object):
         with self.__locks_dict_lock:
             self.__locks[key].release()
         self.__master_locked = False
+
+
+class FlockFile(object):
+
+    """
+    Of flock() operations on a file.
+    """
+
+    class FlockFileInitFailure(EntropyException):
+        """
+        FlockFile initialization failure exception.
+        Can be raised either because file path does
+        not exist (missing directory) or permissions
+        are not sufficient.
+        """
+
+    def __init__(self, file_path, fd = None):
+        self._path = file_path
+        if fd is None:
+            try:
+                self._f = open(self._path, "a+")
+            except IOError as err:
+                if err.errno in (errno.ENOENT, errno.EACCES):
+                    raise FlockFileInitFailure(err)
+                raise
+        else:
+            self._f = os.fdopen(fd)
+
+    def acquire_shared(self):
+        """
+        Acquire the lock in shared mode.
+        """
+        flags = fcntl.LOCK_SH
+        try:
+            fcntl.flock(self._f.fileno(), flags)
+        except IOError as err:
+            self.close()
+            raise
+
+    def acquire_exclusive(self):
+        """
+        Acquire the lock in exclusive mode.
+        """
+        flags = fcntl.LOCK_EX
+        try:
+            fcntl.flock(self._f.fileno(), flags)
+        except IOError as err:
+            self.close()
+            raise
+
+    def promote(self):
+        """
+        Promote a lock acquired in shared mode to exclusive mode.
+        """
+        self.acquire_shared()
+        self.acquire_exclusive()
+
+    def demote(self):
+        """
+        Demote a lock acquired in exclusive mode to shared mode.
+        """
+        self.release()
+        self.acquire_shared()
+
+    def release(self):
+        """
+        Release the lock previously acquired.
+        """
+        fcntl.flock(self._f.fileno(), fcntl.LOCK_UN)
+
+    def close(self):
+        """
+        Close the underlying file object.
+        """
+        self._f.close()
 
 
 class EmailSender:

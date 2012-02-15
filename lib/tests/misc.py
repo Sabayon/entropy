@@ -8,7 +8,7 @@ import tempfile
 import json
 from entropy.const import const_convert_to_unicode
 from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
-    FastRSS
+    FastRSS, FlockFile
 
 class MiscTest(unittest.TestCase):
 
@@ -103,6 +103,24 @@ class MiscTest(unittest.TestCase):
         t.join()
         #print "joined"
         self.assertTrue(self.t_sched_run)
+
+    def test_flock_file(self):
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.test")
+            mf = FlockFile(tmp_path, fd = tmp_fd)
+            mf.acquire_exclusive()
+            mf.demote()
+            mf.promote()
+            mf.release()
+            mf.acquire_shared()
+            mf.release()
+            mf.close()
+        finally:
+            if tmp_fd is not None:
+                self.assertRaises(OSError, os.close, tmp_fd)
+            if tmp_path is not None:
+                os.remove(tmp_path)
 
     def test_email_sender(self):
 
