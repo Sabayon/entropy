@@ -53,8 +53,9 @@ def ugc(options):
             print_error(darkgreen(_("You are not in the entropy group.")))
             return 1
         entropy_client = Client()
+        # do not taint stdout, use blocking mode
         acquired = entropy.tools.acquire_entropy_locks(
-            entropy_client, shared=True)
+            entropy_client, shared=True, blocking=True)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1

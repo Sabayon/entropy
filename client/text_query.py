@@ -84,7 +84,9 @@ def query(options):
             return 1
         from entropy.client.interfaces import Client
         etp_client = Client()
-        acquired = entropy.tools.acquire_entropy_locks(etp_client, shared=True)
+        # do not taint stdout, use blocking mode
+        acquired = entropy.tools.acquire_entropy_locks(etp_client, shared=True,
+                                                       blocking=True)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
