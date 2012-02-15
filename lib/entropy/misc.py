@@ -558,17 +558,19 @@ class FlockFile(object):
         are not sufficient.
         """
 
-    def __init__(self, file_path, fd = None):
+    def __init__(self, file_path, fd = None, fobj = None):
         self._path = file_path
-        if fd is None:
+        if fobj:
+            self._f = fobj
+        elif fd:
+            self._f = os.fdopen(fd)
+        else:
             try:
                 self._f = open(self._path, "a+")
             except IOError as err:
                 if err.errno in (errno.ENOENT, errno.EACCES):
                     raise FlockFileInitFailure(err)
                 raise
-        else:
-            self._f = os.fdopen(fd)
 
     def acquire_shared(self):
         """
@@ -581,6 +583,24 @@ class FlockFile(object):
             self.close()
             raise
 
+    def try_acquire_shared(self):
+        """
+        Acquire the lock in shared mode, non blocking.
+
+        @return: True, if lock acquired.
+        @rtype: bool
+        """
+        flags = fcntl.LOCK_SH | fcntl.LOCK_NB
+        try:
+            fcntl.flock(self._f.fileno(), flags)
+        except IOError as err:
+            if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                # ouch, wtf?
+                self.close()
+                raise
+            return False
+        return True
+
     def acquire_exclusive(self):
         """
         Acquire the lock in exclusive mode.
@@ -591,6 +611,24 @@ class FlockFile(object):
         except IOError as err:
             self.close()
             raise
+
+    def try_acquire_exclusive(self):
+        """
+        Acquire the lock in exclusive mode, non blocking.
+
+        @return: True, if lock acquired.
+        @rtype: bool
+        """
+        flags = fcntl.LOCK_EX | fcntl.LOCK_NB
+        try:
+            fcntl.flock(self._f.fileno(), flags)
+        except IOError as err:
+            if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                # ouch, wtf?
+                self.close()
+                raise
+            return False
+        return True
 
     def promote(self):
         """
@@ -611,6 +649,13 @@ class FlockFile(object):
         Release the lock previously acquired.
         """
         fcntl.flock(self._f.fileno(), fcntl.LOCK_UN)
+
+    def get_file(self):
+        """
+        Get the underlying File Object.
+        Use at your own risk.
+        """
+        return self._f
 
     def close(self):
         """
