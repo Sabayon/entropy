@@ -19,6 +19,7 @@ import shutil
 import time
 import subprocess
 import tempfile
+import threading
 import codecs
 from datetime import datetime
 
@@ -33,6 +34,7 @@ from entropy.exceptions import RepositoryError, SystemDatabaseError, \
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.db.exceptions import Error as EntropyRepositoryError
 from entropy.cache import EntropyCacher
+from entropy.misc import FlockFile
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
     InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
 from entropy.client.mirrors import StatusInterface
@@ -1665,6 +1667,7 @@ class MiscMixin:
     # resources lock file object container
     RESOURCES_LOCK_F_REF = None
     RESOURCES_LOCK_F_COUNT = 0
+    RESOURCES_LOCK_F_COUNT_MUTEX = threading.Lock()
 
     def setup_file_permissions(self, file_path):
         """ @deprecated """
@@ -1687,7 +1690,8 @@ class MiscMixin:
             etpConst['locks']['using_resources'],
             blocking = blocking)
         if acquired:
-            MiscMixin.RESOURCES_LOCK_F_COUNT += 1
+            with MiscMixin.RESOURCES_LOCK_F_COUNT_MUTEX:
+                MiscMixin.RESOURCES_LOCK_F_COUNT += 1
         return acquired
 
     def unlock_resources(self):
@@ -1695,18 +1699,19 @@ class MiscMixin:
         Release previously locked Entropy Resources, see lock_resources().
         """
         # decrement lock counter
-        if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
-            MiscMixin.RESOURCES_LOCK_F_COUNT -= 1
+        with MiscMixin.RESOURCES_LOCK_F_COUNT_MUTEX:
+            if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
+                MiscMixin.RESOURCES_LOCK_F_COUNT -= 1
+            # if lock counter > 0, still locked
+            # waiting for other upper-level calls
+            if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
+                return
 
-        # if lock counter > 0, still locked
-        # waiting for other upper-level calls
-        if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
-            return
-
-        f_obj = MiscMixin.RESOURCES_LOCK_F_REF
-        if f_obj is not None:
-            lock_file = f_obj.name
+        lock_f = MiscMixin.RESOURCES_LOCK_F_REF
+        if lock_f is not None:
+            lock_file = lock_f.get_file().name
             try:
+                # unlink first
                 os.remove(lock_file)
             except OSError as err:
                 # cope with possible race conditions
@@ -1714,10 +1719,9 @@ class MiscMixin:
                 if err.errno not in (errno.ENOENT, errno.EROFS):
                     raise
             finally:
-                fcntl.flock(f_obj.fileno(), fcntl.LOCK_UN)
-                if f_obj is not None:
-                    f_obj.close()
-                    MiscMixin.RESOURCES_LOCK_F_REF = None
+                lock_f.release()
+                MiscMixin.RESOURCES_LOCK_F_REF = None
+                lock_f.close()
 
     def _create_pid_file_lock(self, pidfile, blocking = False):
 
@@ -1731,11 +1735,6 @@ class MiscMixin:
         const_setup_perms(lockdir, etpConst['entropygid'], recursion = False)
         mypid = os.getpid()
 
-        if blocking:
-            flags = fcntl.LOCK_EX
-        else:
-            flags = fcntl.LOCK_EX | fcntl.LOCK_NB
-
         try:
             pid_f = open(pidfile, "a+")
         except IOError as err:
@@ -1743,25 +1742,23 @@ class MiscMixin:
                 # cannot get lock or dir doesn't exist
                 return False
             raise
-        try:
-            fcntl.flock(pid_f.fileno(), flags)
-        except IOError as err:
-            if err.errno not in (errno.EACCES, errno.EAGAIN,):
-                # ouch, wtf?
-                pid_f.close()
-                raise
+
+        flock_f = FlockFile(pidfile, fobj = pid_f)
+        if blocking:
+            flock_f.acquire_exclusive()
+        elif not flock_f.try_acquire_exclusive():
             # lock already acquired, but might come from the same pid
             stored_pid = pid_f.read(128).strip()
             pid_f.close()
             if str(os.getpid()) == stored_pid:
                 # it's me, entropy (in case I called execv*)
                 return True
-            return False # lock already acquired
+            return False
 
         pid_f.truncate()
         pid_f.write(str(mypid))
         pid_f.flush()
-        MiscMixin.RESOURCES_LOCK_F_REF = pid_f
+        MiscMixin.RESOURCES_LOCK_F_REF = flock_f
         return True
 
     def another_entropy_running(self):
