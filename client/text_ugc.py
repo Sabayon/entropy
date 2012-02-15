@@ -45,8 +45,20 @@ def ugc(options):
 
     from entropy.client.interfaces import Client
     entropy_client = None
+    acquired = False
     try:
+        if not entropy.tools.is_user_in_entropy_group():
+            # otherwise the lock handling would potentially
+            # fail.
+            print_error(darkgreen(_("You are not in the entropy group.")))
+            return 1
         entropy_client = Client()
+        acquired = entropy.tools.acquire_entropy_locks(
+            entropy_client, shared=True)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+
         if cmd == "login":
             if options:
                 rc = _ugc_login(entropy_client, options[0],
@@ -61,6 +73,8 @@ def ugc(options):
             if options:
                 rc = _ugc_votes(entropy_client, options)
     finally:
+        if acquired and (entropy_client is not None):
+            entropy.tools.release_entropy_locks(entropy_client)
         if entropy_client is not None:
             entropy_client.shutdown()
 

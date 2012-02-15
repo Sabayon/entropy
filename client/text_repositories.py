@@ -55,8 +55,14 @@ def repositories(options):
 
     from entropy.client.interfaces import Client
     entropy_client = None
+    acquired = False
     try:
         entropy_client = Client(installed_repo = False)
+        acquired = entropy.tools.acquire_entropy_locks(entropy_client)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+
         if cmd == "update":
             # check if I am root
             er_txt = darkred(_("You must be either root or in this group:")) + \
@@ -118,6 +124,8 @@ def repositories(options):
         else:
             rc = -10
     finally:
+        if acquired and (entropy_client is not None):
+            entropy.tools.release_entropy_locks(entropy_client)
         if entropy_client is not None:
             entropy_client.shutdown()
 

@@ -75,9 +75,20 @@ def query(options):
     cmd, args = myopts[0], myopts[1:]
 
     etp_client = None
+    acquired = False
     try:
+        if not entropy.tools.is_user_in_entropy_group():
+            # otherwise the lock handling would potentially
+            # fail.
+            print_error(darkgreen(_("You are not in the entropy group.")))
+            return 1
         from entropy.client.interfaces import Client
         etp_client = Client()
+        acquired = entropy.tools.acquire_entropy_locks(etp_client, shared=True)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+
         if cmd == "match":
             rc_status = match_package(args, etp_client,
                 multi_match = multi_match,
@@ -193,6 +204,8 @@ def query(options):
         else:
             rc_status = -10
     finally:
+        if acquired and (etp_client is not None):
+            entropy.tools.release_entropy_locks(etp_client)
         if etp_client is not None:
             etp_client.shutdown()
 

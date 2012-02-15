@@ -24,12 +24,9 @@ from entropy.const import etpConst
 from entropy.output import red, darkred, brown, green, darkgreen, blue, \
     purple, darkblue, print_info, print_error, print_warning, readtext
 from entropy.i18n import _
+
 import entropy.tools
 
-########################################################
-####
-##   Configuration Tools
-#
 
 def configurator(options):
 
@@ -45,8 +42,14 @@ def configurator(options):
 
     from entropy.client.interfaces import Client
     etp_client = None
+    acquired = False
     try:
         etp_client = Client()
+        acquired = entropy.tools.acquire_entropy_locks(etp_client)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+
         cmd = options.pop(0)
         if cmd == "info":
             rc = confinfo(etp_client)
@@ -55,6 +58,8 @@ def configurator(options):
         else:
             rc = -10
     finally:
+        if acquired and (etp_client is not None):
+            entropy.tools.release_entropy_locks(etp_client)
         if etp_client is not None:
             etp_client.shutdown()
 
