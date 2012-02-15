@@ -22,12 +22,13 @@ from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme, \
     resize_image
 
 from entropy.const import etpUi, const_debug_write, const_debug_enabled
-from entropy.tools import kill_threads
 from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
 from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _
+
+import entropy.tools
 
 class EntropyWebService(object):
 
@@ -413,6 +414,7 @@ class Rigo(Gtk.Application):
         def onDeleteWindow(self, *args):
             while True:
                 try:
+                    entropy.tools.kill_threads()
                     Gtk.main_quit(*args)
                 except KeyboardInterrupt:
                     continue
@@ -446,8 +448,6 @@ class Rigo(Gtk.Application):
                                  DATA_DIR)
 
         self._entropy = Client()
-        # FIXME, lxnay locking
-
         self._entropy_ws = EntropyWebService(self._entropy)
 
         self._state_mutex = Lock()
@@ -511,18 +511,52 @@ class Rigo(Gtk.Application):
     def _on_style_updated(self, widget, init_css_callback, *args):
         init_css_callback(widget, *args)
 
-    def run(self):
-        self._welcome_box.render()
-        self.change_view_state(self._current_state)
+    def _show_ok_dialog(self, parent, title, message):
+        dlg = Gtk.MessageDialog(parent=parent,
+                            type=Gtk.MessageType.INFO,
+                            buttons=Gtk.ButtonsType.OK)
+        dlg.set_markup(message)
+        dlg.set_title(title)
+        dlg.run()
+        dlg.destroy()
+
+    def _permissions_setup(self):
+        if not entropy.tools.is_user_in_entropy_group():
+            # otherwise the lock handling would potentially
+            # fail.
+            self._show_ok_dialog(
+                None,
+                _("Not authorized"),
+                _("You are not authorized to run Rigo"))
+            entropy.tools.kill_threads()
+            Gtk.main_quit()
+            return
+
+        acquired = entropy.tools.acquire_entropy_locks(
+            self._entropy, shared=True, max_tries=1)
+        if not acquired:
+            self._show_ok_dialog(
+                None,
+                _("Rigo"),
+                _("Another Application Manager is active"))
+            entropy.tools.kill_threads()
+            Gtk.main_quit()
+            return
+
         self._pvc.setup()
         self._nc.setup()
         self._window.show()
+
+    def run(self):
+        self._welcome_box.render()
+        self.change_view_state(self._current_state)
+        GLib.idle_add(self._permissions_setup)
 
         GLib.threads_init()
         Gdk.threads_enter()
         Gtk.main()
         Gdk.threads_leave()
-        kill_threads()
+        entropy.tools.kill_threads()
 
 if __name__ == "__main__":
     app = Rigo()
