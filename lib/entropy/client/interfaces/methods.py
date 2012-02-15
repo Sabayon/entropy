@@ -1673,22 +1673,27 @@ class MiscMixin:
         """ @deprecated """
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
-    def lock_resources(self, blocking = False):
+    def lock_resources(self, blocking = False, shared = False):
         """
         Try to lock Entropy Resources (WRITE EXCLUSIVE lock file).
         Once this lock is acquired, it is possible to modify permanent
         data structures like repository data and metadata.
         Please make sure to always acquire this lock if you intend to
         make changes to installed packages or available repositories.
+        If shared=True, you are likely calling this method as user, if
+        so, make sure that the same is in the "entropy" group, by
+        using entropy.tools.is_user_in_entropy_group().
 
         @keyword blocking: execute in blocking mode?
         @type blocking: bool
+        @keyword shared: acquire a shared lock? (default is False)
+        @type shared: bool
         @return: True, if lock has been acquired. False otherwise.
         @rtype: bool
         """
         acquired = self._create_pid_file_lock(
             etpConst['locks']['using_resources'],
-            blocking = blocking)
+            blocking = blocking, shared = shared)
         if acquired:
             with MiscMixin.RESOURCES_LOCK_F_COUNT_MUTEX:
                 MiscMixin.RESOURCES_LOCK_F_COUNT += 1
@@ -1723,7 +1728,7 @@ class MiscMixin:
                 MiscMixin.RESOURCES_LOCK_F_REF = None
                 lock_f.close()
 
-    def _create_pid_file_lock(self, pidfile, blocking = False):
+    def _create_pid_file_lock(self, pidfile, blocking = False, shared = False):
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
             # already locked, reentrant lock
@@ -1745,43 +1750,56 @@ class MiscMixin:
 
         flock_f = FlockFile(pidfile, fobj = pid_f)
         if blocking:
-            flock_f.acquire_exclusive()
-        elif not flock_f.try_acquire_exclusive():
-            # lock already acquired, but might come from the same pid
-            stored_pid = pid_f.read(128).strip()
-            pid_f.close()
-            if str(os.getpid()) == stored_pid:
-                # it's me, entropy (in case I called execv*)
-                return True
-            return False
+            if shared:
+                flock_f.acquire_shared()
+            else:
+                flock_f.acquire_exclusive()
+        else:
+            acquired = False
+            if shared:
+                acquired = flock_f.try_acquire_shared()
+            else:
+                acquired = flock_f.try_acquire_exclusive()
+            if not acquired:
+                # lock already acquired, but might come from the same pid
+                stored_pid = pid_f.read(128).strip()
+                pid_f.close()
+                if str(os.getpid()) == stored_pid:
+                    # it's me, entropy (in case I called execv*)
+                    # NOTE that this won't work with shared locks
+                    return True
+                return False
 
-        pid_f.truncate()
-        pid_f.write(str(mypid))
-        pid_f.flush()
+        if not shared:
+            # if we acquired an exclusive lock
+            # we can place our pid here.
+            pid_f.truncate()
+            pid_f.write(str(mypid))
+            pid_f.flush()
         MiscMixin.RESOURCES_LOCK_F_REF = flock_f
         return True
 
-    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300):
+    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300,
+                       shared = False):
         """
         Wait until resources are unlocked. Please note that this method doesn't
         try to acquire the resources lock but just checks if the lock gets
         released. It is a user-centric function not meant for strict
         race condition handling.
-        If you're familiar with locks, this works like a "spin lock" where
-        checks are interleaved by sleep_seconds seconds with a maximum number
-        of checks (max_lock_count).
 
         @keyword sleep_seconds: time between checks
         type sleep_seconds: float
         @keyword max_lock_count: maximum number of times the lock is checked
         @type max_lock_count: int
+        @keyword shared: acquire a shared lock? (default is False)
+        @type shared: bool
         @return: True, if lock hasn't been released, False otherwise.
         @rtype: bool
         """
         lock_count = 0
         # check lock file
         while True:
-            acquired = self.lock_resources(blocking=False)
+            acquired = self.lock_resources(blocking=False, shared=shared)
             if acquired:
                 if lock_count > 0:
                     self.output(

@@ -3147,7 +3147,7 @@ def release_lock(lock_file, lock_map):
             raise
 
 def acquire_entropy_locks(entropy_client, blocking = False,
-    max_tries = 300):
+    shared = False, max_tries = 300):
     """
     Acquire Entropy Resources General Lock.
     This lock is controlling write access to entropy package metadata and
@@ -3158,18 +3158,24 @@ def acquire_entropy_locks(entropy_client, blocking = False,
     @type entropy_client: entropy.client.interfaces.Client
     @keyword blocking: acquire locks in blocking mode?
     @type blocking: bool
+    @keyword shared: acquire a shared lock? (readers lock,
+    default is False)
+    @type shared: bool
     @keyword max_tries: number of tries for wait_resources()
     @type max_tries: int
     """
     if not blocking:
-        gave_up = entropy_client.wait_resources(max_lock_count = max_tries)
+        gave_up = entropy_client.wait_resources(
+            max_lock_count = max_tries,
+            shared = shared)
         if gave_up:
             return False
         # acquired
         return True
 
     # acquire resources lock in blocking mode
-    acquired = entropy_client.lock_resources(blocking = True)
+    acquired = entropy_client.lock_resources(blocking = True,
+                                             shared = shared)
     if not acquired:
         return False
     return True
