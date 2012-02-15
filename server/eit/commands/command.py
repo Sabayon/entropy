@@ -184,19 +184,31 @@ class EitCommand(object):
     def _call_unlocked(self, func, repo):
         """
         Execute the given function at func after acquiring Entropy
-        Resources Lock, for given repository at repo.
+        Resources Lock in shared mode, for given repository at repo.
         The signature of func is: int func(entropy_server).
         """
         server = None
+        acquired = False
         try:
             try:
                 server = self._entropy(default_repository=repo)
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
+            # use blocking mode to avoid tainting stdout
+            acquired = entropy.tools.acquire_entropy_locks(
+                server, blocking=True, shared=True)
+            if not acquired:
+                server.output(
+                    darkgreen(_("Another Entropy is currently running.")),
+                    level="error", importance=1
+                )
+                return 1
             return func(server)
         finally:
             if server is not None:
+                if acquired:
+                    entropy.tools.release_entropy_locks(server)
                 server.shutdown()
 
     def _settings(self):
