@@ -27,20 +27,6 @@ from entropy.i18n import _
 
 import entropy.dep
 
-def acquire_entropy_locks(entropy_client):
-    """@deprecated"""
-    import warnings
-    import entropy.tools
-    warnings.warn("deprecated, please use entropy.tools module")
-    return entropy.tools.acquire_entropy_locks(entropy_client)
-
-def release_entropy_locks(entropy_client):
-    """@deprecated"""
-    import warnings
-    import entropy.tools
-    warnings.warn("deprecated, please use entropy.tools module")
-    return entropy.tools.release_entropy_locks(entropy_client)
-
 def cleanup(directories):
     """
     Temporary files cleaner.
