@@ -9,7 +9,7 @@
     B{Entropy Framework interface}.
     This is the Entropy Framework Python package.
     Entropy is a framework for creation of package management applications,
-    als featuring a Portage-compatible binary Package Manager built
+    also featuring a Portage-compatible binary Package Manager built
     on top of it.
 
     Code can be divided into 3 main chunks: client, server and services.
