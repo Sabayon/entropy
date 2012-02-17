@@ -13,6 +13,8 @@
 import os
 import sys
 import subprocess
+import errno
+import time
 
 from entropy.const import const_debug_write, etpConst
 from entropy.i18n import _, ngettext
@@ -244,6 +246,52 @@ class Repository:
                 header = bold(" !!! ")
             )
 
+    def _set_last_successful_sync_time(self):
+        """
+        Store current time to mtime of last successful sync file.
+        You can use Repository.get_last_successful_sync_time() for
+        retrieval.
+        """
+        path = os.path.join(etpConst['etpdatabaseclientdir'], ".last_sync")
+        with open(path, "w") as sync_f:
+            sync_f.flush()
+
+    # Days after when repository is considered old
+    REPOSITORY_OLD_DAYS = 10
+
+    @staticmethod
+    def get_last_successful_sync_time():
+        """
+        Get last time (in epoch format) repositories have been
+        updated successfully.
+
+        @return: epoch if info is available, or None
+        @rtype: float
+        """
+        path = os.path.join(etpConst['etpdatabaseclientdir'], ".last_sync")
+        try:
+            return os.path.getmtime(path)
+        except OSError as err:
+            if err.errno not in (errno.ENOENT, errno.EPERM):
+                raise
+            return None
+
+    @staticmethod
+    def are_repositories_old():
+        """
+        Return whether repositories are old and should be updated.
+
+        @return: True, if old
+        @rtype: bool
+        """
+        last_t = Repository.get_last_successful_sync_time()
+        if last_t is None:
+            return True
+        delta = abs(time.time() - last_t)
+        if delta > (Repository.REPOSITORY_OLD_DAYS * 86400):
+            return True
+        return False
+
     def _update_security_advisories(self):
         # update Security Advisories
         try:
@@ -285,11 +333,11 @@ class Repository:
             rc = self._run_sync()
             if rc:
                 return rc
+            if self.not_available >= len(self.repo_ids):
+                return 2
+            elif self.not_available > 0:
+                return 1
+            self._set_last_successful_sync_time()
+            return 0
         finally:
             self._entropy.unlock_resources()
-
-        if self.not_available >= len(self.repo_ids):
-            return 2
-        elif self.not_available > 0:
-            return 1
-        return 0
