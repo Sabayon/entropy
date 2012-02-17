@@ -26,7 +26,7 @@ from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
 from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
-from entropy.i18n import _
+from entropy.i18n import _, ngettext
 
 import entropy.tools
 
@@ -361,25 +361,117 @@ class WelcomeBox(Gtk.VBox):
         image.show()
 
 
-class NotificationBox(Gtk.VBox):
+class NotificationBox(Gtk.HBox):
 
-    def __init__(self, message):
-        Gtk.VBox.__init__(self)
+    """
+    Generic notification widget to be used in the
+    Rigo notification area.
+    """
+
+    def __init__(self, message, message_type=None, tooltip=None):
+        Gtk.HBox.__init__(self)
         self._message = message
+        self._buttons = []
+        self._type = message_type
+        if self._type is None:
+            self._type = Gtk.MessageType.INFO
+        self._tooltip = tooltip
+
+    def add_button(self, text, clicked_callback):
+        """
+        Add a Gtk.Button() to this container.
+        Return the newly created Gtk.Button().
+        """
+        button = Gtk.Button(text)
+        button.set_use_underline(True)
+        button.connect("clicked", clicked_callback)
+        self._buttons.append(button)
+        return button
 
     def render(self):
+        """
+        Render the Notification box filling in the container.
+        """
+        bar = Gtk.InfoBar()
+        if self._tooltip is not None:
+            bar.set_tooltip_markup(self._tooltip)
+        bar.set_message_type(self._type)
+
+        content_area = bar.get_content_area()
+        hbox = Gtk.HBox()
         label = Gtk.Label()
         label.set_markup(self._message)
-        self.pack_start(label, False, False, 0)
+        label.set_property("expand", True)
+        label.set_alignment(0.02, 0.50)
+        hbox.pack_start(label, True, True, 0)
         label.show()
+
+        for button in self._buttons:
+            hbox.pack_start(button, False, False, 3)
+            button.show()
+
+        content_area.set_property("expand", False)
+        content_area.add(hbox)
+        content_area.show()
+        hbox.show()
+
+        bar.show()
+        bar.get_action_area().hide()
+        self.pack_start(bar, True, True, 0)
+
+
+class UpdatesNotificationBox(NotificationBox):
+
+    def __init__(self, entropy_client, pvc,
+                 updates_len, security_updates_len):
+        self._entropy = entropy_client
+        self._pvc = pvc
+
+        msg = ngettext("There is <b>%d</b> update",
+                       "There are <b>%d</b> updates",
+                       updates_len)
+        msg = msg % (updates_len,)
+
+        if security_updates_len > 0:
+            sec_msg = ", " + ngettext("and <b>%d</b> security update",
+                                      "and <b>%d</b> security updates",
+                                      security_updates_len)
+            sec_msg = sec_msg % (security_updates_len,)
+            msg += sec_msg
+
+        msg += ". " + _("What to do?")
+
+        NotificationBox.__init__(self, msg,
+            tooltip=_("Updates available, how about installing them?"))
+        self.add_button(_("_Update System"), self._update)
+        self.add_button(_("_Ignore"), self._dismiss)
+
+    def _update(self, button):
+        """
+        Update button callback from the updates notification box.
+        """
+        # FIXME, lxnay complete
+        print("Update Button clicked", button)
+
+    def _dismiss(self, button):
+        """
+        Dismiss the notification.
+        """
+        self.destroy()
 
 
 class NotificationController(object):
 
-    def __init__(self, entropy_client, notification_box):
+    """
+    Notification area widget controller code.
+    """
+
+    def __init__(self, entropy_client, pvc, notification_box):
         self._entropy = entropy_client
+        self._pvc = pvc
         self._box = notification_box
         self._updates = None
+        self._security_updates = None
 
     def setup(self):
         GLib.timeout_add(3000, self._calculate_updates)
@@ -394,17 +486,65 @@ class NotificationController(object):
         updates, removal, fine, spm_fine = \
             self._entropy.calculate_updates()
         self._updates = updates
+        self._security_updates = self._entropy.calculate_security_updates()
         GLib.idle_add(self._notify_updates_safe)
 
     def _notify_updates_safe(self):
-        # FIXME, use ngettext here
-        msg = _("There are <b>%d</b> updates available, want to <u>update now</u>?")
-        msg = msg % (len(self._updates),)
-        box = NotificationBox(msg)
+        updates_len = len(self._updates)
+        if updates_len == 0:
+            # no updates, do not show anything
+            return
+
+        box = UpdatesNotificationBox(
+            self._entropy, self._pvc,
+            updates_len, len(self._security_updates))
+        self.append(box)
+
+    def append(self, box, timeout=None):
+        """
+        Append a notification to the Notification area.
+        """
         box.render()
-        self._box.pack_start(box, False, False, False)
+        self._box.pack_start(box, False, False, 0)
         box.show()
         self._box.show()
+        if timeout is not None:
+            GLib.timeout_add_seconds(timeout, self.remove, box)
+
+    def append_safe(self, box, timeout=None):
+        """
+        Thread-safe version of append().
+        """
+        def _append():
+            self.append(box, timeout=timeout)
+        GLib.idle_add(_append)
+
+    def remove(self, box):
+        """
+        Remove a NotificationBox from this notification
+        area, if there.
+        """
+        if box in self._box.get_children():
+            self._box.remove(box)
+
+    def remove_safe(self, box):
+        """
+        Thread-safe version of remove().
+        """
+        GLib.idle_add(self.remove, box)
+
+    def clear(self):
+        """
+        Clear all the notifications.
+        """
+        for child in self._box.get_children():
+            self._box.remove(child)
+
+    def clear_safe(self):
+        """
+        Thread-safe version of clear().
+        """
+        GLib.idle_add(self.clear)
 
 
 class Rigo(Gtk.Application):
@@ -456,7 +596,7 @@ class Rigo(Gtk.Application):
             self._entropy, icons, self._entropy_ws,
             self, self._search_entry, self._view)
         self._nc = NotificationController(
-            self._entropy, self._notification)
+            self._entropy, self._pvc, self._notification)
 
     BROWSER_VIEW_STATE = 1
     STATIC_VIEW_STATE = 2
@@ -509,9 +649,15 @@ class Rigo(Gtk.Application):
         GLib.idle_add(_do_change)
 
     def _on_style_updated(self, widget, init_css_callback, *args):
+        """
+        Gtk Style callback, nothing to see here.
+        """
         init_css_callback(widget, *args)
 
     def _show_ok_dialog(self, parent, title, message):
+        """
+        Show ugly OK dialog window.
+        """
         dlg = Gtk.MessageDialog(parent=parent,
                             type=Gtk.MessageType.INFO,
                             buttons=Gtk.ButtonsType.OK)
@@ -521,6 +667,9 @@ class Rigo(Gtk.Application):
         dlg.destroy()
 
     def _permissions_setup(self):
+        """
+        Check execution privileges and spawn the Rigo UI.
+        """
         if not entropy.tools.is_user_in_entropy_group():
             # otherwise the lock handling would potentially
             # fail.
