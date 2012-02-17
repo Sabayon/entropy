@@ -30,6 +30,7 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
+from entropy.client.interfaces.repository import Repository
 from entropy.i18n import _, ngettext
 from entropy.services.client import WebService
 from entropy.cli import countdown, enlightenatom, get_entropy_webservice
@@ -391,6 +392,17 @@ def _upgrade_package_handle_calculation(entropy_client, resume, replay, onlyfetc
 def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
     resume = False, skipfirst = False, dochecksum = True, multifetch = 1,
     build_deps = False):
+
+    # warn about repositories being old
+    old_repos = Repository.are_repositories_old()
+    if old_repos:
+        print_info("")
+        mytxt = "%s %s" % (
+            purple(_("Repositories are old, please run:")),
+            bold("equo update"),
+        )
+        print_warning(mytxt)
+        print_info("")
 
     # check if I am root
     if not entropy.tools.is_root():
@@ -1246,6 +1258,17 @@ def install_packages(entropy_client,
         atomsdata = []
     if pkgs is None:
         pkgs = []
+
+    # warn about repositories being old
+    old_repos = Repository.are_repositories_old()
+    if old_repos:
+        print_info("")
+        mytxt = "%s %s" % (
+            purple(_("Repositories are old, please run:")),
+            bold("equo update"),
+        )
+        print_warning(mytxt)
+        print_info("")
 
     # check if I am root
     if not entropy.tools.is_root():
