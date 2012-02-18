@@ -212,8 +212,7 @@ class NotificationController(GObject.Object):
         print("On Update Request Received", args)
 
     def _on_update_show(self, *args):
-        # FIXME, lxnay complete
-        print("On Update Show Request Received", args)
+        self._avc.set_many_safe(self._updates)
 
     def append(self, box, timeout=None):
         """
