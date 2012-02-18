@@ -16,250 +16,44 @@ from gi.repository import Gtk, Gdk, Gio, GLib, GObject, GdkPixbuf
 
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons
+from rigo.entropyapi import EntropyWebService
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
-from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme, \
-    resize_image
+from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
+    RepositoriesUpdateNotificationBox, UpdatesNotificationBox
+from rigo.ui.gtk3.widgets.welcome import WelcomeBox
+from rigo.ui.gtk3.models.appliststore import AppListStore
+from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
 from entropy.const import etpUi, const_debug_write, const_debug_enabled
-from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.repository import Repository
-from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _, ngettext
 
 import entropy.tools
 
-class EntropyWebService(object):
 
-    def __init__(self, entropy_client, tx_callback=None):
-        # Install custom CACHE_DIR pointing it to our
-        # home directory. This way we don't need to mess
-        # with privileges, resulting in documents not
-        # downloadable.
-        home_dir = os.getenv("HOME")
-        if home_dir is None:
-            home_dir = tempfile.mkdtemp(prefix="EntropyWebService")
-        ws_cache_dir = os.path.join(home_dir, ".entropy", "ws_cache")
-        WebService.CACHE_DIR = ws_cache_dir
-        self._entropy = entropy_client
-        self._webserv_map = {}
-        self._tx_callback = tx_callback
-        self._mutex = Lock()
+class ApplicationViewController(GObject.Object):
 
-    def get(self, repository_id):
-        """
-        Get Entropy Web Services service object (ClientWebService).
+    __gsignals__ = {
+        # View has been cleared
+        "view-cleared" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          tuple(),
+                          ),
+        # View has been filled
+        "view-filled" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          tuple(),
+                          ),
+    }
 
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: the ClientWebService instance
-        @rtype: entropy.client.services.interfaces.ClientWebService
-        @raise WebService.UnsupportedService: if service is unsupported by
-        repository
-        """
-        webserv = self._webserv_map.get(repository_id)
-        if webserv == -1:
-            # not available
-            return None
-        if webserv is not None:
-            return webserv
-
-        with self._mutex:
-            webserv = self._webserv_map.get(repository_id)
-            if webserv == -1:
-                # not available
-                return None
-            if webserv is not None:
-                return webserv
-
-            try:
-                webserv = self._get(self._entropy, repository_id)
-            except WebService.UnsupportedService as err:
-                webserv = None
-
-        if webserv is None:
-            self._webserv_map[repository_id] = -1
-            # not available
-            return None
-
-        try:
-            available = webserv.service_available()
-        except WebService.WebServiceException:
-            available = False
-
-        if not available:
-            with self._mutex:
-                if repository_id not in self._webserv_map:
-                    self._webserv_map[repository_id] = -1
-            return
-
-        with self._mutex:
-            if repository_id not in self._webserv_map:
-                self._webserv_map[repository_id] = webserv
-        return webserv
-
-    def _get(self, entropy_client, repository_id):
-        """
-        Get Entropy Web Services service object (ClientWebService).
-
-        @param entropy_client: Entropy Client interface
-        @type entropy_client: entropy.client.interfaces.Client
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: the ClientWebService instance
-        @rtype: entropy.client.services.interfaces.ClientWebService
-        @raise WebService.UnsupportedService: if service is unsupported by
-        repository
-        """
-        factory = entropy_client.WebServices()
-        webserv = factory.new(repository_id)
-        if self._tx_callback is not None:
-            webserv._set_transfer_callback(self._tx_callback)
-        return webserv
-
-
-class AppListStore(Gtk.ListStore):
-
-    # column types
-    COL_TYPES = (GObject.TYPE_PYOBJECT,)
-
-    # column id
-    COL_ROW_DATA = 0
-
-    # default icon size returned by Application.get_icon()
-    ICON_SIZE = 48
-    _MISSING_ICON = None
-    _MISSING_ICON_MUTEX = Lock()
-    _ICON_CACHE = {}
-
-    def __init__(self, entropy_client, entropy_ws, view, icons):
-        Gtk.ListStore.__init__(self)
-        self._view = view
-        self._entropy = entropy_client
-        self._entropy_ws = entropy_ws
-        self._icons = icons
-        self.set_column_types(self.COL_TYPES)
-
-        # Startup Entropy Package Metadata daemon
-        ApplicationMetadata.start()
-
-    def clear(self):
-        """
-        Clear ListStore content (and Icon Cache).
-        """
-        outcome = Gtk.ListStore.clear(self)
-        AppListStore._ICON_CACHE.clear()
-        return outcome
-
-    def _ui_redraw_callback(self, *args):
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                              "_ui_redraw_callback()")
-        GLib.idle_add(self._view.queue_draw)
-
-    @property
-    def _missing_icon(self):
-        """
-        Return the missing icon Gtk.Image() if needed.
-        """
-        if AppListStore._MISSING_ICON is not None:
-            return AppListStore._MISSING_ICON
-        with AppListStore._MISSING_ICON_MUTEX:
-            if AppListStore._MISSING_ICON is not None:
-                return AppListStore._MISSING_ICON
-            _missing_icon = self._icons.load_icon(
-            Icons.MISSING_APP, AppListStore.ICON_SIZE, 0)
-            AppListStore._MISSING_ICON = _missing_icon
-            return _missing_icon
-
-    def get_icon(self, pkg_match):
-        cached = AppListStore._ICON_CACHE.get(pkg_match)
-        if cached is not None:
-            return cached
-
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        icon, cache_hit = app.get_details().icon
-        if icon is None:
-            if cache_hit:
-                # this means that there is no icon for package
-                # and so we should not keep bugging underlying
-                # layers with requests
-                AppListStore._ICON_CACHE[pkg_match] = self._missing_icon
-            return self._missing_icon
-
-        icon_path = icon.local_document()
-        if not os.path.isfile(icon_path):
-            return self._missing_icon
-
-        img = Gtk.Image()
-        img.set_from_file(icon_path)
-        img_buf = img.get_pixbuf()
-        if img_buf is None:
-            # wth, invalid crap
-            return self._missing_icon
-        w, h = img_buf.get_width(), img_buf.get_height()
-        del img_buf
-        del img
-        if w < 1:
-            # not legit
-            return self._missing_icon
-        width = AppListStore.ICON_SIZE
-        height = width * h / w
-
-        try:
-            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
-                icon_path, width, height)
-        except GObject.GError:
-            try:
-                os.remove(icon_path)
-            except OSError:
-                pass
-            return self._missing_icon
-
-        AppListStore._ICON_CACHE[pkg_match] = pixbuf
-        return pixbuf
-
-    def is_installed(self, pkg_match):
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        return app.is_installed()
-
-    def is_available(self, pkg_match):
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        return app.is_available()
-
-    def get_markup(self, pkg_match):
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        return app.get_markup()
-
-    def get_review_stats(self, pkg_match):
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        return app.get_review_stats()
-
-    def get_application(self, pkg_match):
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
-        return app
-
-    def get_transaction_progress(self, pkg_match):
-        # TODO: complete
-        # int from 0 - 100, or -1 for no transaction
-        return -1
-
-
-class ApplicationViewController(object):
-
-    def __init__(self, entropy_client, icons, entropy_ws, rigo_sm,
+    def __init__(self, entropy_client, icons, entropy_ws,
                  search_entry, view):
+        GObject.Object.__init__(self)
         self._entropy = entropy_client
         self._icons = icons
-        self._rigo_sm = rigo_sm
         self._entropy_ws = entropy_ws
         self._search_entry = search_entry
         self._view = view
@@ -296,8 +90,7 @@ class ApplicationViewController(object):
         search_matches = self._entropy.atom_search(
             text, repositories = self._entropy.repositories())
         matches.extend([x for x in search_matches if x not in matches])
-        self.clear_safe()
-        self.append_many_safe(matches)
+        self.set_many_safe(matches)
 
     def setup(self):
         self._store = AppListStore(
@@ -305,188 +98,58 @@ class ApplicationViewController(object):
             self._view, self._icons)
         self._view.set_model(self._store)
 
-        # setup searchEntry event
         self._search_entry.connect(
             "changed", self._search_changed)
-        # connect icon click event
         self._search_entry.connect("icon-release",
             self._search_icon_release)
         self._view.show()
 
     def clear(self):
-        self._rigo_sm.change_view_state(
-            Rigo.STATIC_VIEW_STATE)
         self._store.clear()
         ApplicationMetadata.discard()
+        if const_debug_enabled():
+            const_debug_write(__name__, "AVC: emitting view-cleared")
+        self.emit("view-cleared")
 
     def append(self, opaque):
         self._store.append([opaque])
-        self._rigo_sm.change_view_state(
-            Rigo.BROWSER_VIEW_STATE)
+        if const_debug_enabled():
+            const_debug_write(__name__, "AVC: emitting view-filled")
+        self.emit("view-filled")
 
     def append_many(self, opaque_list):
         for opaque in opaque_list:
             self._store.append([opaque])
-        self._rigo_sm.change_view_state(
-            Rigo.BROWSER_VIEW_STATE)
+        if const_debug_enabled():
+            const_debug_write(__name__, "AVC: emitting view-filled")
+        self.emit("view-filled")
+
+    def set_many(self, opaque_list):
+        self._store.clear()
+        ApplicationMetadata.discard()
+        return self.append_many(opaque_list)
 
     def clear_safe(self):
-        ApplicationMetadata.discard()
-        self._rigo_sm.change_view_state_safe(
-            Rigo.STATIC_VIEW_STATE)
-        GLib.idle_add(self._store.clear)
+        GLib.idle_add(self.clear)
 
     def append_safe(self, opaque):
         GLib.idle_add(self.append, opaque)
-        self._rigo_sm.change_view_state_safe(
-            Rigo.BROWSER_VIEW_STATE)
 
     def append_many_safe(self, opaque_list):
         GLib.idle_add(self.append_many, opaque_list)
-        self._rigo_sm.change_view_state_safe(
-            Rigo.BROWSER_VIEW_STATE)
 
-class WelcomeBox(Gtk.VBox):
-
-    def __init__(self):
-        Gtk.VBox.__init__(self)
-        self._image_path = os.path.join(DATA_DIR, "ui/gtk3/art/rigo.png")
-
-    def render(self):
-        image = Gtk.Image.new_from_file(self._image_path)
-        label = Gtk.Label()
-        label.set_markup(_("<i>Browse <b>Applications</b> with ease</i>"))
-        self.pack_start(image, False, False, 0)
-        self.pack_start(label, False, False, 0)
-        label.show()
-        image.show()
+    def set_many_safe(self, opaque_list):
+        GLib.idle_add(self.set_many, opaque_list)
 
 
-class NotificationBox(Gtk.HBox):
-
-    """
-    Generic notification widget to be used in the
-    Rigo notification area.
-    """
-
-    def __init__(self, message, message_type=None, tooltip=None):
-        Gtk.HBox.__init__(self)
-        self._message = message
-        self._buttons = []
-        self._type = message_type
-        if self._type is None:
-            self._type = Gtk.MessageType.INFO
-        self._tooltip = tooltip
-
-    def add_button(self, text, clicked_callback):
-        """
-        Add a Gtk.Button() to this container.
-        Return the newly created Gtk.Button().
-        """
-        button = Gtk.Button(text)
-        button.set_use_underline(True)
-        button.connect("clicked", clicked_callback)
-        self._buttons.append(button)
-        return button
-
-    def render(self):
-        """
-        Render the Notification box filling in the container.
-        """
-        bar = Gtk.InfoBar()
-        if self._tooltip is not None:
-            bar.set_tooltip_markup(self._tooltip)
-        bar.set_message_type(self._type)
-
-        content_area = bar.get_content_area()
-        hbox = Gtk.HBox()
-        label = Gtk.Label()
-        label.set_markup(self._message)
-        label.set_property("expand", True)
-        label.set_alignment(0.02, 0.50)
-        hbox.pack_start(label, True, True, 0)
-        label.show()
-
-        for button in self._buttons:
-            hbox.pack_start(button, False, False, 3)
-            button.show()
-
-        content_area.set_property("expand", False)
-        content_area.add(hbox)
-        content_area.show()
-        hbox.show()
-
-        bar.show()
-        bar.get_action_area().hide()
-        self.pack_start(bar, True, True, 0)
-
-
-class UpdatesNotificationBox(NotificationBox):
-
-    def __init__(self, entropy_client, avc,
-                 updates_len, security_updates_len):
-        self._entropy = entropy_client
-        self._avc = avc
-
-        msg = ngettext("There is <b>%d</b> update",
-                       "There are <b>%d</b> updates",
-                       updates_len)
-        msg = msg % (updates_len,)
-
-        if security_updates_len > 0:
-            sec_msg = ", " + ngettext("and <b>%d</b> security update",
-                                      "and <b>%d</b> security updates",
-                                      security_updates_len)
-            sec_msg = sec_msg % (security_updates_len,)
-            msg += sec_msg
-
-        msg += ". " + _("What to do?")
-
-        NotificationBox.__init__(self, msg,
-            tooltip=_("Updates available, how about installing them?"))
-        self.add_button(_("_Update System"), self._update)
-        def _destroy(*args):
-            self.destroy()
-        self.add_button(_("_Ignore"), _destroy)
-
-    def _update(self, button):
-        """
-        Update button callback from the updates notification box.
-        """
-        # FIXME, lxnay complete
-        print("Update Button clicked", button)
-
-
-class RepositoriesUpdateNotificationBox(NotificationBox):
-
-    def __init__(self, entropy_client, avc):
-        self._entropy = entropy_client
-        self._avc = avc
-
-        msg = _("The list of available applications is old, <b>update now</b>?")
-
-        NotificationBox.__init__(self, msg,
-            tooltip=_("I dunno dude, I'd say Yes"))
-        self.add_button(_("_Yes, why not?"), self._update)
-        def _destroy(*args):
-            self.destroy()
-        self.add_button(_("_No, thanks"), _destroy)
-
-    def _update(self, button):
-        """
-        Update button callback from the updates notification box.
-        """
-        # FIXME, lxnay complete
-        print("Update Repositories Button clicked", button)
-
-
-class NotificationController(object):
+class NotificationController(GObject.Object):
 
     """
     Notification area widget controller code.
     """
 
     def __init__(self, entropy_client, avc, notification_box):
+        GObject.Object.__init__(self)
         self._entropy = entropy_client
         self._avc = avc
         self._box = notification_box
@@ -526,6 +189,8 @@ class NotificationController(object):
         box = UpdatesNotificationBox(
             self._entropy, self._avc,
             updates_len, len(self._security_updates))
+        box.connect("upgrade-request", self._on_upgrade)
+        box.connect("show-request", self._on_update_show)
         self.append(box)
 
     def _notify_old_repositories_safe(self):
@@ -535,7 +200,20 @@ class NotificationController(object):
         """
         box = RepositoriesUpdateNotificationBox(
             self._entropy, self._avc)
+        box.connect("update-request", self._on_update)
         self.append(box)
+
+    def _on_upgrade(self, *args):
+        # FIXME, lxnay complete
+        print("On Upgrade Request Received", args)
+
+    def _on_update(self, *args):
+        # FIXME, lxnay complete
+        print("On Update Request Received", args)
+
+    def _on_update_show(self, *args):
+        # FIXME, lxnay complete
+        print("On Update Show Request Received", args)
 
     def append(self, box, timeout=None):
         """
@@ -563,6 +241,7 @@ class NotificationController(object):
         """
         if box in self._box.get_children():
             self._box.remove(box)
+            box.destroy()
 
     def remove_safe(self, box):
         """
@@ -576,6 +255,7 @@ class NotificationController(object):
         """
         for child in self._box.get_children():
             self._box.remove(child)
+            child.destroy()
 
     def clear_safe(self):
         """
@@ -602,6 +282,14 @@ class ApplicationView(Gtk.VBox):
                                    None,
                                    (GObject.TYPE_PYOBJECT, ),
                                   ),
+        # action requested for application
+        "application-request-action" : (GObject.SignalFlags.RUN_LAST,
+                                        None,
+                                        (GObject.TYPE_PYOBJECT,
+                                         GObject.TYPE_PYOBJECT,
+                                         GObject.TYPE_PYOBJECT,
+                                         str),
+                                       ),
     }
 
     def __init__(self):
@@ -670,9 +358,19 @@ class Rigo(Gtk.Application):
         self._current_state = Rigo.STATIC_VIEW_STATE
         self._avc = ApplicationViewController(
             self._entropy, icons, self._entropy_ws,
-            self, self._search_entry, self._view)
+            self._search_entry, self._view)
+
+        self._avc.connect("view-cleared", self._on_view_cleared)
+        self._avc.connect("view-filled", self._on_view_filled)
+
         self._nc = NotificationController(
             self._entropy, self._avc, self._notification)
+
+    def _on_view_cleared(self, *args):
+        self.change_view_state(Rigo.STATIC_VIEW_STATE)
+
+    def _on_view_filled(self, *args):
+        self.change_view_state(Rigo.BROWSER_VIEW_STATE)
 
     BROWSER_VIEW_STATE = 1
     STATIC_VIEW_STATE = 2

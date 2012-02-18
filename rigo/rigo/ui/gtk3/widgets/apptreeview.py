@@ -115,7 +115,7 @@ class AppTreeView(Gtk.TreeView):
 
     def expand_path(self, path):
         if path is not None and not isinstance(path, Gtk.TreePath):
-            raise TypeError, "Expects Gtk.TreePath or None, got %s" % type(path)
+            raise TypeError("Expects Gtk.TreePath or None, got %s" % type(path))
 
         model = self.get_model()
         old = self.expanded_path
@@ -367,14 +367,16 @@ class AppTreeView(Gtk.TreeView):
         r = False
         if kv == Gdk.KEY_Right: # right-key
             btn = tr.get_button_by_name(CellButtonIDs.ACTION)
-            if btn is None: return  # Bug #846779
+            if btn is None:
+                return  # Bug #846779
             if btn.state != Gtk.StateFlags.INSENSITIVE:
                 btn.has_focus = True
                 btn = tr.get_button_by_name(CellButtonIDs.INFO)
                 btn.has_focus = False
         elif kv == Gdk.KEY_Left: # left-key
             btn = tr.get_button_by_name(CellButtonIDs.ACTION)
-            if btn is None: return  # Bug #846779
+            if btn is None:
+                return  # Bug #846779
             btn.has_focus = False
             btn = tr.get_button_by_name(CellButtonIDs.INFO)
             btn.has_focus = True
@@ -447,8 +449,6 @@ class AppTreeView(Gtk.TreeView):
         if type(store) is Gtk.TreeModelFilter:
             store = store.get_model()
 
-        pkgname = self.appmodel.get_pkgname(app)
-
         if btn_id == CellButtonIDs.INFO:
             self.app_view.emit("application-activated",
                                self.appmodel.get_application(app))
@@ -457,11 +457,11 @@ class AppTreeView(Gtk.TreeView):
             store.row_changed(path, store.get_iter(path))
             # be sure we dont request an action for a
             # pkg with pre-existing actions
-            if pkgname in self._action_block_list:
-                logging.debug("Action already in progress for package: '%s'" % \
-                                  pkgname)
+            if app in self._action_block_list:
+                logging.debug("Action already in progress for match: %s" % \
+                                  app)
                 return False
-            self._action_block_list.append(pkgname)
+            self._action_block_list.append(app)
             if self.appmodel.is_installed(app):
                 perform_action = AppActions.REMOVE
             else:
@@ -501,7 +501,7 @@ class AppTreeView(Gtk.TreeView):
         # need to send a cursor-changed so the row button is properly updated
         self.emit("cursor-changed")
         # remove pkg from the block list
-        self._check_remove_pkg_from_blocklist(result.pkgname)
+        self._check_remove_pkg_from_blocklist(result)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
@@ -514,7 +514,7 @@ class AppTreeView(Gtk.TreeView):
         transaction has stopped
         """
         # remove pkg from the block list
-        self._check_remove_pkg_from_blocklist(result.pkgname)
+        self._check_remove_pkg_from_blocklist(result)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
@@ -525,15 +525,9 @@ class AppTreeView(Gtk.TreeView):
             action_btn.set_sensitive(True)
             self._set_cursor(action_btn, self._cursor_hand)
 
-    def _on_net_state_changed(self, watcher, state, tr):
-        self._update_selected_row(self, tr)
-        # queue a draw just to be sure the view is looking right
-        self.queue_draw()
-        return
-
-    def _check_remove_pkg_from_blocklist(self, pkgname):
-        if pkgname in self._action_block_list:
-            i = self._action_block_list.index(pkgname)
+    def _check_remove_pkg_from_blocklist(self, app):
+        if app in self._action_block_list:
+            i = self._action_block_list.index(app)
             del self._action_block_list[i]
 
     def _xy_is_over_focal_row(self, x, y):
