@@ -354,8 +354,16 @@ class Rigo(Gtk.Application):
                                  Gdk.Screen.get_default(),
                                  DATA_DIR)
 
-        self._state_mutex = Lock()
         self._current_state = Rigo.STATIC_VIEW_STATE
+        self._state_transactions = {
+            Rigo.BROWSER_VIEW_STATE: (
+                self._enter_browser_state,
+                self._exit_browser_state),
+            Rigo.STATIC_VIEW_STATE: (
+                self._enter_static_state,
+                self._exit_static_state),
+        }
+        self._state_mutex = Lock()
         self._avc = ApplicationViewController(
             self._entropy, icons, self._entropy_ws,
             self._search_entry, self._view)
@@ -372,53 +380,74 @@ class Rigo(Gtk.Application):
     def _on_view_filled(self, *args):
         self.change_view_state(Rigo.BROWSER_VIEW_STATE)
 
-    BROWSER_VIEW_STATE = 1
-    STATIC_VIEW_STATE = 2
+    # Possible Rigo Application UI States
+    BROWSER_VIEW_STATE, STATIC_VIEW_STATE = range(2)
 
-    def change_view_state(self, state, child_widget=None):
+    def _exit_browser_state(self):
+        """
+        Action triggered when UI exits the Application Browser
+        state (or mode).
+        """
+        self._app_view.hide()
+
+    def _enter_browser_state(self):
+        """
+        Action triggered when UI exits the Application Browser
+        state (or mode).
+        """
+        self._app_view.show()
+        self._current_state = Rigo.BROWSER_VIEW_STATE
+
+    def _exit_static_state(self):
+        """
+        Action triggered when UI exits the Static Browser
+        state (or mode). AKA the Welcome Box.
+        """
+        self._static_view.hide()
+        # release all the childrens of static_view
+        for child in self._static_view.get_children():
+            self._static_view.remove(child)
+
+    def _enter_static_state(self):
+        """
+        Action triggered when UI exits the Static Browser
+        state (or mode). AKA the Welcome Box.
+        """
+        # keep the current widget if any, or add the
+        # welcome widget
+        if not self._static_view.get_children():
+            self._welcome_box.show()
+            self._static_view.pack_start(self._welcome_box,
+                                         False, False, 0)
+        self._static_view.show()
+        self._current_state = Rigo.STATIC_VIEW_STATE
+
+    def change_view_state(self, state):
         """
         Change Rigo Application UI state.
         You can pass a custom widget that will be shown in case
         of static view state.
         """
         with self._state_mutex:
-            if state == Rigo.BROWSER_VIEW_STATE:
-                self._static_view.hide()
-                # release all the childrens of static_view
-                for child in self._static_view.get_children():
-                    self._static_view.remove(child)
-
-                self._app_view.show()
-
-            elif state == Rigo.STATIC_VIEW_STATE:
-                self._app_view.hide()
-                if child_widget is not None:
-                    for child in self._static_view.get_children():
-                        self._static_view.remove(child)
-                    self._static_view.pack_start(child_widget,
-                                                 False, False, 0)
-                    child_widget.show()
-                else:
-                    # keep the current widget if any, or add the
-                    # welcome widget
-                    if not self._static_view.get_children():
-                        self._welcome_box.show()
-                        self._static_view.pack_start(self._welcome_box,
-                                                     False, False, 0)
-
-                self._static_view.show()
-
-            else:
+            txc = self._state_transactions.get(
+                state)
+            if txc is None:
                 raise AttributeError("wrong view state")
+            enter_st, exit_st = txc
 
-            self._current_state = state
+            current_enter_st, current_exit_st = self._state_transactions.get(
+                self._current_state)
+            # exit from current state
+            current_exit_st()
+            # enter the new state
+            enter_st()
 
-    def change_view_state_safe(self, state, child_widget=None):
+    def change_view_state_safe(self, state):
         """
         Thread-safe version of change_view_state().
         """
         def _do_change():
-            return self.change_view_state(state, child_widget=child_widget)
+            return self.change_view_state(state)
         GLib.idle_add(_do_change)
 
     def _on_style_updated(self, widget, init_css_callback, *args):
