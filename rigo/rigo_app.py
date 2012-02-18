@@ -24,6 +24,7 @@ from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme, \
 from entropy.const import etpUi, const_debug_write, const_debug_enabled
 from entropy.exceptions import RepositoryError
 from entropy.client.interfaces import Client
+from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _, ngettext
@@ -252,7 +253,7 @@ class AppListStore(Gtk.ListStore):
         return -1
 
 
-class PackagesViewController(object):
+class ApplicationViewController(object):
 
     def __init__(self, entropy_client, icons, entropy_ws, rigo_sm,
                  search_entry, view):
@@ -422,10 +423,10 @@ class NotificationBox(Gtk.HBox):
 
 class UpdatesNotificationBox(NotificationBox):
 
-    def __init__(self, entropy_client, pvc,
+    def __init__(self, entropy_client, avc,
                  updates_len, security_updates_len):
         self._entropy = entropy_client
-        self._pvc = pvc
+        self._avc = avc
 
         msg = ngettext("There is <b>%d</b> update",
                        "There are <b>%d</b> updates",
@@ -444,7 +445,9 @@ class UpdatesNotificationBox(NotificationBox):
         NotificationBox.__init__(self, msg,
             tooltip=_("Updates available, how about installing them?"))
         self.add_button(_("_Update System"), self._update)
-        self.add_button(_("_Ignore"), self._dismiss)
+        def _destroy(*args):
+            self.destroy()
+        self.add_button(_("_Ignore"), _destroy)
 
     def _update(self, button):
         """
@@ -453,11 +456,28 @@ class UpdatesNotificationBox(NotificationBox):
         # FIXME, lxnay complete
         print("Update Button clicked", button)
 
-    def _dismiss(self, button):
+
+class RepositoriesUpdateNotificationBox(NotificationBox):
+
+    def __init__(self, entropy_client, avc):
+        self._entropy = entropy_client
+        self._avc = avc
+
+        msg = _("The list of available applications is old, <b>update now</b>?")
+
+        NotificationBox.__init__(self, msg,
+            tooltip=_("I dunno dude, I'd say Yes"))
+        self.add_button(_("_Yes, why not?"), self._update)
+        def _destroy(*args):
+            self.destroy()
+        self.add_button(_("_No, thanks"), _destroy)
+
+    def _update(self, button):
         """
-        Dismiss the notification.
+        Update button callback from the updates notification box.
         """
-        self.destroy()
+        # FIXME, lxnay complete
+        print("Update Repositories Button clicked", button)
 
 
 class NotificationController(object):
@@ -466,9 +486,9 @@ class NotificationController(object):
     Notification area widget controller code.
     """
 
-    def __init__(self, entropy_client, pvc, notification_box):
+    def __init__(self, entropy_client, avc, notification_box):
         self._entropy = entropy_client
-        self._pvc = pvc
+        self._avc = avc
         self._box = notification_box
         self._updates = None
         self._security_updates = None
@@ -483,6 +503,10 @@ class NotificationController(object):
         th.start()
 
     def __calculate_updates(self):
+        if Repository.are_repositories_old():
+            GLib.idle_add(self._notify_old_repositories_safe)
+            return
+
         updates, removal, fine, spm_fine = \
             self._entropy.calculate_updates()
         self._updates = updates
@@ -490,14 +514,27 @@ class NotificationController(object):
         GLib.idle_add(self._notify_updates_safe)
 
     def _notify_updates_safe(self):
+        """
+        Add NotificationBox signaling the user that updates
+        are available.
+        """
         updates_len = len(self._updates)
         if updates_len == 0:
             # no updates, do not show anything
             return
 
         box = UpdatesNotificationBox(
-            self._entropy, self._pvc,
+            self._entropy, self._avc,
             updates_len, len(self._security_updates))
+        self.append(box)
+
+    def _notify_old_repositories_safe(self):
+        """
+        Add NotificationBox signaling the user that repositories
+        are old..
+        """
+        box = RepositoriesUpdateNotificationBox(
+            self._entropy, self._avc)
         self.append(box)
 
     def append(self, box, timeout=None):
@@ -547,6 +584,37 @@ class NotificationController(object):
         GLib.idle_add(self.clear)
 
 
+class ApplicationView(Gtk.VBox):
+    """
+    Applications View Container, exposing all the events
+    that can happen to Applications listed in the contained
+    TreeView.
+    """
+
+    __gsignals__ = {
+        # Double click on application widget
+        "application-activated" : (GObject.SignalFlags.RUN_LAST,
+                                   None,
+                                   (GObject.TYPE_PYOBJECT, ),
+                                  ),
+        # Single click on application widget
+        "application-selected" : (GObject.SignalFlags.RUN_LAST,
+                                   None,
+                                   (GObject.TYPE_PYOBJECT, ),
+                                  ),
+    }
+
+    def __init__(self):
+        Gtk.VBox.__init__(self)
+
+    def setup(self):
+        """
+        Setup ApplicationView signals, etc.
+        """
+        for child in self.get_children():
+            child.show()
+
+
 class Rigo(Gtk.Application):
 
     class RigoHandler:
@@ -561,20 +629,31 @@ class Rigo(Gtk.Application):
                 break
 
     def __init__(self):
+        self._entropy = Client()
+        self._entropy_ws = EntropyWebService(self._entropy)
+
         self._builder = Gtk.Builder()
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
         self._builder.connect_signals(Rigo.RigoHandler())
-        self._window = self._builder.get_object("window1")
-        self._app_vbox = self._builder.get_object("appVbox")
+        self._window = self._builder.get_object("rigoWindow")
+        self._app_vbox = self._builder.get_object("appViewVbox")
         self._search_entry = self._builder.get_object("searchEntry")
-        self._scrolled_view = self._builder.get_object("scrolledView")
         self._static_view = self._builder.get_object("staticViewVbox")
+        self._notification = self._builder.get_object("notificationBox")
+
+        self._scrolled_view = Gtk.ScrolledWindow()
+        self._scrolled_view.set_policy(Gtk.PolicyType.NEVER,
+                                       Gtk.PolicyType.AUTOMATIC)
+
+        self._app_view = ApplicationView()
+        self._app_view.add(self._scrolled_view)
+        self._app_vbox.pack_start(self._app_view, True, True, 0)
+
         icons = get_sc_icon_theme(DATA_DIR)
-        self._view = AppTreeView(self._app_vbox, icons, True,
+        self._view = AppTreeView(self._app_view, icons, True,
                                  AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
 
-        self._notification = self._builder.get_object("notificationBox")
         self._welcome_box = WelcomeBox()
 
         settings = Gtk.Settings.get_default()
@@ -587,16 +666,13 @@ class Rigo(Gtk.Application):
                                  Gdk.Screen.get_default(),
                                  DATA_DIR)
 
-        self._entropy = Client()
-        self._entropy_ws = EntropyWebService(self._entropy)
-
         self._state_mutex = Lock()
         self._current_state = Rigo.STATIC_VIEW_STATE
-        self._pvc = PackagesViewController(
+        self._avc = ApplicationViewController(
             self._entropy, icons, self._entropy_ws,
             self, self._search_entry, self._view)
         self._nc = NotificationController(
-            self._entropy, self._pvc, self._notification)
+            self._entropy, self._avc, self._notification)
 
     BROWSER_VIEW_STATE = 1
     STATIC_VIEW_STATE = 2
@@ -609,15 +685,15 @@ class Rigo(Gtk.Application):
         """
         with self._state_mutex:
             if state == Rigo.BROWSER_VIEW_STATE:
-                self._static_view.set_visible(False)
+                self._static_view.hide()
                 # release all the childrens of static_view
                 for child in self._static_view.get_children():
                     self._static_view.remove(child)
-                self._scrolled_view.set_visible(True)
-                self._scrolled_view.show()
+
+                self._app_view.show()
 
             elif state == Rigo.STATIC_VIEW_STATE:
-                self._scrolled_view.set_visible(False)
+                self._app_view.hide()
                 if child_widget is not None:
                     for child in self._static_view.get_children():
                         self._static_view.remove(child)
@@ -632,7 +708,6 @@ class Rigo(Gtk.Application):
                         self._static_view.pack_start(self._welcome_box,
                                                      False, False, 0)
 
-                self._static_view.set_visible(True)
                 self._static_view.show()
 
             else:
@@ -692,7 +767,8 @@ class Rigo(Gtk.Application):
             Gtk.main_quit()
             return
 
-        self._pvc.setup()
+        self._app_view.setup()
+        self._avc.setup()
         self._nc.setup()
         self._window.show()
 
