@@ -541,7 +541,7 @@ class Application(object):
             description = _("No description")
         if len(description) > 79:
             description =  description[:80].strip() + "..."
-        text = "%s %s\n<small>%s</small>" % (
+        text = "%s %s\n<small><i>%s</i></small>" % (
             GObject.markup_escape_text(name),
             GObject.markup_escape_text(version),
             GObject.markup_escape_text(description))
@@ -552,8 +552,6 @@ class Application(object):
         Return ReviewStats object containing user review
         information about this Application, like
         votes and number of downloads.
-        FIXME, lxnay: move to AppDetails()
-        
         """
         stat = ReviewStats(self)
         stat.ratings_average = ReviewStats.NO_RATING

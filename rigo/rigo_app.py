@@ -34,7 +34,7 @@ from entropy.i18n import _, ngettext
 import entropy.tools
 
 
-class ApplicationViewController(GObject.Object):
+class ApplicationsViewController(GObject.Object):
 
     __gsignals__ = {
         # View has been cleared
@@ -50,12 +50,13 @@ class ApplicationViewController(GObject.Object):
     }
 
     def __init__(self, entropy_client, icons, entropy_ws,
-                 search_entry, view):
+                 search_entry, store, view):
         GObject.Object.__init__(self)
         self._entropy = entropy_client
         self._icons = icons
         self._entropy_ws = entropy_ws
         self._search_entry = search_entry
+        self._store = store
         self._view = view
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
@@ -65,11 +66,13 @@ class ApplicationViewController(GObject.Object):
         """
         if search_entry is not self._search_entry:
             return
-        if icon_pos != Gtk.EntryIconPosition.SECONDARY:
-            return
-        search_entry.set_text("")
-        self.clear()
-        search_entry.emit("changed")
+        if icon_pos == Gtk.EntryIconPosition.SECONDARY:
+            search_entry.set_text("")
+            self.clear()
+            search_entry.emit("changed")
+        elif self._store.get_iter_first():
+            # primary icon click will force UI to switch to Browser mode
+            self.emit("view-filled")
 
     def _search_changed(self, search_entry):
         GLib.timeout_add(700, self._search, search_entry.get_text())
@@ -93,9 +96,6 @@ class ApplicationViewController(GObject.Object):
         self.set_many_safe(matches)
 
     def setup(self):
-        self._store = AppListStore(
-            self._entropy, self._entropy_ws,
-            self._view, self._icons)
         self._view.set_model(self._store)
 
         self._search_entry.connect(
@@ -142,7 +142,7 @@ class ApplicationViewController(GObject.Object):
         GLib.idle_add(self.set_many, opaque_list)
 
 
-class NotificationController(GObject.Object):
+class NotificationViewController(GObject.Object):
 
     """
     Notification area widget controller code.
@@ -204,14 +204,24 @@ class NotificationController(GObject.Object):
         self.append(box)
 
     def _on_upgrade(self, *args):
+        """
+        Callback requesting Packages Update.
+        """
         # FIXME, lxnay complete
         print("On Upgrade Request Received", args)
 
     def _on_update(self, *args):
+        """
+        Callback requesting Repositories Update.
+        """
         # FIXME, lxnay complete
         print("On Update Request Received", args)
 
     def _on_update_show(self, *args):
+        """
+        Callback from UpdatesNotification "Show" button.
+        Showing updates.
+        """
         self._avc.set_many_safe(self._updates)
 
     def append(self, box, timeout=None):
@@ -263,7 +273,7 @@ class NotificationController(GObject.Object):
         GLib.idle_add(self.clear)
 
 
-class ApplicationView(Gtk.VBox):
+class ApplicationViewController(GObject.Object):
     """
     Applications View Container, exposing all the events
     that can happen to Applications listed in the contained
@@ -272,7 +282,12 @@ class ApplicationView(Gtk.VBox):
 
     __gsignals__ = {
         # Double click on application widget
-        "application-activated" : (GObject.SignalFlags.RUN_LAST,
+        "application-activated"  : (GObject.SignalFlags.RUN_LAST,
+                                   None,
+                                   (GObject.TYPE_PYOBJECT, ),
+                                  ),
+        # Show Application in the Rigo UI
+        "application-show"  : (GObject.SignalFlags.RUN_LAST,
                                    None,
                                    (GObject.TYPE_PYOBJECT, ),
                                   ),
@@ -291,16 +306,67 @@ class ApplicationView(Gtk.VBox):
                                        ),
     }
 
-    def __init__(self):
-        Gtk.VBox.__init__(self)
+    def __init__(self, entropy_client, entropy_ws, builder):
+        GObject.Object.__init__(self)
+        self._builder = builder
+        self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
+        self._app_store = None
+
+        self._image = self._builder.get_object("appViewImage")
+        self._app_name_lbl = self._builder.get_object("appViewNameLabel")
+        self._app_download_lbl = self._builder.get_object(
+            "appViewDownloadedLabel")
+
+    def set_store(self, store):
+        """
+        Bind AppListStore object to this class.
+        """
+        self._app_store = store
 
     def setup(self):
-        """
-        Setup ApplicationView signals, etc.
-        """
-        for child in self.get_children():
-            child.show()
+        self.connect("application-activated", self._on_application_activated)
 
+    def _on_application_activated(self, avc, app):
+        """
+        Event received from Gtk widgets requesting us to load package
+        information. Once we're done loading the shit, we just emit
+        'application-show' and let others do the UI switch.
+        """
+        task = ParallelTask(self.__application_activate, app)
+        task.name = "ApplicationActivate"
+        task.daemon = True
+        task.start()
+
+    def __application_activate(self, app):
+        """
+        Collect data from app, then call the UI setup in the main loop.
+        """
+        details = app.get_details()
+        metadata = {}
+        metadata['name'] = app.get_markup()
+        metadata['stats'] = app.get_review_stats()
+        metadata['icon'] = self._app_store.get_icon(details.pkg, app=app)
+        GLib.idle_add(self._setup_application_info, app, metadata)
+
+    def _setup_application_info(self, app, metadata):
+        """
+        Setup the actual UI widgets content and emit 'application-show'
+        """
+        # FIXME, lxnay complete
+        self._app_name_lbl.set_markup(metadata['name'])
+        stats = metadata['stats']
+        total_downloads = stats.downloads_total
+        if not total_downloads:
+            down_msg = _("Never downloaded")
+        else:
+            down_msg = ngettext("<b>%d</b> download",
+                                "<b>%d</b> downloads",
+                                total_downloads)
+        self._app_download_lbl.set_markup(down_msg % (total_downloads,))
+        self._image.set_from_pixbuf(metadata['icon'])
+
+        self.emit("application-show", app)
 
 class Rigo(Gtk.Application):
 
@@ -315,7 +381,13 @@ class Rigo(Gtk.Application):
                     continue
                 break
 
+    # Possible Rigo Application UI States
+    BROWSER_VIEW_STATE, STATIC_VIEW_STATE, \
+        APPLICATION_VIEW_STATE = range(3)
+
     def __init__(self):
+        icons = get_sc_icon_theme(DATA_DIR)
+
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
 
@@ -323,23 +395,26 @@ class Rigo(Gtk.Application):
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
         self._builder.connect_signals(Rigo.RigoHandler())
         self._window = self._builder.get_object("rigoWindow")
-        self._app_vbox = self._builder.get_object("appViewVbox")
+        self._apps_view = self._builder.get_object("appsViewVbox")
+        self._scrolled_view = self._builder.get_object("appsViewScrolledWindow")
+        self._app_view = self._builder.get_object("appViewVbox")
         self._search_entry = self._builder.get_object("searchEntry")
         self._static_view = self._builder.get_object("staticViewVbox")
         self._notification = self._builder.get_object("notificationBox")
 
-        self._scrolled_view = Gtk.ScrolledWindow()
-        self._scrolled_view.set_policy(Gtk.PolicyType.NEVER,
-                                       Gtk.PolicyType.AUTOMATIC)
+        self._app_view_c = ApplicationViewController(
+            self._entropy, self._entropy_ws, self._builder)
 
-        self._app_view = ApplicationView()
-        self._app_view.add(self._scrolled_view)
-        self._app_vbox.pack_start(self._app_view, True, True, 0)
-
-        icons = get_sc_icon_theme(DATA_DIR)
-        self._view = AppTreeView(self._app_view, icons, True,
+        self._view = AppTreeView(self._app_view_c, icons, True,
                                  AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
+
+        self._app_store = AppListStore(
+            self._entropy, self._entropy_ws,
+            self._view, icons)
+        self._app_view_c.set_store(self._app_store)
+        self._app_view_c.connect("application-show",
+            self._on_application_show)
 
         self._welcome_box = WelcomeBox()
 
@@ -361,41 +436,43 @@ class Rigo(Gtk.Application):
             Rigo.STATIC_VIEW_STATE: (
                 self._enter_static_state,
                 self._exit_static_state),
+            Rigo.APPLICATION_VIEW_STATE: (
+                self._enter_application_state,
+                self._exit_application_state),
         }
         self._state_mutex = Lock()
-        self._avc = ApplicationViewController(
+        self._avc = ApplicationsViewController(
             self._entropy, icons, self._entropy_ws,
-            self._search_entry, self._view)
+            self._search_entry, self._app_store, self._view)
 
         self._avc.connect("view-cleared", self._on_view_cleared)
         self._avc.connect("view-filled", self._on_view_filled)
 
-        self._nc = NotificationController(
+        self._nc = NotificationViewController(
             self._entropy, self._avc, self._notification)
 
     def _on_view_cleared(self, *args):
-        self.change_view_state(Rigo.STATIC_VIEW_STATE)
+        self._change_view_state(Rigo.STATIC_VIEW_STATE)
 
     def _on_view_filled(self, *args):
-        self.change_view_state(Rigo.BROWSER_VIEW_STATE)
+        self._change_view_state(Rigo.BROWSER_VIEW_STATE)
 
-    # Possible Rigo Application UI States
-    BROWSER_VIEW_STATE, STATIC_VIEW_STATE = range(2)
+    def _on_application_show(self, *args):
+        self._change_view_state(Rigo.APPLICATION_VIEW_STATE)
 
     def _exit_browser_state(self):
         """
         Action triggered when UI exits the Application Browser
         state (or mode).
         """
-        self._app_view.hide()
+        self._apps_view.hide()
 
     def _enter_browser_state(self):
         """
         Action triggered when UI exits the Application Browser
         state (or mode).
         """
-        self._app_view.show()
-        self._current_state = Rigo.BROWSER_VIEW_STATE
+        self._apps_view.show()
 
     def _exit_static_state(self):
         """
@@ -417,19 +494,31 @@ class Rigo(Gtk.Application):
         if not self._static_view.get_children():
             self._welcome_box.show()
             self._static_view.pack_start(self._welcome_box,
-                                         False, False, 0)
+                                         True, True, 10)
         self._static_view.show()
-        self._current_state = Rigo.STATIC_VIEW_STATE
 
-    def change_view_state(self, state):
+    def _enter_application_state(self):
+        """
+        Action triggered when UI enters the Package Information
+        state (or mode). Showing application information.
+        """
+        self._app_view.show()
+
+    def _exit_application_state(self):
+        """
+        Action triggered when UI exits the Package Information
+        state (or mode). Hiding back application information.
+        """
+        self._app_view.hide()
+
+    def _change_view_state(self, state):
         """
         Change Rigo Application UI state.
         You can pass a custom widget that will be shown in case
         of static view state.
         """
         with self._state_mutex:
-            txc = self._state_transactions.get(
-                state)
+            txc = self._state_transactions.get(state)
             if txc is None:
                 raise AttributeError("wrong view state")
             enter_st, exit_st = txc
@@ -440,13 +529,14 @@ class Rigo(Gtk.Application):
             current_exit_st()
             # enter the new state
             enter_st()
+            self._current_state = state
 
-    def change_view_state_safe(self, state):
+    def _change_view_state_safe(self, state):
         """
         Thread-safe version of change_view_state().
         """
         def _do_change():
-            return self.change_view_state(state)
+            return self._change_view_state(state)
         GLib.idle_add(_do_change)
 
     def _on_style_updated(self, widget, init_css_callback, *args):
@@ -493,14 +583,17 @@ class Rigo(Gtk.Application):
             Gtk.main_quit()
             return
 
-        self._app_view.setup()
+        self._app_view_c.setup()
         self._avc.setup()
         self._nc.setup()
         self._window.show()
 
     def run(self):
+        """
+        Run Rigo ;-)
+        """
         self._welcome_box.render()
-        self.change_view_state(self._current_state)
+        self._change_view_state(self._current_state)
         GLib.idle_add(self._permissions_setup)
 
         GLib.threads_init()

@@ -63,13 +63,14 @@ class AppListStore(Gtk.ListStore):
             AppListStore._MISSING_ICON = _missing_icon
             return _missing_icon
 
-    def get_icon(self, pkg_match):
+    def get_icon(self, pkg_match, app=None):
         cached = AppListStore._ICON_CACHE.get(pkg_match)
         if cached is not None:
             return cached
 
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+        if app is None:
+            app = Application(self._entropy, self._entropy_ws, pkg_match,
+                              redraw_callback=self._ui_redraw_callback)
         icon, cache_hit = app.get_details().icon
         if icon is None:
             if cache_hit:

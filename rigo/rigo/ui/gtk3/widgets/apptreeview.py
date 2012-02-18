@@ -24,11 +24,11 @@ class AppTreeView(Gtk.TreeView):
 
     ACTION_BTNS = (VARIANT_REMOVE, VARIANT_INSTALL)
 
-    def __init__(self, app_view, icons, show_ratings, icon_size, store=None):
+    def __init__(self, apc, icons, show_ratings, icon_size, store=None):
         Gtk.TreeView.__init__(self)
         self._logger = logging.getLogger(__name__)
 
-        self.app_view = app_view
+        self._apc = apc
 
         self.pressed = False
         self.focal_btn = None
@@ -274,8 +274,8 @@ class AppTreeView(Gtk.TreeView):
         else:
             action_btn.set_sensitive(False)
             action_btn.hide()
-            self.app_view.emit("application-selected",
-                               self.appmodel.get_application(app))
+            self._apc.emit("application-selected",
+                           self.appmodel.get_application(app))
             return
 
         if self.appmodel.get_transaction_progress(app) > 0:
@@ -286,7 +286,7 @@ class AppTreeView(Gtk.TreeView):
             action_btn.set_state(Gtk.StateFlags.NORMAL)
 
         #~ self.emit("application-selected", self.appmodel.get_application(app))
-        self.app_view.emit("application-selected",
+        self._apc.emit("application-selected",
                            self.appmodel.get_application(app))
         return False
 
@@ -302,7 +302,7 @@ class AppTreeView(Gtk.TreeView):
             if btn.point_in(x, y):
                 return
 
-        self.app_view.emit("application-activated",
+        self._apc.emit("application-activated",
                            self.appmodel.get_application(rowref))
         return
 
@@ -450,7 +450,7 @@ class AppTreeView(Gtk.TreeView):
             store = store.get_model()
 
         if btn_id == CellButtonIDs.INFO:
-            self.app_view.emit("application-activated",
+            self._apc.emit("application-activated",
                                self.appmodel.get_application(app))
         elif btn_id == CellButtonIDs.ACTION:
             btn.set_sensitive(False)
@@ -469,7 +469,7 @@ class AppTreeView(Gtk.TreeView):
 
             store.notify_action_request(app, path)
 
-            self.app_view.emit("application-request-action",
+            self._apc.emit("application-request-action",
                       self.appmodel.get_application(app),
                       [], [], perform_action)
         return False
