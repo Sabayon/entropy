@@ -8,7 +8,6 @@ from cellrenderers import CellRendererAppView, CellButtonRenderer, \
     CellButtonIDs
 
 from rigo.em import em, StockEms
-from rigo.netstatus import get_network_watcher, network_state_is_connected
 from rigo.utils import ExecutionTime
 from rigo.enums import Icons
 from rigo.models.application import CategoryRowReference
@@ -81,10 +80,6 @@ class AppTreeView(Gtk.TreeView):
         column.set_fixed_width(200)
         column.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
         self.append_column(column)
-
-        # network status watcher
-        watcher = get_network_watcher()
-        watcher.connect("changed", self._on_net_state_changed, tr)
 
         # custom cursor
         self._cursor_hand = Gdk.Cursor.new(Gdk.CursorType.HAND2)
@@ -200,8 +195,7 @@ class AppTreeView(Gtk.TreeView):
 
         model = tree.get_model()
         app = model[path[0]][COL_ROW_DATA]
-        if (not network_state_is_connected() and
-            not self.appmodel.is_installed(app)):
+        if not self.appmodel.is_installed(app):
             for btn_id in self.ACTION_BTNS:
                 btn_id = tr.get_button_by_name(CellButtonIDs.ACTION)
                 btn_id.set_sensitive(False)
@@ -277,11 +271,6 @@ class AppTreeView(Gtk.TreeView):
             action_btn.set_variant(self.VARIANT_INSTALL)
             action_btn.set_sensitive(True)
             action_btn.show()
-            if not network_state_is_connected():
-                action_btn.set_sensitive(False)
-                self.app_view.emit("application-selected",
-                                   self.appmodel.get_application(app))
-                return
         else:
             action_btn.set_sensitive(False)
             action_btn.hide()
