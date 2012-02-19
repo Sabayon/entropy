@@ -1665,75 +1665,82 @@ class RepositoryMixin:
 class MiscMixin:
 
     # resources lock file object container
-    RESOURCES_LOCK_F_REF = None
-    RESOURCES_LOCK_F_COUNT = 0
-    RESOURCES_LOCK_F_COUNT_MUTEX = threading.Lock()
+    # RESOURCES_LOCK_F_REF = None
+    # RESOURCES_LOCK_F_COUNT = 0
+    # RESOURCES_LOCK_F_COUNT_MUTEX = threading.Lock()
+    _FILE_LOCK_MUTEX = threading.Lock()
+    _FILE_LOCK_MAP = {
+    }
 
     def setup_file_permissions(self, file_path):
         """ @deprecated """
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
-    def lock_resources(self, blocking = False, shared = False):
+    def _file_lock_setup(self, file_path):
         """
-        Try to lock Entropy Resources (WRITE EXCLUSIVE lock file).
-        Once this lock is acquired, it is possible to modify permanent
-        data structures like repository data and metadata.
-        Please make sure to always acquire this lock if you intend to
-        make changes to installed packages or available repositories.
-        If shared=True, you are likely calling this method as user, if
-        so, make sure that the same is in the "entropy" group, by
-        using entropy.tools.is_user_in_entropy_group().
+        Setup _FILE_LOCK_MAP for file_path, allocating locking information.
+        """
+        mapped = MiscMixin._FILE_LOCK_MAP.get(file_path)
+        if mapped is None:
+            mapped = {
+                'count': 0,
+                'ref': None,
+                'path': file_path,
+            }
+            MiscMixin._FILE_LOCK_MAP[file_path] = mapped
+        return mapped
 
-        @keyword blocking: execute in blocking mode?
-        @type blocking: bool
-        @keyword shared: acquire a shared lock? (default is False)
-        @type shared: bool
-        @return: True, if lock has been acquired. False otherwise.
-        @rtype: bool
+    def _lock_resource(self, lock_path, blocking, shared):
         """
-        acquired = self._create_pid_file_lock(
-            etpConst['locks']['using_resources'],
-            blocking = blocking, shared = shared)
-        if acquired:
-            with MiscMixin.RESOURCES_LOCK_F_COUNT_MUTEX:
-                MiscMixin.RESOURCES_LOCK_F_COUNT += 1
-        return acquired
+        Internal function that does the locking given a lock
+        file path.
+        """
+        with MiscMixin._FILE_LOCK_MUTEX:
+            mapped = self._file_lock_setup(lock_path)
+            if mapped['ref'] is not None:
+                # reentrant lock, already acquired
+                return True
+            acquired = self._file_lock_create(
+                mapped, blocking = blocking, shared = shared)
+            if acquired:
+                mapped['count'] += 1
+            return acquired
 
-    def unlock_resources(self):
+    def _unlock_resource(self, lock_path):
         """
-        Release previously locked Entropy Resources, see lock_resources().
+        Internal function that does the unlocking of a given
+        lock file.
         """
-        # decrement lock counter
-        with MiscMixin.RESOURCES_LOCK_F_COUNT_MUTEX:
-            if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
-                MiscMixin.RESOURCES_LOCK_F_COUNT -= 1
+        with MiscMixin._FILE_LOCK_MUTEX:
+            mapped = self._file_lock_setup(lock_path)
+            # decrement lock counter
+            if mapped['count'] > 0:
+                mapped['count'] -= 1
             # if lock counter > 0, still locked
             # waiting for other upper-level calls
-            if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
+            if mapped['count'] > 0:
                 return
 
-        lock_f = MiscMixin.RESOURCES_LOCK_F_REF
-        if lock_f is not None:
-            lock_file = lock_f.get_file().name
-            try:
-                # unlink first
-                os.remove(lock_file)
-            except OSError as err:
-                # cope with possible race conditions
-                # and read-only filesystem
-                if err.errno not in (errno.ENOENT, errno.EROFS):
-                    raise
-            finally:
-                lock_f.release()
-                MiscMixin.RESOURCES_LOCK_F_REF = None
-                lock_f.close()
+            ref_obj = mapped['ref']
+            if ref_obj is not None:
+                try:
+                    # unlink first
+                    os.remove(ref_obj.get_file().name)
+                except OSError as err:
+                    # cope with possible race conditions
+                    # and read-only filesystem
+                    if err.errno not in (errno.ENOENT, errno.EROFS):
+                        raise
+                finally:
+                    ref_obj.release()
+                    ref_obj.close()
+                    mapped['ref'] = None
 
-    def _create_pid_file_lock(self, pidfile, blocking = False, shared = False):
-
-        if MiscMixin.RESOURCES_LOCK_F_REF is not None:
-            # already locked, reentrant lock
-            return True
-
+    def _file_lock_create(self, lock_data, blocking = False, shared = False):
+        """
+        Create and allocate the lock file pointed by lock_data structure.
+        """
+        pidfile = lock_data['path']
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
@@ -1776,30 +1783,34 @@ class MiscMixin:
             pid_f.truncate()
             pid_f.write(str(mypid))
             pid_f.flush()
-        MiscMixin.RESOURCES_LOCK_F_REF = flock_f
+
+        lock_data['ref'] = flock_f
+        self._clear_resource_live_cache()
         return True
 
-    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300,
-                       shared = False):
+    def _clear_resource_live_cache(self):
         """
-        Wait until resources are unlocked. Please note that this method doesn't
-        try to acquire the resources lock but just checks if the lock gets
-        released. It is a user-centric function not meant for strict
-        race condition handling.
+        Clear in-RAM cache after having acquired a resource lock.
+        """
+        with self._cacher:
+            # clear repositories live cache
+            if self._installed_repository is not None:
+                self._installed_repository.clearCache()
+            for repo in self._repodb_cache.values():
+                repo.clearCache()
+            self._settings.clear()
+            self._cacher.discard()
+        self._cacher.sync()
 
-        @keyword sleep_seconds: time between checks
-        type sleep_seconds: float
-        @keyword max_lock_count: maximum number of times the lock is checked
-        @type max_lock_count: int
-        @keyword shared: acquire a shared lock? (default is False)
-        @type shared: bool
-        @return: True, if lock hasn't been released, False otherwise.
-        @rtype: bool
+    def _wait_resource(self, lock_func, sleep_seconds = 1.0,
+                       max_lock_count = 300, shared = False):
+        """
+        Poll on a given resource hoping to get its lock.
         """
         lock_count = 0
         # check lock file
         while True:
-            acquired = self.lock_resources(blocking=False, shared=shared)
+            acquired = lock_func(blocking=False, shared=shared)
             if acquired:
                 if lock_count > 0:
                     self.output(
@@ -1808,13 +1819,6 @@ class MiscMixin:
                         level = "info",
                         header = darkred(" @@ ")
                     )
-                    # cannot consider any cache valid, better clearing
-                    # everything
-                    self.clear_cache()
-                    self._settings.clear()
-                    self._cacher.discard()
-                    self.clear_cache()
-                    self._cacher.sync()
                 break
             if lock_count >= max_lock_count:
                 self.output(
@@ -1835,6 +1839,54 @@ class MiscMixin:
             )
             time.sleep(sleep_seconds)
         return False # yay!
+
+    def lock_resources(self, blocking = False, shared = False):
+        """
+        Acquire Entropy Resources lock; once acquired, it's possible
+        to alter:
+        - Installed Packages Repository
+        - Available Packages Repositories
+        - Entropy Configuration and metadata
+        If shared=True, you are likely calling this method as user, if
+        so, make sure that the same is in the "entropy" group, by
+        using entropy.tools.is_user_in_entropy_group().
+
+        @keyword blocking: execute in blocking mode?
+        @type blocking: bool
+        @keyword shared: acquire a shared lock? (default is False)
+        @type shared: bool
+        @return: True, if lock has been acquired. False otherwise.
+        @rtype: bool
+        """
+        lock_path = etpConst['locks']['using_resources']
+        return self._lock_resource(lock_path, blocking, shared)
+
+    def unlock_resources(self):
+        """
+        Release previously locked Entropy Resources, see lock_resources().
+        """
+        lock_path = etpConst['locks']['using_resources']
+        return self._unlock_resource(lock_path)
+
+    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300,
+                       shared = False):
+        """
+        Wait until Entropy resources are unlocked.
+        This method polls over the available repositories lock and
+        could run into starvation.
+
+        @keyword sleep_seconds: time between checks
+        type sleep_seconds: float
+        @keyword max_lock_count: maximum number of times the lock is checked
+        @type max_lock_count: int
+        @keyword shared: acquire a shared lock? (default is False)
+        @type shared: bool
+        @return: True, if lock hasn't been released, False otherwise.
+        @rtype: bool
+        """
+        return self._wait_resource(
+            self.lock_resources, sleep_seconds=sleep_seconds,
+            max_lock_count=max_lock_count, shared=shared)
 
     def switch_chroot(self, chroot):
         """
