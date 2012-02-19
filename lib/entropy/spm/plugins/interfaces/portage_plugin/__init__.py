@@ -3120,31 +3120,46 @@ class PortagePlugin(SpmPlugin):
                     do_rm_path_atomic(mydir)
 
         with self._PortageWorldSetLocker(self):
-
-            # otherwise update Portage world file
-            world_file = self.get_user_installed_packages_file()
-            world_file_tmp = world_file + ".entropy.tmp"
-            enc = etpConst['conf_encoding']
-            if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
-                with codecs.open(world_file_tmp, "w", encoding=enc) as new:
-                    with codecs.open(world_file, "r", encoding=enc) as old:
-                        line = old.readline()
-                        sep = const_convert_to_unicode(":")
-                        keyslot = key+sep+slot
-                        while line:
-                            if line.find(key) != -1:
-                                line = old.readline()
-                                continue
-                            if line.find(keyslot) != -1:
-                                line = old.readline()
-                                continue
-                            new.write(line)
-                            line = old.readline()
-
-                    new.flush()
-                os.rename(world_file_tmp, world_file)
+            try:
+                self.__remove_update_world_file(key, slot)
+            except UnicodeDecodeError:
+                # world file is fucked up
+                mytxt = "%s: %s" % (
+                    red("QA"),
+                    brown(_("Portage world file is corrupted")),
+                )
+                self.__output.output(
+                    mytxt,
+                    importance = 1,
+                    level = "warning",
+                    header = darkred("   ## ")
+                )
 
         return 0
+
+    def __remove_update_world_file(self, key, slot):
+        # otherwise update Portage world file
+        world_file = self.get_user_installed_packages_file()
+        world_file_tmp = world_file + ".entropy.tmp"
+        enc = etpConst['conf_encoding']
+        if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
+            with codecs.open(world_file_tmp, "w", encoding=enc) as new:
+                with codecs.open(world_file, "r", encoding=enc) as old:
+                    line = old.readline()
+                    sep = const_convert_to_unicode(":")
+                    keyslot = key+sep+slot
+                    while line:
+                        if line.find(key) != -1:
+                            line = old.readline()
+                            continue
+                        if line.find(keyslot) != -1:
+                            line = old.readline()
+                            continue
+                        new.write(line)
+                        line = old.readline()
+
+                new.flush()
+            os.rename(world_file_tmp, world_file)
 
     @staticmethod
     def _qa_check_preserved_libraries(entropy_output, portage):
