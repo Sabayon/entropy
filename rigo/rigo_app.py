@@ -2,6 +2,7 @@ import os
 import sys
 import copy
 import tempfile
+import time
 from threading import Lock
 
 sys.path.insert(0, "../lib")
@@ -12,7 +13,7 @@ sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
 
 
-from gi.repository import Gtk, Gdk, Gio, GLib, GObject, GdkPixbuf
+from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons
@@ -22,6 +23,7 @@ from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
+from rigo.ui.gtk3.widgets.stars import ReactiveStar
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
@@ -312,11 +314,22 @@ class ApplicationViewController(GObject.Object):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._app_store = None
+        self._last_pkg_match = None
 
         self._image = self._builder.get_object("appViewImage")
         self._app_name_lbl = self._builder.get_object("appViewNameLabel")
         self._app_download_lbl = self._builder.get_object(
             "appViewDownloadedLabel")
+        self._stars_container = self._builder.get_object("appViewStarsSelVbox")
+
+        self._stars = ReactiveStar()
+        self._stars_alignment = Gtk.Alignment.new(0.0, 0.5, 1.0, 1.0)
+        self._stars_alignment.set_padding(0, 5, 0, 0)
+        self._stars_alignment.add(self._stars)
+        self._stars.set_size_as_pixel_value(24)
+
+        self._stars_container.pack_start(self._stars_alignment, False, False, 0)
+
 
     def set_store(self, store):
         """
@@ -326,6 +339,7 @@ class ApplicationViewController(GObject.Object):
 
     def setup(self):
         self.connect("application-activated", self._on_application_activated)
+        self._app_store.connect("redraw-request", self._on_redraw_request)
 
     def _on_application_activated(self, avc, app):
         """
@@ -333,10 +347,21 @@ class ApplicationViewController(GObject.Object):
         information. Once we're done loading the shit, we just emit
         'application-show' and let others do the UI switch.
         """
+        self._last_pkg_match = app.get_details().pkg
         task = ParallelTask(self.__application_activate, app)
         task.name = "ApplicationActivate"
         task.daemon = True
         task.start()
+
+    def _on_redraw_request(self, widget, pkg_match):
+        """
+        Redraw request received from AppListStore for given package match.
+        We are required to update rating, number of downloads, icon.
+        """
+        if pkg_match == self._last_pkg_match:
+            stats = self._app_store.get_review_stats(pkg_match)
+            icon = self._app_store.get_icon(pkg_match)
+            self._setup_application_stats(stats, icon)
 
     def __application_activate(self, app):
         """
@@ -346,8 +371,27 @@ class ApplicationViewController(GObject.Object):
         metadata = {}
         metadata['name'] = app.get_markup()
         metadata['stats'] = app.get_review_stats()
-        metadata['icon'] = self._app_store.get_icon(details.pkg, app=app)
+        # using app store here because we cache the icon pixbuf
+        metadata['icon'] = self._app_store.get_icon(details.pkg)
         GLib.idle_add(self._setup_application_info, app, metadata)
+
+    def _setup_application_stats(self, stats, icon):
+        """
+        Setup widgets related to Application statistics (and icon).
+        """
+        total_downloads = stats.downloads_total
+        if not total_downloads:
+            down_msg = _("Never downloaded")
+        else:
+            down_msg = ngettext("<small><b>%d</b> download</small>",
+                                "<small><b>%d</b> downloads</small>",
+                                total_downloads)
+            down_msg = down_msg % (total_downloads,)
+        self._app_download_lbl.set_markup(down_msg)
+        if icon:
+            self._image.set_from_pixbuf(icon)
+        self._stars.set_rating(stats.ratings_average - 1)
+        self._stars_alignment.show_all()
 
     def _setup_application_info(self, app, metadata):
         """
@@ -356,17 +400,11 @@ class ApplicationViewController(GObject.Object):
         # FIXME, lxnay complete
         self._app_name_lbl.set_markup(metadata['name'])
         stats = metadata['stats']
-        total_downloads = stats.downloads_total
-        if not total_downloads:
-            down_msg = _("Never downloaded")
-        else:
-            down_msg = ngettext("<b>%d</b> download",
-                                "<b>%d</b> downloads",
-                                total_downloads)
-        self._app_download_lbl.set_markup(down_msg % (total_downloads,))
-        self._image.set_from_pixbuf(metadata['icon'])
+        icon = metadata['icon']
+        self._setup_application_stats(stats, icon)
 
         self.emit("application-show", app)
+
 
 class Rigo(Gtk.Application):
 
@@ -395,6 +433,7 @@ class Rigo(Gtk.Application):
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
         self._builder.connect_signals(Rigo.RigoHandler())
         self._window = self._builder.get_object("rigoWindow")
+        self._window.set_name("rigoWindow")
         self._apps_view = self._builder.get_object("appsViewVbox")
         self._scrolled_view = self._builder.get_object("appsViewScrolledWindow")
         self._app_view = self._builder.get_object("appViewVbox")
@@ -412,6 +451,10 @@ class Rigo(Gtk.Application):
         self._app_store = AppListStore(
             self._entropy, self._entropy_ws,
             self._view, icons)
+        def _queue_draw(*args):
+            self._view.queue_draw()
+        self._app_store.connect("redraw-request", _queue_draw)
+
         self._app_view_c.set_store(self._app_store)
         self._app_view_c.connect("application-show",
             self._on_application_show)

@@ -8,7 +8,6 @@ from cellrenderers import CellRendererAppView, CellButtonRenderer, \
     CellButtonIDs
 
 from rigo.em import em, StockEms
-from rigo.utils import ExecutionTime
 from rigo.enums import Icons
 from rigo.models.application import CategoryRowReference
 
@@ -544,24 +543,18 @@ def on_entry_changed(widget, data):
         new_text = widget.get_text()
         (view, enquirer) = data
 
-        with ExecutionTime("total time"):
-            with ExecutionTime("enquire.set_query()"):
-                # FIXME lxnay
-                enquirer.set_query(get_query_from_search_entry(new_text),
-                                   limit=100*1000,
-                                   nonapps_visible=NonAppVisibility.ALWAYS_VISIBLE)
+        # FIXME lxnay
+        enquirer.set_query(get_query_from_search_entry(new_text),
+                           limit=100*1000,
+                           nonapps_visible=NonAppVisibility.ALWAYS_VISIBLE)
 
-            store = view.tree_view.get_model()
-            with ExecutionTime("store.clear()"):
-                store.clear()
+        store = view.tree_view.get_model()
+        store.clear()
 
-            with ExecutionTime("store.set_documents()"):
-                store.set_from_matches(enquirer.matches)
+        store.set_from_matches(enquirer.matches)
 
-            with ExecutionTime("model settle (size=%s)" % len(store)):
-                while Gtk.events_pending():
-                    Gtk.main_iteration()
-        return
+        while Gtk.events_pending():
+            Gtk.main_iteration()
 
     if widget.stamp:
         GObject.source_remove(widget.stamp)

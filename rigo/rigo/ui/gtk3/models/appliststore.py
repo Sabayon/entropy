@@ -23,6 +23,15 @@ class AppListStore(Gtk.ListStore):
     _MISSING_ICON_MUTEX = Lock()
     _ICON_CACHE = {}
 
+    __gsignals__ = {
+        # Redraw signal, requesting UI update
+        # for given pkg_match object
+        "redraw-request"  : (GObject.SignalFlags.RUN_LAST,
+                             None,
+                             (GObject.TYPE_PYOBJECT, ),
+                             ),
+    }
+
     def __init__(self, entropy_client, entropy_ws, view, icons):
         Gtk.ListStore.__init__(self)
         self._view = view
@@ -42,12 +51,6 @@ class AppListStore(Gtk.ListStore):
         AppListStore._ICON_CACHE.clear()
         return outcome
 
-    def _ui_redraw_callback(self, *args):
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                              "_ui_redraw_callback()")
-        GLib.idle_add(self._view.queue_draw)
-
     @property
     def _missing_icon(self):
         """
@@ -63,14 +66,18 @@ class AppListStore(Gtk.ListStore):
             AppListStore._MISSING_ICON = _missing_icon
             return _missing_icon
 
-    def get_icon(self, pkg_match, app=None):
+    def get_icon(self, pkg_match):
         cached = AppListStore._ICON_CACHE.get(pkg_match)
         if cached is not None:
             return cached
 
-        if app is None:
-            app = Application(self._entropy, self._entropy_ws, pkg_match,
-                              redraw_callback=self._ui_redraw_callback)
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+        app = Application(self._entropy, self._entropy_ws, pkg_match,
+                          redraw_callback=_ui_redraw_callback)
         icon, cache_hit = app.get_details().icon
         if icon is None:
             if cache_hit:
@@ -113,28 +120,58 @@ class AppListStore(Gtk.ListStore):
         return pixbuf
 
     def is_installed(self, pkg_match):
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+
         app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback)
         return app.is_installed()
 
     def is_available(self, pkg_match):
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+
         app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback)
         return app.is_available()
 
     def get_markup(self, pkg_match):
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+
         app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback)
         return app.get_markup()
 
     def get_review_stats(self, pkg_match):
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+
         app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback)
         return app.get_review_stats()
 
     def get_application(self, pkg_match):
+        def _ui_redraw_callback(*args):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                                  "_ui_redraw_callback()")
+            self.emit("redraw-request", pkg_match)
+
         app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=self._ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback)
         return app
 
     def get_transaction_progress(self, pkg_match):

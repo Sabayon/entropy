@@ -134,6 +134,9 @@ class ApplicationMetadata(object):
         """
         Thread executing generic (both rating and doc) metadata retrieval.
         """
+        cache_miss = WebService.CacheMiss
+        ws_exception = WebService.WebServiceException
+
         while True:
             sem.acquire()
             discard_signal.set(False)
@@ -191,7 +194,7 @@ class ApplicationMetadata(object):
                         try:
                             outcome[(key, repo_id)] = request_map[request](
                                 [key], cache=True, cached=True)[key]
-                        except WebService.CacheMiss:
+                        except cache_miss:
                             uncached_keys.append(key)
 
                     for key in uncached_keys:
@@ -201,7 +204,7 @@ class ApplicationMetadata(object):
                             # FIXME, lxnay: work more instances in parallel?
                             outcome[(key, repo_id)] = request_map[request](
                                 [key], cache = True)[key]
-                        except WebService.WebServiceException as wse:
+                        except ws_exception as wse:
                             const_debug_write(
                                 __name__,
                                 "%s, WebServiceExc: %s" % (name, wse,)
@@ -541,7 +544,7 @@ class Application(object):
             description = _("No description")
         if len(description) > 79:
             description =  description[:80].strip() + "..."
-        text = "%s %s\n<small><i>%s</i></small>" % (
+        text = "<b>%s</b> %s\n<small><i>%s</i></small>" % (
             GObject.markup_escape_text(name),
             GObject.markup_escape_text(version),
             GObject.markup_escape_text(description))

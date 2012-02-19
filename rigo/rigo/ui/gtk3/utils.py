@@ -48,12 +48,12 @@ def init_sc_css_provider(toplevel, settings, screen, datadir):
 
     # munge css path for theme-name
     css_path = os.path.join(datadir,
-                            "ui/gtk3/css/softwarecenter.%s.css" % \
+                            "ui/gtk3/css/rigo.%s.css" % \
                             theme_name)
 
     # if no css for theme-name try fallback css
     if not os.path.exists(css_path):
-        css_path = os.path.join(datadir, "ui/gtk3/css/softwarecenter.css")
+        css_path = os.path.join(datadir, "ui/gtk3/css/rigo.css")
 
     if not os.path.exists(css_path):
         # check fallback exists as well... if not return None but warn
@@ -64,7 +64,7 @@ def init_sc_css_provider(toplevel, settings, screen, datadir):
         LOG.warn(msg % css_path)
         return None
 
-    # things seem ok, now set the css provider for softwarecenter
+    # things seem ok, now set the css provider for Rigo
     msg = "Rigo style provider for %s Gtk theme: %s"
     LOG.info(msg % (theme_name, css_path))
 
