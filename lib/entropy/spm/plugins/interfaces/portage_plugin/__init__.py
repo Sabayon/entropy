@@ -1082,14 +1082,18 @@ class PortagePlugin(SpmPlugin):
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
 
-        if not data['sources']:
-            env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
-            if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
-                # when extracting fake metadata, env_bz2 can be unavailable
-                uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
-                # unfortunately upstream dropped SRC_URI file support
-                data['sources'] = self.__source_env_get_var(
-                    uncompressed_env_file, "SRC_URI")
+        env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
+        uncompressed_env_file = None
+        if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
+            # when extracting fake metadata, env_bz2 can be unavailable
+            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
+
+        if not data['sources'] and (uncompressed_env_file is not None):
+            # when extracting fake metadata, env_bz2 can be unavailable
+            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
+            # unfortunately upstream dropped SRC_URI file support
+            data['sources'] = self.__source_env_get_var(
+                uncompressed_env_file, "SRC_URI")
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
@@ -1172,6 +1176,16 @@ class PortagePlugin(SpmPlugin):
 
         if data['category'] != PortagePlugin.KERNEL_CATEGORY:
             kern_dep_key = self._add_kernel_dependency_to_pkg(data, pkg_dir)
+        elif uncompressed_env_file is not None:
+            # we may have packages in sys-kernel category holding
+            # kernel modules without being kernels
+            # ETYPE is a typical environment variable used by kernel
+            # sources and binaries (and firmwares).
+            # If it's set, it means that this is a kernel ebuild.
+            etype = self.__source_env_get_var(
+                uncompressed_env_file, "ETYPE")
+            if not etype:
+                kern_dep_key = self._add_kernel_dependency_to_pkg(data, pkg_dir)
 
         file_ext = PortagePlugin.EBUILD_EXT
         ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
