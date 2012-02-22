@@ -76,5 +76,20 @@ GtkViewport {
 
 #rigoWindow {
     background-color: white;
-    /* color: black; */
+    color: black;
 }
+
+/* our infobars have to be dark */
+GtkInfoBar.info {
+    background-color: #1c1c1c;
+}
+GtkInfoBar.error {
+    background-color: #770000;
+}
+GtkInfoBar.warning {
+    background-color: #613056;
+}
+GtkInfoBar #notificationMessage {
+    color: white;
+}
+

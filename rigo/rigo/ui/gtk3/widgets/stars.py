@@ -406,7 +406,7 @@ class ReactiveStar(Star):
 
     __gsignals__ = {
         "changed" : (GObject.SignalFlags.RUN_LAST,
-                     None, 
+                     None,
                      (),)
         }
 
@@ -431,7 +431,6 @@ class ReactiveStar(Star):
         self.connect("key-release-event", self.on_key_release)
         self.connect("focus-in-event", self.on_focus_in)
         self.connect("focus-out-event", self.on_focus_out)
-        return
 
     # signal handlers
     def on_enter_notify(self, widget, event):
@@ -445,7 +444,7 @@ class ReactiveStar(Star):
 
     def on_button_release(self, widget, event):
         star_index = self.get_star_at_xy(event.x, event.y)
-        if star_index is None: 
+        if star_index is None:
             return
         self.set_rating(star_index)
         self.emit('changed')

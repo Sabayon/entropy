@@ -91,8 +91,7 @@ class AppListStore(Gtk.ListStore):
         if not os.path.isfile(icon_path):
             return self._missing_icon
 
-        img = Gtk.Image()
-        img.set_from_file(icon_path)
+        img = Gtk.Image.new_from_file(icon_path)
         img_buf = img.get_pixbuf()
         if img_buf is None:
             # wth, invalid crap

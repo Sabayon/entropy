@@ -87,13 +87,17 @@ class ApplicationsViewController(GObject.Object):
             th.start()
 
     def __search_thread(self, text):
+        def _prepare_for_search(txt):
+            return txt.replace(" ", "-").lower()
+
         matches = []
         pkg_matches, rc = self._entropy.atom_match(
             text, multi_match = True,
             multi_repo = True, mask_filter = False)
         matches.extend(pkg_matches)
         search_matches = self._entropy.atom_search(
-            text, repositories = self._entropy.repositories())
+            _prepare_for_search(text),
+            repositories = self._entropy.repositories())
         matches.extend([x for x in search_matches if x not in matches])
         self.set_many_safe(matches)
 
@@ -318,8 +322,11 @@ class ApplicationViewController(GObject.Object):
 
         self._image = self._builder.get_object("appViewImage")
         self._app_name_lbl = self._builder.get_object("appViewNameLabel")
+        self._app_info_lbl = self._builder.get_object("appViewInfoLabel")
         self._app_download_lbl = self._builder.get_object(
             "appViewDownloadedLabel")
+        self._app_downloaded_lbl = self._builder.get_object(
+            "appViewDownloadSizeLabel")
         self._stars_container = self._builder.get_object("appViewStarsSelVbox")
 
         self._stars = ReactiveStar()
@@ -369,8 +376,11 @@ class ApplicationViewController(GObject.Object):
         """
         details = app.get_details()
         metadata = {}
-        metadata['name'] = app.get_markup()
+        metadata['markup'] = app.get_extended_markup()
+        metadata['download_size'] = details.downsize
         metadata['stats'] = app.get_review_stats()
+        metadata['homepage'] = details.website
+        metadata['date'] = details.date
         # using app store here because we cache the icon pixbuf
         metadata['icon'] = self._app_store.get_icon(details.pkg)
         GLib.idle_add(self._setup_application_info, app, metadata)
@@ -398,7 +408,16 @@ class ApplicationViewController(GObject.Object):
         Setup the actual UI widgets content and emit 'application-show'
         """
         # FIXME, lxnay complete
-        self._app_name_lbl.set_markup(metadata['name'])
+        down_size = entropy.tools.bytes_into_human(
+                metadata['download_size'])
+        self._app_downloaded_lbl.set_markup("<small>%s</small>" % (down_size,))
+        self._app_name_lbl.set_markup(metadata['markup'])
+
+        # GPG info, required space, use flags
+        # install/remove/update buttons
+        # show comments (and allow commenting)
+        # allow screenshots upload?
+
         stats = metadata['stats']
         icon = metadata['icon']
         self._setup_application_stats(stats, icon)

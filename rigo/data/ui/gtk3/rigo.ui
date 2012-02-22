@@ -19,7 +19,6 @@
         <property name="height_request">400</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="border_width">7</property>
         <child>
           <object class="GtkVBox" id="notificationBox">
             <property name="visible">True</property>
@@ -38,6 +37,7 @@
           <object class="GtkVBox" id="appAreaVBox">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="border_width">8</property>
             <child>
               <object class="GtkEntry" id="searchEntry">
                 <property name="height_request">40</property>
@@ -134,13 +134,24 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="appViewNameLabel">
+                      <object class="GtkVBox" id="appViewAppInfoVbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="xalign">0.019999999552965164</property>
-                        <property name="yalign">0.019999999552965164</property>
-                        <property name="label" translatable="yes">Application markup</property>
-                        <property name="wrap">True</property>
+                        <child>
+                          <object class="GtkLabel" id="appViewNameLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">0</property>
+                            <property name="yalign">0</property>
+                            <property name="label" translatable="yes">Application markup</property>
+                            <property name="wrap">True</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">True</property>
@@ -171,7 +182,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                            <property name="xalign">0.98000001907348633</property>
+                            <property name="xalign">1</property>
                             <property name="label" translatable="yes">Downloaded times</property>
                             <property name="use_markup">True</property>
                             <property name="wrap">True</property>
@@ -180,6 +191,19 @@
                             <property name="expand">False</property>
                             <property name="fill">False</property>
                             <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="appViewDownloadSizeLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="xalign">1</property>
+                            <property name="label" translatable="yes">Download size</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -192,10 +216,25 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="padding">10</property>
                     <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="appViewInfoLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="label" translatable="yes">Information label</property>
+                    <property name="wrap">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </object>

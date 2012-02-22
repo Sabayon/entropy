@@ -44,6 +44,8 @@ class NotificationBox(Gtk.HBox):
         hbox = Gtk.HBox()
         label = Gtk.Label()
         label.set_markup(self._message)
+        # make it css-able
+        label.set_name("notificationMessage")
         label.set_property("expand", True)
         label.set_alignment(0.02, 0.50)
         hbox.pack_start(label, True, True, 0)
@@ -97,7 +99,8 @@ class UpdatesNotificationBox(NotificationBox):
         msg += ". " + _("What to do?")
 
         NotificationBox.__init__(self, msg,
-            tooltip=_("Updates available, how about installing them?"))
+            tooltip=_("Updates available, how about installing them?"),
+            message_type=Gtk.MessageType.WARNING)
         self.add_button(_("_Update System"), self._update)
         self.add_button(_("_Show"), self._show)
         def _destroy(*args):
@@ -134,7 +137,8 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
         msg = _("The list of available applications is old, <b>update now</b>?")
 
         NotificationBox.__init__(self, msg,
-            tooltip=_("I dunno dude, I'd say Yes"))
+            tooltip=_("I dunno dude, I'd say Yes"),
+            message_type=Gtk.MessageType.ERROR)
         self.add_button(_("_Yes, why not?"), self._update)
         def _destroy(*args):
             self.destroy()

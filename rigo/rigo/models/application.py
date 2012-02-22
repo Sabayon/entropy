@@ -26,14 +26,16 @@ from threading import Semaphore, Lock
 
 from gi.repository import GObject
 
-from entropy.const import const_debug_write, const_debug_enabled
+from entropy.const import const_debug_write, const_debug_enabled, \
+    const_convert_to_unicode
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
 from entropy.client.services.interfaces import ClientWebService
 
-from rigo.enums import Icons
+import entropy.tools
 
+from rigo.enums import Icons
 
 LOG = logging.getLogger(__name__)
 
@@ -534,20 +536,90 @@ class Application(object):
         return repo.isPackageIdAvailable(self._pkg_id)
 
     def get_markup(self):
+        """
+        Get Application markup text.
+        """
         repo = self._entropy.open_repository(self._repo_id)
         name = repo.retrieveName(self._pkg_id)
+        if name is None:
+            name = _("N/A")
+        else:
+            # make it cute
+            name = " ".join([x.capitalize() for x in \
+                                 name.replace("-"," ").split()])
+            name = GObject.markup_escape_text(name)
         version = repo.retrieveVersion(self._pkg_id)
         if version is None:
-            version = "N/A"
+            version = _("N/A")
+        tag = repo.retrieveTag(self._pkg_id)
+        if not tag:
+            tag = ""
+        else:
+            tag = "#" + tag
         description = repo.retrieveDescription(self._pkg_id)
         if description is None:
             description = _("No description")
         if len(description) > 79:
             description =  description[:80].strip() + "..."
-        text = "<b>%s</b> %s\n<small><i>%s</i></small>" % (
-            GObject.markup_escape_text(name),
+        text = "<b>%s</b> %s%s\n<small><i>%s</i></small>" % (
+            name,
             GObject.markup_escape_text(version),
+            GObject.markup_escape_text(tag),
             GObject.markup_escape_text(description))
+        return text
+
+    def get_extended_markup(self):
+        """
+        Get Application markup text (extended version).
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        strict = repo.getStrictData(self._pkg_id)
+        if strict is None:
+            return _("N/A")
+        key, slot, version, tag, revision, atom = strict
+
+        name = key.split("/", 1)[-1]
+        # make it cute
+        name = " ".join([x.capitalize() for x in \
+                             name.replace("-"," ").split()])
+        name = GObject.markup_escape_text(name)
+        website = repo.retrieveHomepage(self._pkg_id)
+        if website:
+            name = "<a href=\"%s\">%s</a>" % (
+                GObject.markup_escape_text(website),
+                name,)
+
+        if not tag:
+            tag = ""
+        else:
+            tag = "#" + tag
+
+        revision_txt = "~%d" % (revision,)
+
+        description = repo.retrieveDescription(self._pkg_id)
+        if description is None:
+            description = _("No description")
+        if len(description) > 79:
+            description =  description[:80].strip() + "..."
+
+        cdate = repo.retrieveCreationDate(self._pkg_id)
+        if cdate:
+            date = const_convert_to_unicode(time.strftime("%B %d, %Y",
+                time.gmtime(float(cdate))).capitalize())
+        else:
+            date = _("N/A")
+
+        repo_from = "%s <b>%s</b>" % (_("from"), self._repo_id,)
+
+        text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
+            name,
+            GObject.markup_escape_text(version),
+            GObject.markup_escape_text(tag),
+            GObject.markup_escape_text(revision_txt),
+            GObject.markup_escape_text(description),
+            GObject.markup_escape_text(date),
+            repo_from,
+            )
         return text
 
     def get_review_stats(self):
@@ -622,20 +694,16 @@ class AppDetails(object):
 
     @property
     def channelname(self):
+        """
+        Return Application Channel (repository identifier).
+        """
         return self._repo_id
 
     @property
-    def eulafile(self):
-        """Return path to the EULA for App"""
-        # or None
-
-    @property
-    def desktop_file(self):
-        """Return path (?) to desktop file"""
-        # FIXME, we should have it
-
-    @property
     def description(self):
+        """
+        Return Application short description.
+        """
         repo = self._entropy.open_repository(self._repo_id)
         return repo.retrieveDescription(self._pkg_id)
 
@@ -676,97 +744,103 @@ class AppDetails(object):
         return icon, cache_hit
 
     @property
-    def icon_file_name(self):
-        """Return icon file name for package"""
-        # FIXME, we have it
-
-    @property
-    def icon_url(self):
-        """Return icon download URL"""
-        # FIXME, we have it
-
-    @property
-    def cached_icon_file_path(self):
-        """Return path to cached icon (downloaded?) if we have it"""
-        # FIXME, we have it
-
-    @property
     def installation_date(self):
+        """
+        Return human readable representation of the installation
+        date, if installed, or None otherwise.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        inst_repo = self._entropy.installed_repository()
+        if repo is inst_repo:
+            return entropy.tools.convert_unix_time_to_human_time(
+                float(repo.retrieveCreationDate(self._pkg_id)))
+        keyslot = repo.retrieveKeySlotAggregated(self._pkg_id)
+        pkg_id, rc = inst_repo.atomMatch(keyslot)
+        if pkg_id != -1:
+            return entropy.tools.convert_unix_time_to_human_time(
+                float(inst_repo.retrieveCreationDate(pkg_id)))
+
+    @property
+    def date(self):
+        """
+        Return human readable representation of the date the
+        Application has been last updated.
+        """
         repo = self._entropy.open_repository(self._repo_id)
         return entropy.tools.convert_unix_time_to_human_time(
             float(repo.retrieveCreationDate(self._pkg_id)))
 
     @property
-    def purchase_date(self):
-        return self.installation_date
+    def licenses(self):
+        """
+        Return list of license identifiers for Application.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        licenses = repo.retrieveLicense(self._pkg_id)
+        if not licenses:
+            return []
+        return licenses.split()
 
     @property
-    def license(self):
+    def downsize(self):
+        """
+        Return the download size in bytes.
+        """
         repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveLicenseText(self._pkg_id)
+        return repo.retrieveSize(self._pkg_id)
 
     @property
     def name(self):
-        """ Return the name of the application, this will always
-            return Application.name. Most UI will want to use
-            the property display_name instead
+        """
+        Return the name of the application, this will always
+        return Application.name. Most UI will want to use
+        the property display_name instead
         """
         return self._app.name
 
     @property
     def display_name(self):
-        """ Return the application name as it should be displayed in the UI
-            If the appname is defined, just return it, else return
-            the summary (per the spec)
         """
-        # FIXME, do we want anything different?
+        Return the application name as it should be displayed in the UI
+        If the appname is defined, just return it, else return
+        the summary (per the spec)
+        """
         return self.name
 
     @property
-    def display_summary(self):
-        """ Return the application summary as it should be displayed in the UI
-            If the appname is defined, return the application summary, else return
-            the application's pkgname (per the spec)
-        """
-        # FIXME, is description allrite?
-        return self.description
-
-    @property
     def pkg(self):
+        """
+        Return unique identifier belonging to this Application.
+        """
         return self._pkg_match
 
     @property
     def pkgname(self):
+        """
+        Return un-mangled package name belonging to this Application.
+        """
         return self.name
 
     @property
     def signing_key_id(self):
+        """
+        Return GPG key identifier used to sign the Application.
+        """
         return self._repo_id
 
     @property
-    def screenshot(self):
-        # FIXME, what should we do here? use UGC image metadata?
-        return None
-
-    @property
-    def summary(self):
-        return self.description
-        # FIXME, return long description? localized desc?
-
-    @property
-    def thumbnail(self):
-        """Thumbnail for the screenshot"""
-        # FIXME, I think we don't have it
-        return None
-
-    @property
     def version(self):
+        """
+        Return Application version (without revision and tag).
+        """
         repo = self._entropy.open_repository(self._repo_id)
-        # FIXME, also return tag?
         return repo.retrieveVersion(self._pkg_id)
 
     @property
     def website(self):
+        """
+        Return Application official Website URL or None.
+        """
         repo = self._entropy.open_repository(self._repo_id)
         return repo.retrieveHomepage(self._pkg_id)
 
@@ -778,19 +852,11 @@ class AppDetails(object):
         details.append("                 pkg: %s" % self.pkg)
         details.append("             pkgname: %s" % self.pkgname)
         details.append("         channelname: %s" % self.channelname)
-        details.append("        desktop_file: %s" % self.desktop_file)
         details.append("         description: %s" % self.description)
         details.append("               error: %s" % self.error)
         details.append("                icon: %s" % self.icon)
-        details.append("      icon_file_name: %s" % self.icon_file_name)
-        details.append("            icon_url: %s" % self.icon_url)
         details.append("   installation_date: %s" % self.installation_date)
-        details.append("       purchase_date: %s" % self.purchase_date)
-        details.append("             license: %s" % self.license)
-        details.append("          screenshot: %s" % self.screenshot)
-        details.append("             summary: %s" % self.summary)
-        details.append("     display_summary: %s" % self.display_summary)
-        details.append("           thumbnail: %s" % self.thumbnail)
+        details.append("            licenses: %s" % self.licenses)
         details.append("             version: %s" % self.version)
         details.append("             website: %s" % self.website)
         return '\n'.join(details)
