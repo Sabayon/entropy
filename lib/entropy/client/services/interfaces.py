@@ -557,7 +557,6 @@ class ClientWebServiceFactory(WebServiceFactory):
     Main Entropy Client Repository Web Service Factory. Generates
     WebService objects that can be used to communicate with the established
     web service.
-    This class should be instantiated by calling 
     """
 
     def __init__(self, entropy_client):
