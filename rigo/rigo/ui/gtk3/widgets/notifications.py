@@ -1,7 +1,9 @@
 
-from gi.repository import Gtk, GObject
+from gi.repository import Gtk, GLib, GObject
 
 from entropy.i18n import _
+from entropy.services.client import WebService
+from entropy.misc import ParallelTask
 
 
 class NotificationBox(Gtk.HBox):
@@ -11,9 +13,12 @@ class NotificationBox(Gtk.HBox):
     Rigo notification area.
     """
 
-    def __init__(self, message, message_type=None, tooltip=None):
+    def __init__(self, message, message_widget=None,
+                 message_type=None, tooltip=None):
         Gtk.HBox.__init__(self)
         self._message = message
+        # if not None, it will replace Gtk.Label(self._message)
+        self._message_widget = message_widget
         self._buttons = []
         self._type = message_type
         if self._type is None:
@@ -31,6 +36,14 @@ class NotificationBox(Gtk.HBox):
         self._buttons.append(button)
         return button
 
+    def add_destroy_button(self, text):
+        """
+        Add button that destroys the whole Notification object.
+        """
+        def _destroy(*args):
+            self.destroy()
+        self.add_button(text, _destroy)
+
     def render(self):
         """
         Render the Notification box filling in the container.
@@ -42,25 +55,30 @@ class NotificationBox(Gtk.HBox):
 
         content_area = bar.get_content_area()
         hbox = Gtk.HBox()
-        label = Gtk.Label()
-        label.set_markup(self._message)
-        # make it css-able
-        label.set_name("notificationMessage")
-        label.set_property("expand", True)
-        label.set_alignment(0.02, 0.50)
-        hbox.pack_start(label, True, True, 0)
-        label.show()
 
+        message_hbox = Gtk.HBox()
+        message_hbox.set_name("message-area")
+        if self._message_widget is None:
+            label = Gtk.Label()
+            label.set_markup(self._message)
+            # make it css-able
+            label.set_property("expand", True)
+            label.set_alignment(0.02, 0.50)
+            message_hbox.pack_start(label, True, True, 0)
+        else:
+            message_hbox.pack_start(self._message_widget, True, True, 0)
+        hbox.pack_start(message_hbox, True, True, 0)
+
+        button_hbox = Gtk.HBox()
+        button_hbox.set_name("button-area")
         for button in self._buttons:
-            hbox.pack_start(button, False, False, 3)
-            button.show()
+            button_hbox.pack_start(button, False, False, 3)
+        hbox.pack_start(button_hbox, False, False, 2)
 
         content_area.set_property("expand", False)
         content_area.add(hbox)
-        content_area.show()
-        hbox.show()
 
-        bar.show()
+        bar.show_all()
         bar.get_action_area().hide()
         self.pack_start(bar, True, True, 0)
 
@@ -103,9 +121,7 @@ class UpdatesNotificationBox(NotificationBox):
             message_type=Gtk.MessageType.WARNING)
         self.add_button(_("_Update System"), self._update)
         self.add_button(_("_Show"), self._show)
-        def _destroy(*args):
-            self.destroy()
-        self.add_button(_("_Ignore"), _destroy)
+        self.add_destroy_button(_("_Ignore"))
 
     def _update(self, button):
         """
@@ -140,12 +156,124 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
             tooltip=_("I dunno dude, I'd say Yes"),
             message_type=Gtk.MessageType.ERROR)
         self.add_button(_("_Yes, why not?"), self._update)
-        def _destroy(*args):
-            self.destroy()
-        self.add_button(_("_No, thanks"), _destroy)
+        self.add_destroy_button(_("_No, thanks"))
 
     def _update(self, button):
         """
         Update button callback from the updates notification box.
         """
         self.emit("update-request")
+
+
+class LoginNotificationBox(NotificationBox):
+
+    """
+    NotificationBox asking user to login to Entropy Web Service.
+    """
+
+    __gsignals__ = {
+        # Emitted when login is successful
+        "login-success" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          (GObject.TYPE_PYOBJECT, GObject.TYPE_PYOBJECT,),
+                          ),
+        # Emitted when login fails, not going
+        # to retry anymore
+        "login-failed" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          (GObject.TYPE_PYOBJECT,),
+                          ),
+    }
+
+    def __init__(self, entropy_ws, app):
+        self._entropy_ws = entropy_ws
+        self._app = app
+        self._repository_id = app.get_details().channelname
+
+        NotificationBox.__init__(self, None,
+            message_widget=self._make_login_box(),
+            tooltip=_("You need to login to Entropy Web Services"),
+            message_type=Gtk.MessageType.WARNING)
+
+        self.add_button(_("_Login"), self._login)
+
+        def _destroy(*args):
+            self.emit("login-failed", self._app)
+            self.destroy()
+        self.add_button(_("_Cancel"), _destroy)
+
+    def _make_login_box(self):
+
+        vbox = Gtk.VBox()
+
+        hbox = Gtk.HBox()
+        username_label = Gtk.Label()
+        username_label.set_markup(_("Username:"))
+        hbox.pack_start(username_label, False, False, 2)
+
+        self._username_entry = Gtk.Entry()
+        hbox.pack_start(self._username_entry, False, False, 0)
+
+        password_label = Gtk.Label()
+        password_label.set_markup(_(", password:"))
+        hbox.pack_start(password_label, False, False, 2)
+
+        self._password_entry = Gtk.Entry()
+        self._password_entry.set_visibility(False)
+        hbox.pack_start(self._password_entry, False, False, 0)
+
+        hbox.set_property("expand", True)
+
+        vbox.pack_start(hbox, False, False, 0)
+        self._login_message = Gtk.Label()
+        self._login_message.set_no_show_all(True)
+        self._login_message.set_alignment(0.0, 1.0)
+        self._login_message.set_padding(-1, 8)
+        self._login_message.set_name("message-area-error")
+        vbox.pack_start(self._login_message, False, False, 0)
+
+        return vbox
+
+    def _login_thread_body(self, username, password):
+        """
+        Execute the actual login procedure.
+        """
+        webserv = self._entropy_ws.get(self._repository_id)
+        if webserv is None:
+            # can't be, if we're here, this is already not None
+            return
+
+        def _login_error():
+            self._login_message.show()
+            self._login_message.set_markup(
+                _("Login <b>error</b>!"))
+
+        webserv.add_credentials(username, password)
+        try:
+            webserv.validate_credentials()
+        except WebService.MethodNotAvailable:
+            GLib.idle_add(_login_error)
+            return
+        except WebService.AuthenticationFailed:
+            webserv.remove_credentials()
+            GLib.idle_add(_login_error)
+            return
+
+        def _emit_success():
+            self.emit("login-success", username, self._app)
+            GLib.idle_add(self.destroy)
+        GLib.idle_add(_emit_success)
+
+    def _login(self, button):
+        """
+        Try to login to Entropy Web Services.
+        """
+        username = self._username_entry.get_text()
+        password = self._password_entry.get_text()
+
+        task = ParallelTask(
+            self._login_thread_body, username, password)
+        task.name = "LoginNotificationThreadBody"
+        task.daemon = True
+        task.start()
+

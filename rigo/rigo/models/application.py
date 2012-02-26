@@ -27,7 +27,7 @@ from threading import Semaphore, Lock
 from gi.repository import GObject
 
 from entropy.const import const_debug_write, const_debug_enabled, \
-    const_convert_to_unicode
+    const_convert_to_unicode, etpConst
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
@@ -168,6 +168,7 @@ class ApplicationMetadata(object):
             ws_map = {}
             for item in local_queue:
                 webserv, key, repo_id, cb, ts = item
+
                 obj = pkg_key_map.setdefault((key, repo_id), [])
                 obj.append((cb, ts))
 
@@ -181,31 +182,37 @@ class ApplicationMetadata(object):
 
                 webserv = ws_map[repo_id]
                 request_map = {
-                    "vote": webserv.get_votes,
-                    "down": webserv.get_downloads,
-                    "icon": webserv.get_icons,
+                    "vote": (webserv.get_votes, {}),
+                    "down": (webserv.get_downloads, {}),
+                    # for these two, service_cache is broken
+                    # and actually useless.
+                    "icon": (webserv.get_icons, {}),
+                    "comment": (webserv.get_comments, {}),
                 }
-
-                # FIXME: lxnay, who validates this cache?
 
                 for request in request_list:
                     outcome = {}
 
                     uncached_keys = []
                     for key in keys:
+                        request_func, req_kwargs = request_map[request]
+
                         try:
-                            outcome[(key, repo_id)] = request_map[request](
-                                [key], cache=True, cached=True)[key]
+                            outcome[(key, repo_id)] = request_func(
+                                [key], cache=True, cached=True,
+                                **req_kwargs)[key]
                         except cache_miss:
                             uncached_keys.append(key)
 
                     for key in uncached_keys:
                         if discard_signal.get():
                             break
+
+                        request_func, req_kwargs = request_map[request]
                         try:
                             # FIXME, lxnay: work more instances in parallel?
-                            outcome[(key, repo_id)] = request_map[request](
-                                [key], cache = True)[key]
+                            outcome[(key, repo_id)] = request_func(
+                                [key], cache = True, **req_kwargs)[key]
                         except ws_exception as wse:
                             const_debug_write(
                                 __name__,
@@ -280,7 +287,7 @@ class ApplicationMetadata(object):
     @staticmethod
     def _enqueue_rating(webservice, package_key, repository_id, callback):
         """
-        Enqueue the retriveal of the Rating for package key in given repository.
+        Enqueue the retrieval of the Rating for package key in given repository.
         Once the data is ready, callback() will be called passing the
         payload.
         This method is asynchronous and returns as soon as possible.
@@ -335,8 +342,8 @@ class ApplicationMetadata(object):
         Return the Rating (stars) for given package key, if it's available
         in local cache. At the same time, if not available and not already
         enqueued for download, do it, atomically.
-        Return None if not available, the rating otherwise (tuple composed
-        by (vote, number_of_downloads)).
+        Raise WebService.CacheMiss if not available, the rating otherwise
+        (tuple composed by (vote, number_of_downloads)).
         """
         webserv = entropy_ws.get(repository_id)
         if webserv is None:
@@ -366,6 +373,48 @@ class ApplicationMetadata(object):
         return vote, down
 
     @staticmethod
+    def download_rating_async(entropy_ws, package_key, repository_id,
+                        callback):
+        """
+        Asynchronously download updated information regarding the
+        Rating of given package.
+        This request disables local cache usage and directly queries
+        the remote Web Service.
+        Once data is available, callback will be called passing the returned
+        payload as argument.
+        For this method, the signature of callback is:
+          callback((vote, Number_of_downloads)) [one argument, which is a tuple]
+        If the Web Service is not available for repository, None is passed as
+        payload of callback.
+        Please note that the callback is called from another thread.
+        """
+        webserv = entropy_ws.get(repository_id)
+        if webserv is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadRatingAsync::None"
+            task.daemon = True
+            task.start()
+            return None
+
+        def _getter():
+            outcome = None
+            try:
+                vote = webserv.get_votes(
+                    [package_key], cache=False)[package_key]
+                down = webserv.get_downloads(
+                    [package_key], cache=False)[package_key]
+                outcome = (vote, down)
+            finally:
+                # ignore exceptions, if any, and always
+                # call callback.
+                callback(outcome)
+
+        task = ParallelTask(_getter)
+        task.name = "DownloadRatingAsync::Getter"
+        task.daemon = True
+        task.start()
+
+    @staticmethod
     def lazy_get_icon(entropy_ws, package_key, repository_id,
                         callback=None):
         """
@@ -375,6 +424,9 @@ class ApplicationMetadata(object):
         Return None if not available, or DocumentList (see Entropy Services
         API) otherwise. DocumentList contains a list of Document objects,
         and calling Document.local_document() would give you the image path.
+        If cache is not available however, WebService.CacheMiss is raised and
+        an asynchronous request shall be submitted to the remove web service,
+        once data is ready, callback will be called.
         """
         webserv = entropy_ws.get(repository_id)
         if webserv is None:
@@ -430,6 +482,100 @@ class ApplicationMetadata(object):
 
         return icon
 
+    @staticmethod
+    def download_icon_async(entropy_ws, package_key, repository_id,
+                            callback):
+        """
+        Asynchronously download updated information regarding the
+        Icon of given package.
+        This request disables local cache usage and directly queries
+        the remote Web Service.
+        Once data is available, callback will be called passing the returned
+        payload as argument.
+        For this method, the signature of callback is:
+          callback(Icon object)
+        If the Web Service is not available for repository, None is passed as
+        payload of callback.
+        Please note that the callback is called from another thread.
+        """
+        webserv = entropy_ws.get(repository_id)
+        if webserv is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadIconAsync::None"
+            task.daemon = True
+            task.start()
+            return None
+
+        def _pick_icon(icons):
+            return icons[0]
+
+        def _getter():
+            outcome = None
+            try:
+                icons = webserv.get_icons(
+                    [package_key], cache=False)[package_key]
+
+                # pick the first icon as document icon
+                icon = _pick_icon(icons)
+                # check if we have the file on-disk, otherwise
+                # spawn the fetch in parallel.
+                icon_path = icon.local_document()
+                if not os.path.isfile(icon_path):
+                    local_path = ApplicationMetadata._download_document(
+                        webserv, icon)
+                    if local_path:
+                        outcome = icon
+            finally:
+                # ignore exceptions, if any, and always
+                # call callback.
+                callback(outcome)
+
+        task = ParallelTask(_getter)
+        task.name = "DownloadIconAsync::Getter"
+        task.daemon = True
+        task.start()
+
+    @staticmethod
+    def download_comments_async(entropy_ws, package_key, repository_id,
+                                offset, callback):
+        """
+        Asynchronously download updated information regarding the
+        comments of given package.
+        This request disables local cache usage and directly queries
+        the remote Web Service.
+        Once data is available, callback will be called passing the returned
+        payload as argument.
+        For this method, the signature of callback is:
+          callback(DocumentList)
+        If the Web Service is not available for repository, None is passed as
+        payload of callback.
+        Please note that the callback is called from another thread.
+        """
+        webserv = entropy_ws.get(repository_id)
+        if webserv is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadCommentsAsync::None"
+            task.daemon = True
+            task.start()
+            return None
+
+        def _getter():
+            outcome = None
+            try:
+                outcome = webserv.get_comments(
+                    [package_key], cache=False,
+                    offset=offset)[package_key]
+            finally:
+                # ignore exceptions, if any, and always
+                # call callback.
+                callback(outcome)
+
+        task = ParallelTask(_getter)
+        task.name = "DownloadCommentsAsync::Getter"
+        task.daemon = True
+        task.start()
+
+
     class SignalBoolean(object):
 
         def __init__(self, val):
@@ -454,7 +600,7 @@ class ApplicationMetadata(object):
     _RATING_LOCK = Lock()
     _RATING_IN_FLIGHT = set()
 
-    # Application Documents logic
+    # Application Icons logic
     _ICON_QUEUE = deque()
     def _icon_thread_body_wrapper():
         return ApplicationMetadata._icon_thread_body()
@@ -622,6 +768,63 @@ class Application(object):
             )
         return text
 
+    def get_info_markup(self):
+        """
+        Get Application info markup text.
+        """
+        lic_url = "%s/license/" % (etpConst['packages_website_url'],)
+        repo = self._entropy.open_repository(self._repo_id)
+
+        licenses = repo.retrieveLicense(self._pkg_id)
+        if licenses:
+            licenses_txt = "<b>%s</b>: " % (_("License"),)
+            licenses_txt += ", ".join(sorted([
+                        "<a href=\"%s%s\">%s</a>" % (lic_url, x, x) \
+                            for x in licenses.split()]))
+        else:
+            licenses_txt = ""
+
+        required_space = repo.retrieveOnDiskSize(self._pkg_id)
+        if required_space is None:
+            required_space = 0
+        required_space_txt = "<b>%s</b>: %s" % (
+            _("Required space"),
+            entropy.tools.bytes_into_human(required_space),)
+
+        down_size = repo.retrieveSize(self._pkg_id)
+        if down_size is None:
+            down_size = 0
+        down_size_txt = "<b>%s</b>: %s" % (
+            _("Download size"),
+            entropy.tools.bytes_into_human(down_size),)
+
+        digest = repo.retrieveDigest(self._pkg_id)
+        if digest is None:
+            digest = _("N/A")
+        digest_txt = "<b>%s</b>: %s" % (_("Checksum"), digest)
+
+        uses = repo.retrieveUseflags(self._pkg_id)
+        uses = sorted(uses)
+        use_list = []
+        use_url = "%s/useflag/" % (etpConst['packages_website_url'],)
+        for use in uses:
+            txt = "<a href=\"%s%s\">%s</a>" % (use_url, use, use)
+            use_list.append(txt)
+        use_txt = "<b>%s</b>: " % (_("USE flags"),)
+        if use_list:
+            use_txt += " ".join(use_list)
+        else:
+            use_txt += _("No use flags")
+
+        text = "<small>%s\n%s\n%s\n%s\n%s</small>" % (
+            down_size_txt,
+            required_space_txt,
+            licenses_txt,
+            digest_txt,
+            use_txt,
+            )
+        return text
+
     def get_review_stats(self):
         """
         Return ReviewStats object containing user review
@@ -654,6 +857,82 @@ class Application(object):
             # otherwise 0 is shown
             stat.downloads_total = down
         return stat
+
+    def get_icon(self):
+        """
+        Return Application Icon image Entropy Document object.
+        In case of missing icon, None is returned.
+        The actual outcome of this property is a tuple, composed
+        by the Document object (or None) and cache hit information
+        (True if got from local cache, False if not in local cache)
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        key_slot = repo.retrieveKeySlot(self._pkg_id)
+        if key_slot is None:
+            return None, False
+
+        key, slot = key_slot
+        cache_hit = True
+        try:
+            icon = ApplicationMetadata.lazy_get_icon(
+                self._entropy_ws, key, self._repo_id,
+                callback=self._redraw_callback)
+        except WebService.CacheMiss:
+            cache_hit = False
+            icon = None
+
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "Application{%s}.get_icon: icon: %s, cache hit: %s" % (
+                    self._pkg_match,
+                    icon, cache_hit))
+
+        return icon, cache_hit
+
+    def download_comments(self, callback, offset=0):
+        """
+        Return Application Comments Entropy Document object.
+        In case of missing comments (locally), None is returned.
+        The actual outcome of this method is a DocumentList object.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        key_slot = repo.retrieveKeySlot(self._pkg_id)
+        if key_slot is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadCommentsNoneCallback"
+            task.daemon = True
+            task.start()
+            return
+
+        key, slot = key_slot
+        ApplicationMetadata.download_comments_async(
+            self._entropy_ws, key, self._repo_id,
+            offset, callback)
+
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "Application{%s}.download_comments called" % (
+                    self._pkg_match,))
+
+    def is_webservice_available(self):
+        """
+        Return whether the Entropy Web Service is available
+        for this Application.
+        """
+        webserv = self._entropy_ws.get(self._repo_id)
+        if webserv:
+            return True
+        return False
+
+    def get_webservice_username(self):
+        """
+        Return the currently logged Entropy Web Services
+        username, or None, if any.
+        """
+        webserv = self._entropy_ws.get(self._repo_id)
+        if webserv is None:
+            return None
+        return webserv.get_credentials()
 
     # get a AppDetails object for this Applications
     def get_details(self):
@@ -710,38 +989,6 @@ class AppDetails(object):
     @property
     def error(self):
         return _("Application not found")
-
-    @property
-    def icon(self):
-        """
-        Return Application Icon image Entropy Document object.
-        In case of missing icon, None is returned.
-        The actual outcome of this property is a tuple, composed
-        by the Document object (or None) and cache hit information
-        (True if got from local cache, False if not in local cache)
-        """
-        repo = self._entropy.open_repository(self._repo_id)
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            return None, False
-
-        key, slot = key_slot
-        cache_hit = True
-        try:
-            icon = ApplicationMetadata.lazy_get_icon(
-                self._entropy_ws, key, self._repo_id,
-                callback=self._redraw_callback)
-        except WebService.CacheMiss:
-            cache_hit = False
-            icon = None
-
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                "AppDetails{%s}.icon: icon: %s, cache hit: %s" % (
-                    self._pkg_match,
-                    icon, cache_hit))
-
-        return icon, cache_hit
 
     @property
     def installation_date(self):
@@ -817,9 +1064,19 @@ class AppDetails(object):
     @property
     def pkgname(self):
         """
-        Return un-mangled package name belonging to this Application.
+        Return unmangled package name belonging to this Application.
         """
-        return self.name
+        repo = self._entropy.open_repository(self._repo_id)
+        return repo.retrieveName(self._pkg_id)
+
+    @property
+    def pkgkey(self):
+        """
+        Return unmangled package key name belonging to this Application.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        key, slot = repo.retrieveKeySlot(self._pkg_id)
+        return key
 
     @property
     def signing_key_id(self):
@@ -844,19 +1101,3 @@ class AppDetails(object):
         repo = self._entropy.open_repository(self._repo_id)
         return repo.retrieveHomepage(self._pkg_id)
 
-    def __str__(self):
-        details = []
-        details.append("* AppDetails")
-        details.append("                name: %s" % self.name)
-        details.append("        display_name: %s" % self.display_name)
-        details.append("                 pkg: %s" % self.pkg)
-        details.append("             pkgname: %s" % self.pkgname)
-        details.append("         channelname: %s" % self.channelname)
-        details.append("         description: %s" % self.description)
-        details.append("               error: %s" % self.error)
-        details.append("                icon: %s" % self.icon)
-        details.append("   installation_date: %s" % self.installation_date)
-        details.append("            licenses: %s" % self.licenses)
-        details.append("             version: %s" % self.version)
-        details.append("             website: %s" % self.website)
-        return '\n'.join(details)

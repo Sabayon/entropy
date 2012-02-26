@@ -21,15 +21,20 @@ from rigo.entropyapi import EntropyWebService
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
-    RepositoriesUpdateNotificationBox, UpdatesNotificationBox
+    RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
+    LoginNotificationBox
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.widgets.stars import ReactiveStar
+from rigo.ui.gtk3.widgets.comments import CommentBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
+from rigo.utils import build_application_store_url, build_register_url
 
-from entropy.const import etpUi, const_debug_write, const_debug_enabled
+from entropy.const import etpUi, const_debug_write, const_debug_enabled, \
+    const_convert_to_unicode
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.repository import Repository
+from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _, ngettext
 
@@ -151,7 +156,10 @@ class ApplicationsViewController(GObject.Object):
 class NotificationViewController(GObject.Object):
 
     """
-    Notification area widget controller code.
+    Notification area widget controller.
+    This class features the handling of some built-in
+    Notification objects (like updates and outdated repositories)
+    but also accepts external NotificationBox instances as well.
     """
 
     def __init__(self, entropy_client, avc, notification_box):
@@ -290,17 +298,22 @@ class ApplicationViewController(GObject.Object):
         # Double click on application widget
         "application-activated"  : (GObject.SignalFlags.RUN_LAST,
                                    None,
-                                   (GObject.TYPE_PYOBJECT, ),
+                                   (GObject.TYPE_PYOBJECT,),
                                   ),
         # Show Application in the Rigo UI
         "application-show"  : (GObject.SignalFlags.RUN_LAST,
                                    None,
-                                   (GObject.TYPE_PYOBJECT, ),
+                                   (GObject.TYPE_PYOBJECT,),
+                                  ),
+        # Hide Application in the Rigo UI
+        "application-hide"  : (GObject.SignalFlags.RUN_LAST,
+                                   None,
+                                   (GObject.TYPE_PYOBJECT,),
                                   ),
         # Single click on application widget
         "application-selected" : (GObject.SignalFlags.RUN_LAST,
                                    None,
-                                   (GObject.TYPE_PYOBJECT, ),
+                                   (GObject.TYPE_PYOBJECT,),
                                   ),
         # action requested for application
         "application-request-action" : (GObject.SignalFlags.RUN_LAST,
@@ -318,15 +331,22 @@ class ApplicationViewController(GObject.Object):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._app_store = None
-        self._last_pkg_match = None
+        self._last_app = None
+        self._nc = None
 
         self._image = self._builder.get_object("appViewImage")
         self._app_name_lbl = self._builder.get_object("appViewNameLabel")
         self._app_info_lbl = self._builder.get_object("appViewInfoLabel")
-        self._app_download_lbl = self._builder.get_object(
-            "appViewDownloadedLabel")
         self._app_downloaded_lbl = self._builder.get_object(
-            "appViewDownloadSizeLabel")
+            "appViewDownloadedLabel")
+        self._app_comments_box = self._builder.get_object("appViewCommentsVbox")
+        self._app_comment_send_button = self._builder.get_object(
+            "appViewCommentSendButton")
+        self._app_comment_text_view = self._builder.get_object(
+            "appViewCommentText")
+        self._app_comment_text_view.set_name("rigoTextView")
+        self._app_comment_text_buffer = self._builder.get_object(
+            "appViewCommentTextBuffer")
         self._stars_container = self._builder.get_object("appViewStarsSelVbox")
 
         self._stars = ReactiveStar()
@@ -337,6 +357,11 @@ class ApplicationViewController(GObject.Object):
 
         self._stars_container.pack_start(self._stars_alignment, False, False, 0)
 
+    def set_notification_controller(self, nc):
+        """
+        Bind NotificationController object to this class.
+        """
+        self._nc = nc
 
     def set_store(self, store):
         """
@@ -347,6 +372,18 @@ class ApplicationViewController(GObject.Object):
     def setup(self):
         self.connect("application-activated", self._on_application_activated)
         self._app_store.connect("redraw-request", self._on_redraw_request)
+        self._app_comment_send_button.connect("clicked", self._on_send_comment)
+        self._app_comment_send_button.set_sensitive(False)
+        self._app_comment_text_buffer.connect(
+            "changed", self._on_comment_buffer_changed)
+
+    def _on_comment_buffer_changed(self, widget):
+        """
+        Our comment text is changed, decide if to activate the Send button.
+        """
+        count = self._app_comment_text_buffer.get_char_count()
+        found = count != 0
+        self._app_comment_send_button.set_sensitive(found)
 
     def _on_application_activated(self, avc, app):
         """
@@ -354,7 +391,7 @@ class ApplicationViewController(GObject.Object):
         information. Once we're done loading the shit, we just emit
         'application-show' and let others do the UI switch.
         """
-        self._last_pkg_match = app.get_details().pkg
+        self._last_app = app
         task = ParallelTask(self.__application_activate, app)
         task.name = "ApplicationActivate"
         task.daemon = True
@@ -365,7 +402,9 @@ class ApplicationViewController(GObject.Object):
         Redraw request received from AppListStore for given package match.
         We are required to update rating, number of downloads, icon.
         """
-        if pkg_match == self._last_pkg_match:
+        if self._last_app is None:
+            return
+        if pkg_match == self._last_app.get_details().pkg:
             stats = self._app_store.get_review_stats(pkg_match)
             icon = self._app_store.get_icon(pkg_match)
             self._setup_application_stats(stats, icon)
@@ -377,6 +416,7 @@ class ApplicationViewController(GObject.Object):
         details = app.get_details()
         metadata = {}
         metadata['markup'] = app.get_extended_markup()
+        metadata['info'] = app.get_info_markup()
         metadata['download_size'] = details.downsize
         metadata['stats'] = app.get_review_stats()
         metadata['homepage'] = details.website
@@ -384,6 +424,256 @@ class ApplicationViewController(GObject.Object):
         # using app store here because we cache the icon pixbuf
         metadata['icon'] = self._app_store.get_icon(details.pkg)
         GLib.idle_add(self._setup_application_info, app, metadata)
+
+    def hide(self):
+        """
+        This method shall be called when the Controller widgets are
+        going to hide.
+        """
+        self._last_app = None
+        self.emit("application-hide", self)
+
+    def _on_send_comment(self, widget, app=None):
+        """
+        Send comment to Web Service.
+        """
+        if app is None:
+            app = self._last_app
+            if app is None:
+                # we're hiding
+                return
+
+        text = self._app_comment_text_buffer.get_text(
+            self._app_comment_text_buffer.get_start_iter(),
+            self._app_comment_text_buffer.get_end_iter(),
+            False)
+        if not text.strip():
+            return
+        # make it utf-8
+        text = const_convert_to_unicode(text, enctype="utf-8")
+
+        # get entropy ws, check if we're logged in
+        # if not, use LoginNotificationBox and wait on signal
+        # if yes, use SubmitDocumentNotificationBox and wait on signal
+        # FIXME, lxnay complete
+
+        def _sender(app, text):
+            if not app.is_webservice_available():
+                GLib.idle_add(self._notify_webservice_na, app)
+                return
+            ws_user = app.get_webservice_username()
+            if ws_user is not None:
+                GLib.idle_add(self._notify_comment_submit, app, ws_user, text)
+            else:
+                GLib.idle_add(self._notify_login_request, app, text)
+
+        task = ParallelTask(_sender, app, text)
+        task.name = "AppViewSendComment"
+        task.start()
+
+    def _notify_webservice_na(self, app):
+        """
+        Notify Web Service unavailability for given Application object.
+        """
+        box = NotificationBox(
+            "%s: <b>%s</b>" % (
+                _("Entropy Web Services not available for repository"),
+                app.get_details().channelname),
+            message_type=Gtk.MessageType.ERROR)
+        box.add_destroy_button(_("Ok, thanks"))
+        self._nc.append(box)
+
+    def _notify_comment_submit(self, app, username, text):
+        """
+        Notify User about Comment submission with current credentials.
+        """
+        box = NotificationBox(
+            _("You are about to add a <b>comment</b> as <b>%s</b>.") \
+                % (GObject.markup_escape_text(username),),
+            message_type=Gtk.MessageType.INFO)
+
+        def _comment_submit(widget):
+            box.destroy()
+            self._comment_submit(app, username, text)
+        box.add_button(_("_Ok, cool!"), _comment_submit)
+
+        def _logout_webservice(widget):
+            box.destroy()
+            self._logout_webservice(app)
+        box.add_button(_("_No, logout!"), _logout_webservice)
+
+        box.add_destroy_button(_("_Abort"))
+        self._nc.append(box)
+
+    def _comment_submit(self, app, username, text):
+        """
+        Actual Comment submit to Web Service.
+        Here we arrive from the MainThread.
+        """
+        task = ParallelTask(
+            self._comment_submit_thread_body,
+            app, username, text)
+        task.name = "CommentSubmitThreadBody"
+        task.daemon = True
+        task.start()
+
+    def _comment_submit_thread_body(self, app, username, text):
+        """
+        Called by _comment_submit(), does the actualy submit.
+        """
+        repository_id = app.get_details().channelname
+        webserv = self._entropy_ws.get(repository_id)
+        if webserv is None:
+            # impossible!
+            return
+
+        key = app.get_details().pkgkey
+        doc_factory = webserv.document_factory()
+        doc = doc_factory.comment(
+            username, text, "", "")
+
+        err_msg = None
+        try:
+            new_doc = webserv.add_document(key, doc)
+        except WebService.WebServiceException as err:
+            new_doc = None
+            err_msg = str(err)
+
+        def _submit_success(doc):
+            box = CommentBox(doc, is_last=True)
+            box.render()
+            self._app_comments_box.pack_start(box, False, False, 2)
+            box.show()
+
+            nbox = NotificationBox(
+                _("Your comment has been submitted!"),
+                message_type=Gtk.MessageType.INFO)
+            nbox.add_destroy_button(_("Ok, great!"))
+            self._nc.append(nbox, timeout=10)
+
+        def _submit_fail():
+            box = NotificationBox(
+                _("Comment submit error: <i>%s</i>") % (err_msg,),
+                message_type=Gtk.MessageType.ERROR)
+            box.add_destroy_button(_("Ok, thanks"))
+            self._nc.append(box)
+
+        if new_doc is not None:
+            GLib.idle_add(_submit_success, new_doc)
+        else:
+            GLib.idle_add(_submit_fail)
+
+    def _logout_webservice(self, app):
+        """
+        Execute logout of current credentials from Web Service.
+        Actually, this means removing the local cookie.
+        """
+        repository_id = app.get_details().channelname
+        webserv = self._entropy_ws.get(repository_id)
+        if webserv is not None:
+            webserv.remove_credentials()
+
+        def _send_comment():
+            self._on_send_comment(None, app=app)
+        GLib.idle_add(_send_comment)
+
+    def _notify_login_request(self, app, text):
+        """
+        Notify User that login is required
+        """
+        box = LoginNotificationBox(self._entropy_ws, app)
+        box.connect("login-success", self._on_comment_login_success)
+        box.connect("login-failed", self._on_comment_login_failed)
+        self._nc.append(box)
+
+    def _on_comment_login_success(self, widget, username, app):
+        """
+        Notify user that we successfully logged in!
+        """
+        box = NotificationBox(
+            _("Logged in as <b>%s</b>! How about your <b>comment</b>?") \
+                % (GObject.markup_escape_text(username),),
+            message_type=Gtk.MessageType.INFO)
+        def _send_comment(widget):
+            box.destroy()
+            self._on_send_comment(widget, app=app)
+        box.add_button(_("_Send now"), _send_comment)
+        box.add_destroy_button(_("_Abort"))
+        self._nc.append(box)
+
+    def _on_comment_login_failed(self, widget, app):
+        """
+        Entropy Web Services Login failed message.
+        """
+        box = NotificationBox(
+            _("Login failed. Your <b>comment</b> hasn't been added"),
+            message_type=Gtk.MessageType.ERROR)
+        box.add_destroy_button(_("_Ok, thanks"))
+        self._nc.append(box)
+
+    def _append_comments(self, downloader, app, comments, has_more):
+        """
+        Append given Entropy WebService Document objects to
+        the comment area.
+        """
+        more_button_name = "commentBoxMoreButton"
+
+        # remove spinner if there, ugly O(n)
+        for child in self._app_comments_box.get_children():
+            if isinstance(child, Gtk.Spinner):
+                child.destroy()
+            if child.get_name() == more_button_name:
+                child.destroy()
+
+        if not comments:
+            label = Gtk.Label()
+            label.set_markup(
+                _("<i>No <b>comments</b> for this Application, yet!</i>"))
+            self._app_comments_box.pack_start(label, False, False, 1)
+
+            label = Gtk.Label()
+            url = build_register_url()
+            url = GObject.markup_escape_text(url)
+            reg_msg = _("You need to <a href=\"%s\">register here</a>")  % (
+                url,)
+            label.set_markup("<small>" + reg_msg + "</small>")
+            label.show()
+            self._app_comments_box.pack_start(label, False, False, 1)
+            return
+
+        idx = 0
+        length = len(comments)
+        for doc in comments:
+            idx += 1
+            box = CommentBox(doc, is_last=(not has_more and (idx == length)))
+            box.render()
+            self._app_comments_box.pack_start(box, False, False, 2)
+            box.show()
+
+        if has_more:
+            button = Gtk.Button()
+            button.set_label(_("More comments"))
+            button.set_name(more_button_name)
+            button.set_alignment(0.5, 0.5)
+            def _enqueue_download(widget):
+                widget.hide()
+                spinner = Gtk.Spinner()
+                spinner.set_size_request(-1, 24)
+                spinner.set_tooltip_text(_("Loading comments..."))
+                spinner.set_name("commentBoxSpinner")
+                self._app_comments_box.pack_start(spinner, False, False, 3)
+                spinner.show()
+                downloader.enqueue_download()
+            button.connect("clicked", _enqueue_download)
+            self._app_comments_box.pack_start(button, False, False, 1)
+            button.show()
+
+    def _append_comments_safe(self, downloader, app, comments, has_more):
+        """
+        Same as _append_comments() but thread-safe.
+        """
+        GLib.idle_add(self._append_comments, downloader, app,
+                      comments, has_more)
 
     def _setup_application_stats(self, stats, icon):
         """
@@ -393,11 +683,12 @@ class ApplicationViewController(GObject.Object):
         if not total_downloads:
             down_msg = _("Never downloaded")
         else:
-            down_msg = ngettext("<small><b>%d</b> download</small>",
-                                "<small><b>%d</b> downloads</small>",
+            down_msg = ngettext("<small><b>%d</b>\ndownload</small>",
+                                "<small><b>%d</b>\ndownloads</small>",
                                 total_downloads)
             down_msg = down_msg % (total_downloads,)
-        self._app_download_lbl.set_markup(down_msg)
+
+        self._app_downloaded_lbl.set_markup(down_msg)
         if icon:
             self._image.set_from_pixbuf(icon)
         self._stars.set_rating(stats.ratings_average - 1)
@@ -407,22 +698,118 @@ class ApplicationViewController(GObject.Object):
         """
         Setup the actual UI widgets content and emit 'application-show'
         """
-        # FIXME, lxnay complete
-        down_size = entropy.tools.bytes_into_human(
-                metadata['download_size'])
-        self._app_downloaded_lbl.set_markup("<small>%s</small>" % (down_size,))
         self._app_name_lbl.set_markup(metadata['markup'])
+        self._app_info_lbl.set_markup(metadata['info'])
 
-        # GPG info, required space, use flags
+        # FIXME, lxnay complete
         # install/remove/update buttons
-        # show comments (and allow commenting)
-        # allow screenshots upload?
+        # for the rest, point to the remote www service
 
         stats = metadata['stats']
         icon = metadata['icon']
         self._setup_application_stats(stats, icon)
 
+        # load application comments asynchronously
+        # so at the beginning, just place a spinner
+        spinner = Gtk.Spinner()
+        spinner.set_size_request(-1, 48)
+        spinner.set_tooltip_text(_("Loading comments..."))
+        spinner.set_name("commentBoxSpinner")
+        for child in self._app_comments_box.get_children():
+            child.destroy()
+        self._app_comments_box.pack_start(spinner, False, False, 0)
+        spinner.show()
+        spinner.start()
+
+        downloader = ApplicationViewController.CommentsDownloader(
+            app, self, self._append_comments_safe)
+        downloader.start()
+
         self.emit("application-show", app)
+
+    class CommentsDownloader(GObject.Object):
+        """
+        Automated Application comments downloader.
+        """
+
+        def __init__(self, app, avc, callback):
+            self._app = app
+            self._avc = avc
+            self._offset = 0
+            self._callback = callback
+            self._avc.connect("application-hide", self.stop)
+            self._task = ParallelTask(self._download)
+            self._started = False
+
+        def stop(self, *args):
+            """
+            Stop downloading comments, if we're still doing it.
+            """
+            self._started = False
+            print("Application-hide called, this is", self)
+
+        def start(self):
+            """
+            Start downloading comments and send them to callback.
+            Loop over until we have more of them to download.
+            """
+            self._offset = 0
+            self._started = True
+            self._task.start()
+
+        def _download_callback(self, document_list):
+            """
+            Callback called by download_comments() once data
+            is arrived from web service.
+            document_list can be None!
+            """
+            has_more = 0
+            if document_list is not None:
+                has_more = document_list.has_more()
+            # stash more data?
+            if has_more and (document_list is not None):
+                self._offset += len(document_list)
+                # download() will be called externally
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "CommentsDownloader._download_callback: %s, more: %s" % (
+                        document_list, has_more))
+                if document_list is not None:
+                    const_debug_write(
+                        __name__,
+                        "CommentsDownloader._download_callback: "
+                            "total: %s, offset: %s" % (
+                            document_list.total(), document_list.offset()))
+
+            self._callback(self, self._app, document_list, has_more)
+
+        def reset_offset(self):
+            """
+            Reset Comments download offset to 0.
+            """
+            self._offset = 0
+
+        def get_offset(self):
+            """
+            Get current Comments download offset.
+            """
+            return self._offset
+
+        def enqueue_download(self):
+            """
+            Enqueue a new download, starting from current offset
+            """
+            self._task = ParallelTask(self._download)
+            self._task.start()
+
+        def _download(self):
+            """
+            Thread body of the initial Comments downloader.
+            """
+            self._app.download_comments(self._download_callback,
+                                        offset=self._offset)
 
 
 class Rigo(Gtk.Application):
@@ -455,7 +842,10 @@ class Rigo(Gtk.Application):
         self._window.set_name("rigoWindow")
         self._apps_view = self._builder.get_object("appsViewVbox")
         self._scrolled_view = self._builder.get_object("appsViewScrolledWindow")
-        self._app_view = self._builder.get_object("appViewVbox")
+        self._app_view = self._builder.get_object("appViewScrollWin")
+        self._app_view.set_name("rigoWindow")
+        self._app_view_port = self._builder.get_object("appViewVport")
+        self._app_view_port.set_name("rigoWindow")
         self._search_entry = self._builder.get_object("searchEntry")
         self._static_view = self._builder.get_object("staticViewVbox")
         self._notification = self._builder.get_object("notificationBox")
@@ -512,6 +902,7 @@ class Rigo(Gtk.Application):
 
         self._nc = NotificationViewController(
             self._entropy, self._avc, self._notification)
+        self._app_view_c.set_notification_controller(self._nc)
 
     def _on_view_cleared(self, *args):
         self._change_view_state(Rigo.STATIC_VIEW_STATE)
@@ -572,6 +963,7 @@ class Rigo(Gtk.Application):
         state (or mode). Hiding back application information.
         """
         self._app_view.hide()
+        self._app_view_c.hide()
 
     def _change_view_state(self, state):
         """

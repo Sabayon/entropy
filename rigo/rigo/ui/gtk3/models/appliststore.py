@@ -74,11 +74,16 @@ class AppListStore(Gtk.ListStore):
         def _ui_redraw_callback(*args):
             if const_debug_enabled():
                 const_debug_write(__name__,
-                                  "_ui_redraw_callback()")
+                                  "_ui_redraw_callback(), %s" % (args,))
             self.emit("redraw-request", pkg_match)
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
-        icon, cache_hit = app.get_details().icon
+        icon, cache_hit = app.get_icon()
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                              "get_icon({%s, %s}) = %s, hit: %s" % (
+                    (pkg_match, app.name, icon, cache_hit,)))
+
         if icon is None:
             if cache_hit:
                 # this means that there is no icon for package

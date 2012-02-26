@@ -74,22 +74,44 @@ GtkViewport {
     padding: 0;
 }
 
+
+/* Rigo specific part */
+
+/* our infobars have to be dark */
+GtkInfoBar.info {
+    background-color: #1c1c1c;  /* gray */
+}
+GtkInfoBar.error {
+    background-color: #770000;  /* dark red */
+}
+GtkInfoBar.warning {
+    background-color: #613056;  /* purple */
+}
+GtkInfoBar #message-area GtkLabel {
+    color: white;
+}
+
+GtkInfoBar #message-area-error GtkLabel {
+    color: yellow;
+}
+
 #rigoWindow {
     background-color: white;
     color: black;
 }
 
-/* our infobars have to be dark */
-GtkInfoBar.info {
-    background-color: #1c1c1c;
-}
-GtkInfoBar.error {
-    background-color: #770000;
-}
-GtkInfoBar.warning {
-    background-color: #613056;
-}
-GtkInfoBar #notificationMessage {
-    color: white;
+#rigoTextView {
+    color: black;
+    background-color: #ebddff;
 }
 
+/* Application View Comment Box */
+#commentBoxTitle {
+    color: #613056; /* purple */
+}
+#commentBoxComment {
+    color: #345f14;
+}
+#commentBoxAuthor {
+    color: brown;
+}
