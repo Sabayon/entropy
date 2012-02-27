@@ -42,15 +42,15 @@ _ENCODING = "UTF-8"
 default_enc = sys.getfilesystemencoding()
 if default_enc is None:
     default_enc = "ascii"
-if default_enc.lower() != "utf-8":
-    default_locale = "en_US.UTF-8"
+if default_enc.lower() != _ENCODING:
+    default_locale = "en_US." + _ENCODING
     sys.stderr.write("""\
-invalid filesystem encoding %s, must be UTF-8.
-Make sure to set LC_ALL, LANG, LANGUAGE to valid UTF-8 values.
+invalid filesystem encoding %s, must be %s.
+Make sure to set LC_ALL, LANG, LANGUAGE to valid %s values.
 Please execute:
-  LC_ALL=en_US.UTF-8 %s
+  LC_ALL=en_US.%s %s
 Cannot automatically recover from this.
-""" % (default_enc, ' '.join(sys.argv)))
+""" % (default_enc, _ENCODING, _ENCODING, _ENCODING, ' '.join(sys.argv)))
     # just nag from now, make possible to fix broken glibc
     # raise SystemExit(1)
 
