@@ -3014,7 +3014,6 @@ class PortagePlugin(SpmPlugin):
         world_atoms = set()
         enc = etpConst['conf_encoding']
 
-
         try:
 
             with self._PortageWorldSetLocker(self):
@@ -4318,28 +4317,38 @@ class PortagePlugin(SpmPlugin):
         desktop_mime = []
         provided_mime = set()
         enc = etpConst['conf_encoding']
+        raw_enc = etpConst['conf_raw_encoding']
+
+        def _read_file(desktop_path, encoding):
+            with codecs.open(desktop_path, "r", encoding=encoding) as desk_f:
+                desk_data = [x.strip().split("=", 1) for x in \
+                    desk_f.readlines() if len(x.strip().split("=", 1)) == 2]
+                raw_desk_meta = dict(desk_data)
+            return raw_desk_meta
 
         for desktop_path in sorted(valid_paths):
             if not (os.path.isfile(desktop_path) and \
                 os.access(desktop_path, os.R_OK)):
                 continue
-            with codecs.open(desktop_path, "r", encoding=enc) as desk_f:
-                desk_data = [x.strip().split("=", 1) for x in \
-                    desk_f.readlines() if len(x.strip().split("=", 1)) == 2]
-                raw_desk_meta = dict(desk_data)
 
-                if "MimeType" not in raw_desk_meta:
-                    continue
-                elif "Name" not in raw_desk_meta:
-                    continue
-                provided_mime.update(raw_desk_meta['MimeType'].split(";"))
-                desk_meta = {
-                    "name": raw_desk_meta['Name'],
-                    "mimetype": raw_desk_meta['MimeType'],
-                    "executable": raw_desk_meta.get('Exec'),
-                    "icon": raw_desk_meta.get("Icon"),
-                }
-                desktop_mime.append(desk_meta)
+            try:
+                raw_desk_meta = _read_file(desktop_path, enc)
+            except UnicodeDecodeError:
+                # sometimes files are stored in raw unicode format
+                raw_desk_meta = _read_file(desktop_path, raw_enc)
+
+            if "MimeType" not in raw_desk_meta:
+                continue
+            elif "Name" not in raw_desk_meta:
+                continue
+            provided_mime.update(raw_desk_meta['MimeType'].split(";"))
+            desk_meta = {
+                "name": raw_desk_meta['Name'],
+                "mimetype": raw_desk_meta['MimeType'],
+                "executable": raw_desk_meta.get('Exec'),
+                "icon": raw_desk_meta.get("Icon"),
+            }
+            desktop_mime.append(desk_meta)
 
         provided_mime.discard("")
         return desktop_mime, provided_mime
@@ -4424,6 +4433,7 @@ responsible in any way.""" % (mylicense, mylicense,)
             return ebuild_tag
 
         enc = etpConst['conf_encoding']
+        
         with codecs.open(ebuild, "r", encoding=enc) as f:
             tags = [x.strip() for x in f.readlines() \
                         if x.strip() and x.strip().startswith(search_tag)]
