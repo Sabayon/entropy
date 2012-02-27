@@ -1,3 +1,21 @@
+commit b97c1dd8b7ae4ee8820b92bc77fc28a35ab6253d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 23:33:12 2012 +0100
+
+    Release Entropy 1.0_rc89
+
+commit 85ebb0ebacf963baa35c2dc2c152cb0f905db91a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 23:18:26 2012 +0100
+
+    [entropy.const] rework ETP_ARCH_CONST and keywords configuration, make it work with overridden values
+
+commit 74805acac02cdd4c8523eed015d7205cd6cca94a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 22:57:04 2012 +0100
+
+    Tagging Entropy version 1.0_rc88
+
 commit 65506c706fc36a7244e496e23dab673266d82d4f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 27 22:56:58 2012 +0100
