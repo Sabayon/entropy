@@ -1,3 +1,390 @@
+commit 65506c706fc36a7244e496e23dab673266d82d4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 22:56:58 2012 +0100
+
+    Release Entropy 1.0_rc88
+
+commit 642da47e4004b5fb6347c127a2013939a7c40d9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 19:49:13 2012 +0100
+
+    [entropy.const] add _RAW_ENCODING and fix wrong encoding detection code
+
+commit 18282e37647479f913dfa12a620cb2d3abf38131
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 19:47:16 2012 +0100
+
+    [entropy.spm] PortagePlugin: try using raw_unicode_escape when reading .desktop files
+    
+    Sometimes, upstream .desktop files are encoded using raw_unicode_escape
+    and we should really fallback to that encoding before giving up reading
+    them.
+
+commit a28a92c2a3a9bfad332e61eefc2d9dc7720c53e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 19:35:15 2012 +0100
+
+    [entropy.const] do not hardcode UTF-8 string, but rather use _ENCODING
+
+commit ba805a528f1ba82357062fee95f20f823490e801
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 10:33:07 2012 +0100
+
+    [rigo] more UI work for Application View Pane (comments handling)
+
+commit c1ef9ae4b52c5d11940fbf2a85d25074e8d36eec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 10:32:47 2012 +0100
+
+    [entropy.client.services] make possible to retrieve documents in reverse order
+
+commit 4e2882ef26293a8c69087b6236df7ead2983ca42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 26 22:36:47 2012 +0100
+
+    [rigo] another chunk of Application View code
+
+commit 550be469a17683744b7b17f53b167014e4e91a85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 26 22:18:37 2012 +0100
+
+    [entropy.client.services.interfaces] drop incomplete comment
+
+commit 6b3f214f6ffeef6435b2726f5ed510edd875b75b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 22 12:46:49 2012 +0100
+
+    [rigo] another set of code update, still UI work
+
+commit 4673c622a4b0a6feb748ad127ee2a791cd866c34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 20 17:52:50 2012 +0100
+
+    [entropy.spm] improve heuristic used to detect non-kernel ebuilds
+    
+    This makes possible to have external module packages inside the
+    sys-kernel/ category, by just adding extra checks. In particular,
+    we now check against ETYPE ebuild environment variable.
+    This should guarantee that all the kernel sources, binaries and
+    headers won't be tagged by Entropy.
+
+commit ac8de69970dca4f0e697bfb05784103b6d7fde65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 19 23:07:34 2012 +0100
+
+    [rigo] rework some code paths to be more signal-centric, more work on the app details pane
+
+commit 74149c79c1355b8f1a75aa0a0212581ad6567190
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 19 14:52:15 2012 +0100
+
+    [entropy.spm] PortagePlugin: be more robust against fucked up portage world file
+
+commit ceeaf62ddee82eb36a71bedac8f94f481b57d181
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 19 14:43:41 2012 +0100
+
+    [entropy.client] improve code that handles the Entropy Resources Lock
+
+commit 66b05a32a57eb61e9722c765e5340a6cd00469dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 17:28:42 2012 +0100
+
+    [rigo] start implementing Application View UI mode
+
+commit eb65e05410ec9fb206072fab758c3f89ba6cd91d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 14:30:00 2012 +0100
+
+    [rigo] implement UpdatesNotification "Show" button action
+
+commit d38cc2befdafa61c2510a529ace6ef87d69fe231
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 14:22:45 2012 +0100
+
+    [rigo] implement UI view changes as a Finite State Machine
+
+commit 064f18b719f94b95f30e50fe1fb822485008901b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 14:06:04 2012 +0100
+
+    [rigo] start moving code to separate packages, enforce signals usage
+
+commit 13b7a70b63e9f9654ab15358c0dbf26446e8e939
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 12:19:50 2012 +0100
+
+    [rigo] drop networkmanager dependency
+
+commit 31cfd410abb614a660bba2a58d2987b4eb39417d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 18 12:04:58 2012 +0100
+
+    [rigo] add custom ApplicationView (Gtk.VBox) supporting package related signals
+
+commit 4fa3cf9e847e458a1ac69bba61b3a80df683c088
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 17 14:14:18 2012 +0100
+
+    [equo] warn user if repositories haven't been updated for a while
+
+commit 1c213a911b8d1b4ffce612407327bc295f95f79e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 17 13:58:11 2012 +0100
+
+    [entropy.client] add Repository.get_last_sync_time()
+    
+    Everytime Repository.sync() is triggered, the last sync time
+    information is updated. This makes possible to figure out when
+    the last repository update has been run and warn user about it
+    if they're too old.
+
+commit 26cd526b583ad07b465cecf9c74caf00a2db35cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 17 13:35:56 2012 +0100
+
+    [rigo] improve NotificationController and NotificationBox UI
+
+commit 351b2b23b9f5eedcf508ce59580028088c0c1d2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 16 15:58:49 2012 +0100
+
+    [entropy] fix typo in documentation
+
+commit a67a52f49a1df39e0f23e02c1e1c43a4b8eda47e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 20:08:09 2012 +0100
+
+    [eit] enable shared locking usage for "unlocked" methods
+
+commit d02d4e9356af07a57d4db6b0ff2c1836e4f416ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 20:07:33 2012 +0100
+
+    [equo] use blocking mode when acquiring the shared lock
+    
+    This avoids tainting stdout with "please wait" messages
+
+commit 1371a8d540cb3d3c557f0f2b9ea62c4fd6a37694
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 19:36:08 2012 +0100
+
+    [rigo] implement Entropy Resources locking
+
+commit 91dd06b168b98888f4a7c4a5b99225f6a9dcf7c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 19:13:11 2012 +0100
+
+    [equo] implement shared Entropy Resources locking where required
+
+commit 451c2b158bbd56c9ff7774dbea36dc84d5f51d1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 18:59:59 2012 +0100
+
+    [entropy.client] add support for shared Entropy resources lock acquisition
+    
+    This makes possible to support the "readers/writers" model by
+    letting code to acquire Entropy Resources in shared mode (for
+    readers) and the same in exclusive mode (default, for writers).
+
+commit acf58620347b431e1e4898366b2fc7707667abbe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 18:23:44 2012 +0100
+
+    [entropy.client] drop Client.another_entropy_running()
+    
+    This has been sitting in deprecated state for very long time.
+
+commit 897a91d4434038e7caf82ce2e760efb37514d6d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 18:21:51 2012 +0100
+
+    [entropy.client] migrate Entropy resources locking functions to FlockFile
+    
+    In order to simplify the code and allow further improvements
+    (eg. the addition of readers/writers locking), migrate all the
+    Entropy Resources locking functions to FlockFile().
+
+commit c2d0c819237f3b79e0128c5ce34ee239a1396c27
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 18:21:04 2012 +0100
+
+    [entropy.misc] add non blocking methods to FlockFile
+
+commit 7c2c9437bb09b4e072319a850d47bea561b70820
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 17:23:32 2012 +0100
+
+    [entropy.misc] add FlockFile class
+    
+    The purpose of this class is to implement a file-based lock,
+    abstracting away from fcntl.
+
+commit 6cdede57ab2a6df1572cbcce722eac7cc892fe76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 15 17:22:48 2012 +0100
+
+    [entropy.cli] remove deprecated acquire_entropy_locks, release_entropy_locks
+
+commit 24bbfae7c799ed155e160fada7b5f4502c2ccdc5
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Mon Feb 13 22:42:43 2012 +0100
+
+    [po] update Polish translation, with corrected plural forms thanks to last changes
+
+commit 4150fa8856e8992c30885877f558fa9a5a76630d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 16:49:45 2012 +0100
+
+    [rigo] implement more methods in AppListStore
+
+commit d16a3845196b888feb71c3d4682b47d3859274f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 16:35:52 2012 +0100
+
+    [rigo] properly position installed overlay icon over application icon
+
+commit fc59f0bc808f79178fd76f01458b9c2318c3d5e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 16:35:36 2012 +0100
+
+    [rigo.utils] drop utf8(), not needed
+
+commit 1ae108898346f8282d6e64c8b0c81276103d9f4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 16:26:39 2012 +0100
+
+    [entropy.cache] put EntropyCacher to sleep when there's nothing to do
+    
+    Use a semaphore to signal the worker thread if there's something to do,
+    otherwise the whole thread should just sleep and avoid to poll every
+    N seconds.
+
+commit 3a7e33ce726a9d78ad97001189b56a2181737b13
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 15:30:39 2012 +0100
+
+    [rigo] fix WebService cache dir path, make it point to $HOME/.entropy/ws_cache
+
+commit 0ce9fe62d36f1ac12289cec25cbe4602d40624b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 14:15:42 2012 +0100
+
+    [po] update translations
+
+commit affcf204255d9b7581dadd8aa2cbac8b1ab561f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 14:14:45 2012 +0100
+
+    [entropy.i18n] rename P_() into ngettext().
+    
+    intltool-update doesn't understand ngettext function exposed as
+    P_().
+
+commit f4e2ae464094c1284f070376f122fd4b83b48159
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 09:42:36 2012 +0100
+
+    [rigo] rework model and controllers layers in order to improve caching
+
+commit e914763b6de16defeb17d1533987c477c1e1ef13
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 13 08:50:44 2012 +0100
+
+    [entropy.client.services] implement ram-caching for get_downloads()
+    
+    get_downloads() was left uncovered from ram-caching of the responses,
+    in contraddiction to get_votes() and get_available_downloads(), for
+    example.
+
+commit a7e5f2f3cb81469ead3d4a0d4c3f4dd4f37cdb42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 12 23:19:09 2012 +0100
+
+    [rigo] integrate package icons retrieval
+
+commit a8420b5ad5eb995ee6a7d66b5fa045d34ad73bf0
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Feb 12 03:04:11 2012 +0100
+
+    [i18n] use ngettext in some places where it's most useful
+
+commit f59d04baa9291cfa6566bc2911bc2e108c244d50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 12 13:26:21 2012 +0100
+
+    [rigo] add more interactions on the UI, consolidate current code (not complete yet)
+
+commit f148ca069447f52822163011c39813c36890750e
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Feb 12 00:22:36 2012 +0100
+
+    [rigo] add a TODO line
+
+commit c76f3168b7a44895b4e99dc1e79e92b6f8220713
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 11 22:58:54 2012 +0100
+
+    [rigo] add Rigo prototype app (almost nothing is implemented)
+    
+    This app will hopefully replace Sulfur at some point in 2012.
+    You need pygobject[cairo] to get it working.
+
+commit 7b0c95078bed140cc91d6c383a6764d571dea88f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 10 14:07:30 2012 +0100
+
+    [entropy.client.interfaces.db] do not use "&>", which is bash only
+    
+    This commit fixes bug #3022
+
+commit dafc861554fbdfe7c4cb7c7f57ad9939105bb55b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 10 13:55:39 2012 +0100
+
+    [entropy.spm] PortagePlugin._pkg_foorm: catch OSError during env setup
+    
+    ebuild environment setup function for pkg_{prerm,postrm} can raise
+    OSError during os.makedirs(). Better catch it and handle the failure
+    nicely so that the user can take proper measures to fix it, instead
+    of completely bailing out with garbageish text.
+
+commit 3d3b9967e88bde9e94771d18453235eae65aca6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 10 13:20:50 2012 +0100
+
+    [sulfur] catch WebService.MethodNotAvailable exception during UGC login
+
+commit eca401649db970be8fb0df02d126953569ebe91c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 9 21:55:52 2012 +0100
+
+    [entropy.fetchers] UrlFetcher: handle HTTP response without Content-Length
+    
+    It can happen that HTTP servers (or those accessed via Proxy) do not
+    actually provide Content-Length information in the response.
+    This caused UrlFetcher to keep __remotesize = 0, which means that
+    the same thought that the file has been fully downloaded already
+    under some circumstances.
+
+commit 056f552dab9692b469d36ab8bd27a419e8bca498
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 8 15:27:57 2012 +0100
+
+    [entropy.client] implement Client.atom_search
+    
+    As of today, both Equo and Sulfur implemented their own search
+    functions because the API didn't provide any direct support for
+    searching through all the repositories. atom_search() now offers
+    a basic way to do this, without reinventing the weel every time
+    in consumer code.
+
+commit f53b11e5274007d18a3548f1a0efe15de8b4281a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 3 23:06:47 2012 +0100
+
+    Tagging Entropy version 1.0_rc87
+
 commit 0ceb055608814bfa8d99a7ecfd0356c2677d1927
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 3 23:06:41 2012 +0100
