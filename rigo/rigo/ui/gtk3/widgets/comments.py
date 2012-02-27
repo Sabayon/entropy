@@ -27,7 +27,7 @@ class CommentBox(Gtk.VBox):
     def __init__(self, comment, is_last=False):
         Gtk.VBox.__init__(self)
         self._comment = comment
-        self.set_name("commentBox")
+        self.set_name("comment-box")
         self.set_spacing(2)
         self._is_last = is_last
 
@@ -39,7 +39,7 @@ class CommentBox(Gtk.VBox):
             title_id = Document.DOCUMENT_TITLE_ID
             label = Gtk.Label()
             label.set_markup("<b>" + self._comment[title_id] + "</b>")
-            label.set_name("commentBoxTitle")
+            label.set_name("comment-box-title")
             label.set_line_wrap(True)
             label.set_line_wrap_mode(Pango.WrapMode.WORD)
             label.set_alignment(0.0, 0.0)
@@ -50,7 +50,7 @@ class CommentBox(Gtk.VBox):
         data_id = Document.DOCUMENT_DATA_ID
         label = Gtk.Label()
         label.set_markup("<small>"  + self._comment[data_id] + "</small>")
-        label.set_name("commentBoxComment")
+        label.set_name("comment-box-comment")
         label.set_line_wrap(True)
         label.set_line_wrap_mode(Pango.WrapMode.WORD)
         label.set_alignment(0.0, 0.0)
@@ -72,7 +72,7 @@ class CommentBox(Gtk.VBox):
         label.set_line_wrap_mode(Pango.WrapMode.WORD)
         label.set_alignment(0.98, 0.0)
         label.set_selectable(True)
-        label.set_name("commentBoxAuthor")
+        label.set_name("comment-box-author")
         label.show()
         self.pack_start(label, False, False, 0)
 

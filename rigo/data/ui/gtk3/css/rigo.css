@@ -95,23 +95,23 @@ GtkInfoBar #message-area-error GtkLabel {
     color: yellow;
 }
 
-#rigoWindow {
+#rigo-view {
     background-color: white;
     color: black;
 }
 
-#rigoTextView {
+#rigo-text-view {
     color: black;
     background-color: #ebddff;
 }
 
 /* Application View Comment Box */
-#commentBoxTitle {
+#comment-box-title {
     color: #613056; /* purple */
 }
-#commentBoxComment {
+#comment-box-comment {
     color: #345f14;
 }
-#commentBoxAuthor {
+#comment-box-author {
     color: brown;
 }

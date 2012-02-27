@@ -187,7 +187,7 @@ class ApplicationMetadata(object):
                     # for these two, service_cache is broken
                     # and actually useless.
                     "icon": (webserv.get_icons, {}),
-                    "comment": (webserv.get_comments, {}),
+                    "comment": (webserv.get_comments, {"latest": True,}),
                 }
 
                 for request in request_list:
@@ -564,7 +564,7 @@ class ApplicationMetadata(object):
             try:
                 outcome = webserv.get_comments(
                     [package_key], cache=False,
-                    offset=offset)[package_key]
+                    latest=True, offset=offset)[package_key]
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.

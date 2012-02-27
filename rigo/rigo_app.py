@@ -340,11 +340,13 @@ class ApplicationViewController(GObject.Object):
         self._app_downloaded_lbl = self._builder.get_object(
             "appViewDownloadedLabel")
         self._app_comments_box = self._builder.get_object("appViewCommentsVbox")
+        self._app_my_comments_box = self._builder.get_object(
+            "appViewMyCommentsVbox")
         self._app_comment_send_button = self._builder.get_object(
             "appViewCommentSendButton")
         self._app_comment_text_view = self._builder.get_object(
             "appViewCommentText")
-        self._app_comment_text_view.set_name("rigoTextView")
+        self._app_comment_text_view.set_name("rigo-text-view")
         self._app_comment_text_buffer = self._builder.get_object(
             "appViewCommentTextBuffer")
         self._stars_container = self._builder.get_object("appViewStarsSelVbox")
@@ -452,11 +454,6 @@ class ApplicationViewController(GObject.Object):
         # make it utf-8
         text = const_convert_to_unicode(text, enctype="utf-8")
 
-        # get entropy ws, check if we're logged in
-        # if not, use LoginNotificationBox and wait on signal
-        # if yes, use SubmitDocumentNotificationBox and wait on signal
-        # FIXME, lxnay complete
-
         def _sender(app, text):
             if not app.is_webservice_available():
                 GLib.idle_add(self._notify_webservice_na, app)
@@ -542,13 +539,14 @@ class ApplicationViewController(GObject.Object):
         def _submit_success(doc):
             box = CommentBox(doc, is_last=True)
             box.render()
-            self._app_comments_box.pack_start(box, False, False, 2)
+            self._app_my_comments_box.pack_start(box, False, False, 2)
             box.show()
 
             nbox = NotificationBox(
                 _("Your comment has been submitted!"),
                 message_type=Gtk.MessageType.INFO)
             nbox.add_destroy_button(_("Ok, great!"))
+            self._app_comment_text_buffer.set_text("")
             self._nc.append(nbox, timeout=10)
 
         def _submit_fail():
@@ -616,13 +614,9 @@ class ApplicationViewController(GObject.Object):
         Append given Entropy WebService Document objects to
         the comment area.
         """
-        more_button_name = "commentBoxMoreButton"
-
         # remove spinner if there, ugly O(n)
         for child in self._app_comments_box.get_children():
-            if isinstance(child, Gtk.Spinner):
-                child.destroy()
-            if child.get_name() == more_button_name:
+            if not isinstance(child, CommentBox):
                 child.destroy()
 
         if not comments:
@@ -641,32 +635,34 @@ class ApplicationViewController(GObject.Object):
             self._app_comments_box.pack_start(label, False, False, 1)
             return
 
+        if has_more:
+            button = Gtk.Button()
+            button.set_label(_("Older comments"))
+            button.set_alignment(0.5, 0.5)
+            def _enqueue_download(widget):
+                widget.hide()
+                spinner = Gtk.Spinner()
+                spinner.set_size_request(-1, 24)
+                spinner.set_tooltip_text(_("Loading older comments..."))
+                spinner.set_name("comment-box-spinner")
+                self._app_comments_box.pack_start(spinner, False, False, 3)
+                spinner.show()
+                downloader.enqueue_download()
+            button.connect("clicked", _enqueue_download)
+
+            button_box = Gtk.HButtonBox()
+            button_box.pack_start(button, False, False, 0)
+            self._app_comments_box.pack_start(button_box, False, False, 1)
+            button_box.show_all()
+
         idx = 0
         length = len(comments)
         for doc in comments:
             idx += 1
             box = CommentBox(doc, is_last=(not has_more and (idx == length)))
             box.render()
-            self._app_comments_box.pack_start(box, False, False, 2)
+            self._app_comments_box.pack_end(box, False, False, 2)
             box.show()
-
-        if has_more:
-            button = Gtk.Button()
-            button.set_label(_("More comments"))
-            button.set_name(more_button_name)
-            button.set_alignment(0.5, 0.5)
-            def _enqueue_download(widget):
-                widget.hide()
-                spinner = Gtk.Spinner()
-                spinner.set_size_request(-1, 24)
-                spinner.set_tooltip_text(_("Loading comments..."))
-                spinner.set_name("commentBoxSpinner")
-                self._app_comments_box.pack_start(spinner, False, False, 3)
-                spinner.show()
-                downloader.enqueue_download()
-            button.connect("clicked", _enqueue_download)
-            self._app_comments_box.pack_start(button, False, False, 1)
-            button.show()
 
     def _append_comments_safe(self, downloader, app, comments, has_more):
         """
@@ -714,7 +710,7 @@ class ApplicationViewController(GObject.Object):
         spinner = Gtk.Spinner()
         spinner.set_size_request(-1, 48)
         spinner.set_tooltip_text(_("Loading comments..."))
-        spinner.set_name("commentBoxSpinner")
+        spinner.set_name("comment-box-spinner")
         for child in self._app_comments_box.get_children():
             child.destroy()
         self._app_comments_box.pack_start(spinner, False, False, 0)
@@ -839,13 +835,13 @@ class Rigo(Gtk.Application):
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
         self._builder.connect_signals(Rigo.RigoHandler())
         self._window = self._builder.get_object("rigoWindow")
-        self._window.set_name("rigoWindow")
+        self._window.set_name("rigo-view")
         self._apps_view = self._builder.get_object("appsViewVbox")
         self._scrolled_view = self._builder.get_object("appsViewScrolledWindow")
         self._app_view = self._builder.get_object("appViewScrollWin")
-        self._app_view.set_name("rigoWindow")
+        self._app_view.set_name("rigo-view")
         self._app_view_port = self._builder.get_object("appViewVport")
-        self._app_view_port.set_name("rigoWindow")
+        self._app_view_port.set_name("rigo-view")
         self._search_entry = self._builder.get_object("searchEntry")
         self._static_view = self._builder.get_object("staticViewVbox")
         self._notification = self._builder.get_object("notificationBox")
