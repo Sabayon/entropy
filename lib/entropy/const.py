@@ -133,15 +133,15 @@ if ETP_ARCH_CONST is None:
             break
 
 _more_keywords = None
-if ETP_ARCH_CONST is None:
-    if _uname_m.startswith("arm"):
-        # ARM is "special", multiple subarches
-        # ahead, better use the full uname value
-        # and account "arm" to etpSys['keywords']
+if _uname_m.startswith("arm"):
+    # ARM is "special", multiple subarches
+    # ahead, better use the full uname value
+    # and account "arm" to etpSys['keywords']
+    if ETP_ARCH_CONST is None:
         ETP_ARCH_CONST = _uname_m
-        _more_keywords = set(["arm", "~arm"])
-    else:
-        ETP_ARCH_CONST = "UNKNOWN"
+    _more_keywords = set(["arm", "~arm"])
+elif ETP_ARCH_CONST is None:
+    ETP_ARCH_CONST = "UNKNOWN"
 
 etpSys = {
     'archs': ['alpha', 'amd64', 'amd64-fbsd', 'arm', 'hppa', 'ia64', 'm68k',
