@@ -34,6 +34,7 @@ import time
 import codecs
 
 _ENCODING = "UTF-8"
+_RAW_ENCODING = "raw_unicode_escape"
 # check for potentially disruptive filesystem encoding setting.
 # Values different from UTF-8 are not supported and can cause
 # massive system destruction. Unfortunately, there is no good way
@@ -42,7 +43,7 @@ _ENCODING = "UTF-8"
 default_enc = sys.getfilesystemencoding()
 if default_enc is None:
     default_enc = "ascii"
-if default_enc.lower() != _ENCODING:
+if default_enc.lower() != _ENCODING.lower():
     default_locale = "en_US." + _ENCODING
     sys.stderr.write("""\
 invalid filesystem encoding %s, must be %s.
@@ -675,6 +676,7 @@ def const_default_settings(rootdir):
 
         # default entropy configuration files encoding
         'conf_encoding': _ENCODING,
+        'conf_raw_encoding': _RAW_ENCODING,
 
     }
 
