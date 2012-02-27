@@ -952,8 +952,8 @@ class ClientWebService(WebService):
                 self._clear_live_cache("get_available_downloads")
         return valid
 
-    def get_icons(self, package_names, offset = 0, cache = True,
-        cached = False, service_cache = False):
+    def get_icons(self, package_names, offset = 0, latest = False,
+        cache = True, cached = False, service_cache = False):
         """
         For given package names, return the current Document icon object
         DocumentList.
@@ -969,6 +969,8 @@ class ClientWebService(WebService):
         @keyword offset: specify the offset document from where to start
             for each package_name
         @type offset: int
+        @keyword latest: get documents in inverse order, from latest to oldest
+        @type latest: bool
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
         @keyword cached: if True, it will only use the on-disk cached call
@@ -1002,11 +1004,12 @@ class ClientWebService(WebService):
         document_type_filter = [Document.ICON_TYPE_ID]
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
+            latest = latest,
             offset = offset, cache = cache, cached = cached,
             service_cache = service_cache)
 
-    def get_comments(self, package_names, offset = 0, cache = True,
-        cached = False, service_cache = False):
+    def get_comments(self, package_names, offset = 0, latest = False,
+        cache = True, cached = False, service_cache = False):
         """
         For given package names, return the current Document Comment object
         DocumentList.
@@ -1022,6 +1025,8 @@ class ClientWebService(WebService):
         @keyword offset: specify the offset document from where to start
             for each package_name
         @type offset: int
+        @keyword latest: get documents in inverse order, from latest to oldest
+        @type latest: bool
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
         @keyword cached: if True, it will only use the on-disk cached call
@@ -1056,10 +1061,11 @@ class ClientWebService(WebService):
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
             offset = offset, cache = cache, cached = cached,
-            service_cache = service_cache)
+            latest = latest, service_cache = service_cache)
 
     def get_documents(self, package_names, document_type_filter = None,
-        offset = 0, cache = True, cached = False, service_cache = False):
+        offset = 0, latest = False, cache = True, cached = False,
+        service_cache = False):
         """
         For given package names, return the current Document object
         DocumentList.
@@ -1078,6 +1084,8 @@ class ClientWebService(WebService):
         @keyword offset: specify the offset document from where to start
             for each package_name
         @type offset: int
+        @keyword latest: get documents in inverse order, from latest to oldest
+        @type latest: bool
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
         @keyword cached: if True, it will only use the on-disk cached call
@@ -1110,10 +1118,14 @@ class ClientWebService(WebService):
         """
         if document_type_filter is None:
             document_type_filter = []
+        latest_str = "0"
+        if latest:
+            latest_str = "1"
         params = {
             "package_names": " ".join(package_names),
             "filter": " ".join([str(x) for x in document_type_filter]),
             "offset": offset,
+            "latest": latest_str,
         }
         if service_cache:
             params["cache"] = "1"
