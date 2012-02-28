@@ -46,7 +46,7 @@ class CommentBox(Gtk.VBox):
             self._comment[ts_id])
         time_str = escape_markup(time_str)
         label.set_markup(
-            "<small><b>%s</b>" % (self._comment[user_id],) \
+            "<small><b>%s</b>" % (escape_markup(self._comment[user_id]),) \
                 + ", <i>" + time_str + "</i>" \
                 + "</small>")
         label.set_line_wrap(True)
@@ -63,32 +63,34 @@ class CommentBox(Gtk.VBox):
         if title:
             title_id = Document.DOCUMENT_TITLE_ID
             label = Gtk.Label()
-            label.set_markup("<b>" + self._comment[title_id] + "</b>")
+            label_align = Gtk.Alignment()
+            label_align.set_padding(0, 3, 0, 0)
+            label_align.add(label)
+            label.set_markup(
+                "<b>" + escape_markup(self._comment[title_id]) + "</b>")
             label.set_name("comment-box-title")
             label.set_line_wrap(True)
             label.set_line_wrap_mode(Pango.WrapMode.WORD)
             label.set_alignment(0.0, 0.0)
             label.set_selectable(True)
             label.show()
-            vbox.pack_start(label, False, False, 0)
+            vbox.pack_start(label_align, False, False, 0)
 
         data_id = Document.DOCUMENT_DATA_ID
         label = Gtk.Label()
-        label.set_markup("<small>"  + self._comment[data_id] + "</small>")
+        label_align = Gtk.Alignment()
+        label_align.set_padding(0, 15, 0, 0)
+        label_align.add(label)
+        label.set_markup(
+            "<small>"  + \
+                escape_markup(self._comment[data_id]) + "</small>")
         label.set_name("comment-box-comment")
         label.set_line_wrap(True)
         label.set_line_wrap_mode(Pango.WrapMode.WORD)
         label.set_alignment(0.0, 0.0)
         label.set_selectable(True)
         label.show()
-        vbox.pack_start(label, False, False, 0)
+        vbox.pack_start(label_align, False, False, 0)
 
-        if self._is_last:
-            self.pack_start(vbox, False, False, 0)
-            vbox.show_all()
-        else:
-            align = Gtk.Alignment()
-            align.set_padding(0, 10, 0, 0)
-            align.add(vbox)
-            self.pack_start(align, False, False, 0)
-            align.show_all()
+        self.pack_start(vbox, False, False, 0)
+        vbox.show_all()

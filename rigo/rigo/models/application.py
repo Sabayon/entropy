@@ -34,7 +34,8 @@ from entropy.const import const_debug_write, const_debug_enabled, \
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
-from entropy.client.services.interfaces import ClientWebService
+from entropy.client.services.interfaces import ClientWebService, \
+    DocumentList
 
 import entropy.tools
 
@@ -544,7 +545,7 @@ class ApplicationMetadata(object):
                                 offset, callback):
         """
         Asynchronously download updated information regarding the
-        comments of given package.
+        comments of the given application.
         This request disables local cache usage and directly queries
         the remote Web Service.
         Once data is available, callback will be called passing the returned
@@ -576,6 +577,71 @@ class ApplicationMetadata(object):
 
         task = ParallelTask(_getter)
         task.name = "DownloadCommentsAsync::Getter"
+        task.daemon = True
+        task.start()
+
+    @staticmethod
+    def download_images_async(entropy_ws, package_key, repository_id,
+                                offset, callback, ignore_icons=True):
+        """
+        Asynchronously download updated information regarding the images
+        of the given application.
+        This request disables local cache usage and directly queries
+        the remote Web Service.
+        Once data is available, callback will be called passing the returned
+        payload as argument.
+        For this method, the signature of callback is:
+          callback(DocumentList)
+        If the Web Service is not available for repository, None is passed as
+        payload of callback.
+        Please note that the callback is called from another thread.
+        """
+        webserv = entropy_ws.get(repository_id)
+        if webserv is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadImagesAsync::None"
+            task.daemon = True
+            task.start()
+            return None
+
+        def _getter():
+            outcome = None
+            try:
+                images = webserv.get_images(
+                    [package_key], cache=False,
+                    latest=True, offset=offset)[package_key]
+
+                fetched_images = []
+                for image in images:
+                    if image.is_icon() and ignore_icons:
+                        continue
+                    # check if we have the file on-disk, otherwise
+                    # spawn the fetch in parallel.
+                    image_path = image.local_document()
+                    if not os.path.isfile(image_path):
+                        local_path = ApplicationMetadata._download_document(
+                            webserv, image)
+                        if local_path:
+                            fetched_images.append(image)
+                    else:
+                        fetched_images.append(image)
+
+                # final DocumentList may contain less elements
+                # than those advertised by total().
+                _outcome = DocumentList(
+                    images.package_name(),
+                    images.total(),
+                    images.offset())
+                _outcome.extend(fetched_images)
+                outcome = _outcome
+
+            finally:
+                # ignore exceptions, if any, and always
+                # call callback.
+                callback(outcome)
+
+        task = ParallelTask(_getter)
+        task.name = "DownloadImagesAsync::Getter"
         task.daemon = True
         task.start()
 
@@ -925,6 +991,31 @@ class Application(object):
         if const_debug_enabled():
             const_debug_write(__name__,
                 "Application{%s}.download_comments called" % (
+                    self._pkg_match,))
+
+    def download_images(self, callback, offset=0):
+        """
+        Return Application Images Entropy Document object.
+        In case of missing comments (locally), None is returned.
+        The actual outcome of this method is a DocumentList object.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        key_slot = repo.retrieveKeySlot(self._pkg_id)
+        if key_slot is None:
+            task = ParallelTask(callback, None)
+            task.name = "DownloadImagesNoneCallback"
+            task.daemon = True
+            task.start()
+            return
+
+        key, slot = key_slot
+        ApplicationMetadata.download_images_async(
+            self._entropy_ws, key, self._repo_id,
+            offset, callback)
+
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "Application{%s}.download_images called" % (
                     self._pkg_match,))
 
     def is_webservice_available(self):

@@ -116,3 +116,14 @@ GtkInfoBar #message-area-error GtkLabel {
 #comment-box-author {
     color: brown;
 }
+
+/* Application View Image Box */
+#image-box-title {
+    color: #613056; /* purple */
+}
+#image-box-comment {
+    color: #345f14;
+}
+#image-box-author {
+    color: brown;
+}

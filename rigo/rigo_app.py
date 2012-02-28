@@ -47,6 +47,7 @@ from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.widgets.stars import ReactiveStar
 from rigo.ui.gtk3.widgets.comments import CommentBox
+from rigo.ui.gtk3.widgets.images import ImageBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from rigo.utils import build_application_store_url, build_register_url, \
@@ -425,6 +426,9 @@ class ApplicationViewController(GObject.Object):
 
         self._stars_container.pack_start(self._stars_alignment, False, False, 0)
 
+        self._app_images_box = self._builder.get_object(
+            "appViewImagesVbox")
+
     def set_notification_controller(self, nc):
         """
         Bind NotificationController object to this class.
@@ -521,7 +525,7 @@ class ApplicationViewController(GObject.Object):
             self._on_stars_clicked(self._stars, app=app)
         box.add_button(_("_Vote now"), _send_vote)
 
-        box.add_destroy_button(_("_Abort"))
+        box.add_destroy_button(_("_Later"))
         self._nc.append(box)
 
     def _on_stars_login_failed(self, widget, app):
@@ -556,7 +560,7 @@ class ApplicationViewController(GObject.Object):
             self._logout_webservice(app, _send_vote)
         box.add_button(_("_No, logout!"), _logout_webservice)
 
-        box.add_destroy_button(_("_Abort"))
+        box.add_destroy_button(_("_Later"))
         self._nc.append(box)
 
     def _vote_submit(self, app, username, vote):
@@ -640,6 +644,8 @@ class ApplicationViewController(GObject.Object):
         going to hide.
         """
         self._last_app = None
+        for child in self._app_my_comments_box.get_children():
+            child.destroy()
         self.emit("application-hide", self)
 
     def _on_send_comment(self, widget, app=None):
@@ -703,16 +709,16 @@ class ApplicationViewController(GObject.Object):
             context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
 
         def _comment_submit(widget):
-            #box.destroy()
             self._comment_submit(app, username, text)
         box.add_button(_("_Ok, cool!"), _comment_submit)
 
+        def _send_comment():
+            self._on_send_comment(None, app=app)
         def _logout_webservice(widget):
-            #box.destroy()
-            self._logout_webservice(app)
+            self._logout_webservice(app, _send_comment)
         box.add_button(_("_No, logout!"), _logout_webservice)
 
-        box.add_destroy_button(_("_Abort"))
+        box.add_destroy_button(_("_Later"))
         self._nc.append(box)
 
     def _comment_submit(self, app, username, text):
@@ -811,7 +817,7 @@ class ApplicationViewController(GObject.Object):
         def _send_comment(widget):
             self._on_send_comment(widget, app=app)
         box.add_button(_("_Send now"), _send_comment)
-        box.add_destroy_button(_("_Abort"))
+        box.add_destroy_button(_("_Later"))
         self._nc.append(box)
 
     def _on_comment_login_failed(self, widget, app):
@@ -879,6 +885,60 @@ class ApplicationViewController(GObject.Object):
         GLib.idle_add(self._append_comments, downloader, app,
                       comments, has_more)
 
+    def _append_images(self, downloader, app, images, has_more):
+        """
+        Append given Entropy WebService Document objects to
+        the images area.
+        """
+        # remove spinner if there, ugly O(n)
+        for child in self._app_images_box.get_children():
+            if not isinstance(child, ImageBox):
+                child.destroy()
+
+        if not images:
+            label = Gtk.Label()
+            label.set_markup(
+                _("<i>No <b>images</b> for this Application, yet!</i>"))
+            self._app_images_box.pack_start(label, False, False, 1)
+            label.show()
+            return
+
+        if has_more:
+            button_box = Gtk.HButtonBox()
+            button = Gtk.Button()
+            button.set_label(_("Older images"))
+            button.set_alignment(0.5, 0.5)
+            def _enqueue_download(widget):
+                widget.get_parent().destroy()
+                spinner = Gtk.Spinner()
+                spinner.set_size_request(24, 24)
+                spinner.set_tooltip_text(_("Loading older images..."))
+                spinner.set_name("image-box-spinner")
+                self._app_images_box.pack_end(spinner, False, False, 3)
+                spinner.show()
+                downloader.enqueue_download()
+            button.connect("clicked", _enqueue_download)
+
+            button_box.pack_start(button, False, False, 0)
+            self._app_images_box.pack_start(button_box, False, False, 1)
+            button_box.show_all()
+
+        idx = 0
+        length = len(images)
+        for doc in images:
+            idx += 1
+            box = ImageBox(doc, is_last=(not has_more and (idx == length)))
+            box.render()
+            self._app_images_box.pack_end(box, False, False, 2)
+            box.show()
+
+    def _append_images_safe(self, downloader, app, comments, has_more):
+        """
+        Same as _append_images() but thread-safe.
+        """
+        GLib.idle_add(self._append_images, downloader, app,
+                      comments, has_more)
+
     def _setup_application_stats(self, stats, icon):
         """
         Setup widgets related to Application statistics (and icon).
@@ -933,23 +993,30 @@ class ApplicationViewController(GObject.Object):
         spinner.show()
         spinner.start()
 
-        downloader = ApplicationViewController.CommentsDownloader(
-            app, self, self._append_comments_safe)
+        downloader = ApplicationViewController.MetadataDownloader(
+            app, self, self._append_comments_safe,
+            app.download_comments)
+        downloader.start()
+
+        downloader = ApplicationViewController.MetadataDownloader(
+            app, self, self._append_images_safe,
+            app.download_images)
         downloader.start()
 
         self.emit("application-show", app)
 
-    class CommentsDownloader(GObject.Object):
+    class MetadataDownloader(GObject.Object):
         """
         Automated Application comments downloader.
         """
 
-        def __init__(self, app, avc, callback):
+        def __init__(self, app, avc, callback, app_downloader_method):
             self._app = app
             self._avc = avc
             self._offset = 0
             self._callback = callback
             self._task = ParallelTask(self._download)
+            self._app_downloader = app_downloader_method
 
         def start(self):
             """
@@ -961,7 +1028,7 @@ class ApplicationViewController(GObject.Object):
 
         def _download_callback(self, document_list):
             """
-            Callback called by download_comments() once data
+            Callback called by download_<something>() once data
             is arrived from web service.
             document_list can be None!
             """
@@ -976,12 +1043,12 @@ class ApplicationViewController(GObject.Object):
             if const_debug_enabled():
                 const_debug_write(
                     __name__,
-                    "CommentsDownloader._download_callback: %s, more: %s" % (
+                    "MetadataDownloader._download_callback: %s, more: %s" % (
                         document_list, has_more))
                 if document_list is not None:
                     const_debug_write(
                         __name__,
-                        "CommentsDownloader._download_callback: "
+                        "MetadataDownloader._download_callback: "
                             "total: %s, offset: %s" % (
                             document_list.total(), document_list.offset()))
 
@@ -989,13 +1056,13 @@ class ApplicationViewController(GObject.Object):
 
         def reset_offset(self):
             """
-            Reset Comments download offset to 0.
+            Reset Metadata download offset to 0.
             """
             self._offset = 0
 
         def get_offset(self):
             """
-            Get current Comments download offset.
+            Get current Metadata download offset.
             """
             return self._offset
 
@@ -1008,10 +1075,10 @@ class ApplicationViewController(GObject.Object):
 
         def _download(self):
             """
-            Thread body of the initial Comments downloader.
+            Thread body of the initial Metadata downloader.
             """
-            self._app.download_comments(self._download_callback,
-                                        offset=self._offset)
+            self._app_downloader(self._download_callback,
+                                 offset=self._offset)
 
 
 class Rigo(Gtk.Application):
