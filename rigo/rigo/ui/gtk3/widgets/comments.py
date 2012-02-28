@@ -20,6 +20,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, Pango, GObject
 
+from rigo.utils import escape_markup
+
 from entropy.client.services.interfaces import Document, DocumentFactory
 
 import entropy.tools
@@ -42,7 +44,7 @@ class CommentBox(Gtk.VBox):
         label = Gtk.Label()
         time_str = entropy.tools.convert_unix_time_to_human_time(
             self._comment[ts_id])
-        time_str = GObject.markup_escape_text(time_str)
+        time_str = escape_markup(time_str)
         label.set_markup(
             "<small><b>%s</b>" % (self._comment[user_id],) \
                 + ", <i>" + time_str + "</i>" \

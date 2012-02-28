@@ -49,7 +49,8 @@ from rigo.ui.gtk3.widgets.stars import ReactiveStar
 from rigo.ui.gtk3.widgets.comments import CommentBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
-from rigo.utils import build_application_store_url, build_register_url
+from rigo.utils import build_application_store_url, build_register_url, \
+    escape_markup
 
 from entropy.const import etpUi, const_debug_write, const_debug_enabled, \
     const_convert_to_unicode
@@ -503,7 +504,7 @@ class ApplicationViewController(GObject.Object):
         """
         box = NotificationBox(
             _("Logged in as <b>%s</b>! How about your <b>vote</b>?") \
-                % (GObject.markup_escape_text(username),),
+                % (escape_markup(username),),
             message_type=Gtk.MessageType.INFO,
             context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
 
@@ -532,7 +533,7 @@ class ApplicationViewController(GObject.Object):
         """
         box = NotificationBox(
             _("Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?") \
-                % (app.name, GObject.markup_escape_text(username),
+                % (app.name, escape_markup(username),
                    vote,),
             message_type=Gtk.MessageType.INFO,
             context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
@@ -691,7 +692,7 @@ class ApplicationViewController(GObject.Object):
         """
         box = NotificationBox(
             _("You are about to add a <b>comment</b> as <b>%s</b>.") \
-                % (GObject.markup_escape_text(username),),
+                % (escape_markup(username),),
             message_type=Gtk.MessageType.INFO,
             context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
 
@@ -797,7 +798,7 @@ class ApplicationViewController(GObject.Object):
         """
         box = NotificationBox(
             _("Logged in as <b>%s</b>! How about your <b>comment</b>?") \
-                % (GObject.markup_escape_text(username),),
+                % (escape_markup(username),),
             message_type=Gtk.MessageType.INFO,
             context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
         def _send_comment(widget):

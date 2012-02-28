@@ -39,7 +39,7 @@ from entropy.client.services.interfaces import ClientWebService
 import entropy.tools
 
 from rigo.enums import Icons
-from rigo.utils import build_application_store_url
+from rigo.utils import build_application_store_url, escape_markup
 
 LOG = logging.getLogger(__name__)
 
@@ -67,7 +67,7 @@ class CategoryRowReference:
 
     def __init__(self, untranslated_name, display_name, subcats, pkg_count):
         self.untranslated_name = untranslated_name
-        self.display_name = GObject.markup_escape_text(display_name)
+        self.display_name = escape_markup(display_name)
         #self.subcategories = subcats
         self.pkg_count = pkg_count
         self.vis_count = pkg_count
@@ -697,7 +697,7 @@ class Application(object):
             # make it cute
             name = " ".join([x.capitalize() for x in \
                                  name.replace("-"," ").split()])
-            name = GObject.markup_escape_text(name)
+            name = escape_markup(name)
         version = repo.retrieveVersion(self._pkg_id)
         if version is None:
             version = _("N/A")
@@ -713,9 +713,9 @@ class Application(object):
             description =  description[:80].strip() + "..."
         text = "<b>%s</b> %s%s\n<small><i>%s</i></small>" % (
             name,
-            GObject.markup_escape_text(version),
-            GObject.markup_escape_text(tag),
-            GObject.markup_escape_text(description))
+            escape_markup(version),
+            escape_markup(tag),
+            escape_markup(description))
         return text
 
     def get_extended_markup(self):
@@ -732,11 +732,11 @@ class Application(object):
         # make it cute
         name = " ".join([x.capitalize() for x in \
                              name.replace("-"," ").split()])
-        name = GObject.markup_escape_text(name)
+        name = escape_markup(name)
         website = repo.retrieveHomepage(self._pkg_id)
         if website:
             name = "<a href=\"%s\">%s</a>" % (
-                GObject.markup_escape_text(website),
+                escape_markup(website),
                 name,)
 
         if not tag:
@@ -763,11 +763,11 @@ class Application(object):
 
         text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
             name,
-            GObject.markup_escape_text(version),
-            GObject.markup_escape_text(tag),
-            GObject.markup_escape_text(revision_txt),
-            GObject.markup_escape_text(description),
-            GObject.markup_escape_text(date),
+            escape_markup(version),
+            escape_markup(tag),
+            escape_markup(revision_txt),
+            escape_markup(description),
+            escape_markup(date),
             repo_from,
             )
         return text

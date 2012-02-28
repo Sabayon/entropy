@@ -28,6 +28,7 @@ from entropy.i18n import _
 
 from rigo.models.application import AppDetails
 from rigo.enums import Icons
+from rigo.utils import escape_markup
 from rigo.em import StockEms, em
 from rigo.drawing import darken
 from rigo.ui.gtk3.widgets.stars import Star, StarSize
@@ -202,7 +203,7 @@ class FeaturedTile(TileButton):
         self.image = _parse_icon(icon, icon_size)
         self.content_left.pack_start(self.image, False, False, 0)
 
-        self.title = Gtk.Label.new(self._MARKUP % GObject.markup_escape_text(label))
+        self.title = Gtk.Label.new(self._MARKUP % escape_markup(label))
         self.title.set_alignment(0.0, 0.5)
         self.title.set_use_markup(True)
         self.title.set_ellipsize(Pango.EllipsizeMode.END)
@@ -210,7 +211,7 @@ class FeaturedTile(TileButton):
 
         categories = helper.get_categories(doc)
         if categories is not None:
-            self.category = Gtk.Label.new('<span font_desc="%i">%s</span>' % (em(0.6), GObject.markup_escape_text(categories)))
+            self.category = Gtk.Label.new('<span font_desc="%i">%s</span>' % (em(0.6), escape_markup(categories)))
             self.category.set_use_markup(True)
             self.category.set_alignment(0.0, 0.5)
             self.category.set_ellipsize(Pango.EllipsizeMode.END)
