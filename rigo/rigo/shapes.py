@@ -1,3 +1,26 @@
+# -*- coding: utf-8 -*-
+"""
+Copyright (C) 2009 Canonical
+Copyright (C) 2012 Fabio Erculiani
+
+Authors:
+  Michael Vogt
+  Fabio Erculiani
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; version 3.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+"""
+
 import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -28,7 +51,7 @@ class Shape:
 
         If the Shape is direction dependent, the Shape MUST
         implement <_layout_ltr> and <_layout_rtl> methods.
-        
+
         If the Shape is not direction dependent, then it simply can
         override the <layout> method.
 
@@ -271,3 +294,4 @@ class ShapeStar(Shape):
 
         cr.close_path()
         return
+
