@@ -36,12 +36,13 @@ from entropy.client.services.interfaces import ClientWebService
 import entropy.tools
 
 from rigo.enums import Icons
+from rigo.utils import build_application_store_url
 
 LOG = logging.getLogger(__name__)
 
 class ReviewStats(object):
 
-    NO_RATING = 1
+    NO_RATING = 0
 
     def __init__(self, app):
         self.app = app
@@ -816,12 +817,17 @@ class Application(object):
         else:
             use_txt += _("No use flags")
 
-        text = "<small>%s\n%s\n%s\n%s\n%s</small>" % (
+        more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
+            build_application_store_url(self, ""),
+            _("Click here for more details"),)
+
+        text = "<small>%s\n%s\n%s\n%s\n%s\n\n%s</small>" % (
             down_size_txt,
             required_space_txt,
             licenses_txt,
             digest_txt,
             use_txt,
+            more_txt,
             )
         return text
 

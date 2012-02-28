@@ -1,9 +1,14 @@
 
+import subprocess
+
 from gi.repository import Gtk, GLib, GObject
+
+from rigo.utils import build_register_url, open_url
 
 from entropy.i18n import _
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
+
 
 
 class NotificationBox(Gtk.HBox):
@@ -14,7 +19,8 @@ class NotificationBox(Gtk.HBox):
     """
 
     def __init__(self, message, message_widget=None,
-                 message_type=None, tooltip=None):
+                 message_type=None, tooltip=None,
+                 context_id=None):
         Gtk.HBox.__init__(self)
         self._message = message
         # if not None, it will replace Gtk.Label(self._message)
@@ -24,6 +30,7 @@ class NotificationBox(Gtk.HBox):
         if self._type is None:
             self._type = Gtk.MessageType.INFO
         self._tooltip = tooltip
+        self._context_id = context_id
 
     def add_button(self, text, clicked_callback):
         """
@@ -82,6 +89,15 @@ class NotificationBox(Gtk.HBox):
         bar.get_action_area().hide()
         self.pack_start(bar, True, True, 0)
 
+    def get_context_id(self):
+        """
+        Multiple NotificationBox instances can
+        share the same context_id. This information
+        is useful when showing multiple notifications
+        sharing the same context is unwanted.
+        """
+        return self._context_id
+
 
 class UpdatesNotificationBox(NotificationBox):
 
@@ -118,7 +134,8 @@ class UpdatesNotificationBox(NotificationBox):
 
         NotificationBox.__init__(self, msg,
             tooltip=_("Updates available, how about installing them?"),
-            message_type=Gtk.MessageType.WARNING)
+            message_type=Gtk.MessageType.WARNING,
+            context_id="UpdatesNotificationBox")
         self.add_button(_("_Update System"), self._update)
         self.add_button(_("_Show"), self._show)
         self.add_destroy_button(_("_Ignore"))
@@ -154,7 +171,8 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
 
         NotificationBox.__init__(self, msg,
             tooltip=_("I dunno dude, I'd say Yes"),
-            message_type=Gtk.MessageType.ERROR)
+            message_type=Gtk.MessageType.ERROR,
+            context_id="RepositoriesUpdateNotificationBox")
         self.add_button(_("_Yes, why not?"), self._update)
         self.add_destroy_button(_("_No, thanks"))
 
@@ -185,17 +203,21 @@ class LoginNotificationBox(NotificationBox):
                           ),
     }
 
-    def __init__(self, entropy_ws, app):
+    def __init__(self, entropy_ws, app, context_id=None):
         self._entropy_ws = entropy_ws
         self._app = app
         self._repository_id = app.get_details().channelname
+        if context_id is None:
+            context_id = "LoginNotificationBox"
 
         NotificationBox.__init__(self, None,
             message_widget=self._make_login_box(),
             tooltip=_("You need to login to Entropy Web Services"),
-            message_type=Gtk.MessageType.WARNING)
+            message_type=Gtk.MessageType.WARNING,
+            context_id=context_id)
 
         self.add_button(_("_Login"), self._login)
+        self.add_button(_("Register"), self._register)
 
         def _destroy(*args):
             self.emit("login-failed", self._app)
@@ -277,3 +299,8 @@ class LoginNotificationBox(NotificationBox):
         task.daemon = True
         task.start()
 
+    def _register(self, button):
+        """
+        Register button click event.
+        """
+        open_url(build_register_url())

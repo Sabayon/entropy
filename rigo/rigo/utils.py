@@ -1,8 +1,10 @@
 
 import os
+import subprocess
 
 from entropy.const import etpConst
 from entropy.core.settings.base import SystemSettings
+from entropy.misc import ParallelTask
 
 def build_application_store_url(app, sub_page):
     """
@@ -33,3 +35,15 @@ def build_register_url():
     Build User Account Registration Form URL.
     """
     return os.path.join(etpConst['distro_website_url'], "register")
+
+def open_url(url):
+    """
+    Open the given URL using xdg-open
+    """
+    def _open_url(url):
+        subprocess.call(["xdg-open", url])
+
+    task = ParallelTask(_open_url, url)
+    task.name = "UrlOpen"
+    task.daemon = True
+    task.start()

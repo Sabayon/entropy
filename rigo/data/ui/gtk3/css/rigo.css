@@ -106,6 +106,7 @@ GtkInfoBar #message-area-error GtkLabel {
 }
 
 /* Application View Comment Box */
+
 #comment-box-title {
     color: #613056; /* purple */
 }

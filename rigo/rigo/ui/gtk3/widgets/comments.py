@@ -32,6 +32,27 @@ class CommentBox(Gtk.VBox):
         self._is_last = is_last
 
     def render(self):
+
+        vbox = Gtk.VBox()
+
+        ts_id = Document.DOCUMENT_TIMESTAMP_ID
+        user_id = DocumentFactory.DOCUMENT_USERNAME_ID
+        label = Gtk.Label()
+        time_str = entropy.tools.convert_unix_time_to_human_time(
+            self._comment[ts_id])
+        time_str = GObject.markup_escape_text(time_str)
+        label.set_markup(
+            "<small><b>%s</b>" % (self._comment[user_id],) \
+                + ", <i>" + time_str + "</i>" \
+                + "</small>")
+        label.set_line_wrap(True)
+        label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        label.set_alignment(0.0, 1.0)
+        label.set_selectable(True)
+        label.set_name("comment-box-author")
+        label.show()
+        vbox.pack_start(label, False, False, 0)
+
         # title, keywords, ddata, document_id
         title = self._comment['title'].strip()
 
@@ -45,7 +66,7 @@ class CommentBox(Gtk.VBox):
             label.set_alignment(0.0, 0.0)
             label.set_selectable(True)
             label.show()
-            self.pack_start(label, False, False, 0)
+            vbox.pack_start(label, False, False, 0)
 
         data_id = Document.DOCUMENT_DATA_ID
         label = Gtk.Label()
@@ -56,29 +77,13 @@ class CommentBox(Gtk.VBox):
         label.set_alignment(0.0, 0.0)
         label.set_selectable(True)
         label.show()
-        self.pack_start(label, False, False, 0)
+        vbox.pack_start(label, False, False, 0)
 
-        ts_id = Document.DOCUMENT_TIMESTAMP_ID
-        user_id = DocumentFactory.DOCUMENT_USERNAME_ID
-        label = Gtk.Label()
-        time_str = entropy.tools.convert_unix_time_to_human_time(
-            self._comment[ts_id])
-        time_str = GObject.markup_escape_text(time_str)
-        label.set_markup(
-            "<small><i>"  + time_str \
-                + "</i>, <b>%s</b>" % (self._comment[user_id],) \
-                + "</small>")
-        label.set_line_wrap(True)
-        label.set_line_wrap_mode(Pango.WrapMode.WORD)
-        label.set_alignment(0.98, 0.0)
-        label.set_selectable(True)
-        label.set_name("comment-box-author")
-        label.show()
-        self.pack_start(label, False, False, 0)
-
-        if not self._is_last:
-            image = Gtk.Image.new_from_icon_name("comment-separator",
-                                                 Gtk.IconSize.BUTTON)
-            image.set_pixel_size(50)
-            self.pack_start(image, False, False, 0)
-            image.show()
+        if self._is_last:
+            self.pack_start(vbox, False, False, 0)
+        else:
+            align = Gtk.Alignment()
+            align.set_padding(0, 10, 0, 0)
+            align.add(vbox)
+            self.pack_start(align, False, False, 0)
+            align.show_all()

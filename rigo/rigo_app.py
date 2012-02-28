@@ -169,6 +169,7 @@ class NotificationViewController(GObject.Object):
         self._box = notification_box
         self._updates = None
         self._security_updates = None
+        self._context_id_map = {}
 
     def setup(self):
         GLib.timeout_add(3000, self._calculate_updates)
@@ -238,10 +239,18 @@ class NotificationViewController(GObject.Object):
         """
         self._avc.set_many_safe(self._updates)
 
-    def append(self, box, timeout=None):
+    def append(self, box, timeout=None, context_id=None):
         """
         Append a notification to the Notification area.
+        context_id is used to automatically drop any other
+        notification exposing the same context identifier.
         """
+        context_id = box.get_context_id()
+        if context_id is not None:
+            old_box = self._context_id_map.get(context_id)
+            if old_box is not None:
+                old_box.destroy()
+            self._context_id_map[context_id] = box
         box.render()
         self._box.pack_start(box, False, False, 0)
         box.show()
@@ -263,7 +272,7 @@ class NotificationViewController(GObject.Object):
         area, if there.
         """
         if box in self._box.get_children():
-            self._box.remove(box)
+            self._context_id_map.pop(box.get_context_id(), None)
             box.destroy()
 
     def remove_safe(self, box):
@@ -277,8 +286,8 @@ class NotificationViewController(GObject.Object):
         Clear all the notifications.
         """
         for child in self._box.get_children():
-            self._box.remove(child)
             child.destroy()
+        self._context_id_map.clear()
 
     def clear_safe(self):
         """
@@ -293,6 +302,19 @@ class ApplicationViewController(GObject.Object):
     that can happen to Applications listed in the contained
     TreeView.
     """
+
+    class WindowedReactiveStar(ReactiveStar):
+
+        def __init__(self, window):
+            self._window = window
+            self._hand = Gdk.Cursor.new(Gdk.CursorType.HAND2)
+            ReactiveStar.__init__(self)
+
+        def on_enter_notify(self, widget, event):
+            self._window.get_window().set_cursor(self._hand)
+
+        def on_leave_notify(self, widget, event):
+            self._window.get_window().set_cursor(None)
 
     __gsignals__ = {
         # Double click on application widget
@@ -325,6 +347,9 @@ class ApplicationViewController(GObject.Object):
                                        ),
     }
 
+    VOTE_NOTIFICATION_CONTEXT_ID = "VoteNotificationContext"
+    COMMENT_NOTIFICATION_CONTEXT_ID = "CommentNotificationContext"
+
     def __init__(self, entropy_client, entropy_ws, builder):
         GObject.Object.__init__(self)
         self._builder = builder
@@ -334,14 +359,21 @@ class ApplicationViewController(GObject.Object):
         self._last_app = None
         self._nc = None
 
+        self._window = self._builder.get_object("rigoWindow")
         self._image = self._builder.get_object("appViewImage")
         self._app_name_lbl = self._builder.get_object("appViewNameLabel")
         self._app_info_lbl = self._builder.get_object("appViewInfoLabel")
         self._app_downloaded_lbl = self._builder.get_object(
             "appViewDownloadedLabel")
         self._app_comments_box = self._builder.get_object("appViewCommentsVbox")
+        self._app_comments_box.set_name("comments-box")
+        self._app_comments_align = self._builder.get_object(
+            "appViewCommentsAlign")
         self._app_my_comments_box = self._builder.get_object(
             "appViewMyCommentsVbox")
+        self._app_my_comments_align = self._builder.get_object(
+            "appViewMyCommentsAlign")
+        self._app_my_comments_box.set_name("comments-box")
         self._app_comment_send_button = self._builder.get_object(
             "appViewCommentSendButton")
         self._app_comment_text_view = self._builder.get_object(
@@ -349,9 +381,12 @@ class ApplicationViewController(GObject.Object):
         self._app_comment_text_view.set_name("rigo-text-view")
         self._app_comment_text_buffer = self._builder.get_object(
             "appViewCommentTextBuffer")
+        self._app_comment_more_label = self._builder.get_object(
+            "appViewCommentMoreLabel")
         self._stars_container = self._builder.get_object("appViewStarsSelVbox")
 
-        self._stars = ReactiveStar()
+        self._stars = ApplicationViewController.WindowedReactiveStar(
+            self._window)
         self._stars_alignment = Gtk.Alignment.new(0.0, 0.5, 1.0, 1.0)
         self._stars_alignment.set_padding(0, 5, 0, 0)
         self._stars_alignment.add(self._stars)
@@ -378,6 +413,7 @@ class ApplicationViewController(GObject.Object):
         self._app_comment_send_button.set_sensitive(False)
         self._app_comment_text_buffer.connect(
             "changed", self._on_comment_buffer_changed)
+        self._stars.connect("changed", self._on_stars_clicked)
 
     def _on_comment_buffer_changed(self, widget):
         """
@@ -410,6 +446,149 @@ class ApplicationViewController(GObject.Object):
             stats = self._app_store.get_review_stats(pkg_match)
             icon = self._app_store.get_icon(pkg_match)
             self._setup_application_stats(stats, icon)
+
+    def _on_stars_clicked(self, widget, app=None):
+        """
+        Stars clicked, user wants to vote.
+        """
+        if app is None:
+            app = self._last_app
+            if app is None:
+                # wtf
+                return
+
+        def _sender(app, vote):
+            if not app.is_webservice_available():
+                GLib.idle_add(self._notify_webservice_na, app,
+                              self.VOTE_NOTIFICATION_CONTEXT_ID)
+                return
+            ws_user = app.get_webservice_username()
+            if ws_user is not None:
+                GLib.idle_add(self._notify_vote_submit, app, ws_user, vote)
+            else:
+                GLib.idle_add(self._notify_login_request, app, vote,
+                              self._on_stars_login_success,
+                              self._on_stars_login_failed,
+                              self.VOTE_NOTIFICATION_CONTEXT_ID)
+
+        vote = int(self._stars.get_rating()) # is float
+        task = ParallelTask(_sender, app, vote)
+        task.name = "AppViewSendVote"
+        task.start()
+
+    def _on_stars_login_success(self, widget, username, app):
+        """
+        Notify user that we successfully logged in!
+        """
+        box = NotificationBox(
+            _("Logged in as <b>%s</b>! How about your <b>vote</b>?") \
+                % (GObject.markup_escape_text(username),),
+            message_type=Gtk.MessageType.INFO,
+            context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+
+        def _send_vote(widget):
+            # widget.destroy()
+            self._on_stars_clicked(self._stars, app=app)
+        box.add_button(_("_Vote now"), _send_vote)
+
+        box.add_destroy_button(_("_Abort"))
+        self._nc.append(box)
+
+    def _on_stars_login_failed(self, widget, app):
+        """
+        Entropy Web Services Login failed message.
+        """
+        box = NotificationBox(
+            _("Login failed. Your <b>vote</b> hasn't been added"),
+            message_type=Gtk.MessageType.ERROR,
+            context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+        box.add_destroy_button(_("_Ok, thanks"))
+        self._nc.append(box)
+
+    def _notify_vote_submit(self, app, username, vote):
+        """
+        Notify User about Comment submission with current credentials.
+        """
+        box = NotificationBox(
+            _("Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?") \
+                % (app.name, GObject.markup_escape_text(username),
+                   vote,),
+            message_type=Gtk.MessageType.INFO,
+            context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+
+        def _vote_submit(widget):
+            #box.destroy()
+            self._vote_submit(app, username, vote)
+        box.add_button(_("_Ok, cool!"), _vote_submit)
+
+        def _send_vote():
+            self._on_stars_clicked(self._stars, app=app)
+        def _logout_webservice(widget):
+            #box.destroy()
+            self._logout_webservice(app, _send_vote)
+        box.add_button(_("_No, logout!"), _logout_webservice)
+
+        box.add_destroy_button(_("_Abort"))
+        self._nc.append(box)
+
+    def _vote_submit(self, app, username, vote):
+        """
+        Do the actual vote submit.
+        """
+        task = ParallelTask(
+            self._vote_submit_thread_body,
+            app, username, vote)
+        task.name = "VoteSubmitThreadBody"
+        task.daemon = True
+        task.start()
+
+    def _vote_submit_thread_body(self, app, username, vote):
+        """
+        Called by _vote_submit(), does the actualy submit.
+        """
+        repository_id = app.get_details().channelname
+        webserv = self._entropy_ws.get(repository_id)
+        if webserv is None:
+            # impossible!
+            return
+
+        key = app.get_details().pkgkey
+
+        err_msg = None
+        try:
+            voted = webserv.add_vote(
+                key, vote)
+        except WebService.WebServiceException as err:
+            voted = False
+            err_msg = str(err)
+
+        def _submit_success():
+            nbox = NotificationBox(
+                _("Your vote has been added!"),
+                message_type=Gtk.MessageType.INFO,
+                context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+            nbox.add_destroy_button(_("Ok, great!"))
+            self._nc.append(nbox, timeout=10)
+            self._on_redraw_request(None, app.get_details().pkg)
+
+        def _submit_fail(err_msg):
+            if err_msg is None:
+                box = NotificationBox(
+                    _("You already voted this <b>Application</b>"),
+                    message_type=Gtk.MessageType.ERROR,
+                    context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+            else:
+                box = NotificationBox(
+                    _("Vote error: <i>%s</i>") % (err_msg,),
+                    message_type=Gtk.MessageType.ERROR,
+                    context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
+            box.add_destroy_button(_("Ok, thanks"))
+            self._nc.append(box)
+
+        if voted:
+            GLib.idle_add(_submit_success)
+        else:
+            GLib.idle_add(_submit_fail, err_msg)
 
     def __application_activate(self, app):
         """
@@ -456,19 +635,23 @@ class ApplicationViewController(GObject.Object):
 
         def _sender(app, text):
             if not app.is_webservice_available():
-                GLib.idle_add(self._notify_webservice_na, app)
+                GLib.idle_add(self._notify_webservice_na, app,
+                              self.COMMENT_NOTIFICATION_CONTEXT_ID)
                 return
             ws_user = app.get_webservice_username()
             if ws_user is not None:
                 GLib.idle_add(self._notify_comment_submit, app, ws_user, text)
             else:
-                GLib.idle_add(self._notify_login_request, app, text)
+                GLib.idle_add(self._notify_login_request, app, text,
+                              self._on_comment_login_success,
+                              self._on_comment_login_failed,
+                              self.COMMENT_NOTIFICATION_CONTEXT_ID)
 
         task = ParallelTask(_sender, app, text)
         task.name = "AppViewSendComment"
         task.start()
 
-    def _notify_webservice_na(self, app):
+    def _notify_webservice_na(self, app, context_id):
         """
         Notify Web Service unavailability for given Application object.
         """
@@ -476,7 +659,8 @@ class ApplicationViewController(GObject.Object):
             "%s: <b>%s</b>" % (
                 _("Entropy Web Services not available for repository"),
                 app.get_details().channelname),
-            message_type=Gtk.MessageType.ERROR)
+            message_type=Gtk.MessageType.ERROR,
+            context_id=context_id)
         box.add_destroy_button(_("Ok, thanks"))
         self._nc.append(box)
 
@@ -487,15 +671,16 @@ class ApplicationViewController(GObject.Object):
         box = NotificationBox(
             _("You are about to add a <b>comment</b> as <b>%s</b>.") \
                 % (GObject.markup_escape_text(username),),
-            message_type=Gtk.MessageType.INFO)
+            message_type=Gtk.MessageType.INFO,
+            context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
 
         def _comment_submit(widget):
-            box.destroy()
+            #box.destroy()
             self._comment_submit(app, username, text)
         box.add_button(_("_Ok, cool!"), _comment_submit)
 
         def _logout_webservice(widget):
-            box.destroy()
+            #box.destroy()
             self._logout_webservice(app)
         box.add_button(_("_No, logout!"), _logout_webservice)
 
@@ -544,7 +729,8 @@ class ApplicationViewController(GObject.Object):
 
             nbox = NotificationBox(
                 _("Your comment has been submitted!"),
-                message_type=Gtk.MessageType.INFO)
+                message_type=Gtk.MessageType.INFO,
+                context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
             nbox.add_destroy_button(_("Ok, great!"))
             self._app_comment_text_buffer.set_text("")
             self._nc.append(nbox, timeout=10)
@@ -552,7 +738,8 @@ class ApplicationViewController(GObject.Object):
         def _submit_fail():
             box = NotificationBox(
                 _("Comment submit error: <i>%s</i>") % (err_msg,),
-                message_type=Gtk.MessageType.ERROR)
+                message_type=Gtk.MessageType.ERROR,
+                context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
             box.add_destroy_button(_("Ok, thanks"))
             self._nc.append(box)
 
@@ -561,7 +748,7 @@ class ApplicationViewController(GObject.Object):
         else:
             GLib.idle_add(_submit_fail)
 
-    def _logout_webservice(self, app):
+    def _logout_webservice(self, app, reinit_callback):
         """
         Execute logout of current credentials from Web Service.
         Actually, this means removing the local cookie.
@@ -571,17 +758,16 @@ class ApplicationViewController(GObject.Object):
         if webserv is not None:
             webserv.remove_credentials()
 
-        def _send_comment():
-            self._on_send_comment(None, app=app)
-        GLib.idle_add(_send_comment)
+        GLib.idle_add(reinit_callback)
 
-    def _notify_login_request(self, app, text):
+    def _notify_login_request(self, app, text, on_success, on_fail,
+                              context_id):
         """
         Notify User that login is required
         """
         box = LoginNotificationBox(self._entropy_ws, app)
-        box.connect("login-success", self._on_comment_login_success)
-        box.connect("login-failed", self._on_comment_login_failed)
+        box.connect("login-success", on_success)
+        box.connect("login-failed", on_fail)
         self._nc.append(box)
 
     def _on_comment_login_success(self, widget, username, app):
@@ -591,9 +777,10 @@ class ApplicationViewController(GObject.Object):
         box = NotificationBox(
             _("Logged in as <b>%s</b>! How about your <b>comment</b>?") \
                 % (GObject.markup_escape_text(username),),
-            message_type=Gtk.MessageType.INFO)
+            message_type=Gtk.MessageType.INFO,
+            context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
         def _send_comment(widget):
-            box.destroy()
+            #box.destroy()
             self._on_send_comment(widget, app=app)
         box.add_button(_("_Send now"), _send_comment)
         box.add_destroy_button(_("_Abort"))
@@ -605,7 +792,8 @@ class ApplicationViewController(GObject.Object):
         """
         box = NotificationBox(
             _("Login failed. Your <b>comment</b> hasn't been added"),
-            message_type=Gtk.MessageType.ERROR)
+            message_type=Gtk.MessageType.ERROR,
+            context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
         box.add_destroy_button(_("_Ok, thanks"))
         self._nc.append(box)
 
@@ -624,33 +812,25 @@ class ApplicationViewController(GObject.Object):
             label.set_markup(
                 _("<i>No <b>comments</b> for this Application, yet!</i>"))
             self._app_comments_box.pack_start(label, False, False, 1)
-
-            label = Gtk.Label()
-            url = build_register_url()
-            url = GObject.markup_escape_text(url)
-            reg_msg = _("You need to <a href=\"%s\">register here</a>")  % (
-                url,)
-            label.set_markup("<small>" + reg_msg + "</small>")
             label.show()
-            self._app_comments_box.pack_start(label, False, False, 1)
             return
 
         if has_more:
+            button_box = Gtk.HButtonBox()
             button = Gtk.Button()
             button.set_label(_("Older comments"))
             button.set_alignment(0.5, 0.5)
             def _enqueue_download(widget):
-                widget.hide()
+                widget.get_parent().destroy()
                 spinner = Gtk.Spinner()
-                spinner.set_size_request(-1, 24)
+                spinner.set_size_request(24, 24)
                 spinner.set_tooltip_text(_("Loading older comments..."))
                 spinner.set_name("comment-box-spinner")
-                self._app_comments_box.pack_start(spinner, False, False, 3)
+                self._app_comments_box.pack_end(spinner, False, False, 3)
                 spinner.show()
                 downloader.enqueue_download()
             button.connect("clicked", _enqueue_download)
 
-            button_box = Gtk.HButtonBox()
             button_box.pack_start(button, False, False, 0)
             self._app_comments_box.pack_start(button_box, False, False, 1)
             button_box.show_all()
@@ -687,7 +867,7 @@ class ApplicationViewController(GObject.Object):
         self._app_downloaded_lbl.set_markup(down_msg)
         if icon:
             self._image.set_from_pixbuf(icon)
-        self._stars.set_rating(stats.ratings_average - 1)
+        self._stars.set_rating(stats.ratings_average)
         self._stars_alignment.show_all()
 
     def _setup_application_info(self, app, metadata):
@@ -699,7 +879,15 @@ class ApplicationViewController(GObject.Object):
 
         # FIXME, lxnay complete
         # install/remove/update buttons
-        # for the rest, point to the remote www service
+        
+
+        # only comments supported, point to the remote
+        # www service for the rest
+        self._app_comment_more_label.set_markup(
+            "<b>%s</b>: <a href=\"%s\">%s</a>" % (
+                _("Want to add images, etc?"),
+                build_application_store_url(app, "ugc"),
+                _("click here!"),))
 
         stats = metadata['stats']
         icon = metadata['icon']
@@ -733,16 +921,7 @@ class ApplicationViewController(GObject.Object):
             self._avc = avc
             self._offset = 0
             self._callback = callback
-            self._avc.connect("application-hide", self.stop)
             self._task = ParallelTask(self._download)
-            self._started = False
-
-        def stop(self, *args):
-            """
-            Stop downloading comments, if we're still doing it.
-            """
-            self._started = False
-            print("Application-hide called, this is", self)
 
         def start(self):
             """
@@ -750,7 +929,6 @@ class ApplicationViewController(GObject.Object):
             Loop over until we have more of them to download.
             """
             self._offset = 0
-            self._started = True
             self._task.start()
 
         def _download_callback(self, document_list):
