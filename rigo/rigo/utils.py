@@ -75,6 +75,7 @@ def escape_markup(text):
     After escaping, text is converted to raw string
     from unicode. brrr...
     """
-    return GObject.markup_escape_text(
-        const_convert_to_rawstring(
-            text, from_enctype=etpConst['conf_encoding']))
+    return \
+        GObject.markup_escape_text(
+            const_convert_to_rawstring(
+                text, from_enctype=etpConst['conf_encoding']))

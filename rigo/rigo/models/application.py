@@ -754,12 +754,13 @@ class Application(object):
 
         cdate = repo.retrieveCreationDate(self._pkg_id)
         if cdate:
-            date = const_convert_to_unicode(time.strftime("%B %d, %Y",
-                time.gmtime(float(cdate))).capitalize())
+            date = time.strftime("%B %d, %Y",
+                time.gmtime(float(cdate))).capitalize()
         else:
             date = _("N/A")
 
-        repo_from = "%s <b>%s</b>" % (_("from"), self._repo_id,)
+        repo_from = "%s <b>%s</b>" % (escape_markup(_("from")),
+                                      escape_markup(self._repo_id),)
 
         text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
             name,
@@ -781,7 +782,7 @@ class Application(object):
 
         licenses = repo.retrieveLicense(self._pkg_id)
         if licenses:
-            licenses_txt = "<b>%s</b>: " % (_("License"),)
+            licenses_txt = "<b>%s</b>: " % (escape_markup(_("License")),)
             licenses_txt += ", ".join(sorted([
                         "<a href=\"%s%s\">%s</a>" % (lic_url, x, x) \
                             for x in licenses.split()]))
@@ -792,37 +793,40 @@ class Application(object):
         if required_space is None:
             required_space = 0
         required_space_txt = "<b>%s</b>: %s" % (
-            _("Required space"),
-            entropy.tools.bytes_into_human(required_space),)
+            escape_markup(_("Required space")),
+            escape_markup(entropy.tools.bytes_into_human(required_space)),)
 
         down_size = repo.retrieveSize(self._pkg_id)
         if down_size is None:
             down_size = 0
         down_size_txt = "<b>%s</b>: %s" % (
-            _("Download size"),
-            entropy.tools.bytes_into_human(down_size),)
+            escape_markup(_("Download size")),
+            escape_markup(entropy.tools.bytes_into_human(down_size)),)
 
         digest = repo.retrieveDigest(self._pkg_id)
         if digest is None:
             digest = _("N/A")
-        digest_txt = "<b>%s</b>: %s" % (_("Checksum"), digest)
+        digest_txt = "<b>%s</b>: %s" % (
+            escape_markup(_("Checksum")),
+            escape_markup(digest))
 
         uses = repo.retrieveUseflags(self._pkg_id)
         uses = sorted(uses)
         use_list = []
         use_url = "%s/useflag/" % (etpConst['packages_website_url'],)
         for use in uses:
-            txt = "<a href=\"%s%s\">%s</a>" % (use_url, use, use)
+            use_m = escape_markup(use)
+            txt = "<a href=\"%s%s\">%s</a>" % (use_url, use_m, use_m)
             use_list.append(txt)
-        use_txt = "<b>%s</b>: " % (_("USE flags"),)
+        use_txt = "<b>%s</b>: " % (escape_markup(_("USE flags")),)
         if use_list:
             use_txt += " ".join(use_list)
         else:
-            use_txt += _("No use flags")
+            use_txt += escape_markup(_("No use flags"))
 
         more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
             build_application_store_url(self, ""),
-            _("Click here for more details"),)
+            escape_markup(_("Click here for more details")),)
 
         text = "<small>%s\n%s\n%s\n%s\n%s\n\n%s</small>" % (
             down_size_txt,

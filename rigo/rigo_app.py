@@ -202,6 +202,15 @@ class NotificationViewController(GObject.Object):
         th.name = "CalculateUpdates"
         th.start()
 
+    def __order_updates(self, updates):
+        """
+        Order updates using PN.
+        """
+        def _key_func(x):
+            return self._entropy.open_repository(
+                x[1]).retrieveName(x[0])
+        return sorted(updates, key=_key_func)
+
     def __calculate_updates(self):
         if Repository.are_repositories_old():
             GLib.idle_add(self._notify_old_repositories_safe)
@@ -209,7 +218,7 @@ class NotificationViewController(GObject.Object):
 
         updates, removal, fine, spm_fine = \
             self._entropy.calculate_updates()
-        self._updates = updates
+        self._updates = self.__order_updates(updates)
         self._security_updates = self._entropy.calculate_security_updates()
         GLib.idle_add(self._notify_updates_safe)
 
@@ -509,7 +518,6 @@ class ApplicationViewController(GObject.Object):
             context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
 
         def _send_vote(widget):
-            # widget.destroy()
             self._on_stars_clicked(self._stars, app=app)
         box.add_button(_("_Vote now"), _send_vote)
 
@@ -539,14 +547,12 @@ class ApplicationViewController(GObject.Object):
             context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
 
         def _vote_submit(widget):
-            #box.destroy()
             self._vote_submit(app, username, vote)
         box.add_button(_("_Ok, cool!"), _vote_submit)
 
         def _send_vote():
             self._on_stars_clicked(self._stars, app=app)
         def _logout_webservice(widget):
-            #box.destroy()
             self._logout_webservice(app, _send_vote)
         box.add_button(_("_No, logout!"), _logout_webservice)
 
@@ -748,6 +754,7 @@ class ApplicationViewController(GObject.Object):
             box.render()
             self._app_my_comments_box.pack_start(box, False, False, 2)
             box.show()
+            self._app_my_comments_box.show()
 
             nbox = NotificationBox(
                 _("Your comment has been submitted!"),
@@ -802,7 +809,6 @@ class ApplicationViewController(GObject.Object):
             message_type=Gtk.MessageType.INFO,
             context_id=self.COMMENT_NOTIFICATION_CONTEXT_ID)
         def _send_comment(widget):
-            #box.destroy()
             self._on_send_comment(widget, app=app)
         box.add_button(_("_Send now"), _send_comment)
         box.add_destroy_button(_("_Abort"))
