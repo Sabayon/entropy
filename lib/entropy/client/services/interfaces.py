@@ -952,6 +952,62 @@ class ClientWebService(WebService):
                 self._clear_live_cache("get_available_downloads")
         return valid
 
+    def get_images(self, package_names, offset = 0, latest = False,
+        cache = True, cached = False, service_cache = False):
+        """
+        For given package names, return the current Document image object
+        DocumentList.
+        Packages having no images will get empty DocumentList as value.
+
+        Results are paged, if offset is 0, the first page is returned.
+        For gathering information regarding pages (total documents,
+        offset provided, etc), see DocumentList API.
+
+        @param package_names: list of names of the packages to query,
+            either atom or key
+        @type package_names: list
+        @keyword offset: specify the offset document from where to start
+            for each package_name
+        @type offset: int
+        @keyword latest: get documents in inverse order, from latest to oldest
+        @type latest: bool
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
+        @keyword service_cache: explicitly allow service to use its cache to
+            satisfy the request
+        @type service_cache: bool
+        @return: mapping composed by package name as key and DocumentList
+            as value
+        @rtype: dict
+
+        @raise WebService.UnsupportedParameters: if input parameters are
+            invalid
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not
+            available remotely and an error occured (error code passed as
+            exception argument)
+        @raise WebService.AuthenticationRequired: if require_credentials
+            is True and credentials are required.
+        @raise WebService.AuthenticationFailed: if credentials are
+            not valid
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web
+            Service API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
+        """
+        document_type_filter = [Document.IMAGE_TYPE_ID]
+        return self.get_documents(package_names,
+            document_type_filter = document_type_filter,
+            latest = latest,
+            offset = offset, cache = cache, cached = cached,
+            service_cache = service_cache)
+
     def get_icons(self, package_names, offset = 0, latest = False,
         cache = True, cached = False, service_cache = False):
         """
