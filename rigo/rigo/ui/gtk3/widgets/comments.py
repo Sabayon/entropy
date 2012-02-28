@@ -85,6 +85,7 @@ class CommentBox(Gtk.VBox):
 
         if self._is_last:
             self.pack_start(vbox, False, False, 0)
+            vbox.show_all()
         else:
             align = Gtk.Alignment()
             align.set_padding(0, 10, 0, 0)
