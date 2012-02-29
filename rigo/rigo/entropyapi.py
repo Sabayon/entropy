@@ -78,7 +78,14 @@ class EntropyWebService(object):
             return None
 
         try:
-            available = webserv.service_available()
+            # we cannot rely on local cache because the
+            # network availability may have changed.
+            # even tho, we should check this every time
+            # we're asked to return from get().
+            # Moreover, using local cache without Internet
+            # connectivity would result in a crazy amount
+            # of requests floating around the process.
+            available = webserv.service_available(cache=False)
         except WebService.WebServiceException:
             available = False
 

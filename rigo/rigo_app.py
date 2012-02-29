@@ -43,7 +43,7 @@ from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
-    LoginNotificationBox
+    LoginNotificationBox, ConnectivityNotificationBox
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.widgets.stars import ReactiveStar
 from rigo.ui.gtk3.widgets.comments import CommentBox
@@ -185,9 +185,10 @@ class NotificationViewController(GObject.Object):
     but also accepts external NotificationBox instances as well.
     """
 
-    def __init__(self, entropy_client, avc, notification_box):
+    def __init__(self, entropy_client, entropy_ws, avc, notification_box):
         GObject.Object.__init__(self)
         self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
         self._avc = avc
         self._box = notification_box
         self._updates = None
@@ -196,12 +197,34 @@ class NotificationViewController(GObject.Object):
 
     def setup(self):
         GLib.timeout_add(3000, self._calculate_updates)
+        GLib.idle_add(self._check_connectivity)
+
+    def _check_connectivity(self):
+        th = ParallelTask(self.__check_connectivity)
+        th.daemon = True
+        th.name = "CheckConnectivity"
+        th.start()
 
     def _calculate_updates(self):
         th = ParallelTask(self.__calculate_updates)
         th.daemon = True
         th.name = "CalculateUpdates"
         th.start()
+
+    def __check_connectivity(self):
+        """
+        Execute connectivity check basing on Entropy
+        Web Services availability.
+        """
+        repositories = self._entropy.repositories()
+        available = False
+        for repository_id in repositories:
+            if self._entropy_ws.get(repository_id) is not None:
+                available = True
+                break
+
+        if not available:
+            GLib.idle_add(self._notify_connectivity_issues)
 
     def __order_updates(self, updates):
         """
@@ -222,6 +245,13 @@ class NotificationViewController(GObject.Object):
         self._updates = self.__order_updates(updates)
         self._security_updates = self._entropy.calculate_security_updates()
         GLib.idle_add(self._notify_updates_safe)
+
+    def _notify_connectivity_issues(self):
+        """
+        Cannot connect to Entropy Web Services.
+        """
+        box = ConnectivityNotificationBox()
+        self.append(box)
 
     def _notify_updates_safe(self):
         """
@@ -1170,7 +1200,8 @@ class Rigo(Gtk.Application):
         self._avc.connect("view-filled", self._on_view_filled)
 
         self._nc = NotificationViewController(
-            self._entropy, self._avc, self._notification)
+            self._entropy, self._entropy_ws,
+            self._avc, self._notification)
         self._app_view_c.set_notification_controller(self._nc)
 
     def _on_view_cleared(self, *args):

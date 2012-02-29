@@ -20,14 +20,13 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 import subprocess
 
-from gi.repository import Gtk, GLib, GObject
+from gi.repository import Gtk, GLib, GObject, Pango
 
 from rigo.utils import build_register_url, open_url
 
 from entropy.i18n import _
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
-
 
 
 class NotificationBox(Gtk.HBox):
@@ -87,6 +86,7 @@ class NotificationBox(Gtk.HBox):
         if self._message_widget is None:
             label = Gtk.Label()
             label.set_markup(self._message)
+            label.set_line_wrap_mode(Pango.WrapMode.WORD)
             # make it css-able
             label.set_property("expand", True)
             label.set_alignment(0.02, 0.50)
@@ -323,3 +323,17 @@ class LoginNotificationBox(NotificationBox):
         Register button click event.
         """
         open_url(build_register_url())
+
+
+class ConnectivityNotificationBox(NotificationBox):
+
+    def __init__(self):
+
+        msg = _("Cannot connect to Entropy Web Services, "
+                "are you connected to the <b>interweb</b>?")
+
+        NotificationBox.__init__(self, msg,
+            tooltip=_("Don't ask me..."),
+            message_type=Gtk.MessageType.ERROR,
+            context_id="ConnectivityNotificationBox")
+        self.add_destroy_button(_("_Of course not"))
