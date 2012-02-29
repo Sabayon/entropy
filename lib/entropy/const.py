@@ -84,11 +84,14 @@ def dump_signal(signum, frame):
 
     def _std_print_err(msg):
         sys.stderr.write(msg + '\n')
+        sys.stderr.flush()
 
     _std_print_err("")
     _std_print_err("")
     _std_print_err("---- DUMP START [cut here] ----")
+    thread_count = 0
     for thread_id, stack in sys._current_frames().items():
+        thread_count += 1
         _std_print_err("Thread: %s" % (thread_id,))
         for filename, lineno, name, line in traceback.extract_stack(stack):
             _std_print_err("File: '%s', line %d, in %s'" % (
@@ -99,9 +102,13 @@ def dump_signal(signum, frame):
                 _std_print_err("  ???")
         _std_print_err("--")
         _std_print_err("")
+    _std_print_err("[thread count: %d]" % (thread_count,))
     _std_print_err("---- DUMP END [cut here] ----")
     _std_print_err("")
+
+_installed_sigquit = False
 if os.getuid() == 0:
+    _installed_sigquit = True
     signal.signal(signal.SIGQUIT, dump_signal)
 
 _uname_m = os.uname()[4]
@@ -172,6 +179,11 @@ if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
     etpUi['debug'] = True
 if os.getenv('ETP_MUTE'):
     etpUi['mute'] = True
+
+if etpUi['debug'] and not _installed_sigquit:
+    # install the dump signal function at
+    # SIGQUIT anyway if --debug is enabled
+    signal.signal(signal.SIGQUIT, dump_signal)
 
 etpConst = {}
 
