@@ -62,7 +62,7 @@ repository = sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
 # repository = sabayonlinux.org||ftp://mirror.optusnet.com.au/sabayon/entropy|
 
 # AArnet.edu/Internode, Australia
-repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayon/entropy|
 repository = sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
 repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
 
