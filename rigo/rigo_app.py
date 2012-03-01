@@ -53,8 +53,8 @@ from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from rigo.utils import build_application_store_url, build_register_url, \
     escape_markup
 
-from entropy.const import etpUi, const_debug_write, const_debug_enabled, \
-    const_convert_to_unicode
+from entropy.const import etpConst, etpUi, const_debug_write, \
+    const_debug_enabled, const_convert_to_unicode
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
@@ -79,7 +79,7 @@ class ApplicationsViewController(GObject.Object):
                           ),
     }
 
-    def __init__(self, entropy_client, icons, entropy_ws,
+    def __init__(self, entropy_client, entropy_ws, icons, nf_box,
                  search_entry, store, view):
         GObject.Object.__init__(self)
         self._entropy = entropy_client
@@ -88,6 +88,9 @@ class ApplicationsViewController(GObject.Object):
         self._search_entry = search_entry
         self._store = store
         self._view = view
+        self._nf_box = nf_box
+        self._not_found_search_box = None
+        self._not_found_label = None
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
         """
@@ -110,7 +113,10 @@ class ApplicationsViewController(GObject.Object):
     def _search(self, old_text):
         cur_text = self._search_entry.get_text()
         if cur_text == old_text and cur_text:
-            th = ParallelTask(self.__search_thread, copy.copy(old_text))
+            search_text = copy.copy(old_text)
+            search_text = const_convert_to_unicode(
+                search_text, enctype=etpConst['conf_encoding'])
+            th = ParallelTask(self.__search_thread, search_text)
             th.name = "SearchThread"
             th.start()
 
@@ -127,11 +133,93 @@ class ApplicationsViewController(GObject.Object):
             _prepare_for_search(text),
             repositories = self._entropy.repositories())
         matches.extend([x for x in search_matches if x not in matches])
-        self.set_many_safe(matches)
+        # we have to decide if to show the treeview in
+        # the UI thread, to avoid races (and also because we
+        # have to...)
+        self.set_many_safe(matches, _from_search=text)
+
+    def _setup_search_view(self, items_count, text):
+        """
+        Setup UI in order to show a "not found" message if required.
+        """
+        nf_box = self._not_found_box
+        if items_count:
+            nf_box.set_property("expand", False)
+            nf_box.hide()
+            self._view.get_parent().show()
+        else:
+            self._view.get_parent().hide()
+            self._setup_not_found_box(text)
+            nf_box.set_property("expand", True)
+            nf_box.show()
+
+    def _setup_not_found_box(self, search_text):
+        """
+        Setup "not found" message label and layout
+        """
+        nf_box = self._not_found_box
+        # now self._not_found_label is available
+        meant_packages = self._entropy.get_meant_packages(
+            search_text)
+        text = escape_markup(search_text)
+        msg = "%s" % (
+            _("Nothing found for <b>%s</b>") % (
+                const_convert_to_unicode(
+                    text,
+                    enctype=etpConst['conf_encoding']),)
+        )
+        if meant_packages:
+            first_entry = meant_packages[0]
+            app = Application(
+                self._entropy, self._entropy_ws,
+                first_entry)
+            name = app.name
+            #pkgname = app.get_details().pkgname
+
+            msg += ", %s" % (
+                _("did you mean <a href=\"%s\">%s</a>?") % (
+                    escape_markup(name),
+                    escape_markup(name),),)
+
+        self._not_found_label.set_markup(msg)
+
+    def _on_not_found_label_activate_link(self, label, text):
+        """
+        Handling the click event on <a href=""/> of the
+        "not found" search label. Just write the coming text
+        to the Gtk.SearchEntry object.
+        """
+        if text:
+            self._search_entry.set_text(text)
+            self._search(text)
+
+    @property
+    def _not_found_box(self):
+        """
+        Return a Gtk.VBox containing the view that should
+        be shown when no apps have been found (due to a search).
+        """
+        if self._not_found_search_box is not None:
+            return self._not_found_search_box
+        # here we always have to access from the same thread
+        # otherwise Gtk will go boom anyway
+        box_align = Gtk.Alignment()
+        box_align.set_padding(10, 10, 0, 0)
+        box = Gtk.VBox()
+        box_align.add(box)
+        label = Gtk.Label(_("Not found"))
+        label.connect("activate-link", self._on_not_found_label_activate_link)
+        box.pack_start(label, True, True, 0)
+        box_align.show()
+
+        self._nf_box.pack_start(box_align, False, False, 0)
+        self._nf_box.show_all()
+        self._not_found_label = label
+        self._not_found_search_box = box_align
+        return box_align
 
     def setup(self):
         self._view.set_model(self._store)
-
         self._search_entry.connect(
             "changed", self._search_changed)
         self._search_entry.connect("icon-release",
@@ -158,10 +246,13 @@ class ApplicationsViewController(GObject.Object):
             const_debug_write(__name__, "AVC: emitting view-filled")
         self.emit("view-filled")
 
-    def set_many(self, opaque_list):
+    def set_many(self, opaque_list, _from_search=None):
         self._store.clear()
         ApplicationMetadata.discard()
-        return self.append_many(opaque_list)
+        self.append_many(opaque_list)
+        if _from_search:
+            self._setup_search_view(
+                len(opaque_list), _from_search)
 
     def clear_safe(self):
         GLib.idle_add(self.clear)
@@ -172,8 +263,9 @@ class ApplicationsViewController(GObject.Object):
     def append_many_safe(self, opaque_list):
         GLib.idle_add(self.append_many, opaque_list)
 
-    def set_many_safe(self, opaque_list):
-        GLib.idle_add(self.set_many, opaque_list)
+    def set_many_safe(self, opaque_list, _from_search=None):
+        GLib.idle_add(self.set_many, opaque_list,
+                      _from_search)
 
 
 class NotificationViewController(GObject.Object):
@@ -232,7 +324,7 @@ class NotificationViewController(GObject.Object):
         """
         def _key_func(x):
             return self._entropy.open_repository(
-                x[1]).retrieveName(x[0])
+                x[1]).retrieveName(x[0]).lower()
         return sorted(updates, key=_key_func)
 
     def __calculate_updates(self):
@@ -695,7 +787,7 @@ class ApplicationViewController(GObject.Object):
         if not text.strip():
             return
         # make it utf-8
-        text = const_convert_to_unicode(text, enctype="utf-8")
+        text = const_convert_to_unicode(text, enctype=etpConst['conf_encoding'])
 
         def _sender(app, text):
             if not app.is_webservice_available():
@@ -1145,6 +1237,7 @@ class Rigo(Gtk.Application):
         self._app_view.set_name("rigo-view")
         self._app_view_port = self._builder.get_object("appViewVport")
         self._app_view_port.set_name("rigo-view")
+        self._not_found_box = self._builder.get_object("appsViewNotFoundVbox")
         self._search_entry = self._builder.get_object("searchEntry")
         self._static_view = self._builder.get_object("staticViewVbox")
         self._notification = self._builder.get_object("notificationBox")
@@ -1193,7 +1286,7 @@ class Rigo(Gtk.Application):
         }
         self._state_mutex = Lock()
         self._avc = ApplicationsViewController(
-            self._entropy, icons, self._entropy_ws,
+            self._entropy, self._entropy_ws, icons, self._not_found_box,
             self._search_entry, self._app_store, self._view)
 
         self._avc.connect("view-cleared", self._on_view_cleared)

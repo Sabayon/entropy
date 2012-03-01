@@ -722,7 +722,9 @@ class Application(object):
         name = repo.retrieveName(self._pkg_id)
         if name is None:
             return _("N/A")
-        return name.capitalize()
+        name = " ".join([x.capitalize() for x in \
+                             name.replace("-"," ").split()])
+        return escape_markup(name)
 
     def is_installed(self):
         """
@@ -756,14 +758,7 @@ class Application(object):
         Get Application markup text.
         """
         repo = self._entropy.open_repository(self._repo_id)
-        name = repo.retrieveName(self._pkg_id)
-        if name is None:
-            name = _("N/A")
-        else:
-            # make it cute
-            name = " ".join([x.capitalize() for x in \
-                                 name.replace("-"," ").split()])
-            name = escape_markup(name)
+        name = self.name
         version = repo.retrieveVersion(self._pkg_id)
         if version is None:
             version = _("N/A")
