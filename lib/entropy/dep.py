@@ -236,6 +236,7 @@ def dep_getslot(mydep):
     @rtype: string
     @return: the slot
     """
+    mydep = remove_tag(mydep)
     colon = mydep.find(":")
     if colon != -1:
         bracket = mydep.find("[", colon)
