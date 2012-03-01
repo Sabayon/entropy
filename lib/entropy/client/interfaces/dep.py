@@ -688,10 +688,18 @@ class CalculatorsMixin:
                 if installed_slot in available_slots:
                     # restrict my matching to installed_slot, rewrite
                     # r_id r_repo
+                    # NOTE: assume that dependency has no tag nor etp rev
+                    # also, if we got multiple slots, it means that the
+                    # same dep is expressed without slot.
                     old_r_id = r_id
                     old_r_repo = r_repo
                     r_id, r_repo = self.atom_match(
                         dependency, match_slot = installed_slot)
+                    if r_id != -1:
+                        # append slot to dependency
+                        dependency += etpConst['entropyslotprefix'] \
+                            + installed_slot
+
                     if const_debug_enabled():
                         from_atom = self.open_repository(
                             old_r_repo).retrieveAtom(old_r_id)
