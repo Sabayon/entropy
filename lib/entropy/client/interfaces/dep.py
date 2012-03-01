@@ -2540,11 +2540,14 @@ class CalculatorsMixin:
         maxlen = len(idpackages)
         count = 0
         mytxt = _("Calculating updates")
+        last_avg = 0
         for idpackage in idpackages:
 
             count += 1
             avg = int(float(count)/maxlen*100)
-            if (avg%10 == 9) or (count == maxlen) or (count == 1):
+            if (avg%10 == 9 and avg != last_avg) or \
+                    (count == maxlen) or (count == 1):
+                last_avg = avg
                 self.output(
                     mytxt,
                     importance = 0,
