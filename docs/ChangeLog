@@ -1,3 +1,120 @@
+commit 303b7ad1ea9589afe717f96c1d37285366d9fa41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 12:06:54 2012 +0100
+
+    Release Entropy 1.0_rc90
+
+commit 3c8ec43e351832f0ca5f2e9dcc1580987c20c79a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 12:01:53 2012 +0100
+
+    [entropy.client.interfaces.dep] SLOT intersection: alter dependency adding slot
+    
+    Scenario:
+    dependency = dev-lang/python
+    SLOT intersection = enabled
+    available slots = 2.6, 2.7, 3.2
+    installed slot = 2.7
+    
+    The SLOT intersection feature worked correctly but in the end
+    dev-lang/python was added to the unsatisfied set because there
+    was a dev-lang/python-2.7 update as well. This results in other
+    dep calculation code to match dev-lang/python against 3.2 instead.
+    The SLOT intersection feature has to reduce the dependency string
+    scope by adding a SLOT suffix (in this case: ":2.7"). This way the
+    correct dependency is eventually pulled in.
+
+commit 732482473f51c954b5cb5a9a788c51d48b2b74dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 11:58:47 2012 +0100
+
+    [entropy.dep] dep_getslot: remove tag before mangling.
+    
+    Otherwise the following query will fail (at atomMatch()):
+    x11-drivers/nvidia-drivers:0,3.2.0-sabayon#3.2.0-sabayon
+
+commit 80f1e1182ebee7242bd60228fede343cf4cca06c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 11:13:51 2012 +0100
+
+    [entropy.client.interfaces.dep] don't spam stdout with same progress values
+
+commit 154c5c3010e8daee6bd04553f933280c215138c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 08:16:47 2012 +0100
+
+    [rigo] implement "not found + did you mean" message when search returns 0 results
+
+commit bfa92152957e8587b7b2c5fe76e287872faaca68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 29 10:22:31 2012 +0100
+
+    [rigo] notify user when connectivity is absent (via Entropy Web Services)
+
+commit 095038425ae93f484a22a86388a19a1e91aa44c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 29 10:21:04 2012 +0100
+
+    [entropy.const] improve thread dump signal function
+    
+    Always flush stderr on a newline and also write the number of
+    active threads as well.
+    Moreover, always install the dump function at SIGQUIT when --debug
+    is passed.
+
+commit 71308d09dec50aa00d5cbbbfe88d5c3f0d23281f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 21:58:04 2012 +0100
+
+    [rigo] implement loading of Application Images
+    
+    At the end of the App View, load images bound to App.
+
+commit 161ba2cfd941686a3d4a35d60b98b09acfb9e5f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 21:57:03 2012 +0100
+
+    [entropy.client.services.interfaces] add ClientWebService.get_images()
+    
+    Don't ask me why this was missing, anyway, now we have it.
+    This returns a superset of get_icons(), also including normal images.
+
+commit 2e329f6311bf906519b069f939da6553e41cf391
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 12:32:20 2012 +0100
+
+    [rigo] actually show VBox when CommentBox(is_last=True)
+
+commit 59c24a4c6b6a1f1660f8586333cc91c464e10bd1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 12:32:00 2012 +0100
+
+    [rigo] UTF-8 fixes in Application()
+
+commit 8a5575a6b00328e98d874c965fc95dc4437534d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 12:05:10 2012 +0100
+
+    [rigo] fix UTF-8 markup escaping wrt GObject idiotic escape function
+
+commit 7c97d9db7b886da1f73b4fa2b2cf321384577059
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 11:28:10 2012 +0100
+
+    [rigo] uniform file header
+
+commit 24fbdc5f569657ff67aa2af4cf4c8aef7d3d4227
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 28 11:13:07 2012 +0100
+
+    [rigo] App Rating integration, NotificationBox Context support, a lot of other improvements
+
+commit 671901279ad0c3c1b74f42b0ee032fb4ec7dccb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 27 23:33:14 2012 +0100
+
+    Tagging Entropy version 1.0_rc89
+
 commit b97c1dd8b7ae4ee8820b92bc77fc28a35ab6253d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 27 23:33:12 2012 +0100
