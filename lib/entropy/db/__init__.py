@@ -5909,6 +5909,16 @@ class EntropyRepository(EntropyRepositoryBase):
             return
         if self._isBaseinfoExtrainfo2010():
             return
+        if not self._doesTableExist("baseinfo"):
+            return
+        if not self._doesTableExist("extrainfo"):
+            return
+        if not self._doesTableExist("licenses"):
+            return
+        if not self._doesTableExist("categories"):
+            return
+        if not self._doesTableExist("flags"):
+            return
 
         mytxt = "%s: [%s] %s" % (
             bold(_("ATTENTION")),
