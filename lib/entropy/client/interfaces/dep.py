@@ -362,15 +362,18 @@ class CalculatorsMixin:
 
         return dbpkginfo
 
-    def atom_search(self, atom, repositories = None, use_cache = True):
+    def atom_search(self, keyword, description = False, repositories = None,
+                    use_cache = True):
         """
         Search packages inside all the available repositories, including the
         installed packages one.
         Results are returned in random order by default, and as a list of
         package matches (pkg_id_int, repo_string).
 
-        @param atom: string to search
-        @type atom: string
+        @param keyword: string to search
+        @type keyword: string
+        @keyword description: if True, also search through package description
+        @type description: bool
         @keyword repositories: list of repository identifiers to search
             packages into
         @type repositories: string
@@ -386,9 +389,10 @@ class CalculatorsMixin:
             u_hash = hash(tuple(repositories))
         repos_ck = self._all_repositories_hash()
 
-        c_hash = "%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s" % (
             repos_ck,
-            atom,
+            keyword,
+            description,
             str(tuple(repositories)),
             str(tuple(self._settings['repositories']['available'])),
             u_hash
@@ -402,6 +406,7 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
+        atom = keyword[:]
         match_slot = entropy.dep.dep_getslot(atom)
         if match_slot:
             atom = entropy.dep.remove_slot(atom)
@@ -410,6 +415,7 @@ class CalculatorsMixin:
             atom = entropy.dep.remove_tag(atom)
 
         matches = []
+
         for repository in repositories:
 
             try:
@@ -424,6 +430,27 @@ class CalculatorsMixin:
                 just_id = True)
 
             matches.extend((pkg_id, repository) for pkg_id in pkg_ids)
+
+        # less relevance
+        if description:
+            matches_cache = set()
+            matches_cache.update(matches)
+
+            for repository in repositories:
+
+                try:
+                    repo = self.open_repository(repository)
+                except (RepositoryError, SystemDatabaseError):
+                    # ouch, repository not available or corrupted !
+                    continue
+
+                pkg_ids = repo.searchDescription(keyword, just_id = True)
+                pkg_matches = [(pkg_id, repository) for pkg_id in pkg_ids]
+                matches.extend(pkg_match for pkg_match in pkg_matches if \
+                                   pkg_match not in matches_cache)
+                matches_cache.update(pkg_matches)
+
+            matches_cache.clear()
 
         if self.xcache and use_cache:
             self._cacher.push(c_hash, matches)
