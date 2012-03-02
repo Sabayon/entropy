@@ -102,8 +102,9 @@ class ApplicationMetadata(object):
         """
         Start asynchronous Entropy Metadata retrieveal.
         """
-        ApplicationMetadata._RATING_THREAD.start()
-        ApplicationMetadata._ICON_THREAD.start()
+        for th_info in ApplicationMetadata._REGISTERED_THREAD_INFO:
+            thread = th_info[0]
+            thread.start()
 
     @staticmethod
     def _rating_thread_body():
@@ -113,7 +114,7 @@ class ApplicationMetadata(object):
         request_list = ["vote", "down"]
         return ApplicationMetadata._generic_thread_body(
             "RatingThread", ApplicationMetadata._RATING_SEM,
-            ApplicationMetadata._RATING_THREAD_DISCARD_SIGNAL,
+            ApplicationMetadata._RATING_DISCARD_SIGNALS,
             ApplicationMetadata._RATING_THREAD_SLEEP_SECS,
             ApplicationMetadata._RATING_QUEUE,
             ApplicationMetadata._RATING_LOCK,
@@ -128,7 +129,7 @@ class ApplicationMetadata(object):
         request_list = ["icon"]
         return ApplicationMetadata._generic_thread_body(
             "IconThread", ApplicationMetadata._ICON_SEM,
-            ApplicationMetadata._ICON_THREAD_DISCARD_SIGNAL,
+            ApplicationMetadata._ICON_DISCARD_SIGNALS,
             ApplicationMetadata._ICON_THREAD_SLEEP_SECS,
             ApplicationMetadata._ICON_QUEUE,
             ApplicationMetadata._ICON_LOCK,
@@ -136,7 +137,7 @@ class ApplicationMetadata(object):
             request_list)
 
     @staticmethod
-    def _generic_thread_body(name, sem, discard_signal, sleep_secs,
+    def _generic_thread_body(name, sem, discard_signals, sleep_secs,
                              queue, mutex, in_flight, request_list):
         """
         Thread executing generic (both rating and doc) metadata retrieval.
@@ -146,7 +147,8 @@ class ApplicationMetadata(object):
 
         while True:
             sem.acquire()
-            discard_signal.set(False)
+            for discard_signal in discard_signals:
+                discard_signal.set(False)
             const_debug_write(__name__,
                 "%s, waking up" % (name,))
             # sleep a bit in order to catch more flies
@@ -210,12 +212,12 @@ class ApplicationMetadata(object):
                             uncached_keys.append(key)
 
                     for key in uncached_keys:
-                        if discard_signal.get():
-                            break
+                        for discard_signal in discard_signals:
+                            if discard_signal.get():
+                                break
 
                         request_func, req_kwargs = request_map[request]
                         try:
-                            # FIXME, lxnay: work more instances in parallel?
                             outcome[(key, repo_id)] = request_func(
                                 [key], cache = True, **req_kwargs)[key]
                         except ws_exception as wse:
@@ -228,13 +230,18 @@ class ApplicationMetadata(object):
                     request_outcome[request] = outcome
 
             # don't worry about races
-            if discard_signal.get():
-                const_debug_write(
-                    __name__,
-                    "%s, discard signal received." % (name,)
-                )
-                discard_signal.set(False)
-                request_outcome.clear()
+            discarded = False
+            for discard_signal in discard_signals:
+                if discard_signal.get():
+                    const_debug_write(
+                        __name__,
+                        "%s, discard signal received." % (name,)
+                    )
+                    discard_signal.set(False)
+                    request_outcome.clear()
+                    discarded = True
+
+            if discarded:
                 continue
 
             # dispatch results
@@ -260,7 +267,7 @@ class ApplicationMetadata(object):
             "ApplicationMetadata.discard() called")
         for th_info in ApplicationMetadata._REGISTERED_THREAD_INFO:
             th, queue, sem, lock, \
-                discard_signal, in_flight = th_info
+                discard_signals, in_flight = th_info
             while True:
                 try:
                     queue.popleft()
@@ -270,7 +277,8 @@ class ApplicationMetadata(object):
                     break
             with lock:
                 in_flight.clear()
-            discard_signal.set(True)
+            for discard_signal in discard_signals:
+                discard_signal.set(True)
 
     @staticmethod
     def _download_document(entropy_ws, document, cache=True):
@@ -657,44 +665,55 @@ class ApplicationMetadata(object):
         def get(self):
             return self.__val
 
+    _REGISTERED_THREAD_INFO = []
+
+    _RATING_WORKERS = 3
+    _ICON_WORKERS = 3
+
+    _ICON_DISCARD_SIGNALS = []
+    _RATING_DISCARD_SIGNALS = []
+
     # Application Rating logic
     _RATING_QUEUE = deque()
     def _rating_thread_body_wrapper():
         return ApplicationMetadata._rating_thread_body()
-    _RATING_THREAD = ParallelTask(_rating_thread_body_wrapper)
-    _RATING_THREAD.daemon = True
-    _RATING_THREAD.name = "RatingThread"
-    _RATING_THREAD_SLEEP_SECS = 1.0
-    _RATING_THREAD_DISCARD_SIGNAL = SignalBoolean(False)
+    _RATING_THREAD_SLEEP_SECS = 0.5
     _RATING_SEM = Semaphore(0)
     _RATING_LOCK = Lock()
     _RATING_IN_FLIGHT = set()
+
+    for i in range(_RATING_WORKERS):
+        th = ParallelTask(_rating_thread_body_wrapper)
+        th.daemon = True
+        th.name = "RatingThread-%s" % (i,)
+        discard_signal = SignalBoolean(False)
+        _REGISTERED_THREAD_INFO.append(
+            (th, _RATING_QUEUE,
+             _RATING_SEM, _RATING_LOCK,
+             _RATING_DISCARD_SIGNALS,
+             _RATING_IN_FLIGHT))
+        _RATING_DISCARD_SIGNALS.append(discard_signal)
 
     # Application Icons logic
     _ICON_QUEUE = deque()
     def _icon_thread_body_wrapper():
         return ApplicationMetadata._icon_thread_body()
-    _ICON_THREAD = ParallelTask(_icon_thread_body_wrapper)
-    _ICON_THREAD.daemon = True
-    _ICON_THREAD.name = "IconThread"
-    _ICON_THREAD_SLEEP_SECS = 0.5
-    _ICON_THREAD_DISCARD_SIGNAL = SignalBoolean(False)
+    _ICON_THREAD_SLEEP_SECS = 0.15
     _ICON_SEM = Semaphore(0)
     _ICON_LOCK = Lock()
     _ICON_IN_FLIGHT = set()
 
-    _REGISTERED_THREAD_INFO = [
-        # rating
-        (_RATING_THREAD, _RATING_QUEUE,
-         _RATING_SEM, _RATING_LOCK,
-         _RATING_THREAD_DISCARD_SIGNAL,
-         _RATING_IN_FLIGHT),
-        # icon
-        (_ICON_THREAD, _ICON_QUEUE,
-         _ICON_SEM, _ICON_LOCK,
-         _ICON_THREAD_DISCARD_SIGNAL,
-         _ICON_IN_FLIGHT),
-    ]
+    for i in range(_ICON_WORKERS):
+        th = ParallelTask(_icon_thread_body_wrapper)
+        th.daemon = True
+        th.name = "IconThread-%s" % (i,)
+        discard_signal = SignalBoolean(False)
+        _REGISTERED_THREAD_INFO.append(
+            (th, _ICON_QUEUE,
+             _ICON_SEM, _ICON_LOCK,
+             _ICON_DISCARD_SIGNALS,
+             _ICON_IN_FLIGHT))
+        _ICON_DISCARD_SIGNALS.append(discard_signal)
 
 
 # this is a very lean class as its used in the main listview
