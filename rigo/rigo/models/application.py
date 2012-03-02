@@ -173,8 +173,9 @@ class ApplicationMetadata(object):
             # and repository map
             repo_map = {}
             ws_map = {}
+            visible_cb_map = {}
             for item in local_queue:
-                webserv, key, repo_id, cb, ts = item
+                webserv, key, repo_id, cb, still_vis_cb, ts = item
 
                 obj = pkg_key_map.setdefault((key, repo_id), [])
                 obj.append((cb, ts))
@@ -182,6 +183,9 @@ class ApplicationMetadata(object):
                 obj = repo_map.setdefault(repo_id, set())
                 obj.add(key)
                 ws_map[repo_id] = webserv
+
+                obj = visible_cb_map.setdefault(key, [])
+                obj.append(still_vis_cb)
 
             request_outcome = {}
             # issue requests
@@ -202,6 +206,20 @@ class ApplicationMetadata(object):
 
                     uncached_keys = []
                     for key in keys:
+
+                        # checking if we're still visible
+                        is_visible = False
+                        for vis_cb in visible_cb_map[key]:
+                            if vis_cb is None:
+                                is_visible = True
+                                break
+                            if vis_cb():
+                                is_visible = True
+                                break
+                        if not is_visible:
+                            outcome[(key, repo_id)] = None
+                            continue
+
                         request_func, req_kwargs = request_map[request]
 
                         try:
@@ -298,7 +316,8 @@ class ApplicationMetadata(object):
         return local_path
 
     @staticmethod
-    def _enqueue_rating(webservice, package_key, repository_id, callback):
+    def _enqueue_rating(webservice, package_key, repository_id, callback,
+                        _still_visible_cb):
         """
         Enqueue the retrieval of the Rating for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -319,11 +338,13 @@ class ApplicationMetadata(object):
         sem = ApplicationMetadata._RATING_SEM
         in_flight.add((package_key, repository_id))
         queue.append((webservice, package_key,
-                      repository_id, callback, request_time))
+                      repository_id, callback,
+                      _still_visible_cb, request_time))
         sem.release()
 
     @staticmethod
-    def _enqueue_icon(webservice, package_key, repository_id, callback):
+    def _enqueue_icon(webservice, package_key, repository_id, callback,
+                      _still_visible_cb):
         """
         Enqueue the retrieval of the Icon for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -345,12 +366,13 @@ class ApplicationMetadata(object):
         sem = ApplicationMetadata._ICON_SEM
         in_flight.add((package_key, repository_id))
         queue.append((webservice, package_key,
-                      repository_id, callback, request_time))
+                      repository_id, callback,
+                      _still_visible_cb, request_time))
         sem.release()
 
     @staticmethod
     def lazy_get_rating(entropy_ws, package_key, repository_id,
-                        callback=None):
+                        callback=None, _still_visible_cb=None):
         """
         Return the Rating (stars) for given package key, if it's available
         in local cache. At the same time, if not available and not already
@@ -379,7 +401,8 @@ class ApplicationMetadata(object):
                     # enqueue a new rating then
                     ApplicationMetadata._enqueue_rating(
                         webserv, package_key,
-                        repository_id, callback)
+                        repository_id, callback,
+                        _still_visible_cb)
             # let caller handle this
             raise exc
 
@@ -429,7 +452,7 @@ class ApplicationMetadata(object):
 
     @staticmethod
     def lazy_get_icon(entropy_ws, package_key, repository_id,
-                        callback=None):
+                        callback=None, _still_visible_cb=None):
         """
         Return a DocumentList of Icons for given package key, if it's available
         in local cache. At the same time, if not available and not already
@@ -475,7 +498,8 @@ class ApplicationMetadata(object):
                     # enqueue a new rating then
                     ApplicationMetadata._enqueue_icon(
                         webserv, package_key,
-                        repository_id, _icon_callback)
+                        repository_id, _icon_callback,
+                        _still_visible_cb)
             # let caller handle this
             raise exc
 
@@ -918,7 +942,7 @@ class Application(object):
             )
         return text
 
-    def get_review_stats(self):
+    def get_review_stats(self, _still_visible_cb=None):
         """
         Return ReviewStats object containing user review
         information about this Application, like
@@ -935,7 +959,8 @@ class Application(object):
         try:
             rating = ApplicationMetadata.lazy_get_rating(
                 self._entropy_ws, key, self._repo_id,
-                callback=self._redraw_callback)
+                callback=self._redraw_callback,
+                _still_visible_cb=_still_visible_cb)
         except WebService.CacheMiss:
             # not in cache, return empty stats
             return stat
@@ -951,7 +976,7 @@ class Application(object):
             stat.downloads_total = down
         return stat
 
-    def get_icon(self):
+    def get_icon(self, _still_visible_cb=None):
         """
         Return Application Icon image Entropy Document object.
         In case of missing icon, None is returned.
@@ -969,7 +994,8 @@ class Application(object):
         try:
             icon = ApplicationMetadata.lazy_get_icon(
                 self._entropy_ws, key, self._repo_id,
-                callback=self._redraw_callback)
+                callback=self._redraw_callback,
+                _still_visible_cb=_still_visible_cb)
         except WebService.CacheMiss:
             cache_hit = False
             icon = None

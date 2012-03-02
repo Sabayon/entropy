@@ -19,7 +19,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
 import os
-from threading import Lock
+from threading import Lock, Semaphore
 
 from gi.repository import Gtk, GLib, GObject, GdkPixbuf
 
@@ -86,6 +86,44 @@ class AppListStore(Gtk.ListStore):
             AppListStore._MISSING_ICON = _missing_icon
             return _missing_icon
 
+    def _is_app_visible(self, pkg_match):
+        """
+        Returns whether Application (through pkg_match) is still
+        visible in the TreeView.
+        This method shall be Thread safe.
+        """
+        s_data = {
+            'sem': Semaphore(0),
+            'res': None,
+        }
+
+        def _get_visible(data):
+            valid_paths, start_path, end_path = self._view.get_visible_range()
+            if not valid_paths:
+                data['res'] = False
+                data['sem'].release()
+                return
+
+            path = start_path
+            while path <= end_path:
+                path_iter = self.get_iter(path)
+                if self.iter_is_valid(path_iter):
+                    visible_pkg_match = self.get_value(path_iter, 0)
+                    if visible_pkg_match == pkg_match:
+                        data['res'] = True
+                        data['sem'].release()
+                        return
+                path.next()
+
+            data['res'] = False
+            data['sem'].release()
+            return
+
+        GLib.idle_add(_get_visible, s_data)
+        s_data['sem'].acquire()
+
+        return s_data['res']
+
     def get_icon(self, pkg_match):
         cached = AppListStore._ICON_CACHE.get(pkg_match)
         if cached is not None:
@@ -98,7 +136,11 @@ class AppListStore(Gtk.ListStore):
             self.emit("redraw-request", pkg_match)
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
-        icon, cache_hit = app.get_icon()
+
+        def _still_visible():
+            return self._is_app_visible(pkg_match)
+
+        icon, cache_hit = app.get_icon(_still_visible_cb=_still_visible)
         if const_debug_enabled():
             const_debug_write(__name__,
                               "get_icon({%s, %s}) = %s, hit: %s" % (
@@ -185,7 +227,11 @@ class AppListStore(Gtk.ListStore):
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
-        return app.get_review_stats()
+
+        def _still_visible():
+            return self._is_app_visible(pkg_match)
+
+        return app.get_review_stats(_still_visible_cb=_still_visible)
 
     def get_application(self, pkg_match):
         def _ui_redraw_callback(*args):
