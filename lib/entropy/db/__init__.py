@@ -4422,19 +4422,26 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        keyword_split = keyword.split()
+        query_str_list = []
+        query_args = []
+        for sub_keyword in keyword_split:
+            query_str_list.append("LOWER(extrainfo.description) LIKE (?)")
+            query_args.append("%" + sub_keyword + "%")
+        query_str = " AND ".join(query_str_list)
         if just_id:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.description) LIKE (?) AND
+            WHERE %s AND
             baseinfo.idpackage = extrainfo.idpackage
-            """, ("%"+keyword.lower()+"%",))
+            """ % (query_str,), query_args)
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom, baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.description) LIKE (?) AND
+            WHERE %s AND
             baseinfo.idpackage = extrainfo.idpackage
-            """, ("%"+keyword.lower()+"%",))
+            """ % (query_str,), query_args)
             return frozenset(cur)
 
     def searchUseflag(self, keyword, just_id = False):
