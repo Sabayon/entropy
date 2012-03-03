@@ -935,7 +935,9 @@ class ApplicationViewController(GObject.Object):
         """
         Notify User that login is required
         """
-        box = LoginNotificationBox(self._entropy_ws, app)
+        box = LoginNotificationBox(
+            self._entropy_ws, app,
+            context_id=context_id)
         box.connect("login-success", on_success)
         box.connect("login-failed", on_fail)
         self._nc.append(box)
