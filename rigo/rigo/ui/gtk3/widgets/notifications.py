@@ -229,7 +229,8 @@ class LoginNotificationBox(NotificationBox):
                           ),
     }
 
-    def __init__(self, entropy_ws, app, context_id=None):
+    def __init__(self, avc, entropy_ws, app, context_id=None):
+        self._avc = avc
         self._entropy_ws = entropy_ws
         self._app = app
         self._repository_id = app.get_details().channelname
@@ -316,6 +317,7 @@ class LoginNotificationBox(NotificationBox):
 
         def _emit_success():
             self.emit("login-success", username, self._app)
+            self._avc.emit("logged-in", username)
             GLib.idle_add(self.destroy)
         GLib.idle_add(_emit_success)
 

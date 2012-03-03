@@ -77,6 +77,16 @@ class ApplicationsViewController(GObject.Object):
                           None,
                           tuple(),
                           ),
+        # User logged in to Entropy Web Services
+        "logged-in"  : (GObject.SignalFlags.RUN_LAST,
+                        None,
+                        (GObject.TYPE_PYOBJECT,),
+                        ),
+        # User logged out from Entropy Web Services
+        "logged-out"  : (GObject.SignalFlags.RUN_LAST,
+                         None,
+                         tuple(),
+                         ),
     }
 
     def __init__(self, entropy_client, entropy_ws, icons, nf_box,
@@ -187,7 +197,6 @@ class ApplicationsViewController(GObject.Object):
                 self._entropy, self._entropy_ws,
                 first_entry)
             name = app.name
-            #pkgname = app.get_details().pkgname
 
             msg += ", %s" % (
                 _("did you mean <a href=\"%s\">%s</a>?") % (
@@ -525,6 +534,7 @@ class ApplicationViewController(GObject.Object):
         self._app_store = None
         self._last_app = None
         self._nc = None
+        self._avc = None
 
         self._window = self._builder.get_object("rigoWindow")
         self._image = self._builder.get_object("appViewImage")
@@ -569,6 +579,12 @@ class ApplicationViewController(GObject.Object):
         Bind NotificationController object to this class.
         """
         self._nc = nc
+
+    def set_applications_controller(self, avc):
+        """
+        Bind ApplicationsViewController object to this class.
+        """
+        self._avc = avc
 
     def set_store(self, store):
         """
@@ -891,7 +907,10 @@ class ApplicationViewController(GObject.Object):
             err_msg = str(err)
 
         def _submit_success(doc):
-            box = CommentBox(doc, is_last=True)
+            box = CommentBox(self._nc, self._avc, webserv, doc, is_last=True)
+            box.connect("destroy", self._on_comment_box_destroy)
+
+            self.__clean_my_non_comment_boxes()
             box.render()
             self._app_my_comments_box.pack_start(box, False, False, 2)
             box.show()
@@ -928,6 +947,7 @@ class ApplicationViewController(GObject.Object):
         if webserv is not None:
             webserv.remove_credentials()
 
+        GLib.idle_add(self._avc.emit, "logged-out")
         GLib.idle_add(reinit_callback)
 
     def _notify_login_request(self, app, text, on_success, on_fail,
@@ -936,7 +956,7 @@ class ApplicationViewController(GObject.Object):
         Notify User that login is required
         """
         box = LoginNotificationBox(
-            self._entropy_ws, app,
+            self._avc, self._entropy_ws, app,
             context_id=context_id)
         box.connect("login-success", on_success)
         box.connect("login-failed", on_fail)
@@ -968,22 +988,57 @@ class ApplicationViewController(GObject.Object):
         box.add_destroy_button(_("_Ok, thanks"))
         self._nc.append(box)
 
+    def _on_comment_box_destroy(self, widget):
+        """
+        Called when a CommentBox is destroyed.
+        We need to figure out if there are CommentBoxes left and in case
+        show the "no comments available" message.
+        """
+        children = self._app_comments_box.get_children()
+        if not children:
+            self.__show_no_comments()
+
+    def __show_no_comments(self):
+        """
+        Create "No comments for this Application" message.
+        """
+        label = Gtk.Label()
+        label.set_markup(
+            _("<i>No <b>comments</b> for this Application, yet!</i>"))
+        # place in app_my, this way it will get cleared out
+        # once a new comment is inserted
+        self._app_my_comments_box.pack_start(label, False, False, 1)
+        self._app_my_comments_box.show_all()
+
+    def __clean_non_comment_boxes(self):
+        """
+        Remove children that are not CommentBox objects from
+        self._app_comments_box
+        """
+        for child in self._app_comments_box.get_children():
+            if not isinstance(child, CommentBox):
+                child.destroy()
+
+    def __clean_my_non_comment_boxes(self):
+        """
+        Remove children that are not CommentBox objects from
+        self._app_my_comments_box
+        """
+        for child in self._app_my_comments_box.get_children():
+            if not isinstance(child, CommentBox):
+                child.destroy()
+
     def _append_comments(self, downloader, app, comments, has_more):
         """
         Append given Entropy WebService Document objects to
         the comment area.
         """
-        # remove spinner if there, ugly O(n)
-        for child in self._app_comments_box.get_children():
-            if not isinstance(child, CommentBox):
-                child.destroy()
+        self.__clean_non_comment_boxes()
+        # make sure we didn't leave stuff here as well
+        self.__clean_my_non_comment_boxes()
 
         if not comments:
-            label = Gtk.Label()
-            label.set_markup(
-                _("<i>No <b>comments</b> for this Application, yet!</i>"))
-            self._app_comments_box.pack_start(label, False, False, 1)
-            label.show()
+            self.__show_no_comments()
             return
 
         if has_more:
@@ -999,6 +1054,7 @@ class ApplicationViewController(GObject.Object):
                 spinner.set_name("comment-box-spinner")
                 self._app_comments_box.pack_end(spinner, False, False, 3)
                 spinner.show()
+                spinner.start()
                 downloader.enqueue_download()
             button.connect("clicked", _enqueue_download)
 
@@ -1008,9 +1064,14 @@ class ApplicationViewController(GObject.Object):
 
         idx = 0
         length = len(comments)
+        # can be None
+        webserv = self._entropy_ws.get(app.get_details().channelname)
         for doc in comments:
             idx += 1
-            box = CommentBox(doc, is_last=(not has_more and (idx == length)))
+            box = CommentBox(
+                self._nc, self._avc, webserv, doc,
+                is_last=(not has_more and (idx == length)))
+            box.connect("destroy", self._on_comment_box_destroy)
             box.render()
             self._app_comments_box.pack_end(box, False, False, 2)
             box.show()
@@ -1053,6 +1114,7 @@ class ApplicationViewController(GObject.Object):
                 spinner.set_name("image-box-spinner")
                 self._app_images_box.pack_end(spinner, False, False, 3)
                 spinner.show()
+                spinner.start()
                 downloader.enqueue_download()
             button.connect("clicked", _enqueue_download)
 
@@ -1311,6 +1373,7 @@ class Rigo(Gtk.Application):
             self._entropy, self._entropy_ws,
             self._avc, self._notification)
         self._app_view_c.set_notification_controller(self._nc)
+        self._app_view_c.set_applications_controller(self._avc)
 
     def _on_view_cleared(self, *args):
         self._change_view_state(Rigo.STATIC_VIEW_STATE)
