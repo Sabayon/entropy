@@ -24,6 +24,8 @@ from gi.repository import Gtk, GLib, GObject, Pango
 
 from rigo.utils import build_register_url, open_url
 
+from entropy.const import etpConst, const_convert_to_unicode, \
+    const_debug_write
 from entropy.i18n import _
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
@@ -95,11 +97,13 @@ class NotificationBox(Gtk.HBox):
             message_hbox.pack_start(self._message_widget, True, True, 0)
         hbox.pack_start(message_hbox, True, True, 0)
 
+        button_vbox = Gtk.VBox() # to avoid spanning in height
         button_hbox = Gtk.HBox()
         button_hbox.set_name("button-area")
         for button in self._buttons:
             button_hbox.pack_start(button, False, False, 3)
-        hbox.pack_start(button_hbox, False, False, 2)
+        button_vbox.pack_start(button_hbox, False, False, 0)
+        hbox.pack_start(button_vbox, False, False, 2)
 
         content_area.set_property("expand", False)
         content_area.add(hbox)
@@ -311,6 +315,17 @@ class LoginNotificationBox(NotificationBox):
         """
         username = self._username_entry.get_text()
         password = self._password_entry.get_text()
+
+        try:
+            username = const_convert_to_unicode(
+                username, enctype=etpConst['conf_encoding'])
+            password = const_convert_to_unicode(
+                password, enctype=etpConst['conf_encoding'])
+        except UnicodeDecodeError as err:
+            const_debug_write(
+                __name__,
+                "LoginNotificationBox._login: %s" % (repr(err),))
+            return
 
         task = ParallelTask(
             self._login_thread_body, username, password)
