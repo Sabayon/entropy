@@ -22,7 +22,7 @@ import subprocess
 
 from gi.repository import Gtk, GLib, GObject, Pango
 
-from rigo.utils import build_register_url, open_url
+from rigo.utils import build_register_url, open_url, escape_markup
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
@@ -97,13 +97,16 @@ class NotificationBox(Gtk.HBox):
             message_hbox.pack_start(self._message_widget, True, True, 0)
         hbox.pack_start(message_hbox, True, True, 0)
 
+        button_align = Gtk.Alignment()
+        button_align.set(1.0, 1.0, 0.0, 0.0)
         button_vbox = Gtk.VBox() # to avoid spanning in height
+        button_align.add(button_vbox)
         button_hbox = Gtk.HBox()
         button_hbox.set_name("button-area")
         for button in self._buttons:
             button_hbox.pack_start(button, False, False, 3)
         button_vbox.pack_start(button_hbox, False, False, 0)
-        hbox.pack_start(button_vbox, False, False, 2)
+        hbox.pack_start(button_align, False, False, 2)
 
         content_area.set_property("expand", False)
         content_area.add(hbox)
@@ -252,20 +255,27 @@ class LoginNotificationBox(NotificationBox):
         vbox = Gtk.VBox()
 
         hbox = Gtk.HBox()
+
+        username_box = Gtk.VBox()
         username_label = Gtk.Label()
-        username_label.set_markup(_("Username:"))
-        hbox.pack_start(username_label, False, False, 2)
-
+        username_label.set_markup("<small>" + \
+            escape_markup(_("Username")) + "</small>")
+        username_label.set_alignment(0.0, 0.50)
+        username_box.pack_start(username_label, False, False, 0)
         self._username_entry = Gtk.Entry()
-        hbox.pack_start(self._username_entry, False, False, 0)
+        username_box.pack_start(self._username_entry, False, False, 0)
+        hbox.pack_start(username_box, False, False, 0)
 
+        password_box = Gtk.VBox()
         password_label = Gtk.Label()
-        password_label.set_markup(_(", password:"))
-        hbox.pack_start(password_label, False, False, 2)
-
+        password_label.set_markup("<small>" + \
+            escape_markup(_("Password")) + "</small>")
+        password_label.set_alignment(0.0, 0.50)
+        password_box.pack_start(password_label, False, False, 0)
         self._password_entry = Gtk.Entry()
         self._password_entry.set_visibility(False)
-        hbox.pack_start(self._password_entry, False, False, 0)
+        password_box.pack_start(self._password_entry, False, False, 0)
+        hbox.pack_start(password_box, True, False, 0)
 
         hbox.set_property("expand", True)
 
