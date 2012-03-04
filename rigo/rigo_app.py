@@ -185,12 +185,10 @@ class ApplicationsViewController(GObject.Object):
         meant_packages = self._entropy.get_meant_packages(
             search_text)
         text = escape_markup(search_text)
-        msg = "%s" % (
-            _("Nothing found for <b>%s</b>") % (
-                const_convert_to_unicode(
-                    text,
-                    enctype=etpConst['conf_encoding']),)
-        )
+
+        msg = "%s <b>%s</b>" % (
+            escape_markup(_("Nothing found for")),
+            text,)
         if meant_packages:
             first_entry = meant_packages[0]
             app = Application(
@@ -199,7 +197,7 @@ class ApplicationsViewController(GObject.Object):
             name = app.name
 
             msg += ", %s" % (
-                _("did you mean <a href=\"%s\">%s</a>?") % (
+                prepare_markup(_("did you mean <a href=\"%s\">%s</a>?")) % (
                     escape_markup(name),
                     escape_markup(name),),)
 
@@ -1005,7 +1003,8 @@ class ApplicationViewController(GObject.Object):
         """
         label = Gtk.Label()
         label.set_markup(
-            _("<i>No <b>comments</b> for this Application, yet!</i>"))
+            prepare_markup(
+                _("<i>No <b>comments</b> for this Application, yet!</i>")))
         # place in app_my, this way it will get cleared out
         # once a new comment is inserted
         self._app_my_comments_box.pack_start(label, False, False, 1)
@@ -1097,7 +1096,8 @@ class ApplicationViewController(GObject.Object):
         if not images:
             label = Gtk.Label()
             label.set_markup(
-                _("<i>No <b>images</b> for this Application, yet!</i>"))
+                prepare_markup(
+                    _("<i>No <b>images</b> for this Application, yet!</i>")))
             self._app_images_box.pack_start(label, False, False, 1)
             label.show()
             return
@@ -1174,9 +1174,9 @@ class ApplicationViewController(GObject.Object):
         # www service for the rest
         self._app_comment_more_label.set_markup(
             "<b>%s</b>: <a href=\"%s\">%s</a>" % (
-                _("Want to add images, etc?"),
-                build_application_store_url(app, "ugc"),
-                _("click here!"),))
+                escape_markup(_("Want to add images, etc?")),
+                escape_markup(build_application_store_url(app, "ugc")),
+                escape_markup(_("click here!")),))
 
         stats = metadata['stats']
         icon = metadata['icon']
@@ -1186,7 +1186,7 @@ class ApplicationViewController(GObject.Object):
         # so at the beginning, just place a spinner
         spinner = Gtk.Spinner()
         spinner.set_size_request(-1, 48)
-        spinner.set_tooltip_text(_("Loading comments..."))
+        spinner.set_tooltip_text(escape_markup(_("Loading comments...")))
         spinner.set_name("comment-box-spinner")
         for child in self._app_comments_box.get_children():
             child.destroy()
@@ -1493,8 +1493,8 @@ class Rigo(Gtk.Application):
             # fail.
             self._show_ok_dialog(
                 None,
-                _("Not authorized"),
-                _("You are not authorized to run Rigo"))
+                escape_markup(_("Not authorized")),
+                escape_markup(_("You are not authorized to run Rigo")))
             entropy.tools.kill_threads()
             Gtk.main_quit()
             return
@@ -1504,8 +1504,8 @@ class Rigo(Gtk.Application):
         if not acquired:
             self._show_ok_dialog(
                 None,
-                _("Rigo"),
-                _("Another Application Manager is active"))
+                escape_markup(_("Rigo")),
+                escape_markup(_("Another Application Manager is active")))
             entropy.tools.kill_threads()
             Gtk.main_quit()
             return
