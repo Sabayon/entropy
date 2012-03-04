@@ -145,6 +145,19 @@ class ApplicationMetadata(object):
         cache_miss = WebService.CacheMiss
         ws_exception = WebService.WebServiceException
 
+        def _callback_launch(key, repo_id, cb_ts_list, outcome):
+            for (cb, ts) in cb_ts_list:
+                with mutex:
+                    in_flight.discard((key, repo_id))
+                if cb is not None:
+                    outcome_values = []
+                    for request in request_list:
+                        outcome_values.append(
+                            outcome[request].get((key, repo_id)))
+                    task = ParallelTask(cb, outcome_values, ts)
+                    task.name = "%sCb{%s, %s}" % (name, repo_id, key)
+                    task.start()
+
         while True:
             sem.acquire()
             for discard_signal in discard_signals:
@@ -187,8 +200,6 @@ class ApplicationMetadata(object):
                 obj = visible_cb_map.setdefault(key, [])
                 obj.append(still_vis_cb)
 
-            request_outcome = {}
-            # issue requests
             for repo_id, keys in repo_map.items():
 
                 webserv = ws_map[repo_id]
@@ -201,51 +212,61 @@ class ApplicationMetadata(object):
                     "comment": (webserv.get_comments, {"latest": True,}),
                 }
 
-                for request in request_list:
+                for key in keys:
+
+                    # discard signal received ?
+                    do_discard = False
+                    for discard_signal in discard_signals:
+                        if discard_signal.get():
+                            do_discard = True
+                            break
+                    if do_discard:
+                        break
+
+                    uncached_requests = []
                     outcome = {}
+                    for request in request_list:
 
-                    uncached_keys = []
-                    for key in keys:
-
-                        # checking if we're still visible
-                        is_visible = False
-                        for vis_cb in visible_cb_map[key]:
-                            if vis_cb is None:
-                                is_visible = True
-                                break
-                            if vis_cb():
-                                is_visible = True
-                                break
-                        if not is_visible:
-                            outcome[(key, repo_id)] = None
-                            continue
-
+                        request_outcome = outcome.setdefault(request, {})
                         request_func, req_kwargs = request_map[request]
 
                         try:
-                            outcome[(key, repo_id)] = request_func(
+                            request_outcome[(key, repo_id)] = request_func(
                                 [key], cache=True, cached=True,
                                 **req_kwargs)[key]
                         except cache_miss:
-                            uncached_keys.append(key)
+                            uncached_requests.append(request)
 
-                    for key in uncached_keys:
-                        for discard_signal in discard_signals:
-                            if discard_signal.get():
-                                break
+                    # checking if we're still visible
+                    is_visible = False
+                    for vis_cb in visible_cb_map[key]:
+                        if vis_cb is None:
+                            is_visible = True
+                            break
+                        if vis_cb():
+                            is_visible = True
+                            break
+                    if not is_visible:
+                        # don't query the remote service
+                        uncached_requests = []
 
+                    for request in uncached_requests:
+
+                        request_outcome = outcome[request]
                         request_func, req_kwargs = request_map[request]
+
                         try:
-                            outcome[(key, repo_id)] = request_func(
+                            request_outcome[(key, repo_id)] = request_func(
                                 [key], cache = True, **req_kwargs)[key]
                         except ws_exception as wse:
                             const_debug_write(
                                 __name__,
                                 "%s, WebServiceExc: %s" % (name, wse,)
                                 )
-                            outcome[(key, repo_id)] = None
+                            request_outcome[(key, repo_id)] = None
 
-                    request_outcome[request] = outcome
+                    cb_ts_list = pkg_key_map[(key, repo_id)]
+                    _callback_launch(key, repo_id, cb_ts_list, outcome)
 
             # don't worry about races
             discarded = False
@@ -258,23 +279,11 @@ class ApplicationMetadata(object):
                     discard_signal.set(False)
                     request_outcome.clear()
                     discarded = True
+                    break
 
             if discarded:
                 continue
 
-            # dispatch results
-            for (key, repo_id), cb_ts_list in pkg_key_map.items():
-                for (cb, ts) in cb_ts_list:
-                    with mutex:
-                        in_flight.discard((key, repo_id))
-                    if cb is not None:
-                        outcome_values = []
-                        for request in request_list:
-                            outcome_values.append(
-                                request_outcome[request].get((key, repo_id)))
-                        task = ParallelTask(cb, outcome_values, ts)
-                        task.name = "%sCb{%s, %s}" % (name, repo_id, key)
-                        task.start()
 
     @staticmethod
     def discard():
