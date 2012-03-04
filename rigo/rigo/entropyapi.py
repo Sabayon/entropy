@@ -26,6 +26,11 @@ from entropy.services.client import WebService
 
 class EntropyWebService(object):
 
+    # This is sufficient for Votes and Downloads.
+    # The other metadata follow another cache validation
+    # policy anyway.
+    CACHE_AGING_DAYS = 14
+
     def __init__(self, entropy_client, tx_callback=None):
         # Install custom CACHE_DIR pointing it to our
         # home directory. This way we don't need to mess
@@ -69,6 +74,7 @@ class EntropyWebService(object):
 
             try:
                 webserv = self._get(self._entropy, repository_id)
+                webserv.enable_cache_aging(self.CACHE_AGING_DAYS)
             except WebService.UnsupportedService as err:
                 webserv = None
 
