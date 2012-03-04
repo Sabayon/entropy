@@ -420,7 +420,7 @@ class EntropyCacher(Singleton):
             with self.__dump_data_lock:
                 entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
-    def pop(self, key, cache_dir = None):
+    def pop(self, key, cache_dir = None, aging_days = None):
         """
         This is the place where data is retrieved from cache.
         You must know the cache identifier used when push()
@@ -444,7 +444,7 @@ class EntropyCacher(Singleton):
         l_o = entropy.dump.loadobj
         if not l_o:
             return
-        return l_o(key, dump_dir = cache_dir)
+        return l_o(key, dump_dir = cache_dir, aging_days = aging_days)
 
     @staticmethod
     def clear_cache_item(cache_item, cache_dir = None):
