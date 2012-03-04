@@ -1394,7 +1394,7 @@ def const_israwstring(obj):
     else:
         return isinstance(obj, str)
 
-def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
+def const_convert_to_unicode(obj, enctype = _RAW_ENCODING):
     """
     Convert generic string to unicode format, this function supports both
     Python 2.x and Python 3.x unicode bullshit.
@@ -1437,7 +1437,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
         else:
             return unicode(obj, enctype)
 
-def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
+def const_convert_to_rawstring(obj, from_enctype = _RAW_ENCODING):
     """
     Convert generic string to raw string (str for Python 2.x or bytes for
     Python 3.x).
