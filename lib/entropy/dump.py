@@ -238,12 +238,13 @@ def loadobj(name, complete_path = False, dump_dir = None, aging_days = None):
                 except (IOError, OSError,):
                     mtime = 0.0
                 if abs(cur_t - mtime) > (aging_days * 86400):
-                    # unlink
-                    try:
-                        os.remove(dmpfile)
-                    except (OSError, IOError):
-                        # did my best
-                        pass
+                    # do not unlink since other consumers might
+                    # have different aging settings.
+                    #try:
+                    #    os.remove(dmpfile)
+                    #except (OSError, IOError):
+                    #    # did my best
+                    #    pass
                     return None
 
             try:
