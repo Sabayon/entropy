@@ -632,6 +632,7 @@ class ApplicationViewController(GObject.Object):
             stats = self._app_store.get_review_stats(pkg_match)
             icon = self._app_store.get_icon(pkg_match)
             self._setup_application_stats(stats, icon)
+            self._view.queue_draw()
 
     def _on_stars_clicked(self, widget, app=None):
         """
