@@ -25,6 +25,8 @@
 
 import sys
 import os
+import time
+
 from entropy.const import etpConst, const_setup_file
 # Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
 COMPAT_PICKLE_PROTOCOL = 0
@@ -202,7 +204,7 @@ def serialize_string(myobj):
     else:
         return pickle.dumps(myobj)
 
-def loadobj(name, complete_path = False, dump_dir = None):
+def loadobj(name, complete_path = False, dump_dir = None, aging_days = None):
     """
     Load object from a file
     @param name: name of the object to load
@@ -212,6 +214,9 @@ def loadobj(name, complete_path = False, dump_dir = None):
     @type complete_path: bool
     @keyword dump_dir: alternative dump directory
     @type dump_dir: string
+    @keyword aging_days: if int, consider the cached file invalid
+        if older than aging_days.
+    @type aging_days: int
     @return: object or None
     @rtype: any Python pickable object or None
     """
@@ -226,6 +231,21 @@ def loadobj(name, complete_path = False, dump_dir = None):
             dmpfile = dump_path + D_EXT
 
         if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
+            if aging_days is not None:
+                cur_t = time.time()
+                try:
+                    mtime = os.path.getmtime(dmpfile)
+                except (IOError, OSError,):
+                    mtime = 0.0
+                if abs(cur_t - mtime) > (aging_days * 86400):
+                    # unlink
+                    try:
+                        os.remove(dmpfile)
+                    except (OSError, IOError):
+                        # did my best
+                        pass
+                    return None
+
             try:
                 with open(dmpfile, "rb") as dmp_f:
                     obj = None
