@@ -51,7 +51,7 @@ from rigo.ui.gtk3.widgets.images import ImageBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from rigo.utils import build_application_store_url, build_register_url, \
-    escape_markup
+    escape_markup, prepare_markup
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode
@@ -1144,13 +1144,14 @@ class ApplicationViewController(GObject.Object):
         Setup widgets related to Application statistics (and icon).
         """
         total_downloads = stats.downloads_total
-        if not total_downloads:
-            down_msg = _("Never downloaded")
+        if total_downloads < 0:
+            down_msg = escape_markup(_("Not available"))
+        elif not total_downloads:
+            down_msg = escape_markup(_("Never downloaded"))
         else:
-            down_msg = ngettext("<small><b>%d</b>\ndownload</small>",
-                                "<small><b>%d</b>\ndownloads</small>",
-                                total_downloads)
-            down_msg = down_msg % (total_downloads,)
+            down_msg = "<small><b>%s</b> %s</small>" % (
+                stats.downloads_total_markup,
+                escape_markup(_("downloads")),)
 
         self._app_downloaded_lbl.set_markup(down_msg)
         if icon:
