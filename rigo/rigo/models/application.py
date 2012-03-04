@@ -51,9 +51,55 @@ class ReviewStats(object):
     def __init__(self, app):
         self.app = app
         self.ratings_average = None
-        self.downloads_total = 0
+        self.downloads_total = -1
         self.rating_spread = [0,0,0,0,0]
         self.dampened_rating = 3.00
+
+    @property
+    def downloads_total_markup(self):
+        """
+        Return a nicer representation of the total downloads amount.
+        """
+        total = self.downloads_total
+        if total < 100:
+            text = "< 100"
+        elif total < 600:
+            text = "500+"
+        elif total < 1100:
+            text = "1.000+"
+        elif total < 2100:
+            text = "2.000+"
+        elif total < 5100:
+            text = "5.000+"
+        elif total < 10100:
+            text = "10.000+"
+        elif total < 20000:
+            text = "15.000+"
+        elif total < 30000:
+            text = "20.000+"
+        elif total < 60000:
+            text = "50.000+"
+        elif total < 110000:
+            text = "100.000+"
+        elif total < 210000:
+            text = "200.000+"
+        elif total < 510000:
+            text = "500.000+"
+        elif total < 1010000:
+            text = "1.000.000+"
+        elif total < 1510000:
+            text = "1.500.000+"
+        elif total < 2010000:
+            text = "2.000.000+"
+        elif total < 5010000:
+            text = "5.000.000+"
+        elif total < 10010000:
+            text = "10.000.000+"
+        elif total < 50010000:
+            text = "50.000.000+"
+        else:
+            text = "100.000.000+"
+        return escape_markup(text)
 
     def __repr__(self):
         return ("<ReviewStats '%s' ratings_average='%s' downloads_total='%s'"

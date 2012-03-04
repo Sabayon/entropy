@@ -201,11 +201,11 @@ class CellRendererAppView(Gtk.CellRendererText):
         sr = self._stars
 
         if not is_rtl:
-            x = (cell_area.x + 3 * xpad + self.pixbuf_width +
+            x = (cell_area.x + 7 * xpad + self.pixbuf_width +
                  self.apptitle_width)
         else:
             x = (cell_area.x + cell_area.width
-                 - 3*xpad
+                 - 7*xpad
                  - self.pixbuf_width
                  - self.apptitle_width
                  - star_width)
@@ -216,15 +216,16 @@ class CellRendererAppView(Gtk.CellRendererText):
         sr.render_star(context, cr, x, y)
 
         # and nr-reviews in parenthesis to the right of the title
-        nreviews = stats.downloads_total
-        s = "(%i)" % nreviews
+        nreviews_int = stats.downloads_total
+        nreviews = stats.downloads_total_markup
+        if nreviews_int < 0:
+            s = "..."
+        else:
+            s = nreviews
 
         layout.set_markup("<small>%s</small>" % s, -1)
 
-        if not is_rtl:
-            x += xpad+star_width
-        else:
-            x -= xpad+self._layout_get_pixel_width(layout)
+        y += ypad + self.STAR_SIZE
 
         context.save()
         context.add_class("cellrenderer-avgrating-label")
