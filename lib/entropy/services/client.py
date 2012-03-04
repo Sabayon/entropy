@@ -256,6 +256,8 @@ class WebService(object):
         self.__cacher = None
         self._default_timeout_secs = 10.0
         self.__credentials_validated = False
+        # if this is set, cache will be considered invalid if older than
+        self._cache_aging_days = None
 
         # check availability
         _repository_data = self._settings['repositories']['available'].get(
@@ -633,6 +635,13 @@ class WebService(object):
         """
         request_params["__repository_id__"] = self._repository_id
 
+    def enable_cache_aging(self, days):
+        """
+        Turn on on-disk cache aging support. If cache is older than given
+        days, it will be removed and considered invalid.
+        """
+        self._cache_aging_days = int(days)
+
     def add_credentials(self, username, password):
         """
         Add credentials for this repository and store the information into
@@ -719,7 +728,9 @@ class WebService(object):
         Return an on-disk cached object for given cache key.
         """
         with self._cache_dir_lock:
-            return self._cacher.pop(cache_key, cache_dir = WebService.CACHE_DIR)
+            return self._cacher.pop(
+                cache_key, cache_dir = WebService.CACHE_DIR,
+                aging_days = self._cache_aging_days)
 
     def _set_cached(self, cache_key, data):
         """
