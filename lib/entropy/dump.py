@@ -260,8 +260,10 @@ def getobjmtime(name, dump_dir = None):
         dump_dir = D_DIR
     mtime = 0
     dump_path = os.path.join(dump_dir, name+D_EXT)
-    if os.path.isfile(dump_path) and os.access(dump_path, os.R_OK):
+    try:
         mtime = os.path.getmtime(dump_path)
+    except (IOError, OSError):
+        mtime = 0
     return int(mtime)
 
 def removeobj(name, dump_dir = None):
