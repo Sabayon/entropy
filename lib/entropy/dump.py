@@ -223,7 +223,7 @@ def loadobj(name, complete_path = False, dump_dir = None):
             dmpfile = name
         else:
             dump_path = os.path.join(dump_dir, name)
-            dmpfile = dump_path+D_EXT
+            dmpfile = dump_path + D_EXT
 
         if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
             try:
@@ -281,7 +281,7 @@ def removeobj(name, dump_dir = None):
     """
     if dump_dir is None:
         dump_dir = D_DIR
-    filepath = dump_dir+"/"+name+D_EXT
+    filepath = dump_dir + os.path.sep + name + D_EXT
     if os.path.isfile(filepath) and os.access(filepath, os.W_OK):
         os.remove(filepath)
         return True
