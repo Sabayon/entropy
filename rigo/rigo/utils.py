@@ -23,7 +23,8 @@ import subprocess
 
 from gi.repository import GObject
 
-from entropy.const import etpConst, const_convert_to_rawstring
+from entropy.const import etpConst, const_convert_to_rawstring, \
+    const_isunicode
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import ParallelTask
 
@@ -77,5 +78,14 @@ def escape_markup(text):
     """
     return \
         GObject.markup_escape_text(
+            prepare_markup(text))
+
+def prepare_markup(text):
+    """
+    Convert text to raw bytestring to make GTK3 happy.
+    """
+    if const_isunicode(text):
+        return \
             const_convert_to_rawstring(
-                text, from_enctype=etpConst['conf_encoding']))
+                text, from_enctype=etpConst['conf_encoding'])
+    return text
