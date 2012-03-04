@@ -133,7 +133,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback(), %s" % (args,))
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
 
@@ -190,7 +190,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback()")
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
@@ -201,7 +201,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback()")
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
@@ -212,7 +212,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback()")
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
@@ -223,7 +223,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback()")
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
@@ -238,7 +238,7 @@ class AppListStore(Gtk.ListStore):
             if const_debug_enabled():
                 const_debug_write(__name__,
                                   "_ui_redraw_callback()")
-            self.emit("redraw-request", pkg_match)
+            GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
         app = Application(self._entropy, self._entropy_ws, pkg_match,
                           redraw_callback=_ui_redraw_callback)
