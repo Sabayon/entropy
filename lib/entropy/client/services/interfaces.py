@@ -23,6 +23,7 @@ if sys.hexversion >= 0x3000000:
     from io import StringIO
 else:
     from cStringIO import StringIO
+import tempfile
 
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
     const_convert_to_rawstring, const_convert_to_unicode
@@ -1373,13 +1374,31 @@ class ClientWebService(WebService):
             # cached, just return
             return local_document
 
-        fetcher = self._entropy._url_fetcher(document_url, local_document,
-            resume = False)
-        rc = fetcher.download()
+        local_document_dir = os.path.dirname(local_document)
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                dir=local_document_dir, prefix="get_document_url")
 
-        if rc in ("-1", "-2", "-3", "-4"):
-            raise ClientWebService.DocumentError(
-                "Document download failed: %s" % (rc,))
+            fetcher = self._entropy._url_fetcher(
+                document_url, tmp_path, resume = False)
+            rc = fetcher.download()
+
+            if rc in ("-1", "-2", "-3", "-4"):
+                raise ClientWebService.DocumentError(
+                    "Document download failed: %s" % (rc,))
+
+            os.rename(tmp_path, local_document)
+            tmp_path = None
+
+        finally:
+            if tmp_fd is not None:
+                os.close(tmp_fd)
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
 
         if not os.path.isfile(local_document):
             raise ClientWebService.DocumentError(
