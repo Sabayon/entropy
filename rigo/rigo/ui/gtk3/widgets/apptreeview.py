@@ -31,7 +31,7 @@ from cellrenderers import CellRendererAppView, CellButtonRenderer, \
 
 from rigo.em import em, StockEms
 from rigo.enums import Icons
-from rigo.models.application import CategoryRowReference
+from rigo.models.application import CategoryRowReference, Application
 
 COL_ROW_DATA = 0
 
@@ -45,10 +45,12 @@ class AppTreeView(Gtk.TreeView):
 
     ACTION_BTNS = (VARIANT_REMOVE, VARIANT_INSTALL)
 
-    def __init__(self, apc, icons, show_ratings, icon_size, store=None):
+    def __init__(self, entropy_client, apc, icons, show_ratings,
+                 icon_size, store=None):
         Gtk.TreeView.__init__(self)
         self._logger = logging.getLogger(__name__)
 
+        self._entropy = entropy_client
         self._apc = apc
 
         self.pressed = False
@@ -116,8 +118,20 @@ class AppTreeView(Gtk.TreeView):
         # our own "activate" handler
         self.connect("row-activated", self._on_row_activated, tr)
 
+        self.set_search_column(0)
+        self.set_search_equal_func(self._app_search, None)
+        self.set_property("enable-search", True)
+
         self._transactions_connected = False
         self.connect('realize', self._on_realize, tr)
+
+
+    def _app_search(self, model, column, key, iterator, data):
+        pkg_match = model.get_value(iterator, 0)
+        if pkg_match is None:
+            return False
+        app = Application(self._entropy, None, pkg_match)
+        return not app.search(key)
 
     @property
     def appmodel(self):

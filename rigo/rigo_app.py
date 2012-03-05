@@ -1324,7 +1324,7 @@ class Rigo(Gtk.Application):
         self._app_view_c = ApplicationViewController(
             self._entropy, self._entropy_ws, self._builder)
 
-        self._view = AppTreeView(self._app_view_c, icons, True,
+        self._view = AppTreeView(self._entropy, self._app_view_c, icons, True,
                                  AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
 

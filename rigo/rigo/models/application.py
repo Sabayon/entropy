@@ -877,6 +877,16 @@ class Application(object):
             escape_markup(description))
         return text
 
+    def search(self, keyword):
+        """
+        Match keyword against Application name. Return True if
+        the same contains keyword.
+        """
+        name = self.name
+        if keyword in name:
+            return True
+        return keyword.lower() in name.lower()
+
     def get_extended_markup(self):
         """
         Get Application markup text (extended version).
