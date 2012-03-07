@@ -841,6 +841,30 @@ class Application(object):
             return True
         return False
 
+    def is_updatable(self):
+        """
+        Return if Application can be updated.
+        With "updated" we also mean "downgraded".
+        """
+        inst_repo = self._entropy.installed_repository()
+        repo = self._entropy.open_repository(self._repo_id)
+        if repo is inst_repo:
+            return False
+        pkgcmp = self._entropy.get_package_action(
+            (self._pkg_id, self._repo_id))
+        # 0 = reinstall
+        # 1 = new package
+        # 2 = update
+        # else = downgrade
+        if pkgcmp == 2:
+            return True
+        elif pkgcmp == 0:
+            return False
+        elif pkgcmp == 1:
+            return False
+        else:
+            return True
+
     def is_available(self):
         """
         Return if Application is actually available in repos,
