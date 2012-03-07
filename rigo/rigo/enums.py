@@ -154,8 +154,6 @@ class NonAppVisibility:
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
-    UPGRADE = "upgrade"
-    APPLY = "apply_changes"
 
 # transaction types
 class TransactionTypes:
