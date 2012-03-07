@@ -37,7 +37,7 @@ sys.path.insert(5, "/usr/lib/entropy/rigo")
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject
 
 from rigo.paths import DATA_DIR
-from rigo.enums import Icons
+from rigo.enums import Icons, AppActions
 from rigo.entropyapi import EntropyWebService
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
@@ -515,8 +515,6 @@ class ApplicationViewController(GObject.Object):
         "application-request-action" : (GObject.SignalFlags.RUN_LAST,
                                         None,
                                         (GObject.TYPE_PYOBJECT,
-                                         GObject.TYPE_PYOBJECT,
-                                         GObject.TYPE_PYOBJECT,
                                          str),
                                        ),
     }
@@ -559,6 +557,7 @@ class ApplicationViewController(GObject.Object):
         self._app_comment_more_label = self._builder.get_object(
             "appViewCommentMoreLabel")
         self._stars_container = self._builder.get_object("appViewStarsSelVbox")
+        self._app_button_area = self._builder.get_object("appViewButtonArea")
 
         self._stars = ApplicationViewController.WindowedReactiveStar(
             self._window)
@@ -786,6 +785,8 @@ class ApplicationViewController(GObject.Object):
         metadata['date'] = details.date
         # using app store here because we cache the icon pixbuf
         metadata['icon'] = self._app_store.get_icon(details.pkg)
+        metadata['is_installed'] = app.is_installed()
+        metadata['is_updatable'] = app.is_updatable()
         GLib.idle_add(self._setup_application_info, app, metadata)
 
     def hide(self):
@@ -1139,6 +1140,65 @@ class ApplicationViewController(GObject.Object):
         GLib.idle_add(self._append_images, downloader, app,
                       comments, has_more)
 
+    def _on_app_remove(self, widget, app):
+        """
+        Remove the given Application.
+        """
+        self.emit("application-request-action",
+                  app, AppActions.REMOVE)
+
+    def _on_app_install(self, widget, app):
+        """
+        Install (or reinstall) the given Application.
+        """
+        self.emit("application-request-action",
+                  app, AppActions.INSTALL)
+
+    def _setup_buttons(self, app, is_installed, is_updatable):
+        """
+        Setup Application View Buttons (Install/Remove/Update).
+        """
+        button_area = self._app_button_area
+        for child in button_area.get_children():
+            child.destroy()
+
+        if is_installed:
+            if is_updatable:
+                update_button = Gtk.Button()
+                update_button.set_label(
+                    escape_markup(_("Update")))
+                def _on_app_update(widget):
+                    return self._on_app_install(widget, app)
+                update_button.connect("clicked", _on_app_update)
+                button_area.pack_start(update_button, False, False, 0)
+            else:
+                reinstall_button = Gtk.Button()
+                reinstall_button.set_label(
+                    escape_markup(_("Reinstall")))
+                def _on_app_reinstall(widget):
+                    return self._on_app_install(widget, app)
+                reinstall_button.connect("clicked", _on_app_reinstall)
+                button_area.pack_start(reinstall_button, False, False, 0)
+
+            remove_button = Gtk.Button()
+            remove_button.set_label(
+                escape_markup(_("Remove")))
+            def _on_app_remove(widget):
+                return self._on_app_remove(widget, app)
+            remove_button.connect("clicked", _on_app_remove)
+            button_area.pack_start(remove_button, False, False, 0)
+
+        else:
+            install_button = Gtk.Button()
+            install_button.set_label(
+                escape_markup(_("Install")))
+            def _on_app_install(widget):
+                return self._on_app_install(widget, app)
+            install_button.connect("clicked", _on_app_install)
+            button_area.pack_start(install_button, False, False, 0)
+
+        button_area.show_all()
+
     def _setup_application_stats(self, stats, icon):
         """
         Setup widgets related to Application statistics (and icon).
@@ -1166,9 +1226,10 @@ class ApplicationViewController(GObject.Object):
         self._app_name_lbl.set_markup(metadata['markup'])
         self._app_info_lbl.set_markup(metadata['info'])
 
-        # FIXME, lxnay complete
         # install/remove/update buttons
-        
+        self._setup_buttons(
+            app, metadata['is_installed'],
+            metadata['is_updatable'])
 
         # only comments supported, point to the remote
         # www service for the rest

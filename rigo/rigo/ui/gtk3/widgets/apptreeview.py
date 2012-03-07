@@ -30,7 +30,7 @@ from cellrenderers import CellRendererAppView, CellButtonRenderer, \
     CellButtonIDs
 
 from rigo.em import em, StockEms
-from rigo.enums import Icons
+from rigo.enums import Icons, AppActions
 from rigo.models.application import CategoryRowReference, Application
 
 COL_ROW_DATA = 0
@@ -506,7 +506,7 @@ class AppTreeView(Gtk.TreeView):
 
             self._apc.emit("application-request-action",
                       self.appmodel.get_application(app),
-                      [], [], perform_action)
+                      perform_action)
         return False
 
     def _set_cursor(self, btn, cursor):
