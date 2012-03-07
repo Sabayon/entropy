@@ -798,7 +798,9 @@ class ApplicationViewController(GObject.Object):
         self._last_app = None
         for child in self._app_my_comments_box.get_children():
             child.destroy()
-        self.__clean_non_image_boxes()
+        for child in self._app_images_box.get_children():
+            child.destroy()
+
         self.emit("application-hide", self)
 
     def _on_send_comment(self, widget, app=None):
