@@ -629,7 +629,8 @@ class ApplicationViewController(GObject.Object):
             stats = self._app_store.get_review_stats(pkg_match)
             icon = self._app_store.get_icon(pkg_match)
             self._setup_application_stats(stats, icon)
-            self._view.queue_draw()
+            if self._app_store is not None:
+                self._app_store.emit("redraw-request", self._app_store)
 
     def _on_stars_clicked(self, widget, app=None):
         """
@@ -797,6 +798,7 @@ class ApplicationViewController(GObject.Object):
         self._last_app = None
         for child in self._app_my_comments_box.get_children():
             child.destroy()
+        self.__clean_non_image_boxes()
         self.emit("application-hide", self)
 
     def _on_send_comment(self, widget, app=None):
@@ -1029,6 +1031,15 @@ class ApplicationViewController(GObject.Object):
             if not isinstance(child, CommentBox):
                 child.destroy()
 
+    def __clean_non_image_boxes(self):
+        """
+        Remove children that are not ImageBox objects from
+        self._app_images_box
+        """
+        for child in self._app_images_box.get_children():
+            if not isinstance(child, ImageBox):
+                child.destroy()
+
     def _append_comments(self, downloader, app, comments, has_more):
         """
         Append given Entropy WebService Document objects to
@@ -1089,10 +1100,7 @@ class ApplicationViewController(GObject.Object):
         Append given Entropy WebService Document objects to
         the images area.
         """
-        # remove spinner if there, ugly O(n)
-        for child in self._app_images_box.get_children():
-            if not isinstance(child, ImageBox):
-                child.destroy()
+        self.__clean_non_image_boxes()
 
         if not images:
             label = Gtk.Label()
