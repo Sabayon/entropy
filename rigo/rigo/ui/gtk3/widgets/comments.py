@@ -125,7 +125,7 @@ class CommentBox(Gtk.VBox):
         remove_str = ""
         if logged_username == doc_username:
             remove_str = ", <b><a href=\"remove\">%s</a></b>" % (
-                escape_markup(_("remove ?")),)
+                escape_markup(_("remove")),)
 
         self._header_label.set_markup(
             "<small><b>%s</b>" % (escape_markup(doc_username),) \
