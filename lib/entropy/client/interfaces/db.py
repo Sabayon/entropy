@@ -427,8 +427,23 @@ class AvailablePackagesRepositoryUpdater(object):
         if not os.path.isdir(repo_data['dbpath']):
             os.makedirs(repo_data['dbpath'], 0o755)
 
-        const_setup_perms(etpConst['etpdatabaseclientdir'],
-            etpConst['entropygid'], f_perms = 0o644)
+        try:
+            items = os.listdir(etpConst['etpdatabaseclientdir'])
+        except OSError:
+            items = []
+
+        # we cannot operate dir wide (etpdatabaseclientdir) because
+        # there are lock files in there and we should not touch them
+        for item in items:
+            repo_dir_path = os.path.join(
+                etpConst['etpdatabaseclientdir'],
+                item)
+            if not os.path.isdir(repo_dir_path):
+                continue
+            const_setup_perms(
+                repo_dir_path,
+                etpConst['entropygid'],
+                f_perms = 0o644)
 
     def __validate_compression_method(self):
 
