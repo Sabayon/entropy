@@ -637,6 +637,19 @@ class FlockFile(object):
         self.acquire_shared()
         self.acquire_exclusive()
 
+    def try_promote(self):
+        """
+        Promote a lock acquired in shared mode to exclusive mode,
+        non blocking.
+        """
+        acquired = self.try_acquire_shared()
+        if not acquired:
+            return False
+        acquired = self.try_acquire_exclusive()
+        if not acquired:
+            return False
+        return True
+
     def demote(self):
         """
         Demote a lock acquired in exclusive mode to shared mode.
