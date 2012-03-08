@@ -1001,27 +1001,16 @@ class System:
         """
         return os.path.isdir(System.SECURITY_DIR)
 
-    def sync(self, do_cache = True, force = False):
+    def unlocked_sync(self, do_cache = True, force = False):
         """
-        This is the service method for remotely fetch advisories metadata.
+        This is equivalent to sync() but doesn't acquire the
+        Entropy Resources Lock.
 
         @keyword do_cache: generates advisories cache
         @type do_cache: bool
         @return: execution status (0 means all file)
         @rtype: int
         """
-        mytxt = "%s: %s" % (
-            bold(_("Security Advisories")),
-            blue(_("testing service connection")),
-        )
-        self._entropy.output(
-            mytxt,
-            importance = 2,
-            level = "info",
-            header = red(" @@ "),
-            footer = red(" ...")
-        )
-
         mytxt = "%s: %s %s" % (
             bold(_("Security Advisories")),
             blue(_("getting latest advisories")),
@@ -1034,38 +1023,49 @@ class System:
             header = red(" @@ ")
         )
 
+        rc_lock = self.__run_fetch(force = force)
+        if rc_lock == 0:
+            if self.advisories_changed:
+                advtext = "%s: %s" % (
+                    bold(_("Security Advisories")),
+                    darkgreen(_("updated successfully")),
+                )
+                if do_cache:
+                    self.get_advisories_metadata()
+            else:
+                advtext = "%s: %s" % (
+                    bold(_("Security Advisories")),
+                    darkgreen(_("already up to date")),
+                )
+            self._entropy.output(
+                advtext,
+                importance = 2,
+                level = "info",
+                header = red(" @@ ")
+            )
+        return rc_lock
+
+    def sync(self, do_cache = True, force = False):
+        """
+        This is the service method for remotely fetch advisories metadata.
+
+        @keyword do_cache: generates advisories cache
+        @type do_cache: bool
+        @return: execution status (0 means all file)
+        @rtype: int
+        """
         gave_up = self._entropy.wait_resources()
         if gave_up:
             return 7
 
         # acquired
         try:
-            rc_lock = self.__run_fetch(force = force)
+            rc_lock = self.unlocked_sync(do_cache = do_cache,
+                               force = force)
             if rc_lock != 0:
                 return rc_lock
         finally:
             self._entropy.unlock_resources()
-
-        if self.advisories_changed:
-            advtext = "%s: %s" % (
-                bold(_("Security Advisories")),
-                darkgreen(_("updated successfully")),
-            )
-            if do_cache:
-                self.get_advisories_metadata()
-        else:
-            advtext = "%s: %s" % (
-                bold(_("Security Advisories")),
-                darkgreen(_("already up to date")),
-            )
-
-        self._entropy.output(
-            advtext,
-            importance = 2,
-            level = "info",
-            header = red(" @@ ")
-        )
-
         return 0
 
     def __run_fetch(self, force = False):
