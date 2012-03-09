@@ -111,7 +111,7 @@ class Repository:
 
         return br_rc
 
-    def _run_sync(self):
+    def _run_sync(self, _unlocked = False):
 
         self.updated = False
         for repo in self.repo_ids:
@@ -149,7 +149,7 @@ class Repository:
         if self.updated:
             self._entropy.clear_cache()
             if self.fetch_security:
-                self._update_security_advisories()
+                self._update_security_advisories(_unlocked = _unlocked)
             # do treeupdates
             if isinstance(self._entropy.installed_repository(),
                 EntropyRepositoryBase) and entropy.tools.is_root():
@@ -292,11 +292,14 @@ class Repository:
             return True
         return False
 
-    def _update_security_advisories(self):
+    def _update_security_advisories(self, _unlocked = False):
         # update Security Advisories
         try:
             security_intf = self._entropy.Security()
-            security_intf.sync()
+            if _unlocked:
+                security_intf.unlocked_sync()
+            else:
+                security_intf.sync()
         except Exception as e:
             entropy.tools.print_traceback(f = self._entropy.logger)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
@@ -306,6 +309,21 @@ class Repository:
                 level = "warning",
                 header = darkred(" @@ ")
             )
+
+    def unlocked_sync(self):
+        """
+        Start repository synchronization without acquiring
+        Entropy Resources Lock.
+        """
+        rc = self._run_sync(_unlocked=True)
+        if rc:
+            return rc
+        if self.not_available >= len(self.repo_ids):
+            return 2
+        elif self.not_available > 0:
+            return 1
+        self._set_last_successful_sync_time()
+        return 0
 
     def sync(self):
         """
@@ -330,14 +348,6 @@ class Repository:
 
         # locked
         try:
-            rc = self._run_sync()
-            if rc:
-                return rc
-            if self.not_available >= len(self.repo_ids):
-                return 2
-            elif self.not_available > 0:
-                return 1
-            self._set_last_successful_sync_time()
-            return 0
+            return self.unlocked_sync()
         finally:
             self._entropy.unlock_resources()
