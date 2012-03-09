@@ -1706,6 +1706,23 @@ class MiscMixin:
                 mapped['count'] += 1
             return acquired
 
+    def _promote_resource(self, lock_path, blocking):
+        """
+        Internal function that does the file lock promotion.
+        """
+        with MiscMixin._FILE_LOCK_MUTEX:
+            mapped = self._file_lock_setup(lock_path)
+            flock_f = mapped['ref']
+            if flock_f is None:
+                # wtf ?
+                raise IOError("not acquired")
+            acquired = True
+            if blocking:
+                flock_f.promote()
+            else:
+                acquired = flock_f.try_promote()
+            return acquired
+
     def _unlock_resource(self, lock_path):
         """
         Internal function that does the unlocking of a given
@@ -1754,6 +1771,12 @@ class MiscMixin:
                 # cannot get lock or dir doesn't exist
                 return False
             raise
+
+        # ensure that entropy group can write on that
+        try:
+            const_setup_file(pidfile, etpConst['entropygid'], 0o664)
+        except OSError:
+            pass
 
         flock_f = FlockFile(pidfile, fobj = pid_f)
         if blocking:
@@ -1860,6 +1883,17 @@ class MiscMixin:
         """
         lock_path = etpConst['locks']['using_resources']
         return self._lock_resource(lock_path, blocking, shared)
+
+    def promote_resources(self, blocking = False):
+        """
+        Promote previously acquired Entropy Resources Lock from
+        shared to exclusive.
+
+        @keyword blocking: execute in blocking mode?
+        @type blocking: bool
+        """
+        lock_path = etpConst['locks']['using_resources']
+        return self._promote_resource(lock_path, blocking)
 
     def unlock_resources(self):
         """
