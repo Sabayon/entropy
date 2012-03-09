@@ -1,0 +1,401 @@
+#!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
+"""
+
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
+    @copyright: Fabio Erculiani
+    @license: GPL-3
+
+    B{Entropy Package Manager Rigo Daemon}.
+
+"""
+import os
+import sys
+import time
+import signal
+from threading import Lock
+
+# this makes the daemon to not write the entropy pid file
+# avoiding to lock other instances
+sys.argv.append('--no-pid-handling')
+
+import dbus
+import dbus.service
+import dbus.mainloop.glib
+
+from gi.repository import GLib, GObject
+
+DAEMON_LOGGING = True
+DAEMON_DEBUG = False
+# If place here, we won't trigger etpUi['debug']
+if "--debug" in sys.argv:
+    sys.argv.remove("--debug")
+    DAEMON_DEBUG = True
+if "--daemon-loggin" in sys.argv:
+    sys.argv.remove("--daemon-loggin")
+    DAEMON_LOGGING = True
+
+# Entropy imports
+sys.path.insert(0, '/usr/lib/entropy/lib')
+sys.path.insert(0, '/usr/lib/entropy/server')
+sys.path.insert(0, '/usr/lib/entropy/client')
+sys.path.insert(0, '../../lib')
+sys.path.insert(0, '../../server')
+sys.path.insert(0, '../../client')
+
+from entropy.cache import EntropyCacher
+# update default writeback timeout
+EntropyCacher.WRITEBACK_TIMEOUT = 120
+
+from entropy.const import etpConst, const_convert_to_rawstring, const_setup_file
+from entropy.i18n import _
+from entropy.misc import LogFile, ParallelTask, TimeScheduled, FlockFile
+from entropy.fetchers import UrlFetcher
+from entropy.output import TextInterface, darkred, darkgreen, red
+from entropy.client.interfaces import Client
+from entropy.core.settings.base import SystemSettings
+
+import entropy.tools
+
+TEXT = TextInterface()
+DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")
+DAEMON_LOG = LogFile(SystemSettings()['system']['log_level']+1,
+    DAEMON_LOGFILE, header = "[rigo-daemon]")
+PREVIOUS_PROGRESS = ''
+
+if DAEMON_LOGGING:
+    # redirect possible exception tracebacks to log file
+    sys.stderr = DAEMON_LOG
+    sys.stdout = DAEMON_LOG
+
+def write_output(*args, **kwargs):
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
+    global PREVIOUS_PROGRESS
+    if PREVIOUS_PROGRESS == message:
+        return
+    PREVIOUS_PROGRESS = message
+    if DAEMON_DEBUG:
+        TEXT.output(*args, **kwargs)
+
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
+def handle_exception(exc_class, exc_instance, exc_tb):
+    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+    # write exception to log file
+    write_output(const_convert_to_rawstring(t_back))
+    raise exc_instance
+
+install_exception_handler()
+
+class Entropy(Client):
+
+    _DAEMON = None
+
+    def init_singleton(self):
+        Client.init_singleton(self, load_ugc=False,
+            url_fetcher=DaemonUrlFetcher, repo_validation=False)
+        self.output(
+            "Loading Entropy Rigo daemon: logfile: %s" % (
+                DAEMON_LOGFILE,)
+            )
+
+    @staticmethod
+    def set_daemon(daemon):
+        """
+        Bind the Entropy Singleton instance to the DBUS Daemon.
+        """
+        Entropy._DAEMON = daemon
+        DaemonUrlFetcher.set_daemon(daemon)
+
+    def output(self, text, header = "", footer = "", back = False,
+        importance = 0, level = "info", count = None, percent = False):
+        if self._DAEMON is not None:
+            count_c = 0
+            count_t = 0
+            if count is not None:
+                count_c, count_t = count
+            self._DAEMON.output(
+                text, header, footer, back, importance,
+                level, count_c, count_t, percent)
+
+Client.__singleton_class__ = Entropy
+
+class DaemonUrlFetcher(UrlFetcher):
+
+    daemon_last_avg = 100
+    __average = 0
+    __downloadedsize = 0
+    __remotesize = 0
+    __datatransfer = 0
+    __time_remaining = ""
+
+    _DAEMON = None
+
+    @staticmethod
+    def set_daemon(daemon):
+        """
+        Bind RigoDaemon instance to this class.
+        """
+        DaemonUrlFetcher._DAEMON = daemon
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__average = average
+        self.__downloadedsize = downloaded_size
+        self.__remotesize = total_size
+        self.__datatransfer = data_transfer
+        self.__time_remaining = time_remaining
+
+    def update(self):
+        if self._DAEMON is None:
+            return
+
+        mytxt = _("[F]")
+        eta_txt = _("ETA")
+        sec_txt = _("sec") # as in XX kb/sec
+
+        current_txt = darkred("    %s: " % (mytxt,)) + \
+            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" \
+            + red(str(round(self.__remotesize, 1))) + " kB"
+        # create progress bar
+        barsize = 10
+        bartext = "["
+        curbarsize = 1
+
+        averagesize = (self.__average*barsize)/100
+        while averagesize > 0:
+            curbarsize += 1
+            bartext += "="
+            averagesize -= 1
+        bartext += ">"
+        diffbarsize = barsize - curbarsize
+        while diffbarsize > 0:
+            bartext += " "
+            diffbarsize -= 1
+        bartext += "] => %s" % (
+            entropy.tools.bytes_into_human(self.__datatransfer),)
+        bartext += "/%s : %s: %s" % (sec_txt, eta_txt,
+                                     self.__time_remaining,)
+        average = str(self.__average)
+        if len(average) < 2:
+            average = " "+average
+        current_txt += " <->  "+average+"% "+bartext
+        self._DAEMON.output(
+            current_txt, "", "", True, 0,
+            "info", 0, 0, False)
+
+
+class RigoDaemon(dbus.service.Object):
+
+    BUS_NAME = "org.sabayon.Rigo"
+    OBJECT_PATH = "/daemon"
+    MAX_PING_COUNT = 3
+
+    DAEMON_LOCK_PATH = os.path.join(
+        etpConst['pidfiledir'],
+        "rigo_daemon.lock")
+
+    """
+    RigoDaemon is the dbus service Object in charge of executing
+    privileged tasks, like repository updates, package installation
+    and removal and so on.
+    Mutual exclusion with other Entropy instances must be handled
+    by the caller. Here it is assumed that Entropy Resources Lock
+    is acquired in exclusive mode.
+    """
+
+    def __init__(self):
+        self._activity_mutex = Lock()
+        self._entropy = Entropy()
+        self.__ping_lock = Lock()
+        self.__ping_count = 0
+        self._ping_sched = TimeScheduled(2, self.ping)
+        self._ping_sched.set_delay_before(True)
+        self._ping_sched.daemon = True
+        self._daemon_lock_f = None
+
+    def start(self):
+        """
+        RigoDaemon startup method. Loads all the threads.
+        """
+        GLib.threads_init()
+
+        object_path = RigoDaemon.OBJECT_PATH
+        dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
+        system_bus = dbus.SystemBus(mainloop = dbus_loop)
+        name = dbus.service.BusName(RigoDaemon.BUS_NAME, bus = system_bus)
+        dbus.service.Object.__init__ (self, system_bus, object_path)
+        write_output("__init__: dbus service loaded")
+        Entropy.set_daemon(self)
+        self._ping_sched.start()
+
+    def stop(self):
+        """
+        RigoDaemon exit method.
+        """
+        if DAEMON_DEBUG:
+            write_output("stop(): called")
+        self._ping_sched.kill()
+        with self._activity_mutex:
+            if DAEMON_DEBUG:
+                write_output("stop(): activity mutex acquired, quitting")
+            entropy.tools.kill_threads()
+            os.kill(os.getpid(), signal.SIGTERM)
+
+    def _update_repositories(self, repositories, request_id, force):
+        """
+        Repositories Update execution code.
+        """
+        with self._activity_mutex:
+            try:
+                updater = self._entropy.Repositories(
+                    repositories, force = force)
+            except AttributeError as err:
+                self.repositories_updated(
+                    request_id, 1,
+                    _("No repositories configured"))
+                return
+            except Exception as err:
+                self.repositories_updated(
+                    request_id, 2,
+                    _("Unhandled Exception"))
+                return
+
+            result = updater.unlocked_sync()
+            self.repositories_updated(request_id, result, "")
+
+    ### DBUS METHODS
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def pong(self):
+        """
+        Answer event coming from connected dbus client.
+        """
+        with self.__ping_lock:
+            self.__ping_count -= 1
+        if DAEMON_DEBUG:
+            write_output("pong() received")
+
+    @dbus.service.method(BUS_NAME, in_signature='asib',
+        out_signature='')
+    def update_repositories(self, repositories, request_id, force):
+        """
+        Request RigoDaemon to update the given repositories.
+        At the end of the execution, the "repositories_updated"
+        signal will be raised.
+        """
+        if DAEMON_DEBUG:
+            write_output("update_repositories called: %s, id: %i" % (
+                    repositories, request_id,))
+        task = ParallelTask(self._update_repositories, repositories,
+                            request_id, force)
+        task.daemon = True
+        task.name = "UpdateRepositoriesThread"
+        task.start()
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='b')
+    def try_acquire_daemon_lock(self):
+        """
+        Acquire RigoDaemon lock in non-blocking mode.
+        This lock should be acquired as soon as the
+        dbus client inizializes us.
+        We must have only one RigoDaemon instance running
+        at the same time.
+        """
+        if DAEMON_DEBUG:
+            write_output("try_acquire_daemon_lock: called")
+        lock_path = self.DAEMON_LOCK_PATH
+        try:
+            f_obj = open(lock_path, "a+")
+        except IOError as err:
+            if err.errno in (errno.ENOENT, errno.EACCES):
+                # cannot get file or dir doesn't exist ?
+                return False
+            write_output(repr(err))
+            return False
+
+        if DAEMON_DEBUG:
+            write_output("try_acquire_daemon_lock: file opened")
+
+        try:
+            const_setup_file(lock_path, etpConst['entropygid'], 0o664)
+        except OSError:
+            pass
+
+        flock_f = FlockFile(lock_path, fobj = f_obj)
+        acquired = flock_f.try_acquire_exclusive()
+        if acquired:
+            # avoid garbage collection
+            self._daemon_lock_f = flock_f
+        else:
+            flock_f.close()
+
+        if DAEMON_DEBUG:
+            write_output("try_acquire_daemon_lock: acquired? -> %s" % (
+                    acquired,))
+
+        return acquired
+
+    ### DBUS SIGNALS
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='sssbisiib')
+    def output(self, text, header, footer, back, importance, level,
+               count_c, count_t, percent):
+        """
+        Entropy Library output text signal. Clients will be required to
+        forward this message to User.
+        """
+        pass
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='iis')
+    def repositories_updated(self, request_id, result, message):
+        """
+        Repositories have been updated. This signal comes from
+        the request_id passed to update_repositories().
+        "result" is an integer carrying execution return status.
+        """
+        if DAEMON_DEBUG:
+            write_output("repositories_updated() issued, args:"
+                         " %s" % (locals(),))
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def ping(self):
+        """
+        Every 2 seconds, RigoDaemon issues a ping event to client.
+        The same has to answer calling pong() before the ping count,
+        which gets incremented here, reaches MAX_PING_COUNT
+        """
+        with self.__ping_lock:
+            self.__ping_count += 1
+        if DAEMON_DEBUG:
+            write_output("ping() issued")
+        if self.__ping_count > self.MAX_PING_COUNT:
+            task = ParallelTask(self.stop)
+            task.name = "ExitDaemon"
+            task.start()
+
+
+if __name__ == "__main__":
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    try:
+        daemon = RigoDaemon()
+    except dbus.exceptions.DBusException:
+        raise SystemExit(1)
+    GLib.idle_add(daemon.start)
+    main_loop = GObject.MainLoop()
+    main_loop.run()
+    raise SystemExit(0)
