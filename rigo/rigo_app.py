@@ -1499,6 +1499,11 @@ class Rigo(Gtk.Application):
         Action triggered when UI enters the Package Information
         state (or mode). Showing application information.
         """
+        # change search_entry first icon to emphasize the
+        # back action
+        self._search_entry.set_icon_from_stock(
+            Gtk.EntryIconPosition.PRIMARY,
+            "gtk-go-back")
         self._app_view.show()
 
     def _exit_application_state(self):
@@ -1506,6 +1511,8 @@ class Rigo(Gtk.Application):
         Action triggered when UI exits the Package Information
         state (or mode). Hiding back application information.
         """
+        self._search_entry.set_icon_from_stock(
+            Gtk.EntryIconPosition.PRIMARY, "gtk-find")
         self._app_view.hide()
         self._app_view_c.hide()
 
