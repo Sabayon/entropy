@@ -4,11 +4,24 @@ Backlog (raw)
 
     rigo:
     - requires pygobject[cairo]
-    - uniform license header
-    - who clears the vote cache (and document cache) at some point?
-    - redesign entropy locking: use readers/writer file lock
-      - update equo, sulfur, magneto, eit code to use it
+    - requires dbus
+    - [F] repositories not available, update?
+    - [F] show progress -> add bottom notification area
+          (permanent notifications)
+    - [F] when updating repos, clear all the upper notifications
+    - [F] recover from Repository Update execution
+    - [F] recover from Application Install / Remove execution
+    - [F] show App Information while Installing / Removing
+    - [F] at the end of Work View execution, ask before switching back
+    - [F] implement authentication
 
+    magneto:
+      - migrate to RigoDaemon as soon as it's available!
+        - and also Equo (text_repositories)
+      - gtk3 version
+      - singleton!
+
+    - make security advisories caching faster (cache server-side?)
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
