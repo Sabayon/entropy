@@ -2055,6 +2055,9 @@ class MiscMixin:
 
                 url_data = entropy.tools.spliturl(mirror)
                 hostname = url_data.hostname
+                if hostname is None:
+                    # mirror string is fucked up
+                    continue
                 if hostname in mirror_cache:
                     continue
                 mirror_cache.add(hostname)
