@@ -4178,6 +4178,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             # we must exclude all the package_ids not available in this list
             # from dbpkginfo
             dbpkginfo = [x for x in dbpkginfo if x[0] in default_package_ids]
+        # dbpkginfo might have become empty now!
 
         pkgdata = {}
         versions = set()
@@ -4190,7 +4191,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         # if matchTag is not specified, and tagged and non-tagged packages
         # are available, prefer non-tagged ones, excluding others.
-        if not matchTag:
+        if not matchTag and dbpkginfo:
 
             non_tagged_available = False
             tagged_available = False
@@ -4207,23 +4208,34 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 versions = set(((ver, tag, rev) for ver, tag, rev in versions \
                     if not tag))
 
-        newer = entropy.dep.get_entropy_newer_version(list(versions))[0]
-        x = pkgdata[newer]
+        if versions:
+            # it looks like we wiped out all the
+            newer = entropy.dep.get_entropy_newer_version(list(versions))[0]
+            x = pkgdata[newer]
+            rc = 0
+        else:
+            # this is due to dbpkginfo being empty, return
+            # not found. This is due to default_package_ids
+            # email search: "description: playing freecell in KPatience"
+            newer = (None, None, None)
+            x = -1
+            rc = 1
+
         if extendedResults:
-            x = (x, 0, newer[0], newer[1], newer[2])
+            x = (x, rc, newer[0], newer[1], newer[2])
             self.__atomMatchStoreCache(
                 atom, matchSlot,
                 multiMatch, maskFilter,
-                extendedResults, result = (x, 0)
+                extendedResults, result = (x, rc)
             )
-            return x, 0
+            return x, rc
         else:
             self.__atomMatchStoreCache(
                 atom, matchSlot,
                 multiMatch, maskFilter,
-                extendedResults, result = (x, 0)
+                extendedResults, result = (x, rc)
             )
-            return x, 0
+            return x, rc
 
     def __generate_found_ids_match(self, pkgkey, pkgname, pkgcat, multiMatch):
 
