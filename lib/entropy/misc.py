@@ -398,6 +398,70 @@ class ParallelTask(threading.Thread):
         return self.__rc
 
 
+class ReadersWritersSemaphore(object):
+
+    """
+    A simple Readers Writers Lock object.
+    Inspired by:
+    http://code.activestate.com/recipes/\
+        577803-reader-writer-lock-with-priority-for-writers/
+    and by: Mateusz Kobos
+    """
+
+    class SemaphoreWrapper(object):
+
+        def __init__(self):
+            self.__counter = 0
+            self.__mutex = threading.Lock()
+
+        def acquire(self, lock):
+            with self.__mutex:
+                self.__counter += 1
+                if self.__counter == 1:
+                    lock.acquire()
+
+        def release(self, lock):
+            with self.__mutex:
+                self.__counter -= 1
+                if self.__counter == 0:
+                    lock.release()
+
+    def __init__(self):
+        self.__read_switch = self.SemaphoreWrapper()
+        self.__write_switch = self.SemaphoreWrapper()
+        self.__no_readers = threading.Semaphore()
+        self.__no_writers = threading.Semaphore()
+        self.__readers_queue = threading.Semaphore()
+
+    def reader_acquire(self):
+        """
+        Acquire Reader end.
+        """
+        with self.__readers_queue:
+            with self.__no_readers:
+                self.__read_switch.acquire(self.__no_writers)
+
+    def reader_release(self):
+        """
+        Release Reader end.
+        """
+        self.__read_switch.release(self.__no_writers)
+
+    def writer_acquire(self):
+        """
+        Acquire Writer end.
+        """
+        self.__write_switch.acquire(self.__no_readers)
+        self.__no_writers.acquire()
+
+    def writer_release(self):
+        """
+        Release Writer end.
+        """
+        self.__no_writers.release()
+        self.__write_switch.release(self.__no_readers)
+
+
 class FlockFile(object):
 
     """
