@@ -32,8 +32,8 @@ DAEMON_DEBUG = False
 if "--debug" in sys.argv:
     sys.argv.remove("--debug")
     DAEMON_DEBUG = True
-if "--daemon-loggin" in sys.argv:
-    sys.argv.remove("--daemon-loggin")
+if "--daemon-logging" in sys.argv:
+    sys.argv.remove("--daemon-logging")
     DAEMON_LOGGING = True
 
 # Entropy imports
@@ -74,11 +74,14 @@ if DAEMON_LOGGING:
     sys.stdout = DAEMON_LOG
 
 def write_output(*args, **kwargs):
-    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0].rstrip()
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
     global PREVIOUS_PROGRESS
     if PREVIOUS_PROGRESS == message:
         return
     PREVIOUS_PROGRESS = message
+    if DAEMON_LOGGING:
+        DAEMON_LOG.write(message)
+        DAEMON_LOG.flush()
     if DAEMON_DEBUG:
         TEXT.output(*args, **kwargs)
 
@@ -192,9 +195,15 @@ class DaemonUrlFetcher(UrlFetcher):
         if len(average) < 2:
             average = " "+average
         current_txt += " <->  "+average+"% "+bartext
+
         self._DAEMON.output(
             current_txt, "", "", True, 0,
             "info", 0, 0, False)
+
+        self._DAEMON.transfer_output(
+            self.__average, self.__downloadedsize,
+            int(self.__remotesize), int(self.__datatransfer),
+            self.__time_remaining)
 
 
 class RigoDaemonService(dbus.service.Object):
@@ -358,6 +367,17 @@ class RigoDaemonService(dbus.service.Object):
         """
         Entropy Library output text signal. Clients will be required to
         forward this message to User.
+        """
+        pass
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='iiiis')
+    def transfer_output(self, average, downloaded_size,
+                        total_size, data_transfer_bytes,
+                        time_remaining_secs):
+        """
+        Entropy UrlFetchers output signals. Clients will be required to
+        forward this message to User in Progress Bar form.
         """
         pass
 
