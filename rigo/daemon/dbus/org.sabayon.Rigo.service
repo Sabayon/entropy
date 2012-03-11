@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=org.sabayon.Rigo
-Exec=/usr/sbin/rigo-daemon
+Exec=/usr/lib/rigo/RigoDaemon/app.py
 User=root

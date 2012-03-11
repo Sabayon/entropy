@@ -17,5 +17,8 @@ chown root:root /usr/share/dbus-1/system-services/org.sabayon.Rigo.service || ex
 sed -i "s:rigo-daemon:rigo-daemon --daemon-logging-disabled --debug:" \
 	/usr/share/dbus-1/system-services/org.sabayon.Rigo.service || exit 1
 
-cp rigo-daemon /usr/sbin/ -p || exit 1
-chmod 755 /usr/sbin/rigo-daemon || exit 1
+if [ ! -d "/usr/lib/rigo/RigoDaemon" ]; then
+	mkdir -p /usr/lib/rigo/RigoDaemon || exit 1
+fi
+cp *.py /usr/lib/rigo/RigoDaemon/ -p || exit 1
+chmod 755 /usr/lib/rigo/RigoDaemon/app.py || exit 1

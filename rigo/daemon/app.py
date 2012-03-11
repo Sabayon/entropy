@@ -37,6 +37,7 @@ if "--daemon-loggin" in sys.argv:
     DAEMON_LOGGING = True
 
 # Entropy imports
+sys.path.insert(0, '/usr/lib/rigo')
 sys.path.insert(0, '/usr/lib/entropy/lib')
 sys.path.insert(0, '/usr/lib/entropy/server')
 sys.path.insert(0, '/usr/lib/entropy/client')
@@ -48,15 +49,18 @@ from entropy.cache import EntropyCacher
 # update default writeback timeout
 EntropyCacher.WRITEBACK_TIMEOUT = 120
 
-from entropy.const import etpConst, const_convert_to_rawstring, const_setup_file
+from entropy.const import etpConst, const_convert_to_rawstring, \
+    initconfig_entropy_constants
 from entropy.i18n import _
-from entropy.misc import LogFile, ParallelTask, TimeScheduled, FlockFile
+from entropy.misc import LogFile, ParallelTask, TimeScheduled
 from entropy.fetchers import UrlFetcher
 from entropy.output import TextInterface, darkred, darkgreen, red
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
+
+from RigoDaemon.enums import ActivityStates
 
 TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")
@@ -70,7 +74,7 @@ if DAEMON_LOGGING:
     sys.stdout = DAEMON_LOG
 
 def write_output(*args, **kwargs):
-    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0].rstrip()
     global PREVIOUS_PROGRESS
     if PREVIOUS_PROGRESS == message:
         return
@@ -101,7 +105,7 @@ class Entropy(Client):
     def init_singleton(self):
         Client.init_singleton(self, load_ugc=False,
             url_fetcher=DaemonUrlFetcher, repo_validation=False)
-        self.output(
+        write_output(
             "Loading Entropy Rigo daemon: logfile: %s" % (
                 DAEMON_LOGFILE,)
             )
@@ -193,15 +197,10 @@ class DaemonUrlFetcher(UrlFetcher):
             "info", 0, 0, False)
 
 
-class RigoDaemon(dbus.service.Object):
+class RigoDaemonService(dbus.service.Object):
 
     BUS_NAME = "org.sabayon.Rigo"
     OBJECT_PATH = "/daemon"
-    MAX_PING_COUNT = 3
-
-    DAEMON_LOCK_PATH = os.path.join(
-        etpConst['pidfiledir'],
-        "rigo_daemon.lock")
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -213,29 +212,19 @@ class RigoDaemon(dbus.service.Object):
     """
 
     def __init__(self):
-        self._activity_mutex = Lock()
-        self._entropy = Entropy()
-        self.__ping_lock = Lock()
-        self.__ping_count = 0
-        self._ping_sched = TimeScheduled(2, self.ping)
-        self._ping_sched.set_delay_before(True)
-        self._ping_sched.daemon = True
-        self._daemon_lock_f = None
-
-    def start(self):
-        """
-        RigoDaemon startup method. Loads all the threads.
-        """
-        GLib.threads_init()
-
-        object_path = RigoDaemon.OBJECT_PATH
+        object_path = RigoDaemonService.OBJECT_PATH
         dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
         system_bus = dbus.SystemBus(mainloop = dbus_loop)
-        name = dbus.service.BusName(RigoDaemon.BUS_NAME, bus = system_bus)
-        dbus.service.Object.__init__ (self, system_bus, object_path)
-        write_output("__init__: dbus service loaded")
+        name = dbus.service.BusName(RigoDaemonService.BUS_NAME,
+                                    bus = system_bus)
+        dbus.service.Object.__init__(self, name, object_path)
+
+        self._current_activity_mutex = Lock()
+        self._current_activity = ActivityStates.AVAILABLE
+        self._activity_mutex = Lock()
         Entropy.set_daemon(self)
-        self._ping_sched.start()
+        self._entropy = Entropy()
+        write_output("__init__: dbus service loaded")
 
     def stop(self):
         """
@@ -243,8 +232,10 @@ class RigoDaemon(dbus.service.Object):
         """
         if DAEMON_DEBUG:
             write_output("stop(): called")
-        self._ping_sched.kill()
         with self._activity_mutex:
+            with self._current_activity_mutex:
+                self._current_activity = ActivityStates.NOT_AVAILABLE
+            self._close_local_resources()
             if DAEMON_DEBUG:
                 write_output("stop(): activity mutex acquired, quitting")
             entropy.tools.kill_threads()
@@ -255,35 +246,41 @@ class RigoDaemon(dbus.service.Object):
         Repositories Update execution code.
         """
         with self._activity_mutex:
+            with self._current_activity_mutex:
+                self._current_activity = ActivityStates.UPDATING_REPOSITORIES
+            self._close_local_resources()
+            result = 99
             try:
                 updater = self._entropy.Repositories(
                     repositories, force = force)
+                result = updater.unlocked_sync()
             except AttributeError as err:
+                write_output("_update_repositories error: %s" % (err,))
                 self.repositories_updated(
                     request_id, 1,
                     _("No repositories configured"))
                 return
             except Exception as err:
+                write_output("_update_repositories error 2: %s" % (err,))
                 self.repositories_updated(
                     request_id, 2,
                     _("Unhandled Exception"))
                 return
+            finally:
+                with self._current_activity_mutex:
+                    self._current_activity = \
+                        ActivityStates.AVAILABLE
+                self.repositories_updated(request_id, result, "")
 
-            result = updater.unlocked_sync()
-            self.repositories_updated(request_id, result, "")
+    def _close_local_resources(self):
+        """
+        Close any Entropy resource that might have been changed
+        or replaced.
+        """
+        self._entropy.reopen_installed_repository()
+        self._entropy.close_repositories()
 
     ### DBUS METHODS
-
-    @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='')
-    def pong(self):
-        """
-        Answer event coming from connected dbus client.
-        """
-        with self.__ping_lock:
-            self.__ping_count -= 1
-        if DAEMON_DEBUG:
-            write_output("pong() received")
 
     @dbus.service.method(BUS_NAME, in_signature='asib',
         out_signature='')
@@ -303,48 +300,54 @@ class RigoDaemon(dbus.service.Object):
         task.start()
 
     @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='b')
-    def try_acquire_daemon_lock(self):
+        out_signature='')
+    def connect(self):
         """
-        Acquire RigoDaemon lock in non-blocking mode.
-        This lock should be acquired as soon as the
-        dbus client inizializes us.
-        We must have only one RigoDaemon instance running
-        at the same time.
+        Notify us that a new client is now connected.
+        Here we reload Entropy configuration and other resources.
         """
         if DAEMON_DEBUG:
-            write_output("try_acquire_daemon_lock: called")
-        lock_path = self.DAEMON_LOCK_PATH
-        try:
-            f_obj = open(lock_path, "a+")
-        except IOError as err:
-            if err.errno in (errno.ENOENT, errno.EACCES):
-                # cannot get file or dir doesn't exist ?
-                return False
-            write_output(repr(err))
-            return False
+            write_output("connect(): called")
+        with self._activity_mutex:
+            initconfig_entropy_constants(etpConst['systemroot'])
+            self._entropy.Settings().clear()
+            self._entropy._validate_repositories()
+            self._close_local_resources()
+            if DAEMON_DEBUG:
+                write_output("A new client is now connected !")
 
-        if DAEMON_DEBUG:
-            write_output("try_acquire_daemon_lock: file opened")
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='i')
+    def activity(self):
+        """
+        Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
+        values).
+        """
+        with self._current_activity_mutex:
+            return self._current_activity
 
-        try:
-            const_setup_file(lock_path, etpConst['entropygid'], 0o664)
-        except OSError:
-            pass
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def output_test(self):
+        """
+        Return whether RigoDaemon is busy due to previous activity.
+        """
+        def _deptester():
+            with self._activity_mutex:
+                with self._current_activity_mutex:
+                    self._current_activity = \
+                        ActivityStates.INTERNAL_ROUTINES
 
-        flock_f = FlockFile(lock_path, fobj = f_obj)
-        acquired = flock_f.try_acquire_exclusive()
-        if acquired:
-            # avoid garbage collection
-            self._daemon_lock_f = flock_f
-        else:
-            flock_f.close()
+                self._entropy.dependencies_test()
 
-        if DAEMON_DEBUG:
-            write_output("try_acquire_daemon_lock: acquired? -> %s" % (
-                    acquired,))
+                with self._current_activity_mutex:
+                    self._current_activity = \
+                        ActivityStates.AVAILABLE
 
-        return acquired
+        task = ParallelTask(_deptester)
+        task.daemon = True
+        task.name = "OutputTestThread"
+        task.start()
 
     ### DBUS SIGNALS
 
@@ -370,32 +373,13 @@ class RigoDaemon(dbus.service.Object):
             write_output("repositories_updated() issued, args:"
                          " %s" % (locals(),))
 
-    @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='')
-    def ping(self):
-        """
-        Every 2 seconds, RigoDaemon issues a ping event to client.
-        The same has to answer calling pong() before the ping count,
-        which gets incremented here, reaches MAX_PING_COUNT
-        """
-        with self.__ping_lock:
-            self.__ping_count += 1
-        if DAEMON_DEBUG:
-            write_output("ping() issued")
-        if self.__ping_count > self.MAX_PING_COUNT:
-            task = ParallelTask(self.stop)
-            task.name = "ExitDaemon"
-            task.start()
-
 
 if __name__ == "__main__":
-    import signal
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
-        daemon = RigoDaemon()
+        daemon = RigoDaemonService()
     except dbus.exceptions.DBusException:
         raise SystemExit(1)
-    GLib.idle_add(daemon.start)
+    GLib.threads_init()
     main_loop = GObject.MainLoop()
     main_loop.run()
     raise SystemExit(0)
