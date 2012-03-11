@@ -112,7 +112,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="staticViewVbox">
+              <object class="GtkVBox" id="workViewVbox">
                 <property name="can_focus">False</property>
                 <child>
                   <placeholder/>
@@ -122,6 +122,19 @@
                 <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="staticViewVbox">
+                <property name="can_focus">False</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child>
@@ -508,7 +521,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">3</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
