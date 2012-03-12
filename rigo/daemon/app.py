@@ -14,7 +14,7 @@ import os
 import sys
 import time
 import signal
-from threading import Lock
+from threading import Lock, Timer
 
 # this makes the daemon to not write the entropy pid file
 # avoiding to lock other instances
@@ -228,12 +228,24 @@ class RigoDaemonService(dbus.service.Object):
                                     bus = system_bus)
         dbus.service.Object.__init__(self, name, object_path)
 
+        self._ping_timer_mutex = Lock()
+        self._ping_timer = None
+        self._ping_sched = TimeScheduled(3, self.ping)
+        self._ping_sched.set_delay_before(True)
+        self._ping_sched.daemon = True
+        self._ping_sched.name = "PingThread"
+
         self._current_activity_mutex = Lock()
         self._current_activity = ActivityStates.AVAILABLE
         self._activity_mutex = Lock()
+
+        self._acquired_exclusive = False
+        self._acquired_exclusive_mutex = Lock()
+
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         write_output("__init__: dbus service loaded")
+        self._ping_sched.start()
 
     def stop(self):
         """
@@ -289,6 +301,32 @@ class RigoDaemonService(dbus.service.Object):
         self._entropy.reopen_installed_repository()
         self._entropy.close_repositories()
 
+    def _acquire_exclusive(self):
+        """
+        Acquire Exclusive access to Entropy Resources.
+        Note: this is blocking and will issue the
+        exclusive_acquired() signal when done.
+        """
+        with self._acquired_exclusive_mutex:
+            if not self._acquired_exclusive:
+                self._entropy.lock_resources(
+                    blocking=True,
+                    shared=False)
+                # now we got the exclusive lock
+                self._acquired_exclusive = True
+
+        self.exclusive_acquired()
+
+    def _release_exclusive(self):
+        """
+        Release Exclusive access to Entropy Resources.
+        """
+        with self._acquired_exclusive_mutex:
+            if self._acquired_exclusive:
+                self._entropy.unlock_resources()
+                # now we got the exclusive lock
+                self._acquired_exclusive = False
+
     ### DBUS METHODS
 
     @dbus.service.method(BUS_NAME, in_signature='asib',
@@ -332,8 +370,55 @@ class RigoDaemonService(dbus.service.Object):
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
         values).
         """
-        with self._current_activity_mutex:
-            return self._current_activity
+        return self._current_activity
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def acquire_exclusive(self):
+        """
+        Start the rendezvous that will give us (this process)
+        exclusive access to Entropy Resources, released by
+        Rigo.
+        """
+        if DAEMON_DEBUG:
+            write_output("acquire_exclusive: called")
+        task = ParallelTask(self._acquire_exclusive)
+        task.daemon = True
+        task.name = "AcquireExclusive"
+        task.start()
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def release_exclusive(self):
+        """
+        Release exclusive access to Entropy Resources.
+        """
+        if DAEMON_DEBUG:
+            write_output("release_exclusive: called")
+        self._release_exclusive()
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='b')
+    def is_exclusive(self):
+        """
+        Return whether RigoDaemon is running in with
+        Entropy Resources acquired in exclusive mode.
+        """
+        return self._acquired_exclusive
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def pong(self):
+        """
+        Answer to RigoDaemon ping() events.
+        """
+        if DAEMON_DEBUG:
+            write_output("pong() received")
+        with self._ping_timer_mutex:
+            if self._ping_timer is not None:
+                # stop the bomb!
+                self._ping_timer.cancel()
+                self._ping_timer = None
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='')
@@ -392,6 +477,37 @@ class RigoDaemonService(dbus.service.Object):
         if DAEMON_DEBUG:
             write_output("repositories_updated() issued, args:"
                          " %s" % (locals(),))
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def exclusive_acquired(self):
+        """
+        Entropy Resources have been eventually acquired in
+        blocking mode.
+        """
+        if DAEMON_DEBUG:
+            write_output("exclusive_acquired() issued")
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def ping(self):
+        """
+        Ping RigoDaemon dbus clients for answer.
+        If no clients respond within 15 seconds,
+        Entropy Resources will be released completely.
+        """
+        def _time_up():
+            with self._activity_mutex:
+                if DAEMON_DEBUG:
+                    write_output("time is up! issuing release_exclusive()")
+                self.release_exclusive()
+
+        if DAEMON_DEBUG:
+            write_output("ping() issued")
+        with self._ping_timer_mutex:
+            if self._ping_timer is None and self._acquired_exclusive:
+                self._ping_timer = Timer(15.0, _time_up)
+                self._ping_timer.start()
 
 
 if __name__ == "__main__":

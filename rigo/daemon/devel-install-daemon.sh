@@ -14,7 +14,7 @@ chown root:root /usr/share/dbus-1/interfaces/org.sabayon.Rigo.xml || exit 1
 cp dbus/org.sabayon.Rigo.service /usr/share/dbus-1/system-services/ || exit 1
 chown root:root /usr/share/dbus-1/system-services/org.sabayon.Rigo.service || exit 1
 
-sed -i "s:rigo-daemon:rigo-daemon --daemon-logging --debug:" \
+sed -i "s:app.py:app.py --daemon-logging --debug:" \
 	/usr/share/dbus-1/system-services/org.sabayon.Rigo.service || exit 1
 
 if [ ! -d "/usr/lib/rigo/RigoDaemon" ]; then

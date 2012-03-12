@@ -24,7 +24,7 @@ import sys
 import copy
 import tempfile
 import time
-from threading import Lock
+from threading import Lock, Semaphore
 
 import dbus
 
@@ -96,6 +96,8 @@ class RigoServiceController(GObject.Object):
     _OUTPUT_SIGNAL = "output"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
     _TRANSFER_OUTPUT_SIGNAL = "transfer_output"
+    _EXCLUSIVE_ACQUIRED_SIGNAL = "exclusive_acquired"
+    _PING_SIGNAL = "ping"
 
     def __init__(self, rigo_app, activity_rwsem, entropy_client, entropy_ws):
         GObject.Object.__init__(self)
@@ -165,6 +167,10 @@ class RigoServiceController(GObject.Object):
                     )
 
                 self.__entropy_bus.connect_to_signal(
+                    self._PING_SIGNAL, self._ping_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                self.__entropy_bus.connect_to_signal(
                     self._OUTPUT_SIGNAL, self._output_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
@@ -190,6 +196,7 @@ class RigoServiceController(GObject.Object):
                 sig_match = our_signals.pop(0)
                 sig_match.remove()
 
+        self._scale_down() # do we really need this? not really i think
         self._release_local_resources()
         # 1 -- ACTIVITY CRIT :: OFF
         self._activity_rwsem.writer_release()
@@ -266,6 +273,15 @@ class RigoServiceController(GObject.Object):
 
         self._wc.set_progress(fraction, text=text)
 
+    def _ping_signal(self):
+        """
+        Need to call pong() as soon as possible to hold all Entropy
+        Resources allocated by RigoDaemon.
+        """
+        dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).pong()
+
     def activity(self):
         """
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
@@ -274,6 +290,15 @@ class RigoServiceController(GObject.Object):
         return dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).activity()
+
+    def is_exclusive(self):
+        """
+        Return whether RigoDaemon is running in with
+        Entropy Resources acquired in exclusive mode.
+        """
+        return dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).is_exclusive()
 
     def output_test(self):
         """
@@ -325,15 +350,93 @@ class RigoServiceController(GObject.Object):
         """
         # FIXME, complete, need to be nice and not block, etc
         # FIXME, ask for password.
-        self._entropy.promote_resources(blocking=True)
+        acquired_sem = Semaphore()
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_scale_up: enter")
+
+        # start the rendezvous
+        sig_match = self._entropy_bus.connect_to_signal(
+            self._EXCLUSIVE_ACQUIRED_SIGNAL,
+            acquired_sem.release,
+            dbus_interface=self.DBUS_INTERFACE)
+
+        dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE
+            ).acquire_exclusive()
+
+        self._entropy.unlock_resources()
+        acquired_sem.acquire() # CANBLOCK
+        sig_match.remove()
+
+        # we successfully passed the resource to RigoDaemon
         self._connect()
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_scale_up: leave")
         return True
+
+    def _scale_down(self):
+        """
+        Release RigoDaemon Entropy Resources and regain
+        control here.
+        """
+        acquired_sem = Semaphore()
+        # start the rendezvous
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_scale_down: enter")
+
+        def _acquirer(sem):
+            self._entropy.lock_resources(
+                blocking=True,
+                shared=True)
+            sem.release()
+
+        task = ParallelTask(_acquirer, acquired_sem)
+        task.name = "RigoDaemonResourcesReleaser"
+        task.daemon = True
+        task.start()
+
+        dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE
+            ).release_exclusive()
+
+        acquired_sem.acquire()
+        # back with shared lock!
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_scale_down: leave")
 
     def _update_repositories(self, repositories, force):
         """
         Ask RigoDaemon to update repositories once we're
         100% sure that the UI is locked down.
         """
+        scaled = self._scale_up()
+        if not scaled:
+            return
+        self._update_repositories_unlocked(
+            repositories, force)
+
+    def _update_repositories_unlocked(self, repositories, force):
+        """
+        Internal method handling the actual Repositories Update
+        execution.
+        """
+        if self._wc is not None:
+            GLib.idle_add(self._wc.activate_progress_bar)
+            GLib.idle_add(self._wc.deactivate_app_box)
+
+        GLib.idle_add(self.emit, "repositories-updating",
+                      Rigo.WORK_VIEW_STATE)
+
+        if const_debug_enabled():
+            const_debug_write(__name__, "RigoServiceController: "
+                              "repositories-updating")
+
         while not self._rigo.is_ui_locked():
             if const_debug_enabled():
                 const_debug_write(__name__, "RigoServiceController: "
@@ -377,18 +480,6 @@ class RigoServiceController(GObject.Object):
         Local method used to start Entropy repositories
         update.
         """
-        if not self._scale_up():
-            return
-
-        if self._wc is not None:
-            self._wc.activate_progress_bar()
-            self._wc.deactivate_app_box()
-
-        self.emit("repositories-updating", Rigo.WORK_VIEW_STATE)
-        if const_debug_enabled():
-            const_debug_write(__name__, "RigoServiceController: "
-                              "repositories-updating")
-
         task = ParallelTask(self._update_repositories,
                             repositories, force)
         task.name = "UpdateRepositoriesThread"
@@ -2220,13 +2311,16 @@ class Rigo(Gtk.Application):
             max_lock_count=1,
             shared=True)
         if not acquired:
-            self._show_ok_dialog(
-                None,
-                escape_markup(_("Rigo")),
-                escape_markup(_("Another Application Manager is active")))
-            entropy.tools.kill_threads()
-            Gtk.main_quit()
-            return
+            # check whether RigoDaemon is running in excluive mode
+            if not self._service.is_exclusive():
+                self._show_ok_dialog(
+                    None,
+                    escape_markup(_("Rigo")),
+                    escape_markup(_("Another Application Manager is active")))
+                entropy.tools.kill_threads()
+                Gtk.main_quit()
+                return
+            # otherwise we can go ahead and handle our state later
 
         # check RigoDaemon, don't worry about races between Rigo Clients
         # it is fine to have multiple Rigo Clients connected. Mutual

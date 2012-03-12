@@ -4,6 +4,8 @@
     <method name="activity">
        <arg name="state" type="i" direction="out"/>
     </method>
+    <method name="acquire_exclusive"/>
+    <method name="release_exclusive"/>
     <method name="connect"/>
     <method name="output_test"/>
     <method name="update_repositories">
@@ -11,5 +13,9 @@
        <arg name="request_id" type="i" direction="in"/>
        <arg name="force" type="b" direction="in"/>
     </method>
+    <method name="is_exclusive">
+       <arg name="status" type="b" direction="out"/>
+    </method>
+    <method name="pong"/>
   </interface>
 </node>
