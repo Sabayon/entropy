@@ -213,8 +213,8 @@ class EntropyCacher(Singleton):
 
             if etpUi['debug']:
                 const_debug_write(__name__,
-                    "EntropyCacher.__cacher: loop, alive: %s, empty: %s" % (
-                        self.__alive, run_until_empty,))
+                    "EntropyCacher.__cacher: loop: %s, alive: %s, empty: %s" % (
+                        _loop, self.__alive, run_until_empty,))
 
             with self.__enter_context_lock:
                 massive_data = []
@@ -300,7 +300,7 @@ class EntropyCacher(Singleton):
             self.__worker_sem, EntropyCacher.WRITEBACK_TIMEOUT,
             self.__cacher, _loop=True)
         self.__cache_writer.daemon = True
-        self.__cache_writer.setName("EntropyCacher")
+        self.__cache_writer.name = "EntropyCacheWriter"
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
         while not self.__cache_writer.isAlive():
