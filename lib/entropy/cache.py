@@ -206,6 +206,10 @@ class EntropyCacher(Singleton):
             try:
                 # CANBLOCK
                 self.__worker_sem.acquire()
+                # we just consumed one acquire()
+                # that was dedicated to actual data,
+                # put it back
+                self.__worker_sem.release()
             except AttributeError:
                 pass
 
@@ -223,6 +227,14 @@ class EntropyCacher(Singleton):
                 except AttributeError: # interpreter shutdown
                     break
                 while massive_data_count > 0:
+
+                    if _loop:
+                        # extracted an item from worker_sem
+                        # call down() on the semaphore without caring
+                        # can't sleep here because we're in a critical region
+                        # holding __enter_context_lock
+                        self.__worker_sem.acquire(False)
+
                     massive_data_count -= 1
                     try:
                         data = self.__cache_buffer.pop()
@@ -330,6 +342,8 @@ class EntropyCacher(Singleton):
         self.__alive = False
         if self.__cache_writer is not None:
             self.__cache_writer.kill()
+            # make sure it unblocks
+            self.__worker_sem.release()
             self.__cache_writer.join()
             self.__cache_writer = None
         self.sync()
