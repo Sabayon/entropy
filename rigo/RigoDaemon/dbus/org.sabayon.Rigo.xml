@@ -10,7 +10,6 @@
     <method name="output_test"/>
     <method name="update_repositories">
        <arg name="repositories" type="as" direction="in"/>
-       <arg name="request_id" type="i" direction="in"/>
        <arg name="force" type="b" direction="in"/>
     </method>
     <method name="is_exclusive">

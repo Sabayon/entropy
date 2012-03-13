@@ -26,7 +26,7 @@ import dbus.mainloop.glib
 
 from gi.repository import GLib, GObject
 
-DAEMON_LOGGING = True
+DAEMON_LOGGING = False
 DAEMON_DEBUG = False
 # If place here, we won't trigger etpUi['debug']
 if "--debug" in sys.argv:
@@ -39,11 +39,9 @@ if "--daemon-logging" in sys.argv:
 # Entropy imports
 sys.path.insert(0, '/usr/lib/rigo')
 sys.path.insert(0, '/usr/lib/entropy/lib')
-sys.path.insert(0, '/usr/lib/entropy/server')
-sys.path.insert(0, '/usr/lib/entropy/client')
 sys.path.insert(0, '../../lib')
-sys.path.insert(0, '../../server')
-sys.path.insert(0, '../../client')
+sys.path.insert(0, '../lib')
+sys.path.insert(0, './')
 
 from entropy.cache import EntropyCacher
 # update default writeback timeout
@@ -66,7 +64,6 @@ TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")
 DAEMON_LOG = LogFile(SystemSettings()['system']['log_level']+1,
     DAEMON_LOGFILE, header = "[rigo-daemon]")
-PREVIOUS_PROGRESS = ''
 
 if DAEMON_LOGGING:
     # redirect possible exception tracebacks to log file
@@ -75,15 +72,11 @@ if DAEMON_LOGGING:
 
 def write_output(*args, **kwargs):
     message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
-    global PREVIOUS_PROGRESS
-    if PREVIOUS_PROGRESS == message:
-        return
-    PREVIOUS_PROGRESS = message
     if DAEMON_LOGGING:
         DAEMON_LOG.write(message)
         DAEMON_LOG.flush()
     if DAEMON_DEBUG:
-        TEXT.output(*args, **kwargs)
+        TEXT.output(message, *args[1:], **kwargs)
 
 def install_exception_handler():
     sys.excepthook = handle_exception
@@ -234,6 +227,7 @@ class RigoDaemonService(dbus.service.Object):
         self._ping_sched.set_delay_before(True)
         self._ping_sched.daemon = True
         self._ping_sched.name = "PingThread"
+        self._ping_sched_startup = Lock()
 
         self._current_activity_mutex = Lock()
         self._current_activity = ActivityStates.AVAILABLE
@@ -245,7 +239,6 @@ class RigoDaemonService(dbus.service.Object):
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         write_output("__init__: dbus service loaded")
-        self._ping_sched.start()
 
     def stop(self):
         """
@@ -254,6 +247,7 @@ class RigoDaemonService(dbus.service.Object):
         if DAEMON_DEBUG:
             write_output("stop(): called")
         with self._activity_mutex:
+            self._ping_sched.kill()
             with self._current_activity_mutex:
                 self._current_activity = ActivityStates.NOT_AVAILABLE
             self._close_local_resources()
@@ -262,7 +256,7 @@ class RigoDaemonService(dbus.service.Object):
             entropy.tools.kill_threads()
             os.kill(os.getpid(), signal.SIGTERM)
 
-    def _update_repositories(self, repositories, request_id, force):
+    def _update_repositories(self, repositories, force):
         """
         Repositories Update execution code.
         """
@@ -270,6 +264,15 @@ class RigoDaemonService(dbus.service.Object):
             with self._current_activity_mutex:
                 self._current_activity = ActivityStates.UPDATING_REPOSITORIES
             self._close_local_resources()
+
+            if not repositories:
+                repositories = list(
+                    SystemSettings()['repositories']['available'])
+
+            if DAEMON_DEBUG:
+                write_output("_update_repositories(): %s" % (
+                        repositories,))
+
             result = 99
             try:
                 updater = self._entropy.Repositories(
@@ -278,20 +281,18 @@ class RigoDaemonService(dbus.service.Object):
             except AttributeError as err:
                 write_output("_update_repositories error: %s" % (err,))
                 self.repositories_updated(
-                    request_id, 1,
-                    _("No repositories configured"))
+                    1, _("No repositories configured"))
                 return
             except Exception as err:
                 write_output("_update_repositories error 2: %s" % (err,))
                 self.repositories_updated(
-                    request_id, 2,
-                    _("Unhandled Exception"))
+                    2, _("Unhandled Exception"))
                 return
             finally:
                 with self._current_activity_mutex:
                     self._current_activity = \
                         ActivityStates.AVAILABLE
-                self.repositories_updated(request_id, result, "")
+                self.repositories_updated(result, "")
 
     def _close_local_resources(self):
         """
@@ -307,13 +308,21 @@ class RigoDaemonService(dbus.service.Object):
         Note: this is blocking and will issue the
         exclusive_acquired() signal when done.
         """
+        acquire = False
         with self._acquired_exclusive_mutex:
             if not self._acquired_exclusive:
-                self._entropy.lock_resources(
-                    blocking=True,
-                    shared=False)
                 # now we got the exclusive lock
                 self._acquired_exclusive = True
+                acquire = True
+
+        if acquire:
+            if DAEMON_DEBUG:
+                write_output("_acquire_exclusive: about to acquire lock")
+            self._entropy.lock_resources(
+                blocking=True,
+                shared=False)
+            if DAEMON_DEBUG:
+                write_output("_acquire_exclusive: just acquired lock")
 
         self.exclusive_acquired()
 
@@ -329,19 +338,19 @@ class RigoDaemonService(dbus.service.Object):
 
     ### DBUS METHODS
 
-    @dbus.service.method(BUS_NAME, in_signature='asib',
+    @dbus.service.method(BUS_NAME, in_signature='asb',
         out_signature='')
-    def update_repositories(self, repositories, request_id, force):
+    def update_repositories(self, repositories, force):
         """
         Request RigoDaemon to update the given repositories.
         At the end of the execution, the "repositories_updated"
         signal will be raised.
         """
         if DAEMON_DEBUG:
-            write_output("update_repositories called: %s, id: %i" % (
-                    repositories, request_id,))
+            write_output("update_repositories called: %s" % (
+                    repositories,))
         task = ParallelTask(self._update_repositories, repositories,
-                            request_id, force)
+                            force)
         task.daemon = True
         task.name = "UpdateRepositoriesThread"
         task.start()
@@ -355,6 +364,11 @@ class RigoDaemonService(dbus.service.Object):
         """
         if DAEMON_DEBUG:
             write_output("connect(): called")
+        acquired = self._ping_sched_startup.acquire(False)
+        if acquired:
+            if DAEMON_DEBUG:
+                write_output("connect(): starting ping() signaling")
+            self._ping_sched.start()
         with self._activity_mutex:
             initconfig_entropy_constants(etpConst['systemroot'])
             self._entropy.Settings().clear()
@@ -467,11 +481,10 @@ class RigoDaemonService(dbus.service.Object):
         pass
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='iis')
-    def repositories_updated(self, request_id, result, message):
+        signature='is')
+    def repositories_updated(self, result, message):
         """
-        Repositories have been updated. This signal comes from
-        the request_id passed to update_repositories().
+        Repositories have been updated.
         "result" is an integer carrying execution return status.
         """
         if DAEMON_DEBUG:
@@ -511,11 +524,17 @@ class RigoDaemonService(dbus.service.Object):
 
 
 if __name__ == "__main__":
+    if os.getuid() != 0:
+        write_output("RigoDaemon: must run as root")
+        raise SystemExit(1)
     try:
         daemon = RigoDaemonService()
     except dbus.exceptions.DBusException:
         raise SystemExit(1)
     GLib.threads_init()
     main_loop = GObject.MainLoop()
-    main_loop.run()
+    try:
+        main_loop.run()
+    except KeyboardInterrupt:
+        raise SystemExit(1)
     raise SystemExit(0)

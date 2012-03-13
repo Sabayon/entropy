@@ -181,7 +181,7 @@ class RigoServiceController(GObject.Object):
 
             return self.__entropy_bus
 
-    def _repositories_updated_signal(self, request_id, result, message):
+    def _repositories_updated_signal(self, result, message):
         """
         Signal coming from RigoDaemon notifying us that repositories have
         been updated.
@@ -350,15 +350,20 @@ class RigoServiceController(GObject.Object):
         """
         # FIXME, complete, need to be nice and not block, etc
         # FIXME, ask for password.
-        acquired_sem = Semaphore()
+        acquired_sem = Semaphore(0)
 
         const_debug_write(__name__, "RigoServiceController: "
                           "_scale_up: enter")
 
+        def _acquirer():
+            const_debug_write(__name__, "RigoServiceController: "
+                              "_scale_up: acquired!")
+            acquired_sem.release()
+
         # start the rendezvous
         sig_match = self._entropy_bus.connect_to_signal(
             self._EXCLUSIVE_ACQUIRED_SIGNAL,
-            acquired_sem.release,
+            _acquirer,
             dbus_interface=self.DBUS_INTERFACE)
 
         dbus.Interface(
@@ -367,6 +372,8 @@ class RigoServiceController(GObject.Object):
             ).acquire_exclusive()
 
         self._entropy.unlock_resources()
+        # FIXME: lock down UI here and show a please wait
+        # state, or the user won't understand what's happening
         acquired_sem.acquire() # CANBLOCK
         sig_match.remove()
 
@@ -382,7 +389,7 @@ class RigoServiceController(GObject.Object):
         Release RigoDaemon Entropy Resources and regain
         control here.
         """
-        acquired_sem = Semaphore()
+        acquired_sem = Semaphore(0)
         # start the rendezvous
 
         const_debug_write(__name__, "RigoServiceController: "
@@ -473,7 +480,7 @@ class RigoServiceController(GObject.Object):
         iface = dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE)
-        iface.update_repositories(repositories, 1, force)
+        iface.update_repositories(repositories, force)
 
     def update_repositories(self, repositories, force):
         """
@@ -845,8 +852,7 @@ class ApplicationsViewController(GObject.Object):
         """
         Spawn Repository Update on RigoDaemon
         """
-        self._service.update_repositories(
-            self._entropy.repositories(), True)
+        self._service.update_repositories([], True)
 
     def _update_repositories_safe(self):
         """
@@ -1026,7 +1032,7 @@ class NotificationViewController(GObject.Object):
         # FIXME, lxnay complete
         print("On Upgrade Request Received", args)
         # FIXME, this is for testing, REMOVE !!!!
-        self._service.update_repositories(self._entropy.repositories(), True)
+        self._service.update_repositories([], True)
 
     def _on_update(self, *args):
         """
@@ -1034,7 +1040,8 @@ class NotificationViewController(GObject.Object):
         """
         # FIXME, lxnay complete
         print("On Update Request Received", args)
-        self._service.update_repositories(self._entropy.repositories(), True)
+        
+        self._service.update_repositories([], True)
 
     def _on_update_show(self, *args):
         """
