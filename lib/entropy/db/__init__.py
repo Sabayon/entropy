@@ -540,7 +540,10 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # tracking mtime to validate repository Live cache as
         # well.
-        self._cur_mtime = self.mtime()
+        try:
+            self._cur_mtime = self.mtime()
+        except OSError:
+            self._cur_mtime = None
 
         # setup service interface
         self.__skip_checks = skipChecks
@@ -742,7 +745,10 @@ class EntropyRepository(EntropyRepositoryBase):
         self._live_cacher.set(self._getLiveCacheKey() + key, value)
 
     def _getLiveCache(self, key):
-        mtime = self.mtime()
+        try:
+            mtime = self.mtime()
+        except OSError:
+            mtime = None
         if self._cur_mtime != mtime:
             self._cur_mtime = mtime
             self._discardLiveCache()
