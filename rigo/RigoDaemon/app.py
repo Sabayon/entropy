@@ -330,11 +330,14 @@ class RigoDaemonService(dbus.service.Object):
         """
         Release Exclusive access to Entropy Resources.
         """
-        with self._acquired_exclusive_mutex:
-            if self._acquired_exclusive:
-                self._entropy.unlock_resources()
-                # now we got the exclusive lock
-                self._acquired_exclusive = False
+        with self._activity_mutex:
+            # make sure to not release locks as long
+            # as there is activity
+            with self._acquired_exclusive_mutex:
+                if self._acquired_exclusive:
+                    self._entropy.unlock_resources()
+                    # now we got the exclusive lock
+                    self._acquired_exclusive = False
 
     ### DBUS METHODS
 
@@ -409,7 +412,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         if DAEMON_DEBUG:
             write_output("release_exclusive: called")
-        self._release_exclusive()
+        task = ParallelTask(self._release_exclusive)
+        task.daemon = True
+        task.name = "ReleaseExclusive"
+        task.start()
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')
