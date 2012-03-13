@@ -2281,7 +2281,7 @@ class Rigo(Gtk.Application):
 
     def _show_yesno_dialog(self, parent, title, message):
         """
-        Show ugly OK dialog window.
+        Show ugly Yes/No dialog window.
         """
         dlg = Gtk.MessageDialog(parent=parent,
                             type=Gtk.MessageType.INFO,
