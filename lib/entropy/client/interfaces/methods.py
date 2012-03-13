@@ -1700,11 +1700,15 @@ class MiscMixin:
             if mapped['ref'] is not None:
                 # reentrant lock, already acquired
                 return True
-            acquired = self._file_lock_create(
-                mapped, blocking = blocking, shared = shared)
-            if acquired:
+            path = mapped['path']
+        acquired, flock_f = self._file_lock_create(
+            path, blocking = blocking, shared = shared)
+        if acquired:
+            with MiscMixin._FILE_LOCK_MUTEX:
                 mapped['count'] += 1
-            return acquired
+                if flock_f is not None:
+                    mapped['ref'] = flock_f
+        return acquired
 
     def _promote_resource(self, lock_path, blocking):
         """
@@ -1716,12 +1720,13 @@ class MiscMixin:
             if flock_f is None:
                 # wtf ?
                 raise IOError("not acquired")
-            acquired = True
-            if blocking:
-                flock_f.promote()
-            else:
-                acquired = flock_f.try_promote()
-            return acquired
+
+        acquired = True
+        if blocking:
+            flock_f.promote()
+        else:
+            acquired = flock_f.try_promote()
+        return acquired
 
     def _unlock_resource(self, lock_path):
         """
@@ -1753,11 +1758,10 @@ class MiscMixin:
                     ref_obj.close()
                     mapped['ref'] = None
 
-    def _file_lock_create(self, lock_data, blocking = False, shared = False):
+    def _file_lock_create(self, pidfile, blocking = False, shared = False):
         """
         Create and allocate the lock file pointed by lock_data structure.
         """
-        pidfile = lock_data['path']
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
@@ -1769,7 +1773,7 @@ class MiscMixin:
         except IOError as err:
             if err.errno in (errno.ENOENT, errno.EACCES):
                 # cannot get lock or dir doesn't exist
-                return False
+                return False, None
             raise
 
         # ensure that entropy group can write on that
@@ -1797,8 +1801,8 @@ class MiscMixin:
                 if str(os.getpid()) == stored_pid:
                     # it's me, entropy (in case I called execv*)
                     # NOTE that this won't work with shared locks
-                    return True
-                return False
+                    return True, None
+                return False, None
 
         if not shared:
             # if we acquired an exclusive lock
@@ -1807,9 +1811,8 @@ class MiscMixin:
             pid_f.write(str(mypid))
             pid_f.flush()
 
-        lock_data['ref'] = flock_f
         self._clear_resource_live_cache()
-        return True
+        return True, flock_f
 
     def _clear_resource_live_cache(self):
         """
