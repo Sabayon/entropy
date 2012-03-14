@@ -36,7 +36,8 @@ sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
 sys.path.insert(6, "/usr/lib/rigo")
 
-
+import gi
+gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango
 
 from rigo.paths import DATA_DIR
