@@ -147,7 +147,14 @@ def package(options):
     acquired = False
     try:
         entropy_client = Client()
-        acquired = entropy.tools.acquire_entropy_locks(entropy_client)
+        # this is set by our execvp() call
+        blocking = os.getenv("__EQUO_LOCKS_BLOCKING__")
+        if blocking:
+            print_warning(darkgreen(
+                    _("Acquiring Entropy Resources Lock, please wait...")),
+                          back=True)
+        acquired = entropy.tools.acquire_entropy_locks(entropy_client,
+                                                       blocking=blocking)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -560,6 +567,10 @@ def _upgrade_packages_respawn(entropy_client):
             _("There are more updates to install, reloading Entropy"),) ))
         # then spawn a new process
         entropy_client.shutdown()
+        os.environ['__EQUO_LOCKS_BLOCKING__'] = "1"
+        # we will acquire them again in blocking mode, cross
+        # fingers
+        entropy.tools.release_entropy_locks(entropy_client)
         os.execvp("equo", sys.argv)
 
 def branch_hop(entropy_client, branch):
