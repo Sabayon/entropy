@@ -1745,18 +1745,10 @@ class MiscMixin:
 
             ref_obj = mapped['ref']
             if ref_obj is not None:
-                try:
-                    # unlink first
-                    os.remove(ref_obj.get_file().name)
-                except OSError as err:
-                    # cope with possible race conditions
-                    # and read-only filesystem
-                    if err.errno not in (errno.ENOENT, errno.EROFS):
-                        raise
-                finally:
-                    ref_obj.release()
-                    ref_obj.close()
-                    mapped['ref'] = None
+                # do not remove!
+                ref_obj.release()
+                ref_obj.close()
+                mapped['ref'] = None
 
     def _file_lock_create(self, pidfile, blocking = False, shared = False):
         """
@@ -1795,21 +1787,7 @@ class MiscMixin:
             else:
                 acquired = flock_f.try_acquire_exclusive()
             if not acquired:
-                # lock already acquired, but might come from the same pid
-                stored_pid = pid_f.read(128).strip()
-                pid_f.close()
-                if str(os.getpid()) == stored_pid:
-                    # it's me, entropy (in case I called execv*)
-                    # NOTE that this won't work with shared locks
-                    return True, None
                 return False, None
-
-        if not shared:
-            # if we acquired an exclusive lock
-            # we can place our pid here.
-            pid_f.truncate()
-            pid_f.write(str(mypid))
-            pid_f.flush()
 
         self._clear_resource_live_cache()
         return True, flock_f
