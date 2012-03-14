@@ -57,7 +57,7 @@ from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from rigo.utils import build_application_store_url, build_register_url, \
     escape_markup, prepare_markup
 
-from RigoDaemon.enums import ActivityStates
+from RigoDaemon.enums import ActivityStates as DaemonActivityStates
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
@@ -70,12 +70,42 @@ from entropy.output import darkgreen, brown, darkred, red, blue
 
 import entropy.tools
 
+class LocalActivityStates:
+    (
+        READY,
+        UPDATING_REPOSITORIES_MASTER,
+        UPDATING_REPOSITORIES_SLAVE,
+        INSTALLING_APPLICATIONS,
+    ) = range(4)
+
+    class BusyError(Exception):
+        """
+        Cannot acknowledge a Local Activity change.
+        """
+
+    class AlreadyReadyError(Exception):
+        """
+        Cannot acknowledge a Local Activity change to
+        "READY" state, because we're already ready.
+        """
+
+    class UnbusyFromDifferentActivity(Exception):
+        """
+        Unbusy request from different activity.
+        """
+
 class RigoServiceController(GObject.Object):
 
     """
     This is the Rigo Application frontend to Rigo Daemon.
     Handles privileged requests on our behalf.
     """
+
+    class InconsistentDaemonState(Exception):
+        """
+        Raised when RigoDaemon and Rigo states are not
+        coherent.
+        """
 
     __gsignals__ = {
         # we request to lock the whole UI wrt repo
@@ -98,6 +128,7 @@ class RigoServiceController(GObject.Object):
     _TRANSFER_OUTPUT_SIGNAL = "transfer_output"
     _EXCLUSIVE_ACQUIRED_SIGNAL = "exclusive_acquired"
     _PING_SIGNAL = "ping"
+    _RESOURCES_UNLOCK_REQUEST_SIGNAL = "resources_unlock_request"
 
     def __init__(self, rigo_app, activity_rwsem, entropy_client, entropy_ws):
         GObject.Object.__init__(self)
@@ -117,6 +148,8 @@ class RigoServiceController(GObject.Object):
         self._connected = False
         self._registered_signals = {}
         self._registered_signals_mutex = Lock()
+        self._local_activity = LocalActivityStates.READY
+        self._local_activity_mutex = Lock()
 
     def set_applications_controller(self, avc):
         """
@@ -144,6 +177,36 @@ class RigoServiceController(GObject.Object):
         """
         self._nc = nc
 
+    def busy(self, local_activity):
+        """
+        Become busy, switch to some local activity.
+        If an activity is already taking place,
+        LocalActivityStates.BusyError is raised.
+        """
+        with self._local_activity_mutex:
+            if self._local_activity != LocalActivityStates.READY:
+                raise LocalActivityStates.BusyError()
+            self._local_activity = local_activity
+
+    def unbusy(self, current_activity):
+        """
+        Exit from busy state, switch to local activity called "READY".
+        If we're already out of any activity, raise
+        LocalActivityStates.AlreadyReadyError()
+        """
+        with self._local_activity_mutex:
+            if self._local_activity == LocalActivityStates.READY:
+                raise LocalActivityStates.AlreadyReadyError()
+            if self._local_activity != current_activity:
+                raise LocalActivityStates.UnbusyFromDifferentActivity()
+            self._local_activity = LocalActivityStates.READY
+
+    def local_activity(self):
+        """
+        Return the current local activity (enum from LocalActivityStates)
+        """
+        return self._local_activity
+
     @property
     def _dbus_main_loop(self):
         if self.__dbus_main_loop is None:
@@ -166,22 +229,34 @@ class RigoServiceController(GObject.Object):
                     self.DBUS_INTERFACE, self.DBUS_PATH
                     )
 
+                # ping/pong signaling, used to let
+                # RigoDaemon release exclusive locks
+                # when no client is connected
                 self.__entropy_bus.connect_to_signal(
                     self._PING_SIGNAL, self._ping_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # Entropy stdout/stderr messages
                 self.__entropy_bus.connect_to_signal(
                     self._OUTPUT_SIGNAL, self._output_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # Entropy UrlFetchers messages
                 self.__entropy_bus.connect_to_signal(
                     self._TRANSFER_OUTPUT_SIGNAL,
                     self._transfer_output_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon Entropy Resources unlock requests
+                self.__entropy_bus.connect_to_signal(
+                    self._RESOURCES_UNLOCK_REQUEST_SIGNAL,
+                    self._resources_unlock_request_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
-    def _repositories_updated_signal(self, result, message):
+    def _repositories_updated_signal(self, result, message,
+                                     token, local_activity):
         """
         Signal coming from RigoDaemon notifying us that repositories have
         been updated.
@@ -204,16 +279,37 @@ class RigoServiceController(GObject.Object):
                         "already consumed")
                 return
 
-        self._scale_down() # do we really need this? not really i think
-        self._release_local_resources()
-        # 1 -- ACTIVITY CRIT :: OFF
-        self._activity_rwsem.writer_release()
+        # Since we might sleep here, and we're in the
+        # MainThread, better spawning a new thread
+        # The sleep is inside _scale_down (wait on a
+        # semaphore)
+        def _scale_down():
+            # we don't expect to fail here, it would
+            # mean programming error.
+            self.unbusy(local_activity)
 
-        self.emit("repositories-updated")
-        if const_debug_enabled():
-            const_debug_write(
-                __name__,
-                "_repositories_updated_signal: repositories-updated")
+            activity = DaemonActivityStates.UPDATING_REPOSITORIES
+            slave_update = LocalActivityStates.UPDATING_REPOSITORIES_SLAVE
+            if local_activity == slave_update:
+                # FIXME: same??
+                self._scale_down(activity, token)
+            else:
+                self._scale_down(activity, token)
+                self._release_local_resources()
+
+            # 1 -- ACTIVITY CRIT :: OFF
+            self._activity_rwsem.writer_release()
+
+            GLib.idle_add(self.emit, "repositories-updated")
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_repositories_updated_signal: repositories-updated")
+
+        task = ParallelTask(_scale_down)
+        task.name = "RepositoriesUpdatedSignalScalerDown"
+        task.daemon = True
+        task.start()
 
     def _output_signal(self, text, header, footer, back, importance, level,
                count_c, count_t, percent):
@@ -292,6 +388,42 @@ class RigoServiceController(GObject.Object):
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).pong()
 
+    def _resources_unlock_request_signal(self, activity):
+        """
+        RigoDaemon is asking us to release our Entropy Resources Lock.
+        An ActivityStates value is provided in order to let us decide
+        if we can acknowledge the request.
+        """
+        const_debug_write(
+            __name__,
+            "_resources_unlock_request_signal: "
+            "called, with remote activity: %s" % (activity,))
+
+        if activity == DaemonActivityStates.UPDATING_REPOSITORIES:
+            # did we ask that or is it another client?
+            if self.local_activity() == LocalActivityStates.READY:
+                # another client, bend over XD
+                # LocalActivityStates value will be atomically
+                # switched in the above thread.
+                task = ParallelTask(
+                    self._update_repositories,
+                    [], False,
+                    master=False)
+                task.daemon = True
+                task.name = "UpdateRepositoriesExternal"
+                task.start()
+                const_debug_write(
+                    __name__,
+                    "_resources_unlock_request_signal: "
+                    "somebody called repo update, starting here too")
+            else:
+                const_debug_write(
+                    __name__,
+                    "_resources_unlock_request_signal: "
+                    "it's been us calling repositories update")
+                # it's been us calling it, ignore request
+                return
+
     def activity(self):
         """
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
@@ -352,7 +484,7 @@ class RigoServiceController(GObject.Object):
         self._avc.clear_safe()
         self._entropy.close_repositories()
 
-    def _scale_up(self):
+    def _scale_up(self, activity):
         """
         Acquire (in blocking mode) the Entropy Resources Lock
         in exclusive mode. Scale up privileges, and ask for
@@ -375,10 +507,13 @@ class RigoServiceController(GObject.Object):
             _acquirer,
             dbus_interface=self.DBUS_INTERFACE)
 
-        dbus.Interface(
+        accepted = dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE
-            ).acquire_exclusive()
+            ).acquire_exclusive(activity)
+        if not accepted:
+            # FIXME, tell the reason to User
+            return False
 
         self._entropy.unlock_resources()
         # FIXME: lock down UI here and show a please wait
@@ -393,7 +528,7 @@ class RigoServiceController(GObject.Object):
                           "_scale_up: leave")
         return True
 
-    def _scale_down(self):
+    def _scale_down(self, activity, release_exclusive_token):
         """
         Release RigoDaemon Entropy Resources and regain
         control here.
@@ -402,12 +537,17 @@ class RigoServiceController(GObject.Object):
         # start the rendezvous
 
         const_debug_write(__name__, "RigoServiceController: "
-                          "_scale_down: enter")
+                          "_scale_down: enter, for activity: %s" % (
+                activity,))
 
         def _acquirer(sem):
+            const_debug_write(__name__, "RigoServiceController: "
+                              "_scale_down._acquirer: enter")
             self._entropy.lock_resources(
                 blocking=True,
                 shared=True)
+            const_debug_write(__name__, "RigoServiceController: "
+                              "_scale_down._acquirer: leave")
             sem.release()
 
         task = ParallelTask(_acquirer, acquired_sem)
@@ -415,30 +555,62 @@ class RigoServiceController(GObject.Object):
         task.daemon = True
         task.start()
 
-        dbus.Interface(
+        # call this unconditionally and ignore any error.
+        # multiple calls are harmless since the token
+        # ensures that we actually release locks only once,
+        # without the risk of running into race conditions
+        accepted = dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE
-            ).release_exclusive()
+            ).release_exclusive(
+            activity,
+            release_exclusive_token)
 
+        # ignore accepted, unbusy() protects us from
+        # releasing during other activities.
         acquired_sem.acquire()
         # back with shared lock!
 
         const_debug_write(__name__, "RigoServiceController: "
                           "_scale_down: leave")
 
-    def _update_repositories(self, repositories, force):
+    def _update_repositories(self, repositories, force,
+                             master=True):
         """
         Ask RigoDaemon to update repositories once we're
         100% sure that the UI is locked down.
         """
-        scaled = self._scale_up()
-        if not scaled:
+        if master:
+            local_activity = LocalActivityStates.UPDATING_REPOSITORIES_MASTER
+        else:
+            local_activity = LocalActivityStates.UPDATING_REPOSITORIES_SLAVE
+        try:
+            self.busy(local_activity)
+            # will be unlocked when we get the signal back
+        except LocalActivityStates.BusyError:
+            # FIXME, notify user that we cannot do repo update
+            const_debug_write(__name__, "_update_repositories: "
+                              "LocalActivityStates.BusyError!")
             return
+
+        if master:
+            scaled = self._scale_up(
+                DaemonActivityStates.UPDATING_REPOSITORIES)
+            if not scaled:
+                self.unbusy(local_activity)
+                return
+        else:
+            # if we don't need to scale, just unlock
+            # local resources.
+            # No need to connect() because other clients have
+            # already done that
+            self._entropy.unlock_resources()
+
         self._update_repositories_unlocked(
-            repositories, force)
+            repositories, force, master)
 
     def _update_repositories_unlocked(self, repositories, force,
-                                      execute_method=True):
+                                      master):
         """
         Internal method handling the actual Repositories Update
         execution.
@@ -467,15 +639,21 @@ class RigoServiceController(GObject.Object):
         # 1 -- ACTIVITY CRIT :: ON
         self._activity_rwsem.writer_acquire()
 
+        if master:
+            loc_activity = LocalActivityStates.UPDATING_REPOSITORIES_MASTER
+        else:
+            loc_activity = LocalActivityStates.UPDATING_REPOSITORIES_SLAVE
+
         signal_sem = Semaphore(1)
 
-        def _repositories_updated_signal(result, message):
+        def _repositories_updated_signal(result, message, token):
             if not signal_sem.acquire(False):
                 # already called, no need to call again
                 return
             # this is done in order to have it called
             # only once by two different code paths
-            self._repositories_updated_signal(result, message)
+            self._repositories_updated_signal(
+                result, message, token, loc_activity)
 
         with self._registered_signals_mutex:
             # connect our signal
@@ -498,7 +676,7 @@ class RigoServiceController(GObject.Object):
         self._terminal.reset()
         self._release_local_resources()
 
-        if execute_method:
+        if master:
             dbus.Interface(
                 self._entropy_bus,
                 dbus_interface=self.DBUS_INTERFACE
@@ -513,9 +691,11 @@ class RigoServiceController(GObject.Object):
         Called via _update_repositories_unlocked() in order to handle
         the possible race between RigoDaemon signal and the fact that
         we just lost it.
+        This is only called in slave mode. When we didn't spawn the
+        repositories update directly.
         """
         activity = self.activity()
-        if activity == ActivityStates.UPDATING_REPOSITORIES:
+        if activity == DaemonActivityStates.UPDATING_REPOSITORIES:
             return
 
         # lost the signal or not, we're going to force
@@ -533,7 +713,7 @@ class RigoServiceController(GObject.Object):
         # Run in the main loop, to avoid calling a signal
         # callback in random threads.
         GLib.idle_add(self._repositories_updated_signal,
-                      0, "")
+                      0, "", activity)
 
     def update_repositories(self, repositories, force):
         """
@@ -2391,29 +2571,29 @@ class Rigo(Gtk.Application):
         # exclusion is handled via Entropy Resources Lock (which is a file
         # based rwsem).
         activity = self._service.activity()
-        if activity != ActivityStates.AVAILABLE:
+        if activity != DaemonActivityStates.AVAILABLE:
             msg = ""
             show_dialog = True
 
-            if activity == ActivityStates.NOT_AVAILABLE:
+            if activity == DaemonActivityStates.NOT_AVAILABLE:
                 msg = _("Background Service is currently not available")
 
-            elif activity == ActivityStates.UPDATING_REPOSITORIES:
+            elif activity == DaemonActivityStates.UPDATING_REPOSITORIES:
                 show_dialog = False
                 task = ParallelTask(
-                    self._service._update_repositories_unlocked,
-                    [], False, execute_method=False)
+                    self._service._update_repositories,
+                    [], False, master=False)
                 task.daemon = True
                 task.name = "UpdateRepositoriesUnlocked"
                 task.start()
 
-            elif activity == ActivityStates.INSTALLING_APPLICATION:
+            elif activity == DaemonActivityStates.INSTALLING_APPLICATION:
                 # FIXME, jump to WORK_VIEW and show the progress.
                 msg = _("Background Service is installing Applications")
-            elif activity == ActivityStates.UPGRADING_SYSTEM:
+            elif activity == DaemonActivityStates.UPGRADING_SYSTEM:
                 # FIXME, jump to WORK_VIEW and show the progress.
                 msg = _("Background Service is updating your system")
-            elif activity == ActivityStates.INTERNAL_ROUTINES:
+            elif activity == DaemonActivityStates.INTERNAL_ROUTINES:
                 msg = _("Background Service is currently busy")
             else:
                 msg = _("Background Service is incompatible with Rigo")
