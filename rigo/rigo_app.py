@@ -60,7 +60,8 @@ from rigo.utils import build_application_store_url, build_register_url, \
     escape_markup, prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates
-from RigoDaemon.config import DbusConfig as DaemonDbusConfig
+from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
+    PolicyActions
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
@@ -80,13 +81,6 @@ class RigoAuthenticationController(object):
     for privileged activies, like Repository updates
     and Application management.
     """
-
-    class RigoDaemonPolicyActions:
-
-        # PolicyKit update action
-        UPDATE_REPOSITORIES = "org.sabayon.RigoDaemon.update"
-        UPGRADE_SYSTEM = "org.sabayon.RigoDaemon.upgrade"
-        MANAGE_APP = "org.sabayon.RigoDaemon.manage"
 
     def __init__(self):
         self._mainloop = GLib.MainLoop()
@@ -563,9 +557,8 @@ class RigoServiceController(GObject.Object):
             auth_res['sem'].release()
 
         action_id = None
-        pol = RigoAuthenticationController.RigoDaemonPolicyActions
         if daemon_activity == DaemonActivityStates.UPDATING_REPOSITORIES:
-            action_id = pol.UPDATE_REPOSITORIES
+            action_id = PolicyActions.UPDATE_REPOSITORIES
 
         if action_id is None:
             raise AttributeError("unsupported daemon activity")

@@ -15,3 +15,9 @@ class DbusConfig:
     BUS_NAME = "org.sabayon.Rigo"
     OBJECT_PATH = "/"
 
+class PolicyActions:
+
+    # PolicyKit update action
+    UPDATE_REPOSITORIES = "org.sabayon.RigoDaemon.update"
+    UPGRADE_SYSTEM = "org.sabayon.RigoDaemon.upgrade"
+    MANAGE_APP = "org.sabayon.RigoDaemon.manage"
