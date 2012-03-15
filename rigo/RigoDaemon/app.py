@@ -257,7 +257,10 @@ class RigoDaemonService(dbus.service.Object):
 
         Entropy.set_daemon(self)
         self._entropy = Entropy()
-        write_output("__init__: dbus service loaded")
+        write_output(
+            "__init__: dbus service loaded, pid: %d, ppid: %d" %  (
+                os.getpid(), os.getppid(),)
+                )
 
     def _busy(self, activity):
         """

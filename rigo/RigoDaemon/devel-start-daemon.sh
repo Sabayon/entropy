@@ -11,4 +11,6 @@ chown root:root /etc/dbus-1/system.d/org.sabayon.Rigo.conf || exit 1
 cp dbus/org.sabayon.Rigo.xml /usr/share/dbus-1/interfaces/ || exit 1
 chown root:root /usr/share/dbus-1/interfaces/org.sabayon.Rigo.xml || exit 1
 
+cp polkit/org.sabayon.RigoDaemon.policy /usr/share/polkit-1/actions/
+
 cd ../ && ./RigoDaemon/app.py --debug

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policyconfig PUBLIC
+ "-//freedesktop//DTD PolicyKit Policy Configuration 1.0//EN"
+ "http://www.freedesktop.org/standards/PolicyKit/1.0/policyconfig.dtd">
+<policyconfig>
+
+  <vendor>Rigo Application Browser</vendor>
+  <vendor_url>http://www.sabayon.org/</vendor_url>
+  <icon_name>package-x-generic</icon_name>
+
+  <action id="org.sabayon.RigoDaemon.update">
+    <description>Update Repositories</description>
+    <message>Authentication is required to Update Repositories</message>
+    <icon_name>system-software-update</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin_keep</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.sabayon.RigoDaemon.upgrade">
+    <description>Update System</description>
+    <message>Authentication is required to Update System</message>
+    <icon_name>system-software-update</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+  <action id="org.sabayon.RigoDaemon.manage">
+    <description>Manage Applications</description>
+    <message>Authentication is required to Manage Applications</message>
+    <icon_name>package-x-generic</icon_name>
+    <defaults>
+      <allow_any>no</allow_any>
+      <allow_inactive>no</allow_inactive>
+      <allow_active>auth_admin</allow_active>
+    </defaults>
+  </action>
+
+</policyconfig>
