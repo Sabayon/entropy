@@ -60,6 +60,7 @@ from entropy.core.settings.base import SystemSettings
 import entropy.tools
 
 from RigoDaemon.enums import ActivityStates
+from RigoDaemon.config import DbusConfig
 
 TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")
@@ -202,8 +203,8 @@ class DaemonUrlFetcher(UrlFetcher):
 
 class RigoDaemonService(dbus.service.Object):
 
-    BUS_NAME = "org.sabayon.Rigo"
-    OBJECT_PATH = "/daemon"
+    BUS_NAME = DbusConfig.BUS_NAME
+    OBJECT_PATH = DbusConfig.OBJECT_PATH
 
     """
     RigoDaemon is the dbus service Object in charge of executing

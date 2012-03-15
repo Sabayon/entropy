@@ -59,6 +59,7 @@ from rigo.utils import build_application_store_url, build_register_url, \
     escape_markup, prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates
+from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
@@ -122,8 +123,8 @@ class RigoServiceController(GObject.Object):
                                   ),
     }
 
-    DBUS_INTERFACE = "org.sabayon.Rigo"
-    DBUS_PATH = "/daemon"
+    DBUS_INTERFACE = DaemonDbusConfig.BUS_NAME
+    DBUS_PATH = DaemonDbusConfig.OBJECT_PATH
     _OUTPUT_SIGNAL = "output"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
     _TRANSFER_OUTPUT_SIGNAL = "transfer_output"
