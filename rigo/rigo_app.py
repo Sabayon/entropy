@@ -73,6 +73,63 @@ from entropy.output import darkgreen, brown, darkred, red, blue
 
 import entropy.tools
 
+class RigoAuthenticationController(object):
+
+    """
+    This class handles User authentication required
+    for privileged activies, like Repository updates
+    and Application management.
+    """
+
+    class RigoDaemonPolicyActions:
+
+        # PolicyKit update action
+        UPDATE_REPOSITORIES = "org.sabayon.RigoDaemon.update"
+        UPGRADE_SYSTEM = "org.sabayon.RigoDaemon.upgrade"
+        MANAGE_APP = "org.sabayon.RigoDaemon.manage"
+
+    def __init__(self):
+        self._mainloop = GLib.MainLoop()
+
+    def authenticate(self, action_id, authentication_callback):
+        """
+        Authenticate current User asking Administrator
+        passwords.
+        authentication_callback is the function that
+        is called after the authentication procedure,
+        providing one boolean argument describing the
+        process result: True for authenticated, False
+        for not authenticated.
+        This method must be called from the MainLoop.
+        """
+        def _polkit_auth_callback(authority, res, loop):
+            authenticated = False
+            try:
+                result = authority.check_authorization_finish(res)
+                if result.get_is_authorized():
+                    authenticated = True
+                elif result.get_is_challenge():
+                    authenticated = True
+            except GObject.GError as err:
+                const_debug_write(
+                    __name__,
+                    "_polkit_auth_callback: error: %s" % (err,))
+            finally:
+                authentication_callback(authenticated)
+
+        # authenticated_sem will be released in the callback
+        authority = Polkit.Authority.get()
+        subject = Polkit.UnixProcess.new(os.getppid())
+        authority.check_authorization(
+                subject,
+                action_id,
+                None,
+                Polkit.CheckAuthorizationFlags.ALLOW_USER_INTERACTION,
+                None, # Gio.Cancellable()
+                _polkit_auth_callback,
+                self._mainloop)
+
+
 class LocalActivityStates:
     (
         READY,
@@ -133,10 +190,12 @@ class RigoServiceController(GObject.Object):
     _PING_SIGNAL = "ping"
     _RESOURCES_UNLOCK_REQUEST_SIGNAL = "resources_unlock_request"
 
-    def __init__(self, rigo_app, activity_rwsem, entropy_client, entropy_ws):
+    def __init__(self, rigo_app, activity_rwsem, auth,
+                 entropy_client, entropy_ws):
         GObject.Object.__init__(self)
         self._rigo = rigo_app
         self._activity_rwsem = activity_rwsem
+        self._auth = auth
         self._nc = None
         self._wc = None
         self._avc = None
@@ -487,13 +546,51 @@ class RigoServiceController(GObject.Object):
         self._avc.clear_safe()
         self._entropy.close_repositories()
 
+    def _authorize(self, daemon_activity):
+        """
+        Authorize privileged Activity.
+        Return True for success, False for failure.
+        """
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_authorize: enter")
+        auth_res = {
+            'sem': Semaphore(0),
+            'result': None,
+            }
+
+        def _authorized_callback(result):
+            auth_res['result'] = result
+            auth_res['sem'].release()
+
+        action_id = None
+        pol = RigoAuthenticationController.RigoDaemonPolicyActions
+        if daemon_activity == DaemonActivityStates.UPDATING_REPOSITORIES:
+            action_id = pol.UPDATE_REPOSITORIES
+
+        if action_id is None:
+            raise AttributeError("unsupported daemon activity")
+
+        self._auth.authenticate(action_id, _authorized_callback)
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_authorize: sleeping on sem")
+        auth_res['sem'].acquire()
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_authorize: got result: %s" % (
+                auth_res['result'],))
+
+        return auth_res['result']
+
     def _scale_up(self, activity):
         """
         Acquire (in blocking mode) the Entropy Resources Lock
         in exclusive mode. Scale up privileges, and ask for
         root password if not done yet.
         """
-        # FIXME, ask for password.
+        granted = self._authorize(activity)
+        if not granted:
+            return False
+
         acquired_sem = Semaphore(0)
 
         const_debug_write(__name__, "RigoServiceController: "
@@ -1133,9 +1230,10 @@ class Rigo(Gtk.Application):
         self._activity_rwsem = ReadersWritersSemaphore()
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
+        self._auth = RigoAuthenticationController()
         self._service = RigoServiceController(
             self, self._activity_rwsem,
-            self._entropy, self._entropy_ws)
+            self._auth, self._entropy, self._entropy_ws)
 
         self._builder = Gtk.Builder()
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
