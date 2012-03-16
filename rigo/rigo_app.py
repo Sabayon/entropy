@@ -177,7 +177,8 @@ class RigoServiceController(GObject.Object):
         # View has been filled
         "repositories-updated" : (GObject.SignalFlags.RUN_LAST,
                                   None,
-                                  tuple(),
+                                  (GObject.TYPE_PYOBJECT,
+                                   GObject.TYPE_PYOBJECT,),
                                   ),
     }
 
@@ -362,7 +363,8 @@ class RigoServiceController(GObject.Object):
             # 1 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
 
-            GLib.idle_add(self.emit, "repositories-updated")
+            GLib.idle_add(self.emit, "repositories-updated",
+                          result, message)
             if const_debug_enabled():
                 const_debug_write(
                     __name__,
@@ -1393,7 +1395,7 @@ class Rigo(Gtk.Application):
         self._search_entry.set_sensitive(False)
         self._change_view_state(state, lock=True)
 
-    def _on_repo_updated(self, widget):
+    def _on_repo_updated(self, widget, result, message):
         """
         Emitted by RigoServiceController when we're allowed to
         let the user mess again with the UI.
@@ -1401,6 +1403,20 @@ class Rigo(Gtk.Application):
         with self._state_mutex:
             self._current_state_lock = False
         self._search_entry.set_sensitive(True)
+        if result != 0:
+            msg = "<b>%s</b>: %s" % (
+                _("Repositories update error"),
+                message,)
+            message_type = Gtk.MessageType.ERROR
+        else:
+            msg = _("Repositories updated <b>successfully</b>!")
+            message_type = Gtk.MessageType.INFO
+
+        box = NotificationBox(
+            msg, message_type=message_type,
+            context_id=RigoServiceController.NOTIFICATION_CONTEXT_ID)
+        box.add_destroy_button(_("Ok, thanks"))
+        self._nc.append(box)
 
     def _on_view_cleared(self, *args):
         self._change_view_state(RigoViewStates.STATIC_VIEW_STATE)
