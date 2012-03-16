@@ -987,6 +987,21 @@ class RepositoryMixin:
         """
         return self._enabled_repos
 
+    def unavailable_repositories(self):
+        """
+        Return a list of repositories that are currently unavailable on
+        the local system.
+        This method does a set difference from repositories() and
+        SystemSettings metadata.
+
+        @return: list of unavailable (or broken) repositories
+        @rtype: list
+        """
+        repositories = set(self.repositories())
+        all_repositories = set(self._settings['repositories']['order'])
+        unavailable = all_repositories - repositories
+        return sorted(unavailable)
+
     def installed_repository(self):
         """
         Return Entropy Client installed packages repository.
