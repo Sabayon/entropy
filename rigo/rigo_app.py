@@ -1073,7 +1073,7 @@ class NotificationViewController(GObject.Object):
         self._context_id_map = {}
 
     def setup(self):
-        GLib.timeout_add(3000, self._calculate_updates)
+        GLib.timeout_add_seconds(1, self._calculate_updates)
         GLib.idle_add(self._check_connectivity)
 
     def _check_connectivity(self):
@@ -1118,6 +1118,12 @@ class NotificationViewController(GObject.Object):
     def __calculate_updates(self):
         self._activity_rwsem.reader_acquire()
         try:
+            unavailable_repositories = \
+                self._entropy.unavailable_repositories()
+            if unavailable_repositories:
+                GLib.idle_add(self._notify_unavailable_repositories_safe,
+                              unavailable_repositories)
+                return
             if Repository.are_repositories_old():
                 GLib.idle_add(self._notify_old_repositories_safe)
                 return
@@ -1157,11 +1163,21 @@ class NotificationViewController(GObject.Object):
 
     def _notify_old_repositories_safe(self):
         """
-        Add NotificationBox signaling the user that repositories
+        Add a NotificationBox signaling the User that repositories
         are old..
         """
         box = RepositoriesUpdateNotificationBox(
             self._entropy, self._avc)
+        box.connect("update-request", self._on_update)
+        self.append(box)
+
+    def _notify_unavailable_repositories_safe(self, unavailable):
+        """
+        Add a NotificationBox signaling the User that some repositories
+        are unavailable..
+        """
+        box = RepositoriesUpdateNotificationBox(
+            self._entropy, self._avc, unavailable=unavailable)
         box.connect("update-request", self._on_update)
         self.append(box)
 
@@ -1174,10 +1190,11 @@ class NotificationViewController(GObject.Object):
         # FIXME, this is for testing, REMOVE !!!!
         self._service.update_repositories([], True)
 
-    def _on_update(self, *args):
+    def _on_update(self, box):
         """
         Callback requesting Repositories Update.
         """
+        self.remove(box)
         self._service.update_repositories([], True)
 
     def _on_update_show(self, *args):

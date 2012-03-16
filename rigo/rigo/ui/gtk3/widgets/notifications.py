@@ -207,11 +207,14 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
                           ),
     }
 
-    def __init__(self, entropy_client, avc):
+    def __init__(self, entropy_client, avc, unavailable=None):
         self._entropy = entropy_client
         self._avc = avc
 
-        msg = _("The list of available applications is old, <b>update now</b>?")
+        if unavailable is None:
+            msg = _("The list of available Applications is old, <b>update now</b>?")
+        else:
+            msg = _("Repositories should be downloaded, <b>update now</b>?")
 
         NotificationBox.__init__(self, msg,
             tooltip=_("I dunno dude, I'd say Yes"),
