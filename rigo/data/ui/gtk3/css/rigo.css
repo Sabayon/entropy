@@ -91,6 +91,10 @@ GtkInfoBar #message-area GtkLabel {
     color: white;
 }
 
+GtkInfoBar GtkSpinner {
+    color: white;
+}
+
 GtkInfoBar #message-area-error GtkLabel {
     color: yellow;
 }

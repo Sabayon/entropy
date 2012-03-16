@@ -21,6 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 from gi.repository import Gtk, Gdk, GLib, GObject
 
+from rigo.em import StockEms
 from rigo.enums import AppActions
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     LoginNotificationBox
@@ -630,7 +631,8 @@ class ApplicationViewController(GObject.Object):
             def _enqueue_download(widget):
                 widget.get_parent().destroy()
                 spinner = Gtk.Spinner()
-                spinner.set_size_request(24, 24)
+                spinner.set_size_request(StockEms.XXLARGE,
+                                         StockEms.XXLARGE)
                 spinner.set_tooltip_text(_("Loading older comments..."))
                 spinner.set_name("comment-box-spinner")
                 self._app_comments_box.pack_end(spinner, False, False, 3)

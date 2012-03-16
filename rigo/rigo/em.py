@@ -65,9 +65,8 @@ def big_em(multiplier=1, min=1):
 
 # common values
 class StockEms:
+    XXLARGE     = em(1.66, 7)
     XLARGE      = em(1.33, 5)
     LARGE       = em(min=3)
     MEDIUM      = em(0.666, 2)
     SMALL       = em(0.333, 1)
-
-

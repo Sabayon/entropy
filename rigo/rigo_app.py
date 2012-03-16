@@ -40,13 +40,14 @@ from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango, \
     Polkit
 
 from rigo.paths import DATA_DIR
-from rigo.enums import Icons, AppActions
+from rigo.enums import Icons, AppActions, RigoViewStates
 from rigo.entropyapi import EntropyWebService
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
-    LoginNotificationBox, ConnectivityNotificationBox
+    LoginNotificationBox, ConnectivityNotificationBox, \
+    PleaseWaitNotificationBox
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
@@ -155,11 +156,16 @@ class RigoServiceController(GObject.Object):
     Handles privileged requests on our behalf.
     """
 
-    class InconsistentDaemonState(Exception):
-        """
-        Raised when RigoDaemon and Rigo states are not
-        coherent.
-        """
+    NOTIFICATION_CONTEXT_ID = "RigoServiceControllerContextId"
+
+    class ServiceNotificationBox(NotificationBox):
+
+        def __init__(self, message, message_type):
+            NotificationBox.__init__(
+                self, message,
+                tooltip=_("Good luck!"),
+                message_type=message_type,
+                context_id=RigoServiceController.NOTIFICATION_CONTEXT_ID)
 
     __gsignals__ = {
         # we request to lock the whole UI wrt repo
@@ -177,6 +183,7 @@ class RigoServiceController(GObject.Object):
 
     DBUS_INTERFACE = DaemonDbusConfig.BUS_NAME
     DBUS_PATH = DaemonDbusConfig.OBJECT_PATH
+
     _OUTPUT_SIGNAL = "output"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
     _TRANSFER_OUTPUT_SIGNAL = "transfer_output"
@@ -204,8 +211,12 @@ class RigoServiceController(GObject.Object):
         self._connected = False
         self._registered_signals = {}
         self._registered_signals_mutex = Lock()
+
         self._local_activity = LocalActivityStates.READY
         self._local_activity_mutex = Lock()
+
+        self._please_wait_box = None
+        self._please_wait_mutex = Lock()
 
     def set_applications_controller(self, avc):
         """
@@ -345,13 +356,8 @@ class RigoServiceController(GObject.Object):
             self.unbusy(local_activity)
 
             activity = DaemonActivityStates.UPDATING_REPOSITORIES
-            slave_update = LocalActivityStates.UPDATING_REPOSITORIES_SLAVE
-            if local_activity == slave_update:
-                # FIXME: same??
-                self._scale_down(activity, token)
-            else:
-                self._scale_down(activity, token)
-                self._release_local_resources()
+            self._scale_down(activity, token)
+            self._release_local_resources()
 
             # 1 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
@@ -427,11 +433,15 @@ class RigoServiceController(GObject.Object):
         fraction = float(average) / 100
 
         human_dt = entropy.tools.bytes_into_human(data_transfer_bytes)
+        total = round(total_size, 1)
 
-        text = "%s/%s kB @ %s/sec, %s" % (
-                    round(float(downloaded_size)/1024, 1),
-                    round(total_size, 1),
-                    human_dt, time_remaining_secs)
+        if total > 1:
+            text = "%s/%s kB @ %s/sec, %s" % (
+                round(float(downloaded_size)/1024, 1),
+                total,
+                human_dt, time_remaining_secs)
+        else:
+            text = None
 
         self._wc.set_progress(fraction, text=text)
 
@@ -502,6 +512,16 @@ class RigoServiceController(GObject.Object):
         """
         Test Output Signaling. Will be removed in future Rigo versions.
         """
+        # completely unreliable
+        # But this is just a test.
+        ParallelTask(self._please_wait, "Hello").start()
+        waiter = TimeScheduled(10, self._please_wait, None)
+        waiter.daemon = True
+        waiter.name = "OutputTestWaterThread"
+        waiter.set_delay_before(True)
+        # call the waiter, we need the bill!
+        waiter.start()
+
         if self._wc is not None:
             self._wc.activate_progress_bar()
             self._wc.activate_app_box()
@@ -539,6 +559,45 @@ class RigoServiceController(GObject.Object):
         """
         self._avc.clear_safe()
         self._entropy.close_repositories()
+
+    def _please_wait(self, show):
+        """
+        Show a Please Wait NotificationBox if show is not None,
+        otherwise hide, if there.
+        "show" contains the NotificationBox message.
+        """
+        with self._please_wait_mutex:
+
+            if show and self._please_wait_box:
+                return
+
+            if not show and not self._please_wait_box:
+                return
+
+            if not show and self._please_wait_box:
+                # remove from NotificationController
+                # if there
+                box = self._please_wait_box
+                self._please_wait_box = None
+                if self._nc is not None:
+                    GLib.idle_add(self._nc.remove, box)
+                return
+
+            if show and not self._please_wait_box:
+                # create a new Please Wait Notification Box
+                sem = Semaphore(0)
+
+                def _make():
+                    box = PleaseWaitNotificationBox(
+                        show,
+                        RigoServiceController.NOTIFICATION_CONTEXT_ID)
+                    self._please_wait_box = box
+                    sem.release()
+                    if self._nc is not None:
+                        self._nc.append(box)
+
+                GLib.idle_add(_make)
+                sem.acquire()
 
     def _authorize(self, daemon_activity):
         """
@@ -605,13 +664,27 @@ class RigoServiceController(GObject.Object):
             dbus_interface=self.DBUS_INTERFACE
             ).acquire_exclusive(activity)
         if not accepted:
-            # FIXME, tell the reason to User
+            def _notify():
+                if self._nc is not None:
+                    box = self.ServiceNotificationBox(
+                        _("Another activity is currently in progress"),
+                        Gtk.MessageType.ERROR)
+                    box.add_destroy_button(_("K thanks"))
+                    self._nc.append(box)
+            GLib.idle_add(_notify)
             return False
 
         self._entropy.unlock_resources()
-        # FIXME: lock down UI here and show a please wait
+        # lock down UI here and show a please wait
         # state, or the user won't understand what's happening
-        acquired_sem.acquire() # CANBLOCK
+        # we assume we already have the activity_rwsem writer
+        # lock here
+        ms = _("Waiting for <b>Entropy Resources</b> availability, please wait")
+        self._please_wait(ms)
+        try:
+            acquired_sem.acquire() # CANBLOCK
+        finally:
+            self._please_wait(None)
         sig_match.remove()
 
         # we successfully passed the resource to RigoDaemon
@@ -673,6 +746,9 @@ class RigoServiceController(GObject.Object):
         Ask RigoDaemon to update repositories once we're
         100% sure that the UI is locked down.
         """
+        # 1 -- ACTIVITY CRIT :: ON
+        self._activity_rwsem.writer_acquire() # CANBLOCK
+
         if master:
             local_activity = LocalActivityStates.UPDATING_REPOSITORIES_MASTER
         else:
@@ -681,9 +757,10 @@ class RigoServiceController(GObject.Object):
             self.busy(local_activity)
             # will be unlocked when we get the signal back
         except LocalActivityStates.BusyError:
-            # FIXME, notify user that we cannot do repo update
             const_debug_write(__name__, "_update_repositories: "
                               "LocalActivityStates.BusyError!")
+            # 1 -- ACTIVITY CRIT :: OFF
+            self._activity_rwsem.writer_release()
             return
 
         if master:
@@ -691,6 +768,8 @@ class RigoServiceController(GObject.Object):
                 DaemonActivityStates.UPDATING_REPOSITORIES)
             if not scaled:
                 self.unbusy(local_activity)
+                # 1 -- ACTIVITY CRIT :: OFF
+                self._activity_rwsem.writer_release()
                 return
         else:
             # if we don't need to scale, just unlock
@@ -713,7 +792,7 @@ class RigoServiceController(GObject.Object):
             GLib.idle_add(self._wc.deactivate_app_box)
 
         GLib.idle_add(self.emit, "repositories-updating",
-                      Rigo.WORK_VIEW_STATE)
+                      RigoViewStates.WORK_VIEW_STATE)
 
         if const_debug_enabled():
             const_debug_write(__name__, "RigoServiceController: "
@@ -728,9 +807,6 @@ class RigoServiceController(GObject.Object):
         if const_debug_enabled():
             const_debug_write(__name__, "RigoServiceController: "
                               "rigo UI now locked!")
-
-        # 1 -- ACTIVITY CRIT :: ON
-        self._activity_rwsem.writer_acquire()
 
         if master:
             loc_activity = LocalActivityStates.UPDATING_REPOSITORIES_MASTER
@@ -764,7 +840,7 @@ class RigoServiceController(GObject.Object):
         # we don't want people to click on them during the
         # the repo update. Kill the completely.
         if self._nc is not None:
-            self._nc.clear_safe()
+            self._nc.clear_safe(managed=False)
 
         self._terminal.reset()
         self._release_local_resources()
@@ -936,6 +1012,7 @@ class WorkViewController(GObject.Object):
         self._progress_bar.set_fraction(fraction)
         if text is not None:
             self._progress_bar.set_text(escape_markup(text))
+        self._progress_bar.set_show_text(text is not None)
 
     def set_progress_text(self, text):
         """
@@ -1099,9 +1176,6 @@ class NotificationViewController(GObject.Object):
         """
         Callback requesting Repositories Update.
         """
-        # FIXME, lxnay complete
-        print("On Update Request Received", args)
-        
         self._service.update_repositories([], True)
 
     def _on_update_show(self, *args):
@@ -1144,7 +1218,9 @@ class NotificationViewController(GObject.Object):
         area, if there.
         """
         if box in self._box.get_children():
-            self._context_id_map.pop(box.get_context_id(), None)
+            context_id = box.get_context_id()
+            if context_id is not None:
+                self._context_id_map.pop(context_id, None)
             box.destroy()
 
     def remove_safe(self, box):
@@ -1153,19 +1229,23 @@ class NotificationViewController(GObject.Object):
         """
         GLib.idle_add(self.remove, box)
 
-    def clear(self):
+    def clear(self, managed=True):
         """
         Clear all the notifications.
         """
         for child in self._box.get_children():
+            if child.is_managed() and not managed:
+                continue
+            context_id = child.get_context_id()
+            if context_id is not None:
+                self._context_id_map.pop(context_id, None)
             child.destroy()
-        self._context_id_map.clear()
 
-    def clear_safe(self):
+    def clear_safe(self, managed=True):
         """
         Thread-safe version of clear().
         """
-        GLib.idle_add(self.clear)
+        GLib.idle_add(self.clear, managed)
 
 
 class Rigo(Gtk.Application):
@@ -1193,25 +1273,20 @@ class Rigo(Gtk.Application):
                     continue
                 break
 
-    # Possible Rigo Application UI States
-    BROWSER_VIEW_STATE, STATIC_VIEW_STATE, \
-        APPLICATION_VIEW_STATE, \
-        WORK_VIEW_STATE = range(4)
-
     def __init__(self):
         self._current_state_lock = False
-        self._current_state = Rigo.STATIC_VIEW_STATE
+        self._current_state = RigoViewStates.STATIC_VIEW_STATE
         self._state_transactions = {
-            Rigo.BROWSER_VIEW_STATE: (
+            RigoViewStates.BROWSER_VIEW_STATE: (
                 self._enter_browser_state,
                 self._exit_browser_state),
-            Rigo.STATIC_VIEW_STATE: (
+            RigoViewStates.STATIC_VIEW_STATE: (
                 self._enter_static_state,
                 self._exit_static_state),
-            Rigo.APPLICATION_VIEW_STATE: (
+            RigoViewStates.APPLICATION_VIEW_STATE: (
                 self._enter_application_state,
                 self._exit_application_state),
-            Rigo.WORK_VIEW_STATE: (
+            RigoViewStates.WORK_VIEW_STATE: (
                 self._enter_work_state,
                 self._exit_work_state),
         }
@@ -1328,16 +1403,16 @@ class Rigo(Gtk.Application):
         self._search_entry.set_sensitive(True)
 
     def _on_view_cleared(self, *args):
-        self._change_view_state(Rigo.STATIC_VIEW_STATE)
+        self._change_view_state(RigoViewStates.STATIC_VIEW_STATE)
 
     def _on_view_filled(self, *args):
-        self._change_view_state(Rigo.BROWSER_VIEW_STATE)
+        self._change_view_state(RigoViewStates.BROWSER_VIEW_STATE)
 
     def _on_view_change(self, widget, state):
         self._change_view_state(state)
 
     def _on_application_show(self, *args):
-        self._change_view_state(Rigo.APPLICATION_VIEW_STATE)
+        self._change_view_state(RigoViewStates.APPLICATION_VIEW_STATE)
 
     def _exit_browser_state(self):
         """

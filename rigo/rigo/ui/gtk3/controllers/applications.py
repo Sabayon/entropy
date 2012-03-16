@@ -24,6 +24,7 @@ import dbus
 
 from gi.repository import Gtk, GLib, GObject
 
+from rigo.enums import RigoViewStates
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.utils import escape_markup, prepare_markup
 
@@ -116,10 +117,12 @@ class ApplicationsViewController(GObject.Object):
             self._update_repositories_safe()
             return
         if text == "rigo:vte":
-            GLib.idle_add(self.emit, "view-want-change", Rigo.WORK_VIEW_STATE)
+            GLib.idle_add(self.emit, "view-want-change",
+                          RigoViewStates.WORK_VIEW_STATE)
             return
         if text == "rigo:output":
-            GLib.idle_add(self.emit, "view-want-change", Rigo.WORK_VIEW_STATE)
+            GLib.idle_add(self.emit, "view-want-change",
+                          RigoViewStates.WORK_VIEW_STATE)
             GLib.idle_add(self._service.output_test)
             return
 

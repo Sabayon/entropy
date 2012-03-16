@@ -22,6 +22,7 @@ import subprocess
 
 from gi.repository import Gtk, GLib, GObject, Pango
 
+from rigo.em import StockEms
 from rigo.utils import build_register_url, open_url, escape_markup
 
 from entropy.const import etpConst, const_convert_to_unicode, \
@@ -46,6 +47,7 @@ class NotificationBox(Gtk.HBox):
         # if not None, it will replace Gtk.Label(self._message)
         self._message_widget = message_widget
         self._buttons = []
+        self._widgets = []
         self._type = message_type
         if self._type is None:
             self._type = Gtk.MessageType.INFO
@@ -62,6 +64,12 @@ class NotificationBox(Gtk.HBox):
         button.connect("clicked", clicked_callback)
         self._buttons.append(button)
         return button
+
+    def add_widget(self, widget):
+        """
+        Add Gtk.Widget to the Buttons Area on the right.
+        """
+        self._widgets.append(widget)
 
     def add_destroy_button(self, text):
         """
@@ -105,6 +113,8 @@ class NotificationBox(Gtk.HBox):
         button_hbox.set_name("button-area")
         for button in self._buttons:
             button_hbox.pack_start(button, False, False, 3)
+        for widget in self._widgets:
+            button_hbox.pack_start(widget, False, False, 3)
         button_vbox.pack_start(button_hbox, False, False, 0)
         hbox.pack_start(button_align, False, False, 2)
 
@@ -123,6 +133,14 @@ class NotificationBox(Gtk.HBox):
         sharing the same context is unwanted.
         """
         return self._context_id
+
+    def is_managed(self):
+        """
+        If this method returns True, the NotificationBox
+        will not be destroyed by parent or controller
+        if not explicitly requested.
+        """
+        return False
 
 
 class UpdatesNotificationBox(NotificationBox):
@@ -364,3 +382,31 @@ class ConnectivityNotificationBox(NotificationBox):
             message_type=Gtk.MessageType.ERROR,
             context_id="ConnectivityNotificationBox")
         self.add_destroy_button(_("_Of course not"))
+
+
+class PleaseWaitNotificationBox(NotificationBox):
+
+    def __init__(self, message, context_id):
+
+        NotificationBox.__init__(self, message,
+            tooltip=_("A watched pot never boils"),
+            message_type=Gtk.MessageType.INFO,
+            context_id=context_id)
+        self._spinner = Gtk.Spinner()
+        self._spinner.set_size_request(StockEms.XXLARGE, StockEms.XXLARGE)
+        self.add_widget(self._spinner)
+
+    def is_managed(self):
+        """
+        Reimplemented from NotificationBox.
+        Please Wait Boxes are usually managed.
+        """
+        return True
+
+    def render(self):
+        """
+        Reimplemented from NotificationBox.
+        Start the Please Wait Spinner.
+        """
+        NotificationBox.render(self)
+        self._spinner.start()
