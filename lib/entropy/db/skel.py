@@ -3189,6 +3189,21 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def searchKeySlotTag(self, key, slot, tag):
+        """
+        Search package with given key, slot and tag.
+
+        @param key: package key
+        @type key: string
+        @param slot: package slot
+        @type slot: string
+        @param tag: restrict search using tag, if provided
+        @type tag: string
+        @return: list (frozenset) of package identifiers
+        @rtype: frozenset
+        """
+        raise NotImplementedError()
+
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
         Search packages that need given NEEDED ELF entry (library name).

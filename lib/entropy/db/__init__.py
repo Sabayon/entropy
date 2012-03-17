@@ -1228,6 +1228,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("retrieveKeySlot")
         self._clearLiveCache("retrieveKeySplit")
         self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
         return cur.lastrowid
@@ -1455,6 +1456,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("retrieveKeySlot")
         self._clearLiveCache("retrieveKeySplit")
         self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
         self.commit()
@@ -1485,6 +1487,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("retrieveKeySlot")
         self._clearLiveCache("retrieveKeySplit")
         self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
         self.commit()
@@ -1521,6 +1524,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("retrieveSlot")
         self._clearLiveCache("retrieveKeySlot")
         self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictScopeData")
         self._clearLiveCache("getStrictData")
@@ -4200,12 +4204,43 @@ class EntropyRepository(EntropyRepositoryBase):
                 """)
             cached = {}
             for d_cat, d_name, d_slot, pkg_id in cur.fetchall():
-                obj = cached.setdefault((d_cat, d_name, d_slot), set())
+                obj = cached.setdefault(
+                    (d_cat, d_name, d_slot), set())
                 obj.add(pkg_id)
             self._setLiveCache("searchKeySlot", cached)
         cat, name = key.split("/", 1)
         # avoid python3.x memleak
         obj = frozenset(cached.get((cat, name, slot), frozenset()))
+        del cached
+        return obj
+
+    def searchKeySlotTag(self, key, slot, tag):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cached = self._getLiveCache("searchKeySlotTag")
+        if cached is None:
+            if self._isBaseinfoExtrainfo2010():
+                cur = self._cursor().execute("""
+                SELECT category, name, slot, versiontag, idpackage
+                FROM baseinfo
+                """)
+            else:
+                cur = self._cursor().execute("""
+                SELECT categories.category, baseinfo.name, baseinfo.slot,
+                    baseinfo.versiontag, baseinfo.idpackage
+                FROM baseinfo, categories
+                WHERE baseinfo.idcategory = categories.idcategory
+                """)
+            cached = {}
+            for d_cat, d_name, d_slot, d_tag, pkg_id in cur.fetchall():
+                obj = cached.setdefault(
+                    (d_cat, d_name, d_slot, d_tag), set())
+                obj.add(pkg_id)
+            self._setLiveCache("searchKeySlotTag", cached)
+        cat, name = key.split("/", 1)
+        # avoid python3.x memleak
+        obj = frozenset(cached.get((cat, name, slot, tag), frozenset()))
         del cached
         return obj
 
