@@ -828,18 +828,40 @@ class Application(object):
         """
         Return if Application is currently installed.
         """
+        app = self.get_installed()
+        return app is not None
+
+    def get_installed(self):
+        """
+        Return the Application object of the installed
+        application (rather than the available one), or
+        None if not installed.
+        """
         inst_repo = self._entropy.installed_repository()
         repo = self._entropy.open_repository(self._repo_id)
         if repo is inst_repo:
-            return True
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            return False
-        key, slot = key_slot
-        matches = inst_repo.searchKeySlot(key, slot)
-        if matches:
-            return True
-        return False
+            return self
+
+        key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
+        if key_slot_tag is None:
+            return None
+
+        key, slot, tag = key_slot_tag
+        matches = inst_repo.searchKeySlotTag(key, slot, tag)
+        # in the installed packages repository, matches
+        # must be of length < 2.
+        if len(matches) > 1:
+            raise AttributeError(
+                "searchKeySlot for %s returned: %s" % (
+                    (key, slot), matches,))
+        if not matches:
+            # not installed
+            return None
+
+        package_id = list(matches)[0]
+        return Application(self._entropy, self._entropy_ws,
+                           (package_id, inst_repo.repository_id()),
+                           redraw_callback=self._redraw_callback)
 
     def is_updatable(self):
         """
