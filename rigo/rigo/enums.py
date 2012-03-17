@@ -57,13 +57,41 @@ class TransactionTypes:
     REPAIR = "repair_dependencies"
 
 from .version import VERSION, DISTRO, RELEASE, CODENAME
-USER_AGENT="Entropy Rigo/%s (N;) %s/%s (%s)" % (VERSION, 
-                                                   DISTRO, 
-                                                   RELEASE,
-                                                   CODENAME)
+USER_AGENT="Entropy Rigo/%s (N;) %s/%s (%s)" % (
+    VERSION,
+    DISTRO,
+    RELEASE,
+    CODENAME)
 
 class RigoViewStates:
     # Possible Rigo Application UI States
-    BROWSER_VIEW_STATE, STATIC_VIEW_STATE, \
-        APPLICATION_VIEW_STATE, \
-        WORK_VIEW_STATE = range(4)
+    (
+        BROWSER_VIEW_STATE,
+        STATIC_VIEW_STATE,
+        APPLICATION_VIEW_STATE,
+        WORK_VIEW_STATE,
+    ) = range(4)
+
+class LocalActivityStates:
+    (
+        READY,
+        UPDATING_REPOSITORIES_MASTER,
+        UPDATING_REPOSITORIES_SLAVE,
+        INSTALLING_APPLICATIONS,
+    ) = range(4)
+
+    class BusyError(Exception):
+        """
+        Cannot acknowledge a Local Activity change.
+        """
+
+    class AlreadyReadyError(Exception):
+        """
+        Cannot acknowledge a Local Activity change to
+        "READY" state, because we're already ready.
+        """
+
+    class UnbusyFromDifferentActivity(Exception):
+        """
+        Unbusy request from different activity.
+        """

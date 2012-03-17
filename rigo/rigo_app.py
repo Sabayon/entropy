@@ -40,7 +40,8 @@ from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango, \
     Polkit
 
 from rigo.paths import DATA_DIR
-from rigo.enums import Icons, AppActions, RigoViewStates
+from rigo.enums import Icons, AppActions, RigoViewStates, \
+    LocalActivityStates
 from rigo.entropyapi import EntropyWebService
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
@@ -124,30 +125,6 @@ class RigoAuthenticationController(object):
                 _polkit_auth_callback,
                 self._mainloop)
 
-
-class LocalActivityStates:
-    (
-        READY,
-        UPDATING_REPOSITORIES_MASTER,
-        UPDATING_REPOSITORIES_SLAVE,
-        INSTALLING_APPLICATIONS,
-    ) = range(4)
-
-    class BusyError(Exception):
-        """
-        Cannot acknowledge a Local Activity change.
-        """
-
-    class AlreadyReadyError(Exception):
-        """
-        Cannot acknowledge a Local Activity change to
-        "READY" state, because we're already ready.
-        """
-
-    class UnbusyFromDifferentActivity(Exception):
-        """
-        Unbusy request from different activity.
-        """
 
 class RigoServiceController(GObject.Object):
 
