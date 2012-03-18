@@ -3,17 +3,21 @@ Backlog (raw)
   1.0:
 
     rigo:
-    - requires pygobject[cairo]
+    - requires pygobject[cairo,introspection]
     - requires dbus
-    - [F] repositories not available, update?
-    - [F] show progress -> add bottom notification area
-          (permanent notifications)
-    - [F] when updating repos, clear all the upper notifications
-    - [F] recover from Repository Update execution
-    - [F] recover from Application Install / Remove execution
+    - requires polkit [introspection]
+
     - [F] show App Information while Installing / Removing
-    - [F] at the end of Work View execution, ask before switching back
-    - [F] implement authentication
+    - [F] when updating RigoDaemon, ask it to shutdown if possible
+          handle the case where we're updating from Rigo itself.
+    - [F] App Install support
+    - [F] Configuration files Update
+    - [F] Show Installed Application Version in App View
+    - [W] app install vs rigo client atomMatch?
+    - preferences:
+       - clean metadata cache
+       - logout (clean session info)
+       - update repositories
 
     magneto:
       - migrate to RigoDaemon as soon as it's available!
@@ -22,6 +26,8 @@ Backlog (raw)
       - singleton!
 
     - make security advisories caching faster (cache server-side?)
+
+    - drop bashism from entropy.spm (/bin/bash used)
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
