@@ -1598,7 +1598,7 @@ def const_debug_enabled():
     return etpUi['debug']
 
 _DEBUG_W_LOCK = threading.Lock()
-def const_debug_write(identifier, msg):
+def const_debug_write(identifier, msg, force = False):
     """
     Entropy debugging output write functions.
 
@@ -1606,10 +1606,12 @@ def const_debug_write(identifier, msg):
     @type identifier: string
     @param msg: debugging message
     @type msg: string
+    @keyword force: force print even if debug mode is off
+    @type force: bool
     @rtype: None
     @return: None
     """
-    if etpUi['debug']:
+    if etpUi['debug'] or force:
         # XXX: hierarchy violation, but hey, we're debugging shit
         from entropy.output import brown, purple, teal, darkgreen, darkred
         current_thread = threading.current_thread()
