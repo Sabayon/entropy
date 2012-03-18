@@ -14,7 +14,8 @@ import os
 import sys
 import time
 import signal
-from threading import Lock, Timer
+from threading import Lock, Timer, Semaphore
+from collections import deque
 
 # this makes the daemon to not write the entropy pid file
 # avoiding to lock other instances
@@ -48,7 +49,7 @@ from entropy.cache import EntropyCacher
 EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    initconfig_entropy_constants
+    initconfig_entropy_constants, const_debug_write
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled
 from entropy.fetchers import UrlFetcher
@@ -71,13 +72,16 @@ if DAEMON_LOGGING:
     sys.stderr = DAEMON_LOG
     sys.stdout = DAEMON_LOG
 
-def write_output(*args, **kwargs):
-    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
+def write_output(message, debug=False):
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + message
     if DAEMON_LOGGING:
         DAEMON_LOG.write(message)
         DAEMON_LOG.flush()
     if DAEMON_DEBUG:
-        TEXT.output(message, *args[1:], **kwargs)
+        if debug:
+            const_debug_write(__name__, message, force=True)
+        else:
+            TEXT.output(message)
 
 def install_exception_handler():
     sys.excepthook = handle_exception
@@ -90,7 +94,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     # restore original exception handler, to avoid loops
     uninstall_exception_handler()
     # write exception to log file
-    write_output(const_convert_to_rawstring(t_back))
+    write_output(const_convert_to_rawstring(t_back), debug=True)
     raise exc_instance
 
 install_exception_handler()
@@ -214,21 +218,45 @@ class RigoDaemonService(dbus.service.Object):
     is acquired in exclusive mode.
     """
 
-    class BusyError(Exception):
-        """
-        Cannot acknowledge a Local Activity change.
-        """
+    class ActionQueueItem(object):
 
-    class AlreadyAvailableError(Exception):
-        """
-        Cannot acknowledge a Local Activity change to
-        "AVAILABLE" state, because we're already ready.
-        """
+        def __init__(self, package_id, repository_id, action):
+            self._package_id = package_id
+            self._repository_id = repository_id
+            self._action = action
 
-    class UnbusyFromDifferentActivity(Exception):
-        """
-        Unbusy request from different activity.
-        """
+        @property
+        def pkg(self):
+            """
+            Get package match for Application.
+            """
+            return (self._package_id, self._repository_id)
+
+        def repository_id(self):
+            """
+            Return Repository Identifier of package.
+            """
+            return self._repository_id
+
+        def action(self):
+            """
+            Return AppActions Action for this ActionQueueItem.
+            """
+            return self._action
+
+        def __str__(self):
+            """
+            Show item in human readable way
+            """
+            return "ActionQueueItem{%s, %s}" % (
+                self.pkg, self.action())
+
+        def __repr__(self):
+            """
+            Same as __str__
+            """
+            return str(self)
+
 
     def __init__(self):
         object_path = RigoDaemonService.OBJECT_PATH
@@ -237,6 +265,10 @@ class RigoDaemonService(dbus.service.Object):
         name = dbus.service.BusName(RigoDaemonService.BUS_NAME,
                                     bus = system_bus)
         dbus.service.Object.__init__(self, name, object_path)
+
+        # used by non-daemon thread to exit
+        self._stop_signal = False
+        self._stop_on_timeout = False
 
         self._ping_timer_mutex = Lock()
         self._ping_timer = None
@@ -253,6 +285,16 @@ class RigoDaemonService(dbus.service.Object):
         self._acquired_exclusive = False
         self._acquired_exclusive_mutex = Lock()
 
+        self._action_queue = deque()
+        self._action_queue_waiter = Semaphore(0)
+        self._enqueue_action_busy_hold_mutex = Lock()
+        self._action_queue_task = ParallelTask(
+            self._action_queue_worker_thread)
+        self._action_queue_task.name = "ActionQueueWorkerThread"
+        self._action_queue_task.daemon = True
+        # do not daemonize !!
+        self._action_queue_task.start()
+
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         write_output(
@@ -260,48 +302,65 @@ class RigoDaemonService(dbus.service.Object):
                 os.getpid(), os.getppid(),)
                 )
 
+        def _sigusr2_activate_shutdown(signum, frame):
+            write_output("SIGUSR2: activating shutdown...", debug=True)
+            self._stop_on_timeout = True
+            self._ensure_pinger_start()
+
+        signal.signal(signal.SIGUSR2, _sigusr2_activate_shutdown)
+
     def _busy(self, activity):
         """
         Switch to busy activity state, if possible.
-        Raise RigoDaemonService.BusyError if already busy.
+        Raise ActivityStates.BusyError if already busy.
         """
         with self._current_activity_mutex:
             if self._current_activity != ActivityStates.AVAILABLE:
-                raise RigoDaemonService.BusyError()
+                raise ActivityStates.BusyError()
             self._current_activity = activity
 
     def _unbusy(self, activity, _force=False):
         """
         Unbusy from previous Activity.
-        Raise RigoDaemonService.AlreadyAvailableError if already
+        Raise ActivityStates.AlreadyAvailableError if already
         AVAILABLE.
-        Raise RigoDaemonService.UnbusyFromDifferentActivity if
+        Raise ActivityStates.UnbusyFromDifferentActivity if
         provided activity differs from the current one.
         """
         with self._current_activity_mutex:
             if activity != self._current_activity and not _force:
-                raise RigoDaemonService.UnbusyFromDifferentActivity()
+                raise ActivityStates.UnbusyFromDifferentActivity(
+                    "unbusy from: %s, current: %s" % (
+                        activity, self._current_activity,))
             if activity == ActivityStates.AVAILABLE and not _force:
-                raise RigoDaemonService.AlreadyAvalabileError()
+                raise ActivityStates.AlreadyAvalabileError()
             self._current_activity = ActivityStates.AVAILABLE
 
     def stop(self):
         """
         RigoDaemon exit method.
         """
-        if DAEMON_DEBUG:
-            write_output("stop(): called")
+        write_output("stop(): called", debug=True)
         with self._activity_mutex:
             self._ping_sched.kill()
-            try:
-                self._busy(ActivityStates.NOT_AVAILABLE, _force=True)
-            except RigoDaemonService.AlreadyAvailableError:
-                pass
+            self._stop_signal = True
+            self._action_queue_waiter.release()
             self._close_local_resources()
-            if DAEMON_DEBUG:
-                write_output("stop(): activity mutex acquired, quitting")
+            write_output("stop(): activity mutex acquired, quitting",
+                         debug=True)
             entropy.tools.kill_threads()
-            os.kill(os.getpid(), signal.SIGTERM)
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    def _ensure_pinger_start(self):
+        """
+        Make sure that ping() signaling is started.
+        """
+        acquired = self._ping_sched_startup.acquire(False)
+        if acquired:
+            write_output("_ensure_pinger_start: "
+                         "starting ping() signaling",
+                         debug=True)
+            self._ping_sched.start()
 
     def _update_repositories(self, repositories, force, activity):
         """
@@ -321,9 +380,8 @@ class RigoDaemonService(dbus.service.Object):
                 if not repositories:
                     repositories = list(
                         SystemSettings()['repositories']['available'])
-                if DAEMON_DEBUG:
-                    write_output("_update_repositories(): %s" % (
-                            repositories,))
+                write_output("_update_repositories(): %s" % (
+                        repositories,), debug=True)
 
                 updater = self._entropy.Repositories(
                     repositories, force = force)
@@ -343,13 +401,101 @@ class RigoDaemonService(dbus.service.Object):
             finally:
                 try:
                     self._unbusy(activity)
-                except RigoDaemonService.AlreadyAvailableError:
+                except ActivityStates.AlreadyAvailableError:
                     write_output("_update_repositories._unbusy: already "
                                  "available, wtf !?!?")
                     # wtf??
                 self._release_exclusive(activity)
                 self.activity_completed(activity, result == 0)
                 self.repositories_updated(result, msg)
+
+    def _action_queue_worker_thread(self):
+        """
+        Worker thread that handles Application Action requests
+        from Rigo Clients.
+        """
+        activity = ActivityStates.MANAGING_APPLICATIONS
+
+        def _action_queue_finally():
+            with self._enqueue_action_busy_hold_mutex:
+                # unbusy?
+                has_more = self._action_queue_waiter.acquire(False)
+                if has_more:
+                    # put it back
+                    self._action_queue_waiter.release()
+                else:
+                    try:
+                        self._unbusy(activity)
+                    except ActivityStates.AlreadyAvailableError:
+                        write_output("_action_queue_worker_thread"
+                                     "._unbusy: already "
+                                     "available, wtf !?!?")
+                        # wtf??
+                    self._release_exclusive(activity)
+                    self.activity_completed(activity, True)
+                    self.applications_managed(True)
+
+        while True:
+
+            self._action_queue_waiter.acquire() # CANBLOCK
+            if self._stop_signal:
+                write_output("_action_queue_worker_thread: bye bye!",
+                             debug=True)
+                # bye bye!
+                break
+
+            try:
+                item = self._action_queue.popleft()
+            except IndexError:
+                # mumble, no more items, this shouldn't have happened
+                write_output("_action_queue_worker_thread: "
+                             "no item popped!", debug=True)
+                continue
+
+            write_output("_action_queue_worker_thread: "
+                         "got: %s" % (item,), debug=True)
+
+            # now execute the action
+            with self._activity_mutex:
+
+                self._acquire_exclusive(activity)
+                try:
+                    self._close_local_resources()
+                    self._entropy_setup()
+                    self.activity_started(activity)
+
+                    write_output("_action_queue_worker_thread: "
+                                 "doing %s" % (
+                            item,), debug=True)
+                    self._process_action(item)
+
+                finally:
+                    _action_queue_finally()
+
+    def _process_action(self, item):
+        """
+        This is the real Application Action processing function.
+        """
+        package_id, repository_id = item.pkg
+        action = item.action()
+
+        self.processing_application(package_id, repository_id, action)
+        success = False
+        try:
+            # FIXME, complete
+            # 1. calculate dependencies
+            # 2. notify (and block) if conflicts arise
+            # 3. ?? TBD show install/removal queue?
+            # 4. [GUI?] if removal, ask if action is really wanted?
+            # 5. [GUI?] if system package, avoid removal?
+            # simulate
+            self._entropy.output("Application Management Message")
+            time.sleep(35)
+            self._entropy.output("Application Management Complete")
+            success = True
+        finally:
+            self.application_processed(
+                package_id, repository_id, action, success)
 
     def _close_local_resources(self):
         """
@@ -373,20 +519,21 @@ class RigoDaemonService(dbus.service.Object):
                 acquire = True
 
         if acquire:
-            if DAEMON_DEBUG:
-                write_output("_acquire_exclusive: about to acquire lock")
+            write_output("_acquire_exclusive: about to acquire lock",
+                         debug=True)
             acquired = self._entropy.lock_resources(
                 blocking=False,
                 shared=False)
             if not acquired:
-                if DAEMON_DEBUG:
-                    write_output("_acquire_exclusive: asking to unlock")
+                write_output("_acquire_exclusive: asking to unlock",
+                             debug=True)
                 self.resources_unlock_request(activity)
                 self._entropy.lock_resources(
                     blocking=True,
                     shared=False)
-            if DAEMON_DEBUG:
-                write_output("_acquire_exclusive: just acquired lock")
+
+            write_output("_acquire_exclusive: just acquired lock",
+                         debug=True)
 
     def _release_exclusive(self, activity):
         """
@@ -406,20 +553,14 @@ class RigoDaemonService(dbus.service.Object):
         Notify us that a new client is now connected.
         Here we reload Entropy configuration and other resources.
         """
-        if DAEMON_DEBUG:
-            write_output("_entropy_setup(): called")
-        acquired = self._ping_sched_startup.acquire(False)
-        if acquired:
-            if DAEMON_DEBUG:
-                write_output("_entropy_setup(): starting ping() signaling")
-            self._ping_sched.start()
+        write_output("_entropy_setup(): called", debug=True)
+        self._ensure_pinger_start()
 
         initconfig_entropy_constants(etpConst['systemroot'])
         self._entropy.Settings().clear()
         self._entropy._validate_repositories()
         self._close_local_resources()
-        if DAEMON_DEBUG:
-            write_output("_entropy_setup(): complete")
+        write_output("_entropy_setup(): complete", debug=True)
 
     ### DBUS METHODS
 
@@ -434,20 +575,59 @@ class RigoDaemonService(dbus.service.Object):
         activity = ActivityStates.UPDATING_REPOSITORIES
         try:
             self._busy(activity)
-        except RigoDaemonService.BusyError:
+        except ActivityStates.BusyError:
+            write_output("update_repositories: I'm busy", debug=True)
             # I am already busy doing other stuff, cannot
             # satisfy request
             return False
+        except ActivityStates.SameError:
+            write_output("update_repositories: already doing it",
+                         debug=True)
+            # I am already busy doing the same activity
+            return False
 
-        if DAEMON_DEBUG:
-            write_output("update_repositories called: %s" % (
-                    repositories,))
+        write_output("update_repositories called: %s" % (
+                repositories,), debug=True)
         task = ParallelTask(self._update_repositories, repositories,
                             force, activity)
         task.daemon = True
         task.name = "UpdateRepositoriesThread"
         task.start()
         return True
+
+    @dbus.service.method(BUS_NAME, in_signature='iss',
+        out_signature='b')
+    def enqueue_application_action(self, package_id, repository_id,
+                                   action):
+        """
+        Request RigoDaemon to enqueue a new Application Action, if
+        possible.
+        """
+        write_output("enqueue_application_action called: %s, %s" % (
+                (package_id, repository_id), action,), debug=True)
+
+        with self._enqueue_action_busy_hold_mutex:
+
+            activity = ActivityStates.MANAGING_APPLICATIONS
+            try:
+                self._busy(activity)
+            except ActivityStates.BusyError:
+                # I am already busy doing other stuff, cannot
+                # satisfy request
+                return False
+            except ActivityStates.SameError:
+                # I am already busy doing this, so just enqueue
+                write_output("enqueue_application_action: "
+                             "already busy, just enqueue",
+                             debug=True)
+
+            item = self.ActionQueueItem(
+                package_id,
+                repository_id,
+                action)
+            self._action_queue.append(item)
+            self._action_queue_waiter.release()
+            return True
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='i')
@@ -473,28 +653,12 @@ class RigoDaemonService(dbus.service.Object):
         """
         Answer to RigoDaemon ping() events.
         """
-        if DAEMON_DEBUG:
-            write_output("pong() received")
+        write_output("pong() received", debug=True)
         with self._ping_timer_mutex:
             if self._ping_timer is not None:
                 # stop the bomb!
                 self._ping_timer.cancel()
                 self._ping_timer = None
-
-    @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='')
-    def output_test(self):
-        """
-        Return whether RigoDaemon is busy due to previous activity.
-        """
-        def _deptester():
-            with self._activity_mutex:
-                self._entropy.dependencies_test()
-
-        task = ParallelTask(_deptester)
-        task.daemon = True
-        task.name = "OutputTestThread"
-        task.start()
 
     ### DBUS SIGNALS
 
@@ -526,9 +690,17 @@ class RigoDaemonService(dbus.service.Object):
         Repositories have been updated.
         "result" is an integer carrying execution return status.
         """
-        if DAEMON_DEBUG:
-            write_output("repositories_updated() issued, args:"
-                         " %s" % (locals(),))
+        write_output("repositories_updated() issued, args:"
+                     " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='b')
+    def applications_managed(self, success):
+        """
+        Enqueued Application actions have been completed.
+        """
+        write_output("applications_managed() issued, args:"
+                     " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')
@@ -539,9 +711,8 @@ class RigoDaemonService(dbus.service.Object):
         and exclusive). This is a kind request, it is
         not expected that clients actually acknowledge us.
         """
-        if DAEMON_DEBUG:
-            write_output("resources_unlock_request() issued for %d" % (
-                    activity,))
+        write_output("resources_unlock_request() issued for %d" % (
+                activity,), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')
@@ -551,9 +722,8 @@ class RigoDaemonService(dbus.service.Object):
         Entropy Resources Lock. This is actually a mandatory
         request in order to run into really bad, inconsistent states.
         """
-        if DAEMON_DEBUG:
-            write_output("resources_lock_request() issued for %d" % (
-                    activity,))
+        write_output("resources_lock_request() issued for %d" % (
+                activity,), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')
@@ -563,9 +733,8 @@ class RigoDaemonService(dbus.service.Object):
         has begun (and we're running with exclusive Entropy Resources
         access).
         """
-        if DAEMON_DEBUG:
-            write_output("activity_started() issued for %d" % (
-                    activity,))
+        write_output("activity_started() issued for %d" % (
+                activity,), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='ib')
@@ -574,10 +743,35 @@ class RigoDaemonService(dbus.service.Object):
         Signal all the connected Clients that a scheduled activity
         has been carried out.
         """
-        if DAEMON_DEBUG:
-            write_output("activity_completed() issued for %d,"
-                         " success: %s" % (
-                    activity, success,))
+        write_output("activity_completed() issued for %d,"
+                     " success: %s" % (
+                activity, success,), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='iss')
+    def processing_application(self, package_id, repository_id, action):
+        """
+        Signal all the connected Clients that we're currently
+        processing the given Application.
+        """
+        write_output("processing_application(): %d,"
+                     "%s, action: %s" % (
+                package_id, repository_id, action,),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='issb')
+    def application_processed(self, package_id, repository_id,
+                              action, success):
+        """
+        Signal all the connected Clients that we've completed
+        the processing of given Application.
+        """
+        write_output("application_processed(): %d,"
+                     "%s, action: %s, success: %s" % (
+                package_id, repository_id, action, success,),
+                     debug=True)
+
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='')
@@ -588,18 +782,29 @@ class RigoDaemonService(dbus.service.Object):
         Entropy Resources will be released completely.
         """
         def _time_up():
-            if DAEMON_DEBUG:
-                write_output("time is up! issuing _release_exclusive()")
-            self._unbusy(None, _force=True)
-            with self._activity_mutex:
-                self._release_exclusive()
-            if DAEMON_DEBUG:
-                write_output("issued _release_exclusive()")
+            write_output("_time_up timer event, checking...",
+                         debug=True)
+            if self._stop_on_timeout:
+                write_output("stop on timeout requested, stopping...",
+                             debug=True)
+                self.stop()
+                return # just make sure
 
-        if DAEMON_DEBUG:
-            write_output("ping() issued")
+            if self._acquired_exclusive:
+                write_output("time is up! issuing _release_exclusive()",
+                             debug=True)
+                with self._activity_mutex:
+                    self._unbusy(None, _force=True)
+                    self._release_exclusive(self._current_activity)
+                write_output("issued _release_exclusive()", debug=True)
+
+            with self._ping_timer_mutex:
+                # reset timer, wait next round
+                self._ping_timer = None
+
+        write_output("ping() issued", debug=True)
         with self._ping_timer_mutex:
-            if self._ping_timer is None and self._acquired_exclusive:
+            if self._ping_timer is None:
                 self._ping_timer = Timer(15.0, _time_up)
                 self._ping_timer.start()
 
