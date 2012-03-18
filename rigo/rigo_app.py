@@ -44,7 +44,7 @@ from rigo.paths import DATA_DIR
 from rigo.enums import Icons, AppActions, RigoViewStates, \
     LocalActivityStates
 from rigo.entropyapi import EntropyWebService
-from rigo.models.application import Application, ApplicationMetadata
+from rigo.models.application import Application
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
@@ -420,12 +420,23 @@ class RigoServiceController(GObject.Object):
 
     def _processing_application_signal(self, package_id, repository_id,
                                        daemon_action):
-        # FIXME: complete
         const_debug_write(
             __name__,
             "_processing_application_signal: received for "
             "%d, %s, action: %s" % (
                 package_id, repository_id, daemon_action))
+        if self._wc is not None:
+
+            def _redraw_callback(*args):
+                self._processing_application_signal(
+                    package_id, repository_id,
+                    daemon_action)
+
+            app = Application(
+                self._entropy, self._entropy_ws,
+                (package_id, repository_id),
+                redraw_callback=_redraw_callback)
+            self._wc.set_application(app, daemon_action)
 
     def _application_processed_signal(self, package_id, repository_id,
                                       daemon_action, success):
@@ -1235,7 +1246,10 @@ class RigoServiceController(GObject.Object):
 
 class WorkViewController(GObject.Object):
 
-    def __init__(self, rigo_service, work_box):
+    APP_IMAGE_SIZE = 48
+
+    def __init__(self, icons, rigo_service, work_box):
+        self._icons = icons
         self._service = rigo_service
         self._box = work_box
 
@@ -1296,11 +1310,57 @@ class WorkViewController(GObject.Object):
 
         return self._progress_box
 
+    def _setup_app_area(self):
+        """
+        Setup Application Information Area.
+        """
+        self._app_box = Gtk.VBox()
+
+        hbox = Gtk.HBox()
+
+        self._missing_icon = self._icons.load_icon(
+            Icons.MISSING_APP,
+            self.APP_IMAGE_SIZE, 0)
+
+        # Image
+        image_box = Gtk.VBox()
+        self._app_image = Gtk.Image.new_from_pixbuf(
+            self._missing_icon)
+        image_box.pack_start(self._app_image, False, False, 0)
+
+        hbox.pack_start(image_box, False, False, 0)
+
+        # Action, App Name & Description
+        name_align = Gtk.Alignment()
+        name_align.set_padding(0, 0, 5, 0)
+        name_box = Gtk.VBox()
+
+        self._action_label = Gtk.Label("Action")
+        self._action_label.set_alignment(0.0, 0.0)
+
+        self._appname_label = Gtk.Label("App Name")
+        self._appname_label.set_line_wrap(True)
+        self._appname_label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        self._appname_label.set_alignment(0.0, 0.0)
+
+        name_box.pack_start(self._action_label, False, False, 0)
+        name_box.pack_start(self._appname_label, False, False, 0)
+        name_align.add(name_box)
+
+        hbox.pack_start(name_align, True, True, 5)
+
+        self._app_box.pack_start(hbox, False, False, 5)
+
+        return self._app_box
+
     def setup(self):
         """
         Initialize WorkViewController controlled resources.
         """
         self._setup_terminal_menu()
+
+        box = self._setup_app_area()
+        self._box.pack_start(box, False, False, 0)
 
         box = self._setup_progress_area()
         self._box.pack_start(box, False, False, 0)
@@ -1318,14 +1378,14 @@ class WorkViewController(GObject.Object):
         Activate the Application Box showing information
         about the Application being currently handled.
         """
-        # FIXME, complete
+        self._app_box.show_all()
 
     def deactivate_app_box(self):
         """
         Deactivate the Application Box showing information
         about the Application being currently handled.
         """
-        # FIXME, complete
+        self._app_box.hide()
 
     def activate_progress_bar(self):
         """
@@ -1338,6 +1398,38 @@ class WorkViewController(GObject.Object):
         Deactivate the Progress Bar showing progress information.
         """
         self._progress_box.hide()
+
+    def set_application(self, app, daemon_action):
+        """
+        Set Application information by providing its Application
+        object.
+        """
+        msg = None
+        if daemon_action == DaemonAppActions.INSTALL:
+            msg = _("Installing")
+        elif daemon_action == DaemonAppActions.REMOVE:
+            msg = _("Removing")
+
+        if msg is not None:
+            self._action_label.set_markup(
+                "<big><b>%s</b></big>" % (escape_markup(msg),))
+
+        self._appname_label.set_markup(
+            app.get_extended_markup())
+
+        # FIXME, set app icon
+        icon, cache_hit = app.get_icon()
+        if icon is not None:
+            icon_path = icon.local_document()
+            if os.path.isfile(icon_path):
+                try:
+                    self._app_image.set_from_file(icon_path)
+                except GObject.GError:
+                    self._app_image.set_from_pixbuf(
+                        self._missing_icon)
+
+        self.activate_app_box()
+        self._app_box.queue_draw()
 
     def set_progress(self, fraction, text=None):
         """
@@ -1838,7 +1930,7 @@ class Rigo(Gtk.Application):
                               self._on_applications_managed)
 
         self._work_view_c = WorkViewController(
-            self._service, self._work_view)
+            icons, self._service, self._work_view)
         self._service.set_work_controller(self._work_view_c)
 
         self._bottom_nc.connect("show-work-view", self._on_show_work_view)
@@ -1909,6 +2001,7 @@ class Rigo(Gtk.Application):
         box.add_destroy_button(_("Ok, thanks"))
         box.add_button(_("Show me"), self._on_show_work_view)
         self._nc.append(box)
+        self._work_view_c.deactivate_app_box()
 
     def _on_view_cleared(self, *args):
         self._change_view_state(RigoViewStates.STATIC_VIEW_STATE)
