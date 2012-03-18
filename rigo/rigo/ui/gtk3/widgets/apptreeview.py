@@ -502,8 +502,6 @@ class AppTreeView(Gtk.TreeView):
             else:
                 perform_action = AppActions.INSTALL
 
-            store.notify_action_request(app, path)
-
             self._apc.emit("application-request-action",
                       self.appmodel.get_application(app),
                       perform_action)

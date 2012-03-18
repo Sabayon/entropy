@@ -83,7 +83,7 @@ class ApplicationViewController(GObject.Object):
         "application-request-action" : (GObject.SignalFlags.RUN_LAST,
                                         None,
                                         (GObject.TYPE_PYOBJECT,
-                                         str),
+                                         GObject.TYPE_PYOBJECT),
                                        ),
     }
 
@@ -724,7 +724,7 @@ class ApplicationViewController(GObject.Object):
         Remove the given Application.
         """
         self.emit("application-request-action",
-                  app, AppActions.REMOVE)
+                  app.get_installed(), AppActions.REMOVE)
 
     def _on_app_install(self, widget, app):
         """

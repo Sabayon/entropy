@@ -75,14 +75,19 @@ class RigoViewStates:
 class LocalActivityStates:
     (
         READY,
-        UPDATING_REPOSITORIES_MASTER,
-        UPDATING_REPOSITORIES_SLAVE,
-        INSTALLING_APPLICATIONS,
-    ) = range(4)
+        UPDATING_REPOSITORIES,
+        MANAGING_APPLICATIONS,
+    ) = range(3)
 
     class BusyError(Exception):
         """
         Cannot acknowledge a Local Activity change.
+        """
+
+    class SameError(Exception):
+        """
+        Cannot set the same Local Activity.
+        The proposed activity equals the current one.
         """
 
     class AlreadyReadyError(Exception):

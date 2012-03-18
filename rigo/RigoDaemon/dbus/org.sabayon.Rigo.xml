@@ -4,20 +4,11 @@
     <method name="activity">
        <arg name="state" type="i" direction="out"/>
     </method>
-    <method name="acquire_exclusive">
-      <arg name="activity" type="i" direction="in"/>
-      <arg name="accepted" type="b" direction="out"/>
-    </method>
-    <method name="release_exclusive">
-      <arg name="activity" type="i" direction="in"/>
-      <arg name="token" type="s" direction="in"/>
-      <arg name="accepted" type="b" direction="out"/>
-    </method>
-    <method name="connect"/>
     <method name="output_test"/>
     <method name="update_repositories">
        <arg name="repositories" type="as" direction="in"/>
        <arg name="force" type="b" direction="in"/>
+       <arg name="accepted" type="b" direction="out"/>
     </method>
     <method name="is_exclusive">
        <arg name="status" type="b" direction="out"/>

@@ -15,7 +15,7 @@ class ActivityStates:
         AVAILABLE,
         NOT_AVAILABLE,
         UPDATING_REPOSITORIES,
-        INSTALLING_APPLICATION,
+        MANAGING_APPLICATIONS,
         UPGRADING_SYSTEM,
         INTERNAL_ROUTINES
     ) = range(6)
