@@ -53,7 +53,7 @@ from entropy.const import etpConst, const_convert_to_rawstring, \
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled
 from entropy.fetchers import UrlFetcher
-from entropy.output import TextInterface, darkred, darkgreen, red
+from entropy.output import TextInterface
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 
@@ -162,41 +162,6 @@ class DaemonUrlFetcher(UrlFetcher):
     def update(self):
         if self._DAEMON is None:
             return
-
-        mytxt = _("[F]")
-        eta_txt = _("ETA")
-        sec_txt = _("sec") # as in XX kb/sec
-
-        current_txt = darkred("    %s: " % (mytxt,)) + \
-            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" \
-            + red(str(round(self.__remotesize, 1))) + " kB"
-        # create progress bar
-        barsize = 10
-        bartext = "["
-        curbarsize = 1
-
-        averagesize = (self.__average*barsize)/100
-        while averagesize > 0:
-            curbarsize += 1
-            bartext += "="
-            averagesize -= 1
-        bartext += ">"
-        diffbarsize = barsize - curbarsize
-        while diffbarsize > 0:
-            bartext += " "
-            diffbarsize -= 1
-        bartext += "] => %s" % (
-            entropy.tools.bytes_into_human(self.__datatransfer),)
-        bartext += "/%s : %s: %s" % (sec_txt, eta_txt,
-                                     self.__time_remaining,)
-        average = str(self.__average)
-        if len(average) < 2:
-            average = " "+average
-        current_txt += " <->  "+average+"% "+bartext
-
-        self._DAEMON.output(
-            current_txt, "", "", True, 0,
-            "info", 0, 0, False)
 
         self._DAEMON.transfer_output(
             self.__average, self.__downloadedsize,
