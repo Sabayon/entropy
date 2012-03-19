@@ -37,8 +37,7 @@ sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
 sys.path.insert(6, "/usr/lib/rigo")
 
-from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango, \
-    Polkit
+from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango
 
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons, AppActions, RigoViewStates, \
@@ -52,6 +51,7 @@ from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
+from rigo.ui.gtk3.controllers.authentication import AuthenticationController
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.widgets.stars import Star
 from rigo.ui.gtk3.widgets.terminal import TerminalWidget
@@ -73,55 +73,6 @@ from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, brown, darkred, red, blue
 
 import entropy.tools
-
-class RigoAuthenticationController(object):
-
-    """
-    This class handles User authentication required
-    for privileged activies, like Repository updates
-    and Application management.
-    """
-
-    def __init__(self):
-        self._mainloop = GLib.MainLoop()
-
-    def authenticate(self, action_id, authentication_callback):
-        """
-        Authenticate current User asking Administrator
-        passwords.
-        authentication_callback is the function that
-        is called after the authentication procedure,
-        providing one boolean argument describing the
-        process result: True for authenticated, False
-        for not authenticated.
-        This method must be called from the MainLoop.
-        """
-        def _polkit_auth_callback(authority, res, loop):
-            authenticated = False
-            try:
-                result = authority.check_authorization_finish(res)
-                if result.get_is_authorized():
-                    authenticated = True
-                elif result.get_is_challenge():
-                    authenticated = True
-            except GObject.GError as err:
-                const_debug_write(
-                    __name__,
-                    "_polkit_auth_callback: error: %s" % (err,))
-            finally:
-                authentication_callback(authenticated)
-
-        # authenticated_sem will be released in the callback
-        authority = Polkit.Authority.get()
-        subject = Polkit.UnixProcess.new(os.getppid())
-        authority.check_authorization(
-                subject,
-                action_id,
-                None,
-                Polkit.CheckAuthorizationFlags.ALLOW_USER_INTERACTION,
-                None, # Gio.Cancellable()
-                _polkit_auth_callback,
-                self._mainloop)
 
 
 class RigoServiceController(GObject.Object):
@@ -441,7 +392,6 @@ class RigoServiceController(GObject.Object):
             "_application_processed_signal: received for "
             "%d, %s, action: %s, success: %s" % (
                 package_id, repository_id, daemon_action, success))
-        # FIXME: stop threads started in processing_application?
 
     def _applications_managed_signal(self, success):
         """
@@ -1849,7 +1799,7 @@ class Rigo(Gtk.Application):
         self._activity_rwsem = ReadersWritersSemaphore()
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
-        self._auth = RigoAuthenticationController()
+        self._auth = AuthenticationController()
         self._service = RigoServiceController(
             self, self._activity_rwsem,
             self._auth, self._entropy, self._entropy_ws)
