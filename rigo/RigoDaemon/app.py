@@ -268,15 +268,10 @@ class RigoDaemonService(dbus.service.Object):
 
         # used by non-daemon thread to exit
         self._stop_signal = False
-        self._stop_on_timeout = False
 
+        # used to determine if there are connected clients
         self._ping_timer_mutex = Lock()
         self._ping_timer = None
-        self._ping_sched = TimeScheduled(3, self.ping)
-        self._ping_sched.set_delay_before(True)
-        self._ping_sched.daemon = True
-        self._ping_sched.name = "PingThread"
-        self._ping_sched_startup = Lock()
 
         self._current_activity_mutex = Lock()
         self._current_activity = ActivityStates.AVAILABLE
@@ -304,8 +299,12 @@ class RigoDaemonService(dbus.service.Object):
 
         def _sigusr2_activate_shutdown(signum, frame):
             write_output("SIGUSR2: activating shutdown...", debug=True)
-            self._stop_on_timeout = True
-            self._ensure_pinger_start()
+            # ask clients to pong
+            task = TimeScheduled(30.0, self.ping)
+            task.set_delay_before(False)
+            task.name = "ShutdownPinger"
+            task.daemon = True
+            task.start()
 
         signal.signal(signal.SIGUSR2, _sigusr2_activate_shutdown)
 
@@ -333,7 +332,7 @@ class RigoDaemonService(dbus.service.Object):
                     "unbusy from: %s, current: %s" % (
                         activity, self._current_activity,))
             if activity == ActivityStates.AVAILABLE and not _force:
-                raise ActivityStates.AlreadyAvalabileError()
+                raise ActivityStates.AlreadyAvailabileError()
             self._current_activity = ActivityStates.AVAILABLE
 
     def stop(self):
@@ -342,25 +341,14 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("stop(): called", debug=True)
         with self._activity_mutex:
-            self._ping_sched.kill()
             self._stop_signal = True
             self._action_queue_waiter.release()
             self._close_local_resources()
             write_output("stop(): activity mutex acquired, quitting",
                          debug=True)
             entropy.tools.kill_threads()
-        os.kill(os.getpid(), signal.SIGTERM)
-
-    def _ensure_pinger_start(self):
-        """
-        Make sure that ping() signaling is started.
-        """
-        acquired = self._ping_sched_startup.acquire(False)
-        if acquired:
-            write_output("_ensure_pinger_start: "
-                         "starting ping() signaling",
-                         debug=True)
-            self._ping_sched.start()
+            # use kill so that GObject main loop will quit as well
+            os.kill(os.getpid(), signal.SIGTERM)
 
     def _update_repositories(self, repositories, force, activity):
         """
@@ -554,7 +542,6 @@ class RigoDaemonService(dbus.service.Object):
         Here we reload Entropy configuration and other resources.
         """
         write_output("_entropy_setup(): called", debug=True)
-        self._ensure_pinger_start()
 
         initconfig_entropy_constants(etpConst['systemroot'])
         self._entropy.Settings().clear()
@@ -572,6 +559,9 @@ class RigoDaemonService(dbus.service.Object):
         At the end of the execution, the "repositories_updated"
         signal will be raised.
         """
+        write_output("update_repositories called: %s" % (
+                repositories,), debug=True)
+
         activity = ActivityStates.UPDATING_REPOSITORIES
         try:
             self._busy(activity)
@@ -586,8 +576,6 @@ class RigoDaemonService(dbus.service.Object):
             # I am already busy doing the same activity
             return False
 
-        write_output("update_repositories called: %s" % (
-                repositories,), debug=True)
         task = ParallelTask(self._update_repositories, repositories,
                             force, activity)
         task.daemon = True
@@ -636,6 +624,7 @@ class RigoDaemonService(dbus.service.Object):
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
         values).
         """
+        write_output("activity called", debug=True)
         return self._current_activity
 
     @dbus.service.method(BUS_NAME, in_signature='',
@@ -645,15 +634,19 @@ class RigoDaemonService(dbus.service.Object):
         Return whether RigoDaemon is running in with
         Entropy Resources acquired in exclusive mode.
         """
+        write_output("is_exclusive called: %s, %s", debug=True)
+
         return self._acquired_exclusive
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='')
     def pong(self):
         """
-        Answer to RigoDaemon ping() events.
+        Answer to RigoDaemon ping() events to avoid
+        RigoDaemon to terminate with SIGTERM.
         """
         write_output("pong() received", debug=True)
+
         with self._ping_timer_mutex:
             if self._ping_timer is not None:
                 # stop the bomb!
@@ -779,35 +772,15 @@ class RigoDaemonService(dbus.service.Object):
         """
         Ping RigoDaemon dbus clients for answer.
         If no clients respond within 15 seconds,
-        Entropy Resources will be released completely.
+        RigoDaemon will terminate.
+        This signal is spawned after having
+        received SIGUSR2.
         """
-        def _time_up():
-            write_output("_time_up timer event, checking...",
-                         debug=True)
-            if self._stop_on_timeout:
-                write_output("stop on timeout requested, stopping...",
-                             debug=True)
-                self.stop()
-                return # just make sure
-
-            if self._acquired_exclusive:
-                write_output("time is up! issuing _release_exclusive()",
-                             debug=True)
-                with self._activity_mutex:
-                    self._unbusy(None, _force=True)
-                    self._release_exclusive(self._current_activity)
-                write_output("issued _release_exclusive()", debug=True)
-
-            with self._ping_timer_mutex:
-                # reset timer, wait next round
-                self._ping_timer = None
-
         write_output("ping() issued", debug=True)
         with self._ping_timer_mutex:
             if self._ping_timer is None:
-                self._ping_timer = Timer(15.0, _time_up)
+                self._ping_timer = Timer(15.0, self.stop)
                 self._ping_timer.start()
-
 
 if __name__ == "__main__":
     if os.getuid() != 0:
