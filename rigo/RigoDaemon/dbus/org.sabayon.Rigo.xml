@@ -19,7 +19,7 @@
        <arg name="accepted" type="b" direction="out"/>
     </method>
 
-    <method name="is_exclusive">
+    <method name="exclusive">
        <arg name="status" type="b" direction="out"/>
     </method>
 

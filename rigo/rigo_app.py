@@ -755,14 +755,14 @@ class RigoServiceController(GObject.Object):
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).activity()
 
-    def is_exclusive(self):
+    def exclusive(self):
         """
         Return whether RigoDaemon is running in with
         Entropy Resources acquired in exclusive mode.
         """
         return dbus.Interface(
             self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).is_exclusive()
+            dbus_interface=self.DBUS_INTERFACE).exclusive()
 
     def _release_local_resources(self):
         """
@@ -2150,7 +2150,7 @@ class Rigo(Gtk.Application):
             # check whether RigoDaemon is running in excluive mode
             # and ignore non-atomicity here (failing with error
             # is acceptable)
-            if not self._service.is_exclusive():
+            if not self._service.exclusive():
                 self._show_ok_dialog(
                     None,
                     escape_markup(_("Rigo")),

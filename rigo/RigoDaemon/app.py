@@ -594,7 +594,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')
-    def is_exclusive(self):
+    def exclusive(self):
         """
         Return whether RigoDaemon is running in with
         Entropy Resources acquired in exclusive mode.
