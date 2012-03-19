@@ -53,14 +53,11 @@ from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
-from rigo.ui.gtk3.widgets.stars import ReactiveStar
-from rigo.ui.gtk3.widgets.comments import CommentBox
+from rigo.ui.gtk3.widgets.stars import Star
 from rigo.ui.gtk3.widgets.terminal import TerminalWidget
-from rigo.ui.gtk3.widgets.images import ImageBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
-from rigo.utils import build_application_store_url, build_register_url, \
-    escape_markup, prepare_markup
+from rigo.utils import escape_markup, prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
     AppActions as DaemonAppActions
@@ -68,10 +65,9 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
     PolicyActions
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
-    const_debug_enabled, const_convert_to_unicode, const_isunicode
+    const_debug_enabled, const_convert_to_unicode
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.repository import Repository
-from entropy.services.client import WebService
 from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, brown, darkred, red, blue
@@ -1085,7 +1081,9 @@ class RigoServiceController(GObject.Object):
         """
         if self._wc is not None:
             GLib.idle_add(self._wc.activate_progress_bar)
-            GLib.idle_add(self._wc.activate_app_box)
+            # this will be back active once we have something
+            # to show
+            GLib.idle_add(self._wc.deactivate_app_box)
 
         # emit, but we don't really need to switch to
         # the work view nor locking down the UI
@@ -1326,7 +1324,15 @@ class WorkViewController(GObject.Object):
         image_box = Gtk.VBox()
         self._app_image = Gtk.Image.new_from_pixbuf(
             self._missing_icon)
+
+        stars_align = Gtk.Alignment.new(0.5, 0.5, 1.0, 1.0)
+        stars_align.set_padding(5, 0, 0, 0)
+        self._stars = Star()
+        stars_align.add(self._stars)
+        self._stars.set_size_as_pixel_value(16)
+
         image_box.pack_start(self._app_image, False, False, 0)
+        image_box.pack_start(stars_align, False, False, 0)
 
         hbox.pack_start(image_box, False, False, 0)
 
@@ -1335,16 +1341,19 @@ class WorkViewController(GObject.Object):
         name_align.set_padding(0, 0, 5, 0)
         name_box = Gtk.VBox()
 
+        action_align = Gtk.Alignment()
         self._action_label = Gtk.Label("Action")
         self._action_label.set_alignment(0.0, 0.0)
+        action_align.add(self._action_label)
+        action_align.set_padding(0, 4, 0, 0)
 
         self._appname_label = Gtk.Label("App Name")
         self._appname_label.set_line_wrap(True)
         self._appname_label.set_line_wrap_mode(Pango.WrapMode.WORD)
-        self._appname_label.set_alignment(0.0, 0.0)
+        self._appname_label.set_alignment(0.0, 1.0)
 
-        name_box.pack_start(self._action_label, False, False, 0)
-        name_box.pack_start(self._appname_label, False, False, 0)
+        name_box.pack_start(action_align, False, False, 0)
+        name_box.pack_start(self._appname_label, True, True, 0)
         name_align.add(name_box)
 
         hbox.pack_start(name_align, True, True, 5)
@@ -1417,7 +1426,7 @@ class WorkViewController(GObject.Object):
         self._appname_label.set_markup(
             app.get_extended_markup())
 
-        # FIXME, set app icon
+        # icon
         icon, cache_hit = app.get_icon()
         if icon is not None:
             icon_path = icon.local_document()
@@ -1427,6 +1436,10 @@ class WorkViewController(GObject.Object):
                 except GObject.GError:
                     self._app_image.set_from_pixbuf(
                         self._missing_icon)
+
+        # rating
+        stats = app.get_review_stats()
+        self._stars.set_rating(stats.ratings_average)
 
         self.activate_app_box()
         self._app_box.queue_draw()
