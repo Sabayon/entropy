@@ -420,6 +420,16 @@ class ReadersWritersSemaphore(object):
                 if self.__counter == 1:
                     lock.acquire()
 
+        def try_acquire(self, lock):
+            with self.__mutex:
+                self.__counter += 1
+                acquired = True
+                if self.__counter == 1:
+                    acquired = lock.acquire(False)
+                    if not acquired:
+                        self.__counter -= 1
+                return acquired
+
         def release(self, lock):
             with self.__mutex:
                 self.__counter -= 1
@@ -435,24 +445,47 @@ class ReadersWritersSemaphore(object):
 
     def reader_acquire(self):
         """
-        Acquire Reader end.
+        Acquire the Reader end.
         """
         with self.__readers_queue:
             with self.__no_readers:
                 self.__read_switch.acquire(self.__no_writers)
 
+    def try_reader_acquire(self):
+        """
+        Acquire the Reader end in non-blocking mode.
+        """
+        with self.__readers_queue:
+            acquired = self.__no_readers.acquire(False)
+            if acquired:
+                acquired = self.__read_switch.try_acquire(
+                    self.__no_writers)
+                self.__no_readers.release()
+            return acquired
+
     def reader_release(self):
         """
-        Release Reader end.
+        Release the Reader end.
         """
         self.__read_switch.release(self.__no_writers)
 
     def writer_acquire(self):
         """
-        Acquire Writer end.
+        Acquire the Writer end.
         """
         self.__write_switch.acquire(self.__no_readers)
         self.__no_writers.acquire()
+
+    def try_writer_acquire(self):
+        """
+        Acquire the Writer end in non-blocking mode.
+        """
+        acquired = self.__write_switch.try_acquire(self.__no_readers)
+        if acquired:
+            acquired = self.__no_writers.acquire(False)
+            if not acquired:
+                self.__write_switch.release(self.__no_readers)
+        return acquired
 
     def writer_release(self):
         """
