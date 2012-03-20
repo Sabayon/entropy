@@ -279,6 +279,8 @@ class RigoDaemonService(dbus.service.Object):
         Raise ActivityStates.BusyError if already busy.
         """
         with self._current_activity_mutex:
+            if self._current_activity == activity:
+                raise ActivityStates.SameError()
             if self._current_activity != ActivityStates.AVAILABLE:
                 raise ActivityStates.BusyError()
             self._current_activity = activity
