@@ -595,6 +595,15 @@ class RigoDaemonService(dbus.service.Object):
         return self._current_activity
 
     @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='i')
+    def action_queue_length(self):
+        """
+        Return the current size of the Application Action Queue.
+        """
+        write_output("action_queue_length called", debug=True)
+        return len(self._action_queue)
+
+    @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')
     def exclusive(self):
         """

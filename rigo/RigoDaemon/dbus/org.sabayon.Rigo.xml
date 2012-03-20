@@ -19,6 +19,10 @@
        <arg name="accepted" type="b" direction="out"/>
     </method>
 
+    <method name="action_queue_length">
+       <arg name="length" type="i" direction="out"/>
+    </method>
+
     <method name="exclusive">
        <arg name="status" type="b" direction="out"/>
     </method>
