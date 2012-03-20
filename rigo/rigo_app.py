@@ -93,6 +93,40 @@ class RigoServiceController(GObject.Object):
                 message_type=message_type,
                 context_id=RigoServiceController.NOTIFICATION_CONTEXT_ID)
 
+    class SharedLocker(object):
+
+        """
+        SharedLocker ensures that Entropy Resources
+        lock and unlock operations are called once,
+        avoiding reentrancy, which is a property of
+        lock_resources() and unlock_resources(), even
+        during concurrent access.
+        """
+
+        def __init__(self, entropy_client, locked):
+            self._entropy = entropy_client
+            self._locking_mutex = Lock()
+            self._locked = locked
+
+        def lock(self):
+            with self._locking_mutex:
+                lock = False
+                if not self._locked:
+                    lock = True
+                    self._locked = True
+            if lock:
+                self._entropy.lock_resources(
+                    blocking=True, shared=True)
+
+        def unlock(self):
+            with self._locking_mutex:
+                unlock = False
+                if self._locked:
+                    unlock = True
+                    self._locked = False
+            if unlock:
+                self._entropy.unlock_resources()
+
     __gsignals__ = {
         # we request to lock the whole UI wrt repo
         # interaction
@@ -213,9 +247,8 @@ class RigoServiceController(GObject.Object):
         # since we handle the lock/unlock of entropy
         # resources here, we need to know what's the
         # initial state
-        self._resources_locked = Lock()
-        if not shared_locked:
-            self._resources_locked.acquire()
+        self._shared_locker = self.SharedLocker(
+            self._entropy, shared_locked)
 
     def service_available(self):
         """
@@ -570,9 +603,7 @@ class RigoServiceController(GObject.Object):
                 "_resources_lock_request_signal._resources_lock: "
                 "enter (sleep)")
 
-            self._entropy.lock_resources(
-                blocking=True,
-                shared=True)
+            self._shared_locker.lock()
             self._release_local_resources()
 
             const_debug_write(
@@ -580,17 +611,10 @@ class RigoServiceController(GObject.Object):
                 "_resources_lock_request_signal._resources_lock: "
                 "regained shared lock")
 
-            # it's a muted, ask the MainLoop to release it
-            # or it will explode
-            GLib.idle_add(self._resources_locked.release)
-
-        # check if we actually released them
-        locked = self._resources_locked.acquire(False)
-        if not locked:
-            task = ParallelTask(_resources_lock)
-            task.name = "ResourceLockAfterRelease"
-            task.daemon = True
-            task.start()
+        task = ParallelTask(_resources_lock)
+        task.name = "ResourceLockAfterRelease"
+        task.daemon = True
+        task.start()
 
     def _resources_unlock_request_signal(self, activity):
         """
@@ -603,32 +627,30 @@ class RigoServiceController(GObject.Object):
             "_resources_unlock_request_signal: "
             "called, with remote activity: %s" % (activity,))
 
-        # FIXME: there might be a race here between local_activity
-        # and subsequent busy() called by _update_repositories
-        # wrt unlock_resources() and locking back.
-        # maybe we should busy() here and then call ParallelTask?
-        # OR: we just need to lock_resources() back in case of
-        # error activity switch not being accepted.
-
         if activity == DaemonActivityStates.UPDATING_REPOSITORIES:
 
             # did we ask that or is it another client?
             local_activity = self.local_activity()
             if local_activity == LocalActivityStates.READY:
-                locked = self._resources_locked.acquire(False)
-                if locked:
-                    self._entropy.unlock_resources()
+
+                def _update_repositories():
+                    accepted = self._update_repositories(
+                        [], False, master=False)
+                    if accepted:
+                        const_debug_write(
+                            __name__,
+                            "_resources_unlock_request_signal: "
+                            "_update_repositories accepted, unlocking")
+                        self._shared_locker.unlock()
 
                 # another client, bend over XD
                 # LocalActivityStates value will be atomically
                 # switched in the above thread.
-                task = ParallelTask(
-                    self._update_repositories,
-                    [], False,
-                    master=False)
+                task = ParallelTask(_update_repositories)
                 task.daemon = True
                 task.name = "UpdateRepositoriesExternal"
                 task.start()
+
                 const_debug_write(
                     __name__,
                     "_resources_unlock_request_signal: "
@@ -636,9 +658,7 @@ class RigoServiceController(GObject.Object):
 
             elif local_activity == \
                     LocalActivityStates.UPDATING_REPOSITORIES:
-                locked = self._resources_locked.acquire(False)
-                if locked:
-                    self._entropy.unlock_resources()
+                self._shared_locker.unlock()
 
                 const_debug_write(
                     __name__,
@@ -658,20 +678,25 @@ class RigoServiceController(GObject.Object):
 
             local_activity = self.local_activity()
             if local_activity == LocalActivityStates.READY:
-                locked = self._resources_locked.acquire(False)
-                if locked:
-                    self._entropy.unlock_resources()
+
+                def _application_request():
+                    accepted = self._application_request(
+                        None, None, master=False)
+                    if accepted:
+                        const_debug_write(
+                            __name__,
+                            "_resources_unlock_request_signal: "
+                            "_application_request accepted, unlocking")
+                        self._shared_locker.unlock()
 
                 # another client, bend over XD
                 # LocalActivityStates value will be atomically
                 # switched in the above thread.
-                task = ParallelTask(
-                    self._application_request,
-                    None, None,
-                    master=False)
+                task = ParallelTask(_application_request)
                 task.daemon = True
                 task.name = "ApplicationRequestExternal"
                 task.start()
+
                 const_debug_write(
                     __name__,
                     "_resources_unlock_request_signal: "
@@ -679,9 +704,7 @@ class RigoServiceController(GObject.Object):
 
             elif local_activity == \
                     LocalActivityStates.MANAGING_APPLICATIONS:
-                locked = self._resources_locked.acquire(False)
-                if locked:
-                    self._entropy.unlock_resources()
+                self._shared_locker.unlock()
 
                 const_debug_write(
                     __name__,
@@ -888,13 +911,13 @@ class RigoServiceController(GObject.Object):
                               "LocalActivityStates.BusyError!")
             # 1 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
-            return
+            return False
         except LocalActivityStates.SameError:
             const_debug_write(__name__, "_update_repositories: "
                               "LocalActivityStates.SameError!")
             # 1 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
-            return
+            return False
 
         if master:
             scaled = self._scale_up(
@@ -903,7 +926,7 @@ class RigoServiceController(GObject.Object):
                 self.unbusy(local_activity)
                 # 1 -- ACTIVITY CRIT :: OFF
                 self._activity_rwsem.writer_release()
-                return
+                return False
 
         accepted = self._update_repositories_unlocked(
             repositories, force, master)
@@ -920,6 +943,9 @@ class RigoServiceController(GObject.Object):
                 box.add_destroy_button(_("K thanks"))
                 self._nc.append(box)
             GLib.idle_add(_notify)
+            return False
+
+        return True
 
     def _update_repositories_unlocked(self, repositories, force,
                                       master):
@@ -1133,7 +1159,7 @@ class RigoServiceController(GObject.Object):
                     const_debug_write(__name__, "_application_request: "
                                       "LocalActivityStates.BusyError!")
                     # doing other stuff, cannot go ahead
-                    return
+                    return False
                 except LocalActivityStates.SameError:
                     const_debug_write(__name__, "_application_request: "
                                       "LocalActivityStates.SameError, "
@@ -1160,7 +1186,7 @@ class RigoServiceController(GObject.Object):
                         DaemonActivityStates.MANAGING_APPLICATIONS)
                     if not scaled:
                         _unbusy()
-                        return
+                        return False
 
                 # clean terminal, make sure no crap is left there
                 if self._terminal is not None:
@@ -1190,6 +1216,8 @@ class RigoServiceController(GObject.Object):
                     box.add_destroy_button(_("K thanks"))
                     self._nc.append(box)
                 GLib.idle_add(_notify)
+
+            return accepted
 
 
 class WorkViewController(GObject.Object):
