@@ -21,6 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 import copy
 import dbus
+from threading import Lock
 
 from gi.repository import Gtk, GLib, GObject
 
@@ -79,6 +80,7 @@ class ApplicationsViewController(GObject.Object):
         self._nf_box = nf_box
         self._not_found_search_box = None
         self._not_found_label = None
+        self._search_thread_mutex = Lock()
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
         """
@@ -126,40 +128,47 @@ class ApplicationsViewController(GObject.Object):
             GLib.idle_add(self._service.output_test)
             return
 
-        # Do not execute search if repositories are
-        # being hold by other write
-        self._activity_rwsem.reader_acquire()
-        try:
+        # serialize searches to avoid segfaults with sqlite3
+        # (apparently?)
+        with self._search_thread_mutex:
+            # Do not execute search if repositories are
+            # being hold by other write
+            acquired = self._service.repositories_lock.acquire(False)
+            if not acquired:
+                # this avoids having starvation here.
+                return
+            try:
 
-            matches = []
+               matches = []
+               # exact match
+               pkg_matches, rc = self._entropy.atom_match(
+                   text, multi_match = True,
+                   multi_repo = True, mask_filter = False)
+               matches.extend(pkg_matches)
 
-            # exact match
-            pkg_matches, rc = self._entropy.atom_match(
-                text, multi_match = True,
-                multi_repo = True, mask_filter = False)
-            matches.extend(pkg_matches)
+               # atom searching (name and desc)
+               search_matches = self._entropy.atom_search(
+                   text,
+                   repositories = self._entropy.repositories(),
+                   description = True)
 
-            # atom searching (name and desc)
-            search_matches = self._entropy.atom_search(
-                text,
-                repositories = self._entropy.repositories(),
-                description = True)
+               matches.extend([x for x in search_matches \
+                                   if x not in matches])
 
-            matches.extend([x for x in search_matches if x not in matches])
+               if not search_matches:
+                   search_matches = self._entropy.atom_search(
+                       _prepare_for_search(text),
+                       repositories = self._entropy.repositories())
+                   matches.extend(
+                       [x for x in search_matches if x not in matches])
 
-            if not search_matches:
-                search_matches = self._entropy.atom_search(
-                    _prepare_for_search(text),
-                    repositories = self._entropy.repositories())
-                matches.extend([x for x in search_matches if x not in matches])
+               # we have to decide if to show the treeview in
+               # the UI thread, to avoid races (and also because we
+               # have to...)
+               self.set_many_safe(matches, _from_search=text)
 
-            # we have to decide if to show the treeview in
-            # the UI thread, to avoid races (and also because we
-            # have to...)
-            self.set_many_safe(matches, _from_search=text)
-
-        finally:
-            self._activity_rwsem.reader_release()
+            finally:
+                self._service.repositories_lock.release()
 
     def _setup_search_view(self, items_count, text):
         """

@@ -195,6 +195,10 @@ class RigoServiceController(GObject.Object):
         # atomicity.
         self._application_request_mutex = Lock()
 
+        # threads doing repo activities must coordinate
+        # with this
+        self._update_repositories_mutex = Lock()
+
     def set_applications_controller(self, avc):
         """
         Bind ApplicationsViewController object to this class.
@@ -298,6 +302,15 @@ class RigoServiceController(GObject.Object):
         Return the current local activity (enum from LocalActivityStates)
         """
         return self._local_activity
+
+    @property
+    def repositories_lock(self):
+        """
+        Return the Repositories Update Mutex object.
+        This lock protects repositories access during their
+        physical update.
+        """
+        return self._update_repositories_mutex
 
     @property
     def _dbus_main_loop(self):
@@ -498,6 +511,7 @@ class RigoServiceController(GObject.Object):
 
         # 1 -- ACTIVITY CRIT :: OFF
         self._activity_rwsem.writer_release()
+        self.repositories_lock.release()
 
         self.emit("repositories-updated",
                   result, message)
@@ -1005,6 +1019,11 @@ class RigoServiceController(GObject.Object):
 
         if self._terminal is not None:
             self._terminal.reset()
+
+        self.repositories_lock.acquire()
+        # not allowing other threads to mess with repos
+        # will be released on repo updated signal
+
         self._release_local_resources()
 
         accepted = True
@@ -1049,51 +1068,135 @@ class RigoServiceController(GObject.Object):
         GLib.idle_add(self._repositories_updated_signal,
                       0, "", activity)
 
+    def _ask_blocking_question(self, ask_meta, message, message_type):
+        """
+        Ask a task blocking question to User and waits for the
+        answer.
+        """
+        box = self.ServiceNotificationBox(
+            message, message_type)
+
+        def _say_yes(widget):
+            ask_meta['res'] = True
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        def _say_no(widget):
+            ask_meta['res'] = False
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        box.add_button(_("Yes, thanks"), _say_yes)
+        box.add_button(_("No, sorry"), _say_no)
+        self._nc.append(box)
+
+    def _notify_blocking_message(self, sem, message, message_type):
+        """
+        Notify a task blocking information to User and wait for the
+        acknowledgement.
+        """
+        box = self.ServiceNotificationBox(
+            message, message_type)
+
+        def _say_kay(widget):
+            self._nc.remove(box)
+            if sem is not None:
+                sem.release()
+
+        box.add_button(_("Ok then"), _say_kay)
+        self._nc.append(box)
+
+    def _application_request_removal_checks(self, app):
+        """
+        Examine Application Removal Request on behalf of
+        _application_request_checks().
+        """
+        removable = app.is_removable()
+        if not removable:
+            msg = _("<b>%s</b>\nis part of the Base"
+                    " System and <b>cannot</b> be removed")
+            msg = msg % (app.get_markup(),)
+            message_type = Gtk.MessageType.ERROR
+
+            GLib.idle_add(
+                self._notify_blocking_message,
+                None, msg, message_type)
+
+            return False
+
+        return True
+
+    def _application_request_install_checks(self, app):
+        """
+        Examine Application Install Request on behalf of
+        _application_request_checks().
+        """
+        # FIXME, complete
+        return True
+
+    def _application_request_checks(self, app, daemon_action):
+        """
+        Examine Application Request before sending it to RigoDaemon.
+        Specifically, check for things like system apps removal asking
+        User confirmation.
+        """
+        if daemon_action == DaemonAppActions.REMOVE:
+            accepted = self._application_request_removal_checks(app)
+        else:
+            accepted = self._application_request_install_checks(app)
+        return accepted
+
     def _application_request_unlocked(self, package_id, repository_id,
-                                      daemon_action, master):
+                                      daemon_action, master, busied):
         """
         Internal method handling the actual Application Request
         execution.
         """
-        if self._wc is not None:
-            GLib.idle_add(self._wc.activate_progress_bar)
-            # this will be back active once we have something
-            # to show
-            GLib.idle_add(self._wc.deactivate_app_box)
+        if busied:
+            if self._wc is not None:
+                GLib.idle_add(self._wc.activate_progress_bar)
+                # this will be back active once we have something
+                # to show
+                GLib.idle_add(self._wc.deactivate_app_box)
 
-        # emit, but we don't really need to switch to
-        # the work view nor locking down the UI
-        GLib.idle_add(self.emit, "start-working", None, False)
+            # emit, but we don't really need to switch to
+            # the work view nor locking down the UI
+            GLib.idle_add(self.emit, "start-working", None, False)
 
-        const_debug_write(__name__, "RigoServiceController: "
-                          "_application_request_unlocked: "
-                          "start-working")
-        # don't check if UI is locked though
+            const_debug_write(__name__, "RigoServiceController: "
+                              "_application_request_unlocked: "
+                              "start-working")
+            # don't check if UI is locked though
 
-        signal_sem = Semaphore(1)
+            signal_sem = Semaphore(1)
 
-        def _applications_managed_signal(success):
-            if not signal_sem.acquire(False):
-                # already called, no need to call again
-                return
-            # this is done in order to have it called
-            # only once by two different code paths
-            self._applications_managed_signal(
-                success)
+            def _applications_managed_signal(success):
+                if not signal_sem.acquire(False):
+                    # already called, no need to call again
+                    return
+                # this is done in order to have it called
+                # only once by two different code paths
+                self._applications_managed_signal(
+                    success)
 
-        with self._registered_signals_mutex:
-            # connect our signal
-            sig_match = self._entropy_bus.connect_to_signal(
-                self._APPLICATIONS_MANAGED_SIGNAL,
-                _applications_managed_signal,
-                dbus_interface=self.DBUS_INTERFACE)
+            with self._registered_signals_mutex:
+                # connect our signal
+                sig_match = self._entropy_bus.connect_to_signal(
+                    self._APPLICATIONS_MANAGED_SIGNAL,
+                    _applications_managed_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
 
-            # and register it as a signal generated by us
-            obj = self._registered_signals.setdefault(
-                self._APPLICATIONS_MANAGED_SIGNAL, [])
-            obj.append(sig_match)
+                # and register it as a signal generated by us
+                obj = self._registered_signals.setdefault(
+                    self._APPLICATIONS_MANAGED_SIGNAL, [])
+                obj.append(sig_match)
 
-        self._release_local_resources()
+            self._release_local_resources()
+
+        const_debug_write(
+            __name__,
+            "_application_request_unlocked, about to 'schedule'")
+
         accepted = True
         if master:
             accepted = dbus.Interface(
@@ -1101,8 +1204,12 @@ class RigoServiceController(GObject.Object):
                 dbus_interface=self.DBUS_INTERFACE
                 ).enqueue_application_action(
                     package_id, repository_id, daemon_action)
-            # FIXME: handle removal of system packages
-            # somewhere in the process
+            const_debug_write(
+                __name__,
+                "service enqueue_application_action, got: %s, type: %s" % (
+                    accepted, type(accepted),))
+            # FIXME: notify user that we added a new app
+            # FIXME: notify UI to change app state
         else:
             self._applications_managed_signal_check(
                 sig_match, signal_sem)
@@ -1181,7 +1288,7 @@ class RigoServiceController(GObject.Object):
                         # 2 -- ACTIVITY CRIT :: OFF
                         self._activity_rwsem.writer_release()
 
-                if master:
+                if master and busied:
                     scaled = self._scale_up(
                         DaemonActivityStates.MANAGING_APPLICATIONS)
                     if not scaled:
@@ -1198,12 +1305,25 @@ class RigoServiceController(GObject.Object):
             elif app_action == AppActions.REMOVE:
                 daemon_action = DaemonAppActions.REMOVE
 
+            accepted = True
+            do_notify = True
             if master:
+                accepted = self._application_request_checks(
+                    app, daemon_action)
+                if not accepted:
+                    do_notify = False
+                const_debug_write(
+                    __name__,
+                    "_application_request, checks result: %s" % (
+                        accepted,))
                 pkg_id, repository_id = app.get_details().pkg
             else:
                 pkg_id, repository_id = None, None
-            accepted = self._application_request_unlocked(
-                pkg_id, repository_id, daemon_action, master)
+
+            if accepted:
+                accepted = self._application_request_unlocked(
+                    pkg_id, repository_id, daemon_action, master,
+                    busied)
 
             if not accepted:
                 with self._application_request_mutex:
@@ -1215,7 +1335,8 @@ class RigoServiceController(GObject.Object):
                         Gtk.MessageType.ERROR)
                     box.add_destroy_button(_("K thanks"))
                     self._nc.append(box)
-                GLib.idle_add(_notify)
+                if do_notify:
+                    GLib.idle_add(_notify)
 
             return accepted
 
