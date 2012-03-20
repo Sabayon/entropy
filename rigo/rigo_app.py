@@ -37,7 +37,8 @@ sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/rigo")
 sys.path.insert(6, "/usr/lib/rigo")
 
-from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango
+from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango, \
+    GdkPixbuf
 
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons, AppActions, RigoViewStates, \
@@ -618,7 +619,10 @@ class RigoServiceController(GObject.Object):
                 "enter (sleep)")
 
             self._shared_locker.lock()
-            self._release_local_resources()
+            clear_avc = True
+            if activity in (DaemonActivityStates.MANAGING_APPLICATIONS,):
+                clear_avc = False
+            self._release_local_resources(clear_avc=clear_avc)
 
             const_debug_write(
                 __name__,
@@ -792,6 +796,14 @@ class RigoServiceController(GObject.Object):
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).activity()
 
+    def action_queue_length(self):
+        """
+        Return the current size of the RigoDaemon Application Action Queue.
+        """
+        return dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).action_queue_length()
+
     def exclusive(self):
         """
         Return whether RigoDaemon is running in with
@@ -801,14 +813,15 @@ class RigoServiceController(GObject.Object):
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).exclusive()
 
-    def _release_local_resources(self):
+    def _release_local_resources(self, clear_avc=True):
         """
         Release all the local resources (like repositories)
         that shall be used by RigoDaemon.
         For example, leaving EntropyRepository objects open
         would cause sqlite3 to deadlock.
         """
-        self._avc.clear_safe()
+        if clear_avc:
+            self._avc.clear_safe()
         self._entropy.close_repositories()
 
     def _please_wait(self, show):
@@ -952,7 +965,8 @@ class RigoServiceController(GObject.Object):
 
             def _notify():
                 box = self.ServiceNotificationBox(
-                    _("Another activity is currently in progress"),
+                    prepare_markup(
+                        _("Another activity is currently in progress")),
                     Gtk.MessageType.ERROR)
                 box.add_destroy_button(_("K thanks"))
                 self._nc.append(box)
@@ -1074,7 +1088,7 @@ class RigoServiceController(GObject.Object):
         answer.
         """
         box = self.ServiceNotificationBox(
-            message, message_type)
+            prepare_markup(message), message_type)
 
         def _say_yes(widget):
             ask_meta['res'] = True
@@ -1096,7 +1110,7 @@ class RigoServiceController(GObject.Object):
         acknowledgement.
         """
         box = self.ServiceNotificationBox(
-            message, message_type)
+            prepare_markup(message), message_type)
 
         def _say_kay(widget):
             self._nc.remove(box)
@@ -1146,12 +1160,17 @@ class RigoServiceController(GObject.Object):
             accepted = self._application_request_install_checks(app)
         return accepted
 
-    def _application_request_unlocked(self, package_id, repository_id,
-                                      daemon_action, master, busied):
+    def _application_request_unlocked(self, app, daemon_action,
+                                      master, busied):
         """
         Internal method handling the actual Application Request
         execution.
         """
+        if app is not None:
+            package_id, repository_id = app.get_details().pkg
+        else:
+            package_id, repository_id = None, None
+
         if busied:
             if self._wc is not None:
                 GLib.idle_add(self._wc.activate_progress_bar)
@@ -1191,7 +1210,7 @@ class RigoServiceController(GObject.Object):
                     self._APPLICATIONS_MANAGED_SIGNAL, [])
                 obj.append(sig_match)
 
-            self._release_local_resources()
+            self._release_local_resources(clear_avc=False)
 
         const_debug_write(
             __name__,
@@ -1208,8 +1227,25 @@ class RigoServiceController(GObject.Object):
                 __name__,
                 "service enqueue_application_action, got: %s, type: %s" % (
                     accepted, type(accepted),))
-            # FIXME: notify user that we added a new app
-            # FIXME: notify UI to change app state
+
+            def _notify():
+                queue_len = self.action_queue_length()
+                msg = prepare_markup(_("<b>%s</b> added") % (app.name,))
+                if queue_len > 0:
+                    msg += prepare_markup(ngettext(
+                        ", <b>%i</b> Application enqueued so far...",
+                        ", <b>%i</b> Applications enqueued so far...",
+                        queue_len)) % (queue_len,)
+                box = self.ServiceNotificationBox(
+                    msg,
+                    Gtk.MessageType.INFO)
+                self._nc.append(box, timeout=10)
+            GLib.idle_add(_notify)
+
+            # FIXME: notify UI to change app state, and make
+            # it back available (or recalculate its state
+            # afterwards)
+
         else:
             self._applications_managed_signal_check(
                 sig_match, signal_sem)
@@ -1316,13 +1352,10 @@ class RigoServiceController(GObject.Object):
                     __name__,
                     "_application_request, checks result: %s" % (
                         accepted,))
-                pkg_id, repository_id = app.get_details().pkg
-            else:
-                pkg_id, repository_id = None, None
 
             if accepted:
                 accepted = self._application_request_unlocked(
-                    pkg_id, repository_id, daemon_action, master,
+                    app, daemon_action, master,
                     busied)
 
             if not accepted:
@@ -1331,7 +1364,9 @@ class RigoServiceController(GObject.Object):
 
                 def _notify():
                     box = self.ServiceNotificationBox(
-                        _("Another activity is currently in progress"),
+                        prepare_markup(
+                            _("Another activity is currently in progress")
+                        ),
                         Gtk.MessageType.ERROR)
                     box.add_destroy_button(_("K thanks"))
                     self._nc.append(box)
@@ -1507,6 +1542,55 @@ class WorkViewController(GObject.Object):
         """
         self._progress_box.hide()
 
+    def _set_application_icon(self, app):
+        """
+        Set Application Icon image.
+        """
+        icon, cache_hit = app.get_icon()
+        if icon is None:
+            self._app_image.set_from_pixbuf(
+                self._missing_icon)
+            return
+
+        icon_path = icon.local_document()
+        if not os.path.isfile(icon_path):
+            self._app_image.set_from_pixbuf(
+                self._missing_icon)
+            return
+
+        try:
+            img = Gtk.Image.new_from_file(icon_path)
+        except GObject.GError:
+            img = None
+
+        img_buf = None
+        if img is not None:
+            img_buf = img.get_pixbuf()
+        if img_buf is not None:
+            w, h = img_buf.get_width(), \
+                img_buf.get_height()
+            width = self.APP_IMAGE_SIZE
+            if w < 1:
+                # not legit
+                height = self.APP_IMAGE_SIZE
+            else:
+                height = width * h / w
+
+        del img_buf
+        del img
+
+        try:
+            pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(
+                icon_path, width, height)
+            if pixbuf is not None:
+                self._app_image.set_from_pixbuf(pixbuf)
+            else:
+                self._app_image.set_from_pixbuf(
+                    self._missing_icon)
+        except GObject.GError:
+            self._app_image.set_from_pixbuf(
+                self._missing_icon)
+
     def set_application(self, app, daemon_action):
         """
         Set Application information by providing its Application
@@ -1525,16 +1609,7 @@ class WorkViewController(GObject.Object):
         self._appname_label.set_markup(
             app.get_extended_markup())
 
-        # icon
-        icon, cache_hit = app.get_icon()
-        if icon is not None:
-            icon_path = icon.local_document()
-            if os.path.isfile(icon_path):
-                try:
-                    self._app_image.set_from_file(icon_path)
-                except GObject.GError:
-                    self._app_image.set_from_pixbuf(
-                        self._missing_icon)
+        self._set_application_icon(app)
 
         # rating
         stats = app.get_review_stats()
@@ -1871,7 +1946,7 @@ class BottomNotificationViewController(NotificationViewController):
         Add a NotificationBox related to Applications Install
         Activity in progress.
         """
-        msg = _("Application Install in <b>progress</b>...")
+        msg = _("<b>Application Management</b> in progress...")
         box = NotificationBox(
             msg, message_type=Gtk.MessageType.INFO,
             context_id=self.UNIQUE_CONTEXT_ID)
