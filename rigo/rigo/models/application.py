@@ -31,6 +31,7 @@ from gi.repository import GObject
 
 from entropy.const import const_debug_write, const_debug_enabled, \
     const_convert_to_unicode, etpConst
+from entropy.exceptions import DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
@@ -886,6 +887,27 @@ class Application(object):
             return False
         else:
             return True
+
+    def is_removable(self):
+        """
+        Return if Application can be removed or it's part of
+        the Base System.
+        """
+        installed = self.get_installed()
+        if installed is not self:
+            return installed.is_removable()
+
+        removable = self._entropy.validate_package_removal(
+            self._pkg_id)
+        if removable:
+            return True
+
+        try:
+            self._entropy.get_reverse_queue(
+                [(self._pkg_id, self._repo_id)])
+            return True
+        except DependenciesNotRemovable:
+            return False
 
     def is_available(self):
         """
