@@ -493,8 +493,9 @@ class AppTreeView(Gtk.TreeView):
             # be sure we dont request an action for a
             # pkg with pre-existing actions
             if app in self._action_block_list:
-                logging.debug("Action already in progress for match: %s" % \
-                                  app)
+                logging.debug(
+                    "Action already in progress for match: %s" % (
+                        (app,)))
                 return False
             self._action_block_list.append(app)
             if self.appmodel.is_installed(app):
