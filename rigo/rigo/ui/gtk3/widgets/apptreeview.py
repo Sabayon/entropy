@@ -45,13 +45,14 @@ class AppTreeView(Gtk.TreeView):
 
     ACTION_BTNS = (VARIANT_REMOVE, VARIANT_INSTALL)
 
-    def __init__(self, entropy_client, apc, icons, show_ratings,
+    def __init__(self, entropy_client, backend, apc, icons, show_ratings,
                  icon_size, store=None):
         Gtk.TreeView.__init__(self)
         self._logger = logging.getLogger(__name__)
 
         self._entropy = entropy_client
         self._apc = apc
+        self._backend = backend
 
         self.pressed = False
         self.focal_btn = None
@@ -118,12 +119,20 @@ class AppTreeView(Gtk.TreeView):
         # our own "activate" handler
         self.connect("row-activated", self._on_row_activated, tr)
 
+        self._backend.connect(
+            "application-processed",
+            self._on_transaction_finished, tr)
+        self._backend.connect(
+            "application-processing",
+            self._on_transaction_started, tr)
+        self._backend.connect(
+            "application-abort",
+            self._on_transaction_stopped, tr)
+
         self.set_search_column(0)
         self.set_search_equal_func(self._app_search, None)
         self.set_property("enable-search", True)
 
-        self._transactions_connected = False
-        self.connect('realize', self._on_realize, tr)
 
     def _app_search(self, model, column, key, iterator, data):
         pkg_match = model.get_value(iterator, 0)
@@ -179,15 +188,6 @@ class AppTreeView(Gtk.TreeView):
 
     def rowref_is_category(self, rowref):
         return isinstance(rowref, CategoryRowReference)
-
-    def _on_realize(self, widget, tr):
-        # connect to backend events once self is realized so handlers
-        # have access to the TreeView's initialised Gdk.Window
-        if self._transactions_connected:
-            return
-        # do stuff
-        self._transactions_connected = True
-        return
 
     def _calc_row_heights(self, tr):
         ypad = StockEms.SMALL
@@ -508,8 +508,7 @@ class AppTreeView(Gtk.TreeView):
             if btn.point_in(x, y):
                 window.set_cursor(cursor)
 
-    def _on_transaction_started(self, backend, pkgname, appname,
-                                trans_id, trans_type, tr):
+    def _on_transaction_started(self, widget, app, daemon_action, tr):
         """
         callback when an application install/remove
         transaction has started
@@ -519,28 +518,29 @@ class AppTreeView(Gtk.TreeView):
             action_btn.set_sensitive(False)
             self._set_cursor(action_btn, None)
 
-    def _on_transaction_finished(self, backend, result, tr):
+    def _on_transaction_finished(self, widget, app, daemon_action, tr):
         """
         callback when an application install/remove
         transaction has finished
         """
-        # need to send a cursor-changed so the row button is properly updated
         self.emit("cursor-changed")
         # remove pkg from the block list
-        self._check_remove_pkg_from_blocklist(result)
+        pkg = app.get_details().pkg
+        self._check_remove_pkg_from_blocklist(pkg)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
             action_btn.set_sensitive(True)
             self._set_cursor(action_btn, self._cursor_hand)
 
-    def _on_transaction_stopped(self, backend, result, tr):
+    def _on_transaction_stopped(self, widget, app, daemon_action, tr):
         """
         callback when an application install/remove
         transaction has stopped
         """
+        pkg = app.get_details().pkg
         # remove pkg from the block list
-        self._check_remove_pkg_from_blocklist(result)
+        self._check_remove_pkg_from_blocklist(pkg)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:

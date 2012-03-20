@@ -147,6 +147,26 @@ class RigoServiceController(GObject.Object):
                                   None,
                                   (GObject.TYPE_PYOBJECT,),
                                   ),
+        # Application has been processed
+        "application-processed" : (GObject.SignalFlags.RUN_LAST,
+                                   None,
+                                   (GObject.TYPE_PYOBJECT,
+                                    GObject.TYPE_PYOBJECT,),
+                                   ),
+        # Application is being processed
+        "application-processing" : (GObject.SignalFlags.RUN_LAST,
+                                    None,
+                                    (GObject.TYPE_PYOBJECT,
+                                     GObject.TYPE_PYOBJECT,),
+                                    ),
+        # Application has been removed from the action queue
+        # before processing.
+        # FIXME, support this?
+        "application-abort" : (GObject.SignalFlags.RUN_LAST,
+                               None,
+                               (GObject.TYPE_PYOBJECT,
+                                GObject.TYPE_PYOBJECT,),
+                               ),
     }
 
     DBUS_INTERFACE = DaemonDbusConfig.BUS_NAME
@@ -419,18 +439,19 @@ class RigoServiceController(GObject.Object):
             "_processing_application_signal: received for "
             "%d, %s, action: %s" % (
                 package_id, repository_id, daemon_action))
-        if self._wc is not None:
 
-            def _redraw_callback(*args):
-                self._processing_application_signal(
-                    package_id, repository_id,
-                    daemon_action)
+        def _redraw_callback(*args):
+            self._processing_application_signal(
+                package_id, repository_id,
+                daemon_action)
 
-            app = Application(
-                self._entropy, self._entropy_ws,
-                (package_id, repository_id),
-                redraw_callback=_redraw_callback)
-            self._wc.set_application(app, daemon_action)
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (package_id, repository_id),
+            redraw_callback=_redraw_callback)
+        self._wc.set_application(app, daemon_action)
+
+        self.emit("application-processing", app, daemon_action)
 
     def _application_processed_signal(self, package_id, repository_id,
                                       daemon_action, success):
@@ -439,6 +460,12 @@ class RigoServiceController(GObject.Object):
             "_application_processed_signal: received for "
             "%d, %s, action: %s, success: %s" % (
                 package_id, repository_id, daemon_action, success))
+
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (package_id, repository_id),
+            redraw_callback=None)
+        self.emit("application-processed", app, daemon_action)
 
     def _applications_managed_signal(self, success):
         """
@@ -1230,7 +1257,8 @@ class RigoServiceController(GObject.Object):
 
             def _notify():
                 queue_len = self.action_queue_length()
-                msg = prepare_markup(_("<b>%s</b> added") % (app.name,))
+                msg = prepare_markup(_("<b>%s</b> action enqueued") % (
+                        app.name,))
                 if queue_len > 0:
                     msg += prepare_markup(ngettext(
                         ", <b>%i</b> Application enqueued so far...",
@@ -2052,7 +2080,7 @@ class Rigo(Gtk.Application):
             self._entropy, self._entropy_ws, self._builder)
 
         self._view = AppTreeView(
-            self._entropy, self._app_view_c, icons,
+            self._entropy, self._service, self._app_view_c, icons,
             True, AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
 
