@@ -125,7 +125,6 @@ class AppTreeView(Gtk.TreeView):
         self._transactions_connected = False
         self.connect('realize', self._on_realize, tr)
 
-
     def _app_search(self, model, column, key, iterator, data):
         pkg_match = model.get_value(iterator, 0)
         if pkg_match is None:
@@ -227,13 +226,6 @@ class AppTreeView(Gtk.TreeView):
         if self.rowref_is_category(rowref):
             window.set_cursor(None)
             return
-
-        model = tree.get_model()
-        app = model[path[0]][COL_ROW_DATA]
-        if not self.appmodel.is_installed(app):
-            for btn_id in self.ACTION_BTNS:
-                btn_id = tr.get_button_by_name(CellButtonIDs.ACTION)
-                btn_id.set_sensitive(False)
 
         use_hand = False
         for btn in tr.get_buttons():
