@@ -20,8 +20,6 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-
-import logging
 import os
 import time
 from collections import deque
@@ -42,8 +40,6 @@ import entropy.tools
 
 from rigo.enums import Icons
 from rigo.utils import build_application_store_url, escape_markup
-
-LOG = logging.getLogger(__name__)
 
 class ReviewStats(object):
 

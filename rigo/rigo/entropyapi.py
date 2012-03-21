@@ -22,6 +22,8 @@ import os
 import tempfile
 from threading import Lock
 
+from rigo.paths import CONF_DIR
+
 from entropy.services.client import WebService
 
 class EntropyWebService(object):
@@ -36,10 +38,7 @@ class EntropyWebService(object):
         # home directory. This way we don't need to mess
         # with privileges, resulting in documents not
         # downloadable.
-        home_dir = os.getenv("HOME")
-        if home_dir is None:
-            home_dir = tempfile.mkdtemp(prefix="EntropyWebService")
-        ws_cache_dir = os.path.join(home_dir, ".entropy", "ws_cache")
+        ws_cache_dir = os.path.join(CONF_DIR, "ws_cache")
         WebService.CACHE_DIR = ws_cache_dir
         self._entropy = entropy_client
         self._webserv_map = {}

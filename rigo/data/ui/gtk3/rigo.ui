@@ -550,4 +550,15 @@
       </object>
     </child>
   </object>
+  <object class="GtkEntryCompletion" id="searchEntryCompletion">
+    <property name="model">searchEntryStore</property>
+    <property name="minimum_key_length">2</property>
+    <property name="text_column">0</property>
+  </object>
+  <object class="GtkListStore" id="searchEntryStore">
+    <columns>
+      <!-- column-name name -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
 </interface>

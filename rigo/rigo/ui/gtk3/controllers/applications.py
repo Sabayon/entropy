@@ -18,17 +18,20 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-
+import os
+import errno
 import copy
 import dbus
-from threading import Lock
+from threading import Lock, Semaphore, Timer
 
 from gi.repository import Gtk, GLib, GObject
 
+from rigo.paths import CONF_DIR
 from rigo.enums import RigoViewStates
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.utils import escape_markup, prepare_markup
 
+from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode
 from entropy.misc import ParallelTask
@@ -65,10 +68,17 @@ class ApplicationsViewController(GObject.Object):
                          ),
     }
 
+    RECENT_SEARCHES_DIR = os.path.join(CONF_DIR, "recent_searches")
+    RECENT_SEARCHES_CACHE_KEY = "list"
+    RECENT_SEARCHES_MAX_LEN = 20
+    MIN_RECENT_SEARCH_KEY_LEN = 2
+
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
                  rigo_service, icons, nf_box,
-                 search_entry, store, view):
+                 search_entry, search_entry_completion,
+                 search_entry_store, store, view):
         GObject.Object.__init__(self)
+
         self._activity_rwsem = activity_rwsem
         self._entropy = entropy_client
         self._service = rigo_service
@@ -80,7 +90,14 @@ class ApplicationsViewController(GObject.Object):
         self._nf_box = nf_box
         self._not_found_search_box = None
         self._not_found_label = None
+
+        self._cacher = EntropyCacher()
         self._search_thread_mutex = Lock()
+
+        self._search_completion = search_entry_completion
+        self._search_completion_model = search_entry_store
+        self._search_writeback_mutex = Lock()
+        self._search_writeback_thread = None
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
         """
@@ -166,6 +183,8 @@ class ApplicationsViewController(GObject.Object):
                # the UI thread, to avoid races (and also because we
                # have to...)
                self.set_many_safe(matches, _from_search=text)
+               if matches:
+                   self._add_recent_search_safe(text)
 
             finally:
                 self._service.repositories_lock.release()
@@ -259,7 +278,99 @@ class ApplicationsViewController(GObject.Object):
         """
         GLib.idle_add(self._update_repositories)
 
+    def _ensure_cache_dir(self):
+        """
+        Make sure the cache directory is available.
+        """
+        path = self.RECENT_SEARCHES_DIR
+        try:
+            os.makedirs(path)
+        except OSError as err:
+            if err.errno == errno.EEXIST:
+                if os.path.isfile(path):
+                    os.remove(path) # fail, yeah
+                return
+            elif err.errno == errno.ENOTDIR:
+                # wtf? we will fail later for sure
+                return
+            elif err.errno == errno.EPERM:
+                # meh!
+                return
+            raise
+
+    def _load_recent_searches(self):
+        """
+        Load from disk a list() of recent searches.
+        """
+        self._ensure_cache_dir()
+        data = self._cacher.pop(
+            self.RECENT_SEARCHES_CACHE_KEY,
+            cache_dir=self.RECENT_SEARCHES_DIR)
+        if data is None:
+            return []
+        return data[:self.RECENT_SEARCHES_MAX_LEN]
+
+    def _store_recent_searches(self, searches):
+        """
+        Store to disk a list of recent searches.
+        """
+        self._ensure_cache_dir()
+        self._cacher.save(
+            self.RECENT_SEARCHES_CACHE_KEY,
+            searches,
+            cache_dir=self.RECENT_SEARCHES_DIR)
+
+    def _store_searches_thread(self):
+        """
+        Thread body doing recent searches writeback.
+        """
+        data = {
+            'sem': Semaphore(0),
+            'res': None,
+        }
+        const_debug_write(
+            __name__, "running recent searches writeback")
+
+        def _get_list():
+            searches = [x[0] for x in self._search_completion_model]
+            data['res'] = searches
+            data['sem'].release()
+        GLib.idle_add(_get_list)
+
+        data['sem'].acquire()
+        searches = data['res']
+        self._store_recent_searches(searches)
+        self._search_writeback_thread = None
+        const_debug_write(
+            __name__, "searches writeback completed")
+
+    def _add_recent_search_safe(self, search):
+        """
+        Add text element to recent searches.
+        """
+        if len(search) < self.MIN_RECENT_SEARCH_KEY_LEN:
+            return
+
+        def _prepend():
+            self._search_completion_model.prepend((search,))
+        GLib.idle_add(_prepend)
+
+        with self._search_writeback_mutex:
+            if self._search_writeback_thread is None:
+                task = Timer(15.0, self._store_searches_thread)
+                task.name = "StoreRecentSearches"
+                task.daemon = True
+                self._search_writeback_thread = task
+                task.start()
+
     def setup(self):
+        # load recent searches
+        for search in self._load_recent_searches():
+            self._search_completion_model.append([search])
+
+        # not enabling because it causes SIGFPE (Gtk3 bug?)
+        # self._search_entry.set_completion(self._search_completion)
+
         self._view.set_model(self._store)
         self._search_entry.connect(
             "changed", self._search_changed)

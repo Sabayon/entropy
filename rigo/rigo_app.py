@@ -2069,6 +2069,10 @@ class Rigo(Gtk.Application):
         self._app_view_port.set_name("rigo-view")
         self._not_found_box = self._builder.get_object("appsViewNotFoundVbox")
         self._search_entry = self._builder.get_object("searchEntry")
+        self._search_entry_completion = self._builder.get_object(
+            "searchEntryCompletion")
+        self._search_entry_store = self._builder.get_object(
+            "searchEntryStore")
         self._static_view = self._builder.get_object("staticViewVbox")
         self._notification = self._builder.get_object("notificationBox")
         self._bottom_notification = \
@@ -2111,7 +2115,8 @@ class Rigo(Gtk.Application):
             self._activity_rwsem,
             self._entropy, self._entropy_ws, self._service,
             icons, self._not_found_box,
-            self._search_entry, self._app_store, self._view)
+            self._search_entry, self._search_entry_completion,
+            self._search_entry_store, self._app_store, self._view)
 
         self._avc.connect("view-cleared", self._on_view_cleared)
         self._avc.connect("view-filled", self._on_view_filled)
