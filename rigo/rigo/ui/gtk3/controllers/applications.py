@@ -157,27 +157,39 @@ class ApplicationsViewController(GObject.Object):
             try:
 
                matches = []
-               # exact match
-               pkg_matches, rc = self._entropy.atom_match(
-                   text, multi_match = True,
-                   multi_repo = True, mask_filter = False)
-               matches.extend(pkg_matches)
 
-               # atom searching (name and desc)
-               search_matches = self._entropy.atom_search(
-                   text,
-                   repositories = self._entropy.repositories(),
-                   description = True)
+               # package set search
+               if text.startswith(etpConst['packagesetprefix']):
+                   sets = self._entropy.Sets()
+                   package_deps = sets.expand(text)
+                   for package_dep in package_deps:
+                       pkg_id, pkg_repo = self._entropy.atom_match(
+                           package_dep)
+                       if pkg_id != -1:
+                           matches.append((pkg_id, pkg_repo))
 
-               matches.extend([x for x in search_matches \
-                                   if x not in matches])
+               if not matches:
+                   # exact match
+                   pkg_matches, rc = self._entropy.atom_match(
+                       text, multi_match=True,
+                       multi_repo=True, mask_filter=False)
+                   matches.extend(pkg_matches)
 
-               if not search_matches:
+                   # atom searching (name and desc)
                    search_matches = self._entropy.atom_search(
-                       _prepare_for_search(text),
-                       repositories = self._entropy.repositories())
-                   matches.extend(
-                       [x for x in search_matches if x not in matches])
+                       text,
+                       repositories = self._entropy.repositories(),
+                       description = True)
+
+                   matches.extend([x for x in search_matches \
+                                       if x not in matches])
+
+                   if not search_matches:
+                       search_matches = self._entropy.atom_search(
+                           _prepare_for_search(text),
+                           repositories = self._entropy.repositories())
+                       matches.extend(
+                           [x for x in search_matches if x not in matches])
 
                # we have to decide if to show the treeview in
                # the UI thread, to avoid races (and also because we
