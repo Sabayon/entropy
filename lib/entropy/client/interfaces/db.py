@@ -109,11 +109,6 @@ class CachedRepository(EntropyRepository):
                     "cannot close this repository directly. Software bug!")
         return EntropyRepository.close(self)
 
-    def __del__(self):
-        """
-        Cannot honor the constraint in this case, sorry!
-        """
-        return EntropyRepository.close(self)
 
 class InstalledPackagesRepository(CachedRepository):
     """

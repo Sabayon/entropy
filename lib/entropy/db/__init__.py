@@ -754,9 +754,6 @@ class EntropyRepository(EntropyRepositoryBase):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    def __del__(self):
-        self.close()
-
     @staticmethod
     def update(entropy_client, repository_id, force, gpg):
         """
