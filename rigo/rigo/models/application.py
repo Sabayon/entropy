@@ -29,7 +29,8 @@ from gi.repository import GObject
 
 from entropy.const import const_debug_write, const_debug_enabled, \
     const_convert_to_unicode, etpConst
-from entropy.exceptions import DependenciesNotRemovable
+from entropy.exceptions import DependenciesNotRemovable, \
+    DependenciesNotFound, DependenciesCollision
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
@@ -904,6 +905,31 @@ class Application(object):
             return True
         except DependenciesNotRemovable:
             return False
+
+    def is_installable(self):
+        """
+        Return if Application can be installed or it's masked
+        or one of its dependencies are.
+        """
+        inst_repo = self._entropy.installed_repository()
+        repo = self._entropy.open_repository(self._repo_id)
+        if repo is inst_repo:
+            return False
+
+        pkg_match = self.get_details().pkg
+        masked = self._entropy.is_package_masked(pkg_match)
+        if not masked:
+            return False
+
+        try:
+            install_queue, removal_queue = self._entropy.get_install_queue(
+                [pkg_match], False, False)
+        except DependenciesNotFound:
+            return False
+        except DependenciesCollision:
+            return False
+
+        return True
 
     def is_available(self):
         """
