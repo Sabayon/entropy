@@ -24,7 +24,9 @@ from threading import Lock
 
 from rigo.paths import CONF_DIR
 
+from entropy.misc import ReadersWritersSemaphore
 from entropy.services.client import WebService
+from entropy.client.interfaces import Client
 
 class EntropyWebService(object):
 
@@ -123,3 +125,18 @@ class EntropyWebService(object):
         if self._tx_callback is not None:
             webserv._set_transfer_callback(self._tx_callback)
         return webserv
+
+class EntropyClient(Client):
+    """
+    Entropy Client Interface object.
+    """
+
+    _RWSEM = ReadersWritersSemaphore()
+
+    def rwsem(self):
+        """
+        Return a Readers/Writers semaphore object that
+        arbitrates concurrent access to shared, non-atomic
+        resources such as cached EntropyRepository objects.
+        """
+        return EntropyClient._RWSEM

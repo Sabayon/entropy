@@ -43,7 +43,7 @@ from gi.repository import Gtk, Gdk, Gio, GLib, GObject, Vte, Pango, \
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons, AppActions, RigoViewStates, \
     LocalActivityStates
-from rigo.entropyapi import EntropyWebService
+from rigo.entropyapi import EntropyWebService, EntropyClient as Client
 from rigo.models.application import Application
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
@@ -67,7 +67,6 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode
-from entropy.client.interfaces import Client
 from entropy.client.interfaces.repository import Repository
 from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore
 from entropy.i18n import _, ngettext
@@ -844,9 +843,13 @@ class RigoServiceController(GObject.Object):
         For example, leaving EntropyRepository objects open
         would cause sqlite3 to deadlock.
         """
-        if clear_avc:
-            self._avc.clear_safe()
-        self._entropy.close_repositories()
+        self._entropy.rwsem().writer_acquire()
+        try:
+            if clear_avc:
+                self._avc.clear_safe()
+            self._entropy.close_repositories()
+        finally:
+            self._entropy.rwsem().writer_release()
 
     def _please_wait(self, show):
         """
@@ -1832,30 +1835,39 @@ class UpperNotificationViewController(NotificationViewController):
         Execute connectivity check basing on Entropy
         Web Services availability.
         """
-        repositories = self._entropy.repositories()
-        available = False
-        for repository_id in repositories:
-            if self._entropy_ws.get(repository_id) is not None:
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repositories = self._entropy.repositories()
+            available = False
+            for repository_id in repositories:
+                if self._entropy_ws.get(repository_id) is not None:
+                    available = True
+                    break
+            if not repositories:
+                # no repos to check against
                 available = True
-                break
-        if not repositories:
-            # no repos to check against
-            available = True
 
-        if not available:
-            GLib.idle_add(self._notify_connectivity_issues)
+            if not available:
+                GLib.idle_add(self._notify_connectivity_issues)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def __order_updates(self, updates):
         """
         Order updates using PN.
         """
-        def _key_func(x):
-            return self._entropy.open_repository(
-                x[1]).retrieveName(x[0]).lower()
-        return sorted(updates, key=_key_func)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            def _key_func(x):
+                return self._entropy.open_repository(
+                    x[1]).retrieveName(x[0]).lower()
+            return sorted(updates, key=_key_func)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def __calculate_updates(self):
         self._activity_rwsem.reader_acquire()
+        self._entropy.rwsem().reader_acquire()
         try:
             unavailable_repositories = \
                 self._entropy.unavailable_repositories()
@@ -1872,6 +1884,7 @@ class UpperNotificationViewController(NotificationViewController):
             self._updates = self.__order_updates(updates)
             self._security_updates = self._entropy.calculate_security_updates()
         finally:
+            self._entropy.rwsem().reader_release()
             self._activity_rwsem.reader_release()
 
         GLib.idle_add(self._notify_updates_safe)

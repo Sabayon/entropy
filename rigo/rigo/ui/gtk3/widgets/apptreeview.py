@@ -33,6 +33,8 @@ from rigo.em import em, StockEms
 from rigo.enums import Icons, AppActions
 from rigo.models.application import CategoryRowReference, Application
 
+from RigoDaemon.enums import AppActions as DaemonAppActions
+
 COL_ROW_DATA = 0
 
 class AppTreeView(Gtk.TreeView):
@@ -42,8 +44,8 @@ class AppTreeView(Gtk.TreeView):
     VARIANT_INFO = 0
     VARIANT_REMOVE = 1
     VARIANT_INSTALL = 2
-
-    ACTION_BTNS = (VARIANT_REMOVE, VARIANT_INSTALL)
+    VARIANT_INSTALLING = 3
+    VARIANT_REMOVING = 4
 
     def __init__(self, entropy_client, backend, apc, icons, show_ratings,
                  icon_size, store=None):
@@ -56,7 +58,8 @@ class AppTreeView(Gtk.TreeView):
 
         self.pressed = False
         self.focal_btn = None
-        self._action_block_list = []
+        # pkg match is key, AppAction is val
+        self._action_block_list = {}
         self.expanded_path = None
 
         #~ # if this hacked mode is available everything will be fast
@@ -93,7 +96,9 @@ class AppTreeView(Gtk.TreeView):
                                     name=CellButtonIDs.ACTION)
         action.set_markup_variants(
                 {self.VARIANT_INSTALL: _('Install'),
-                 self.VARIANT_REMOVE: _('Remove')})
+                 self.VARIANT_REMOVE: _('Remove'),
+                 self.VARIANT_INSTALLING: _('Installing'),
+                 self.VARIANT_REMOVING: _('Removing'),})
 
         tr.button_pack_start(info)
         tr.button_pack_end(action)
@@ -290,20 +295,31 @@ class AppTreeView(Gtk.TreeView):
                             CellButtonIDs.ACTION)
         #if not action_btn: return False
 
-        if self.appmodel.is_installed(app):
-            action_btn.set_variant(self.VARIANT_REMOVE)
-            action_btn.set_sensitive(True)
-            action_btn.show()
-        elif self.appmodel.is_available(app):
-            action_btn.set_variant(self.VARIANT_INSTALL)
-            action_btn.set_sensitive(True)
-            action_btn.show()
+        app_action = self._action_block_list.get(app)
+        if app_action is None:
+            if self.appmodel.is_installed(app):
+                action_btn.set_variant(self.VARIANT_REMOVE)
+                action_btn.set_sensitive(True)
+                action_btn.show()
+            elif self.appmodel.is_available(app):
+                action_btn.set_variant(self.VARIANT_INSTALL)
+                action_btn.set_sensitive(True)
+                action_btn.show()
+            else:
+                action_btn.set_sensitive(False)
+                action_btn.hide()
+                self._apc.emit("application-selected",
+                               self.appmodel.get_application(app))
+                return
         else:
-            action_btn.set_sensitive(False)
-            action_btn.hide()
-            self._apc.emit("application-selected",
-                           self.appmodel.get_application(app))
-            return
+            if app_action == AppActions.INSTALL:
+                action_btn.set_variant(self.VARIANT_INSTALLING)
+                action_btn.set_sensitive(False)
+                action_btn.show()
+            elif app_action == AppActions.REMOVE:
+                action_btn.set_variant(self.VARIANT_REMOVING)
+                action_btn.set_sensitive(False)
+                action_btn.show()
 
         if self.appmodel.get_transaction_progress(app) > 0:
             action_btn.set_sensitive(False)
@@ -489,11 +505,11 @@ class AppTreeView(Gtk.TreeView):
                     "Action already in progress for match: %s" % (
                         (app,)))
                 return False
-            self._action_block_list.append(app)
             if self.appmodel.is_installed(app):
                 perform_action = AppActions.REMOVE
             else:
                 perform_action = AppActions.INSTALL
+            self._action_block_list[app] = perform_action
 
             self._apc.emit("application-request-action",
                       self.appmodel.get_application(app),
@@ -515,8 +531,13 @@ class AppTreeView(Gtk.TreeView):
         """
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
+            if daemon_action == DaemonAppActions.INSTALL:
+                action_btn.set_variant(self.VARIANT_INSTALLING)
+            elif daemon_action == DaemonAppActions.REMOVE:
+                action_btn.set_variant(self.VARIANT_REMOVING)
             action_btn.set_sensitive(False)
             self._set_cursor(action_btn, None)
+            self.queue_draw()
 
     def _on_transaction_finished(self, widget, app, daemon_action, tr):
         """
@@ -530,8 +551,34 @@ class AppTreeView(Gtk.TreeView):
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
-            action_btn.set_sensitive(True)
-            self._set_cursor(action_btn, self._cursor_hand)
+            # just completed daemon_action
+            sensitive = True
+            if daemon_action == DaemonAppActions.INSTALL:
+                if app.is_installed():
+                    action_btn.set_variant(self.VARIANT_REMOVE)
+                elif app.is_available():
+                    action_btn.set_variant(self.VARIANT_INSTALL)
+                else:
+                    action_btn.set_variant(self.VARIANT_INSTALL)
+                    sensitive = False
+                    # wtf?
+
+            elif daemon_action == DaemonAppActions.REMOVE:
+                if app.is_available():
+                    action_btn.set_variant(self.VARIANT_INSTALL)
+                elif app.is_installed():
+                    action_btn.set_variant(self.VARIANT_REMOVE)
+                else:
+                    action_btn.set_variant(self.VARIANT_INSTALL)
+                    sensitive = False
+                    # wtf?
+
+            action_btn.set_sensitive(sensitive)
+            if sensitive:
+                self._set_cursor(action_btn, self._cursor_hand)
+            else:
+                self._set_cursor(action_btn, None)
+            self.queue_draw()
 
     def _on_transaction_stopped(self, widget, app, daemon_action, tr):
         """
@@ -539,22 +586,21 @@ class AppTreeView(Gtk.TreeView):
         transaction has stopped
         """
         pkg = app.get_details().pkg
-        # remove pkg from the block list
         self._check_remove_pkg_from_blocklist(pkg)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
-            # this should be a function that
-            # decides action button state label...
-            if action_btn.current_variant == self.VARIANT_INSTALL:
-                action_btn.set_markup(self.VARIANT_REMOVE)
+            if daemon_action == DaemonAppActions.INSTALL:
+                action_btn.set_variant(self.VARIANT_INSTALL)
+            elif daemon_action == DaemonAppActions.REMOVE:
+                action_btn.set_variant(self.VARIANT_REMOVE)
             action_btn.set_sensitive(True)
             self._set_cursor(action_btn, self._cursor_hand)
+            self.queue_draw()
 
     def _check_remove_pkg_from_blocklist(self, app):
-        if app in self._action_block_list:
-            i = self._action_block_list.index(app)
-            del self._action_block_list[i]
+        action = self._action_block_list.pop(app, None)
+        return action
 
     def _xy_is_over_focal_row(self, x, y):
         res = self.get_path_at_pos(x, y)

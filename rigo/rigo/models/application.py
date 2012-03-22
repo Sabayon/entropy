@@ -814,13 +814,17 @@ class Application(object):
     @property
     def name(self):
         """Show user visible name"""
-        repo = self._entropy.open_repository(self._repo_id)
-        name = repo.retrieveName(self._pkg_id)
-        if name is None:
-            return _("N/A")
-        name = " ".join([x.capitalize() for x in \
-                             name.replace("-"," ").split()])
-        return escape_markup(name)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            name = repo.retrieveName(self._pkg_id)
+            if name is None:
+                return _("N/A")
+            name = " ".join([x.capitalize() for x in \
+                                 name.replace("-"," ").split()])
+            return escape_markup(name)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_installed(self):
         """
@@ -835,101 +839,117 @@ class Application(object):
         application (rather than the available one), or
         None if not installed.
         """
-        inst_repo = self._entropy.installed_repository()
-        repo = self._entropy.open_repository(self._repo_id)
-        if repo is inst_repo:
-            return self
+        self._entropy.rwsem().reader_acquire()
+        try:
+            inst_repo = self._entropy.installed_repository()
+            repo = self._entropy.open_repository(self._repo_id)
+            if repo is inst_repo:
+                return self
 
-        key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
-        if key_slot_tag is None:
-            return None
+            key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
+            if key_slot_tag is None:
+                return None
 
-        key, slot, tag = key_slot_tag
-        matches = inst_repo.searchKeySlotTag(key, slot, tag)
-        # in the installed packages repository, matches
-        # must be of length < 2.
-        if len(matches) > 1:
-            raise AttributeError(
-                "searchKeySlot for %s returned: %s" % (
-                    (key, slot), matches,))
-        if not matches:
-            # not installed
-            return None
+            key, slot, tag = key_slot_tag
+            matches = inst_repo.searchKeySlotTag(key, slot, tag)
+            # in the installed packages repository, matches
+            # must be of length < 2.
+            if len(matches) > 1:
+                raise AttributeError(
+                    "searchKeySlot for %s returned: %s" % (
+                        (key, slot), matches,))
+            if not matches:
+                # not installed
+                return None
 
-        package_id = list(matches)[0]
-        return Application(self._entropy, self._entropy_ws,
-                           (package_id, inst_repo.repository_id()),
-                           redraw_callback=self._redraw_callback)
+            package_id = list(matches)[0]
+            return Application(self._entropy, self._entropy_ws,
+                               (package_id, inst_repo.repository_id()),
+                               redraw_callback=self._redraw_callback)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_updatable(self):
         """
         Return if Application can be updated.
         With "updated" we also mean "downgraded".
         """
-        inst_repo = self._entropy.installed_repository()
-        repo = self._entropy.open_repository(self._repo_id)
-        if repo is inst_repo:
-            return False
-        pkgcmp = self._entropy.get_package_action(
-            (self._pkg_id, self._repo_id))
-        # 0 = reinstall
-        # 1 = new package
-        # 2 = update
-        # else = downgrade
-        if pkgcmp == 2:
-            return True
-        elif pkgcmp == 0:
-            return False
-        elif pkgcmp == 1:
-            return False
-        else:
-            return True
+        self._entropy.rwsem().reader_acquire()
+        try:
+            inst_repo = self._entropy.installed_repository()
+            repo = self._entropy.open_repository(self._repo_id)
+            if repo is inst_repo:
+                return False
+            pkgcmp = self._entropy.get_package_action(
+                (self._pkg_id, self._repo_id))
+            # 0 = reinstall
+            # 1 = new package
+            # 2 = update
+            # else = downgrade
+            if pkgcmp == 2:
+                return True
+            elif pkgcmp == 0:
+                return False
+            elif pkgcmp == 1:
+                return False
+            else:
+                return True
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_removable(self):
         """
         Return if Application can be removed or it's part of
         the Base System.
         """
-        installed = self.get_installed()
-        if installed is not self:
-            return installed.is_removable()
-
-        removable = self._entropy.validate_package_removal(
-            self._pkg_id)
-        if removable:
-            return True
-
+        self._entropy.rwsem().reader_acquire()
         try:
-            self._entropy.get_reverse_queue(
-                [(self._pkg_id, self._repo_id)])
-            return True
-        except DependenciesNotRemovable:
-            return False
+            installed = self.get_installed()
+            if installed is not self:
+                return installed.is_removable()
+
+            removable = self._entropy.validate_package_removal(
+                self._pkg_id)
+            if removable:
+                return True
+
+            try:
+                self._entropy.get_reverse_queue(
+                    [(self._pkg_id, self._repo_id)])
+                return True
+            except DependenciesNotRemovable:
+                return False
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_installable(self):
         """
         Return if Application can be installed or it's masked
         or one of its dependencies are.
         """
-        inst_repo = self._entropy.installed_repository()
-        repo = self._entropy.open_repository(self._repo_id)
-        if repo is inst_repo:
-            return False
-
-        pkg_match = self.get_details().pkg
-        masked = self._entropy.is_package_masked(pkg_match)
-        if not masked:
-            return False
-
+        self._entropy.rwsem().reader_acquire()
         try:
-            install_queue, removal_queue = self._entropy.get_install_queue(
-                [pkg_match], False, False)
-        except DependenciesNotFound:
-            return False
-        except DependenciesCollision:
-            return False
+            inst_repo = self._entropy.installed_repository()
+            repo = self._entropy.open_repository(self._repo_id)
+            if repo is inst_repo:
+                return False
 
-        return True
+            pkg_match = self.get_details().pkg
+            masked = self._entropy.is_package_masked(pkg_match)
+            if masked:
+                return True
+
+            try:
+                install_queue, removal_queue = self._entropy.get_install_queue(
+                    [pkg_match], False, False)
+            except DependenciesNotFound:
+                return False
+            except DependenciesCollision:
+                return False
+
+            return True
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_available(self):
         """
@@ -938,34 +958,42 @@ class Application(object):
         The actual semantics of this method in softwarecenter
         seems quite ambiguous to me.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.isPackageIdAvailable(self._pkg_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.isPackageIdAvailable(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def get_markup(self):
         """
         Get Application markup text.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        name = self.name
-        version = repo.retrieveVersion(self._pkg_id)
-        if version is None:
-            version = _("N/A")
-        tag = repo.retrieveTag(self._pkg_id)
-        if not tag:
-            tag = ""
-        else:
-            tag = "#" + tag
-        description = repo.retrieveDescription(self._pkg_id)
-        if description is None:
-            description = _("No description")
-        if len(description) > 79:
-            description =  description[:80].strip() + "..."
-        text = "<b>%s</b> %s%s\n<small><i>%s</i></small>" % (
-            name,
-            escape_markup(version),
-            escape_markup(tag),
-            escape_markup(description))
-        return text
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            name = self.name
+            version = repo.retrieveVersion(self._pkg_id)
+            if version is None:
+                version = _("N/A")
+            tag = repo.retrieveTag(self._pkg_id)
+            if not tag:
+                tag = ""
+            else:
+                tag = "#" + tag
+            description = repo.retrieveDescription(self._pkg_id)
+            if description is None:
+                description = _("No description")
+            if len(description) > 79:
+                description =  description[:80].strip() + "..."
+            text = "<b>%s</b> %s%s\n<small><i>%s</i></small>" % (
+                name,
+                escape_markup(version),
+                escape_markup(tag),
+                escape_markup(description))
+            return text
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def search(self, keyword):
         """
@@ -981,121 +1009,129 @@ class Application(object):
         """
         Get Application markup text (extended version).
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        strict = repo.getStrictData(self._pkg_id)
-        if strict is None:
-            return _("N/A")
-        key, slot, version, tag, revision, atom = strict
+        self._entropy.rwsem().reader_release()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            strict = repo.getStrictData(self._pkg_id)
+            if strict is None:
+                return _("N/A")
+            key, slot, version, tag, revision, atom = strict
 
-        name = key.split("/", 1)[-1]
-        # make it cute
-        name = " ".join([x.capitalize() for x in \
-                             name.replace("-"," ").split()])
-        name = escape_markup(name)
-        website = repo.retrieveHomepage(self._pkg_id)
-        if website:
-            name = "<a href=\"%s\">%s</a>" % (
-                escape_markup(website),
-                name,)
+            name = key.split("/", 1)[-1]
+            # make it cute
+            name = " ".join([x.capitalize() for x in \
+                                 name.replace("-"," ").split()])
+            name = escape_markup(name)
+            website = repo.retrieveHomepage(self._pkg_id)
+            if website:
+                name = "<a href=\"%s\">%s</a>" % (
+                    escape_markup(website),
+                    name,)
 
-        if not tag:
-            tag = ""
-        else:
-            tag = "#" + tag
+            if not tag:
+                tag = ""
+            else:
+                tag = "#" + tag
 
-        revision_txt = "~%d" % (revision,)
+            revision_txt = "~%d" % (revision,)
 
-        description = repo.retrieveDescription(self._pkg_id)
-        if description is None:
-            description = _("No description")
-        if len(description) > 79:
-            description =  description[:80].strip() + "..."
+            description = repo.retrieveDescription(self._pkg_id)
+            if description is None:
+                description = _("No description")
+            if len(description) > 79:
+                description =  description[:80].strip() + "..."
 
-        cdate = repo.retrieveCreationDate(self._pkg_id)
-        if cdate:
-            date = time.strftime("%B %d, %Y",
-                time.gmtime(float(cdate))).capitalize()
-        else:
-            date = _("N/A")
+            cdate = repo.retrieveCreationDate(self._pkg_id)
+            if cdate:
+                date = time.strftime("%B %d, %Y",
+                    time.gmtime(float(cdate))).capitalize()
+            else:
+                date = _("N/A")
 
-        repo_from = "%s <b>%s</b>" % (escape_markup(_("from")),
-                                      escape_markup(self._repo_id),)
+            repo_from = "%s <b>%s</b>" % (escape_markup(_("from")),
+                                          escape_markup(self._repo_id),)
 
-        text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
-            name,
-            escape_markup(version),
-            escape_markup(tag),
-            escape_markup(revision_txt),
-            escape_markup(description),
-            escape_markup(date),
-            repo_from,
-            )
-        return text
+            text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
+                name,
+                escape_markup(version),
+                escape_markup(tag),
+                escape_markup(revision_txt),
+                escape_markup(description),
+                escape_markup(date),
+                repo_from,
+                )
+            return text
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def get_info_markup(self):
         """
         Get Application info markup text.
         """
-        lic_url = "%s/license/" % (etpConst['packages_website_url'],)
-        repo = self._entropy.open_repository(self._repo_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            lic_url = "%s/license/" % (etpConst['packages_website_url'],)
+            repo = self._entropy.open_repository(self._repo_id)
 
-        licenses = repo.retrieveLicense(self._pkg_id)
-        if licenses:
-            licenses_txt = "<b>%s</b>: " % (escape_markup(_("License")),)
-            licenses_txt += ", ".join(sorted([
-                        "<a href=\"%s%s\">%s</a>" % (lic_url, x, x) \
-                            for x in licenses.split()]))
-        else:
-            licenses_txt = ""
+            licenses = repo.retrieveLicense(self._pkg_id)
+            if licenses:
+                licenses_txt = "<b>%s</b>: " % (escape_markup(_("License")),)
+                licenses_txt += ", ".join(sorted([
+                            "<a href=\"%s%s\">%s</a>" % (lic_url, x, x) \
+                                for x in licenses.split()]))
+            else:
+                licenses_txt = ""
 
-        required_space = repo.retrieveOnDiskSize(self._pkg_id)
-        if required_space is None:
-            required_space = 0
-        required_space_txt = "<b>%s</b>: %s" % (
-            escape_markup(_("Required space")),
-            escape_markup(entropy.tools.bytes_into_human(required_space)),)
+            required_space = repo.retrieveOnDiskSize(self._pkg_id)
+            if required_space is None:
+                required_space = 0
+            required_space_txt = "<b>%s</b>: %s" % (
+                escape_markup(_("Required space")),
+                escape_markup(entropy.tools.bytes_into_human(required_space)),)
 
-        down_size = repo.retrieveSize(self._pkg_id)
-        if down_size is None:
-            down_size = 0
-        down_size_txt = "<b>%s</b>: %s" % (
-            escape_markup(_("Download size")),
-            escape_markup(entropy.tools.bytes_into_human(down_size)),)
+            down_size = repo.retrieveSize(self._pkg_id)
+            if down_size is None:
+                down_size = 0
+            down_size_txt = "<b>%s</b>: %s" % (
+                escape_markup(_("Download size")),
+                escape_markup(entropy.tools.bytes_into_human(down_size)),)
 
-        digest = repo.retrieveDigest(self._pkg_id)
-        if digest is None:
-            digest = _("N/A")
-        digest_txt = "<b>%s</b>: %s" % (
-            escape_markup(_("Checksum")),
-            escape_markup(digest))
+            digest = repo.retrieveDigest(self._pkg_id)
+            if digest is None:
+                digest = _("N/A")
+            digest_txt = "<b>%s</b>: %s" % (
+                escape_markup(_("Checksum")),
+                escape_markup(digest))
 
-        uses = repo.retrieveUseflags(self._pkg_id)
-        uses = sorted(uses)
-        use_list = []
-        use_url = "%s/useflag/" % (etpConst['packages_website_url'],)
-        for use in uses:
-            use_m = escape_markup(use)
-            txt = "<a href=\"%s%s\">%s</a>" % (use_url, use_m, use_m)
-            use_list.append(txt)
-        use_txt = "<b>%s</b>: " % (escape_markup(_("USE flags")),)
-        if use_list:
-            use_txt += " ".join(use_list)
-        else:
-            use_txt += escape_markup(_("No use flags"))
+            uses = repo.retrieveUseflags(self._pkg_id)
+            uses = sorted(uses)
+            use_list = []
+            use_url = "%s/useflag/" % (etpConst['packages_website_url'],)
+            for use in uses:
+                use_m = escape_markup(use)
+                txt = "<a href=\"%s%s\">%s</a>" % (use_url, use_m, use_m)
+                use_list.append(txt)
+            use_txt = "<b>%s</b>: " % (escape_markup(_("USE flags")),)
+            if use_list:
+                use_txt += " ".join(use_list)
+            else:
+                use_txt += escape_markup(_("No use flags"))
 
-        more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
-            build_application_store_url(self, ""),
-            escape_markup(_("Click here for more details")),)
+            more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
+                build_application_store_url(self, ""),
+                escape_markup(_("Click here for more details")),)
 
-        text = "<small>%s\n%s\n%s\n%s\n%s\n\n%s</small>" % (
-            down_size_txt,
-            required_space_txt,
-            licenses_txt,
-            digest_txt,
-            use_txt,
-            more_txt,
-            )
-        return text
+            text = "<small>%s\n%s\n%s\n%s\n%s\n\n%s</small>" % (
+                down_size_txt,
+                required_space_txt,
+                licenses_txt,
+                digest_txt,
+                use_txt,
+                more_txt,
+                )
+            return text
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def get_review_stats(self, _still_visible_cb=None):
         """
@@ -1103,33 +1139,37 @@ class Application(object):
         information about this Application, like
         votes and number of downloads.
         """
-        stat = ReviewStats(self)
-        stat.ratings_average = ReviewStats.NO_RATING
-
-        repo = self._entropy.open_repository(self._repo_id)
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            return stat # empty stats
-        key, slot = key_slot
+        self._entropy.rwsem().reader_acquire()
         try:
-            rating = ApplicationMetadata.lazy_get_rating(
-                self._entropy_ws, key, self._repo_id,
-                callback=self._redraw_callback,
-                _still_visible_cb=_still_visible_cb)
-        except WebService.CacheMiss:
-            # not in cache, return empty stats
-            return stat
+            stat = ReviewStats(self)
+            stat.ratings_average = ReviewStats.NO_RATING
 
-        if rating is None:
-            # not ready yet, return empty ratings
-            return stat # empty stats
-        vote, down = rating
-        if vote is not None:
-            stat.ratings_average = vote
-        if down is not None:
-            # otherwise 0 is shown
-            stat.downloads_total = down
-        return stat
+            repo = self._entropy.open_repository(self._repo_id)
+            key_slot = repo.retrieveKeySlot(self._pkg_id)
+            if key_slot is None:
+                return stat # empty stats
+            key, slot = key_slot
+            try:
+                rating = ApplicationMetadata.lazy_get_rating(
+                    self._entropy_ws, key, self._repo_id,
+                    callback=self._redraw_callback,
+                    _still_visible_cb=_still_visible_cb)
+            except WebService.CacheMiss:
+                # not in cache, return empty stats
+                return stat
+
+            if rating is None:
+                # not ready yet, return empty ratings
+                return stat # empty stats
+            vote, down = rating
+            if vote is not None:
+                stat.ratings_average = vote
+            if down is not None:
+                # otherwise 0 is shown
+                stat.downloads_total = down
+            return stat
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def get_icon(self, _still_visible_cb=None):
         """
@@ -1139,29 +1179,33 @@ class Application(object):
         by the Document object (or None) and cache hit information
         (True if got from local cache, False if not in local cache)
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            return None, False
-
-        key, slot = key_slot
-        cache_hit = True
+        self._entropy.rwsem().reader_acquire()
         try:
-            icon = ApplicationMetadata.lazy_get_icon(
-                self._entropy_ws, key, self._repo_id,
-                callback=self._redraw_callback,
-                _still_visible_cb=_still_visible_cb)
-        except WebService.CacheMiss:
-            cache_hit = False
-            icon = None
+            repo = self._entropy.open_repository(self._repo_id)
+            key_slot = repo.retrieveKeySlot(self._pkg_id)
+            if key_slot is None:
+                return None, False
 
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                "Application{%s}.get_icon: icon: %s, cache hit: %s" % (
-                    self._pkg_match,
-                    icon, cache_hit))
+            key, slot = key_slot
+            cache_hit = True
+            try:
+                icon = ApplicationMetadata.lazy_get_icon(
+                    self._entropy_ws, key, self._repo_id,
+                    callback=self._redraw_callback,
+                    _still_visible_cb=_still_visible_cb)
+            except WebService.CacheMiss:
+                cache_hit = False
+                icon = None
 
-        return icon, cache_hit
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "Application{%s}.get_icon: icon: %s, cache hit: %s" % (
+                        self._pkg_match,
+                        icon, cache_hit))
+
+            return icon, cache_hit
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def download_comments(self, callback, offset=0):
         """
@@ -1169,24 +1213,28 @@ class Application(object):
         In case of missing comments (locally), None is returned.
         The actual outcome of this method is a DocumentList object.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            task = ParallelTask(callback, None)
-            task.name = "DownloadCommentsNoneCallback"
-            task.daemon = True
-            task.start()
-            return
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            key_slot = repo.retrieveKeySlot(self._pkg_id)
+            if key_slot is None:
+                task = ParallelTask(callback, None)
+                task.name = "DownloadCommentsNoneCallback"
+                task.daemon = True
+                task.start()
+                return
 
-        key, slot = key_slot
-        ApplicationMetadata.download_comments_async(
-            self._entropy_ws, key, self._repo_id,
-            offset, callback)
+            key, slot = key_slot
+            ApplicationMetadata.download_comments_async(
+                self._entropy_ws, key, self._repo_id,
+                offset, callback)
 
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                "Application{%s}.download_comments called" % (
-                    self._pkg_match,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "Application{%s}.download_comments called" % (
+                        self._pkg_match,))
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def download_images(self, callback, offset=0):
         """
@@ -1194,24 +1242,28 @@ class Application(object):
         In case of missing comments (locally), None is returned.
         The actual outcome of this method is a DocumentList object.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        key_slot = repo.retrieveKeySlot(self._pkg_id)
-        if key_slot is None:
-            task = ParallelTask(callback, None)
-            task.name = "DownloadImagesNoneCallback"
-            task.daemon = True
-            task.start()
-            return
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            key_slot = repo.retrieveKeySlot(self._pkg_id)
+            if key_slot is None:
+                task = ParallelTask(callback, None)
+                task.name = "DownloadImagesNoneCallback"
+                task.daemon = True
+                task.start()
+                return
 
-        key, slot = key_slot
-        ApplicationMetadata.download_images_async(
-            self._entropy_ws, key, self._repo_id,
-            offset, callback)
+            key, slot = key_slot
+            ApplicationMetadata.download_images_async(
+                self._entropy_ws, key, self._repo_id,
+                offset, callback)
 
-        if const_debug_enabled():
-            const_debug_write(__name__,
-                "Application{%s}.download_images called" % (
-                    self._pkg_match,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "Application{%s}.download_images called" % (
+                        self._pkg_match,))
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_webservice_available(self):
         """
@@ -1243,9 +1295,13 @@ class Application(object):
                           redraw_callback=self._redraw_callback)
 
     def __str__(self):
-        repo = self._entropy.open_repository(self._repo_id)
-        atom = repo.retrieveAtom(self._pkg_id)
-        return "(%s: %s)" % (self._pkg_match, atom)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            atom = repo.retrieveAtom(self._pkg_id)
+            return "(%s: %s)" % (self._pkg_match, atom)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def __repr__(self):
         return str(self)
@@ -1282,8 +1338,12 @@ class AppDetails(object):
         """
         Return Application short description.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveDescription(self._pkg_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveDescription(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def error(self):
@@ -1295,16 +1355,20 @@ class AppDetails(object):
         Return human readable representation of the installation
         date, if installed, or None otherwise.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        inst_repo = self._entropy.installed_repository()
-        if repo is inst_repo:
-            return entropy.tools.convert_unix_time_to_human_time(
-                float(repo.retrieveCreationDate(self._pkg_id)))
-        keyslot = repo.retrieveKeySlotAggregated(self._pkg_id)
-        pkg_id, rc = inst_repo.atomMatch(keyslot)
-        if pkg_id != -1:
-            return entropy.tools.convert_unix_time_to_human_time(
-                float(inst_repo.retrieveCreationDate(pkg_id)))
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            inst_repo = self._entropy.installed_repository()
+            if repo is inst_repo:
+                return entropy.tools.convert_unix_time_to_human_time(
+                    float(repo.retrieveCreationDate(self._pkg_id)))
+            keyslot = repo.retrieveKeySlotAggregated(self._pkg_id)
+            pkg_id, rc = inst_repo.atomMatch(keyslot)
+            if pkg_id != -1:
+                return entropy.tools.convert_unix_time_to_human_time(
+                    float(inst_repo.retrieveCreationDate(pkg_id)))
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def date(self):
@@ -1312,28 +1376,40 @@ class AppDetails(object):
         Return human readable representation of the date the
         Application has been last updated.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return entropy.tools.convert_unix_time_to_human_time(
-            float(repo.retrieveCreationDate(self._pkg_id)))
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return entropy.tools.convert_unix_time_to_human_time(
+                float(repo.retrieveCreationDate(self._pkg_id)))
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def licenses(self):
         """
         Return list of license identifiers for Application.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        licenses = repo.retrieveLicense(self._pkg_id)
-        if not licenses:
-            return []
-        return licenses.split()
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            licenses = repo.retrieveLicense(self._pkg_id)
+            if not licenses:
+                return []
+            return licenses.split()
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def downsize(self):
         """
         Return the download size in bytes.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveSize(self._pkg_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveSize(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def name(self):
@@ -1365,17 +1441,25 @@ class AppDetails(object):
         """
         Return unmangled package name belonging to this Application.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveName(self._pkg_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveName(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def pkgkey(self):
         """
         Return unmangled package key name belonging to this Application.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        key, slot = repo.retrieveKeySlot(self._pkg_id)
-        return key
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            key, slot = repo.retrieveKeySlot(self._pkg_id)
+            return key
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def signing_key_id(self):
@@ -1389,14 +1473,21 @@ class AppDetails(object):
         """
         Return Application version (without revision and tag).
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveVersion(self._pkg_id)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveVersion(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def website(self):
         """
         Return Application official Website URL or None.
         """
-        repo = self._entropy.open_repository(self._repo_id)
-        return repo.retrieveHomepage(self._pkg_id)
-
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveHomepage(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()

@@ -127,6 +127,50 @@ class ApplicationsViewController(GObject.Object):
             th.name = "SearchThread"
             th.start()
 
+    def __search_produce_matches(self, text):
+        """
+        Execute the actual search inside Entropy repositories.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            matches = []
+            # package set search
+            if text.startswith(etpConst['packagesetprefix']):
+                sets = self._entropy.Sets()
+                package_deps = sets.expand(text)
+                for package_dep in package_deps:
+                    pkg_id, pkg_repo = self._entropy.atom_match(
+                        package_dep)
+                    if pkg_id != -1:
+                        matches.append((pkg_id, pkg_repo))
+
+            if not matches:
+                # exact match
+                pkg_matches, rc = self._entropy.atom_match(
+                    text, multi_match=True,
+                    multi_repo=True, mask_filter=False)
+                matches.extend(pkg_matches)
+
+                # atom searching (name and desc)
+                search_matches = self._entropy.atom_search(
+                    text,
+                    repositories = self._entropy.repositories(),
+                    description = True)
+
+                matches.extend([x for x in search_matches \
+                                    if x not in matches])
+
+                if not search_matches:
+                    search_matches = self._entropy.atom_search(
+                        _prepare_for_search(text),
+                        repositories = self._entropy.repositories())
+                    matches.extend(
+                        [x for x in search_matches if x not in matches])
+
+            return matches
+        finally:
+            self._entropy.rwsem().reader_release()
+
     def __search_thread(self, text):
         def _prepare_for_search(txt):
             return txt.replace(" ", "-").lower()
@@ -156,41 +200,7 @@ class ApplicationsViewController(GObject.Object):
                 return
             try:
 
-               matches = []
-
-               # package set search
-               if text.startswith(etpConst['packagesetprefix']):
-                   sets = self._entropy.Sets()
-                   package_deps = sets.expand(text)
-                   for package_dep in package_deps:
-                       pkg_id, pkg_repo = self._entropy.atom_match(
-                           package_dep)
-                       if pkg_id != -1:
-                           matches.append((pkg_id, pkg_repo))
-
-               if not matches:
-                   # exact match
-                   pkg_matches, rc = self._entropy.atom_match(
-                       text, multi_match=True,
-                       multi_repo=True, mask_filter=False)
-                   matches.extend(pkg_matches)
-
-                   # atom searching (name and desc)
-                   search_matches = self._entropy.atom_search(
-                       text,
-                       repositories = self._entropy.repositories(),
-                       description = True)
-
-                   matches.extend([x for x in search_matches \
-                                       if x not in matches])
-
-                   if not search_matches:
-                       search_matches = self._entropy.atom_search(
-                           _prepare_for_search(text),
-                           repositories = self._entropy.repositories())
-                       matches.extend(
-                           [x for x in search_matches if x not in matches])
-
+               matches = self.__search_produce_matches(text)
                # we have to decide if to show the treeview in
                # the UI thread, to avoid races (and also because we
                # have to...)
@@ -221,25 +231,29 @@ class ApplicationsViewController(GObject.Object):
         Setup "not found" message label and layout
         """
         nf_box = self._not_found_box
-        # now self._not_found_label is available
-        meant_packages = self._entropy.get_meant_packages(
-            search_text)
-        text = escape_markup(search_text)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            # now self._not_found_label is available
+            meant_packages = self._entropy.get_meant_packages(
+                search_text)
+            text = escape_markup(search_text)
 
-        msg = "%s <b>%s</b>" % (
-            escape_markup(_("Nothing found for")),
-            text,)
-        if meant_packages:
-            first_entry = meant_packages[0]
-            app = Application(
-                self._entropy, self._entropy_ws,
-                first_entry)
-            name = app.name
+            msg = "%s <b>%s</b>" % (
+                escape_markup(_("Nothing found for")),
+                text,)
+            if meant_packages:
+                first_entry = meant_packages[0]
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    first_entry)
+                name = app.name
 
-            msg += ", %s" % (
-                prepare_markup(_("did you mean <a href=\"%s\">%s</a>?")) % (
-                    escape_markup(name),
-                    escape_markup(name),),)
+                msg += ", %s" % (
+                    prepare_markup(_("did you mean <a href=\"%s\">%s</a>?")) % (
+                        escape_markup(name),
+                        escape_markup(name),),)
+        finally:
+            self._entropy.rwsem().reader_release()
 
         self._not_found_label.set_markup(msg)
 
@@ -354,7 +368,7 @@ class ApplicationsViewController(GObject.Object):
         self._store_recent_searches(searches)
         self._search_writeback_thread = None
         const_debug_write(
-            __name__, "searches writeback completed")
+            __name__, "searches writeback complete")
 
     def _add_recent_search_safe(self, search):
         """
