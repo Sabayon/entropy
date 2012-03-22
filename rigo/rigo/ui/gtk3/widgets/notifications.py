@@ -97,6 +97,7 @@ class NotificationBox(Gtk.HBox):
             label = Gtk.Label()
             label.set_markup(self._message)
             label.set_line_wrap_mode(Pango.WrapMode.WORD)
+            label.set_line_wrap(True)
             # make it css-able
             label.set_property("expand", True)
             label.set_alignment(0.02, 0.50)
