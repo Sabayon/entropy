@@ -330,7 +330,7 @@ class AppTreeView(Gtk.TreeView):
 
         #~ self.emit("application-selected", self.appmodel.get_application(app))
         self._apc.emit("application-selected",
-                           self.appmodel.get_application(app))
+                       self.appmodel.get_application(app))
         return False
 
     def _on_row_activated(self, view, path, column, tr):
@@ -514,6 +514,7 @@ class AppTreeView(Gtk.TreeView):
             self._apc.emit("application-request-action",
                       self.appmodel.get_application(app),
                       perform_action)
+            self.queue_draw()
         return False
 
     def _set_cursor(self, btn, cursor):
@@ -537,7 +538,7 @@ class AppTreeView(Gtk.TreeView):
                 action_btn.set_variant(self.VARIANT_REMOVING)
             action_btn.set_sensitive(False)
             self._set_cursor(action_btn, None)
-            self.queue_draw()
+        self.queue_draw()
 
     def _on_transaction_finished(self, widget, app, daemon_action, tr):
         """
@@ -578,7 +579,8 @@ class AppTreeView(Gtk.TreeView):
                 self._set_cursor(action_btn, self._cursor_hand)
             else:
                 self._set_cursor(action_btn, None)
-            self.queue_draw()
+
+        self.queue_draw()
 
     def _on_transaction_stopped(self, widget, app, daemon_action, tr):
         """
