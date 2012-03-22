@@ -159,9 +159,6 @@ class RigoServiceController(GObject.Object):
                                     (GObject.TYPE_PYOBJECT,
                                      GObject.TYPE_PYOBJECT,),
                                     ),
-        # Application has been removed from the action queue
-        # before processing.
-        # FIXME, support this?
         "application-abort" : (GObject.SignalFlags.RUN_LAST,
                                None,
                                (GObject.TYPE_PYOBJECT,
@@ -1172,7 +1169,20 @@ class RigoServiceController(GObject.Object):
         Examine Application Install Request on behalf of
         _application_request_checks().
         """
-        # FIXME, complete
+        installable = app.is_installable()
+        if not installable:
+            msg = _("<b>%s</b>\ncannot be installed at this time"
+                    " due to <b>missing/masked</b> dependencies or"
+                    " dependency <b>conflict</b>")
+            msg = msg % (app.get_markup(),)
+            message_type = Gtk.MessageType.ERROR
+
+            GLib.idle_add(
+                self._notify_blocking_message,
+                None, msg, message_type)
+
+            return False
+
         return True
 
     def _application_request_checks(self, app, daemon_action):
@@ -1185,6 +1195,10 @@ class RigoServiceController(GObject.Object):
             accepted = self._application_request_removal_checks(app)
         else:
             accepted = self._application_request_install_checks(app)
+        if not accepted:
+            def _emit():
+                self.emit("application-abort", app, daemon_action)
+            GLib.idle_add(_emit)
         return accepted
 
     def _application_request_unlocked(self, app, daemon_action,
