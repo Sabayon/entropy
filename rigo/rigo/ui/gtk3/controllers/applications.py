@@ -405,7 +405,7 @@ class ApplicationsViewController(GObject.Object):
         self._view.show()
 
     def clear(self):
-        self._store.clear()
+        self._view.clear_model()
         ApplicationMetadata.discard()
         if const_debug_enabled():
             const_debug_write(__name__, "AVC: emitting view-cleared")
@@ -425,7 +425,7 @@ class ApplicationsViewController(GObject.Object):
         self.emit("view-filled")
 
     def set_many(self, opaque_list, _from_search=None):
-        self._store.clear()
+        self._view.clear_model()
         ApplicationMetadata.discard()
         self.append_many(opaque_list)
         if _from_search:
