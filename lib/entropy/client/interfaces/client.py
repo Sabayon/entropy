@@ -978,6 +978,3 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
     def is_destroyed(self):
         return self.__instance_destroyed
-
-    def __del__(self):
-        self.destroy()

@@ -1332,9 +1332,6 @@ class Server(Client):
         """
         return self.__instance_destroyed
 
-    def __del__(self):
-        self.destroy()
-
     def _get_branch_from_download_relative_uri(self, db_download_uri):
         return db_download_uri.split("/")[2]
 
