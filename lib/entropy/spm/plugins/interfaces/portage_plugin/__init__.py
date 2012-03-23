@@ -2906,21 +2906,25 @@ class PortagePlugin(SpmPlugin):
         proposed_xpak_dir = os.path.join(package_metadata['xpakpath'],
             xpak_rel_path)
 
+        # dealing with merge_from feature
+        copypath_avail = True
+        copypath = proposed_xpak_dir
+        if package_metadata['merge_from']:
+            copypath = package_metadata['xpakdir']
+            if not os.path.isdir(copypath):
+                copypath_avail = False
+
         counter = -1
         if (package_metadata['xpakstatus'] != None) and \
-            os.path.isdir(proposed_xpak_dir) or package_metadata['merge_from']:
-
-            copypath = proposed_xpak_dir
-            if package_metadata['merge_from']:
-                copypath = package_metadata['xpakdir']
-                if not os.path.isdir(copypath):
-                    return 0
+            os.path.isdir(proposed_xpak_dir) or \
+            (package_metadata['merge_from'] and copypath_avail):
 
             if not os.path.isdir(cat_dir):
                 os.makedirs(cat_dir, 0o755)
 
             splitdebug = package_metadata.get("splitdebug", False)
             splitdebug_dirs = package_metadata.get("splitdebug_dirs", tuple())
+
             if not splitdebug and splitdebug_dirs:
                 contents_path = os.path.join(copypath,
                     PortagePlugin.xpak_entries['contents'])
@@ -2985,10 +2989,14 @@ class PortagePlugin(SpmPlugin):
                 if not vdb_failed:
                     # from this point, every vardb change has to be committed
                     self._bump_vartree_mtime(spm_package)
-                if os.path.isdir(pkg_dir):
-                    # We also need to bump vdb mtime now, otherwise Portage
-                    # will potentially pick up wrong cache data
-                    os.utime(pkg_dir, None)
+
+        try:
+            # We also need to bump vdb mtime now, otherwise Portage
+            # will potentially pick up wrong cache data
+            os.utime(pkg_dir, None)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:
