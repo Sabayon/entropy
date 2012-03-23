@@ -1009,7 +1009,7 @@ class Application(object):
         """
         Get Application markup text (extended version).
         """
-        self._entropy.rwsem().reader_release()
+        self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
             strict = repo.getStrictData(self._pkg_id)
