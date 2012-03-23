@@ -523,6 +523,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type temporary: bool
         """
         self._live_cacher = EntropyRepositoryCacher()
+        self.__connlock = threading.RLock()
         self.__settings_cache = {}
         self.__cursor_cache = {}
         self.__connection_cache = {}
@@ -609,18 +610,19 @@ class EntropyRepository(EntropyRepositoryBase):
         th_ids = [x.ident for x in threading.enumerate() if x.ident]
 
         def kill_me(th_id, pid):
-            try:
-                cur = self.__cursor_cache.pop((th_id, pid))
-                cur.close()
-            except KeyError:
-                pass
-            try:
-                conn = self.__connection_cache.pop((th_id, pid))
+            with self.__connlock:
+                cur = self.__cursor_cache.pop((th_id, pid), None)
+                if cur is not None:
+                    cur.close()
+                conn = self.__connection_cache.pop((th_id, pid), None)
+
+            if conn is not None:
                 if not self._readonly:
                     try:
                         conn.commit()
                     except OperationalError:
-                        # no transaction is active can cause this, bleh!
+                        # no transaction is active can
+                        # cause this, bleh!
                         pass
                 try:
                     conn.close()
@@ -629,24 +631,24 @@ class EntropyRepository(EntropyRepositoryBase):
                         conn.interrupt()
                         conn.close()
                     except OperationalError:
-                        # heh, unable to close due to unfinalised statements
+                        # heh, unable to close due to
+                        # unfinalized statements
                         # interpreter shutdown?
                         pass
-            except KeyError:
-                pass
 
-        th_data = set(self.__cursor_cache.keys())
-        th_data |= set(self.__connection_cache.keys())
-        for th_id, pid in th_data:
-            do_kill = False
-            if kill_all:
-                do_kill = True
-            elif th_id not in th_ids:
-                do_kill = True
-            elif not const_pid_exists(pid):
-                do_kill = True
-            if do_kill:
-                kill_me(th_id, pid)
+        with self.__connlock:
+            th_data = set(self.__cursor_cache.keys())
+            th_data |= set(self.__connection_cache.keys())
+            for th_id, pid in th_data:
+                do_kill = False
+                if kill_all:
+                    do_kill = True
+                elif th_id not in th_ids:
+                    do_kill = True
+                elif not const_pid_exists(pid):
+                    do_kill = True
+                if do_kill:
+                    kill_me(th_id, pid)
 
     def _cursor(self):
 
@@ -658,7 +660,8 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cleanup_stale_cur_conn_t = t1
 
         c_key = self._get_cur_th_key()
-        cursor = self.__cursor_cache.get(c_key)
+        with self.__connlock:
+            cursor = self.__cursor_cache.get(c_key)
         if cursor is None:
             conn = self._connection()
             cursor = conn.cursor()
@@ -669,7 +672,8 @@ class EntropyRepository(EntropyRepositoryBase):
             # to in-memory value
             # http://www.sqlite.org/pragma.html#pragma_temp_store
             cursor.execute("pragma temp_store = 2").fetchall()
-            self.__cursor_cache[c_key] = cursor
+            with self.__connlock:
+                self.__cursor_cache[c_key] = cursor
             # memory databases are critical because every new cursor brings
             # up a totally empty repository. So, enforce initialization.
             if self._db_path == ":memory:":
@@ -679,13 +683,16 @@ class EntropyRepository(EntropyRepositoryBase):
     def _connection(self):
         self._cleanup_stale_cur_conn()
         c_key = self._get_cur_th_key()
-        conn = self.__connection_cache.get(c_key)
+        with self.__connlock:
+            conn = self.__connection_cache.get(c_key)
         if conn is None:
-            # check_same_thread still required for conn.close() called from
+            # check_same_thread still required for
+            # conn.close() called from
             # arbitrary thread
             conn = dbapi2.connect(self._db_path, timeout=300.0,
-                check_same_thread = False)
-            self.__connection_cache[c_key] = conn
+                                  check_same_thread = False)
+            with self.__connlock:
+                self.__connection_cache[c_key] = conn
         return conn
 
     def __show_info(self):
