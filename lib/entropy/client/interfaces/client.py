@@ -11,6 +11,7 @@
 """
 import os
 import codecs
+import threading
 
 from entropy.core import Singleton
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
@@ -740,6 +741,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self.__instance_destroyed = False
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
+        self._repodb_cache_mutex = threading.RLock()
         self._memory_db_instances = {}
         self._installed_repository = None
         self._treeupdates_repos = set()

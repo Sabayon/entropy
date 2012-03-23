@@ -65,14 +65,16 @@ class RepositoryMixin:
 
         def ensure_closed_repo(repoid):
             key = self.__get_repository_cache_key(repoid)
-            for cache_obj in (self._repodb_cache, self._memory_db_instances):
-                obj = cache_obj.pop(key, None)
-                if obj is None:
-                    continue
-                try:
-                    obj.close(_token = repoid)
-                except OperationalError:
-                    pass
+            with self._repodb_cache_mutex:
+                for cache_obj in (self._repodb_cache,
+                                  self._memory_db_instances):
+                    obj = cache_obj.pop(key, None)
+                    if obj is None:
+                        continue
+                    try:
+                        obj.close(_token = repoid)
+                    except OperationalError:
+                        pass
 
         t2 = _("Please update your repositories now in order to remove this message!")
 
@@ -166,21 +168,23 @@ class RepositoryMixin:
         @keyword mask_clear: clear package masking information if True
         @type mask_clear: bool
         """
-        repo_cache = getattr(self, "_repodb_cache", {})
-        for item, val in list(repo_cache.items()): # list() -> python3 support
-            repository_id, root = item
-            # in-memory repositories cannot be closed
-            # otherwise everything will be lost, to
-            # effectively close these repos you
-            # must call remove_repository method
-            if item in self._memory_db_instances:
-                continue
-            try:
-                repo_cache.pop(item).close(_token = repository_id)
-            except OperationalError as err: # wtf!
-                sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
-                    err,))
-        repo_cache.clear()
+        with self._repodb_cache_mutex:
+            repo_cache = getattr(self, "_repodb_cache", {})
+            # list() -> python3 support
+            for item, val in list(repo_cache.items()):
+                repository_id, root = item
+                # in-memory repositories cannot be closed
+                # otherwise everything will be lost, to
+                # effectively close these repos you
+                # must call remove_repository method
+                if item in self._memory_db_instances:
+                    continue
+                try:
+                    repo_cache.pop(item).close(_token = repository_id)
+                except OperationalError as err: # wtf!
+                    sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
+                        err,))
+            repo_cache.clear()
 
         # disable hooks during SystemSettings cleanup
         # otherwise it makes entropy.client.interfaces.repository crazy
@@ -197,14 +201,16 @@ class RepositoryMixin:
             return self._installed_repository
 
         key = self.__get_repository_cache_key(repository_id)
-        cached = self._repodb_cache.get(key)
-        if cached is not None:
+        with self._repodb_cache_mutex:
+            cached = self._repodb_cache.get(key)
+            if cached is not None:
+                return cached
+            cached = self._load_repository(
+                repository_id,
+                xcache = self.xcache, indexing = self._indexing,
+                _enabled_repos = _enabled_repos)
+            self._repodb_cache[key] = cached
             return cached
-
-        self._repodb_cache[key] = self._load_repository(repository_id,
-            xcache = self.xcache, indexing = self._indexing,
-            _enabled_repos = _enabled_repos)
-        return self._repodb_cache[key]
 
     def open_repository(self, repository_id):
         """
@@ -451,10 +457,8 @@ class RepositoryMixin:
             pass
 
         repo_key = self.__get_repository_cache_key(repository_id)
-        try:
-            dbconn = self._repodb_cache.pop(repo_key)
-        except KeyError:
-            dbconn = None
+        with self._repodb_cache_mutex:
+            dbconn = self._repodb_cache.pop(repo_key, None)
 
         if done:
 
@@ -1815,8 +1819,9 @@ class MiscMixin:
             # clear repositories live cache
             if self._installed_repository is not None:
                 self._installed_repository.clearCache()
-            for repo in self._repodb_cache.values():
-                repo.clearCache()
+            with self._repodb_cache_mutex:
+                for repo in self._repodb_cache.values():
+                    repo.clearCache()
             self._settings.clear()
             self._cacher.discard()
         self._cacher.sync()

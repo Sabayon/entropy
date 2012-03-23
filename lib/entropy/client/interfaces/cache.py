@@ -53,8 +53,9 @@ class CacheMixin:
             # clear repositories live cache
             if self._installed_repository is not None:
                 self._installed_repository.clearCache()
-            for repo in self._repodb_cache.values():
-                repo.clearCache()
+            with self._repodb_cache_mutex:
+                for repo in self._repodb_cache.values():
+                    repo.clearCache()
             cache_dir = self._cacher.current_directory()
             try:
                 shutil.rmtree(cache_dir, True)
