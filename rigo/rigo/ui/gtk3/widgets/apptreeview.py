@@ -226,7 +226,8 @@ class AppTreeView(Gtk.TreeView):
             return
 
         rowref = self.get_rowref(tree.get_model(), path[0])
-        if not rowref: return
+        if not rowref:
+            return
 
         if self.rowref_is_category(rowref):
             window.set_cursor(None)
@@ -311,6 +312,12 @@ class AppTreeView(Gtk.TreeView):
                 self._apc.emit("application-selected",
                                self.appmodel.get_application(app))
                 return
+
+            if self.pressed and self.focal_btn == action_btn:
+                action_btn.set_state(Gtk.StateFlags.ACTIVE)
+            else:
+                action_btn.set_state(Gtk.StateFlags.NORMAL)
+
         else:
             if app_action == AppActions.INSTALL:
                 action_btn.set_variant(self.VARIANT_INSTALLING)
@@ -320,13 +327,7 @@ class AppTreeView(Gtk.TreeView):
                 action_btn.set_variant(self.VARIANT_REMOVING)
                 action_btn.set_sensitive(False)
                 action_btn.show()
-
-        if self.appmodel.get_transaction_progress(app) > 0:
-            action_btn.set_sensitive(False)
-        elif self.pressed and self.focal_btn == action_btn:
-            action_btn.set_state(Gtk.StateFlags.ACTIVE)
-        else:
-            action_btn.set_state(Gtk.StateFlags.NORMAL)
+            action_btn.set_state(Gtk.StateFlags.INSENSITIVE)
 
         #~ self.emit("application-selected", self.appmodel.get_application(app))
         self._apc.emit("application-selected",

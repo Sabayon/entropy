@@ -140,3 +140,4 @@ class EntropyClient(Client):
         resources such as cached EntropyRepository objects.
         """
         return EntropyClient._RWSEM
+Client.__singleton_class__ = EntropyClient
