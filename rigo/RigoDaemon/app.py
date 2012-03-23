@@ -445,7 +445,7 @@ class RigoDaemonService(dbus.service.Object):
             # 5. [GUI?] if system package, avoid removal?
             # simulate
             self._entropy.output("Application Management Message")
-            time.sleep(35)
+            time.sleep(5)
             self._entropy.output("Application Management Complete")
             success = True
         finally:
