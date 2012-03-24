@@ -7,17 +7,15 @@ Backlog (raw)
     - requires dbus
     - requires polkit [introspection]
 
-    - [F] show App Information while Installing / Removing
-    - [F] when updating RigoDaemon, ask it to shutdown if possible
-          handle the case where we're updating from Rigo itself.
-    - [F] App Install support
+    - [F] App Install support (get_transaction_progress)
     - [F] Configuration files Update
-    - [F] Show Installed Application Version in App View
-    - [W] app install vs rigo client atomMatch?
+
     - preferences:
        - clean metadata cache
+       - clean recent searches
        - logout (clean session info)
        - update repositories
+       - reload RigoDaemon (via reload())
 
     magneto:
       - migrate to RigoDaemon as soon as it's available!
