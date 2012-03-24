@@ -117,12 +117,14 @@ class ApplicationsViewController(GObject.Object):
     def _search_changed(self, search_entry):
         GLib.timeout_add(700, self._search, search_entry.get_text())
 
-    def _search(self, old_text):
+    def _search(self, old_text, _force=False):
         cur_text = self._search_entry.get_text()
-        if cur_text == old_text and cur_text:
+        if (cur_text == old_text and cur_text) or _force:
             search_text = copy.copy(old_text)
             search_text = const_convert_to_unicode(
                 search_text, enctype=etpConst['conf_encoding'])
+            if _force:
+                self._search_entry.set_text(search_text)
             th = ParallelTask(self.__search_thread, search_text)
             th.name = "SearchThread"
             th.start()
@@ -131,6 +133,9 @@ class ApplicationsViewController(GObject.Object):
         """
         Execute the actual search inside Entropy repositories.
         """
+        def _prepare_for_search(txt):
+            return txt.replace(" ", "-").lower()
+
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
@@ -172,8 +177,6 @@ class ApplicationsViewController(GObject.Object):
             self._entropy.rwsem().reader_release()
 
     def __search_thread(self, text):
-        def _prepare_for_search(txt):
-            return txt.replace(" ", "-").lower()
 
         ## special keywords hook
         if text == "rigo:update":
@@ -388,6 +391,12 @@ class ApplicationsViewController(GObject.Object):
                 task.daemon = True
                 self._search_writeback_thread = task
                 task.start()
+
+    def search(self, text):
+        """
+        Execute an Application Search.
+        """
+        self._search(text, _force=True)
 
     def setup(self):
         # load recent searches

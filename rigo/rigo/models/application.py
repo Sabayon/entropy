@@ -38,6 +38,7 @@ from entropy.client.services.interfaces import ClientWebService, \
     DocumentList
 
 import entropy.tools
+import entropy.dep
 
 from rigo.enums import Icons
 from rigo.utils import build_application_store_url, escape_markup, \
@@ -1151,16 +1152,53 @@ class Application(object):
             else:
                 use_txt += escape_markup(_("No use flags"))
 
+            rdepend_id = etpConst['dependency_type_ids']['rdepend_id']
+            pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
+            bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
+            mdepend_id = etpConst['dependency_type_ids']['mdepend_id']
+
+            deps = repo.retrieveDependencies(
+                self._pkg_id, extended=True,
+                resolve_conditional_deps=False)
+            runtime_deps = [x for x, y in deps if y == rdepend_id]
+            build_deps = [x for x, y in deps if y == bdepend_id]
+            post_deps = [x for x, y in deps if y == pdepend_id]
+            manual_deps = [x for x, y in deps if y == mdepend_id]
+
+            depsorter = lambda x: entropy.dep.dep_getcpv(x)
+
+            dep_couples = [
+                (runtime_deps, _("Runtime dependencies")),
+                (build_deps, _("Build dependencies")),
+                (post_deps, _("Post dependencies")),
+                (manual_deps, _("Staff dependencies"))
+            ]
+            dep_txts = []
+            for dep_list, dep_title in dep_couples:
+                if not dep_list:
+                    continue
+                dep_txt = "<b>%s</b>" % (escape_markup(dep_title),)
+                for dep in sorted(dep_list, key=depsorter):
+                    dep_mk = escape_markup(dep)
+                    dep_txt += "\n      <a href=\"app://%s\">%s</a>" % (
+                        dep_mk, dep_mk,)
+                dep_txts.append(dep_txt)
+
+            deps_txt = "\n".join(dep_txts)
+            if deps_txt:
+                deps_txt += "\n\n"
+
             more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
                 build_application_store_url(self, ""),
                 escape_markup(_("Click here for more details")),)
 
-            text = "<small>%s\n%s\n%s\n%s\n%s\n\n%s</small>" % (
+            text = "<small>%s\n%s\n%s\n%s\n%s\n%s%s</small>" % (
                 down_size_txt,
                 required_space_txt,
                 licenses_txt,
                 digest_txt,
                 use_txt,
+                deps_txt,
                 more_txt,
                 )
             return text

@@ -169,6 +169,8 @@ class ApplicationViewController(GObject.Object):
         self._app_comment_text_buffer.connect(
             "changed", self._on_comment_buffer_changed)
         self._stars.connect("changed", self._on_stars_clicked)
+        self._app_info_lbl.connect(
+            "activate-link", self._on_info_lbl_activate_link)
 
         self._service.connect(
             "application-processed", self._on_reload_state)
@@ -224,6 +226,17 @@ class ApplicationViewController(GObject.Object):
         task.name = "ApplicationActivate"
         task.daemon = True
         task.start()
+
+    def _on_info_lbl_activate_link(self, widget, uri):
+        """
+        Event coming from Application Information label on link
+        clicked.
+        """
+        if uri.startswith("app://"):
+            if self._avc is not None:
+                self._avc.search(uri[len("app://"):])
+            return True
+        return False
 
     def _on_redraw_request(self, widget, pkg_match):
         """
