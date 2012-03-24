@@ -40,7 +40,8 @@ from entropy.client.services.interfaces import ClientWebService, \
 import entropy.tools
 
 from rigo.enums import Icons
-from rigo.utils import build_application_store_url, escape_markup
+from rigo.utils import build_application_store_url, escape_markup, \
+    prepare_markup
 
 class ReviewStats(object):
 
@@ -493,6 +494,11 @@ class ApplicationMetadata(object):
                 down = webserv.get_downloads(
                     [package_key], cache=False)[package_key]
                 outcome = (vote, down)
+            except WebService.WebServiceException as err:
+                const_debug_write(
+                    __name__,
+                    "Application{%s}.download_rating_async: %s" % (
+                        package_key, err,))
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.
@@ -615,6 +621,11 @@ class ApplicationMetadata(object):
                         webserv, icon)
                     if local_path:
                         outcome = icon
+            except WebService.WebServiceException as err:
+                const_debug_write(
+                    __name__,
+                    "Application{%s}.download_icon_async: %s" % (
+                        package_key, err,))
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.
@@ -655,6 +666,11 @@ class ApplicationMetadata(object):
                 outcome = webserv.get_comments(
                     [package_key], cache=False,
                     latest=True, offset=offset)[package_key]
+            except WebService.WebServiceException as err:
+                const_debug_write(
+                    __name__,
+                    "Application{%s}.download_comments_async: %s" % (
+                        package_key, err,))
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.
@@ -720,6 +736,11 @@ class ApplicationMetadata(object):
                 _outcome.extend(fetched_images)
                 outcome = _outcome
 
+            except WebService.WebServiceException as err:
+                const_debug_write(
+                    __name__,
+                    "Application{%s}.download_images_async: %s" % (
+                        self._pkg_match, err,))
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.
@@ -1012,6 +1033,7 @@ class Application(object):
         self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
+            inst_repo = self._entropy.installed_repository()
             strict = repo.getStrictData(self._pkg_id)
             if strict is None:
                 return _("N/A")
@@ -1048,18 +1070,30 @@ class Application(object):
             else:
                 date = _("N/A")
 
-            repo_from = "%s <b>%s</b>" % (escape_markup(_("from")),
-                                          escape_markup(self._repo_id),)
+            from_str = self._repo_id
+            installed_str = ""
+            if repo is inst_repo:
+                from_str = _("Installed")
+            else:
+                inst_app = self.get_installed()
+                if inst_app is not None:
+                    ver = inst_app.get_details().version
+                    installed_str = "\n" + prepare_markup(
+                        _("<b>%s</b> is installed") % (ver,))
 
-            text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s</small>" % (
-                name,
-                escape_markup(version),
-                escape_markup(tag),
-                escape_markup(revision_txt),
-                escape_markup(description),
-                escape_markup(date),
-                repo_from,
-                )
+            repo_from = "%s <b>%s</b>" % (escape_markup(_("from")),
+                                          escape_markup(from_str),)
+
+            text = "<b>%s</b> %s%s%s\n<small><i>%s</i>\n%s, %s%s</small>" % (
+                    name,
+                    escape_markup(version),
+                    escape_markup(tag),
+                    escape_markup(revision_txt),
+                    escape_markup(description),
+                    escape_markup(date),
+                    repo_from,
+                    installed_str,
+                    )
             return text
         finally:
             self._entropy.rwsem().reader_release()
@@ -1476,7 +1510,11 @@ class AppDetails(object):
         self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
-            return repo.retrieveVersion(self._pkg_id)
+            ver = repo.retrieveVersion(self._pkg_id)
+            tag = repo.retrieveTag(self._pkg_id)
+            if tag:
+                ver += etpConst['entropytagprefix'] + tag
+            return ver
         finally:
             self._entropy.rwsem().reader_release()
 

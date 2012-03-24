@@ -865,13 +865,22 @@ class ApplicationViewController(GObject.Object):
         def _setup():
             self._setup_buttons(
                 app, is_installed, is_updatable)
+            # contains Application Version
+            self._setup_application_markup(
+                app.get_extended_markup())
         GLib.idle_add(_setup)
+
+    def _setup_application_markup(self, extended_markup):
+        """
+        Setup Application header text
+        """
+        self._app_name_lbl.set_markup(extended_markup)
 
     def _setup_application_info(self, app, metadata):
         """
         Setup the actual UI widgets content and emit 'application-show'
         """
-        self._app_name_lbl.set_markup(metadata['markup'])
+        self._setup_application_markup(metadata['markup'])
         self._app_info_lbl.set_markup(metadata['info'])
 
         # install/remove/update buttons
