@@ -300,7 +300,6 @@ class RigoDaemonService(dbus.service.Object):
             self._action_queue_worker_thread)
         self._action_queue_task.name = "ActionQueueWorkerThread"
         self._action_queue_task.daemon = True
-        # do not daemonize !!
         self._action_queue_task.start()
 
         Entropy.set_daemon(self)
@@ -310,16 +309,26 @@ class RigoDaemonService(dbus.service.Object):
                 os.getpid(), os.getppid(),)
                 )
 
-        def _sigusr2_activate_shutdown(signum, frame):
-            write_output("SIGUSR2: activating shutdown...", debug=True)
-            # ask clients to pong
-            task = TimeScheduled(30.0, self.ping)
-            task.set_delay_before(False)
-            task.name = "ShutdownPinger"
-            task.daemon = True
-            task.start()
+        self._deferred_shutdown = False
+        self._deferred_shutdown_mutex = Lock()
+        signal.signal(signal.SIGUSR2, self._activate_deferred_shutdown)
 
-        signal.signal(signal.SIGUSR2, _sigusr2_activate_shutdown)
+    def _activate_deferred_shutdown(self, *args):
+        """
+        Activate deferred shutdown starting the ping/pong
+        protocol.
+        """
+        with self._deferred_shutdown_mutex:
+            if self._deferred_shutdown:
+                return
+            self._deferred_shutdown = True
+
+        write_output("Activating deferred shutdown...", debug=True)
+        task = TimeScheduled(30.0, self.ping)
+        task.set_delay_before(False)
+        task.name = "ShutdownPinger"
+        task.daemon = True
+        task.start()
 
     def _busy(self, activity):
         """
@@ -687,6 +696,16 @@ class RigoDaemonService(dbus.service.Object):
         write_output("api called", debug=True)
 
         return RigoDaemonService.API_VERSION
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def reload(self):
+        """
+        Ask RigoDaemon to exit when no clients are
+        connected in order to get loaded back by Dbus.
+        """
+        write_output("reload called", debug=True)
+        self._activate_deferred_shutdown()
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='')

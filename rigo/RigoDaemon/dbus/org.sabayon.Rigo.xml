@@ -37,6 +37,9 @@
        <arg name="version" type="i" direction="out"/>
     </method>
 
+    <method name="reload">
+    </method>
+
     <method name="pong"/>
   </interface>
 </node>
