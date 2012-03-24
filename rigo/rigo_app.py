@@ -179,6 +179,7 @@ class RigoServiceController(GObject.Object):
     _PROCESSING_APPLICATION_SIGNAL = "processing_application"
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
+    _SUPPORTED_APIS = [0]
 
     def __init__(self, rigo_app, activity_rwsem, auth,
                  entropy_client, entropy_ws):
@@ -327,6 +328,12 @@ class RigoServiceController(GObject.Object):
         Return the current local transaction state mapping.
         """
         return self._local_transactions
+
+    def supported_apis(self):
+        """
+        Return a list of supported RigoDaemon APIs.
+        """
+        return RigoServiceController._SUPPORTED_APIS
 
     @property
     def repositories_lock(self):
@@ -873,6 +880,14 @@ class RigoServiceController(GObject.Object):
         return dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).exclusive()
+
+    def api(self):
+        """
+        Return RigoDaemon API version
+        """
+        return dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).api()
 
     def _release_local_resources(self, clear_avc=True):
         """
@@ -2461,6 +2476,18 @@ class Rigo(Gtk.Application):
                 None,
                 escape_markup(_("Rigo")),
                 escape_markup(_("RigoDaemon service is not available")))
+            entropy.tools.kill_threads()
+            Gtk.main_quit()
+            return
+
+        supported_apis = self._service.supported_apis()
+        daemon_api = self._service.api()
+        if daemon_api not in supported_apis:
+            self._show_ok_dialog(
+                None,
+                escape_markup(_("Rigo")),
+                escape_markup(
+                    _("API mismatch, please update Rigo and RigoDaemon")))
             entropy.tools.kill_threads()
             Gtk.main_quit()
             return

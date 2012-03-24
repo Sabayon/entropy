@@ -219,6 +219,8 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
+    API_VERSION = 0
+
     """
     RigoDaemon is the dbus service Object in charge of executing
     privileged tasks, like repository updates, package installation
@@ -675,6 +677,16 @@ class RigoDaemonService(dbus.service.Object):
         write_output("exclusive called", debug=True)
 
         return self._acquired_exclusive
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='i')
+    def api(self):
+        """
+        Return RigoDaemon API version.
+        """
+        write_output("api called", debug=True)
+
+        return RigoDaemonService.API_VERSION
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='')
