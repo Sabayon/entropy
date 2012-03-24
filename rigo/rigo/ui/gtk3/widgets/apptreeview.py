@@ -58,8 +58,6 @@ class AppTreeView(Gtk.TreeView):
 
         self.pressed = False
         self.focal_btn = None
-        # pkg match is key, AppAction is val
-        self._action_block_list = {}
         self.expanded_path = None
 
         #~ # if this hacked mode is available everything will be fast
@@ -286,23 +284,24 @@ class AppTreeView(Gtk.TreeView):
         # update active app, use row-ref as argument
         self.expand_path(row)
 
-        app = model[row][COL_ROW_DATA]
+        pkg_match = model[row][COL_ROW_DATA]
 
         # make sure this is not a category (LP: #848085)
-        if self.rowref_is_category(app):
+        if self.rowref_is_category(pkg_match):
             return False
 
         action_btn = tr.get_button_by_name(
                             CellButtonIDs.ACTION)
         #if not action_btn: return False
 
-        app_action = self._action_block_list.get(app)
+        app = self.appmodel.get_application(pkg_match)
+        app_action = self._get_app_transaction(app)
         if app_action is None:
-            if self.appmodel.is_installed(app):
+            if self.appmodel.is_installed(pkg_match):
                 action_btn.set_variant(self.VARIANT_REMOVE)
                 action_btn.set_sensitive(True)
                 action_btn.show()
-            elif self.appmodel.is_available(app):
+            elif self.appmodel.is_available(pkg_match):
                 action_btn.set_variant(self.VARIANT_INSTALL)
                 action_btn.set_sensitive(True)
                 action_btn.show()
@@ -310,7 +309,7 @@ class AppTreeView(Gtk.TreeView):
                 action_btn.set_sensitive(False)
                 action_btn.hide()
                 self._apc.emit("application-selected",
-                               self.appmodel.get_application(app))
+                               app)
                 return
 
             if self.pressed and self.focal_btn == action_btn:
@@ -329,15 +328,14 @@ class AppTreeView(Gtk.TreeView):
                 action_btn.show()
             action_btn.set_state(Gtk.StateFlags.INSENSITIVE)
 
-        #~ self.emit("application-selected", self.appmodel.get_application(app))
-        self._apc.emit("application-selected",
-                       self.appmodel.get_application(app))
+        self._apc.emit("application-selected", app)
         return False
 
     def _on_row_activated(self, view, path, column, tr):
         rowref = self.get_rowref(view.get_model(), path)
 
-        if not rowref: return
+        if not rowref:
+            return
 
         if self.rowref_is_category(rowref): return
 
@@ -483,8 +481,8 @@ class AppTreeView(Gtk.TreeView):
         cell.set_property('isactive', is_active)
         return
 
-    def _app_activated_cb(self, btn, btn_id, app, store, path):
-        if self.rowref_is_category(app):
+    def _app_activated_cb(self, btn, btn_id, pkg_match, store, path):
+        if self.rowref_is_category(pkg_match):
             return
 
         # FIXME: would be nice if that would be more elegant
@@ -493,28 +491,28 @@ class AppTreeView(Gtk.TreeView):
         if type(store) is Gtk.TreeModelFilter:
             store = store.get_model()
 
+        app = self.appmodel.get_application(pkg_match)
         if btn_id == CellButtonIDs.INFO:
-            self._apc.emit("application-activated",
-                               self.appmodel.get_application(app))
+            self._apc.emit("application-activated", app)
         elif btn_id == CellButtonIDs.ACTION:
             btn.set_sensitive(False)
             store.row_changed(path, store.get_iter(path))
             # be sure we dont request an action for a
             # pkg with pre-existing actions
-            if app in self._action_block_list:
+            daemon_action = self._get_app_transaction(app)
+            if daemon_action is not None:
                 logging.debug(
                     "Action already in progress for match: %s" % (
-                        (app,)))
+                        (pkg_match,)))
                 return False
-            if self.appmodel.is_installed(app):
+            if self.appmodel.is_installed(pkg_match):
                 perform_action = AppActions.REMOVE
             else:
                 perform_action = AppActions.INSTALL
-            self._action_block_list[app] = perform_action
+            self._set_app_transaction(app, perform_action)
 
             self._apc.emit("application-request-action",
-                      self.appmodel.get_application(app),
-                      perform_action)
+                           app, perform_action)
             self.queue_draw()
         return False
 
@@ -548,8 +546,7 @@ class AppTreeView(Gtk.TreeView):
         """
         self.emit("cursor-changed")
         # remove pkg from the block list
-        pkg = app.get_details().pkg
-        self._check_remove_pkg_from_blocklist(pkg)
+        self._pop_app_transaction(app)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
@@ -588,8 +585,7 @@ class AppTreeView(Gtk.TreeView):
         callback when an application install/remove
         transaction has stopped
         """
-        pkg = app.get_details().pkg
-        self._check_remove_pkg_from_blocklist(pkg)
+        self._pop_app_transaction(app)
 
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
@@ -601,8 +597,34 @@ class AppTreeView(Gtk.TreeView):
             self._set_cursor(action_btn, self._cursor_hand)
             self.queue_draw()
 
-    def _check_remove_pkg_from_blocklist(self, app):
-        action = self._action_block_list.pop(app, None)
+    def _get_app_transaction(self, app):
+        """
+        Get Application transaction state (AppAction enum).
+        """
+        pkg_match = app.get_details().pkg
+        local_txs = self._backend.local_transactions()
+        tx = local_txs.get(pkg_match)
+        if tx is None:
+            tx = self._backend.action(app)
+            if tx == DaemonAppActions.IDLE:
+                tx = None
+        return tx
+
+    def _set_app_transaction(self, app, daemon_action):
+        """
+        Set Application local transaction state (AppAction enum).
+        """
+        pkg_match = app.get_details().pkg
+        local_txs = self._backend.local_transactions()
+        local_txs[pkg_match] = daemon_action
+
+    def _pop_app_transaction(self, app):
+        """
+        Drop Application local transaction state.
+        """
+        pkg_match = app.get_details().pkg
+        local_txs = self._backend.local_transactions()
+        action = local_txs.pop(pkg_match, None)
         return action
 
     def _xy_is_over_focal_row(self, x, y):
@@ -635,4 +657,3 @@ def on_entry_changed(widget, data):
     if widget.stamp:
         GObject.source_remove(widget.stamp)
         widget.stamp = GObject.timeout_add(250, _work)
-

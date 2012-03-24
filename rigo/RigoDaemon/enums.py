@@ -45,3 +45,4 @@ class ActivityStates:
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
+    IDLE = "idle"

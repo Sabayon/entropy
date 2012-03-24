@@ -23,6 +23,12 @@
        <arg name="length" type="i" direction="out"/>
     </method>
 
+    <method name="action">
+       <arg name="package_id" type="i" direction="in"/>
+       <arg name="repository_id" type="s" direction="in"/>
+       <arg name="action" type="s" direction="out"/>
+    </method>
+
     <method name="exclusive">
        <arg name="status" type="b" direction="out"/>
     </method>

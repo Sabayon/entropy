@@ -59,7 +59,7 @@ from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
-from RigoDaemon.enums import ActivityStates
+from RigoDaemon.enums import ActivityStates, AppActions
 from RigoDaemon.config import DbusConfig
 
 TEXT = TextInterface()
@@ -168,6 +168,51 @@ class DaemonUrlFetcher(UrlFetcher):
             int(self.__remotesize), int(self.__datatransfer),
             self.__time_remaining)
 
+class ApplicationsTransaction(object):
+
+    """
+    RigoDaemon Application Transaction Controller.
+    """
+
+    def __init__(self):
+        self._transactions = {}
+        self._transactions_mutex = Lock()
+
+    def set(self, package_id, repository_id, app_action):
+        """
+        Set transaction state for Application.
+        """
+        with self._transactions_mutex:
+            match = (package_id, repository_id)
+            self._transactions[match] = app_action
+
+    def unset(self, package_id, repository_id):
+        """
+        Unset transaction state for Application.
+        """
+        with self._transactions_mutex:
+            match = (package_id, repository_id)
+            self._transactions.pop(match, None)
+
+    def reset(self):
+        """
+        Reset all the transaction states.
+        """
+        with self._transactions_mutex:
+            self._transactions.clear()
+
+    def get(self, package_id, repository_id):
+        """
+        Get transaction state (in for of AppActions enum)
+        for given Application.
+        """
+        with self._transactions_mutex:
+            match = (package_id, repository_id)
+            tx = self._transactions.get(match)
+            if tx is None:
+                return AppActions.IDLE
+        return tx
+
 
 class RigoDaemonService(dbus.service.Object):
 
@@ -231,6 +276,7 @@ class RigoDaemonService(dbus.service.Object):
                                     bus = system_bus)
         dbus.service.Object.__init__(self, name, object_path)
 
+        self._txs = ApplicationsTransaction()
         # used by non-daemon thread to exit
         self._stop_signal = False
 
@@ -331,6 +377,7 @@ class RigoDaemonService(dbus.service.Object):
                 self._close_local_resources()
                 self._entropy_setup()
                 self.activity_started(activity)
+                self.activity_progress(activity, 0)
 
                 if not repositories:
                     repositories = list(
@@ -361,6 +408,7 @@ class RigoDaemonService(dbus.service.Object):
                                  "available, wtf !?!?")
                     # wtf??
                 self._release_exclusive(activity)
+                self.activity_progress(activity, 100)
                 self.activity_completed(activity, result == 0)
                 self.repositories_updated(result, msg)
 
@@ -422,33 +470,36 @@ class RigoDaemonService(dbus.service.Object):
                     write_output("_action_queue_worker_thread: "
                                  "doing %s" % (
                             item,), debug=True)
-                    self._process_action(item)
+                    self._process_action(item, activity)
 
                 finally:
                     _action_queue_finally()
 
-    def _process_action(self, item):
+    def _process_action(self, item, activity):
         """
         This is the real Application Action processing function.
         """
         package_id, repository_id = item.pkg
         action = item.action()
 
+        self._txs.reset()
+        self._txs.set(package_id, repository_id, action)
+
         self.processing_application(package_id, repository_id, action)
         success = False
         try:
+            self.activity_progress(activity, 0)
             # FIXME, complete
-            # 1. calculate dependencies
-            # 2. notify (and block) if conflicts arise
-            # 3. ?? TBD show install/removal queue?
-            # 4. [GUI?] if removal, ask if action is really wanted?
-            # 5. [GUI?] if system package, avoid removal?
             # simulate
             self._entropy.output("Application Management Message")
-            time.sleep(5)
+            time.sleep(2.5)
+            self.activity_progress(activity, 50)
+            time.sleep(2.5)
             self._entropy.output("Application Management Complete")
             success = True
         finally:
+            self.activity_progress(activity, 100)
+            self._txs.reset()
             self.application_processed(
                 package_id, repository_id, action, success)
 
@@ -603,6 +654,17 @@ class RigoDaemonService(dbus.service.Object):
         write_output("action_queue_length called", debug=True)
         return len(self._action_queue)
 
+    @dbus.service.method(BUS_NAME, in_signature='is',
+        out_signature='s')
+    def action(self, package_id, repository_id):
+        """
+        Return Application transaction state (AppAction enum
+        value)
+        """
+        write_output("action called: %s, %s" % (
+                package_id, repository_id,), debug=True)
+        return self._txs.get(package_id, repository_id)
+
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')
     def exclusive(self):
@@ -610,7 +672,7 @@ class RigoDaemonService(dbus.service.Object):
         Return whether RigoDaemon is running in with
         Entropy Resources acquired in exclusive mode.
         """
-        write_output("is_exclusive called: %s, %s", debug=True)
+        write_output("exclusive called", debug=True)
 
         return self._acquired_exclusive
 
@@ -704,6 +766,16 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("activity_started() issued for %d" % (
                 activity,), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='ii')
+    def activity_progress(self, activity, progress):
+        """
+        Signal all the connected Clients the ongoing activity
+        progress state (from 0 to 100).
+        """
+        write_output("activity_progress() issued for %d, state: %i" % (
+                activity, progress,), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='ib')

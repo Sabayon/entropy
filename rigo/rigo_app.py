@@ -74,11 +74,10 @@ from entropy.output import darkgreen, brown, darkred, red, blue
 
 import entropy.tools
 
-
 class RigoServiceController(GObject.Object):
 
     """
-    This is the Rigo Application frontend to Rigo Daemon.
+    This is the Rigo Application frontend to RigoDaemon.
     Handles privileged requests on our behalf.
     """
 
@@ -175,6 +174,7 @@ class RigoServiceController(GObject.Object):
     _RESOURCES_UNLOCK_REQUEST_SIGNAL = "resources_unlock_request"
     _RESOURCES_LOCK_REQUEST_SIGNAL = "resources_lock_request"
     _ACTIVITY_STARTED_SIGNAL = "activity_started"
+    _ACTIVITY_PROGRESS_SIGNAL = "activity_progress"
     _ACTIVITY_COMPLETED_SIGNAL = "activity_completed"
     _PROCESSING_APPLICATION_SIGNAL = "processing_application"
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
@@ -201,8 +201,10 @@ class RigoServiceController(GObject.Object):
         self._registered_signals = {}
         self._registered_signals_mutex = Lock()
 
+        self._local_transactions = {}
         self._local_activity = LocalActivityStates.READY
         self._local_activity_mutex = Lock()
+        self._daemon_activity_progress = 0
 
         self._please_wait_box = None
         self._please_wait_mutex = Lock()
@@ -320,6 +322,12 @@ class RigoServiceController(GObject.Object):
         """
         return self._local_activity
 
+    def local_transactions(self):
+        """
+        Return the current local transaction state mapping.
+        """
+        return self._local_transactions
+
     @property
     def repositories_lock(self):
         """
@@ -386,6 +394,13 @@ class RigoServiceController(GObject.Object):
                 self.__entropy_bus.connect_to_signal(
                     self._ACTIVITY_STARTED_SIGNAL,
                     self._activity_started_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon is telling us the activity
+                # progress
+                self.__entropy_bus.connect_to_signal(
+                    self._ACTIVITY_PROGRESS_SIGNAL,
+                    self._activity_progress_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
                 # RigoDaemon is telling us that an activity
@@ -776,6 +791,18 @@ class RigoServiceController(GObject.Object):
         # reset please wait notification then
         self._please_wait(None)
 
+    def _activity_progress_signal(self, activity, progress):
+        """
+        RigoDaemon is telling us the currently running activity
+        progress.
+        """
+        const_debug_write(
+            __name__,
+            "_activity_progress_signal: "
+            "called, with remote activity: %s, val: %i" % (
+                activity, progress,))
+        self._daemon_activity_progress = progress
+
     def _activity_completed_signal(self, activity, success):
         """
         RigoDaemon is telling us that the scheduled activity,
@@ -826,6 +853,17 @@ class RigoServiceController(GObject.Object):
         return dbus.Interface(
             self._entropy_bus,
             dbus_interface=self.DBUS_INTERFACE).action_queue_length()
+
+    def action(self, app):
+        """
+        Return Application transaction state (RigoDaemon.AppAction enum
+        value).
+        """
+        package_id, repository_id = app.get_details().pkg
+        return dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).action(
+            package_id, repository_id)
 
     def exclusive(self):
         """
@@ -2108,7 +2146,8 @@ class Rigo(Gtk.Application):
         self._work_view.set_name("rigo-view")
 
         self._app_view_c = ApplicationViewController(
-            self._entropy, self._entropy_ws, self._builder)
+            self._entropy, self._entropy_ws, self._service,
+            self._builder)
 
         self._view = AppTreeView(
             self._entropy, self._service, self._app_view_c, icons,

@@ -31,6 +31,8 @@ from rigo.ui.gtk3.widgets.images import ImageBox
 from rigo.utils import build_application_store_url, \
     escape_markup, prepare_markup
 
+from RigoDaemon.enums import AppActions as DaemonAppActions
+
 from entropy.const import etpConst, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
 from entropy.misc import ParallelTask
@@ -90,15 +92,17 @@ class ApplicationViewController(GObject.Object):
     VOTE_NOTIFICATION_CONTEXT_ID = "VoteNotificationContext"
     COMMENT_NOTIFICATION_CONTEXT_ID = "CommentNotificationContext"
 
-    def __init__(self, entropy_client, entropy_ws, builder):
+    def __init__(self, entropy_client, entropy_ws, rigo_service, builder):
         GObject.Object.__init__(self)
         self._builder = builder
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
+        self._service = rigo_service
         self._app_store = None
         self._last_app = None
         self._nc = None
         self._avc = None
+        self._visible = False
 
         self._window = self._builder.get_object("rigoWindow")
         self._image = self._builder.get_object("appViewImage")
@@ -166,6 +170,40 @@ class ApplicationViewController(GObject.Object):
             "changed", self._on_comment_buffer_changed)
         self._stars.connect("changed", self._on_stars_clicked)
 
+        self._service.connect(
+            "application-processed", self._on_reload_state)
+        self._service.connect(
+            "application-processing", self._on_reload_state)
+        self._service.connect(
+            "application-abort", self._on_reload_state)
+
+    def _get_app_transaction(self, app):
+        """
+        Get Application transaction state (AppAction enum).
+        """
+        pkg_match = app.get_details().pkg
+        local_txs = self._service.local_transactions()
+        tx = local_txs.get(pkg_match)
+        if tx is None:
+            tx = self._service.action(app)
+            if tx == DaemonAppActions.IDLE:
+                tx = None
+        return tx
+
+    def _on_reload_state(self, srv, app, daemon_action):
+        """
+        Reload Application state due to a transaction event.
+        """
+        if not self._visible:
+            return
+        last_app = self._last_app
+        if last_app is not None:
+            app = last_app
+        task = ParallelTask(self._reload_application_state, app)
+        task.daemon = True
+        task.name = "OnReloadAppState"
+        task.start()
+
     def _on_comment_buffer_changed(self, widget):
         """
         Our comment text is changed, decide if to activate the Send button.
@@ -180,6 +218,7 @@ class ApplicationViewController(GObject.Object):
         information. Once we're done loading the shit, we just emit
         'application-show' and let others do the UI switch.
         """
+        self._visible = True
         self._last_app = app
         task = ParallelTask(self.__application_activate, app)
         task.name = "ApplicationActivate"
@@ -363,6 +402,7 @@ class ApplicationViewController(GObject.Object):
         This method shall be called when the Controller widgets are
         going to hide.
         """
+        self._visible = False
         self._last_app = None
         for child in self._app_my_comments_box.get_children():
             child.destroy()
@@ -741,40 +781,57 @@ class ApplicationViewController(GObject.Object):
         for child in button_area.get_children():
             child.destroy()
 
-        if is_installed:
-            if is_updatable:
-                update_button = Gtk.Button()
-                update_button.set_label(
-                    escape_markup(_("Update")))
-                def _on_app_update(widget):
-                    return self._on_app_install(widget, app)
-                update_button.connect("clicked", _on_app_update)
-                button_area.pack_start(update_button, False, False, 0)
-            else:
-                reinstall_button = Gtk.Button()
-                reinstall_button.set_label(
-                    escape_markup(_("Reinstall")))
-                def _on_app_reinstall(widget):
-                    return self._on_app_install(widget, app)
-                reinstall_button.connect("clicked", _on_app_reinstall)
-                button_area.pack_start(reinstall_button, False, False, 0)
-
-            remove_button = Gtk.Button()
-            remove_button.set_label(
-                escape_markup(_("Remove")))
-            def _on_app_remove(widget):
-                return self._on_app_remove(widget, app)
-            remove_button.connect("clicked", _on_app_remove)
-            button_area.pack_start(remove_button, False, False, 0)
-
+        daemon_action = self._get_app_transaction(app)
+        if daemon_action is not None:
+            button = Gtk.Button()
+            if daemon_action == DaemonAppActions.INSTALL:
+                button.set_label(escape_markup("Installing"))
+            elif daemon_action == DaemonAppActions.REMOVE:
+                button.set_label(escape_markup("Removing"))
+            button.set_sensitive(False)
+            button_area.pack_start(
+                button, False, False, 0)
         else:
-            install_button = Gtk.Button()
-            install_button.set_label(
-                escape_markup(_("Install")))
-            def _on_app_install(widget):
-                return self._on_app_install(widget, app)
-            install_button.connect("clicked", _on_app_install)
-            button_area.pack_start(install_button, False, False, 0)
+            if is_installed:
+                if is_updatable:
+                    update_button = Gtk.Button()
+                    update_button.set_label(
+                        escape_markup(_("Update")))
+                    def _on_app_update(widget):
+                        return self._on_app_install(widget, app)
+                    update_button.connect("clicked",
+                                          _on_app_update)
+                    button_area.pack_start(update_button,
+                                           False, False, 0)
+                else:
+                    reinstall_button = Gtk.Button()
+                    reinstall_button.set_label(
+                        escape_markup(_("Reinstall")))
+                    def _on_app_reinstall(widget):
+                        return self._on_app_install(widget, app)
+                    reinstall_button.connect("clicked",
+                                             _on_app_reinstall)
+                    button_area.pack_start(reinstall_button,
+                                           False, False, 0)
+
+                remove_button = Gtk.Button()
+                remove_button.set_label(
+                    escape_markup(_("Remove")))
+                def _on_app_remove(widget):
+                    return self._on_app_remove(widget, app)
+                remove_button.connect("clicked", _on_app_remove)
+                button_area.pack_start(remove_button,
+                                       False, False, 0)
+
+            else:
+                install_button = Gtk.Button()
+                install_button.set_label(
+                    escape_markup(_("Install")))
+                def _on_app_install(widget):
+                    return self._on_app_install(widget, app)
+                install_button.connect("clicked", _on_app_install)
+                button_area.pack_start(install_button,
+                                       False, False, 0)
 
         button_area.show_all()
 
@@ -797,6 +854,18 @@ class ApplicationViewController(GObject.Object):
             self._image.set_from_pixbuf(icon)
         self._stars.set_rating(stats.ratings_average)
         self._stars_alignment.show_all()
+
+    def _reload_application_state(self, app):
+        """
+        Reload Application state after transaction.
+        """
+        is_installed = app.is_installed()
+        is_updatable = app.is_updatable()
+
+        def _setup():
+            self._setup_buttons(
+                app, is_installed, is_updatable)
+        GLib.idle_add(_setup)
 
     def _setup_application_info(self, app, metadata):
         """
