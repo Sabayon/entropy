@@ -3174,6 +3174,15 @@ class EntropyRepository(EntropyRepositoryBase):
             deptype = etpConst['dependency_type_ids']['bdepend_id'],
             resolve_conditional_deps = resolve_conditional_deps)
 
+    def retrieveRuntimeDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        return self.retrieveDependencies(package_id, extended = extended,
+            deptype = etpConst['dependency_type_ids']['rdepend_id'],
+            resolve_conditional_deps = resolve_conditional_deps)
+
     def retrievePostDependencies(self, package_id, extended = False,
         resolve_conditional_deps = True):
         """

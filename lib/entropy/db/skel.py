@@ -2560,6 +2560,27 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def retrieveRuntimeDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
+        """
+        Return list of runtime package dependencies for given package
+        identifier.
+        Note: this function is just a wrapper of retrieveDependencies()
+        providing deptype (dependency type) = runtime-dependencies.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @keyword extended: return in extended format
+        @type extended: bool
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
+        @return: list (frozenset) of build dependencies of package
+        @rtype: frozenset
+        """
+        raise NotImplementedError()
+
     def retrievePostDependencies(self, package_id, extended = False,
         resolve_conditional_deps = True):
         """
