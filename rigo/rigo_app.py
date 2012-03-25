@@ -61,7 +61,8 @@ from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 from rigo.utils import escape_markup, prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
-    AppActions as DaemonAppActions
+    AppActions as DaemonAppActions, \
+    AppTransactionOutcome as DaemonAppTransactionOutcome
 from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
     PolicyActions
 
@@ -149,6 +150,7 @@ class RigoServiceController(GObject.Object):
         "application-processed" : (GObject.SignalFlags.RUN_LAST,
                                    None,
                                    (GObject.TYPE_PYOBJECT,
+                                    GObject.TYPE_PYOBJECT,
                                     GObject.TYPE_PYOBJECT,),
                                    ),
         # Application is being processed
@@ -472,18 +474,19 @@ class RigoServiceController(GObject.Object):
         self.emit("application-processing", app, daemon_action)
 
     def _application_processed_signal(self, package_id, repository_id,
-                                      daemon_action, success):
+                                      daemon_action, app_outcome):
         const_debug_write(
             __name__,
             "_application_processed_signal: received for "
-            "%d, %s, action: %s, success: %s" % (
-                package_id, repository_id, daemon_action, success))
+            "%d, %s, action: %s, outcome: %s" % (
+                package_id, repository_id, daemon_action, app_outcome))
 
         app = Application(
             self._entropy, self._entropy_ws,
             (package_id, repository_id),
             redraw_callback=None)
-        self.emit("application-processed", app, daemon_action)
+        self.emit("application-processed", app, daemon_action,
+                  app_outcome)
 
     def _applications_managed_signal(self, success):
         """

@@ -539,7 +539,8 @@ class AppTreeView(Gtk.TreeView):
             self._set_cursor(action_btn, None)
         self.queue_draw()
 
-    def _on_transaction_finished(self, widget, app, daemon_action, tr):
+    def _on_transaction_finished(self, widget, app,
+                                 daemon_action, app_outcome, tr):
         """
         callback when an application install/remove
         transaction has finished

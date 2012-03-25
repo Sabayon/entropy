@@ -59,7 +59,8 @@ from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
-from RigoDaemon.enums import ActivityStates, AppActions
+from RigoDaemon.enums import ActivityStates, AppActions, \
+    AppTransactionOutcome
 from RigoDaemon.config import DbusConfig
 
 TEXT = TextInterface()
@@ -497,7 +498,7 @@ class RigoDaemonService(dbus.service.Object):
         self._txs.set(package_id, repository_id, action)
 
         self.processing_application(package_id, repository_id, action)
-        success = False
+        outcome = AppTransactionOutcome.INTERNAL_ERROR
         try:
             self.activity_progress(activity, 0)
             # FIXME, complete
@@ -507,12 +508,12 @@ class RigoDaemonService(dbus.service.Object):
             self.activity_progress(activity, 50)
             time.sleep(2.5)
             self._entropy.output("Application Management Complete")
-            success = True
+            outcome = AppTransactionOutcome.SUCCESS
         finally:
             self.activity_progress(activity, 100)
             self._txs.reset()
             self.application_processed(
-                package_id, repository_id, action, success)
+                package_id, repository_id, action, outcome)
 
     def _close_local_resources(self):
         """
@@ -832,16 +833,16 @@ class RigoDaemonService(dbus.service.Object):
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='issb')
+        signature='isss')
     def application_processed(self, package_id, repository_id,
-                              action, success):
+                              action, app_outcome):
         """
         Signal all the connected Clients that we've completed
         the processing of given Application.
         """
         write_output("application_processed(): %d,"
-                     "%s, action: %s, success: %s" % (
-                package_id, repository_id, action, success,),
+                     "%s, action: %s, outcome: %s" % (
+                package_id, repository_id, action, app_outcome,),
                      debug=True)
 
 

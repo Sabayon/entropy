@@ -43,6 +43,18 @@ class ActivityStates:
     ) = range(6)
 
 class AppActions:
+
+    """ Application Transaction States """
+
     INSTALL = "install"
     REMOVE = "remove"
     IDLE = "idle"
+
+class AppTransactionOutcome:
+
+    SUCCESS = "success"
+    INTERNAL_ERROR = "internal-error"
+    DEPENDENCIES_CALCULATION_ERROR = "dependencies-calc-error"
+    DOWNLOAD_ERROR = "download-error"
+    INSTALL_ERROR = "install-error"
+    REMOVE_ERROR = "remove-error"
