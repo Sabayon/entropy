@@ -192,7 +192,7 @@ class ApplicationViewController(GObject.Object):
                 tx = None
         return tx
 
-    def _on_reload_state(self, srv, app, daemon_action, app_outcome):
+    def _on_reload_state(self, srv, app, daemon_action, app_outcome=None):
         """
         Reload Application state due to a transaction event.
         """

@@ -51,7 +51,8 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write
 from entropy.i18n import _
-from entropy.misc import LogFile, ParallelTask, TimeScheduled
+from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
+    ReadersWritersSemaphore
 from entropy.fetchers import UrlFetcher
 from entropy.output import TextInterface
 from entropy.client.interfaces import Client
@@ -279,6 +280,10 @@ class RigoDaemonService(dbus.service.Object):
                                     bus = system_bus)
         dbus.service.Object.__init__(self, name, object_path)
 
+        # protects against concurrent entropy shared objects
+        # (like EntropyRepository) while in use.
+        self._rwsem = ReadersWritersSemaphore()
+
         self._txs = ApplicationsTransaction()
         # used by non-daemon thread to exit
         self._stop_signal = False
@@ -391,15 +396,20 @@ class RigoDaemonService(dbus.service.Object):
                 self.activity_started(activity)
                 self.activity_progress(activity, 0)
 
-                if not repositories:
-                    repositories = list(
-                        SystemSettings()['repositories']['available'])
-                write_output("_update_repositories(): %s" % (
-                        repositories,), debug=True)
+                self._rwsem.reader_acquire()
+                try:
+                    if not repositories:
+                        repositories = list(
+                            SystemSettings()['repositories']['available'])
 
-                updater = self._entropy.Repositories(
-                    repositories, force = force)
-                result = updater.unlocked_sync()
+                    write_output("_update_repositories(): %s" % (
+                            repositories,), debug=True)
+
+                    updater = self._entropy.Repositories(
+                        repositories, force = force)
+                    result = updater.unlocked_sync()
+                finally:
+                    self._rwsem.reader_release()
 
             except AttributeError as err:
                 write_output("_update_repositories error: %s" % (err,))
@@ -482,7 +492,12 @@ class RigoDaemonService(dbus.service.Object):
                     write_output("_action_queue_worker_thread: "
                                  "doing %s" % (
                             item,), debug=True)
-                    self._process_action(item, activity)
+
+                    self._rwsem.reader_acquire()
+                    try:
+                        self._process_action(item, activity)
+                    finally:
+                        self._rwsem.reader_release()
 
                 finally:
                     _action_queue_finally()
@@ -510,6 +525,10 @@ class RigoDaemonService(dbus.service.Object):
             self._entropy.output("Application Management Complete")
             outcome = AppTransactionOutcome.SUCCESS
         finally:
+            # this avoids Rigo to stall due to uncommitted
+            # transactions.
+            self._entropy.installed_repository().commit()
+
             self.activity_progress(activity, 100)
             self._txs.reset()
             self.application_processed(
@@ -519,6 +538,16 @@ class RigoDaemonService(dbus.service.Object):
         """
         Close any Entropy resource that might have been changed
         or replaced.
+        """
+        self._rwsem.writer_acquire()
+        try:
+            self._close_local_resources_unlocked()
+        finally:
+            self._rwsem.writer_release()
+
+    def _close_local_resources_unlocked(self):
+        """
+        Same as _close_local_resources but without rwsem locking.
         """
         self._entropy.reopen_installed_repository()
         self._entropy.close_repositories()
@@ -572,12 +601,15 @@ class RigoDaemonService(dbus.service.Object):
         Here we reload Entropy configuration and other resources.
         """
         write_output("_entropy_setup(): called", debug=True)
-
-        initconfig_entropy_constants(etpConst['systemroot'])
-        self._entropy.Settings().clear()
-        self._entropy._validate_repositories()
-        self._close_local_resources()
-        write_output("_entropy_setup(): complete", debug=True)
+        self._rwsem.writer_acquire()
+        try:
+            initconfig_entropy_constants(etpConst['systemroot'])
+            self._entropy.Settings().clear()
+            self._entropy._validate_repositories()
+            self._close_local_resources_unlocked()
+        finally:
+            self._rwsem.writer_release()
+            write_output("_entropy_setup(): complete", debug=True)
 
     ### DBUS METHODS
 
@@ -676,6 +708,28 @@ class RigoDaemonService(dbus.service.Object):
         write_output("action called: %s, %s" % (
                 package_id, repository_id,), debug=True)
         return self._txs.get(package_id, repository_id)
+
+    @dbus.service.method(BUS_NAME, in_signature='as',
+        out_signature='')
+    def accept_licenses(self, names):
+        """
+        Accept Application Licenses.
+        """
+        write_output("accept_licenses called: %s" % (names,),
+                     debug=True)
+        def _accept():
+            self._rwsem.reader_acquire()
+            try:
+                inst_repo = self._entropy.installed_repository()
+                for name in names:
+                    inst_repo.acceptLicense(name)
+            finally:
+                self._rwsem.reader_release()
+
+        task = ParallelTask(_accept)
+        task.daemon = True
+        task.name = "AcceptLicensesThread"
+        task.start()
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')

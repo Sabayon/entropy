@@ -30,7 +30,7 @@ from gi.repository import GObject
 from entropy.const import const_debug_write, const_debug_enabled, \
     const_convert_to_unicode, etpConst
 from entropy.exceptions import DependenciesNotRemovable, \
-    DependenciesNotFound, DependenciesCollision
+    DependenciesNotFound, DependenciesCollision, EntropyException
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.services.client import WebService
@@ -245,6 +245,8 @@ class ApplicationMetadata(object):
 
                 obj = visible_cb_map.setdefault(key, [])
                 obj.append(still_vis_cb)
+
+            request_outcome = {}
 
             for repo_id, keys in repo_map.items():
 
@@ -825,6 +827,26 @@ class Application(object):
     There is also a __cmp__ method and a name property
     """
 
+    class AcceptLicenseError(EntropyException):
+
+        """
+        Exception raised when Application can be installed
+        but licenses have to be accepted. The get() method
+        returns a mapping composed by license id as key and
+        list of Application objects as value.
+        """
+
+        def __init__(self, license_map):
+            self._licenses = license_map
+
+        def get(self):
+            """
+            Return the Licenses to accept in mapping form:
+            license id as key, list of Application objects as
+            value.
+            """
+            return self._licenses
+
     def __init__(self, entropy_client, entropy_ws, package_match,
                  redraw_callback=None):
         self._entropy = entropy_client
@@ -944,6 +966,35 @@ class Application(object):
         finally:
             self._entropy.rwsem().reader_release()
 
+    def _get_install_queue(self):
+        """
+        Return Application install and removal queues.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            inst_repo = self._entropy.installed_repository()
+            repo = self._entropy.open_repository(self._repo_id)
+            if repo is inst_repo:
+                return None
+
+            pkg_match = self.get_details().pkg
+            masked = self._entropy.is_package_masked(pkg_match)
+            if masked:
+                return None
+
+            try:
+                install_queue, removal_queue = \
+                    self._entropy.get_install_queue(
+                        [pkg_match], False, False)
+            except DependenciesNotFound:
+                raise
+            except DependenciesCollision:
+                raise
+
+            return install_queue, removal_queue
+        finally:
+            self._entropy.rwsem().reader_release()
+
     def is_installable(self):
         """
         Return if Application can be installed or it's masked
@@ -951,27 +1002,33 @@ class Application(object):
         """
         self._entropy.rwsem().reader_acquire()
         try:
-            inst_repo = self._entropy.installed_repository()
-            repo = self._entropy.open_repository(self._repo_id)
-            if repo is inst_repo:
+            queues = self._get_install_queue()
+            if queues is None:
                 return False
+            install, removal = queues
 
-            pkg_match = self.get_details().pkg
-            masked = self._entropy.is_package_masked(pkg_match)
-            if masked:
-                return True
+            # check licenses
+            licenses = self._entropy.get_licenses_to_accept(install)
+            if licenses:
+                license_map = {}
+                for lic_id, pkg_matches in licenses.items():
+                    obj = license_map.setdefault(lic_id, [])
+                    for pkg_match in pkg_matches:
+                        app = Application(
+                            self._entropy, self._entropy_ws,
+                            pkg_match)
+                        obj.append(app)
+                raise Application.AcceptLicenseError(license_map)
 
-            try:
-                install_queue, removal_queue = self._entropy.get_install_queue(
-                    [pkg_match], False, False)
-            except DependenciesNotFound:
-                return False
-            except DependenciesCollision:
-                return False
+        except DependenciesNotFound:
+            return False
+        except DependenciesCollision:
+            return False
 
-            return True
         finally:
             self._entropy.rwsem().reader_release()
+
+        return True
 
     def is_available(self):
         """

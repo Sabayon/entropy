@@ -18,12 +18,15 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
+import os
 import subprocess
+import tempfile
 
 from gi.repository import Gtk, GLib, GObject, Pango
 
 from rigo.em import StockEms
-from rigo.utils import build_register_url, open_url, escape_markup
+from rigo.utils import build_register_url, open_url, escape_markup, \
+    prepare_markup
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
@@ -31,6 +34,7 @@ from entropy.i18n import _
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
 
+import entropy.tools
 
 class NotificationBox(Gtk.HBox):
 
@@ -98,7 +102,6 @@ class NotificationBox(Gtk.HBox):
             label.set_markup(self._message)
             label.set_line_wrap_mode(Pango.WrapMode.WORD)
             label.set_line_wrap(True)
-            # make it css-able
             label.set_property("expand", True)
             label.set_alignment(0.02, 0.50)
             message_hbox.pack_start(label, True, True, 0)
@@ -414,3 +417,145 @@ class PleaseWaitNotificationBox(NotificationBox):
         """
         NotificationBox.render(self)
         self._spinner.start()
+
+
+class LicensesNotificationBox(NotificationBox):
+
+    __gsignals__ = {
+        # Licenses have been accepted
+        "accepted" : (GObject.SignalFlags.RUN_LAST,
+                      None,
+                      (GObject.TYPE_PYOBJECT,),
+                      ),
+        # Licenses have been declined
+        "declined" : (GObject.SignalFlags.RUN_LAST,
+                      None,
+                      tuple(),
+                      ),
+    }
+
+    def __init__(self, app, entropy_client, license_map):
+
+        """
+        LicensesNotificationBox constructor.
+
+        @param entropy_client: Entropy Client object
+        @param license_map: mapping composed by license id as key and
+        list of Application objects as value.
+        """
+        self._app = app
+        self._entropy = entropy_client
+        self._licenses = license_map
+
+        msg = _("<b>%s</b> Application or one of its "
+                "dependencies is distributed with the following"
+                " licenses: %s")
+
+        licenses = sorted(license_map.keys(),
+                          key = lambda x: x.lower())
+        lic_txts = []
+        for lic in licenses:
+            lic_txt = "<a href=\"%s\">%s</a>" % (lic, lic,)
+            lic_txts.append(lic_txt)
+        msg = msg % (self._app.name, ", ".join(lic_txts),)
+
+        label = Gtk.Label()
+        label.set_markup(prepare_markup(msg))
+        label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        label.set_line_wrap(True)
+        label.set_property("expand", True)
+        label.set_alignment(0.02, 0.50)
+        label.connect("activate-link",
+                      self._on_license_activate)
+
+        NotificationBox.__init__(
+            self, None, message_widget=label,
+            tooltip=_("Make sure to review all the licenses"),
+            message_type=Gtk.MessageType.WARNING,
+            context_id="LicensesNotificationBox")
+
+        self.add_button(_("Accept"), self._on_accept)
+        self.add_button(_("Accept forever"),
+                        self._on_accept_forever)
+        self.add_button(_("Decline"),
+                        self._on_decline)
+
+    def _on_accept(self, widget):
+        """
+        Licenses have been accepted.
+        """
+        self.emit("accepted", False)
+
+    def _on_accept_forever(self, widget):
+        """
+        Licenses have been forever accepted.
+        """
+        self.emit("accepted", True)
+
+    def _on_decline(self, widget):
+        """
+        Licenses have been declined.
+        """
+        self.emit("declined")
+
+    def _show_license(self, uri, license_apps):
+        """
+        Show selected License to User.
+        """
+        self._entropy.rwsem().reader_acquire()
+        tmp_fd, tmp_path = None, None
+        try:
+
+            license_text = None
+            # get the first repo with valid license text
+            repos = set([x.get_details().channelname for \
+                             x in license_apps])
+            if not repos:
+                return
+            for repo_id in repos:
+                repo = self._entropy.open_repository(repo_id)
+                license_text = repo.retrieveLicenseText(uri)
+                if license_text is not None:
+                    break
+
+            if license_text is not None:
+                tmp_fd, tmp_path = tempfile.mkstemp(suffix=".txt")
+                try:
+                    license_text = const_convert_to_unicode(
+                        license_text, enctype=etpConst['conf_encoding'])
+                except UnicodeDecodeError:
+                    license_text = const_convert_to_unicode(
+                        license_text)
+
+                with entropy.tools.codecs_fdopen(
+                    tmp_fd, "w", etpConst['conf_encoding']) as tmp_f:
+                    tmp_f.write(license_text)
+                    tmp_f.flush()
+                subprocess.call(["xdg-open", tmp_path])
+            else:
+                const_debug_write(
+                    __name__,
+                    "LicensesNotificationBox._show_license: "
+                    "not available"
+                    )
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+            # leaks, but xdg-open is async
+            self._entropy.rwsem().reader_release()
+
+    def _on_license_activate(self, widget, uri):
+        """
+        License link clicked.
+        """
+        license_apps = self._licenses.get(uri)
+        if not license_apps:
+            return True
+        task = ParallelTask(self._show_license, uri, license_apps)
+        task.name = "ShowLicense"
+        task.daemon = True
+        task.start()
+        return True

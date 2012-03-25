@@ -49,7 +49,7 @@ from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
     LoginNotificationBox, ConnectivityNotificationBox, \
-    PleaseWaitNotificationBox
+    PleaseWaitNotificationBox, LicensesNotificationBox
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
 from rigo.ui.gtk3.controllers.authentication import AuthenticationController
@@ -913,6 +913,7 @@ class RigoServiceController(GObject.Object):
         otherwise hide, if there.
         "show" contains the NotificationBox message.
         """
+        msg = _("Waiting for <b>RigoDaemon</b>, please wait...")
         with self._please_wait_mutex:
 
             if show and self._please_wait_box:
@@ -926,8 +927,7 @@ class RigoServiceController(GObject.Object):
                 # if there
                 box = self._please_wait_box
                 self._please_wait_box = None
-                if self._nc is not None:
-                    GLib.idle_add(self._nc.remove, box)
+                GLib.idle_add(self._nc.remove, box)
                 return
 
             if show and not self._please_wait_box:
@@ -936,12 +936,11 @@ class RigoServiceController(GObject.Object):
 
                 def _make():
                     box = PleaseWaitNotificationBox(
-                        show,
+                        msg,
                         RigoServiceController.NOTIFICATION_CONTEXT_ID)
                     self._please_wait_box = box
                     sem.release()
-                    if self._nc is not None:
-                        self._nc.append(box)
+                    self._nc.append(box)
 
                 GLib.idle_add(_make)
                 sem.acquire()
@@ -989,19 +988,19 @@ class RigoServiceController(GObject.Object):
         Make sure User is authorized to perform a privileged
         operation.
         """
-        granted = self._authorize(activity)
-        if not granted:
-            const_debug_write(__name__, "RigoServiceController: "
+        self._please_wait(True)
+        try:
+            granted = self._authorize(activity)
+            if not granted:
+                const_debug_write(__name__, "RigoServiceController: "
                               "_scale_up: abort")
-            return False
+                return False
 
-        ms = _("Waiting for <b>RigoDaemon</b>, please wait...")
-        # this will be reset when activity_started() arrives
-        self._please_wait(ms)
-
-        const_debug_write(__name__, "RigoServiceController: "
-                          "_scale_up: leave")
-        return True
+            const_debug_write(__name__, "RigoServiceController: "
+                              "_scale_up: leave")
+            return True
+        finally:
+            self._please_wait(False)
 
     def _update_repositories(self, repositories, force,
                              master=True):
@@ -1038,6 +1037,7 @@ class RigoServiceController(GObject.Object):
                 self._activity_rwsem.writer_release()
                 return False
 
+        self._please_wait(True)
         accepted = self._update_repositories_unlocked(
             repositories, force, master)
 
@@ -1054,6 +1054,10 @@ class RigoServiceController(GObject.Object):
                 box.add_destroy_button(_("K thanks"))
                 self._nc.append(box)
             GLib.idle_add(_notify)
+
+            # unhide please wait notification
+            self._please_wait(False)
+
             return False
 
         return True
@@ -1203,6 +1207,28 @@ class RigoServiceController(GObject.Object):
         box.add_button(_("Ok then"), _say_kay)
         self._nc.append(box)
 
+    def _notify_blocking_licenses(self, ask_meta, app, license_map):
+        """
+        Notify licenses that have to be accepted for Application and
+        block until User answers.
+        """
+        box = LicensesNotificationBox(app, self._entropy, license_map)
+
+        def _license_accepted(widget, forever):
+            ask_meta['forever'] = forever
+            ask_meta['res'] = True
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        def _license_declined(widget):
+            ask_meta['res'] = False
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        box.connect("accepted", _license_accepted)
+        box.connect("declined", _license_declined)
+        self._nc.append(box)
+
     def _application_request_removal_checks(self, app):
         """
         Examine Application Removal Request on behalf of
@@ -1223,12 +1249,51 @@ class RigoServiceController(GObject.Object):
 
         return True
 
+    def _accept_licenses(self, license_list):
+        """
+        Accept the given list of license ids.
+        """
+        dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).accept_licenses(
+            license_list)
+
     def _application_request_install_checks(self, app):
         """
         Examine Application Install Request on behalf of
         _application_request_checks().
         """
-        installable = app.is_installable()
+        installable = True
+        try:
+            installable = app.is_installable()
+        except Application.AcceptLicenseError as err:
+            # can be installed, but licenses have to be accepted
+            license_map = err.get()
+            const_debug_write(
+                __name__,
+                "_application_request_install_checks: "
+                "need to accept licenses: %s" % (license_map,))
+            ask_meta = {
+                'sem': Semaphore(0),
+                'forever': False,
+                'res': None,
+            }
+            GLib.idle_add(self._notify_blocking_licenses,
+                          ask_meta, app, license_map)
+            ask_meta['sem'].acquire()
+
+            const_debug_write(
+                __name__,
+                "_application_request_install_checks: "
+                "unblock, accepted:: %s, forever: %s" % (
+                    ask_meta['res'], ask_meta['forever'],))
+
+            if not ask_meta['res']:
+                return False
+            if ask_meta['forever']:
+                self._accept_licenses(license_map.keys())
+            return True
+
         if not installable:
             msg = _("<b>%s</b>\ncannot be installed at this time"
                     " due to <b>missing/masked</b> dependencies or"
@@ -1310,7 +1375,7 @@ class RigoServiceController(GObject.Object):
                     self._APPLICATIONS_MANAGED_SIGNAL, [])
                 obj.append(sig_match)
 
-            self._release_local_resources(clear_avc=False)
+        self._release_local_resources(clear_avc=False)
 
         const_debug_write(
             __name__,
@@ -1455,6 +1520,7 @@ class RigoServiceController(GObject.Object):
                         accepted,))
 
             if accepted:
+                self._please_wait(True)
                 accepted = self._application_request_unlocked(
                     app, daemon_action, master,
                     busied)
@@ -1473,6 +1539,9 @@ class RigoServiceController(GObject.Object):
                     self._nc.append(box)
                 if do_notify:
                     GLib.idle_add(_notify)
+
+            # unhide please wait notification
+            self._please_wait(False)
 
             return accepted
 

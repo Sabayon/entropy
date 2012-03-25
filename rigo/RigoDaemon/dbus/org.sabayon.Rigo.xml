@@ -33,6 +33,10 @@
        <arg name="status" type="b" direction="out"/>
     </method>
 
+    <method name="accept_licenses">
+       <arg name="names" type="as" direction="in"/>
+    </method>
+
     <method name="api">
        <arg name="version" type="i" direction="out"/>
     </method>
