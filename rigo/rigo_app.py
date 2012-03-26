@@ -2207,12 +2207,14 @@ class Rigo(Gtk.Application):
 
     class RigoHandler(object):
 
-        def __init__(self, rigo_app):
+        def __init__(self, rigo_app, rigo_service):
             self._app = rigo_app
+            self._service = rigo_service
 
         def onDeleteWindow(self, window, event):
             # if UI is locked, do not allow to close Rigo
-            if self._app.is_ui_locked():
+            if self._app.is_ui_locked() or \
+                    self._service.local_activity() != LocalActivityStates.READY:
                 rc = self._app._show_yesno_dialog(
                     None,
                     escape_markup(_("Hey hey hey!")),
@@ -2248,7 +2250,6 @@ class Rigo(Gtk.Application):
         self._state_mutex = Lock()
 
         icons = get_sc_icon_theme(DATA_DIR)
-        app_handler = Rigo.RigoHandler(self)
 
         self._activity_rwsem = ReadersWritersSemaphore()
         self._entropy = Client()
@@ -2257,6 +2258,8 @@ class Rigo(Gtk.Application):
         self._service = RigoServiceController(
             self, self._activity_rwsem,
             self._auth, self._entropy, self._entropy_ws)
+
+        app_handler = Rigo.RigoHandler(self, self._service)
 
         self._builder = Gtk.Builder()
         self._builder.add_from_file(os.path.join(DATA_DIR, "ui/gtk3/rigo.ui"))
