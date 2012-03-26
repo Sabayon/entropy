@@ -67,7 +67,7 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
     PolicyActions
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
-    const_debug_enabled, const_convert_to_unicode
+    const_debug_enabled, const_convert_to_unicode, dump_signal
 from entropy.client.interfaces.repository import Repository
 from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore
 from entropy.i18n import _, ngettext
@@ -2364,6 +2364,18 @@ class Rigo(Gtk.Application):
         """
         return self._current_state_lock
 
+    def _thread_dumper(self):
+        """
+        If --dumper is in argv, a recurring thread dump
+        function will be spawned every 30 seconds.
+        """
+        dumper_enable = "--dumper" in sys.argv
+        if dumper_enable:
+            task = TimeScheduled(30, dump_signal, None, None)
+            task.name = "ThreadDumper"
+            task.daemon = True
+            task.start()
+
     def _on_start_working(self, widget, state, lock):
         """
         Emitted by RigoServiceController when we're asked to
@@ -2691,6 +2703,7 @@ class Rigo(Gtk.Application):
             Gtk.main_quit()
             return
 
+        self._thread_dumper()
         self._app_view_c.setup()
         self._avc.setup()
         self._nc.setup()
