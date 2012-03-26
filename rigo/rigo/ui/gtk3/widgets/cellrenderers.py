@@ -187,7 +187,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         else:
             x = cell_area.x+cell_area.width-lw-self.pixbuf_width-2*xpad
 
-        y = cell_area.y+ypad
+        y = cell_area.y + ypad
 
         Gtk.render_layout(context, cr, x, y, layout)
         return
@@ -239,8 +239,9 @@ class CellRendererAppView(Gtk.CellRendererText):
         action_btn = self.get_button_by_name(CellButtonIDs.ACTION)
 
         x, _, w, h = action_btn.allocation
-        # shift the bar to the top edge
-        y = cell_area.y + ypad
+        # shift the bar under the rating info
+        y = cell_area.y + ypad + self.apptitle_height + self.STAR_SIZE
+        y += ypad
 
         context.save()
         context.add_class("trough")
@@ -268,7 +269,7 @@ class CellRendererAppView(Gtk.CellRendererText):
             is_rtl, is_available):
 
         # layout buttons and paint
-        y = cell_area.y+cell_area.height-ypad
+        y = cell_area.y + cell_area.height - ypad
         spacing = self.button_spacing
 
         if not is_rtl:

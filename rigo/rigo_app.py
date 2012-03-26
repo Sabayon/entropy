@@ -179,6 +179,7 @@ class RigoServiceController(GObject.Object):
     _ACTIVITY_PROGRESS_SIGNAL = "activity_progress"
     _ACTIVITY_COMPLETED_SIGNAL = "activity_completed"
     _PROCESSING_APPLICATION_SIGNAL = "processing_application"
+    _APPLICATION_PROCESSING_UPDATE = "application_processing_update"
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
     _SUPPORTED_APIS = [0]
@@ -208,6 +209,9 @@ class RigoServiceController(GObject.Object):
         self._local_activity = LocalActivityStates.READY
         self._local_activity_mutex = Lock()
         self._daemon_activity_progress = 0
+        self._daemon_transaction_app = None
+        self._daemon_transaction_app_state = None
+        self._daemon_transaction_app_progress = -1
 
         self._please_wait_box = None
         self._please_wait_mutex = Lock()
@@ -426,6 +430,13 @@ class RigoServiceController(GObject.Object):
                     self._processing_application_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us about an Application
+                # processing status update
+                self.__entropy_bus.connect_to_signal(
+                    self._APPLICATION_PROCESSING_UPDATE,
+                    self._application_processing_update_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
                 # RigoDaemon tells us that a queued app action
                 # is now complete
                 self.__entropy_bus.connect_to_signal(
@@ -470,17 +481,40 @@ class RigoServiceController(GObject.Object):
             (package_id, repository_id),
             redraw_callback=_redraw_callback)
         self._wc.set_application(app, daemon_action)
+        self._daemon_transaction_app = app
+        self._daemon_transaction_app_state = None
+        self._daemon_transaction_app_progress = 0
 
         self.emit("application-processing", app, daemon_action)
+
+    def _application_processing_update_signal(
+        self, package_id, repository_id, app_transaction_state,
+        progress):
+        const_debug_write(
+            __name__,
+            "_application_processing_update_signal: received for "
+            "%i, %s, transaction_state: %s, progress: %i" % (
+                package_id, repository_id,
+                app_transaction_state, progress))
+
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (package_id, repository_id))
+        self._daemon_transaction_app = app
+        self._daemon_transaction_app_progress = progress
+        self._daemon_transaction_app_state = app_transaction_state
 
     def _application_processed_signal(self, package_id, repository_id,
                                       daemon_action, app_outcome):
         const_debug_write(
             __name__,
             "_application_processed_signal: received for "
-            "%d, %s, action: %s, outcome: %s" % (
+            "%i, %s, action: %s, outcome: %s" % (
                 package_id, repository_id, daemon_action, app_outcome))
 
+        self._daemon_transaction_app = None
+        self._daemon_transaction_app_progress = -1
+        self._daemon_transaction_app_state = None
         app = Application(
             self._entropy, self._entropy_ws,
             (package_id, repository_id),
@@ -825,6 +859,22 @@ class RigoServiceController(GObject.Object):
                 activity, success,))
 
     ### GP PUBLIC METHODS
+
+    def get_transaction_state(self):
+        """
+        Return current RigoDaemon Application transaction
+        state information, if available.
+        """
+        app = self._daemon_transaction_app
+        state = self._daemon_transaction_app_state
+        progress = self._daemon_transaction_app_progress
+        if app is None:
+            state = None
+            progress = -1
+        if state is None:
+            app = None
+            progress = -1
+        return app, state, progress
 
     def application_request(self, app, app_action):
         """
@@ -2243,7 +2293,7 @@ class Rigo(Gtk.Application):
 
         self._app_store = AppListStore(
             self._entropy, self._entropy_ws,
-            self._view, icons)
+            self._service, self._view, icons)
         def _queue_draw(*args):
             self._view.queue_draw()
         self._app_store.connect("redraw-request", _queue_draw)

@@ -204,7 +204,8 @@ class AppTreeView(Gtk.TreeView):
         btn_h = btn.height
 
         tr.normal_height = max(32 + 4*ypad, em(2.5) + 4*ypad)
-        tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM
+        tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM \
+            + ypad
         return
 
     def _on_style_updated(self, widget, tr):

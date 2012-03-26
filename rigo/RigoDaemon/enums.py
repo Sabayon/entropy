@@ -44,11 +44,18 @@ class ActivityStates:
 
 class AppActions:
 
-    """ Application Transaction States """
+    """ Application Transaction Actions """
 
     INSTALL = "install"
     REMOVE = "remove"
     IDLE = "idle"
+
+class AppTransactionStates:
+
+    """ Application Transaction States """
+
+    DOWNLOAD = "download"
+    MANAGE = "manage"
 
 class AppTransactionOutcome:
 

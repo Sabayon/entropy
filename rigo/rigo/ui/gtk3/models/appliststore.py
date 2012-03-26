@@ -52,11 +52,13 @@ class AppListStore(Gtk.ListStore):
                              ),
     }
 
-    def __init__(self, entropy_client, entropy_ws, view, icons):
+    def __init__(self, entropy_client, entropy_ws, rigo_service,
+                 view, icons):
         Gtk.ListStore.__init__(self)
         self._view = view
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
+        self._service = rigo_service
         self._icons = icons
         self.set_column_types(self.COL_TYPES)
 
@@ -249,6 +251,9 @@ class AppListStore(Gtk.ListStore):
         return app
 
     def get_transaction_progress(self, pkg_match):
-        # FIXME, lxnay complete this
-        # int from 0 - 100, or -1 for no transaction
-        return -1
+        app, state, progress = self._service.get_transaction_state()
+        if app is None:
+            return -1
+        if app.get_details().pkg != pkg_match:
+            return -1
+        return progress

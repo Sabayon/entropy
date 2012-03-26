@@ -61,7 +61,7 @@ from entropy.core.settings.base import SystemSettings
 import entropy.tools
 
 from RigoDaemon.enums import ActivityStates, AppActions, \
-    AppTransactionOutcome
+    AppTransactionOutcome, AppTransactionStates
 from RigoDaemon.config import DbusConfig
 
 TEXT = TextInterface()
@@ -516,12 +516,22 @@ class RigoDaemonService(dbus.service.Object):
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         try:
             self.activity_progress(activity, 0)
+
+            self.application_processing_update(
+                package_id, repository_id,
+                AppTransactionStates.DOWNLOAD, 50)
+
             # FIXME, complete
             # simulate
             self._entropy.output("Application Management Message")
             time.sleep(2.5)
             self.activity_progress(activity, 50)
-            time.sleep(2.5)
+            time.sleep(20.0)
+
+            self.application_processing_update(
+                package_id, repository_id,
+                AppTransactionStates.MANAGE, 100)
+
             self._entropy.output("Application Management Complete")
             outcome = AppTransactionOutcome.SUCCESS
         finally:
@@ -881,9 +891,24 @@ class RigoDaemonService(dbus.service.Object):
         Signal all the connected Clients that we're currently
         processing the given Application.
         """
-        write_output("processing_application(): %d,"
+        write_output("processing_application(): %i,"
                      "%s, action: %s" % (
                 package_id, repository_id, action,),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='issi')
+    def application_processing_update(self, package_id, repository_id,
+                                      app_transaction_state, progress):
+        """
+        Signal all the connected Clients an Application processing
+        update.
+        """
+        write_output("application_processing_update(): %i,"
+                     "%s, transaction_state: %s, progress: %i" % (
+                package_id, repository_id,
+                app_transaction_state,
+                progress,),
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
