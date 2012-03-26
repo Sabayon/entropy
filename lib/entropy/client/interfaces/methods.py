@@ -1718,6 +1718,7 @@ class MiscMixin:
             mapped = self._file_lock_setup(lock_path)
             if mapped['ref'] is not None:
                 # reentrant lock, already acquired
+                mapped['count'] += 1
                 return True
             path = mapped['path']
         acquired, flock_f = self._file_lock_create(
