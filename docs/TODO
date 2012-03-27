@@ -7,7 +7,19 @@ Backlog (raw)
     - requires dbus
     - requires polkit [introspection]
 
+    # simulation -> rigo:simulate:kde-meta
+
     - [F] App Install support (get_transaction_progress)
+          - inform about apps being removed due to install?
+          - handle error states in Rigo (UI)
+          - handle global activity progress
+          - make possible to undo accidental enqueue, give 5 seconds?
+            -> Undo feature via NotificationBox?
+          - Polkit: authenticate as admin, not user
+          - on applications managed signal, clear the progress bar text
+            and state
+
+    - [F] System Upgrade support
     - [F] Configuration files Update
 
     - preferences:
