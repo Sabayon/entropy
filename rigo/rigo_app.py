@@ -464,12 +464,13 @@ class RigoServiceController(GObject.Object):
     ### DBUS SIGNALS
 
     def _processing_application_signal(self, package_id, repository_id,
-                                       daemon_action):
+                                       daemon_action, daemon_tx_state):
         const_debug_write(
             __name__,
             "_processing_application_signal: received for "
-            "%d, %s, action: %s" % (
-                package_id, repository_id, daemon_action))
+            "%d, %s, action: %s, tx state: %s" % (
+                package_id, repository_id, daemon_action,
+                daemon_tx_state))
 
         def _redraw_callback(*args):
             self._processing_application_signal(
@@ -481,6 +482,7 @@ class RigoServiceController(GObject.Object):
             (package_id, repository_id),
             redraw_callback=_redraw_callback)
         self._wc.set_application(app, daemon_action)
+        # FIXME: _daemon_transaction_app must be a set
         self._daemon_transaction_app = app
         self._daemon_transaction_app_state = None
         self._daemon_transaction_app_progress = 0
@@ -500,6 +502,7 @@ class RigoServiceController(GObject.Object):
         app = Application(
             self._entropy, self._entropy_ws,
             (package_id, repository_id))
+        # FIXME: _daemon_transaction_app must be a set
         self._daemon_transaction_app = app
         self._daemon_transaction_app_progress = progress
         self._daemon_transaction_app_state = app_transaction_state
@@ -512,6 +515,8 @@ class RigoServiceController(GObject.Object):
             "%i, %s, action: %s, outcome: %s" % (
                 package_id, repository_id, daemon_action, app_outcome))
 
+        # FIXME: _daemon_transaction_app must be a set (due to multifetch)
+        # FIXME: fix this fixme!
         self._daemon_transaction_app = None
         self._daemon_transaction_app_progress = -1
         self._daemon_transaction_app_state = None
@@ -661,7 +666,6 @@ class RigoServiceController(GObject.Object):
             return
 
         fraction = float(average) / 100
-
         human_dt = entropy.tools.bytes_into_human(data_transfer_bytes)
         total = round(total_size, 1)
 
@@ -876,12 +880,12 @@ class RigoServiceController(GObject.Object):
             progress = -1
         return app, state, progress
 
-    def application_request(self, app, app_action):
+    def application_request(self, app, app_action, simulate=False):
         """
         Start Application Action (install/remove).
         """
         task = ParallelTask(self._application_request,
-                            app, app_action)
+                            app, app_action, simulate=simulate)
         task.name = "ApplicationRequest{%s, %s}" % (
             app, app_action,)
         task.daemon = True
@@ -1376,7 +1380,7 @@ class RigoServiceController(GObject.Object):
         return accepted
 
     def _application_request_unlocked(self, app, daemon_action,
-                                      master, busied):
+                                      master, busied, simulate):
         """
         Internal method handling the actual Application Request
         execution.
@@ -1437,7 +1441,8 @@ class RigoServiceController(GObject.Object):
                 self._entropy_bus,
                 dbus_interface=self.DBUS_INTERFACE
                 ).enqueue_application_action(
-                    package_id, repository_id, daemon_action)
+                    package_id, repository_id, daemon_action,
+                    simulate)
             const_debug_write(
                 __name__,
                 "service enqueue_application_action, got: %s, type: %s" % (
@@ -1497,7 +1502,8 @@ class RigoServiceController(GObject.Object):
         GLib.idle_add(self._applications_managed_signal,
                       True)
 
-    def _application_request(self, app, app_action, master=True):
+    def _application_request(self, app, app_action, simulate=False,
+                             master=True):
         """
         Forward Application Request (install or remove) to RigoDaemon.
         Make sure there isn't any other ongoing activity.
@@ -1573,7 +1579,7 @@ class RigoServiceController(GObject.Object):
                 self._please_wait(True)
                 accepted = self._application_request_unlocked(
                     app, daemon_action, master,
-                    busied)
+                    busied, simulate)
 
             if not accepted:
                 with self._application_request_mutex:

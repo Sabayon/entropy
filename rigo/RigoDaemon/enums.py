@@ -61,7 +61,8 @@ class AppTransactionOutcome:
 
     SUCCESS = "success"
     INTERNAL_ERROR = "internal-error"
-    DEPENDENCIES_CALCULATION_ERROR = "dependencies-calc-error"
+    DEPENDENCIES_NOT_FOUND_ERROR = "dependencies-not-found"
+    DEPENDENCIES_COLLISION_ERROR = "dependencies-collision"
     DOWNLOAD_ERROR = "download-error"
     INSTALL_ERROR = "install-error"
     REMOVE_ERROR = "remove-error"

@@ -16,6 +16,7 @@
        <arg name="package_id" type="i" direction="in"/>
        <arg name="repository_id" type="s" direction="in"/>
        <arg name="action" type="s" direction="in"/>
+       <arg name="simulate" type="b" direction="in"/>
        <arg name="accepted" type="b" direction="out"/>
     </method>
 

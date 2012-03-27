@@ -50,15 +50,20 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write
+from entropy.exceptions import DependenciesNotFound, \
+    DependenciesCollision
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
 from entropy.fetchers import UrlFetcher
-from entropy.output import TextInterface
+from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
+from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
+from entropy.cli import get_entropy_webservice
 
 import entropy.tools
+import entropy.dep
 
 from RigoDaemon.enums import ActivityStates, AppActions, \
     AppTransactionOutcome, AppTransactionStates
@@ -142,6 +147,7 @@ class DaemonUrlFetcher(UrlFetcher):
     __remotesize = 0
     __datatransfer = 0
     __time_remaining = ""
+    __last_t = None
 
     _DAEMON = None
 
@@ -164,6 +170,16 @@ class DaemonUrlFetcher(UrlFetcher):
     def update(self):
         if self._DAEMON is None:
             return
+
+        # avoid flooding clients
+        average = self.__average
+        if average > 0.2 and average < 99.8:
+            last_t = self.__last_t
+            cur_t = time.time()
+            if last_t is not None:
+                if (cur_t - last_t) < 0.5:
+                    return # dont flood
+            self.__last_t = cur_t
 
         self._DAEMON.transfer_output(
             self.__average, self.__downloadedsize,
@@ -234,10 +250,11 @@ class RigoDaemonService(dbus.service.Object):
 
     class ActionQueueItem(object):
 
-        def __init__(self, package_id, repository_id, action):
+        def __init__(self, package_id, repository_id, action, simulate):
             self._package_id = package_id
             self._repository_id = repository_id
             self._action = action
+            self._simulate = simulate
 
         @property
         def pkg(self):
@@ -258,12 +275,18 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._action
 
+        def simulate(self):
+            """
+            Return True, if Action should be simulated only.
+            """
+            return self._simulate
+
         def __str__(self):
             """
             Show item in human readable way
             """
-            return "ActionQueueItem{%s, %s}" % (
-                self.pkg, self.action())
+            return "ActionQueueItem{%s, %s, %s}" % (
+                self.pkg, self.action(), self.simulate())
 
         def __repr__(self):
             """
@@ -508,41 +531,375 @@ class RigoDaemonService(dbus.service.Object):
         """
         package_id, repository_id = item.pkg
         action = item.action()
+        simulate = item.simulate()
 
         self._txs.reset()
-        self._txs.set(package_id, repository_id, action)
 
-        self.processing_application(package_id, repository_id, action)
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         try:
-            self.activity_progress(activity, 0)
 
-            self.application_processing_update(
-                package_id, repository_id,
-                AppTransactionStates.DOWNLOAD, 50)
+            if action == AppActions.REMOVE:
+                outcome = self._process_remove_action(
+                    activity, action, simulate,
+                    package_id, repository_id)
+            elif action == AppActions.INSTALL:
+                outcome = self._process_install_action(
+                    activity, action, simulate,
+                    package_id, repository_id)
 
-            # FIXME, complete
-            # simulate
-            self._entropy.output("Application Management Message")
-            time.sleep(2.5)
-            self.activity_progress(activity, 50)
-            time.sleep(20.0)
-
-            self.application_processing_update(
-                package_id, repository_id,
-                AppTransactionStates.MANAGE, 100)
-
-            self._entropy.output("Application Management Complete")
-            outcome = AppTransactionOutcome.SUCCESS
         finally:
-            # this avoids Rigo to stall due to uncommitted
-            # transactions.
-            self._entropy.installed_repository().commit()
-
-            self.activity_progress(activity, 100)
             self._txs.reset()
+
+    def _process_remove_action(self, activity, action, simulate,
+                               package_id, repository_id):
+        """
+        
+        """
+        self.activity_progress(activity, 0)
+        self._entropy.output("Process Remove Action")
+        # FIXME: complete
+
+        self._txs.set(package_id, repository_id, AppActions.REMOVE)
+
+        self.processing_application(package_id, repository_id,
+                                    AppActions.REMOVE,
+                                    AppTransactionStates.MANAGE)
+
+        self.application_processing_update(
+            package_id, repository_id,
+            AppTransactionStates.DOWNLOAD, 50)
+
+        self.application_processing_update(
+            package_id, repository_id,
+            AppTransactionStates.MANAGE, 100)
+
+        # this is for each transaction cycle
+        # this avoids Rigo to stall due to uncommitted
+        # transactions.
+        self._entropy.installed_repository().commit()
+
+        # this goes into a finally
+        self.application_processed(
+            package_id, repository_id, AppActions.REMOVE,
+            AppTransactionOutcome.SUCCESS)
+
+        self.activity_progress(activity, 100)
+        return AppTransactionOutcome.SUCCESS
+
+    def _process_install_action(self, activity, action, simulate,
+                                package_id, repository_id):
+        """
+        Process Application Install Action.
+        """
+        self.activity_progress(activity, 0)
+
+        def _signal_processed(_package_id, _repository_id, _outcome):
+            self.application_processed(
+                _package_id, _repository_id, action,
+                _outcome)
+
+        outcome = AppTransactionOutcome.INTERNAL_ERROR
+        pkg_match = (package_id, repository_id)
+        self.activity_progress(activity, 0)
+        self._txs.set(package_id, repository_id, AppActions.INSTALL)
+        self.processing_application(package_id, repository_id,
+                                    AppActions.INSTALL,
+                                    AppTransactionStates.MANAGE)
+
+        try:
+
+            write_output(
+                "_process_install_action, about to get_install_queue(): "
+                "%s, %s" % (package_id, repository_id,), debug=True)
+
+            try:
+                install, removal = self._entropy.get_install_queue(
+                    [pkg_match], False, False)
+
+            except DependenciesNotFound as dnf:
+                write_output(
+                    "_process_install_action, DependenciesNotFound: "
+                    "%s" % (dnf,))
+                # this should never happen since client executes this
+                # before us
+                outcome = \
+                    AppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR
+                return outcome
+
+            except DependenciesCollision as dcol:
+                write_output(
+                    "_process_install_action, DependenciesCollision: "
+                    "%s" % (dcol,))
+                # this should never happen since client executes this
+                # before us
+                outcome = \
+                    AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
+                return outcome
+
+            # mark transactions
+            for _package_id, _repository_id in install:
+                self._txs.set(_package_id, _repository_id,
+                              action)
+
+            # Download
+            outcome = None
+            try:
+                count, total, outcome = \
+                    self._process_install_fetch_action(
+                        install, activity, action)
+                if outcome != AppTransactionOutcome.SUCCESS:
+                    return outcome
+
+            finally:
+                if outcome is None:
+                    outcome = AppTransactionOutcome.INTERNAL_ERROR
+
+            # Install
+            outcome = None
+            try:
+                outcome = self._process_install_merge_action(
+                    install, activity, action, simulate, count, total)
+                return outcome
+
+            finally:
+                # if we fail, make sure to signal Rigo the results
+                # of the interrupted transactions before exploding.
+                # However, filter out duplicated signals by looking
+                # at our transactions table.
+                if outcome is None:
+                    # exception
+                    outcome = AppTransactionOutcome.INTERNAL_ERROR
+
+        finally:
             self.application_processed(
                 package_id, repository_id, action, outcome)
+            self.activity_progress(activity, 100)
+
+    def _process_install_fetch_action(self, install_queue, activity,
+                                      action):
+        """
+        Process Applications Download Action.
+        """
+        def _signal_download_process(is_multifetch, opaque, amount):
+            if is_multifetch:
+                for pkg_match in opaque:
+                    package_id, repository_id = pkg_match
+                    self.application_processing_update(
+                        package_id, repository_id,
+                        AppTransactionStates.DOWNLOAD, amount)
+            else:
+                package_id, repository_id = opaque
+                self.application_processing_update(
+                    package_id, repository_id,
+                    AppTransactionStates.DOWNLOAD, amount)
+
+        def _account_downloads(is_multifetch, download_map, pkg):
+            if is_multifetch:
+                _repo_data = pkg.pkgmeta['repository_atoms']
+                for _repo_id, atom_list in _repo_data.items():
+                    obj = download_map.setdefault(_repo_id, set())
+                    for _atom in atom_list:
+                        obj.add(entropy.dep.dep_getkey(_atom))
+            else:
+                obj = download_map.setdefault(
+                    pkg.pkgmeta['repository'], set())
+                _atom = entropy.dep.dep_getkey(pkg.pkgmeta['atom'])
+                obj.add(_atom)
+
+        _settings = self._entropy.Settings()
+        _plg_ids = etpConst['system_settings_plugins_ids']
+        client_plg_id = _plg_ids['client_plugin']
+        client_settings = _settings[client_plg_id]
+
+        download_map = {}
+        _count = 0
+        total = len(install_queue)
+
+        queue = []
+        pkg_action = "fetch"
+        is_multifetch = False
+        multifetch = client_settings.get("multifetch", 1)
+        mymultifetch = multifetch
+        if multifetch > 1:
+
+            start = 0
+
+            while True:
+                _list = install_queue[start:mymultifetch]
+                if not _list:
+                    break
+                queue.append(_list)
+                start += multifetch
+                mymultifetch += multifetch
+
+            queue_len = len(queue)
+            total += queue_len
+            pkg_action = "multi_fetch"
+            is_multifetch = True
+
+        else:
+            queue_len = len(install_queue)
+            total += queue_len
+            queue = install_queue
+
+        try:
+            for opaque in queue:
+
+                write_output(
+                    "_process_install_fetch_action: "
+                    "%s, mode: %s, count: %s, total: %s" % (
+                        opaque, pkg_action, (_count + 1),
+                        total),
+                    debug=True)
+
+                _count += 1
+                progress = int(round(float(_count) / total * 100, 0))
+                self.activity_progress(activity, progress)
+
+                pkg = self._entropy.Package()
+                pkg.prepare(opaque, pkg_action, {})
+
+                msg = ":: %s" % (purple(_("Application download")),)
+                self._entropy.output(msg, count=(_count, total),
+                                     importance=1, level="info")
+
+                _signal_download_process(is_multifetch, opaque, 50)
+
+                rc = pkg.run()
+                if rc != 0:
+                    _signal_download_process(is_multifetch, opaque, -1)
+                    _outcome = AppTransactionOutcome.DOWNLOAD_ERROR
+                    write_output(
+                        "_process_install_fetch_action: "
+                        "%s, mode: %s, count: %s, total: %s, error: %s" % (
+                            opaque, pkg_action, _count,
+                            total, rc))
+                    return _count, total, _outcome
+
+                _account_downloads(is_multifetch, download_map, pkg)
+                _signal_download_process(is_multifetch, opaque, 100)
+
+                pkg.kill()
+                del pkg
+
+        finally:
+            self._record_download(download_map)
+
+        return _count, total, AppTransactionOutcome.SUCCESS
+
+    def _record_download(self, download_map):
+        """
+        Record downloaded Applications.
+        """
+        def _record():
+            write_output(
+                "_record_download._record: running",
+                debug=True)
+            for repository_id, pkg_keys in download_map.items():
+                try:
+                    webserv = get_entropy_webservice(
+                        self._entropy, repository_id,
+                        tx_cb=False)
+                except WebService.UnsupportedService:
+                    continue
+                try:
+                    webserv.add_downloads(
+                        sorted(pkg_keys),
+                        clear_available_cache=True)
+                except WebService.WebServiceException as err:
+                    write_output(
+                        "_record_download: %s" % (repr(err),),
+                        debug=True)
+                    continue
+
+        write_output(
+            "_record_download: spawning",
+            debug=True)
+        task = ParallelTask(_record)
+        task.name = "RecordDownloads"
+        task.daemon = True
+        task.start()
+
+    def _process_install_merge_action(self, install_queue, activity,
+                                      action, simulate, count, total):
+        """
+        Process Applications Merge Action.
+        """
+
+        def _signal_merge_process(_package_id, _repository_id, amount):
+            self.application_processing_update(
+                _package_id, _repository_id,
+                AppTransactionStates.MANAGE, amount)
+
+        try:
+            for pkg_match in install_queue:
+
+                package_id, repository_id = pkg_match
+
+                write_output(
+                    "_process_install_merge_action: "
+                    "%s, count: %s, total: %s" % (
+                        pkg_match, (count + 1),
+                        total),
+                    debug=True)
+
+                # signal progress
+                count += 1
+                progress = int(round(float(count) / total * 100, 0))
+                self.activity_progress(activity, progress)
+
+                pkg = self._entropy.Package()
+                pkg.prepare(pkg_match, "install", {})
+
+                msg = "++ %s" % (purple(_("Application Install")),)
+                self._entropy.output(msg, count=(count, total),
+                                     importance=1, level="info")
+
+                self.processing_application(
+                    package_id, repository_id, action,
+                    AppTransactionStates.MANAGE)
+                _signal_merge_process(package_id, repository_id, 50)
+
+                if simulate:
+                    # simulate time taken
+                    time.sleep(5.0)
+                    rc = 0
+                else:
+                    rc = pkg.run()
+                if rc != 0:
+                    _signal_merge_process(package_id, repository_id, -1)
+                    outcome = AppTransactionOutcome.INSTALL_ERROR
+                    write_output(
+                        "_process_install_merge_action: "
+                        "%s, count: %s, total: %s, error: %s" % (
+                            pkg_match, count,
+                            total, rc))
+                    return outcome
+
+                pkg.kill()
+                del pkg
+
+                write_output(
+                    "_process_install_merge_action: "
+                    "%s, count: %s, total: %s, done, committing." % (
+                        pkg_match, count, total), debug=True)
+                self._entropy.installed_repository().commit()
+
+                _signal_merge_process(package_id, repository_id, 100)
+
+                # Remove us from the ongoing transactions
+                self._txs.unset(package_id, repository_id)
+                self.application_processed(
+                    package_id, repository_id, action,
+                    AppTransactionOutcome.SUCCESS)
+
+        finally:
+            write_output(
+                "_process_install_merge_action: "
+                "count: %s, total: %s, finally stmt, committing." % (
+                    count, total), debug=True)
+            self._entropy.installed_repository().commit()
+
 
     def _close_local_resources(self):
         """
@@ -655,10 +1012,10 @@ class RigoDaemonService(dbus.service.Object):
         task.start()
         return True
 
-    @dbus.service.method(BUS_NAME, in_signature='iss',
+    @dbus.service.method(BUS_NAME, in_signature='issb',
         out_signature='b')
     def enqueue_application_action(self, package_id, repository_id,
-                                   action):
+                                   action, simulate):
         """
         Request RigoDaemon to enqueue a new Application Action, if
         possible.
@@ -682,9 +1039,10 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
 
             item = self.ActionQueueItem(
-                package_id,
-                repository_id,
-                action)
+                int(package_id),
+                str(repository_id),
+                action,
+                bool(simulate))
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True
@@ -885,15 +1243,17 @@ class RigoDaemonService(dbus.service.Object):
                 activity, success,), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='iss')
-    def processing_application(self, package_id, repository_id, action):
+        signature='isss')
+    def processing_application(self, package_id, repository_id, action,
+                               transaction_state):
         """
         Signal all the connected Clients that we're currently
         processing the given Application.
         """
         write_output("processing_application(): %i,"
-                     "%s, action: %s" % (
-                package_id, repository_id, action,),
+                     "%s, action: %s, tx state: %s" % (
+                package_id, repository_id, action,
+                transaction_state,),
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
