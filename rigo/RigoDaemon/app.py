@@ -127,7 +127,8 @@ class Entropy(Client):
         DaemonUrlFetcher.set_daemon(daemon)
 
     def output(self, text, header = "", footer = "", back = False,
-        importance = 0, level = "info", count = None, percent = False):
+               importance = 0, level = "info", count = None,
+               percent = False, _raw=False):
         if self._DAEMON is not None:
             count_c = 0
             count_t = 0
@@ -135,7 +136,7 @@ class Entropy(Client):
                 count_c, count_t = count
             self._DAEMON.output(
                 text, header, footer, back, importance,
-                level, count_c, count_t, percent)
+                level, count_c, count_t, percent, _raw)
 
 Client.__singleton_class__ = Entropy
 
@@ -185,6 +186,66 @@ class DaemonUrlFetcher(UrlFetcher):
             self.__average, self.__downloadedsize,
             int(self.__remotesize), int(self.__datatransfer),
             self.__time_remaining)
+
+class FakeOutFile(object):
+
+    """
+    Fake Standard Output / Error file object
+    """
+
+    def __init__(self, entropy_client):
+        self._entropy = entropy_client
+        self._rfd, self._wfd = os.pipe()
+        task = ParallelTask(self._pusher)
+        task.name = "FakeOutFilePusher"
+        task.daemon = True
+        task.start()
+
+    def _pusher(self):
+        while True:
+            chunk = os.read(self._rfd, 512) # BLOCKS
+            self._entropy.output(chunk, _raw=True)
+
+    def close(self):
+        pass
+
+    def flush(self):
+        pass
+
+    def fileno(self):
+        return self._wfd
+
+    def isatty(self):
+        return False
+
+    def read(self, a):
+        return ""
+
+    def readline(self):
+        return ""
+
+    def readlines(self):
+        return []
+
+    def write(self, s):
+        self._entropy.output(s, _raw=True)
+
+    def write_line(self, s):
+        self.write(s)
+
+    def writelines(self, l):
+        for s in l:
+            self.write(s)
+
+    def seek(self, a):
+        raise IOError(29, "Illegal seek")
+
+    def tell(self):
+        raise IOError(29, "Illegal seek")
+
+    def truncate(self):
+        self.tell()
+
 
 class ApplicationsTransaction(object):
 
@@ -333,6 +394,7 @@ class RigoDaemonService(dbus.service.Object):
 
         Entropy.set_daemon(self)
         self._entropy = Entropy()
+        self._fakeout = FakeOutFile(self._entropy)
         write_output(
             "__init__: dbus service loaded, pid: %d, ppid: %d" %  (
                 os.getpid(), os.getppid(),)
@@ -358,6 +420,21 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "ShutdownPinger"
         task.daemon = True
         task.start()
+
+    def _enable_stdout_stderr_redirect(self):
+        """
+        Enable standard output and standard error redirect to
+        Entropy.output()
+        """
+        sys.stderr = self._fakeout
+        sys.stdout = self._fakeout
+
+    def _disable_stdout_stderr_redirect(self):
+        """
+        Disable standard output and standard error redirect to file.
+        """
+        sys.stderr = sys.__stderr__
+        sys.stdout = sys.__stdout__
 
     def _busy(self, activity):
         """
@@ -410,6 +487,7 @@ class RigoDaemonService(dbus.service.Object):
         with self._activity_mutex:
 
             # ask clients to release their locks
+            self._enable_stdout_stderr_redirect()
             self._acquire_exclusive(activity)
             result = 99
             msg = ""
@@ -446,6 +524,7 @@ class RigoDaemonService(dbus.service.Object):
                 return
 
             finally:
+                self._disable_stdout_stderr_redirect()
                 try:
                     self._unbusy(activity)
                 except ActivityStates.AlreadyAvailableError:
@@ -479,6 +558,7 @@ class RigoDaemonService(dbus.service.Object):
                                      "._unbusy: already "
                                      "available, wtf !?!?")
                         # wtf??
+                    self._disable_stdout_stderr_redirect()
                     self._release_exclusive(activity)
                     self.activity_completed(activity, True)
                     self.applications_managed(True)
@@ -507,6 +587,7 @@ class RigoDaemonService(dbus.service.Object):
             with self._activity_mutex:
 
                 self._acquire_exclusive(activity)
+                self._enable_stdout_stderr_redirect()
                 try:
                     self._close_local_resources()
                     self._entropy_setup()
@@ -1148,14 +1229,13 @@ class RigoDaemonService(dbus.service.Object):
     ### DBUS SIGNALS
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='sssbisiib')
+        signature='sssbisiibb')
     def output(self, text, header, footer, back, importance, level,
-               count_c, count_t, percent):
+               count_c, count_t, percent, raw):
         """
         Entropy Library output text signal. Clients will be required to
         forward this message to User.
         """
-        pass
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='iiiis')
@@ -1166,7 +1246,6 @@ class RigoDaemonService(dbus.service.Object):
         Entropy UrlFetchers output signals. Clients will be required to
         forward this message to User in Progress Bar form.
         """
-        pass
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='is')

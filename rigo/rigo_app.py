@@ -555,6 +555,10 @@ class RigoServiceController(GObject.Object):
             # the other thread can only block here when
             # we're not in busy state
 
+            # reset progress bar, we're done with it
+            if self._wc is not None:
+                self._wc.reset_progress()
+
             local_activity = LocalActivityStates.MANAGING_APPLICATIONS
             # we don't expect to fail here, it would
             # mean programming error.
@@ -592,6 +596,10 @@ class RigoServiceController(GObject.Object):
                         "already consumed")
                 return
 
+        # reset progress bar, we're done with it
+        if self._wc is not None:
+            self._wc.reset_progress()
+
         local_activity = LocalActivityStates.UPDATING_REPOSITORIES
         # we don't expect to fail here, it would
         # mean programming error.
@@ -609,7 +617,7 @@ class RigoServiceController(GObject.Object):
             "_repositories_updated_signal: repositories-updated")
 
     def _output_signal(self, text, header, footer, back, importance, level,
-               count_c, count_t, percent):
+               count_c, count_t, percent, raw):
         """
         Entropy Client output() method from RigoDaemon comes here.
         Will be redirected to a virtual terminal here in Rigo.
@@ -625,6 +633,10 @@ class RigoServiceController(GObject.Object):
                                  back=back, importance=importance,
                                  level=level, count=count,
                                  percent=percent)
+            return
+
+        if raw:
+            self._terminal.feed_child(text.replace("\n", "\r\n"))
             return
 
         color_func = darkgreen
@@ -1843,6 +1855,13 @@ class WorkViewController(GObject.Object):
 
         self.activate_app_box()
         self._app_box.queue_draw()
+
+    def reset_progress(self):
+        """
+        Reset Progress Bar to intial state.
+        """
+        self._progress_bar.set_show_text(False)
+        self._progress_bar.set_fraction(0.0)
 
     def set_progress(self, fraction, text=None):
         """
