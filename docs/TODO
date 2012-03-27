@@ -6,18 +6,21 @@ Backlog (raw)
     - requires pygobject[cairo,introspection]
     - requires dbus
     - requires polkit [introspection]
-
-    # simulation -> rigo:simulate:kde-meta
+    - install simulation -> rigo:simulate:i:<dep>
+    - removal simulation -> rigo:simulate:r:<dep>
 
     - [F] App Install support (get_transaction_progress)
-          - inform about apps being removed due to install?
+          - on applications managed signal, clear the progress bar text
+            and state
+          - implement removal
+          - redirect daemon stdout/stderr to output_signal()
+            -> test with Perl
           - handle error states in Rigo (UI)
           - handle global activity progress
+          - inform about apps being removed due to install?
           - make possible to undo accidental enqueue, give 5 seconds?
             -> Undo feature via NotificationBox?
           - Polkit: authenticate as admin, not user
-          - on applications managed signal, clear the progress bar text
-            and state
 
     - [F] System Upgrade support
     - [F] Configuration files Update
