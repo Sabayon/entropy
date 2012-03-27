@@ -206,7 +206,46 @@ class ApplicationsViewController(GObject.Object):
             __name__,
             "__simulate_app_install: "
             "application_request() sent for: %s, %s" % (
-                text, pkg_match,))
+                text, app,))
+
+    def __simulate_app_removal(self, text):
+
+        const_debug_write(
+            __name__,
+            "__simulate_app_removal: "
+            "%s" % (text,))
+        self._entropy.rwsem().reader_acquire()
+        try:
+            pkg_match = self._entropy.atom_match(text)
+        finally:
+            self._entropy.rwsem().reader_release()
+
+        pkg_id, pkg_repo = pkg_match
+        if pkg_id == -1:
+            const_debug_write(
+                __name__,
+                "__simulate_app_removal: "
+                "no match for: %s" % (text,))
+            return
+
+        app = Application(
+            self._entropy, self._entropy_ws,
+            pkg_match)
+        app = app.get_installed()
+        if app is None:
+            const_debug_write(
+                __name__,
+                "__simulate_app_removal: "
+                "not installed: %s" % (text,))
+            return
+        self._service.application_request(
+            app, AppActions.REMOVE, simulate=True)
+
+        const_debug_write(
+            __name__,
+            "__simulate_app_removal: "
+            "application_request() sent for: %s, %s" % (
+                text, app,))
 
     def __search_thread(self, text):
 
@@ -223,10 +262,15 @@ class ApplicationsViewController(GObject.Object):
                           RigoViewStates.WORK_VIEW_STATE)
             GLib.idle_add(self._service.output_test)
             return
-        if text.startswith("rigo:simulate:"):
-            sim_str = text[len("rigo:simulate:"):].strip()
+        if text.startswith("rigo:simulate:i:"):
+            sim_str = text[len("rigo:simulate:i:"):].strip()
             if sim_str:
                 self.__simulate_app_install(sim_str)
+                return
+        if text.startswith("rigo:simulate:r:"):
+            sim_str = text[len("rigo:simulate:r:"):].strip()
+            if sim_str:
+                self.__simulate_app_removal(sim_str)
                 return
 
         # serialize searches to avoid segfaults with sqlite3
