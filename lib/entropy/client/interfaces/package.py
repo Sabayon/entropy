@@ -793,6 +793,14 @@ class Package:
             except OSError:
                 pass
 
+        def do_get_md5sum(path):
+            try:
+                return entropy.tools.md5sum(path)
+            except IOError:
+                return None
+            except OSError:
+                return None
+
         fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
         filepath_dir = os.path.dirname(save_path)
         # symlink support
@@ -856,11 +864,21 @@ class Package:
                 do_stfu_rm(save_path)
             return -1, data_transfer, resumed
         if fetch_checksum == "-3":
-            # not found
-            return -3, data_transfer, resumed
+            # !! not found
+            # maybe we already have it?
+            # this handles the case where network is unavailable
+            # but file is already downloaded
+            fetch_checksum = do_get_md5sum(save_path)
+            if (fetch_checksum != digest) or fetch_checksum is None:
+                return -3, data_transfer, resumed
         elif fetch_checksum == "-4":
-            # timeout
-            return -4, data_transfer, resumed
+            # !! timeout
+            # maybe we already have it?
+            # this handles the case where network is unavailable
+            # but file is already downloaded
+            fetch_checksum = do_get_md5sum(save_path)
+            if (fetch_checksum != digest) or fetch_checksum is None:
+                return -4, data_transfer, resumed
 
         del fetch_intf
 
