@@ -24,7 +24,7 @@ import sys
 import copy
 import tempfile
 import time
-from threading import Lock, Semaphore
+from threading import Lock, Semaphore, Timer
 
 import dbus
 import dbus.exceptions
@@ -2399,7 +2399,19 @@ class Rigo(Gtk.Application):
         """
         dumper_enable = "--dumper" in sys.argv
         if dumper_enable:
-            task = TimeScheduled(30, dump_signal, None, None)
+            task = None
+
+            def _dumper():
+                def _dump():
+                    task.kill()
+                    dump_signal(None, None)
+                timer = Timer(10.0, _dump)
+                timer.name = "MainThreadHearthbeatCheck"
+                timer.daemon = True
+                timer.start()
+                GLib.idle_add(timer.cancel)
+
+            task = TimeScheduled(5.0, _dumper)
             task.name = "ThreadDumper"
             task.daemon = True
             task.start()
