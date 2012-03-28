@@ -80,7 +80,7 @@ if os.getuid() == 0:
     signal.signal(signal.SIGUSR1, debug_signal)
 
 # Setup thread dump hook on SIGQUIT
-def dump_signal(signum, frame):
+def dump_signal(signum, frame, extended=True):
 
     def _std_print_err(msg):
         sys.stderr.write(msg + '\n')
@@ -90,9 +90,20 @@ def dump_signal(signum, frame):
     _std_print_err("")
     _std_print_err("---- DUMP START [cut here] ----")
     thread_count = 0
+    threads_map = dict((x.ident, x) for x in threading.enumerate())
     for thread_id, stack in sys._current_frames().items():
         thread_count += 1
-        _std_print_err("Thread: %s" % (thread_id,))
+        thread_obj = threads_map.get(thread_id, "N/A")
+        _std_print_err("Thread: %s, object: %s" % (thread_id, thread_obj))
+
+        stack_list = []
+        _stack = stack
+        while True:
+            stack_list.append(_stack)
+            _stack = _stack.f_back
+            if _stack is None:
+                break
+
         for filename, lineno, name, line in traceback.extract_stack(stack):
             _std_print_err("File: '%s', line %d, in %s'" % (
                     filename, lineno, name,))
@@ -100,6 +111,25 @@ def dump_signal(signum, frame):
                 _std_print_err("  %s" % (line.rstrip(),))
             else:
                 _std_print_err("  ???")
+
+            if not extended:
+                continue
+
+            try:
+                _stack = stack_list.pop()
+            except IndexError:
+                _stack = None
+            if _stack is None:
+                continue
+
+            for key, value in _stack.f_locals.items():
+                cur_str = "\t%20s = " % key
+                try:
+                    cur_str += repr(value)
+                except (AttributeError, NameError, TypeError):
+                    cur_str += "<ERROR WHILE PRINTING VALUE>"
+                _std_print_err(cur_str)
+
         _std_print_err("--")
         _std_print_err("")
     _std_print_err("[thread count: %d]" % (thread_count,))
