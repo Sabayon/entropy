@@ -826,7 +826,7 @@ class Package:
             url, save_path, resume = resume,
             abort_check_func = fetch_abort_function)
         if (download is not None) and (package_id is not None) and \
-            (repository is not None):
+            (repository is not None) and (rc == 0):
             fetch_path = self.__get_fetch_disk_path(download)
             self._setup_differential_download(
                 self._entropy._url_fetcher, url,
