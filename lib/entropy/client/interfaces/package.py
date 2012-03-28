@@ -822,12 +822,14 @@ class Package:
         if os.path.isfile(save_path) and os.path.exists(save_path):
             existed_before = True
 
-        fetch_intf = self._entropy._url_fetcher(url, save_path, resume = resume,
+        fetch_intf = self._entropy._url_fetcher(
+            url, save_path, resume = resume,
             abort_check_func = fetch_abort_function)
         if (download is not None) and (package_id is not None) and \
             (repository is not None):
             fetch_path = self.__get_fetch_disk_path(download)
-            self._setup_differential_download(self._entropy._url_fetcher, url,
+            self._setup_differential_download(
+                self._entropy._url_fetcher, url,
                 resume, fetch_path, repository, package_id)
 
         # start to download
