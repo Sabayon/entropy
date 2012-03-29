@@ -9,15 +9,11 @@ Backlog (raw)
     - install simulation -> rigo:simulate:i:<dep>
     - removal simulation -> rigo:simulate:r:<dep>
 
-    - [F] App Install support (get_transaction_progress)
+    - [F] App Install support
           - implement removal
-          - handle error states in Rigo (UI)
-          - handle global activity progress
           - inform about apps being removed due to install?
           - make possible to undo accidental enqueue, give 5 seconds?
             -> Undo feature via NotificationBox?
-          - Polkit: authenticate as admin, not user.
-            and in the backend !!!
 
     - [F] System Upgrade support
     - [F] Configuration files Update
