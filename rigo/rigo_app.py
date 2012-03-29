@@ -1551,10 +1551,6 @@ class RigoServiceController(GObject.Object):
                 self._nc.append(box, timeout=10)
             GLib.idle_add(_notify)
 
-            # FIXME: notify UI to change app state, and make
-            # it back available (or recalculate its state
-            # afterwards)
-
         else:
             self._applications_managed_signal_check(
                 sig_match, signal_sem)
@@ -1915,8 +1911,19 @@ class WorkViewController(GObject.Object):
             msg = _("Removing")
 
         if msg is not None:
+            queue_len = self._service.action_queue_length()
+            more_msg = ""
+            if queue_len:
+                more_msg = ngettext(
+                    ", and <b>%d</b> <i>more in queue</i>",
+                    ", and <b>%d</b> <i>more in queue</i>",
+                    queue_len)
+                more_msg = prepare_markup(more_msg % (queue_len,))
+
             self._action_label.set_markup(
-                "<big><b>%s</b></big>" % (escape_markup(msg),))
+                "<big><b>%s</b>%s</big>" % (
+                    escape_markup(msg),
+                    more_msg,))
 
         self._appname_label.set_markup(
             app.get_extended_markup())
