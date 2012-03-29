@@ -19,7 +19,9 @@ this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
 import os
-from gi.repository import GLib, Polkit
+from gi.repository import GLib, Polkit, GObject
+
+from entropy.const import const_debug_write
 
 class AuthenticationController(object):
 

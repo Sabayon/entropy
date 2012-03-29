@@ -52,7 +52,7 @@ from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
-from rigo.ui.gtk3.controllers.authentication import AuthenticationController
+
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.widgets.stars import Star
 from rigo.ui.gtk3.widgets.terminal import TerminalWidget
@@ -64,8 +64,7 @@ from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
     AppActions as DaemonAppActions, \
     AppTransactionOutcome as DaemonAppTransactionOutcome, \
     AppTransactionStates as DaemonAppTransactionStates
-from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
-    PolicyActions
+from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, dump_signal
@@ -185,12 +184,11 @@ class RigoServiceController(GObject.Object):
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
     _SUPPORTED_APIS = [0]
 
-    def __init__(self, rigo_app, activity_rwsem, auth,
+    def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
         GObject.Object.__init__(self)
         self._rigo = rigo_app
         self._activity_rwsem = activity_rwsem
-        self._auth = auth
         self._nc = None
         self._bottom_nc = None
         self._wc = None
@@ -1082,63 +1080,6 @@ class RigoServiceController(GObject.Object):
                 GLib.idle_add(_make)
                 sem.acquire()
 
-    def _authorize(self, daemon_activity):
-        """
-        Authorize privileged Activity.
-        Return True for success, False for failure.
-        """
-        const_debug_write(__name__, "RigoServiceController: "
-                          "_authorize: enter")
-        auth_res = {
-            'sem': Semaphore(0),
-            'result': None,
-            }
-
-        def _authorized_callback(result):
-            auth_res['result'] = result
-            auth_res['sem'].release()
-
-        action_id = None
-        if daemon_activity == DaemonActivityStates.UPDATING_REPOSITORIES:
-            action_id = PolicyActions.UPDATE_REPOSITORIES
-        elif daemon_activity == DaemonActivityStates.MANAGING_APPLICATIONS:
-            action_id = PolicyActions.MANAGE_APPLICATIONS
-        elif daemon_activity == DaemonActivityStates.UPGRADING_SYSTEM:
-            action_id = PolicyActions.UPGRADE_SYSTEM
-
-        if action_id is None:
-            raise AttributeError("unsupported daemon activity")
-
-        self._auth.authenticate(action_id, _authorized_callback)
-
-        const_debug_write(__name__, "RigoServiceController: "
-                          "_authorize: sleeping on sem")
-        auth_res['sem'].acquire()
-        const_debug_write(__name__, "RigoServiceController: "
-                          "_authorize: got result: %s" % (
-                auth_res['result'],))
-
-        return auth_res['result']
-
-    def _scale_up(self, activity):
-        """
-        Make sure User is authorized to perform a privileged
-        operation.
-        """
-        self._please_wait(True)
-        try:
-            granted = self._authorize(activity)
-            if not granted:
-                const_debug_write(__name__, "RigoServiceController: "
-                              "_scale_up: abort")
-                return False
-
-            const_debug_write(__name__, "RigoServiceController: "
-                              "_scale_up: leave")
-            return True
-        finally:
-            self._please_wait(False)
-
     def _update_repositories(self, repositories, force,
                              master=True):
         """
@@ -1164,15 +1105,6 @@ class RigoServiceController(GObject.Object):
             # 1 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
             return False
-
-        if master:
-            scaled = self._scale_up(
-                DaemonActivityStates.UPDATING_REPOSITORIES)
-            if not scaled:
-                self.unbusy(local_activity)
-                # 1 -- ACTIVITY CRIT :: OFF
-                self._activity_rwsem.writer_release()
-                return False
 
         self._please_wait(True)
         accepted = self._update_repositories_unlocked(
@@ -1629,13 +1561,6 @@ class RigoServiceController(GObject.Object):
                         self.unbusy(local_activity)
                         # 2 -- ACTIVITY CRIT :: OFF
                         self._activity_rwsem.writer_release()
-
-                if master and busied:
-                    scaled = self._scale_up(
-                        DaemonActivityStates.MANAGING_APPLICATIONS)
-                    if not scaled:
-                        _unbusy()
-                        return False
 
                 # clean terminal, make sure no crap is left there
                 if self._terminal is not None:
@@ -2360,10 +2285,9 @@ class Rigo(Gtk.Application):
         self._activity_rwsem = ReadersWritersSemaphore()
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
-        self._auth = AuthenticationController()
         self._service = RigoServiceController(
             self, self._activity_rwsem,
-            self._auth, self._entropy, self._entropy_ws)
+            self._entropy, self._entropy_ws)
 
         app_handler = Rigo.RigoHandler(self, self._service)
 

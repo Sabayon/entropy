@@ -67,7 +67,8 @@ import entropy.dep
 
 from RigoDaemon.enums import ActivityStates, AppActions, \
     AppTransactionOutcome, AppTransactionStates
-from RigoDaemon.config import DbusConfig
+from RigoDaemon.config import DbusConfig, PolicyActions
+from RigoDaemon.authentication import AuthenticationController
 
 TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'], "rigo-daemon.log")
@@ -368,6 +369,9 @@ class RigoDaemonService(dbus.service.Object):
         # (like EntropyRepository) while in use.
         self._rwsem = ReadersWritersSemaphore()
 
+        # Polkit-based authentication controller
+        self._auth = AuthenticationController()
+
         self._txs = ApplicationsTransaction()
         # used by non-daemon thread to exit
         self._stop_signal = False
@@ -465,6 +469,32 @@ class RigoDaemonService(dbus.service.Object):
                 raise ActivityStates.AlreadyAvailabileError()
             self._current_activity = ActivityStates.AVAILABLE
 
+    def _authorize(self, action_id):
+        """
+        Authorize privileged Activity.
+        Return True for success, False for failure.
+        """
+        write_output("_authorize: enter", debug=True)
+        auth_res = {
+            'sem': Semaphore(0),
+            'result': None,
+            }
+
+        def _authorized_callback(result):
+            auth_res['result'] = result
+            auth_res['sem'].release()
+
+        self._auth.authenticate(action_id, _authorized_callback)
+        write_output("_authorize: sleeping on sem",
+            debug=True)
+
+        auth_res['sem'].acquire()
+        write_output("_authorize: got result: %s" % (
+                auth_res['result'],),
+            debug=True)
+
+        return auth_res['result']
+
     def stop(self):
         """
         RigoDaemon exit method.
@@ -489,9 +519,13 @@ class RigoDaemonService(dbus.service.Object):
             # ask clients to release their locks
             self._enable_stdout_stderr_redirect()
             self._acquire_exclusive(activity)
-            result = 99
+            result = 500
             msg = ""
             try:
+                authorized = self._authorize(
+                    PolicyActions.UPDATE_REPOSITORIES)
+                if not authorized:
+                    result = 401
                 self._close_local_resources()
                 self._entropy_setup()
                 self.activity_started(activity)
@@ -594,6 +628,11 @@ class RigoDaemonService(dbus.service.Object):
                 self._acquire_exclusive(activity)
                 self._enable_stdout_stderr_redirect()
                 try:
+                    authorized = self._authorize(
+                        PolicyActions.MANAGE_APPLICATIONS)
+                    if not authorized:
+                        outcome = AppTransactionOutcome.PERMISSION_DENIED
+                        continue
                     self._close_local_resources()
                     self._entropy_setup()
                     self.activity_started(activity)

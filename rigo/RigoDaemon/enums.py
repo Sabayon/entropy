@@ -61,6 +61,7 @@ class AppTransactionOutcome:
 
     SUCCESS = "success"
     INTERNAL_ERROR = "internal-error"
+    PERMISSION_DENIED = "permission-denied"
     DEPENDENCIES_NOT_FOUND_ERROR = "dependencies-not-found"
     DEPENDENCIES_COLLISION_ERROR = "dependencies-collision"
     DOWNLOAD_ERROR = "download-error"
