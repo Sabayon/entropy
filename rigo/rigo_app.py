@@ -1364,9 +1364,10 @@ class RigoServiceController(GObject.Object):
             return True
 
         if not installable:
-            msg = _("<b>%s</b>\ncannot be installed at this time"
+            msg = prepare_markup(
+                _("<b>%s</b>\ncannot be installed at this time"
                     " due to <b>missing/masked</b> dependencies or"
-                    " dependency <b>conflict</b>")
+                    " dependency <b>conflict</b>"))
             msg = msg % (app.get_markup(),)
             message_type = Gtk.MessageType.ERROR
 
@@ -1375,6 +1376,27 @@ class RigoServiceController(GObject.Object):
                 None, msg, message_type)
 
             return False
+
+        conflicting_apps = app.get_install_conflicts()
+        if conflicting_apps:
+            msg = prepare_markup(
+                _("Installing <b>%s</b> would cause the removal"
+                  " of the following Applications: %s"))
+            msg = msg % (
+                app.name,
+                ", ".join(
+                    ["<b>" + x.name + "</b>" for x in conflicting_apps]),)
+            message_type = Gtk.MessageType.WARNING
+
+            ask_meta = {
+                'res': None,
+                'sem': Semaphore(0),
+            }
+            GLib.idle_add(self._ask_blocking_question, ask_meta,
+                          msg, message_type)
+            ask_meta['sem'].acquire() # CANBLOCK
+            if not ask_meta['res']:
+                return False
 
         return True
 

@@ -995,6 +995,28 @@ class Application(object):
         finally:
             self._entropy.rwsem().reader_release()
 
+    def get_install_conflicts(self):
+        """
+        Return a list of Application objects belonging to
+        Apps that would need to be removed of this Application
+        is installed.
+        """
+        apps = []
+        queues = self._get_install_queue()
+        if queues is None:
+            return apps
+        install, removal = queues
+        del install
+
+        inst_repo = self._entropy.installed_repository()
+        inst_repo_id = inst_repo.repository_id()
+        for inst_pkg_id in removal:
+            app = Application(
+                self._entropy, self._entropy_ws,
+                (inst_pkg_id, inst_repo_id))
+            apps.append(app)
+        return apps
+
     def is_installable(self):
         """
         Return if Application can be installed or it's masked
