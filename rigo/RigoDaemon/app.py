@@ -543,7 +543,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         activity = ActivityStates.MANAGING_APPLICATIONS
 
-        def _action_queue_finally():
+        def _action_queue_finally(outcome):
             with self._enqueue_action_busy_hold_mutex:
                 # unbusy?
                 has_more = self._action_queue_waiter.acquire(False)
@@ -560,8 +560,12 @@ class RigoDaemonService(dbus.service.Object):
                         # wtf??
                     self._disable_stdout_stderr_redirect()
                     self._release_exclusive(activity)
-                    self.activity_completed(activity, True)
-                    self.applications_managed(True)
+                    success = outcome == AppTransactionOutcome.SUCCESS
+                    write_output("_action_queue_worker_thread"
+                                 "._action_queue_finally: "
+                                 "outcome: %s" % (outcome,))
+                    self.activity_completed(activity, success)
+                    self.applications_managed(success)
 
         while True:
 
@@ -586,6 +590,7 @@ class RigoDaemonService(dbus.service.Object):
             # now execute the action
             with self._activity_mutex:
 
+                outcome = AppTransactionOutcome.INTERNAL_ERROR
                 self._acquire_exclusive(activity)
                 self._enable_stdout_stderr_redirect()
                 try:
@@ -599,12 +604,15 @@ class RigoDaemonService(dbus.service.Object):
 
                     self._rwsem.reader_acquire()
                     try:
-                        self._process_action(item, activity)
+                        outcome = self._process_action(item, activity)
+                        write_output("_action_queue_worker_thread, "
+                                     "returned outcome: %s" % (
+                                outcome,), debug=True)
                     finally:
                         self._rwsem.reader_release()
 
                 finally:
-                    _action_queue_finally()
+                    _action_queue_finally(outcome)
 
     def _process_action(self, item, activity):
         """
@@ -627,6 +635,7 @@ class RigoDaemonService(dbus.service.Object):
                 outcome = self._process_install_action(
                     activity, action, simulate,
                     package_id, repository_id)
+            return outcome
 
         finally:
             self._txs.reset()
@@ -674,18 +683,15 @@ class RigoDaemonService(dbus.service.Object):
         """
         self.activity_progress(activity, 0)
 
-        def _signal_processed(_package_id, _repository_id, _outcome):
-            self.application_processed(
-                _package_id, _repository_id, action,
-                _outcome)
-
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         pkg_match = (package_id, repository_id)
         self.activity_progress(activity, 0)
         self._txs.set(package_id, repository_id, AppActions.INSTALL)
-        self.processing_application(package_id, repository_id,
-                                    AppActions.INSTALL,
-                                    AppTransactionStates.MANAGE)
+        # initial transaction state is always download
+        self.processing_application(
+            package_id, repository_id,
+            AppActions.INSTALL,
+            AppTransactionStates.DOWNLOAD)
 
         try:
 
@@ -723,35 +729,24 @@ class RigoDaemonService(dbus.service.Object):
                               action)
 
             # Download
-            outcome = None
-            try:
-                count, total, outcome = \
-                    self._process_install_fetch_action(
-                        install, activity, action)
-                if outcome != AppTransactionOutcome.SUCCESS:
-                    return outcome
-
-            finally:
-                if outcome is None:
-                    outcome = AppTransactionOutcome.INTERNAL_ERROR
-
-            # Install
-            outcome = None
-            try:
-                outcome = self._process_install_merge_action(
-                    install, activity, action, simulate, count, total)
+            count, total, outcome = \
+                self._process_install_fetch_action(
+                    install, activity, action)
+            if outcome != AppTransactionOutcome.SUCCESS:
                 return outcome
 
-            finally:
-                # if we fail, make sure to signal Rigo the results
-                # of the interrupted transactions before exploding.
-                # However, filter out duplicated signals by looking
-                # at our transactions table.
-                if outcome is None:
-                    # exception
-                    outcome = AppTransactionOutcome.INTERNAL_ERROR
+            # this way if an exception is raised in
+            # _process_install_merge_action we will signal an error
+            outcome = AppTransactionOutcome.INTERNAL_ERROR
+            # Install
+            outcome = self._process_install_merge_action(
+                install, activity, action, simulate, count, total)
+            return outcome
 
         finally:
+            write_output("_process_install_action, finally, "
+                         "action: %s, outcome: %s" % (
+                    action, outcome,), debug=True)
             self.application_processed(
                 package_id, repository_id, action, outcome)
             self.activity_progress(activity, 100)
@@ -791,6 +786,7 @@ class RigoDaemonService(dbus.service.Object):
         _plg_ids = etpConst['system_settings_plugins_ids']
         client_plg_id = _plg_ids['client_plugin']
         client_settings = _settings[client_plg_id]
+        misc_settings = client_settings['misc']
 
         download_map = {}
         _count = 0
@@ -799,7 +795,7 @@ class RigoDaemonService(dbus.service.Object):
         queue = []
         pkg_action = "fetch"
         is_multifetch = False
-        multifetch = client_settings.get("multifetch", 1)
+        multifetch = misc_settings.get("multifetch", 1)
         mymultifetch = multifetch
         if multifetch > 1:
 
@@ -943,7 +939,7 @@ class RigoDaemonService(dbus.service.Object):
 
                 if simulate:
                     # simulate time taken
-                    time.sleep(5.0)
+                    time.sleep(1.0)
                     rc = 0
                 else:
                     rc = pkg.run()
@@ -973,6 +969,9 @@ class RigoDaemonService(dbus.service.Object):
                 self.application_processed(
                     package_id, repository_id, action,
                     AppTransactionOutcome.SUCCESS)
+
+            outcome = AppTransactionOutcome.SUCCESS
+            return outcome
 
         finally:
             write_output(

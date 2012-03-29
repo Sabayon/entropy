@@ -62,7 +62,8 @@ from rigo.utils import escape_markup, prepare_markup
 
 from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
     AppActions as DaemonAppActions, \
-    AppTransactionOutcome as DaemonAppTransactionOutcome
+    AppTransactionOutcome as DaemonAppTransactionOutcome, \
+    AppTransactionStates as DaemonAppTransactionStates
 from RigoDaemon.config import DbusConfig as DaemonDbusConfig, \
     PolicyActions
 
@@ -208,10 +209,7 @@ class RigoServiceController(GObject.Object):
         self._local_transactions = {}
         self._local_activity = LocalActivityStates.READY
         self._local_activity_mutex = Lock()
-        self._daemon_activity_progress = 0
-        self._daemon_transaction_app = None
-        self._daemon_transaction_app_state = None
-        self._daemon_transaction_app_progress = -1
+        self._reset_daemon_transaction_state()
 
         self._please_wait_box = None
         self._please_wait_mutex = Lock()
@@ -224,6 +222,16 @@ class RigoServiceController(GObject.Object):
         # threads doing repo activities must coordinate
         # with this
         self._update_repositories_mutex = Lock()
+
+    def _reset_daemon_transaction_state(self):
+        """
+        Reset local daemon transaction state bits.
+        """
+        self._daemon_activity_progress = 0
+        self._daemon_processing_application_state = None
+        self._daemon_transaction_app = None
+        self._daemon_transaction_app_state = None
+        self._daemon_transaction_app_progress = -1
 
     def set_applications_controller(self, avc):
         """
@@ -472,16 +480,31 @@ class RigoServiceController(GObject.Object):
                 package_id, repository_id, daemon_action,
                 daemon_tx_state))
 
+        def _rate_limited_set_application(app):
+            _sleep_secs = 1.0
+            if self._wc is not None:
+                last_t = getattr(self, "_rate_lim_set_app", 0.0)
+                cur_t = time.time()
+                if (abs(cur_t - last_t) < _sleep_secs):
+                    # yeah, we're nazi, we sleep in the mainloop
+                    time.sleep(_sleep_secs)
+                setattr(self, "_rate_lim_set_app", cur_t)
+                self._wc.set_application(app, daemon_action)
+
+        # circular dep trick
+        app = None
         def _redraw_callback(*args):
-            self._processing_application_signal(
-                package_id, repository_id,
-                daemon_action)
+            if self._wc is not None:
+                GLib.idle_add(
+                    _rate_limited_set_application, app)
 
         app = Application(
             self._entropy, self._entropy_ws,
             (package_id, repository_id),
             redraw_callback=_redraw_callback)
-        self._wc.set_application(app, daemon_action)
+
+        self._daemon_processing_application_state = daemon_tx_state
+        _rate_limited_set_application(app)
         # FIXME: _daemon_transaction_app must be a set
         self._daemon_transaction_app = app
         self._daemon_transaction_app_state = None
@@ -516,7 +539,6 @@ class RigoServiceController(GObject.Object):
                 package_id, repository_id, daemon_action, app_outcome))
 
         # FIXME: _daemon_transaction_app must be a set (due to multifetch)
-        # FIXME: fix this fixme!
         self._daemon_transaction_app = None
         self._daemon_transaction_app_progress = -1
         self._daemon_transaction_app_state = None
@@ -526,6 +548,43 @@ class RigoServiceController(GObject.Object):
             redraw_callback=None)
         self.emit("application-processed", app, daemon_action,
                   app_outcome)
+
+        if app_outcome != DaemonAppTransactionOutcome.SUCCESS:
+            msg = prepare_markup(_("An <b>unknown error</b> occurred"))
+            if app_outcome == DaemonAppTransactionOutcome.DOWNLOAD_ERROR:
+                msg = prepare_markup(_("<b>%s</b> download failed")) % (
+                    app.name,)
+            elif app_outcome == DaemonAppTransactionOutcome.INSTALL_ERROR:
+                msg = prepare_markup(_("<b>%s</b> install failed")) % (
+                    app.name,)
+            elif app_outcome == DaemonAppTransactionOutcome.REMOVE_ERROR:
+                msg = prepare_markup(_("<b>%s</b> removal failed")) % (
+                    app.name,)
+            elif app_outcome == DaemonAppTransactionOutcome.INTERNAL_ERROR:
+                msg = prepare_markup(_("<b>%s</b>, internal error")) % (
+                    app.name,)
+            elif app_outcome == \
+                DaemonAppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR:
+                msg = prepare_markup(
+                    _("<b>%s</b> dependencies not found")) % (
+                        app.name,)
+            elif app_outcome == \
+                DaemonAppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR:
+                msg = prepare_markup(
+                    _("<b>%s</b> dependencies collision error")) % (
+                        app.name,)
+
+            box = NotificationBox(
+                msg,
+                tooltip=_("An error occurred"),
+                message_type=Gtk.MessageType.ERROR,
+                context_id="ApplicationProcessedSignal{%s, %s}" % (
+                    package_id, repository_id))
+            def _show_me(*args):
+                self._bottom_nc.emit("show-work-view")
+            box.add_destroy_button(_("Ok, thanks"))
+            box.add_button(_("Show me"), _show_me)
+            self._nc.append(box)
 
     def _applications_managed_signal(self, success):
         """
@@ -848,6 +907,8 @@ class RigoServiceController(GObject.Object):
             __name__,
             "_activity_started_signal: "
             "called, with remote activity: %s" % (activity,))
+
+        self._reset_daemon_transaction_state()
         # reset please wait notification then
         self._please_wait(None)
 
@@ -861,6 +922,15 @@ class RigoServiceController(GObject.Object):
             "_activity_progress_signal: "
             "called, with remote activity: %s, val: %i" % (
                 activity, progress,))
+        # update progress bar if it's not used for pushing
+        # download state
+        if self._daemon_processing_application_state == \
+                DaemonAppTransactionStates.MANAGE:
+            if self._wc is not None:
+                prog = float(progress) / 100
+                prog_txt = "%d %%" % (progress,)
+                self._wc.set_progress(prog, text=prog_txt)
+
         self._daemon_activity_progress = progress
 
     def _activity_completed_signal(self, activity, success):
@@ -873,6 +943,7 @@ class RigoServiceController(GObject.Object):
             "_activity_completed_signal: "
             "called, with remote activity: %s, success: %s" % (
                 activity, success,))
+        self._reset_daemon_transaction_state()
 
     ### GP PUBLIC METHODS
 
@@ -1409,6 +1480,12 @@ class RigoServiceController(GObject.Object):
                 # to show
                 GLib.idle_add(self._wc.deactivate_app_box)
 
+                # Clear all the NotificationBoxes from upper area
+                # we don't want people to click on them during the
+                # the repo update. Kill the completely.
+                if self._nc is not None:
+                    self._nc.clear_safe(managed=False)
+
             # emit, but we don't really need to switch to
             # the work view nor locking down the UI
             GLib.idle_add(self.emit, "start-working", None, False)
@@ -1470,8 +1547,7 @@ class RigoServiceController(GObject.Object):
                         ", <b>%i</b> Applications enqueued so far...",
                         queue_len)) % (queue_len,)
                 box = self.ServiceNotificationBox(
-                    msg,
-                    Gtk.MessageType.INFO)
+                    msg, Gtk.MessageType.INFO)
                 self._nc.append(box, timeout=10)
             GLib.idle_add(_notify)
 
@@ -1801,17 +1877,15 @@ class WorkViewController(GObject.Object):
         except GObject.GError:
             img = None
 
+        width = self.APP_IMAGE_SIZE
+        height = self.APP_IMAGE_SIZE
         img_buf = None
         if img is not None:
             img_buf = img.get_pixbuf()
         if img_buf is not None:
             w, h = img_buf.get_width(), \
                 img_buf.get_height()
-            width = self.APP_IMAGE_SIZE
-            if w < 1:
-                # not legit
-                height = self.APP_IMAGE_SIZE
-            else:
+            if w >= 1:
                 height = width * h / w
 
         del img_buf
