@@ -1628,7 +1628,7 @@ def const_debug_enabled():
     return etpUi['debug']
 
 _DEBUG_W_LOCK = threading.Lock()
-def const_debug_write(identifier, msg, force = False):
+def const_debug_write(identifier, msg, force = False, stdout=None):
     """
     Entropy debugging output write functions.
 
@@ -1638,10 +1638,14 @@ def const_debug_write(identifier, msg, force = False):
     @type msg: string
     @keyword force: force print even if debug mode is off
     @type force: bool
+    @keyword stdout: provide an alternative stdout file object
+    @type stdout: file object or None
     @rtype: None
     @return: None
     """
     if etpUi['debug'] or force:
+        if stdout is None:
+            stdout = sys.stdout
         # XXX: hierarchy violation, but hey, we're debugging shit
         from entropy.output import brown, purple, teal, darkgreen, darkred
         current_thread = threading.current_thread()
@@ -1652,12 +1656,12 @@ def const_debug_write(identifier, msg, force = False):
             darkred(identifier),)
         with _DEBUG_W_LOCK:
             if sys.hexversion >= 0x3000000:
-                sys.stdout.buffer.write(
+                stdout.buffer.write(
                     const_convert_to_rawstring(th_identifier) + \
                         b" " + const_convert_to_rawstring(msg) + b"\n")
             else:
-                sys.stdout.write("%s: %s" % (th_identifier, msg + "\n"))
-            sys.stdout.flush()
+                stdout.write("%s: %s" % (th_identifier, msg + "\n"))
+            stdout.flush()
 
 def const_get_caller():
     """
