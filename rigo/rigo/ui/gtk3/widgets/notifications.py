@@ -30,7 +30,7 @@ from rigo.utils import build_register_url, open_url, escape_markup, \
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
-from entropy.i18n import _
+from entropy.i18n import _, ngettext
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
 

@@ -35,6 +35,7 @@ from RigoDaemon.enums import AppActions as DaemonAppActions
 
 from entropy.const import etpConst, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
+from entropy.services.client import WebService
 from entropy.misc import ParallelTask
 from entropy.i18n import _
 

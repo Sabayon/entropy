@@ -743,7 +743,7 @@ class ApplicationMetadata(object):
                 const_debug_write(
                     __name__,
                     "Application{%s}.download_images_async: %s" % (
-                        self._pkg_match, err,))
+                        package_key, err,))
             finally:
                 # ignore exceptions, if any, and always
                 # call callback.

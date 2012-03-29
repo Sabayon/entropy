@@ -635,27 +635,3 @@ class AppTreeView(Gtk.TreeView):
         if not res:
             return False
         return self.get_path_at_pos(x, y)[0] == self.get_cursor()[0]
-
-
-def on_entry_changed(widget, data):
-
-    def _work():
-        new_text = widget.get_text()
-        (view, enquirer) = data
-
-        # FIXME lxnay
-        enquirer.set_query(get_query_from_search_entry(new_text),
-                           limit=100*1000,
-                           nonapps_visible=NonAppVisibility.ALWAYS_VISIBLE)
-
-        store = view.tree_view.get_model()
-        store.clear()
-
-        store.set_from_matches(enquirer.matches)
-
-        while Gtk.events_pending():
-            Gtk.main_iteration()
-
-    if widget.stamp:
-        GObject.source_remove(widget.stamp)
-        widget.stamp = GObject.timeout_add(250, _work)
