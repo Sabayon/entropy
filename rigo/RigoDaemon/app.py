@@ -87,7 +87,9 @@ def write_output(message, debug=False):
         DAEMON_LOG.flush()
     if DAEMON_DEBUG:
         if debug:
-            const_debug_write(__name__, message, force=True)
+            const_debug_write(
+                __name__, message, force=True,
+                stdout=sys.__stdout__)
         else:
             TEXT.output(message)
 
@@ -376,6 +378,10 @@ class RigoDaemonService(dbus.service.Object):
         # used by non-daemon thread to exit
         self._stop_signal = False
 
+        # original standard output and error files
+        self._old_stdout = sys.stdout
+        self._old_stderr = sys.stderr
+
         # used to determine if there are connected clients
         self._ping_timer_mutex = Lock()
         self._ping_timer = None
@@ -430,6 +436,8 @@ class RigoDaemonService(dbus.service.Object):
         Enable standard output and standard error redirect to
         Entropy.output()
         """
+        self._old_stdout = sys.stdout
+        self._old_stderr = sys.stderr
         sys.stderr = self._fakeout
         sys.stdout = self._fakeout
 
@@ -437,8 +445,8 @@ class RigoDaemonService(dbus.service.Object):
         """
         Disable standard output and standard error redirect to file.
         """
-        sys.stderr = sys.__stderr__
-        sys.stdout = sys.__stdout__
+        sys.stderr = self._old_stderr
+        sys.stdout = self._old_stdout
 
     def _busy(self, activity):
         """
