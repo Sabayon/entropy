@@ -11,7 +11,6 @@ Backlog (raw)
 
     - [F] App Install support
           - implement removal
-          - inform about apps being removed due to install?
           - make possible to undo accidental enqueue, give 5 seconds?
             -> Undo feature via NotificationBox?
 
