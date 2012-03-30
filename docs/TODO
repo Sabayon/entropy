@@ -13,16 +13,15 @@ Backlog (raw)
     - [F] App Install support
           - make possible to undo accidental enqueue, give 5 seconds?
             -> Undo feature via NotificationBox?
-          - cancel updates calculation if app request is raised
           - AppTransactionOutcome, bring payload (dep collision,
             dep not found)
 
     - [F] System Upgrade support
-          - cancel updates calculation if system upgrade is spawned
+          - signal removable pkgs (orphaned pkgs)
           - AppTransactionOutcome, bring payload (dep collision,
             dep not found)
-          - signal removable pkgs (orphaned pkgs)
           - keep calculate_updates() cached
+
     - [F] Configuration files Update
 
     - preferences:
