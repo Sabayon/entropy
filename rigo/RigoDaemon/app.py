@@ -550,14 +550,18 @@ class RigoDaemonService(dbus.service.Object):
 
             # ask clients to release their locks
             self._enable_stdout_stderr_redirect()
-            self._acquire_exclusive(activity)
             result = 500
             msg = ""
+            acquired_exclusive = False
             try:
                 authorized = self._authorize(
                     PolicyActions.UPDATE_REPOSITORIES)
                 if not authorized:
                     result = 401
+                    msg = _("Not authorized")
+                    return
+                self._acquire_exclusive(activity)
+                acquired_exclusive = True
                 self._close_local_resources()
                 self._entropy_setup()
                 self.activity_started(activity)
@@ -597,7 +601,8 @@ class RigoDaemonService(dbus.service.Object):
                     write_output("_update_repositories._unbusy: already "
                                  "available, wtf !?!?")
                     # wtf??
-                self._release_exclusive(activity)
+                if acquired_exclusive:
+                    self._release_exclusive(activity)
                 self.activity_progress(activity, 100)
                 self.activity_completed(activity, result == 0)
                 self.repositories_updated(result, msg)
@@ -635,7 +640,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         Action Queue worker code.
         """
-        def _action_queue_finally(activity, outcome):
+        def _action_queue_finally(exclusive, activity, outcome):
             with self._enqueue_action_busy_hold_mutex:
                 # unbusy?
                 has_more = self._action_queue_waiter.acquire(False)
@@ -651,7 +656,8 @@ class RigoDaemonService(dbus.service.Object):
                                      "available, wtf !?!?")
                         # wtf??
                     self._disable_stdout_stderr_redirect()
-                    self._release_exclusive(activity)
+                    if exclusive:
+                        self._release_exclusive(activity)
                     success = outcome == AppTransactionOutcome.SUCCESS
                     write_output("_action_queue_worker_thread"
                                  "._action_queue_finally: "
@@ -671,8 +677,8 @@ class RigoDaemonService(dbus.service.Object):
             raise AssertionError("wtf?")
 
         outcome = AppTransactionOutcome.INTERNAL_ERROR
-        self._acquire_exclusive(activity)
         self._enable_stdout_stderr_redirect()
+        acquired_exclusive = False
         try:
             authorized = self._authorize(policy)
             if not authorized:
@@ -684,6 +690,8 @@ class RigoDaemonService(dbus.service.Object):
                     self.application_processed(
                         _pkg_id, _repo_id, item.action(), outcome)
                 return
+            self._acquire_exclusive(activity)
+            acquired_exclusive = True
 
             self._close_local_resources()
             self._entropy_setup()
@@ -703,7 +711,7 @@ class RigoDaemonService(dbus.service.Object):
                 self._rwsem.reader_release()
 
         finally:
-            _action_queue_finally(activity, outcome)
+            _action_queue_finally(acquired_exclusive, activity, outcome)
 
     def _process_action(self, item, activity, is_app):
         """
