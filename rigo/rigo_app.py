@@ -503,7 +503,6 @@ class RigoServiceController(GObject.Object):
 
         self._daemon_processing_application_state = daemon_tx_state
         _rate_limited_set_application(app)
-        # FIXME: _daemon_transaction_app must be a set
         self._daemon_transaction_app = app
         self._daemon_transaction_app_state = None
         self._daemon_transaction_app_progress = 0
@@ -523,7 +522,6 @@ class RigoServiceController(GObject.Object):
         app = Application(
             self._entropy, self._entropy_ws,
             (package_id, repository_id))
-        # FIXME: _daemon_transaction_app must be a set
         self._daemon_transaction_app = app
         self._daemon_transaction_app_progress = progress
         self._daemon_transaction_app_state = app_transaction_state
@@ -536,7 +534,6 @@ class RigoServiceController(GObject.Object):
             "%i, %s, action: %s, outcome: %s" % (
                 package_id, repository_id, daemon_action, app_outcome))
 
-        # FIXME: _daemon_transaction_app must be a set (due to multifetch)
         self._daemon_transaction_app = None
         self._daemon_transaction_app_progress = -1
         self._daemon_transaction_app_state = None
@@ -544,6 +541,7 @@ class RigoServiceController(GObject.Object):
             self._entropy, self._entropy_ws,
             (package_id, repository_id),
             redraw_callback=None)
+
         self.emit("application-processed", app, daemon_action,
                   app_outcome)
 
@@ -558,6 +556,10 @@ class RigoServiceController(GObject.Object):
             elif app_outcome == DaemonAppTransactionOutcome.REMOVE_ERROR:
                 msg = prepare_markup(_("<b>%s</b> removal failed")) % (
                     app.name,)
+            elif app_outcome == \
+                    DaemonAppTransactionOutcome.PERMISSION_DENIED:
+                msg = prepare_markup(_("<b>%s</b>, not authorized")) % (
+                    app.name,)
             elif app_outcome == DaemonAppTransactionOutcome.INTERNAL_ERROR:
                 msg = prepare_markup(_("<b>%s</b>, internal error")) % (
                     app.name,)
@@ -570,6 +572,11 @@ class RigoServiceController(GObject.Object):
                 DaemonAppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR:
                 msg = prepare_markup(
                     _("<b>%s</b> dependencies collision error")) % (
+                        app.name,)
+            elif app_outcome == \
+                DaemonAppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR:
+                msg = prepare_markup(
+                    _("<b>%s</b> dependencies not removable error")) % (
                         app.name,)
 
             box = NotificationBox(
@@ -611,6 +618,11 @@ class RigoServiceController(GObject.Object):
             # should be safe to block in here, because
             # the other thread can only block here when
             # we're not in busy state
+
+            # This way repository in-RAM caches are reset
+            # otherwise installed repository metadata becomes
+            # inconsistent
+            self._release_local_resources(clear_avc=False)
 
             # reset progress bar, we're done with it
             if self._wc is not None:
@@ -1434,11 +1446,11 @@ class RigoServiceController(GObject.Object):
                 # to show
                 GLib.idle_add(self._wc.deactivate_app_box)
 
-                # Clear all the NotificationBoxes from upper area
-                # we don't want people to click on them during the
-                # the repo update. Kill the completely.
-                if self._nc is not None:
-                    self._nc.clear_safe(managed=False)
+            # Clear all the NotificationBoxes from upper area
+            # we don't want people to click on them during the
+            # the repo update. Kill the completely.
+            if self._nc is not None:
+                self._nc.clear_safe(managed=False)
 
             # emit, but we don't really need to switch to
             # the work view nor locking down the UI
@@ -1872,8 +1884,9 @@ class WorkViewController(GObject.Object):
                     escape_markup(msg),
                     more_msg,))
 
-        self._appname_label.set_markup(
-            app.get_extended_markup())
+        extended_markup = app.get_extended_markup()
+
+        self._appname_label.set_markup(extended_markup)
 
         self._set_application_icon(app)
 

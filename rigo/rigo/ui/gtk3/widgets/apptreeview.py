@@ -498,6 +498,7 @@ class AppTreeView(Gtk.TreeView):
         elif btn_id == CellButtonIDs.ACTION:
             btn.set_sensitive(False)
             store.row_changed(path, store.get_iter(path))
+
             # be sure we dont request an action for a
             # pkg with pre-existing actions
             daemon_action = self._get_app_transaction(app)
@@ -506,8 +507,12 @@ class AppTreeView(Gtk.TreeView):
                     "Action already in progress for match: %s" % (
                         (pkg_match,)))
                 return False
-            if self.appmodel.is_installed(pkg_match):
+
+            if btn.current_variant == self.VARIANT_REMOVE:
                 perform_action = AppActions.REMOVE
+                app = app.get_installed()
+                if app is None:
+                    return False
             else:
                 perform_action = AppActions.INSTALL
             self._set_app_transaction(app, perform_action)

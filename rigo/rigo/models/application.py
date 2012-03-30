@@ -887,8 +887,6 @@ class Application(object):
         try:
             inst_repo = self._entropy.installed_repository()
             repo = self._entropy.open_repository(self._repo_id)
-            if repo is inst_repo:
-                return self
 
             key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
             if key_slot_tag is None:
@@ -907,6 +905,10 @@ class Application(object):
                 return None
 
             package_id = list(matches)[0]
+            if inst_repo is repo:
+                # return ourselves if we're already representing
+                # an installed App (is_removable() expects that)
+                return self
             return Application(self._entropy, self._entropy_ws,
                                (package_id, inst_repo.repository_id()),
                                redraw_callback=self._redraw_callback)

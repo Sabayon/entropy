@@ -51,7 +51,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write
 from entropy.exceptions import DependenciesNotFound, \
-    DependenciesCollision
+    DependenciesCollision, DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
@@ -639,8 +639,14 @@ class RigoDaemonService(dbus.service.Object):
                     authorized = self._authorize(
                         PolicyActions.MANAGE_APPLICATIONS)
                     if not authorized:
+                        # this is required in order to let clients know
+                        # that their scheduled app action just failed
                         outcome = AppTransactionOutcome.PERMISSION_DENIED
+                        _pkg_id, _repo_id = item.pkg
+                        self.application_processed(
+                            _pkg_id, _repo_id, item.action(), outcome)
                         continue
+
                     self._close_local_resources()
                     self._entropy_setup()
                     self.activity_started(activity)
@@ -690,38 +696,148 @@ class RigoDaemonService(dbus.service.Object):
     def _process_remove_action(self, activity, action, simulate,
                                package_id, repository_id):
         """
-        
+        Process Application Remove Action.
         """
         self.activity_progress(activity, 0)
-        self._entropy.output("Process Remove Action")
-        # FIXME: complete
 
+        outcome = AppTransactionOutcome.INTERNAL_ERROR
+        pkg_match = (package_id, repository_id)
+        self.activity_progress(activity, 0)
         self._txs.set(package_id, repository_id, AppActions.REMOVE)
 
-        self.processing_application(package_id, repository_id,
-                                    AppActions.REMOVE,
-                                    AppTransactionStates.MANAGE)
-
-        self.application_processing_update(
+        self.processing_application(
             package_id, repository_id,
-            AppTransactionStates.DOWNLOAD, 50)
+            AppActions.REMOVE,
+            AppTransactionStates.MANAGE)
 
-        self.application_processing_update(
-            package_id, repository_id,
-            AppTransactionStates.MANAGE, 100)
+        try:
 
-        # this is for each transaction cycle
-        # this avoids Rigo to stall due to uncommitted
-        # transactions.
-        self._entropy.installed_repository().commit()
+            write_output(
+                "_process_remove_action, about to get_reverse_queue(): "
+                "%s, %s" % (package_id, repository_id,), debug=True)
 
-        # this goes into a finally
-        self.application_processed(
-            package_id, repository_id, AppActions.REMOVE,
-            AppTransactionOutcome.SUCCESS)
+            try:
+                removal = self._entropy.get_reverse_queue(
+                    [pkg_match])
 
-        self.activity_progress(activity, 100)
-        return AppTransactionOutcome.SUCCESS
+            except DependenciesNotRemovable as dnr:
+                write_output(
+                    "_process_remove_action, DependenciesNotRemovable: "
+                    "%s" % (dnf,))
+                outcome = \
+                    AppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR
+                return outcome
+
+            # mark transactions
+            for _package_id, _repository_id in removal:
+                self._txs.set(_package_id, _repository_id,
+                              action)
+
+            # Remove
+            outcome = self._process_remove_merge_action(
+                removal, activity, action, simulate)
+            return outcome
+
+        finally:
+            write_output("_process_remove_action, finally, "
+                         "action: %s, outcome: %s" % (
+                    action, outcome,), debug=True)
+            self.application_processed(
+                package_id, repository_id, action, outcome)
+            self.activity_progress(activity, 100)
+
+    def _process_remove_merge_action(self, removal_queue, activity,
+                                      action, simulate):
+        """
+        Process Applications Remove Merge Action.
+        """
+
+        def _signal_merge_process(_package_id, _repository_id, amount):
+            self.application_processing_update(
+                _package_id, _repository_id,
+                AppTransactionStates.MANAGE, amount)
+
+        count = 0
+        total = len(removal_queue)
+
+        try:
+            for pkg_match in removal_queue:
+
+                package_id, repository_id = pkg_match
+
+                write_output(
+                    "_process_install_merge_action: "
+                    "%s, count: %s, total: %s" % (
+                        pkg_match, (count + 1),
+                        total),
+                    debug=True)
+
+                # signal progress
+                count += 1
+                progress = int(round(float(count) / total * 100, 0))
+                self.activity_progress(activity, progress)
+
+                pkg = self._entropy.Package()
+                pkg.prepare((package_id,), "remove", {})
+
+                msg = "-- %s" % (purple(_("Application Removal")),)
+                self._entropy.output(msg, count=(count, total),
+                                     importance=1, level="info")
+
+                self.processing_application(
+                    package_id, repository_id, action,
+                    AppTransactionStates.MANAGE)
+                _signal_merge_process(package_id, repository_id, 50)
+
+                if simulate:
+                    # simulate time taken
+                    time.sleep(5.0)
+                    rc = 0
+                else:
+                    rc = pkg.run()
+                if rc != 0:
+                    self._txs.unset(package_id, repository_id)
+                    _signal_merge_process(package_id, repository_id, -1)
+
+                    outcome = AppTransactionOutcome.REMOVE_ERROR
+                    self.application_processed(
+                        package_id, repository_id, action,
+                        outcome)
+
+                    write_output(
+                        "_process_remove_merge_action: "
+                        "%s, count: %s, total: %s, error: %s" % (
+                            pkg_match, count,
+                            total, rc))
+                    return outcome
+
+                pkg.kill()
+                del pkg
+
+                write_output(
+                    "_process_remove_merge_action: "
+                    "%s, count: %s, total: %s, done, committing." % (
+                        pkg_match, count, total), debug=True)
+                self._entropy.installed_repository().commit()
+
+                # Remove us from the ongoing transactions
+                self._txs.unset(package_id, repository_id)
+
+                _signal_merge_process(package_id, repository_id, 100)
+
+                self.application_processed(
+                    package_id, repository_id, action,
+                    AppTransactionOutcome.SUCCESS)
+
+            outcome = AppTransactionOutcome.SUCCESS
+            return outcome
+
+        finally:
+            write_output(
+                "_process_remove_merge_action: "
+                "count: %s, total: %s, finally stmt, committing." % (
+                    count, total), debug=True)
+            self._entropy.installed_repository().commit()
 
     def _process_install_action(self, activity, action, simulate,
                                 package_id, repository_id):
@@ -947,7 +1063,7 @@ class RigoDaemonService(dbus.service.Object):
     def _process_install_merge_action(self, install_queue, activity,
                                       action, simulate, count, total):
         """
-        Process Applications Merge Action.
+        Process Applications Install Merge Action.
         """
 
         def _signal_merge_process(_package_id, _repository_id, amount):
@@ -986,13 +1102,19 @@ class RigoDaemonService(dbus.service.Object):
 
                 if simulate:
                     # simulate time taken
-                    time.sleep(1.0)
+                    time.sleep(5.0)
                     rc = 0
                 else:
                     rc = pkg.run()
                 if rc != 0:
+                    self._txs.unset(package_id, repository_id)
                     _signal_merge_process(package_id, repository_id, -1)
+
                     outcome = AppTransactionOutcome.INSTALL_ERROR
+                    self.application_processed(
+                        package_id, repository_id, action,
+                        outcome)
+
                     write_output(
                         "_process_install_merge_action: "
                         "%s, count: %s, total: %s, error: %s" % (
@@ -1007,12 +1129,14 @@ class RigoDaemonService(dbus.service.Object):
                     "_process_install_merge_action: "
                     "%s, count: %s, total: %s, done, committing." % (
                         pkg_match, count, total), debug=True)
-                self._entropy.installed_repository().commit()
 
-                _signal_merge_process(package_id, repository_id, 100)
+                self._entropy.installed_repository().commit()
 
                 # Remove us from the ongoing transactions
                 self._txs.unset(package_id, repository_id)
+
+                _signal_merge_process(package_id, repository_id, 100)
+
                 self.application_processed(
                     package_id, repository_id, action,
                     AppTransactionOutcome.SUCCESS)
