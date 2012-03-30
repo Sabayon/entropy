@@ -447,17 +447,22 @@ class LicensesNotificationBox(NotificationBox):
         self._entropy = entropy_client
         self._licenses = license_map
 
-        msg = _("<b>%s</b> Application or one of its "
-                "dependencies is distributed with the following"
-                " licenses: %s")
-
         licenses = sorted(license_map.keys(),
                           key = lambda x: x.lower())
         lic_txts = []
         for lic in licenses:
             lic_txt = "<a href=\"%s\">%s</a>" % (lic, lic,)
             lic_txts.append(lic_txt)
-        msg = msg % (self._app.name, ", ".join(lic_txts),)
+
+        if app is None:
+            msg = _("You are required to <b>review</b> and <b>accept</b>"
+                    " the following licenses before continuing: %s")
+            msg = msg % (", ".join(lic_txts),)
+        else:
+            msg = _("<b>%s</b> Application or one of its "
+                    "dependencies is distributed with the following"
+                    " licenses: %s")
+            msg = msg % (self._app.name, ", ".join(lic_txts),)
 
         label = Gtk.Label()
         label.set_markup(prepare_markup(msg))
@@ -529,6 +534,16 @@ class LicensesNotificationBox(NotificationBox):
 
                 with entropy.tools.codecs_fdopen(
                     tmp_fd, "w", etpConst['conf_encoding']) as tmp_f:
+                    tmp_f.write("License: %s\n" % (
+                            uri,))
+                    apps = self._licenses.get(uri, [])
+                    if apps:
+                        tmp_f.write("Applications:\n")
+                    for app in apps:
+                        tmp_f.write("\t%s\n" % (app.name,))
+                    if apps:
+                        tmp_f.write("\n")
+                    tmp_f.write("-" * 79 + "\n")
                     tmp_f.write(license_text)
                     tmp_f.flush()
                 subprocess.call(["xdg-open", tmp_path])

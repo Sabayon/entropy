@@ -1699,13 +1699,66 @@ class RigoServiceController(GObject.Object):
 
             return accepted
 
+    def _upgrade_system_license_check(self):
+        """
+        Examine Applications that are going to be upgraded looking for
+        licenses to read and accept.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            update, remove, fine, spm_fine = \
+                self._entropy.calculate_updates()
+            if not update:
+                return True
+            licenses = self._entropy.get_licenses_to_accept(update)
+            if not licenses:
+                return True
+        finally:
+            self._entropy.rwsem().reader_release()
+
+        license_map = {}
+        for lic_id, pkg_matches in licenses.items():
+            obj = license_map.setdefault(lic_id, [])
+            for pkg_match in pkg_matches:
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    pkg_match)
+                obj.append(app)
+
+        const_debug_write(
+            __name__,
+            "_system_upgrade_license_checks: "
+            "need to accept licenses: %s" % (license_map,))
+        ask_meta = {
+            'sem': Semaphore(0),
+            'forever': False,
+            'res': None,
+        }
+        GLib.idle_add(self._notify_blocking_licenses,
+                      ask_meta, None, license_map)
+        ask_meta['sem'].acquire()
+
+        const_debug_write(
+            __name__,
+            "_system_upgrade_license_checks: "
+            "unblock, accepted:: %s, forever: %s" % (
+                ask_meta['res'], ask_meta['forever'],))
+
+        if not ask_meta['res']:
+            return False
+        if ask_meta['forever']:
+            self._accept_licenses(license_map.keys())
+        return True
+
     def _upgrade_system_checks(self):
         """
         Examine System Upgrade Request before sending it to RigoDaemon.
         """
-        # FIXME complete
-        # add dep calculation checks
         # add license check
+        accepted = self._upgrade_system_license_check()
+        if not accepted:
+            return False
+
         return True
 
     def _upgrade_system_unlocked(self, master, simulate):
@@ -2395,7 +2448,7 @@ class UpperNotificationViewController(NotificationViewController):
         box.connect("update-request", self._on_update)
         self.append(box)
 
-    def _on_upgrade(self, *args):
+    def _on_upgrade(self, box):
         """
         Callback requesting Packages Update.
         """
