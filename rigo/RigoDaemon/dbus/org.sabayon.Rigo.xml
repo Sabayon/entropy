@@ -20,6 +20,11 @@
        <arg name="accepted" type="b" direction="out"/>
     </method>
 
+    <method name="upgrade_system">
+       <arg name="simulate" type="b" direction="in"/>
+       <arg name="accepted" type="b" direction="out"/>
+    </method>
+
     <method name="action_queue_length">
        <arg name="length" type="i" direction="out"/>
     </method>

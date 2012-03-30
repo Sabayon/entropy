@@ -144,7 +144,8 @@ class RigoServiceController(GObject.Object):
         # Application actions have been completed
         "applications-managed" : (GObject.SignalFlags.RUN_LAST,
                                   None,
-                                  (GObject.TYPE_PYOBJECT,),
+                                  (GObject.TYPE_PYOBJECT,
+                                   GObject.TYPE_PYOBJECT,),
                                   ),
         # Application has been processed
         "application-processed" : (GObject.SignalFlags.RUN_LAST,
@@ -591,7 +592,7 @@ class RigoServiceController(GObject.Object):
             box.add_button(_("Show me"), _show_me)
             self._nc.append(box)
 
-    def _applications_managed_signal(self, success):
+    def _applications_managed_signal(self, success, local_activity):
         """
         Signal coming from RigoDaemon notifying us that the
         MANAGING_APPLICATIONS is over.
@@ -628,7 +629,6 @@ class RigoServiceController(GObject.Object):
             if self._wc is not None:
                 self._wc.reset_progress()
 
-            local_activity = LocalActivityStates.MANAGING_APPLICATIONS
             # we don't expect to fail here, it would
             # mean programming error.
             self.unbusy(local_activity)
@@ -636,7 +636,7 @@ class RigoServiceController(GObject.Object):
             # 2 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
 
-            self.emit("applications-managed", success)
+            self.emit("applications-managed", success, local_activity)
 
             const_debug_write(
                 __name__,
@@ -898,6 +898,45 @@ class RigoServiceController(GObject.Object):
                 # it's been us calling it, ignore request
                 return
 
+        elif activity == DaemonActivityStates.UPGRADING_SYSTEM:
+
+            local_activity = self.local_activity()
+            if local_activity == LocalActivityStates.READY:
+
+                def _upgrade_system():
+                    accepted = self._upgrade_system(
+                        False, master=False)
+                    if accepted:
+                        const_debug_write(
+                            __name__,
+                            "_resources_unlock_request_signal: "
+                            "_upgrade_system accepted, unlocking")
+                        self._shared_locker.unlock()
+
+                # another client, bend over XD
+                # LocalActivityStates value will be atomically
+                # switched in the above thread.
+                task = ParallelTask(_upgrade_system)
+                task.daemon = True
+                task.name = "UpgradeSystemExternal"
+                task.start()
+
+                const_debug_write(
+                    __name__,
+                    "_resources_unlock_request_signal: "
+                    "somebody called sys upgrade, starting here too")
+
+            elif local_activity == \
+                    LocalActivityStates.UPGRADING_SYSTEM:
+                self._shared_locker.unlock()
+
+                const_debug_write(
+                    __name__,
+                    "_resources_unlock_request_signal: "
+                    "it's been us calling system upgrade")
+                # it's been us calling it, ignore request
+                return
+
             else:
                 const_debug_write(
                     __name__,
@@ -981,6 +1020,17 @@ class RigoServiceController(GObject.Object):
                             app, app_action, simulate=simulate)
         task.name = "ApplicationRequest{%s, %s}" % (
             app, app_action,)
+        task.daemon = True
+        task.start()
+
+    def upgrade_system(self, simulate=False):
+        """
+        Start a System Upgrade.
+        """
+        task = ParallelTask(self._upgrade_system,
+                            simulate=simulate)
+        task.name = "UpgradeSystem{simulate=%s}" % (
+            simulate,)
         task.daemon = True
         task.start()
 
@@ -1470,7 +1520,7 @@ class RigoServiceController(GObject.Object):
                 # this is done in order to have it called
                 # only once by two different code paths
                 self._applications_managed_signal(
-                    success)
+                    success, LocalActivityStates.MANAGING_APPLICATIONS)
 
             with self._registered_signals_mutex:
                 # connect our signal
@@ -1515,15 +1565,20 @@ class RigoServiceController(GObject.Object):
                 box = self.ServiceNotificationBox(
                     msg, Gtk.MessageType.INFO)
                 self._nc.append(box, timeout=10)
-            GLib.idle_add(_notify)
+            if accepted:
+                GLib.idle_add(_notify)
 
         else:
             self._applications_managed_signal_check(
-                sig_match, signal_sem)
+                sig_match, signal_sem,
+                DaemonActivityStates.MANAGING_APPLICATIONS,
+                LocalActivityStates.MANAGING_APPLICATIONS)
 
         return accepted
 
-    def _applications_managed_signal_check(self, sig_match, signal_sem):
+    def _applications_managed_signal_check(self, sig_match, signal_sem,
+                                           daemon_activity,
+                                           local_activity):
         """
         Called via _application_request_unlocked() in order to handle
         the possible race between RigoDaemon signal and the fact that
@@ -1532,7 +1587,7 @@ class RigoServiceController(GObject.Object):
         repositories update directly.
         """
         activity = self.activity()
-        if activity == DaemonActivityStates.MANAGING_APPLICATIONS:
+        if activity == daemon_activity:
             return
 
         # lost the signal or not, we're going to force
@@ -1550,7 +1605,7 @@ class RigoServiceController(GObject.Object):
         # Run in the main loop, to avoid calling a signal
         # callback in random threads.
         GLib.idle_add(self._applications_managed_signal,
-                      True)
+                      True, local_activity)
 
     def _application_request(self, app, app_action, simulate=False,
                              master=True):
@@ -1644,6 +1699,172 @@ class RigoServiceController(GObject.Object):
 
             return accepted
 
+    def _upgrade_system_checks(self):
+        """
+        Examine System Upgrade Request before sending it to RigoDaemon.
+        """
+        # FIXME complete
+        # add dep calculation checks
+        # add license check
+        return True
+
+    def _upgrade_system_unlocked(self, master, simulate):
+        """
+        Internal method handling the actual System Upgrade
+        execution.
+        """
+        if self._wc is not None:
+            GLib.idle_add(self._wc.activate_progress_bar)
+            # this will be back active once we have something
+            # to show
+            GLib.idle_add(self._wc.deactivate_app_box)
+
+        # Clear all the NotificationBoxes from upper area
+        # we don't want people to click on them during the
+        # the repo update. Kill the completely.
+        if self._nc is not None:
+            self._nc.clear_safe(managed=False)
+
+        # emit, but we don't really need to switch to
+        # the work view nor locking down the UI
+        GLib.idle_add(self.emit, "start-working", None, False)
+
+        const_debug_write(__name__, "RigoServiceController: "
+                          "_upgrade_system_unlocked: "
+                          "start-working")
+        # don't check if UI is locked though
+
+        signal_sem = Semaphore(1)
+
+        def _applications_managed_signal(success):
+            if not signal_sem.acquire(False):
+                # already called, no need to call again
+                return
+            # this is done in order to have it called
+            # only once by two different code paths
+            self._applications_managed_signal(
+                success, LocalActivityStates.UPGRADING_SYSTEM)
+
+        with self._registered_signals_mutex:
+            # connect our signal
+            sig_match = self._entropy_bus.connect_to_signal(
+                self._APPLICATIONS_MANAGED_SIGNAL,
+                _applications_managed_signal,
+                dbus_interface=self.DBUS_INTERFACE)
+
+            # and register it as a signal generated by us
+            obj = self._registered_signals.setdefault(
+                self._APPLICATIONS_MANAGED_SIGNAL, [])
+            obj.append(sig_match)
+
+        self._release_local_resources(clear_avc=False)
+
+        const_debug_write(
+            __name__,
+            "_upgrade_system_unlocked, about to 'schedule'")
+
+        accepted = True
+        if master:
+            accepted = dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).upgrade_system(simulate)
+            const_debug_write(
+                __name__,
+                "service upgrade_system, accepted: %s" % (
+                    accepted,))
+
+            def _notify():
+                queue_len = self.action_queue_length()
+                msg = prepare_markup(
+                    _("<b>System Upgrade</b> has begun, "
+                      "now go make some coffee"))
+                box = self.ServiceNotificationBox(
+                    msg, Gtk.MessageType.INFO)
+                self._nc.append(box, timeout=10)
+            if accepted:
+                GLib.idle_add(_notify)
+
+        else:
+            self._applications_managed_signal_check(
+                sig_match, signal_sem,
+                DaemonActivityStates.UPGRADING_SYSTEM,
+                LocalActivityStates.UPGRADING_SYSTEM)
+
+        return accepted
+
+    def _upgrade_system(self, simulate, master=True):
+        """
+        Forward a System Upgrade Request to RigoDaemon.
+        """
+        # This code has a lot of similarities wtih the application
+        # request one.
+        with self._application_request_mutex:
+            busied = True
+            # since we need to writer_acquire(), which is blocking
+            # better try to allocate the local activity first
+            local_activity = LocalActivityStates.UPGRADING_SYSTEM
+            try:
+                self.busy(local_activity)
+            except LocalActivityStates.BusyError:
+                const_debug_write(__name__, "_upgrade_system: "
+                                  "LocalActivityStates.BusyError!")
+                # doing other stuff, cannot go ahead
+                return False
+            except LocalActivityStates.SameError:
+                const_debug_write(__name__, "_upgrade_system: "
+                                  "LocalActivityStates.SameError, "
+                                  "aborting")
+                return False
+
+            # 3 -- ACTIVITY CRIT :: ON
+            const_debug_write(__name__, "_upgrade_system: "
+                              "about to acquire writer end of "
+                              "activity rwsem")
+            self._activity_rwsem.writer_acquire() # CANBLOCK
+
+            def _unbusy():
+                self.unbusy(local_activity)
+                # 3 -- ACTIVITY CRIT :: OFF
+                self._activity_rwsem.writer_release()
+
+            # clean terminal, make sure no crap is left there
+            if self._terminal is not None:
+                self._terminal.reset()
+
+        do_notify = True
+        accepted = self._upgrade_system_checks()
+        if not accepted:
+            do_notify = False
+        const_debug_write(
+            __name__,
+            "_upgrade_system, checks result: %s" % (
+                accepted,))
+
+        if accepted:
+            self._please_wait(True)
+            accepted = self._upgrade_system_unlocked(
+                master, simulate)
+
+        if not accepted:
+            with self._application_request_mutex:
+                _unbusy()
+
+            def _notify():
+                box = self.ServiceNotificationBox(
+                    prepare_markup(
+                        _("Another activity is currently in progress")
+                    ),
+                    Gtk.MessageType.ERROR)
+                box.add_destroy_button(_("K thanks"))
+                self._nc.append(box)
+            if do_notify:
+                GLib.idle_add(_notify)
+
+        # unhide please wait notification
+        self._please_wait(False)
+
+        return accepted
 
 class WorkViewController(GObject.Object):
 
@@ -2178,8 +2399,8 @@ class UpperNotificationViewController(NotificationViewController):
         """
         Callback requesting Packages Update.
         """
-        # FIXME, lxnay complete
-        print("On Upgrade Request Received", args)
+        self.remove(box)
+        self._service.upgrade_system()
 
     def _on_update(self, box):
         """
@@ -2249,6 +2470,18 @@ class BottomNotificationViewController(NotificationViewController):
         box.add_button(_("Show me"), self._on_work_view_show)
         self.append(box)
 
+    def _append_upgrading_system(self):
+        """
+        Add a NotificationBox related to System Upgrade
+        Activity in progress.
+        """
+        msg = _("<b>System Upgrade</b> in progress...")
+        box = NotificationBox(
+            msg, message_type=Gtk.MessageType.INFO,
+            context_id=self.UNIQUE_CONTEXT_ID)
+        box.add_button(_("Show me"), self._on_work_view_show)
+        self.append(box)
+
     def set_activity(self, local_activity):
         """
         Set a current local Activity, showing the
@@ -2264,6 +2497,9 @@ class BottomNotificationViewController(NotificationViewController):
             return
         elif local_activity == LocalActivityStates.MANAGING_APPLICATIONS:
             self._append_installing_apps()
+            return
+        elif local_activity == LocalActivityStates.UPGRADING_SYSTEM:
+            self._append_upgrading_system()
             return
 
         raise NotImplementedError()
@@ -2496,18 +2732,26 @@ class Rigo(Gtk.Application):
         box.add_destroy_button(_("Ok, thanks"))
         self._nc.append(box)
 
-    def _on_applications_managed(self, widget, success):
+    def _on_applications_managed(self, widget, success, local_activity):
         """
         Emitted by RigoServiceController telling us that
         enqueue application actions have been completed.
         """
         if not success:
-            msg = "<b>%s</b>: %s" % (
-                _("Application Management Error"),
-                _("please check the install log"),)
+            if local_activity == LocalActivityStates.UPDATING_REPOSITORIES:
+                msg = "<b>%s</b>: %s" % (
+                    _("Application Management Error"),
+                    _("please check the management log"),)
+            elif local_activity == LocalActivityStates.UPGRADING_SYSTEM:
+                msg = "<b>%s</b>: %s" % (
+                    _("System Upgrade Error"),
+                    _("please check the upgrade log"),)
             message_type = Gtk.MessageType.ERROR
         else:
-            msg = _("Applications managed <b>successfully</b>!")
+            if local_activity == LocalActivityStates.UPDATING_REPOSITORIES:
+                msg = _("Applications managed <b>successfully</b>!")
+            elif local_activity == LocalActivityStates.UPGRADING_SYSTEM:
+                msg = _("System Upgraded <b>successfully</b>!")
             message_type = Gtk.MessageType.INFO
 
         box = NotificationBox(
@@ -2756,8 +3000,14 @@ class Rigo(Gtk.Application):
                 task.start()
 
             elif activity == DaemonActivityStates.UPGRADING_SYSTEM:
-                # FIXME, jump to WORK_VIEW and show the progress.
-                msg = _("Background Service is updating your system")
+                show_dialog = False
+                task = ParallelTask(
+                    self._service._upgrade_system,
+                    False, master=False)
+                task.daemon = True
+                task.name = "UpgradeSystemUnlocked"
+                task.start()
+
             elif activity == DaemonActivityStates.INTERNAL_ROUTINES:
                 msg = _("Background Service is currently busy")
             else:

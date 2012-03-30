@@ -21,7 +21,7 @@
 
   <action id="org.sabayon.RigoDaemon.upgrade">
     <description>Update System</description>
-    <message>Authentication is required to Update System</message>
+    <message>Authentication is required to Upgrade System</message>
     <icon_name>system-software-update</icon_name>
     <defaults>
       <allow_any>no</allow_any>

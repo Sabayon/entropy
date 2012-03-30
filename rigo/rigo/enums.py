@@ -77,7 +77,8 @@ class LocalActivityStates:
         READY,
         UPDATING_REPOSITORIES,
         MANAGING_APPLICATIONS,
-    ) = range(3)
+        UPGRADING_SYSTEM,
+    ) = range(4)
 
     class BusyError(Exception):
         """

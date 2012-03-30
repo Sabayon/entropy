@@ -51,7 +51,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write
 from entropy.exceptions import DependenciesNotFound, \
-    DependenciesCollision, DependenciesNotRemovable
+    DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
@@ -358,6 +358,30 @@ class RigoDaemonService(dbus.service.Object):
             """
             return str(self)
 
+    class UpgradeActionQueueItem(object):
+
+        def __init__(self, simulate):
+            self._simulate = simulate
+
+        def simulate(self):
+            """
+            Return True, if Action should be simulated only.
+            """
+            return self._simulate
+
+        def __str__(self):
+            """
+            Show item in human readable way
+            """
+            return "UpgradeActionQueueItem{simulate=%s}" % (
+                self.simulate())
+
+        def __repr__(self):
+            """
+            Same as __str__
+            """
+            return str(self)
+
 
     def __init__(self):
         object_path = RigoDaemonService.OBJECT_PATH
@@ -583,9 +607,35 @@ class RigoDaemonService(dbus.service.Object):
         Worker thread that handles Application Action requests
         from Rigo Clients.
         """
-        activity = ActivityStates.MANAGING_APPLICATIONS
+        while True:
 
-        def _action_queue_finally(outcome):
+            self._action_queue_waiter.acquire() # CANBLOCK
+            if self._stop_signal:
+                write_output("_action_queue_worker_thread: bye bye!",
+                             debug=True)
+                # bye bye!
+                break
+
+            try:
+                item = self._action_queue.popleft()
+            except IndexError:
+                # mumble, no more items, this shouldn't have happened
+                write_output("_action_queue_worker_thread: "
+                             "no item popped!", debug=True)
+                continue
+
+            write_output("_action_queue_worker_thread: "
+                         "got: %s" % (item,), debug=True)
+
+            # now execute the action
+            with self._activity_mutex:
+                self._action_queue_worker_unlocked(item)
+
+    def _action_queue_worker_unlocked(self, item):
+        """
+        Action Queue worker code.
+        """
+        def _action_queue_finally(activity, outcome):
             with self._enqueue_action_busy_hold_mutex:
                 # unbusy?
                 has_more = self._action_queue_waiter.acquire(False)
@@ -609,70 +659,63 @@ class RigoDaemonService(dbus.service.Object):
                     self.activity_completed(activity, success)
                     self.applications_managed(success)
 
-        while True:
+        is_app = True
+        if isinstance(item, RigoDaemonService.ActionQueueItem):
+            activity = ActivityStates.MANAGING_APPLICATIONS
+            policy = PolicyActions.MANAGE_APPLICATIONS
+        elif isinstance(item, RigoDaemonService.UpgradeActionQueueItem):
+            activity = ActivityStates.UPGRADING_SYSTEM
+            policy = PolicyActions.UPGRADE_SYSTEM
+            is_app = False
+        else:
+            raise AssertionError("wtf?")
 
-            self._action_queue_waiter.acquire() # CANBLOCK
-            if self._stop_signal:
-                write_output("_action_queue_worker_thread: bye bye!",
-                             debug=True)
-                # bye bye!
-                break
+        outcome = AppTransactionOutcome.INTERNAL_ERROR
+        self._acquire_exclusive(activity)
+        self._enable_stdout_stderr_redirect()
+        try:
+            authorized = self._authorize(policy)
+            if not authorized:
+                # this is required in order to let clients know
+                # that their scheduled app action just failed
+                outcome = AppTransactionOutcome.PERMISSION_DENIED
+                if is_app:
+                    _pkg_id, _repo_id = item.pkg
+                    self.application_processed(
+                        _pkg_id, _repo_id, item.action(), outcome)
+                return
 
-            try:
-                item = self._action_queue.popleft()
-            except IndexError:
-                # mumble, no more items, this shouldn't have happened
-                write_output("_action_queue_worker_thread: "
-                             "no item popped!", debug=True)
-                continue
+            self._close_local_resources()
+            self._entropy_setup()
+            self.activity_started(activity)
 
             write_output("_action_queue_worker_thread: "
-                         "got: %s" % (item,), debug=True)
+                         "doing %s" % (
+                    item,), debug=True)
 
-            # now execute the action
-            with self._activity_mutex:
+            self._rwsem.reader_acquire()
+            try:
+                outcome = self._process_action(item, activity, is_app)
+                write_output("_action_queue_worker_thread, "
+                             "returned outcome: %s" % (
+                        outcome,), debug=True)
+            finally:
+                self._rwsem.reader_release()
 
-                outcome = AppTransactionOutcome.INTERNAL_ERROR
-                self._acquire_exclusive(activity)
-                self._enable_stdout_stderr_redirect()
-                try:
-                    authorized = self._authorize(
-                        PolicyActions.MANAGE_APPLICATIONS)
-                    if not authorized:
-                        # this is required in order to let clients know
-                        # that their scheduled app action just failed
-                        outcome = AppTransactionOutcome.PERMISSION_DENIED
-                        _pkg_id, _repo_id = item.pkg
-                        self.application_processed(
-                            _pkg_id, _repo_id, item.action(), outcome)
-                        continue
+        finally:
+            _action_queue_finally(activity, outcome)
 
-                    self._close_local_resources()
-                    self._entropy_setup()
-                    self.activity_started(activity)
-
-                    write_output("_action_queue_worker_thread: "
-                                 "doing %s" % (
-                            item,), debug=True)
-
-                    self._rwsem.reader_acquire()
-                    try:
-                        outcome = self._process_action(item, activity)
-                        write_output("_action_queue_worker_thread, "
-                                     "returned outcome: %s" % (
-                                outcome,), debug=True)
-                    finally:
-                        self._rwsem.reader_release()
-
-                finally:
-                    _action_queue_finally(outcome)
-
-    def _process_action(self, item, activity):
+    def _process_action(self, item, activity, is_app):
         """
         This is the real Application Action processing function.
         """
-        package_id, repository_id = item.pkg
-        action = item.action()
+        if is_app:
+            package_id, repository_id = item.pkg
+            action = item.action()
+        else:
+            # upgrade
+            package_id, repository_id = None, None
+            action = None
         simulate = item.simulate()
 
         self._txs.reset()
@@ -680,18 +723,95 @@ class RigoDaemonService(dbus.service.Object):
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         try:
 
-            if action == AppActions.REMOVE:
-                outcome = self._process_remove_action(
-                    activity, action, simulate,
-                    package_id, repository_id)
-            elif action == AppActions.INSTALL:
-                outcome = self._process_install_action(
-                    activity, action, simulate,
-                    package_id, repository_id)
+            if is_app:
+                if action == AppActions.REMOVE:
+                    outcome = self._process_remove_action(
+                        activity, action, simulate,
+                        package_id, repository_id)
+                elif action == AppActions.INSTALL:
+                    outcome = self._process_install_action(
+                        activity, action, simulate,
+                        package_id, repository_id)
+            else:
+                # upgrade
+                outcome = self._process_upgrade_action(
+                    activity, simulate)
             return outcome
 
         finally:
             self._txs.reset()
+
+    def _process_upgrade_action(self, activity, simulate):
+        """
+        Process System Upgrade Action.
+        """
+        # FIXME notify list of removable packages (see remove list)
+        outcome = AppTransactionOutcome.INTERNAL_ERROR
+        self.activity_progress(activity, 0)
+        try:
+
+            write_output(
+                "_process_upgrade_action, about to calculate_updates()",
+                debug=True)
+
+            try:
+                update, remove, fine, spm_fine = \
+                    self._entropy.calculate_updates()
+
+            except SystemDatabaseError as sde:
+                write_output(
+                    "_process_upgrade_action, SystemDatabaseError: "
+                    "%s" % (sde,))
+                outcome = \
+                    AppTransactionOutcome.INTERNAL_ERROR
+                return outcome
+
+            try:
+                install, removal = self._entropy.get_install_queue(
+                    update, False, False)
+
+            except DependenciesNotFound as dnf:
+                write_output(
+                    "_process_upgrade_action, DependenciesNotFound: "
+                    "%s" % (dnf,))
+                outcome = \
+                    AppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR
+                return outcome
+
+            except DependenciesCollision as dcol:
+                write_output(
+                    "_process_upgrade_action, DependenciesCollision: "
+                    "%s" % (dcol,))
+                outcome = \
+                    AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
+                return outcome
+
+            # mark transactions
+            for _package_id, _repository_id in install:
+                self._txs.set(_package_id, _repository_id,
+                              AppActions.INSTALL)
+
+            # Download
+            count, total, outcome = \
+                self._process_install_fetch_action(
+                    install, activity, AppActions.INSTALL)
+            if outcome != AppTransactionOutcome.SUCCESS:
+                return outcome
+
+            # this way if an exception is raised in
+            # _process_install_merge_action we will signal an error
+            outcome = AppTransactionOutcome.INTERNAL_ERROR
+            # Install
+            outcome = self._process_install_merge_action(
+                install, activity, AppActions.INSTALL, simulate,
+                count, total)
+            return outcome
+
+        finally:
+            write_output("_process_upgrade_action, finally, "
+                         "outcome: %s" % (
+                    outcome,), debug=True)
+            self.activity_progress(activity, 100)
 
     def _process_remove_action(self, activity, action, simulate,
                                package_id, repository_id):
@@ -1294,6 +1414,36 @@ class RigoDaemonService(dbus.service.Object):
                 str(repository_id),
                 action,
                 bool(simulate))
+            self._action_queue.append(item)
+            self._action_queue_waiter.release()
+            return True
+
+    @dbus.service.method(BUS_NAME, in_signature='b',
+        out_signature='b')
+    def upgrade_system(self, simulate):
+        """
+        Request RigoDaemon to Upgrade the whole System.
+        """
+        write_output("upgrade_system called: simulate: %s" % (
+                (simulate,)), debug=True)
+
+        with self._enqueue_action_busy_hold_mutex:
+
+            activity = ActivityStates.UPGRADING_SYSTEM
+            try:
+                self._busy(activity)
+            except ActivityStates.BusyError:
+                # I am already busy doing other stuff, cannot
+                # satisfy request
+                return False
+            except ActivityStates.SameError:
+                # I am already busy doing this
+                write_output("upgrade_system: "
+                             "already doing it, failing",
+                             debug=True)
+                return False
+
+            item = self.UpgradeActionQueueItem(bool(simulate))
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True

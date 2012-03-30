@@ -247,6 +247,15 @@ class ApplicationsViewController(GObject.Object):
             "application_request() sent for: %s, %s" % (
                 text, app,))
 
+    def __simulate_system_upgrade(self):
+
+        const_debug_write(
+            __name__, "__simulate_system_upgrade")
+        self._service.upgrade_system(simulate=True)
+        const_debug_write(
+            __name__, "__simulate_system_upgrade:"
+            " upgrade_system() sent")
+
     def __search_thread(self, text):
 
         ## special keywords hook
@@ -272,6 +281,9 @@ class ApplicationsViewController(GObject.Object):
             if sim_str:
                 self.__simulate_app_removal(sim_str)
                 return
+        if text == "rigo:simulate:u":
+            self.__simulate_system_upgrade()
+            return
 
         # serialize searches to avoid segfaults with sqlite3
         # (apparently?)
