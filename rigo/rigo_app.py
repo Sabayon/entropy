@@ -787,7 +787,9 @@ class RigoServiceController(GObject.Object):
 
             self._shared_locker.lock()
             clear_avc = True
-            if activity in (DaemonActivityStates.MANAGING_APPLICATIONS,):
+            if activity in (
+                DaemonActivityStates.MANAGING_APPLICATIONS,
+                DaemonActivityStates.UPGRADING_SYSTEM,):
                 clear_avc = False
             self._release_local_resources(clear_avc=clear_avc)
 
@@ -819,6 +821,7 @@ class RigoServiceController(GObject.Object):
             if local_activity == LocalActivityStates.READY:
 
                 def _update_repositories():
+                    self._release_local_resources()
                     accepted = self._update_repositories(
                         [], False, master=False)
                     if accepted:
@@ -843,7 +846,14 @@ class RigoServiceController(GObject.Object):
 
             elif local_activity == \
                     LocalActivityStates.UPDATING_REPOSITORIES:
-                self._shared_locker.unlock()
+
+                def _unlocker():
+                    self._release_local_resources() # CANBLOCK
+                    self._shared_locker.unlock()
+                task = ParallelTask(_unlocker)
+                task.daemon = True
+                task.name = "UpdateRepositoriesInternal"
+                task.start()
 
                 const_debug_write(
                     __name__,
@@ -865,6 +875,7 @@ class RigoServiceController(GObject.Object):
             if local_activity == LocalActivityStates.READY:
 
                 def _application_request():
+                    self._release_local_resources(clear_avc=False)
                     accepted = self._application_request(
                         None, None, master=False)
                     if accepted:
@@ -889,6 +900,7 @@ class RigoServiceController(GObject.Object):
 
             elif local_activity == \
                     LocalActivityStates.MANAGING_APPLICATIONS:
+                self._release_local_resources(clear_avc=False)
                 self._shared_locker.unlock()
 
                 const_debug_write(
@@ -1256,8 +1268,6 @@ class RigoServiceController(GObject.Object):
         # not allowing other threads to mess with repos
         # will be released on repo updated signal
 
-        self._release_local_resources()
-
         accepted = True
         if master:
             accepted = dbus.Interface(
@@ -1534,8 +1544,6 @@ class RigoServiceController(GObject.Object):
                     self._APPLICATIONS_MANAGED_SIGNAL, [])
                 obj.append(sig_match)
 
-        self._release_local_resources(clear_avc=False)
-
         const_debug_write(
             __name__,
             "_application_request_unlocked, about to 'schedule'")
@@ -1810,8 +1818,6 @@ class RigoServiceController(GObject.Object):
                 self._APPLICATIONS_MANAGED_SIGNAL, [])
             obj.append(sig_match)
 
-        self._release_local_resources(clear_avc=False)
-
         const_debug_write(
             __name__,
             "_upgrade_system_unlocked, about to 'schedule'")
@@ -1886,13 +1892,15 @@ class RigoServiceController(GObject.Object):
                 self._terminal.reset()
 
         do_notify = True
-        accepted = self._upgrade_system_checks()
-        if not accepted:
-            do_notify = False
-        const_debug_write(
-            __name__,
-            "_upgrade_system, checks result: %s" % (
-                accepted,))
+        accepted = True
+        if master:
+            accepted = self._upgrade_system_checks()
+            if not accepted:
+                do_notify = False
+            const_debug_write(
+                __name__,
+                "_upgrade_system, checks result: %s" % (
+                    accepted,))
 
         if accepted:
             self._please_wait(True)
@@ -2371,14 +2379,10 @@ class UpperNotificationViewController(NotificationViewController):
         """
         Order updates using PN.
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
-            def _key_func(x):
-                return self._entropy.open_repository(
-                    x[1]).retrieveName(x[0]).lower()
-            return sorted(updates, key=_key_func)
-        finally:
-            self._entropy.rwsem().reader_release()
+        def _key_func(x):
+            return self._entropy.open_repository(
+                x[1]).retrieveName(x[0]).lower()
+        return sorted(updates, key=_key_func)
 
     def __calculate_updates(self):
         self._activity_rwsem.reader_acquire()
@@ -2790,8 +2794,9 @@ class Rigo(Gtk.Application):
         Emitted by RigoServiceController telling us that
         enqueue application actions have been completed.
         """
+        msg = "N/A"
         if not success:
-            if local_activity == LocalActivityStates.UPDATING_REPOSITORIES:
+            if local_activity == LocalActivityStates.MANAGING_APPLICATIONS:
                 msg = "<b>%s</b>: %s" % (
                     _("Application Management Error"),
                     _("please check the management log"),)
@@ -2801,7 +2806,7 @@ class Rigo(Gtk.Application):
                     _("please check the upgrade log"),)
             message_type = Gtk.MessageType.ERROR
         else:
-            if local_activity == LocalActivityStates.UPDATING_REPOSITORIES:
+            if local_activity == LocalActivityStates.MANAGING_APPLICATIONS:
                 msg = _("Applications managed <b>successfully</b>!")
             elif local_activity == LocalActivityStates.UPGRADING_SYSTEM:
                 msg = _("System Upgraded <b>successfully</b>!")
