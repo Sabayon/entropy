@@ -2385,7 +2385,7 @@ class UpperNotificationViewController(NotificationViewController):
         return sorted(updates, key=_key_func)
 
     def __calculate_updates(self):
-        self._activity_rwsem.reader_acquire()
+        #self._activity_rwsem.reader_acquire()
         self._entropy.rwsem().reader_acquire()
         try:
             unavailable_repositories = \
@@ -2404,7 +2404,7 @@ class UpperNotificationViewController(NotificationViewController):
             self._security_updates = self._entropy.calculate_security_updates()
         finally:
             self._entropy.rwsem().reader_release()
-            self._activity_rwsem.reader_release()
+            #self._activity_rwsem.reader_release()
 
         GLib.idle_add(self._notify_updates_safe)
 
