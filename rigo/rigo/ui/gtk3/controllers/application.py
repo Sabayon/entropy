@@ -904,11 +904,15 @@ class ApplicationViewController(GObject.Object):
 
         # only comments supported, point to the remote
         # www service for the rest
-        self._app_comment_more_label.set_markup(
-            "<b>%s</b>: <a href=\"%s\">%s</a>" % (
-                escape_markup(_("Want to add images, etc?")),
-                escape_markup(build_application_store_url(app, "ugc")),
-                escape_markup(_("click here!")),))
+        if app.is_installed_app():
+            self._app_comment_more_label.hide()
+        else:
+            self._app_comment_more_label.set_markup(
+                "<b>%s</b>: <a href=\"%s\">%s</a>" % (
+                    escape_markup(_("Want to add images, etc?")),
+                    escape_markup(build_application_store_url(app, "ugc")),
+                    escape_markup(_("click here!")),))
+            self._app_comment_more_label.show()
 
         stats = metadata['stats']
         icon = metadata['icon']
