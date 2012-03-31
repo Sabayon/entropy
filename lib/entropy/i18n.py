@@ -27,6 +27,10 @@ if _LOCALE_FULL:
     _LOCALE = _LOCALE.split('_')[0]
     _LOCALE = _LOCALE.lower()
 
+# make possible to override the default gettext domain
+# from api users
+_GETTEXT_DOMAIN = os.getenv("ETP_GETTEXT_DOMAIN", "entropy")
+
 try:
     import __builtin__
     import gettext
@@ -39,7 +43,7 @@ try:
     kwargs['names'] = ["ngettext"]
     if sys.hexversion < 0x3000000:
         kwargs['unicode'] = True
-    gettext.install('entropy', **kwargs)
+    gettext.install(_GETTEXT_DOMAIN, **kwargs)
     # do not use gettext.gettext because it returns str instead of unicode
     _ = __builtin__.__dict__['_']
     ngettext = __builtin__.__dict__['ngettext']
@@ -95,7 +99,7 @@ def change_language(lang):
     kw_args = {"localedir": localedir}
     if sys.hexversion < 0x3000000:
         kw_args['unicode'] = True
-    gettext.install('entropy', **kw_args)
+    gettext.install(_GETTEXT_DOMAIN, **kw_args)
     _ = _
     # redeclare "_" in all loaded modules
     for module in list(sys.modules.values()):
