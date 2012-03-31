@@ -11,6 +11,10 @@
 
 """
 import os
+
+# entropy.i18n will pick this up
+os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
+
 import sys
 import time
 import signal
