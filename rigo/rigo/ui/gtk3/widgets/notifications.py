@@ -216,7 +216,8 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
         self._avc = avc
 
         if unavailable is None:
-            msg = _("The list of available Applications is old, <b>update now</b>?")
+            msg = _("The list of available Applications is old"
+                    ", <b>update now</b>?")
         else:
             msg = _("Repositories should be downloaded, <b>update now</b>?")
 
@@ -455,13 +456,15 @@ class LicensesNotificationBox(NotificationBox):
             lic_txts.append(lic_txt)
 
         if app is None:
-            msg = _("You are required to <b>review</b> and <b>accept</b>"
-                    " the following licenses before continuing: %s")
+            msg =  prepare_markup(
+                _("You are required to <b>review</b> and <b>accept</b>"
+                    " the following licenses before continuing: %s"))
             msg = msg % (", ".join(lic_txts),)
         else:
-            msg = _("<b>%s</b> Application or one of its "
+            msg = prepare_markup(
+                _("<b>%s</b> Application or one of its "
                     "dependencies is distributed with the following"
-                    " licenses: %s")
+                    " licenses: %s"))
             msg = msg % (self._app.name, ", ".join(lic_txts),)
 
         label = Gtk.Label()
