@@ -661,7 +661,8 @@ class RigoDaemonService(dbus.service.Object):
                     success = outcome == AppTransactionOutcome.SUCCESS
                     write_output("_action_queue_worker_thread"
                                  "._action_queue_finally: "
-                                 "outcome: %s" % (outcome,))
+                                 "outcome: %s" % (outcome,),
+                                 debug=True)
                     self.activity_completed(activity, success)
                     self.applications_managed(success)
 
