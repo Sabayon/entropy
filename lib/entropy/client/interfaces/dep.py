@@ -2746,6 +2746,47 @@ class CalculatorsMixin:
 
         return update, remove, fine, spm_fine
 
+    def calculate_orphaned_packages(self, use_cache = True):
+        """
+        Collect Installed Packages that are no longer available
+        in Entropy repositories due to their support being
+        discontinued. If no orphaned packages are found, empty
+        lists will be returned.
+
+        @return: tuple composed by manually removable installed
+        package ids (list) and automatically removable ones (list)
+        @rtype: tuple
+        """
+        update, remove, fine, spm_fine = self.calculate_updates(
+            use_cache = use_cache)
+
+        installed_repo = self.installed_repository()
+        # verify that client database idpackage still exist,
+        # validate here before passing removePackage() wrong info
+        remove = [x for x in remove if \
+                      installed_repo.isPackageIdAvailable(x)]
+        # Filter out packages installed from unavailable
+        # repositories, this is mainly required to allow
+        # 3rd party packages installation without
+        # erroneously inform user about unavailability.
+        unavail_pkgs = [x for x in remove if \
+            installed_repo.getInstalledPackageRepository(x) \
+                not in self.repositories()]
+        remove = [x for x in remove if x not in unavail_pkgs]
+        # drop system packages for automatic removal,
+        # user has to do it manually.
+        system_unavail_pkgs = [x for x in remove if \
+            not self.validate_package_removal(x)]
+        remove = [x for x in remove if x not in system_unavail_pkgs]
+
+        manual_removal = []
+        if (unavail_pkgs or remove or system_unavail_pkgs) and \
+                self.repositories():
+            manual_removal.extend(sorted(
+                set(unavail_pkgs + system_unavail_pkgs)))
+
+        return manual_removal, remove
+
     def _get_masked_packages_tree(self, package_match, atoms = False,
         flat = False, matchfilter = None):
 
