@@ -30,6 +30,7 @@ from rigo.paths import CONF_DIR
 from rigo.enums import RigoViewStates, AppActions
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.utils import escape_markup, prepare_markup
+from rigo.ui.gtk3.widgets.notifications import OrphanedAppsNotificationBox
 
 from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_debug_write, \
@@ -247,6 +248,29 @@ class ApplicationsViewController(GObject.Object):
             "application_request() sent for: %s, %s" % (
                 text, app,))
 
+    def __simulate_orphaned_apps(self, text):
+
+        const_debug_write(
+            __name__,
+            "__simulate_orphaned_apps: "
+            "%s" % (text,))
+        self._entropy.rwsem().reader_acquire()
+        try:
+            inst_repo = self._entropy.installed_repository()
+            pkg_ids = inst_repo.searchPackages(text, just_id=True)
+            manual_pkg_ids, rc = inst_repo.atomMatch(text, multiMatch=True)
+        finally:
+            self._entropy.rwsem().reader_release()
+
+        def _notify():
+            self._service._unsupported_applications_signal(
+                list(manual_pkg_ids), pkg_ids)
+        GLib.idle_add(_notify)
+
+        const_debug_write(
+            __name__,
+            "__simulate_orphaned_apps: completed")
+
     def __simulate_system_upgrade(self):
 
         const_debug_write(
@@ -262,24 +286,29 @@ class ApplicationsViewController(GObject.Object):
         if text == "rigo:update":
             self._update_repositories_safe()
             return
-        if text == "rigo:vte":
+        elif text == "rigo:vte":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE)
             return
-        if text == "rigo:output":
+        elif text == "rigo:output":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE)
             GLib.idle_add(self._service.output_test)
             return
-        if text.startswith("rigo:simulate:i:"):
+        elif text.startswith("rigo:simulate:i:"):
             sim_str = text[len("rigo:simulate:i:"):].strip()
             if sim_str:
                 self.__simulate_app_install(sim_str)
                 return
-        if text.startswith("rigo:simulate:r:"):
+        elif text.startswith("rigo:simulate:r:"):
             sim_str = text[len("rigo:simulate:r:"):].strip()
             if sim_str:
                 self.__simulate_app_removal(sim_str)
+                return
+        elif text.startswith("rigo:simulate:o:"):
+            sim_str = text[len("rigo:simulate:o:"):].strip()
+            if sim_str:
+                self.__simulate_orphaned_apps(sim_str)
                 return
         if text == "rigo:simulate:u":
             self.__simulate_system_upgrade()
