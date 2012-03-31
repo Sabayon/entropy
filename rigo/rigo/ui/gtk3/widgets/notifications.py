@@ -507,7 +507,6 @@ class LicensesNotificationBox(NotificationBox):
         """
         Show selected License to User.
         """
-        self._entropy.rwsem().reader_acquire()
         tmp_fd, tmp_path = None, None
         try:
 
@@ -517,11 +516,16 @@ class LicensesNotificationBox(NotificationBox):
                              x in license_apps])
             if not repos:
                 return
-            for repo_id in repos:
-                repo = self._entropy.open_repository(repo_id)
-                license_text = repo.retrieveLicenseText(uri)
-                if license_text is not None:
-                    break
+
+            self._entropy.rwsem().reader_acquire()
+            try:
+                for repo_id in repos:
+                    repo = self._entropy.open_repository(repo_id)
+                    license_text = repo.retrieveLicenseText(uri)
+                    if license_text is not None:
+                        break
+            finally:
+                self._entropy.rwsem().reader_release()
 
             if license_text is not None:
                 tmp_fd, tmp_path = tempfile.mkstemp(suffix=".txt")
@@ -560,7 +564,6 @@ class LicensesNotificationBox(NotificationBox):
                 except OSError:
                     pass
             # leaks, but xdg-open is async
-            self._entropy.rwsem().reader_release()
 
     def _on_license_activate(self, widget, uri):
         """

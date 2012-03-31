@@ -877,6 +877,38 @@ class Application(object):
         app = self.get_installed()
         return app is not None
 
+    def _get_instaled(self):
+        """
+        Application.get_installed() method body.
+        """
+        inst_repo = self._entropy.installed_repository()
+        repo = self._entropy.open_repository(self._repo_id)
+
+        key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
+        if key_slot_tag is None:
+            return None
+
+        key, slot, tag = key_slot_tag
+        matches = inst_repo.searchKeySlotTag(key, slot, tag)
+        # in the installed packages repository, matches
+        # must be of length < 2.
+        if len(matches) > 1:
+            raise AttributeError(
+                "searchKeySlot for %s returned: %s" % (
+                    (key, slot), matches,))
+        if not matches:
+            # not installed
+            return None
+
+        package_id = list(matches)[0]
+        if inst_repo is repo:
+            # return ourselves if we're already representing
+            # an installed App (is_removable() expects that)
+            return self
+        return Application(self._entropy, self._entropy_ws,
+                           (package_id, inst_repo.repository_id()),
+                           redraw_callback=self._redraw_callback)
+
     def get_installed(self):
         """
         Return the Application object of the installed
@@ -885,33 +917,7 @@ class Application(object):
         """
         self._entropy.rwsem().reader_acquire()
         try:
-            inst_repo = self._entropy.installed_repository()
-            repo = self._entropy.open_repository(self._repo_id)
-
-            key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
-            if key_slot_tag is None:
-                return None
-
-            key, slot, tag = key_slot_tag
-            matches = inst_repo.searchKeySlotTag(key, slot, tag)
-            # in the installed packages repository, matches
-            # must be of length < 2.
-            if len(matches) > 1:
-                raise AttributeError(
-                    "searchKeySlot for %s returned: %s" % (
-                        (key, slot), matches,))
-            if not matches:
-                # not installed
-                return None
-
-            package_id = list(matches)[0]
-            if inst_repo is repo:
-                # return ourselves if we're already representing
-                # an installed App (is_removable() expects that)
-                return self
-            return Application(self._entropy, self._entropy_ws,
-                               (package_id, inst_repo.repository_id()),
-                               redraw_callback=self._redraw_callback)
+            return self._get_installed()
         finally:
             self._entropy.rwsem().reader_release()
 
@@ -948,12 +954,12 @@ class Application(object):
         Return if Application can be removed or it's part of
         the Base System.
         """
+        installed = self.get_installed()
+        if installed is not self:
+            return installed.is_removable()
+
         self._entropy.rwsem().reader_acquire()
         try:
-            installed = self.get_installed()
-            if installed is not self:
-                return installed.is_removable()
-
             removable = self._entropy.validate_package_removal(
                 self._pkg_id)
             if removable:
@@ -972,30 +978,26 @@ class Application(object):
         """
         Return Application install and removal queues.
         """
-        self._entropy.rwsem().reader_acquire()
+        inst_repo = self._entropy.installed_repository()
+        repo = self._entropy.open_repository(self._repo_id)
+        if repo is inst_repo:
+            return None
+
+        pkg_match = self.get_details().pkg
+        masked = self._entropy.is_package_masked(pkg_match)
+        if masked:
+            return None
+
         try:
-            inst_repo = self._entropy.installed_repository()
-            repo = self._entropy.open_repository(self._repo_id)
-            if repo is inst_repo:
-                return None
+            install_queue, removal_queue = \
+                self._entropy.get_install_queue(
+                    [pkg_match], False, False)
+        except DependenciesNotFound:
+            raise
+        except DependenciesCollision:
+            raise
 
-            pkg_match = self.get_details().pkg
-            masked = self._entropy.is_package_masked(pkg_match)
-            if masked:
-                return None
-
-            try:
-                install_queue, removal_queue = \
-                    self._entropy.get_install_queue(
-                        [pkg_match], False, False)
-            except DependenciesNotFound:
-                raise
-            except DependenciesCollision:
-                raise
-
-            return install_queue, removal_queue
-        finally:
-            self._entropy.rwsem().reader_release()
+        return install_queue, removal_queue
 
     def get_install_conflicts(self):
         """
@@ -1003,21 +1005,25 @@ class Application(object):
         Apps that would need to be removed of this Application
         is installed.
         """
-        apps = []
-        queues = self._get_install_queue()
-        if queues is None:
-            return apps
-        install, removal = queues
-        del install
+        self._entropy.rwsem().reader_acquire()
+        try:
+            apps = []
+            queues = self._get_install_queue()
+            if queues is None:
+                return apps
+            install, removal = queues
+            del install
 
-        inst_repo = self._entropy.installed_repository()
-        inst_repo_id = inst_repo.repository_id()
-        for inst_pkg_id in removal:
-            app = Application(
-                self._entropy, self._entropy_ws,
-                (inst_pkg_id, inst_repo_id))
-            apps.append(app)
-        return apps
+            inst_repo = self._entropy.installed_repository()
+            inst_repo_id = inst_repo.repository_id()
+            for inst_pkg_id in removal:
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    (inst_pkg_id, inst_repo_id))
+                apps.append(app)
+            return apps
+        finally:
+            self._entropy.rwsem().reader_release()
 
     def is_installable(self):
         """
@@ -1072,10 +1078,10 @@ class Application(object):
         """
         Get Application markup text.
         """
+        name = self.name
         self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
-            name = self.name
             version = repo.retrieveVersion(self._pkg_id)
             if version is None:
                 version = _("N/A")
@@ -1157,7 +1163,7 @@ class Application(object):
             if repo is inst_repo:
                 from_str = _("Installed")
             else:
-                inst_app = self.get_installed()
+                inst_app = self._get_installed()
                 if inst_app is not None:
                     ver = inst_app.get_details().version
                     installed_str = "\n" + prepare_markup(
@@ -1184,6 +1190,8 @@ class Application(object):
         """
         Get Application info markup text.
         """
+        app_store_url = build_application_store_url(self, "")
+
         self._entropy.rwsem().reader_acquire()
         try:
             lic_url = "%s/license/" % (etpConst['packages_website_url'],)
@@ -1270,7 +1278,7 @@ class Application(object):
                 deps_txt += "\n\n"
 
             more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
-                build_application_store_url(self, ""),
+                app_store_url,
                 escape_markup(_("Click here for more details")),)
 
             text = "<small>%s\n%s\n%s\n%s\n%s\n%s%s</small>" % (
