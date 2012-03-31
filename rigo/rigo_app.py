@@ -185,6 +185,7 @@ class RigoServiceController(GObject.Object):
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
     _UNSUPPORTED_APPLICATIONS_SIGNAL = "unsupported_applications"
+    _RESTARTING_UPGRADE_SIGNAL = "restarting_system_upgrade"
     _SUPPORTED_APIS = [0]
 
     def __init__(self, rigo_app, activity_rwsem,
@@ -460,6 +461,14 @@ class RigoServiceController(GObject.Object):
                     self._unsupported_applications_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that the currently scheduled
+                # System Upgrade is being restarted due to further
+                # updates being available
+                self.__entropy_bus.connect_to_signal(
+                    self._RESTARTING_UPGRADE_SIGNAL,
+                    self._restarting_system_upgrade_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -649,6 +658,22 @@ class RigoServiceController(GObject.Object):
             const_debug_write(
                 __name__,
                 "_applications_managed_signal: applications-managed")
+
+    def _restarting_system_upgrade_signal(self, updates_amount):
+        """
+        System Upgrade Activity is being restarted due to further updates
+        being available. This happens when RigoDaemon processed critical
+        updates during the previous activity execution.
+        """
+        if self._nc is not None:
+            msg = "%s. %s" % (
+                _("<b>System Upgrade</b> Activity is being restarted"),
+                ngettext("There is %i more update",
+                         "There are %i more updates",
+                         int(updates_amount)) % (updates_amount,),)
+            box = self.ServiceNotificationBox(
+                prepare_markup(msg), Gtk.MessageType.INFO)
+            self._nc.append(box, timeout=20)
 
     def _unsupported_applications_signal(self, manual_package_ids,
                                          package_ids):
