@@ -654,7 +654,8 @@ class OrphanedAppsNotificationBox(NotificationBox):
             app_str = "<b><a href=\"%d|%s\">%s</a></b>" % (
                 pkg_id, pkg_repo, app_name)
             app_lst.append(app_str)
-        return prepare_markup(", ".join(app_lst))
+        return prepare_markup("<small>" + \
+                              ", ".join(app_lst) + "</small>")
 
     def _on_remove_safe(self, widget):
         """
