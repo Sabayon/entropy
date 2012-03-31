@@ -877,7 +877,7 @@ class Application(object):
         app = self.get_installed()
         return app is not None
 
-    def _get_instaled(self):
+    def _get_installed(self):
         """
         Application.get_installed() method body.
         """
