@@ -753,7 +753,6 @@ class RigoDaemonService(dbus.service.Object):
         """
         Process System Upgrade Action.
         """
-        # FIXME notify list of removable packages (see remove list)
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         self.activity_progress(activity, 0)
         try:
@@ -813,7 +812,15 @@ class RigoDaemonService(dbus.service.Object):
             outcome = self._process_install_merge_action(
                 install, activity, AppActions.INSTALL, simulate,
                 count, total)
-            return outcome
+            if outcome != AppTransactionOutcome.SUCCESS:
+                return outcome
+
+            manual_remove, remove = \
+                self._entropy.calculate_orphaned_packages()
+            if manual_remove or remove:
+                self.unsupported_applications(manual_removal, remove)
+
+            return AppTransactionOutcome.SUCCESS
 
         finally:
             write_output("_process_upgrade_action, finally, "
@@ -1592,6 +1599,18 @@ class RigoDaemonService(dbus.service.Object):
         Enqueued Application actions have been completed.
         """
         write_output("applications_managed() issued, args:"
+                     " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='aiai')
+    def unsupported_applications(self, manual_package_ids, package_ids):
+        """
+        Notify Installed Applications that are no longer supported.
+        "manual_package_ids" denotes the list of installed package ids
+        that should be manually reviewed before removal, while
+        "package_ids" denotes those safe to be removed.
+        """
+        write_output("unsupported_applications() issued, args:"
                      " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
