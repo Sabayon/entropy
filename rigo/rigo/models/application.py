@@ -909,6 +909,22 @@ class Application(object):
                            (package_id, inst_repo.repository_id()),
                            redraw_callback=self._redraw_callback)
 
+    def _source_repository_id(self, repo):
+        """
+        Return the actual repository name (if possible) if
+        Application is coming from the Installed Packages Repository.
+        """
+        inst_repo = self._entropy.installed_repository()
+        repository_id = repo.repository_id()
+        if repo is inst_repo:
+            # get source repository id, because installed repo
+            # id won't work
+            _repository_id = repo.getInstalledPackageRepository(
+                self._pkg_id)
+            if _repository_id is not None:
+                repository_id = _repository_id
+        return repository_id
+
     def get_installed(self):
         """
         Return the Application object of the installed
@@ -1312,7 +1328,8 @@ class Application(object):
             key, slot = key_slot
             try:
                 rating = ApplicationMetadata.lazy_get_rating(
-                    self._entropy_ws, key, self._repo_id,
+                    self._entropy_ws, key,
+                    self._source_repository_id(repo),
                     callback=self._redraw_callback,
                     _still_visible_cb=_still_visible_cb)
             except WebService.CacheMiss:
@@ -1351,7 +1368,8 @@ class Application(object):
             cache_hit = True
             try:
                 icon = ApplicationMetadata.lazy_get_icon(
-                    self._entropy_ws, key, self._repo_id,
+                    self._entropy_ws, key,
+                    self._source_repository_id(repo),
                     callback=self._redraw_callback,
                     _still_visible_cb=_still_visible_cb)
             except WebService.CacheMiss:
@@ -1387,7 +1405,7 @@ class Application(object):
 
             key, slot = key_slot
             ApplicationMetadata.download_comments_async(
-                self._entropy_ws, key, self._repo_id,
+                self._entropy_ws, key, self._source_repository_id(repo),
                 offset, callback)
 
             if const_debug_enabled():
@@ -1416,7 +1434,7 @@ class Application(object):
 
             key, slot = key_slot
             ApplicationMetadata.download_images_async(
-                self._entropy_ws, key, self._repo_id,
+                self._entropy_ws, key, self._source_repository_id(repo),
                 offset, callback)
 
             if const_debug_enabled():
@@ -1493,6 +1511,20 @@ class AppDetails(object):
         Return Application Channel (repository identifier).
         """
         return self._repo_id
+
+    @property
+    def sourcechannel(self):
+        """
+        Return Application Source Channel (if this is an Installed
+        Application, the Channel of the original repository shall
+        be returned).
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return self._app._source_repository_id(repo)
+        finally:
+            self._entropy.rwsem().reader_release()
 
     @property
     def description(self):
