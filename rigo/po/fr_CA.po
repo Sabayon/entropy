@@ -3,20 +3,19 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Tim Lauridsen <tla@rasmil.dk>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-03-31 19:57+0200\n"
-"PO-Revision-Date: 2012-03-31 21:54+0000\n"
+"PO-Revision-Date: 2012-03-31 22:08+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: da\n"
+"Language: fr_CA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
 #: ../RigoDaemon/app.py:565
 msgid "Not authorized"
@@ -50,15 +49,15 @@ msgstr ""
 #: ../rigo/models/application.py:1163 ../rigo/models/application.py:1195
 #: ../rigo/models/application.py:1261
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: ../rigo/models/application.py:1131 ../rigo/models/application.py:1186
 msgid "No description"
-msgstr ""
+msgstr "Pas de description"
 
 #: ../rigo/models/application.py:1200
 msgid "Installed"
-msgstr "Installeret"
+msgstr "Installé"
 
 #: ../rigo/models/application.py:1206
 #, python-format
@@ -67,11 +66,11 @@ msgstr ""
 
 #: ../rigo/models/application.py:1208
 msgid "from"
-msgstr ""
+msgstr "à partir de"
 
 #: ../rigo/models/application.py:1238
 msgid "License"
-msgstr ""
+msgstr "License"
 
 #: ../rigo/models/application.py:1249
 msgid "Required space"
@@ -79,15 +78,15 @@ msgstr ""
 
 #: ../rigo/models/application.py:1256
 msgid "Download size"
-msgstr ""
+msgstr "Taille du téléchargement"
 
 #: ../rigo/models/application.py:1263
 msgid "Checksum"
-msgstr ""
+msgstr "Somme de contrôle"
 
 #: ../rigo/models/application.py:1274
 msgid "USE flags"
-msgstr ""
+msgstr "Indicateurs USE"
 
 #: ../rigo/models/application.py:1278
 msgid "No use flags"
@@ -273,12 +272,12 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/work.py:262
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:98
 msgid "Installing"
-msgstr ""
+msgstr "Installation"
 
 #: ../rigo/ui/gtk3/controllers/work.py:264
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:99
 msgid "Removing"
-msgstr "Sletter"
+msgstr "Suppression"
 
 #: ../rigo/ui/gtk3/controllers/work.py:271
 #, python-format
@@ -403,25 +402,25 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:813
 msgid "Update"
-msgstr ""
+msgstr "Mettre à jour"
 
 #: ../rigo/ui/gtk3/controllers/application.py:823
 msgid "Reinstall"
-msgstr ""
+msgstr "Réinstaller"
 
 #: ../rigo/ui/gtk3/controllers/application.py:833
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:97
 msgid "Remove"
-msgstr ""
+msgstr "Supprimer"
 
 #: ../rigo/ui/gtk3/controllers/application.py:843
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:96
 msgid "Install"
-msgstr ""
+msgstr "Installer"
 
 #: ../rigo/ui/gtk3/controllers/application.py:858
 msgid "Not available"
-msgstr ""
+msgstr "Pas disponible"
 
 #: ../rigo/ui/gtk3/controllers/application.py:860
 msgid "Never downloaded"
@@ -454,7 +453,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:409
 msgid "Not found"
-msgstr ""
+msgstr "Introuvable"
 
 #. TRANSLATORS: this is an accessibility description for eg orca and
 #. is not visible in the ui
@@ -545,11 +544,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:291
 msgid "Username"
-msgstr ""
+msgstr "Nom d'utilisateur"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:301
 msgid "Password"
-msgstr ""
+msgstr "Mot de passe"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:333
 msgid "Login <b>error</b>!"
@@ -608,7 +607,7 @@ msgstr ""
 #. self.add_button(_("Remove All"), self._on_remove_all)
 #: ../rigo/ui/gtk3/widgets/notifications.py:615
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:632
 msgid ""
@@ -667,11 +666,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
-msgstr ""
+msgstr "suppression"
 
 #: ../rigo/ui/gtk3/widgets/images.py:206
 msgid "Keywords"
-msgstr ""
+msgstr "Mots-clé"
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:91
 msgid "More Info"

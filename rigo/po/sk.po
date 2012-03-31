@@ -1,63 +1,57 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# Translators:
 msgid ""
 msgstr ""
-"Project-Id-Version: Entropy 0.98.5.3\n"
+"Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-03-31 19:57+0200\n"
-"PO-Revision-Date: 2012-03-31 23:53+0100\n"
-"Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
-"Language-Team: \n"
-"Language: \n"
+"PO-Revision-Date: 2012-03-31 21:55+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
 #: ../RigoDaemon/app.py:565
 msgid "Not authorized"
 msgstr ""
 
 #: ../RigoDaemon/app.py:592
-#, fuzzy
 msgid "No repositories configured"
-msgstr "repozitár nie je nakonfigurovaný"
+msgstr ""
 
 #: ../RigoDaemon/app.py:597
 msgid "Unhandled Exception"
 msgstr ""
 
 #: ../RigoDaemon/app.py:947
-#, fuzzy
 msgid "Application Removal"
-msgstr "Aplikácie k zmazaniu"
+msgstr ""
 
 #: ../RigoDaemon/app.py:1166
-#, fuzzy
 msgid "Application download"
-msgstr "Balíčky k downgrade"
+msgstr ""
 
 #: ../RigoDaemon/app.py:1258
-#, fuzzy
 msgid "Application Install"
-msgstr "Aplikácie k inštalácii"
+msgstr ""
 
 #: ../rigo/models/application.py:129
 msgid "Uncategorized"
 msgstr ""
 
-#: ../rigo/models/application.py:866
-#: ../rigo/models/application.py:1123
-#: ../rigo/models/application.py:1163
-#: ../rigo/models/application.py:1195
+#: ../rigo/models/application.py:866 ../rigo/models/application.py:1123
+#: ../rigo/models/application.py:1163 ../rigo/models/application.py:1195
 #: ../rigo/models/application.py:1261
 msgid "N/A"
 msgstr ""
 
-#: ../rigo/models/application.py:1131
-#: ../rigo/models/application.py:1186
+#: ../rigo/models/application.py:1131 ../rigo/models/application.py:1186
 msgid "No description"
 msgstr "Žiaden popis"
 
@@ -66,9 +60,9 @@ msgid "Installed"
 msgstr "Nainštalované"
 
 #: ../rigo/models/application.py:1206
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s</b> is installed"
-msgstr "nie je nainštalované"
+msgstr ""
 
 #: ../rigo/models/application.py:1208
 msgid "from"
@@ -79,18 +73,16 @@ msgid "License"
 msgstr "Licencia"
 
 #: ../rigo/models/application.py:1249
-#, fuzzy
 msgid "Required space"
-msgstr "Uvoľnené miesto"
+msgstr ""
 
 #: ../rigo/models/application.py:1256
 msgid "Download size"
 msgstr "Veľkosť na stiahnutie"
 
 #: ../rigo/models/application.py:1263
-#, fuzzy
 msgid "Checksum"
-msgstr "Test kontrolného súčtu"
+msgstr ""
 
 #: ../rigo/models/application.py:1274
 msgid "USE flags"
@@ -101,33 +93,28 @@ msgid "No use flags"
 msgstr ""
 
 #: ../rigo/models/application.py:1296
-#, fuzzy
 msgid "Runtime dependencies"
-msgstr "Bežiaca závislosť"
+msgstr ""
 
 #: ../rigo/models/application.py:1297
-#, fuzzy
 msgid "Build dependencies"
-msgstr "Zostavovacia závislosť"
+msgstr ""
 
 #: ../rigo/models/application.py:1298
-#, fuzzy
 msgid "Post dependencies"
-msgstr "Funkčná závislosť"
+msgstr ""
 
 #: ../rigo/models/application.py:1299
-#, fuzzy
 msgid "Staff dependencies"
-msgstr "Triedenie závislostí"
+msgstr ""
 
 #: ../rigo/models/application.py:1321
 msgid "Click here for more details"
 msgstr ""
 
 #: ../rigo/models/application.py:1566
-#, fuzzy
 msgid "Application not found"
-msgstr "Aktualizácie aplikácií"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:67
 msgid "Good luck!"
@@ -163,24 +150,23 @@ msgid "<b>%s</b>, internal error"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:562
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr "Neboli nájdené žiadne chýbajúce závislosti."
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:567
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr "Neboli nájdené žiadne chýbajúce závislosti."
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:572
-#, fuzzy, python-format
+#, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr "Test závislostí"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:577
-#, fuzzy
 msgid "An error occurred"
-msgstr "Vyskytla sa Spm chyba"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:582
 #: ../rigo/ui/gtk3/controllers/application.py:388
@@ -193,34 +179,31 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/notifications.py:313
 #: ../rigo/ui/gtk3/controllers/notifications.py:325
 #: ../rigo/ui/gtk3/controllers/notifications.py:337
-#, fuzzy
 msgid "Show me"
-msgstr "Ukáž všetky"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:644
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:645
-#, fuzzy, python-format
+#, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] "Nie sú dostupné žiadne aktualizácie"
-msgstr[1] "Nie sú dostupné žiadne aktualizácie"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/controllers/daemon.py:1165
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1235
-#: ../rigo/controllers/daemon.py:1737
+#: ../rigo/controllers/daemon.py:1235 ../rigo/controllers/daemon.py:1737
 #: ../rigo/controllers/daemon.py:1955
-#, fuzzy
 msgid "Another activity is currently in progress"
-msgstr "Práve beží iné Entropy."
+msgstr ""
 
-#: ../rigo/controllers/daemon.py:1237
-#: ../rigo/controllers/daemon.py:1740
+#: ../rigo/controllers/daemon.py:1237 ../rigo/controllers/daemon.py:1740
 #: ../rigo/controllers/daemon.py:1958
 msgid "K thanks"
 msgstr ""
@@ -248,12 +231,15 @@ msgstr ""
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:1495
 #, python-format
-msgid "Installing <b>%s</b> would cause the removal of the following Applications: %s"
+msgid ""
+"Installing <b>%s</b> would cause the removal of the following Applications: "
+"%s"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:1606
@@ -267,15 +253,15 @@ msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/controllers/daemon.py:1878
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:309
-#, fuzzy
 msgid "Repositories Update in <b>progress</b>..."
-msgstr "Aktualizujú sa repozitáre"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:321
 msgid "<b>Application Management</b> in progress..."
@@ -301,6 +287,7 @@ msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:290
 #, python-format
@@ -362,9 +349,8 @@ msgid "Vote error: <i>%s</i>"
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:471
-#, fuzzy
 msgid "Entropy Web Services not available for repository"
-msgstr "služba Entropy DBus nie je dostupná"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:483
 #, python-format
@@ -372,9 +358,8 @@ msgid "You are about to add a <b>comment</b> as <b>%s</b>."
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:546
-#, fuzzy
 msgid "Your comment has been submitted!"
-msgstr "Vaše známenie bolo úspešne odovzdané! Ďakujeme pekne."
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:555
 #, python-format
@@ -399,9 +384,8 @@ msgid "<i>No <b>comments</b> for this Application, yet!</i>"
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:683
-#, fuzzy
 msgid "Older comments"
-msgstr "Komentáre"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:690
 msgid "Loading older comments..."
@@ -442,14 +426,12 @@ msgid "Not available"
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:860
-#, fuzzy
 msgid "Never downloaded"
-msgstr "Zoraď podľa stiahnutia"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
-#, fuzzy
 msgid "downloads"
-msgstr "Stiahnuť teraz"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:912
 msgid "Want to add images, etc?"
@@ -460,14 +442,12 @@ msgid "click here!"
 msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:925
-#, fuzzy
 msgid "Loading comments..."
-msgstr "Načítať obsah"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:367
-#, fuzzy
 msgid "Nothing found for"
-msgstr "Nič nebolo nájdené"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:377
 #, python-format
@@ -492,47 +472,44 @@ msgid "Free"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/buttons.py:574
-#, fuzzy
 msgid "More"
-msgstr "_Viac"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:171
-#, fuzzy, python-format
+#, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] "Nie sú dostupné žiadne aktualizácie"
-msgstr[1] "Nie sú dostupné žiadne aktualizácie"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:177
-#, fuzzy, python-format
+#, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] "Bezpečnostné aktualizácie"
-msgstr[1] "Bezpečnostné aktualizácie"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:183
-#, fuzzy
 msgid "What to do?"
-msgstr "Čo ste robili"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:186
 msgid "Updates available, how about installing them?"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
-#, fuzzy
 msgid "_Update System"
-msgstr "Aktualizácie"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:190
-#, fuzzy
 msgid "_Show"
-msgstr "Zobrazenie"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:191
-#, fuzzy
 msgid "_Ignore"
-msgstr "Ignorovať"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:221
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -559,18 +536,16 @@ msgid "You need to login to Entropy Web Services"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:274
-#, fuzzy
 msgid "_Login"
-msgstr "_Odstrániť Prihlásenie"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:275
 msgid "Register"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:280
-#, fuzzy
 msgid "_Cancel"
-msgstr "Zrušiť"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:291
 msgid "Username"
@@ -585,7 +560,9 @@ msgid "Login <b>error</b>!"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:387
-msgid "Cannot connect to Entropy Web Services, are you connected to the <b>interweb</b>?"
+msgid ""
+"Cannot connect to Entropy Web Services, are you connected to the "
+"<b>interweb</b>?"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:391
@@ -602,12 +579,16 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:462
 #, python-format
-msgid "You are required to <b>review</b> and <b>accept</b> the following licenses before continuing: %s"
+msgid ""
+"You are required to <b>review</b> and <b>accept</b> the following licenses "
+"before continuing: %s"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:467
 #, python-format
-msgid "<b>%s</b> Application or one of its dependencies is distributed with the following licenses: %s"
+msgid ""
+"<b>%s</b> Application or one of its dependencies is distributed with the "
+"following licenses: %s"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:483
@@ -615,14 +596,12 @@ msgid "Make sure to review all the licenses"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:487
-#, fuzzy
 msgid "Accept"
-msgstr "Prijatá"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:488
-#, fuzzy
 msgid "Accept forever"
-msgstr "Prijatá"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:490
 msgid "Decline"
@@ -636,7 +615,10 @@ msgid "Close"
 msgstr "Zavrieť"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:632
-msgid "Several <b>Applications</b>, no longer maintained by this distribution, have been found on your <b>System</b>. Some of them might require <b>manual review</b> before being uninstalled. Click on the Apps to expand."
+msgid ""
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
+"review</b> before being uninstalled. Click on the Apps to expand."
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:640
@@ -644,9 +626,8 @@ msgid "Manual review"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:644
-#, fuzzy
 msgid "Safe to drop"
-msgstr "Bezpečný mód"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:399
 #, python-format
@@ -654,6 +635,7 @@ msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:499
 msgid "Hint: Click a star to rate this app"
@@ -685,9 +667,8 @@ msgid "Excellent"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/comments.py:91
-#, fuzzy
 msgid "Cannot remove comment"
-msgstr "Nie je možné odstrániť balíčky"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
@@ -704,4 +685,3 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr ""
-
