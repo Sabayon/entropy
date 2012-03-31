@@ -580,3 +580,56 @@ class LicensesNotificationBox(NotificationBox):
         task.daemon = True
         task.start()
         return True
+
+
+class OrphanedAppsNotificationBox(NotificationBox):
+
+    def __init__(self, avc, manual_apps, apps):
+
+        self._avc = avc
+        msg = prepare_markup(
+            _("Several <b>Applications</b> have been found on "
+                "your <b>System</b> which are no longer maintained "
+                "by this distribution. Some might still be "
+                "<b>critical</b> thus their removal should be manually "
+                "reviewed, while others can be safely dropped"))
+        msg += "\n"
+
+        if manual_apps:
+            msg += "%s: %s" % (
+                prepare_markup(_("Manual review")),
+                self._build_app_str_list(manual_apps),)
+        if apps:
+            msg += "\n%s: %s" % (
+                prepare_markup(_("Safe to drop")),
+                self._build_app_str_list(apps),)
+
+        label = Gtk.Label()
+        label.set_markup(msg)
+        label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        label.set_line_wrap(True)
+        label.set_property("expand", True)
+        label.set_alignment(0.02, 0.50)
+        label.connect("activate-link", self._on_app_activate)
+
+        NotificationBox.__init__(
+            self, None, message_widget=label,
+            tooltip=_("Spring cleansing ftw!"),
+            message_type=Gtk.MessageType.INFO,
+            context_id="OrphanedAppsNotificationBox")
+
+        self.add_destroy_button(_("Close this"))
+
+    def _build_app_str_list(self, apps):
+        app_lst = []
+        for app in apps:
+            app_name = escape_markup(app.name)
+            pkg_name = escape_markup(app.get_details().fullname)
+            app_str = "<b><a href=\"%s\">%s</a></b>" % (
+                pkg_name, app_name)
+            app_lst.append(app_str)
+        return prepare_markup(", ".join(app_lst))
+
+    def _on_app_activate(self, widget, uri):
+        self._avc.search(uri)
+        return True

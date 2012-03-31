@@ -49,7 +49,8 @@ from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
     LoginNotificationBox, ConnectivityNotificationBox, \
-    PleaseWaitNotificationBox, LicensesNotificationBox
+    PleaseWaitNotificationBox, LicensesNotificationBox, \
+    OrphanedAppsNotificationBox
 from rigo.ui.gtk3.controllers.applications import ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import ApplicationViewController
 
@@ -183,6 +184,7 @@ class RigoServiceController(GObject.Object):
     _APPLICATION_PROCESSING_UPDATE = "application_processing_update"
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
+    _UNSUPPORTED_APPLICATIONS_SIGNAL = "unsupported_applications"
     _SUPPORTED_APIS = [0]
 
     def __init__(self, rigo_app, activity_rwsem,
@@ -451,6 +453,13 @@ class RigoServiceController(GObject.Object):
                     self._application_processed_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that there are unsupported
+                # applications currently installed
+                self.__entropy_bus.connect_to_signal(
+                    self._UNSUPPORTED_APPLICATIONS_SIGNAL,
+                    self._unsupported_applications_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -641,6 +650,38 @@ class RigoServiceController(GObject.Object):
             const_debug_write(
                 __name__,
                 "_applications_managed_signal: applications-managed")
+
+    def _unsupported_applications_signal(self, manual_package_ids,
+                                         package_ids):
+        const_debug_write(
+            __name__,
+            "_unsupported_applications_signal: manual: "
+            "%s, normal: %s" % (
+                manual_package_ids, package_ids))
+
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repository_id = self._entropy.installed_repository(
+                ).repository_id()
+        finally:
+            self._entropy.rwsem().reader_release()
+
+        if manual_package_ids or package_ids:
+            manual_apps = []
+            apps = []
+            list_objs = [(manual_package_ids, manual_apps),
+                         (package_ids, apps)]
+            for source_list, app_list in list_objs:
+                for package_id in source_list:
+                    app = Application(
+                        self._entropy, self._entropy_ws,
+                        (package_id, repository_id))
+                    app_list.append(app)
+
+            if self._nc is not None:
+                box = OrphanedAppsNotificationBox(
+                    self._avc, manual_apps, apps)
+                self._nc.append(box)
 
     def _repositories_updated_signal(self, result, message):
         """
