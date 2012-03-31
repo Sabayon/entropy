@@ -20,6 +20,10 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 
 import os
+
+# entropy.i18n will pick this up
+os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
+
 import sys
 from threading import Lock, Timer
 
