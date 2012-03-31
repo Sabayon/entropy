@@ -758,63 +758,22 @@ class RigoDaemonService(dbus.service.Object):
         self.activity_progress(activity, 0)
         try:
 
-            write_output(
-                "_process_upgrade_action, about to calculate_updates()",
-                debug=True)
-
-            try:
-                update, remove, fine, spm_fine = \
-                    self._entropy.calculate_updates()
-
-            except SystemDatabaseError as sde:
-                write_output(
-                    "_process_upgrade_action, SystemDatabaseError: "
-                    "%s" % (sde,))
-                outcome = \
-                    AppTransactionOutcome.INTERNAL_ERROR
-                return outcome
-
-            try:
-                install, removal = self._entropy.get_install_queue(
-                    update, False, False)
-
-            except DependenciesNotFound as dnf:
-                write_output(
-                    "_process_upgrade_action, DependenciesNotFound: "
-                    "%s" % (dnf,))
-                outcome = \
-                    AppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR
-                return outcome
-
-            except DependenciesCollision as dcol:
-                write_output(
-                    "_process_upgrade_action, DependenciesCollision: "
-                    "%s" % (dcol,))
-                outcome = \
-                    AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
-                return outcome
-
-            # mark transactions
-            for _package_id, _repository_id in install:
-                self._txs.set(_package_id, _repository_id,
-                              AppActions.INSTALL)
-
-            # Download
-            count, total, outcome = \
-                self._process_install_fetch_action(
-                    install, activity, AppActions.INSTALL)
+            outcome = self._process_upgrade_merge_action(
+                activity, simulate)
             if outcome != AppTransactionOutcome.SUCCESS:
                 return outcome
 
-            # this way if an exception is raised in
-            # _process_install_merge_action we will signal an error
-            outcome = AppTransactionOutcome.INTERNAL_ERROR
-            # Install
-            outcome = self._process_install_merge_action(
-                install, activity, AppActions.INSTALL, simulate,
-                count, total)
-            if outcome != AppTransactionOutcome.SUCCESS:
-                return outcome
+            # check if we need to respawn the upgrade process again?
+            metadata = self._process_upgrade_action_calculate()
+            if metadata is None:
+                return AppTransactionOutcome.INTERNAL_ERROR
+            update, remove, fine, spm_fine = metadata
+            if update:
+                self.restarting_system_upgrade(len(update))
+                outcome = self._process_upgrade_merge_action(
+                    activity, simulate)
+                if outcome != AppTransactionOutcome.SUCCESS:
+                    return outcome
 
             manual_remove, remove = \
                 self._entropy.calculate_orphaned_packages()
@@ -828,6 +787,71 @@ class RigoDaemonService(dbus.service.Object):
                          "outcome: %s" % (
                     outcome,), debug=True)
             self.activity_progress(activity, 100)
+
+    def _process_upgrade_action_calculate(self):
+        """
+        Calculate Application Updates.
+        """
+        try:
+            update, remove, fine, spm_fine = \
+                self._entropy.calculate_updates()
+            return update, remove, fine, spm_fine
+        except SystemDatabaseError as sde:
+            write_output(
+                "_process_upgrade_action_calculate, SystemDatabaseError: "
+                "%s" % (sde,))
+            return None
+
+    def _process_upgrade_merge_action(self, activity, simulate):
+        """
+        Execute the actual System Upgrade activity.
+        """
+        write_output(
+            "_process_upgrade_merge_action, about to calculate_updates()",
+            debug=True)
+
+        metadata = self._process_upgrade_action_calculate()
+        if metadata is None:
+            return AppTransactionOutcome.INTERNAL_ERROR
+        update, remove, fine, spm_fine = metadata
+
+        try:
+            install, removal = self._entropy.get_install_queue(
+                update, False, False)
+
+        except DependenciesNotFound as dnf:
+            write_output(
+                "_process_upgrade_merge_action, DependenciesNotFound: "
+                "%s" % (dnf,))
+            outcome = \
+                AppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR
+            return outcome
+
+        except DependenciesCollision as dcol:
+            write_output(
+                "_process_upgrade_merge_action, DependenciesCollision: "
+                "%s" % (dcol,))
+            outcome = \
+                AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
+            return outcome
+
+        # mark transactions
+        for _package_id, _repository_id in install:
+            self._txs.set(_package_id, _repository_id,
+                          AppActions.INSTALL)
+
+        # Download
+        count, total, outcome = \
+            self._process_install_fetch_action(
+                install, activity, AppActions.INSTALL)
+        if outcome != AppTransactionOutcome.SUCCESS:
+            return outcome
+
+        # Install
+        outcome = self._process_install_merge_action(
+            install, activity, AppActions.INSTALL, simulate,
+            count, total)
+        return outcome
 
     def _process_remove_action(self, activity, action, simulate,
                                package_id, repository_id):
@@ -1613,6 +1637,17 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("unsupported_applications() issued, args:"
                      " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='i')
+    def restarting_system_upgrade(self, updates_amount):
+        """
+        Notify that System Upgrade activity is being restarted because
+        there are more updates available. This happens when the
+        previous upgrade queue contained critical updates.
+        """
+        write_output("restarting_system_upgrade(): issued",
+                     debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')
