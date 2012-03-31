@@ -680,7 +680,8 @@ class RigoServiceController(GObject.Object):
 
             if self._nc is not None:
                 box = OrphanedAppsNotificationBox(
-                    self._avc, manual_apps, apps)
+                    self._apc, self, self._entropy, self._entropy_ws,
+                    manual_apps, apps)
                 self._nc.append(box)
 
     def _repositories_updated_signal(self, result, message):

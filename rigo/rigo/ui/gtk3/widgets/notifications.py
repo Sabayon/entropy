@@ -27,6 +27,8 @@ from gi.repository import Gtk, GLib, GObject, Pango
 from rigo.em import StockEms
 from rigo.utils import build_register_url, open_url, escape_markup, \
     prepare_markup
+from rigo.models.application import Application
+from rigo.enums import AppActions, LocalActivityStates
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
@@ -584,52 +586,127 @@ class LicensesNotificationBox(NotificationBox):
 
 class OrphanedAppsNotificationBox(NotificationBox):
 
-    def __init__(self, avc, manual_apps, apps):
+    def __init__(self, apc, rigo_service, entropy_client,
+                 entropy_ws, manual_apps, apps):
 
-        self._avc = avc
-        msg = prepare_markup(
-            _("Several <b>Applications</b> have been found on "
-                "your <b>System</b> which are no longer maintained "
-                "by this distribution. Some might still be "
-                "<b>critical</b> thus their removal should be manually "
-                "reviewed, while others can be safely dropped"))
-        msg += "\n"
+        self._apc = apc
+        self._service = rigo_service
+        self._apps = apps
+        self._manual_apps = manual_apps
+        self._entropy = entropy_client
+        self._entropy_ws = entropy_ws
 
-        if manual_apps:
-            msg += "%s: %s" % (
-                prepare_markup(_("Manual review")),
-                self._build_app_str_list(manual_apps),)
-        if apps:
-            msg += "\n%s: %s" % (
-                prepare_markup(_("Safe to drop")),
-                self._build_app_str_list(apps),)
-
-        label = Gtk.Label()
-        label.set_markup(msg)
-        label.set_line_wrap_mode(Pango.WrapMode.WORD)
-        label.set_line_wrap(True)
-        label.set_property("expand", True)
-        label.set_alignment(0.02, 0.50)
-        label.connect("activate-link", self._on_app_activate)
+        self._label = Gtk.Label()
+        self._label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        self._label.set_line_wrap(True)
+        self._label.set_property("expand", True)
+        self._label.set_alignment(0.02, 0.50)
+        self._setup_label(self._label)
+        self._label.connect("activate-link", self._on_app_activate)
 
         NotificationBox.__init__(
-            self, None, message_widget=label,
+            self, None, message_widget=self._label,
             tooltip=_("Spring cleansing ftw!"),
             message_type=Gtk.MessageType.INFO,
             context_id="OrphanedAppsNotificationBox")
 
-        self.add_destroy_button(_("Close this"))
+        #if apps:
+        #    self.add_button(_("Remove safe"), self._on_remove_safe)
+        #self.add_button(_("Remove All"), self._on_remove_all)
+        self.add_destroy_button(_("Close"))
+
+        self._service.connect(
+            "applications-managed",
+            self._on_applications_managed)
+
+    def is_managed(self):
+        """
+        This NotificationBox cannot be destroyed easily.
+        """
+        return True
+
+    def _setup_label(self, label):
+        """
+        Setup message Label content.
+        """
+        msg = prepare_markup(
+            _("Several <b>Applications</b>, no longer maintained by this "
+              "distribution, have been found on your <b>System</b>. "
+              "Some of them might require <b>manual review</b> before "
+              "being uninstalled. Just click on the links to remove."))
+        msg += "\n"
+
+        if self._manual_apps:
+            msg += "%s: %s" % (
+                prepare_markup(_("Manual review")),
+                self._build_app_str_list(self._manual_apps),)
+        if self._apps:
+            msg += "\n%s: %s" % (
+                prepare_markup(_("Safe to drop")),
+                self._build_app_str_list(self._apps),)
+
+        label.set_markup(prepare_markup(msg))
 
     def _build_app_str_list(self, apps):
         app_lst = []
         for app in apps:
             app_name = escape_markup(app.name)
-            pkg_name = escape_markup(app.get_details().fullname)
-            app_str = "<b><a href=\"%s\">%s</a></b>" % (
-                pkg_name, app_name)
+            pkg_id, pkg_repo = app.get_details().pkg
+            app_str = "<b><a href=\"%d|%s\">%s</a></b>" % (
+                pkg_id, pkg_repo, app_name)
             app_lst.append(app_str)
         return prepare_markup(", ".join(app_lst))
 
+    def _on_remove_safe(self, widget):
+        """
+        "Remove safe" button click event.
+        """
+        for app in self._apps:
+            self._apc.emit(
+                "application-request-action",
+                app, AppActions.REMOVE)
+
+    def _on_remove_all(self, widget):
+        """
+        "Remove All" button click event.
+        """
+        pkg_cache = set()
+        for app in self._apps + self._manual_apps:
+            pkg = app.get_details().pkg
+            if pkg in pkg_cache:
+                continue
+            pkg_cache.add(pkg)
+            self._apc.emit(
+                "application-request-action",
+                app, AppActions.REMOVE)
+
+    def _on_applications_managed(self, widget, success, local_activity):
+        """
+        Reload Gtk.Label and drop removed apps.
+        """
+        if not success:
+            return
+        if local_activity != LocalActivityStates.MANAGING_APPLICATIONS:
+            return
+        apps = [x for x in self._apps if x.is_available()]
+        manual_apps = [x for x in self._manual_apps if x.is_available()]
+        if not (apps or manual_apps):
+            self.destroy()
+            return
+        self._apps = apps
+        self._manual_apps = manual_apps
+        self._setup_label(self._label)
+
     def _on_app_activate(self, widget, uri):
-        self._avc.search(uri)
+        """
+        Application clickable Label event.
+        """
+        pkg_id, pkg_repo = uri.split("|", 1)
+        pkg_id = int(pkg_id)
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (pkg_id, pkg_repo))
+        self._apc.emit(
+            "application-request-action",
+            app, AppActions.REMOVE)
         return True
