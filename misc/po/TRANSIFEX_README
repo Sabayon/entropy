@@ -1,0 +1,18 @@
+URL: https://www.transifex.net/projects/p/sabayon-entropy
+:: Transifex .po files management workflow ::
+
+UPLOAD
+======
+.pot file is generated via:
+
+    $ make entropy.pot
+
+and pushed using:
+
+    $ sh transifex_push.sh # requires transifex-client
+
+DOWNLOAD
+========
+.po files are downloaded via:
+
+    $ sh transifex_pull.sh # requires transifex-client
