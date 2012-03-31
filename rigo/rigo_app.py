@@ -593,8 +593,7 @@ class RigoServiceController(GObject.Object):
                 msg,
                 tooltip=_("An error occurred"),
                 message_type=Gtk.MessageType.ERROR,
-                context_id="ApplicationProcessedSignal{%s, %s}" % (
-                    package_id, repository_id))
+                context_id="ApplicationProcessedSignalError")
             def _show_me(*args):
                 self._bottom_nc.emit("show-work-view")
             box.add_destroy_button(_("Ok, thanks"))
