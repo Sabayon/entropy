@@ -606,7 +606,6 @@ class OrphanedAppsNotificationBox(NotificationBox):
 
         NotificationBox.__init__(
             self, None, message_widget=self._label,
-            tooltip=_("Spring cleansing ftw!"),
             message_type=Gtk.MessageType.INFO,
             context_id="OrphanedAppsNotificationBox")
 
@@ -633,11 +632,11 @@ class OrphanedAppsNotificationBox(NotificationBox):
             _("Several <b>Applications</b>, no longer maintained by this "
               "distribution, have been found on your <b>System</b>. "
               "Some of them might require <b>manual review</b> before "
-              "being uninstalled. Just click on the links to remove."))
+              "being uninstalled. Click on the Apps to expand."))
         msg += "\n"
 
         if self._manual_apps:
-            msg += "%s: %s" % (
+            msg += "\n%s: %s" % (
                 prepare_markup(_("Manual review")),
                 self._build_app_str_list(self._manual_apps),)
         if self._apps:
@@ -706,7 +705,5 @@ class OrphanedAppsNotificationBox(NotificationBox):
         app = Application(
             self._entropy, self._entropy_ws,
             (pkg_id, pkg_repo))
-        self._apc.emit(
-            "application-request-action",
-            app, AppActions.REMOVE)
+        self._apc.emit("application-activated", app)
         return True
