@@ -877,6 +877,26 @@ class Application(object):
         app = self.get_installed()
         return app is not None
 
+    def is_installed_app(self):
+        """
+        Return whether this Application object describes an
+        Installed one.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            return self._is_installed_app()
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    def _is_installed_app(self):
+        """
+        Return whether this Application object describes an
+        Installed one.
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        inst_repo = self._entropy.installed_repository()
+        return repo is inst_repo
+
     def _get_installed(self):
         """
         Application.get_installed() method body.
@@ -1293,9 +1313,12 @@ class Application(object):
             if deps_txt:
                 deps_txt += "\n\n"
 
-            more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
-                app_store_url,
-                escape_markup(_("Click here for more details")),)
+            if self._is_installed_app():
+                more_txt = ""
+            else:
+                more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
+                    app_store_url,
+                    escape_markup(_("Click here for more details")),)
 
             text = "<small>%s\n%s\n%s\n%s\n%s\n%s%s</small>" % (
                 down_size_txt,
