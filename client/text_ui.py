@@ -452,29 +452,14 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
             blue("%s." % (_("Nothing to update"),) ))
 
     equo_client_settings['collisionprotect'] = oldcollprotect
+    allow_run = not onlyfetch
 
-    installed_repo = entropy_client.installed_repository()
-    # verify that client database idpackage still exist,
-    # validate here before passing removePackage() wrong info
-    remove = [x for x in remove if installed_repo.isPackageIdAvailable(x)]
-    # Filter out packages installed from unavailable repositories, this is
-    # mainly required to allow 3rd party packages installation without
-    # erroneously inform user about unavailability.
-    unavail_pkgs = [x for x in remove if \
-        installed_repo.getInstalledPackageRepository(x) \
-            not in entropy_client.repositories()]
-    remove = [x for x in remove if x not in unavail_pkgs]
-    # drop system packages for automatic removal, user has to do it manually.
-    system_unavail_pkgs = [x for x in remove if \
-        not entropy_client.validate_package_removal(x)]
-    remove = [x for x in remove if x not in system_unavail_pkgs]
+    if allow_run:
 
-    allow_run = entropy_client.repositories() and (not onlyfetch)
-
-    if (unavail_pkgs or remove or system_unavail_pkgs) and allow_run:
+        manual_removal, remove = \
+            entropy_client.calculate_orphaned_packages()
         remove.sort()
-        unavail_pkgs.sort()
-        system_unavail_pkgs.sort()
+        manual_removal.sort()
 
         print_info(red(" @@ ") + \
             blue("%s." % (
@@ -485,11 +470,10 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         print_info(red(" @@ ")+blue(
             _("Even if they are usually harmless, it is suggested (after proper verification) to remove them.")))
 
-        if unavail_pkgs:
-            _show_package_removal_info(entropy_client, unavail_pkgs, manual = True)
-        if system_unavail_pkgs:
-            _show_package_removal_info(entropy_client, system_unavail_pkgs, manual = True)
-        if remove:
+        if manual_removal:
+            _show_package_removal_info(
+                entropy_client, manual_removal, manual = True)
+        if removal:
             _show_package_removal_info(entropy_client, remove)
 
     if remove and allow_run:
