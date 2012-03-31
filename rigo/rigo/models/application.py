@@ -1610,6 +1610,18 @@ class AppDetails(object):
             self._entropy.rwsem().reader_release()
 
     @property
+    def fullname(self):
+        """
+        Return unmangled package name belonging to this Application.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveAtom(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    @property
     def pkgkey(self):
         """
         Return unmangled package key name belonging to this Application.
