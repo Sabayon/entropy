@@ -318,11 +318,13 @@ class RigoDaemonService(dbus.service.Object):
 
     class ActionQueueItem(object):
 
-        def __init__(self, package_id, repository_id, action, simulate):
+        def __init__(self, package_id, repository_id, action,
+                     simulate, sender):
             self._package_id = package_id
             self._repository_id = repository_id
             self._action = action
             self._simulate = simulate
+            self._sender = sender
 
         @property
         def pkg(self):
@@ -349,6 +351,12 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._simulate
 
+        def sender(self):
+            """
+            Return the Dbus Sender Id.
+            """
+            return self._sender
+
         def __str__(self):
             """
             Show item in human readable way
@@ -364,14 +372,21 @@ class RigoDaemonService(dbus.service.Object):
 
     class UpgradeActionQueueItem(object):
 
-        def __init__(self, simulate):
+        def __init__(self, simulate, sender):
             self._simulate = simulate
+            self._sender = sender
 
         def simulate(self):
             """
             Return True, if Action should be simulated only.
             """
             return self._simulate
+
+        def sender(self):
+            """
+            Return the Dbus Sender Id.
+            """
+            return self._sender
 
         def __str__(self):
             """
@@ -391,6 +406,7 @@ class RigoDaemonService(dbus.service.Object):
         object_path = RigoDaemonService.OBJECT_PATH
         dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
         system_bus = dbus.SystemBus(mainloop = dbus_loop)
+        self._bus = system_bus
         name = dbus.service.BusName(RigoDaemonService.BUS_NAME,
                                     bus = system_bus)
         dbus.service.Object.__init__(self, name, object_path)
@@ -505,7 +521,19 @@ class RigoDaemonService(dbus.service.Object):
                 raise ActivityStates.AlreadyAvailabileError()
             self._current_activity = ActivityStates.AVAILABLE
 
-    def _authorize(self, action_id):
+    def _get_caller_pid(self, sender):
+        """
+        Return the PID of the caller (through Dbus).
+        """
+        bus = self._bus.get_object(
+            'org.freedesktop.DBus',
+            '/org/freedesktop/DBus')
+        return dbus.Interface(
+            bus,
+            'org.freedesktop.DBus').GetConnectionUnixProcessID(
+            sender)
+
+    def _authorize(self, sender, action_id):
         """
         Authorize privileged Activity.
         Return True for success, False for failure.
@@ -520,7 +548,11 @@ class RigoDaemonService(dbus.service.Object):
             auth_res['result'] = result
             auth_res['sem'].release()
 
-        self._auth.authenticate(action_id, _authorized_callback)
+        pid = self._get_caller_pid(sender)
+        write_output("_authorize: got pid: %s" % (pid,), debug=True)
+        GLib.idle_add(
+            self._auth.authenticate,
+            pid, action_id, _authorized_callback)
         write_output("_authorize: sleeping on sem",
             debug=True)
 
@@ -546,7 +578,7 @@ class RigoDaemonService(dbus.service.Object):
             # use kill so that GObject main loop will quit as well
             os.kill(os.getpid(), signal.SIGTERM)
 
-    def _update_repositories(self, repositories, force, activity):
+    def _update_repositories(self, repositories, force, activity, sender):
         """
         Repositories Update execution code.
         """
@@ -559,6 +591,7 @@ class RigoDaemonService(dbus.service.Object):
             acquired_exclusive = False
             try:
                 authorized = self._authorize(
+                    sender,
                     PolicyActions.UPDATE_REPOSITORIES)
                 if not authorized:
                     result = 401
@@ -674,9 +707,11 @@ class RigoDaemonService(dbus.service.Object):
         if isinstance(item, RigoDaemonService.ActionQueueItem):
             activity = ActivityStates.MANAGING_APPLICATIONS
             policy = PolicyActions.MANAGE_APPLICATIONS
+            sender = item.sender()
         elif isinstance(item, RigoDaemonService.UpgradeActionQueueItem):
             activity = ActivityStates.UPGRADING_SYSTEM
             policy = PolicyActions.UPGRADE_SYSTEM
+            sender = item.sender()
             is_app = False
         else:
             raise AssertionError("wtf?")
@@ -685,7 +720,7 @@ class RigoDaemonService(dbus.service.Object):
         self._enable_stdout_stderr_redirect()
         acquired_exclusive = False
         try:
-            authorized = self._authorize(policy)
+            authorized = self._authorize(sender, policy)
             if not authorized:
                 # this is required in order to let clients know
                 # that their scheduled app action just failed
@@ -1396,8 +1431,8 @@ class RigoDaemonService(dbus.service.Object):
     ### DBUS METHODS
 
     @dbus.service.method(BUS_NAME, in_signature='asb',
-        out_signature='b')
-    def update_repositories(self, repositories, force):
+        out_signature='b', sender_keyword='sender')
+    def update_repositories(self, repositories, force, sender=None):
         """
         Request RigoDaemon to update the given repositories.
         At the end of the execution, the "repositories_updated"
@@ -1421,16 +1456,16 @@ class RigoDaemonService(dbus.service.Object):
             return False
 
         task = ParallelTask(self._update_repositories, repositories,
-                            force, activity)
+                            force, activity, sender)
         task.daemon = True
         task.name = "UpdateRepositoriesThread"
         task.start()
         return True
 
     @dbus.service.method(BUS_NAME, in_signature='issb',
-        out_signature='b')
+        out_signature='b', sender_keyword='sender')
     def enqueue_application_action(self, package_id, repository_id,
-                                   action, simulate):
+                                   action, simulate, sender=None):
         """
         Request RigoDaemon to enqueue a new Application Action, if
         possible.
@@ -1457,14 +1492,15 @@ class RigoDaemonService(dbus.service.Object):
                 int(package_id),
                 str(repository_id),
                 action,
-                bool(simulate))
+                bool(simulate),
+                sender)
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True
 
     @dbus.service.method(BUS_NAME, in_signature='b',
-        out_signature='b')
-    def upgrade_system(self, simulate):
+        out_signature='b', sender_keyword='sender')
+    def upgrade_system(self, simulate, sender=None):
         """
         Request RigoDaemon to Upgrade the whole System.
         """
@@ -1487,7 +1523,7 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
                 return False
 
-            item = self.UpgradeActionQueueItem(bool(simulate))
+            item = self.UpgradeActionQueueItem(bool(simulate), sender)
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True
@@ -1556,13 +1592,12 @@ class RigoDaemonService(dbus.service.Object):
         return self._acquired_exclusive
 
     @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='i')
-    def api(self):
+        out_signature='i', sender_keyword='sender')
+    def api(self, sender=None):
         """
         Return RigoDaemon API version.
         """
         write_output("api called", debug=True)
-
         return RigoDaemonService.API_VERSION
 
     @dbus.service.method(BUS_NAME, in_signature='',

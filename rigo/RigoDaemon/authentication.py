@@ -34,7 +34,7 @@ class AuthenticationController(object):
     def __init__(self):
         self._mainloop = GLib.MainLoop()
 
-    def authenticate(self, action_id, authentication_callback):
+    def authenticate(self, pid, action_id, authentication_callback):
         """
         Authenticate current User asking Administrator
         passwords.
@@ -62,7 +62,7 @@ class AuthenticationController(object):
 
         # authenticated_sem will be released in the callback
         authority = Polkit.Authority.get()
-        subject = Polkit.UnixProcess.new(os.getppid())
+        subject = Polkit.UnixProcess.new(pid)
         authority.check_authorization(
                 subject,
                 action_id,
