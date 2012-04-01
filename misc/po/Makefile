@@ -22,7 +22,8 @@ POTFILES.in:
 $(NLSPACKAGE).pot: $(POTFILES) POTFILES.in
 	intltool-update --gettext-package=$(NLSPACKAGE) --pot
 
-update-po: Makefile $(NLSPACKAGE).pot refresh-po
+update-po: Makefile $(NLSPACKAGE).pot
+	./transifex_pull.sh
 
 refresh-po: Makefile POTFILES.in
 	catalogs='$(CATALOGS)'; \
