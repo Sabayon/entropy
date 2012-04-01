@@ -1,3 +1,4 @@
+#!/usr/bin/python2
 # -*- coding: utf-8 -*-
 """
 Copyright (C) 2012 Fabio Erculiani
@@ -32,7 +33,6 @@ sys.path.insert(1, "../client")
 sys.path.insert(2, "./")
 sys.path.insert(3, "/usr/lib/entropy/lib")
 sys.path.insert(4, "/usr/lib/entropy/client")
-sys.path.insert(5, "/usr/lib/entropy/rigo")
 sys.path.insert(6, "/usr/lib/rigo")
 
 from gi.repository import Gtk, Gdk, GLib
@@ -235,7 +235,7 @@ class Rigo(Gtk.Application):
         If --dumper is in argv, a recurring thread dump
         function will be spawned every 30 seconds.
         """
-        dumper_enable = "--dumper" in sys.argv
+        dumper_enable = "--no-dumper" not in sys.argv
         if dumper_enable:
             task = None
 
