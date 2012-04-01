@@ -1,3 +1,1396 @@
+commit 7335c0e0eb90a1ec9f90800d97c2177de662aa8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 20:20:55 2012 +0200
+
+    Release Entropy 1.0_rc91
+
+commit cef5e9dcb9a60865a6e26fe2a5a8478738045423
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 19:07:40 2012 +0200
+
+    [Rigo] add Makefiles
+
+commit 2d3def6d44f1b0d4f43b0913ab7fb973f5caba99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 19:06:40 2012 +0200
+
+    [RigoDaemon] get client PID from DBus and use it with PolicyKit auth mechanism
+
+commit 0640d7ee4371f05a5afa1e94a928fc3883fa9b59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 19:05:46 2012 +0200
+
+    [RigoDaemon] enable daemon logging by default
+
+commit 8ecba20de12df9ff1155f167ac308f0239323f7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 19:05:14 2012 +0200
+
+    [Rigo] enable thread dumper by default, add shebang
+
+commit 918a0470391cef255a744fc906e66632fdbb3a40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 16:13:24 2012 +0200
+
+    [po] update translations
+
+commit 72f38e2c47032e85e672548202a947e1c2106cb1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 16:13:16 2012 +0200
+
+    [Rigo] update translations
+
+commit 6b62c6632215e758fc7ac171181b5d91bc639331
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 16:13:04 2012 +0200
+
+    [Rigo] po: Makefile update-po target now pulls from transifex
+
+commit f3ccd7369bc721da052cb2cd964eed3cc0da6254
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 16:12:37 2012 +0200
+
+    [po] Makefile: update-po target now pulls from transifex
+
+commit 3a43bb7e13073199c4d2b5313fdb39c6cd178dff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 01:18:30 2012 +0200
+
+    [RigoDaemon] integrate with build system
+
+commit 8b554928fce46046c882642493391859f8a2307b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:51:29 2012 +0200
+
+    [po] add TRANSIFEX_README file
+
+commit 2faa90ad75ef2c58f23e882b62219ce0c8103774
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:50:48 2012 +0200
+
+    [Rigo] po: add TRANSIFEX_README file
+
+commit b413a99716d72714248b0f88b9274ad0284959cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:47:30 2012 +0200
+
+    [Rigo] sync .po files with transifex
+
+commit cc52adb3275c8b41e5180db2ecb7d8846edf4d1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:47:00 2012 +0200
+
+    [Rigo] po: add transifex push/pull scripts
+
+commit d96089051c571da4a32698c5c527bc7ca810c890
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:41:20 2012 +0200
+
+    [po] add Czech translation
+
+commit 9ecc2872c1987ff637254f05c58bcc31ecfc9e9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 00:40:47 2012 +0200
+
+    [po] add transifex push/pull scripts and config
+
+commit 0d7b10af96290c1e4d295ee94e10cf780ff19a17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 23:54:08 2012 +0200
+
+    [Rigo] add remaining translations
+
+commit e5b2fb04515202e126fe8c7722f96336fa254a38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:31:36 2012 +0200
+
+    [po] update entropy.pot
+
+commit 01700ddb45652a1b8c3bcf7754abe09371c217b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:27:58 2012 +0200
+
+    [Rigo] add de, es, fr, nl translation files
+
+commit 723ee336f6f75f42fa468d025963b2adfe014dea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:08:39 2012 +0200
+
+    [Rigo] add Polish translation file (15% done)
+
+commit 51494b260257bb436cc5ac9b3ab9593e853149dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:03:52 2012 +0200
+
+    [Rigo] add intltool stuff to po/
+
+commit f282b5c4844dd1d4e31593103288ed4bc1b7b709
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:03:33 2012 +0200
+
+    [todo] update TODO
+
+commit 610cdec16a048559e95246d98eacee4175353a94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:03:16 2012 +0200
+
+    [RigoDaemon] override the default gettext domain, set it to "rigo"
+
+commit c8fcefcbc3ffcb14e66dea77e26c3e6ffcf0ab32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:02:50 2012 +0200
+
+    [Rigo] override the default gettext domain, set it to "rigo"
+
+commit 1ca52341c18b047732803dbd5077c02889e88f67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:02:18 2012 +0200
+
+    [Rigo] move App Controllers to separate packages
+
+commit af69c294aa2529eaa7932d66ce81e9d62f9e8d03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 20:01:38 2012 +0200
+
+    [entropy.i18n] make possible to override the default gettext domain (entropy)
+
+commit 7879be8a05651c288363acd03008d2f3bfb73ffa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 18:14:56 2012 +0200
+
+    [Rigo] implement restarting_system_upgrade() signal handling
+
+commit 76a5a326e9c5affabbbc1030394fce954a2f13ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 18:13:45 2012 +0200
+
+    [RigoDaemon] respawn System Upgrade if more updates are available
+    
+    Also introducing restarting_system_upgrade() signal.
+
+commit a38044677d17fec5561971b795f55d124008fff7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 17:23:23 2012 +0200
+
+    [Rigo] reduce text size of apps listed in OrphanedAppsNotificationBox
+
+commit 7f0cbb0c9a16e54f60a17941a0059b26f5f13dff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 17:20:25 2012 +0200
+
+    [Rigo] tweak context id of application_processed error notification box
+
+commit 64a0665db7859a57090ffb894f3c82bebac12514
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:51:30 2012 +0200
+
+    [RigoDaemon] trivial: send message to debug
+
+commit 394430613f5ad694ce847a5e15970492a38f466e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:50:57 2012 +0200
+
+    [Rigo] add orphaned apps notification popup simulation (via rigo:simulate:o:<dep>)
+
+commit 2d25df31e8811ccaa9d5ed188e846727aa5d962d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:50:15 2012 +0200
+
+    [Rigo] OrphanedAppsNotificationBox: show App info rather than spawning App removal
+
+commit 2aa9a6c4967525d2a5373bb40d14f0b7d4dd0ce6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:49:01 2012 +0200
+
+    [Rigo] do not show links to Entropy Store if App is from Installed Repository
+
+commit 91fbf4cecf2220dc396ecbf29424e041b4679f53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:48:17 2012 +0200
+
+    [Rigo] Application: add is_installed_app() method
+
+commit 032b02edde834b9c590b657c308a507854d5f4a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 16:47:48 2012 +0200
+
+    Application: resolve installed packages repository into available
+
+commit e8aece32f86d455b1cdfaf824b32cb54e1060731
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 15:41:33 2012 +0200
+
+    [Rigo] rework OrphanedAppsNotificationBox logic, make it easier to use
+
+commit f7ade49625619cc6ab28e7464957cb5cdb3a0fdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:58:34 2012 +0200
+
+    [Rigo] implement handling of unsupported_applications() RigoDaemon signal
+
+commit 27f69f58e7b1dbf5acdf7dcc49b41415e6082c83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:58:06 2012 +0200
+
+    [Rigo] Notifications: trivial i18n fixes
+
+commit 776933daba6b42985d55f58f7c551e864f249645
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:56:35 2012 +0200
+
+    [RigoDaemon] add unsupported_applications() signal
+    
+    This signal is raised after a System Upgrade when Applications
+    no longer supported by us are found on the Installed Apps Repository
+
+commit 6ada5a9c5c0c85dbffefc06eae3077a6e3dc98a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:56:03 2012 +0200
+
+    [Rigo] AppDetails: add fullname property returning package atom
+
+commit aed0867d6e9f5c1ef4e0fbc6c48007ca60387259
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:49:11 2012 +0200
+
+    [Rigo] fix typo in method name
+
+commit be95f30356f2733974d68fb367e118e4c0085dea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 12:01:29 2012 +0200
+
+    [equo] make use of Client.calculate_orphaned_packages()
+
+commit 374845e913cca2e1001ee0324901398fd20b8577
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 11:59:21 2012 +0200
+
+    [entropy.client] introduce Client.calculate_orphaned_packages()
+    
+    This method has been introduced in order to remove this calculation
+    logic from Sulfur, Equo and RigoDaemon that resulted in unwanted
+    code duplication.
+
+commit c3bba9a10dbe977a71053d2c02200df6fb28a5f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 31 11:12:08 2012 +0200
+
+    [Rigo] ReadersWritersSemaphore is not reentrant for readers
+    
+    Nested acquire_reader() calls can cause deadlock in this scenario:
+    
+    Thread 1 calls acquire_reader() twice (or more)
+    Thread 2 calls acquire_writer() once
+
+commit 7829eee1dcd906d8a467a7cd27188484b85bf32d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 21:00:33 2012 +0200
+
+    [todo] update TODO
+
+commit 56264f3a409981016a585b483789089be1ddbf6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 20:58:43 2012 +0200
+
+    [Rigo] remove activity_rwsem usage from updates calculation code (experimental)
+
+commit 790f2121210e5be0fdd902999246f706b0e9d7db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 20:55:53 2012 +0200
+
+    [Rigo] several misc bugfixes related to recent code dump
+
+commit f193f44f0de910bdb230b2b2a3cfe973a2c135b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 20:54:28 2012 +0200
+
+    [RigoDaemon] acquire exclusive lock after polkit auth request (to avoid UI lag)
+
+commit 0cfbd6a3bc0c93bfbd6f76d3cb6fbb556583e6ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 18:06:45 2012 +0200
+
+    [todo] update TODO
+
+commit fe5e723d8a09abfceb8f4df4d1d9526f66a2c3fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 18:05:54 2012 +0200
+
+    [Rigo] implement License management code for System Upgrade activity
+
+commit e35b225d26a3f007a26b403e0a6c96cc26a4c9e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 17:15:56 2012 +0200
+
+    [Rigo/RigoDaemon] implement basic support to System Upgrade
+
+commit 34ee151d9a81520e21bb35d854f566e1c379c1f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 30 07:13:25 2012 +0200
+
+    [Rigo/RigoDaemon] implement Application removal support
+
+commit 154d038b7f46443565813d7cb4936712ed444a77
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:44:35 2012 +0200
+
+    [todo] update TODO
+
+commit e6b24784baccdb868c186c071ea9ecb011b88e9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:43:14 2012 +0200
+
+    [Rigo] notify user about apps being removed due to conflict
+
+commit b62e46abfcd3e4eef73e7c5aec940de114e3843e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:42:29 2012 +0200
+
+    [Rigo] fixup several undefined references (thanks pylint)
+    
+    Did I mention I hate Python?
+
+commit b928757e57565730a314351db964840a8cb88a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:08:36 2012 +0200
+
+    [todo] update TODO
+
+commit 96842e5043755c3e350434341f8d6b4e948615c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:08:16 2012 +0200
+
+    [RigoDaemon] always write debug messages to stdout
+
+commit 1084359821936530868042670509fdc7c14d9920
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 19:07:23 2012 +0200
+
+    [entropy.const] const_debug_write: make posible to write to arbitrary files
+
+commit 3c5f2bf8b6d1348c7d51e0452f847bf16a7d06a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 18:57:27 2012 +0200
+
+    [Rigo/RigoDaemon] move authentication in RigoDaemon's security domain
+
+commit 892a2d5eaefe644e8fcbd9c60c48c3e690feb32b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 13:51:11 2012 +0200
+
+    [Rigo] during App management, show the remaining enqueue actions
+
+commit 59b0aae5b1259da5ecf59ae1fe3b53fdae70a398
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 29 13:33:31 2012 +0200
+
+    [Rigo/RigoDaemon] complete initial application install implementation
+
+commit ada9d15f685e8c2d964a71003dd78af0e2863c40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 28 23:35:32 2012 +0200
+
+    [Rigo] if --dumper is passed, test main thread health status before dumping threads state
+
+commit 1dcff4ce0af20f6dc91442cfa10413f66c3aa9dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 28 23:21:31 2012 +0200
+
+    [entropy.client.interfaces.package] better handle download when network is unavailable
+    
+    When network is unavailable, the package file fetch function returns an error
+    whilst the file itself has been completely and successfully downloaded already.
+    With this commit it is ensured that the event is correctly handled.
+
+commit e25ebbb59ee5f63a3f7878be7d1ee4a651a79be3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 28 23:14:43 2012 +0200
+
+    [entropy.const] dump_signal: print stack variables if extended=True
+
+commit 0e3b18be2f6a4c57a64e8e1aefc7749f7c7e7726
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 28 18:24:49 2012 +0200
+
+    [entropy.client] only setup differential download when edelta support is available
+
+commit 940b99b65651caf47ad4d8574fb60e4e38b210c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 28 18:23:54 2012 +0200
+
+    [entropy.client] trivial code style update
+
+commit 1b7ad171df89a4f628ba1289a9faebf0d2f89cda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 19:25:35 2012 +0200
+
+    [todo] update TODO
+
+commit f07e53c597b095882a3461b67eea23354900c5ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 19:24:21 2012 +0200
+
+    [RigoDaemon] implement stdout and stderr redirection to Rigo
+
+commit 3ee2e5cd56fc54fd36a15b8e5956873c64fcf5bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 18:27:45 2012 +0200
+
+    [todo] update TODO
+
+commit da1a55a57f084bcebc48dd6eab3b0c6e7bfda3fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 18:27:23 2012 +0200
+
+    [Rigo] add app removal simulation cheatcode
+
+commit b58d1164c172b2c002f5e47a087ada079a989f75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 18:16:42 2012 +0200
+
+    [todo] update TODO
+
+commit 0c506f51640f6a898b4c555962c53f4d8e7689f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 27 18:15:11 2012 +0200
+
+    [RigoDaemon/Rigo] first chunk of App management code (install action only, incomplete)
+
+commit 4c954a919493255d76b883abf1440e053cbab9c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 26 14:03:43 2012 +0200
+
+    [entropy.client] _lock_resource: always increase lock reference count
+    
+    Entropy Resouce Locks are reentrant, thus reference counted on lock()
+    and unlock() operations. For this reason, the counter must be increased
+    on every lock() request. This did not happen if the lock was already
+    held by the process with the unwanted effect of improperly releasing it.
+    This caused the "Calculating dependencies" glitch on each package
+    transaction.
+
+commit a20d8da8682109811c91e7c34e7b7b28a68df834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 26 13:46:12 2012 +0200
+
+    [Rigo] ask for exit confirmation when there is local activity
+
+commit c659d4cbb4bc5a8d2356b4a539495721cc2c0dc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 26 10:11:58 2012 +0200
+
+    [Rigo] dump threads every 30 seconds if --dumper is passed
+
+commit ee25f790af4e1d086d47f3521f8c291e7d5e8aec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 26 10:00:29 2012 +0200
+
+    [Rigo/RigoDaemon] implement transaction state update notifications
+
+commit 72def71a0773b0c501668318f2bfe1c161695641
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 25 18:02:54 2012 +0200
+
+    [Rigo/RigoDaemon] implement Application License management
+
+commit ac8358772e11d6ff5dad6c898f11a7a8c929235f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 25 11:02:04 2012 +0200
+
+    [RigoDaemon] transaction_finished(): return AppTransactionOutcome struct
+
+commit 794e3a91346c2e6f2430e8318b52d00ba867679c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 20:15:07 2012 +0100
+
+    [todo] update TODO
+
+commit abdb7dc53f48c1f62eb674d3813c89afc70a7660
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 20:12:29 2012 +0100
+
+    [RigoDaemon] add reload() Dbus method
+    
+    reload() is going to be used during RigoDaemon package
+    upgrade to kindly ask the Dbus service to reload itself as soon as
+    no more clients are connected.
+
+commit a3d82ff44f133cfc74f87f343236f154b9d47139
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 19:53:08 2012 +0100
+
+    [RigoDaemon] expose daemon API version to Rigo
+
+commit f2f58e86169f88a05d1819e569ff1104d084b1af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 17:30:46 2012 +0100
+
+    [Rigo] list Application dependencies in App View
+
+commit 228e0a7da1738a56e2d8a416d41d16c1bcbae089
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 17:29:41 2012 +0100
+
+    [entropy.db] add EntropyRepository.retrieveRuntimeDependencies()
+
+commit d1965b71ac6b18e5a1978e440157c5c1b88e28ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 16:35:12 2012 +0100
+
+    [Rigo] show installed Application version if available
+
+commit 47b9570224cd8ab877cf7dcecde836fde0b9dc50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 24 16:07:39 2012 +0100
+
+    [Rigo] implement centralized Application transaction state
+
+commit dd46c23b2065c500b2ca1f3e72e7ae241b25fe66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:35:47 2012 +0100
+
+    [entropy.spm] PortagePlugin.add_installed_package: make sure to always run os.utime
+
+commit 99b20257a4a7f9906fe87bb6cdf82c80b36819cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:14:06 2012 +0100
+
+    [entropy.client] handle _repodb_cache atomically
+    
+    This prevents close_repositories() and _open_repository()
+    to concurrently mess with _repodb_cache, which is a dict, thus
+    not thread-safe.
+
+commit 115988a08c29cfe83c200237bf0a614adf10a27a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:13:01 2012 +0100
+
+    [entropy.client,entropy.server] drop __del__(), can be racey
+
+commit d465bb56e29fc0b87f119ec57b8d83c788119374
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:07:48 2012 +0100
+
+    [entropy.db] EntropyRepository: use RLock() to handle connection pooling
+    
+    This is much safer than being fault tolerant and shouldn't have any
+    tangible impact on performance
+
+commit af525fb0eaa9b4608999c911785727a5e302d158
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:04:49 2012 +0100
+
+    [Rigo] Entropy API: enforce the new singleton class
+
+commit ef28caff3b818ded6615881354be3950cf510165
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:03:51 2012 +0100
+
+    [RigoDaemon] reduce fake app management time
+
+commit 5bdaad7257b73b7824836545b76884dfd146fbb7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 23 10:02:26 2012 +0100
+
+    [Rigo] Application.get_extended_markup: fix typo in rwsem management
+    
+    This could potentially cause Segmentation faults
+
+commit b093f24fbbac936d8274399e84258e0d767f9f3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 19:36:02 2012 +0100
+
+    [Rigo] enforce AppTreeView redraw whenever App state changes
+
+commit 6bce9168f04e5cd2fa7d063cde615aa3a5de088e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 19:35:14 2012 +0100
+
+    [Rigo] call AppTreeView.clear_model() rather than model.clear()
+    
+    This lets the view to reset its state accordingly to an empty model.
+
+commit 92e42ca3aad80a3b8303510ecf6be1fecc30eff8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 19:01:15 2012 +0100
+
+    [entropy.db*] EntropyRepository, do not close() on object destruction
+    
+    Closing the underlying sqlite3 db on object destruction (__del__())
+    causes funny race conditions when concurrently accessing the object
+    itself.
+    
+    When the Garbage Collector tries to free memory, which can happen
+    when no more references pointing to self are used, by calling __del__()
+    (which called close()) it is possible to run into troubles if another
+    thread is inside a method of the same object holding a valid sqlite cursor.
+    
+    Moreover, no external arbitration is possible if the garbage collection
+    gets in the middle and calls close() through the destructor on behalf
+    of a poor random innocent thread.
+    
+    Solution is simple, destructor is evil and resource leaks have to be
+    handled where they actually are. Bye bye __del__().
+
+commit 6d0c2d93a802786e2f8425cda92dc47402902328
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 16:50:15 2012 +0100
+
+    [Rigo] wrap a dedicated rwsem around any EntropyRepository call
+    
+    The ReadersWritersSemaphore object protects concurrent access
+    on EntropyRepository objects ensuring that they don't get closed
+    by RigoServiceController while in use.
+
+commit 30041ee0f2ab690906661fd7b35e7f1ec5d60e7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 08:40:31 2012 +0100
+
+    [Rigo] implement App Install transaction validation checks and application-abort signaling
+
+commit b6c71301d663dfbac28e4dad83e83bee96138331
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 08:39:32 2012 +0100
+
+    [Rigo] NotificationBox: enable message text wrap
+
+commit 14023c39d1b72e6236d6f9164c7bd1b2708e524c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 08:39:13 2012 +0100
+
+    [Rigo] add Application.is_installable()
+
+commit 539476d3a3e934804f3ef8f798fc203ddc073cb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 22 08:20:54 2012 +0100
+
+    [Rigo] add package set search support via "@setname"
+
+commit 48c74e2db10535692d228685599a11236713bac0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 21 23:41:28 2012 +0100
+
+    [Rigo] add Search Bar completion code, but keep it disabled due to Gtk3 bug
+
+commit 332b8ffe03cefedd27b56c6e7ed1d9c35d355029
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 21:43:47 2012 +0100
+
+    [Rigo] handle Application processing in AppTreeView widgets
+
+commit 53ec387cd54757cb0b335494eec0cf4d4abefc7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 20:55:32 2012 +0100
+
+    [Rigo] AppTreeView: drop weirdo code from Software Center
+
+commit 196036ebd7d719bd4022e6c748c7cea59455259f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 19:44:09 2012 +0100
+
+    [Rigo] several App Install UI improvements
+
+commit 1c8872d6104810f591ca81507e7e74db72d17b39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 19:43:29 2012 +0100
+
+    [RigoDaemon] add action_queue_length() dbus method
+
+commit b9747f32acd751f55ca183d4ca90c44074d94c79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 14:35:33 2012 +0100
+
+    [Rigo] Rework search thread locking, add more App Management code
+
+commit 43f929d8ef09c054bdd535f0ed021079a158c98a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 14:34:25 2012 +0100
+
+    [Rigo] fix typo in string expansion
+
+commit efef827057dbe0db977b4901f41de46b4fc028ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 14:33:53 2012 +0100
+
+    [Rigo] Add Application.is_removable()
+
+commit b4e9f9f78fcf4456c91cc96fba6b1054ef7ff60b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 14:33:02 2012 +0100
+
+    [RigoDaemon] fix _busy(), also raise SameError (which is actually expected)
+
+commit 5557bf8b3f9e47c3130d058bdd69b2e79b638776
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 14:32:37 2012 +0100
+
+    [entropy.misc] add non-blocking methods to ReadersWritersSemaphore
+
+commit 87fd48eafee12842b3a08066145a1cdaf5f43643
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 20 07:58:13 2012 +0100
+
+    [Rigo] introduce SharedLocker to avoid reentrancy of Entropy Resources Lock
+    
+    There are two issues with Entropy Resources Lock when used in Rigo.
+    1. Reentrancy: this property is unwanted in Rigo due to the amount
+       of time Entropy Resources Lock is acquired and released.
+       It is always wanted to acquire once and release once.
+    2. Re-acquiring it is costly, this lock should be relased only when
+       we are really forced to do so.
+
+commit b400b4bfea9f1fb69ffbe3183b45e77b94d619a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 19 21:32:26 2012 +0100
+
+    [RigoDaemon] rename is_exclusive() to exclusive()
+
+commit 7c132a9bf44edc209b26362b19fa44b51301e873
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 19 21:31:55 2012 +0100
+
+    [RigoDaemon] drop text-based UrlFetcher progress output
+
+commit 9d5c88abce7baa2f8721a5313e701e0f2c2e4d44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 19 18:54:25 2012 +0100
+
+    [Rigo] move RigoAuthenticationController to separate module
+
+commit aa49714d45f93207c92851542521387767a87941
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 19 18:51:00 2012 +0100
+
+    [RigoDaemon] simplify ping/pong protocol
+    
+    Now that Entropy Resources are completely handled by RigoDaemon
+    in its activity code, there is no need to keep pinging clients
+    unless SIGUSR2 arrived.
+    SIGUSR2 signal will be later used to force RigoDaemon shutdown
+    in case of rigo package updates via Entropy, to avoid having incompatible
+    RigoDaemon versions running.
+
+commit 339b8a7417d08c144bb4eea97d51e262dcec0c17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 19 10:25:02 2012 +0100
+
+    [Rigo] Add Application Info to App Box in Work View Area
+
+commit 767bd7eb2a6b77e21badb11d6e2ec752c2a7e54b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 18 23:14:52 2012 +0100
+
+    [Rigo] implement Application Information Box in Work Area
+
+commit 4b0945e724cddf3cc2012efe98fcc9d0560092b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 18 18:32:41 2012 +0100
+
+    [todo] update TODO
+
+commit 5f63057c059cdc2fcdb836421f123058eb8aa663
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 18 18:30:11 2012 +0100
+
+    [Rigo/RigoDaemon] first chunk of code related to Application Management, WIP
+
+commit 5839d818192c08cdfa225c799ef62134cfd4dc50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 18 18:29:09 2012 +0100
+
+    [entropy.const] const_debug_write: add force argument support
+
+commit efde0c2ec3d9c86fa548e86d4742d0845b318432
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 18 07:57:57 2012 +0100
+
+    [Rigo/RigoDaemon] greatly simplify resource passing rendezvous
+    
+    Completely move the arbitration to RigoDaemon, making Rigo passively
+    accepting the former requests.
+    Moreover, complete support for bottom notification area and start
+    implementing app management events.
+
+commit 4da1bd7a5ced78fcef9f2f15f4d8a05fb9cc1831
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 17 17:11:31 2012 +0100
+
+    [Rigo] move LocalActivityStates to rigo.enums
+
+commit 3e94e1cf52904f81077a3f1fa6e36104fa735ab3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 17 17:09:58 2012 +0100
+
+    [Rigo] add bottomNotificationBox GtkVBox
+
+commit 9c0cbf836873f403b7f244ae4f52d5fb8e87a18a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 17 17:08:14 2012 +0100
+
+    [Rigo] add Application.get_installed() method
+    
+    get_installed() returns an Application object belonging to the
+    installed package if the current one is from available repos.
+
+commit c62790b9339604c5ad6945057358292a1f3324ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 17 17:05:39 2012 +0100
+
+    [entropy.db] add searchKeySlotTag()
+    
+    Implement searchKeySlotTag(), it is the same as searchKeySlot() but
+    it also allows to specify package tag.
+
+commit e7d22c33fe0663b31e86296508e53a8ea1927ec7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 16 16:05:08 2012 +0100
+
+    [Rigo] notify User in case of unavailable repositories
+
+commit 361c4166dab9d7494ffb07e86b4e2b1e40abab91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 16 16:04:15 2012 +0100
+
+    [entropy.client] introduce Client.unavailable_repositories()
+    
+    The method returns a sorted list of repositories identifiers
+    belonging to repositories that are unavaiable or invalid.
+
+commit 56fc4844329dc0a314aea5211c5aa716bef19e18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 16 14:58:43 2012 +0100
+
+    [Rigo] explicitly notify User when repositories have been updated
+
+commit 33175e3895ce740cce1c7eb887061314679f8c3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 16 14:29:45 2012 +0100
+
+    [Rigo] consolidate previous work
+    
+    - Add User notifications before blocking on semaphores
+    - Fix several minor glitches related to features introduced the
+      past week
+    - Cleanup rigo.enums from Software Center crapcode
+    - Improve Progress Bar interaction with User
+
+commit ab0e36a313138e8cbee997ee57c9cb70f0969abe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 15 17:42:57 2012 +0100
+
+    [RigoDaemon] move PolicyKit actions to RigoDaemon
+
+commit 9fc23256e965fea197312839cfcaef253a2a2ac6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 15 17:30:42 2012 +0100
+
+    [Rigo] use PolicyKit to authenticate Repository Update
+
+commit 543fbda4f40d5edc4b31a9307b2179d915b15dc1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 15 17:30:15 2012 +0100
+
+    [RigoDaemon] implement PolicyKit support
+
+commit d04e7de070973bdfee30231d62896c5f3ebcc47c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 15 15:54:07 2012 +0100
+
+    [Rigo] move completed Rigo View Controllers to separate modules
+
+commit 1affa249ca4e521f692d53552b2abf5f985ca475
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 15 15:20:49 2012 +0100
+
+    [RigoDaemon] move dbus configuration to separate module
+
+commit 629fca50b28f8ec30006e3f018d7b5342c9018cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 14 23:23:22 2012 +0100
+
+    [Rigo] provide installed icon image
+
+commit 99cf283a94774db1af6dc1eb9e4355316f175633
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 14 18:00:28 2012 +0100
+
+    [Rigo] force Gtk 3.0 by the beginning
+
+commit b2f3bd5b8cf7b9528996e684c94c51cbbe5b35b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 14 17:47:34 2012 +0100
+
+    [Rigo*] fifth daemon architectural design
+    
+    - Introduce Activity states and busy(), unbusy() methods to allocate
+    and deallocate Daemon activities from the Clients, concurrently.
+    
+    - Tokenize acquire_resources() and release_resources() to filter out
+    older events. The same token is returned to Clients via signals whenever
+    it makes sense (repositories_updated() is one of them).
+    
+    - Implement Repositories Update Activity resume functionality in Rigo.
+    It is possible to close Rigo during a repo update and reopen it afterwards.
+    Multiple Rigo instances are allowed as well.
+    
+    - Implement the ability for RigoDaemon to kindly request Rigo Clients
+    to release their locks (either shared or exclusive) due to new activity
+    being scheduled.
+    
+    All the races and possible deadlocks should be handled correctly,
+    but due to the actual complexity, only time will tell.
+
+commit b7d198c776e46c042ce396bbe6aaf19b06bed936
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 14 16:21:20 2012 +0100
+
+    [entropy.client] Client, more locking cleanup
+    
+    Never unlink() a lock when releasing it. This is quite bad when
+    used with shared locks.
+    At the same time, don't write any pid information in it, because
+    it's not always reliable (see previous commit).
+
+commit f46922e6cac8b521df963f9498266a33d1a59d95
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 14 16:17:18 2012 +0100
+
+    [equo] text_ui: re-acquiring entropy resources locks after exec() is bad
+    
+    in Entropy Client library functions, we currently check if current
+    pid equals the one stored inside .using_resources file if lock
+    cannot be acquired in blocking mode. This is bad because the information
+    is not 100% reliable. The trick was there in order to allow equo
+    to exec*() without releasing the file locks. However, there could
+    be a race between lock and unlock Entropy Client methods that could
+    cause the former to unlink() a still valid lock file. This happens
+    now due to the introduction of non-exclusive locking support.
+    Get rid of all this shit then!
+
+commit 7d262a71e2e73db64cf87afd9be646e083fc71d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 23:35:50 2012 +0100
+
+    [Rigo] implement resume support on Repositories Update
+
+commit 5d420224642cce90a6ac4b8b1de3ab9dd327c4ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 23:34:42 2012 +0100
+
+    [RigoDaemon] wait on activity_mutex before releasing resources lock
+
+commit 6a4da6c261448416509f2c6873449f35ef7e7c3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 16:04:39 2012 +0100
+
+    [rigo] fifth architectural design iteration, things should work now
+
+commit 7d2633f2a08a9983c68fbe1ae372528fbe2b30dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 16:00:06 2012 +0100
+
+    [entropy.client] _lock_resource: avoid to deadlock when _unlock_resource is called
+
+commit 63e9764bfa99bddd98f1281a4f6b307be3a4d89c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 15:59:39 2012 +0100
+
+    [entropy.db] EntropyRepository: mtime() can return OSError, need to cope with it
+
+commit 4816c90e80af917d85ce507d2f8f046d6cc869ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 14:31:20 2012 +0100
+
+    [rigo] trivial comment fix
+
+commit 6bb4f6b28c548d7aaf42e739feecdf79a9e915a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 13 09:01:49 2012 +0100
+
+    [entropy.db] EntropyRepository: validate Live cache against mtime()
+    
+    Scenario: Process A is writing to EntropyRepository, adding new
+    package entries. Process B is reading from EntropyRepository,
+    querying for the same package entries, for example by using
+    retrieveKeySlot(). This method uses a dict-based cache to speed
+    up things, but this should be invalidated also when the mtime()
+    value changes.
+
+commit 40343d071945d12caf62e14765001e51bb8a7250
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 23:47:29 2012 +0100
+
+    [rigo] fifth RigoDaemon architecture iteration, let's see...
+
+commit cd9a2b12209413f9704e289cdce4ad1e9f58f5dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 17:05:53 2012 +0100
+
+    [rigo] only connect signals when needed, fix YES/NO dialog on exit during activity
+
+commit 9584c0ae71059b355830e78499a048474b6ee7f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 16:26:46 2012 +0100
+
+    [entropy.cache] better handle sleeping in EntropyCacheWriter thread
+    
+    Make sure we never block on stop() but also we never run for nothing.
+    Now calling release() as many times as calling acquire()
+
+commit 5649c1dc80530a4568bbc6a8bfb48023cabaf0c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 16:26:15 2012 +0100
+
+    [entropy.cache] trivial tweaks to cacher thread
+
+commit 1270c28fd9238ea20c8a9877035d328a7d52ef45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 00:35:25 2012 +0100
+
+    [rigo] first chunk of RigoDaemon integration code, still WIP
+
+commit d2ef8c8005eb60cac6a789d8d39e1569b5359e73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 00:34:01 2012 +0100
+
+    [todo] update TODO
+
+commit 50ebb63cc7ab4fbb259e17062a57f36173e5dba3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 12 00:32:37 2012 +0100
+
+    [rigo-daemon] third architectural design iteration, still WIP
+
+commit caf2e2192d725692cd5f672c4dc64479a8cb64cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 11 19:36:41 2012 +0100
+
+    [entropy.db] atomMatch: versions can be an empty set
+    
+    When matching >=dev-lang/python-2.6 having some weird mask, it
+    can happen to end up having no matches left after the last
+    checkpoint. Make sure to handle the case even on the very last mile
+
+commit 1f334138fbf1005228f3fc55bc23bdfdf60e0e2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 11 18:53:42 2012 +0100
+
+    [entropy.client] reorder_mirrors: hostname property can be None
+    
+    If mirror string (URL string) is malformed, the hostname object
+    property can be None.
+
+commit f294ec3c1d467d6c3abbf481d78f26927f0d2700
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 11 17:54:10 2012 +0100
+
+    [rigo-daemon] second architectural design iteration, starting to look good
+
+commit 0e9491082b97decc8e8f4a2fc134433973e69d4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 11 12:33:29 2012 +0100
+
+    [entropy.misc] introduce ReadersWritersSemaphore object
+
+commit 62a67600d82c9b3de5ff91089353c47fdd58b4a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 11 12:14:52 2012 +0100
+
+    [entropy.misc] drop MasterSlaveLock, no longer used
+
+commit 912bf157027b2b92228e453466d79dfc33f35c81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 9 18:00:21 2012 +0100
+
+    [rigo] emphasize the App View exit button
+
+commit 7fb23c224ffc0e6af83ea1810f7d0d29c2c491f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 9 17:29:55 2012 +0100
+
+    [rigo-daemon] first commit, introduce RigoDaemon dbus service
+
+commit 37133e2ab2382860cec1e805850bb61d72d26fa7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 9 09:42:27 2012 +0100
+
+    [entropy.client] add Client.promote_resources()
+    
+    Promoting a previously acquired shared Entropy Resources Lock to
+    an exclusive one is now possible via Client.promote_resources().
+
+commit 9b52c0f04ac4f496da09db0d10cb8b2cf79fe4c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 9 09:32:06 2012 +0100
+
+    [entropy.client.interfaces.repository] provide unlocked_sync() method
+    
+    As done with entropy.security, unlocked_sync() will make possible
+    for callers to handle the Entropy Resources Lock on their own.
+
+commit 922fc34d7e721cb6b6560270442bf74b57f41c10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 8 22:49:38 2012 +0100
+
+    [entropy.client.interfaces.db] do not touch lock files permissions
+    
+    Entropy Resources Lock file is in the etpConst['etpdatabaseclientdir']
+    directory. For this reason, it is better to not touch the whole
+    directory but just the subdirs.
+
+commit 3195a2368989a60fb13849581350fb223ccf4f37
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 8 21:44:13 2012 +0100
+
+    [entropy.security] add Security.unlocked_sync()
+    
+    unlocked_sync() works just like sync() but without acquiring the
+    Entropy Resources Lock. This way it's possible to externally control
+    the mutual exclusion.
+
+commit b379bbc8ad9078af24c0aa224b0eeb6a213dd2d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 8 21:43:29 2012 +0100
+
+    [entropy.misc] FlockFile: add try_promote() method
+
+commit 6ba23248ffd98f16e4f00d0c39c419caaa309476
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 18:10:29 2012 +0100
+
+    [rigo] properly clean ImageBoxes from app view on hide
+
+commit 9659ce66331e18ed492342a052942c98f341738f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 17:12:55 2012 +0100
+
+    [rigo] fix misc, trivial bugs
+
+commit ed37f776c40287534792dfb74d9e68b7417704c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 08:13:57 2012 +0100
+
+    [rigo] add Install/Update/Remove/Reinstall buttons to AppView and config signals
+
+commit 83ea6931962396f1d743800a78db26a4e4b94334
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 08:11:44 2012 +0100
+
+    [rigo] replace "remove ?" with "remove" in CommentBox removal link area
+
+commit a36209f0d15a66a4773a625ab2ade62289d0b774
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 08:11:21 2012 +0100
+
+    [rigo.models] add Application.is_updatable() method
+
+commit de7e0287c439b11393c05253db1ddc440939ca74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 7 08:11:03 2012 +0100
+
+    [rigo.enums] drop unused enums (not all)
+
+commit 72d326c35ab103330ca3812ef7e7c9ab7ff2fee4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 5 23:37:20 2012 +0100
+
+    [rigo] enable filtering support in Application View TreeView
+
+commit 87e984b30319185175351bcce522cafb2c71c16f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 5 23:35:34 2012 +0100
+
+    [entropy.client.services] make get_document_url() fetch atomic
+    
+    This avoids other instances to pull in invalid/partial data
+
+commit 234907f6069e6ce8aa6c661264f54b5f08df17a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 21:43:39 2012 +0100
+
+    [rigo] use prepare_markup() and escape_markup() when needed
+
+commit 18e1744607f8798d4b24872b88005524eef11a9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 18:14:28 2012 +0100
+
+    [rigo.entropyapi] Enable WebService cache aging, default to 14 days
+
+commit 058e448ebd51f17c82a329f4ad99052fd01194d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 18:10:22 2012 +0100
+
+    [entropy.dump] do not unlink() old cache files if aging threshold is reached
+    
+    Other cache consumers may still find the cache file valid, even if
+    for others it's old. So, don't remove the file but just return None.
+    This way it works more like an "overlay".
+
+commit bf01329f4d0070da77329b557833bacf957b8b31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 18:06:50 2012 +0100
+
+    [entropy.services] WebService: make possible to configure cache aging
+    
+    Configuring cache aging makes possible to automatically throw away
+    old metadata, like package votes and number of downloads.
+    Usually, this information is still valid, from user POV, even if
+    quite old. But how much old? This can be tuned via enable_cache_aging()
+    from outside WebService class, depending on the scenario.
+
+commit a48cb985c66426fcd954807d142033415a116961
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 18:05:54 2012 +0100
+
+    [entropy.cache] EntropyCacher: add cache aging support
+    
+    Following entropy.dump cache aging suport, this commit exports the
+    same functionality to Cacher.pop()
+
+commit 623930ee4b3d43e7707964568e807aa25b859276
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:59:02 2012 +0100
+
+    [entropy.dump] add cache aging support to deserializer
+    
+    If cached file is older than aging_days, it will be removed from
+    disk (if possible) and None shall be returned
+
+commit 63947241b41677284cc1cfb61f43da891e4d03f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:57:57 2012 +0100
+
+    [entropy.const] do not hardcode "raw_unicode_escape"
+
+commit 7e3c89f3d6b2c7b7e34bde4698667ff36e12f99c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:57:37 2012 +0100
+
+    [entropy.dump] trivial code style update
+
+commit 527cbbbaa99d5eff999826fe317beb9adf663c13
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:56:51 2012 +0100
+
+    [entropy.dump] getobjmtime: fix possible race wrt file removal
+
+commit 3f45623ab560fd5e230ac376feb042850f0755ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:56:15 2012 +0100
+
+    [entropy.dump] use etpConst['conf_raw_encoding']
+
+commit fcf07b0d5961ef2a765633bc87b00fd0745c70b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:31:21 2012 +0100
+
+    [rigo] beautify download stats in Application View
+
+commit 0a6d1b081d7a1c8d70f6e35c2624d43aab88807e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:31:02 2012 +0100
+
+    [rigo.utils] add prepare_markup() function
+
+commit 0a5c263c3f81f60f8f59b2d7e7de52f9d76e7063
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 17:15:05 2012 +0100
+
+    [rigo] beautify downloads amount representation in the TreeView
+
+commit ee14030a3053c244913e8b64a8c5d9426450a607
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 16:41:02 2012 +0100
+
+    [rigo] ApplicationMetadata: dispatch events as soon as they are ready
+
+commit 66089d4b29b14ac235ddabfcd376a58c0fbf8c76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 16:38:30 2012 +0100
+
+    [rigo] always emit() in the MainThread
+
+commit 5d04371ddf5f98dc14baba6d18dfc2fbb3de60e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 4 16:37:03 2012 +0100
+
+    [rigo] make sure to call queue_draw() when answering to redraw-request event
+
+commit ee37e90de4b663a5fa2433514b5f24429c0af5bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 3 18:04:55 2012 +0100
+
+    [rigo] implement comment removal support
+
+commit 2e8a1c20013d47c291b50eab5fbd66e748ae67f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 3 15:32:48 2012 +0100
+
+    [rigo] beautify NotificationBox layout and LoginNotificationBox widgets
+
+commit 8019a86eb10a465e153bdc88bc72e58695e8e33e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 3 15:20:33 2012 +0100
+
+    [rigo] add context_id to LoginNotificationBox constructor
+
+commit 7ee54b964bb04dbeb493a83492c4ffce4a47a575
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 3 15:19:38 2012 +0100
+
+    [rigo] improve the look and feel of the login notification box
+
+commit 21dcdcc6367da8656669bf03397fa24750070096
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 17:16:42 2012 +0100
+
+    [entropy.db] _migrateBaseinfoExtrainfo: make sure tables exist before running the query
+
+commit a09063da9902ceace6d7a150474313aab3880602
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 10:59:40 2012 +0100
+
+    [rigo] discard remote Web Service requests if App is no longer visible
+
+commit fbe8068cca4283948498717c628bc5acb2ef8749
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 09:58:02 2012 +0100
+
+    [rigo] raise the number of icon and rating worker threads to 3, respectively
+
+commit 0a91618f46cfcc78f7f5bd8a065242ff6bee52a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 08:36:50 2012 +0100
+
+    [rigo] search bar: also search through descriptions
+
+commit 81738b8d3a8f87e56813ff5c612d0ebb30d90b90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 08:36:06 2012 +0100
+
+    [entropy.client] atom_search: make possible to also search through package description
+
+commit de72481fbd1d1dff1bc546e1da66e26162c2ef8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 2 08:35:05 2012 +0100
+
+    [entropy.db] searchDescription: improve search results
+    
+    Improve search results by splitting keyword into multiple words
+    and searching the unordered concatenation of them.
+
+commit 1ef6959c0e0e1c1bba02047eb98f0af9c6d2ef5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 20:32:50 2012 +0100
+
+    [conf] fix Internode mirror URLs, fixes bug #3090
+
+commit f3b96ece61dd7d91416228c09b5e5842787b5c76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 1 12:06:54 2012 +0100
+
+    Tagging Entropy version 1.0_rc90
+
 commit 303b7ad1ea9589afe717f96c1d37285366d9fa41
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 1 12:06:54 2012 +0100
