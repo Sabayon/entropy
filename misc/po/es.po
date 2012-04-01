@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011.
 msgid ""
@@ -12,10 +12,10 @@ msgstr ""
 "PO-Revision-Date: 2012-03-31 22:01+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -416,8 +416,7 @@ msgstr "Revirtiendo"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3505
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
-"No eres root, saltándose la actualización de archivos de configuración."
+msgstr "No eres root, saltándose la actualización de archivos de configuración."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3767
 msgid "Error calculating dependencies"
@@ -1553,9 +1552,7 @@ msgstr "El sistema está en buen estado"
 
 #: ../../lib/entropy/server/interfaces/main.py:4031
 msgid "Matching libraries with Spm, please wait"
-msgstr ""
-"Haciendo coincidir bibliotecas con el Administrador de Paquetes Fuente, "
-"espera por favor"
+msgstr "Haciendo coincidir bibliotecas con el Administrador de Paquetes Fuente, espera por favor"
 
 #: ../../lib/entropy/server/interfaces/main.py:4045
 msgid "These are the matched packages"
@@ -2095,9 +2092,7 @@ msgstr "Actualizando en la base de datos"
 #: ../../lib/entropy/client/interfaces/package.py:2223
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
-msgstr ""
-"%s es un archivo que debería de ser un directorio. Eliminándolo en 20 "
-"segundos..."
+msgstr "%s es un archivo que debería de ser un directorio. Eliminándolo en 20 segundos..."
 
 #: ../../lib/entropy/client/interfaces/package.py:2248
 msgid "directory expected, symlink found"
@@ -2479,7 +2474,8 @@ msgstr "Abandonando"
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
@@ -2617,15 +2613,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:2001
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Error no crítico en la actualización de archivos de configuración, "
-"continuando"
+msgstr "Error no crítico en la actualización de archivos de configuración, continuando"
 
 #: ../../lib/entropy/client/interfaces/methods.py:79
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
-"Por favor, actualiza los repositorios para hacer que este mensaje "
-"desaparezca."
+msgstr "Por favor, actualiza los repositorios para hacer que este mensaje desaparezca."
 
 #: ../../lib/entropy/client/interfaces/methods.py:99
 #: ../../client/text_ui.py:1798
@@ -2950,9 +2942,7 @@ msgstr ""
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"El Repositorio Cliente está Corrupto. Por favor, restaura una copia de "
-"seguridad."
+msgstr "El Repositorio Cliente está Corrupto. Por favor, restaura una copia de seguridad."
 
 #: ../../lib/entropy/const.py:689
 msgid "reason not available"
@@ -3372,9 +3362,7 @@ msgstr "Recopilando los ejecutables rotos"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"no te preocupes por las bibliotecas que se muestren aquí pero que no "
-"aparezcan después."
+msgstr "no te preocupes por las bibliotecas que se muestren aquí pero que no aparezcan después."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -3986,9 +3974,7 @@ msgstr "Correctamente conectado como"
 
 #: ../../client/text_ugc.py:170
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
-"A partir de ahora, cualquier acción del Contenido Generado por el Usuario "
-"será realizada como este usuario"
+msgstr "A partir de ahora, cualquier acción del Contenido Generado por el Usuario será realizada como este usuario"
 
 #: ../../client/text_ugc.py:198
 msgid "Not logged in."
@@ -4445,9 +4431,7 @@ msgstr "Elige la base de datos que quieras restaurar"
 
 #: ../../client/text_rescue.py:180
 msgid "Entropy installed packages database restore tool"
-msgstr ""
-"Herramienta de restauración de bases de datos de paquetes instalados de "
-"Entropy"
+msgstr "Herramienta de restauración de bases de datos de paquetes instalados de Entropy"
 
 #: ../../client/text_rescue.py:211
 msgid "Regenerating counters table"
@@ -4461,16 +4445,13 @@ msgstr "Tabla de contadores regenerada. Mire arriba para ver posibles errores."
 msgid ""
 "The installed package database will be resurrected, this will take a LOT of "
 "time."
-msgstr ""
-"La base de datos de paquetes instalados será resucitada. Esto tardara MUCHO "
-"tiempo."
+msgstr "La base de datos de paquetes instalados será resucitada. Esto tardara MUCHO tiempo."
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
-msgstr ""
-"Por favor, use esta función SÓLO si está usando una distribución consciente "
-"de Entropy."
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
+msgstr "Por favor, use esta función SÓLO si está usando una distribución consciente de Entropy."
 
 #: ../../client/text_rescue.py:230
 msgid "Can I continue ?"
@@ -4780,7 +4761,8 @@ msgstr "Metadatos de Entropy extraídos de"
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr "Esta es la lista de paquetes que serán unidos en uno solo"
 
 #: ../../client/text_smart.py:328
@@ -4877,8 +4859,7 @@ msgstr "actualiza los repositorios configurados"
 
 #: ../../client/equo.py:74
 msgid "force sync regardless repositories status"
-msgstr ""
-"fuerza la sincronización independientemente del estado de los repositorios"
+msgstr "fuerza la sincronización independientemente del estado de los repositorios"
 
 #: ../../client/equo.py:76
 msgid "manage your repositories"
@@ -4989,8 +4970,7 @@ msgstr "continúa las operaciones previamente interrumpidas"
 
 #: ../../client/equo.py:105
 msgid "used with --resume, makes the first package to be skipped"
-msgstr ""
-"usado junto a --resume hace que el primer paquete no se tenga en cuenta"
+msgstr "usado junto a --resume hace que el primer paquete no se tenga en cuenta"
 
 #: ../../client/equo.py:106 ../../client/equo.py:142 ../../client/equo.py:157
 msgid "download multiple packages in parallel (default 3)"
@@ -5051,9 +5031,7 @@ msgstr "muestra sólo los no afectados"
 
 #: ../../client/equo.py:121
 msgid "show information about provided advisories identifiers"
-msgstr ""
-"muestra la información de los avisos correspondiente a los identificadores "
-"proporcionado"
+msgstr "muestra la información de los avisos correspondiente a los identificadores proporcionado"
 
 #: ../../client/equo.py:122
 msgid "automatically install all the available security updates"
@@ -5217,8 +5195,7 @@ msgstr "muestra los paquetes que posean las licencias proporcionadas"
 
 #: ../../client/equo.py:209
 msgid "list packages based on the chosen parameter below"
-msgstr ""
-"muestra los paquetes basándose en el parámetro escogido de los siguientes"
+msgstr "muestra los paquetes basándose en el parámetro escogido de los siguientes"
 
 #: ../../client/equo.py:210
 msgid "list installed packages"
@@ -5246,9 +5223,7 @@ msgstr ""
 
 #: ../../client/equo.py:217
 msgid "show runtime libraries needed by the provided atoms"
-msgstr ""
-"muestra las bibliotecas en tiempo de ejecución requeridas por los atoms "
-"proporcionados"
+msgstr "muestra las bibliotecas en tiempo de ejecución requeridas por los atoms proporcionados"
 
 #: ../../client/equo.py:218
 msgid "search files that do not belong to any package"
@@ -5308,10 +5283,9 @@ msgstr "maneja las funcionalidades extendidas"
 
 #: ../../client/equo.py:243
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
-"crea un paquete smart para los atoms proporcionados (varios paquetes en un "
-"mismo archivo)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
+msgstr "crea un paquete smart para los atoms proporcionados (varios paquetes en un mismo archivo)"
 
 #: ../../client/equo.py:244
 msgid "recreate an Entropy package from your System"
@@ -5360,9 +5334,7 @@ msgstr ""
 #: ../../client/equo.py:257
 msgid ""
 "generate installed packages database using files on the system [last hope]"
-msgstr ""
-"genera la base de datos de paquetes instalados usando los archivos en el "
-"sistema [última esperanza]"
+msgstr "genera la base de datos de paquetes instalados usando los archivos en el sistema [última esperanza]"
 
 #: ../../client/equo.py:258
 msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
@@ -5374,15 +5346,11 @@ msgstr ""
 
 #: ../../client/equo.py:260
 msgid "backup the current Entropy installed packages database"
-msgstr ""
-"hace una copia de seguridad de la base de datos actual de paquetes "
-"instalados de Entropy"
+msgstr "hace una copia de seguridad de la base de datos actual de paquetes instalados de Entropy"
 
 #: ../../client/equo.py:261
 msgid "restore a previously backed up Entropy installed packages database"
-msgstr ""
-"restaura una base de datos de paquetes instalados de Entropy previamente "
-"guardada"
+msgstr "restaura una base de datos de paquetes instalados de Entropy previamente guardada"
 
 #: ../../client/equo.py:263
 msgid "handles User Generated Content features"
@@ -5404,21 +5372,16 @@ msgstr "forzar accción"
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
-msgstr ""
-"administra los documentos de los paquetes para el repositorio seleccionado "
-"(comentarios, archivos, videos)"
+msgstr "administra los documentos de los paquetes para el repositorio seleccionado (comentarios, archivos, videos)"
 
 #: ../../client/equo.py:268
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"adquiere los documentos disponibles para el paquete especificado (ejemplo: "
-"x11-libs/qt)"
+msgstr "adquiere los documentos disponibles para el paquete especificado (ejemplo: x11-libs/qt)"
 
 #: ../../client/equo.py:269
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr ""
-"añade un nuevo documento al paquete especificado (ejemplo: x11-libs/qt)"
+msgstr "añade un nuevo documento al paquete especificado (ejemplo: x11-libs/qt)"
 
 #: ../../client/equo.py:270
 msgid "remove documents from database using their identifiers"
@@ -5472,33 +5435,27 @@ msgstr ""
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
-msgstr ""
-"Hola. Mi nombre es Reportador de Bugs. Siento informarte de que Equo ha "
-"petado. Ya sabes, a veces ocurren errores."
+msgstr "Hola. Mi nombre es Reportador de Bugs. Siento informarte de que Equo ha petado. Ya sabes, a veces ocurren errores."
 
 #: ../../client/equo.py:682
 msgid ""
 "But there's something you could do to help Equo to be a better application."
-msgstr ""
-"Pero hay algo que puedes hacer para hacer que Equo sea una aplicación mejor."
+msgstr "Pero hay algo que puedes hacer para hacer que Equo sea una aplicación mejor."
 
 #: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr "-- PROCURA NO ENVIAR EL MISMO INFORME MÚLTIPLES VECES --"
 
 #: ../../client/equo.py:684
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Ahora te voy a mostrar que ha sucedido. No te preocupes, estoy aquí para "
-"ayudarte."
+msgstr "Ahora te voy a mostrar que ha sucedido. No te preocupes, estoy aquí para ayudarte."
 
 #: ../../client/equo.py:693
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Ni siquiera puedo escribir en /tmp Por favor, copia el error y envíalo a "
-"lxnay@sabayon.org"
+msgstr "Ni siquiera puedo escribir en /tmp Por favor, copia el error y envíalo a lxnay@sabayon.org"
 
 #: ../../client/equo.py:712
 msgid "Of course you are on the Internet..."
@@ -5507,8 +5464,7 @@ msgstr "Por supuesto, estás conectado a Internet..."
 #: ../../client/equo.py:713
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/equo.py:715
@@ -5519,9 +5475,7 @@ msgstr "Vale vale vale vale... Lo siento."
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Si quieres que te respondamos (y te demos soporte activo), escribe también "
-"los siguientes datos:"
+msgstr "Si quieres que te respondamos (y te demos soporte activo), escribe también los siguientes datos:"
 
 #: ../../client/equo.py:720
 msgid "Your Full name:"
@@ -5539,9 +5493,7 @@ msgstr "Qué estabas haciendo:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Muchas gracias. El error ha sido reportado; el problema será solucionado lo "
-"antes posible."
+msgstr "Muchas gracias. El error ha sido reportado; el problema será solucionado lo antes posible."
 
 #: ../../client/equo.py:741
 msgid ""
@@ -5638,17 +5590,13 @@ msgstr "Nada que actualizar"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"En el sistema hay paquetes que ya no están disponibles en los repositorios "
-"online"
+msgstr "En el sistema hay paquetes que ya no están disponibles en los repositorios online"
 
 #: ../../client/text_ui.py:471
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"A pesar de que no suelen ser dañinos, es aconsejable eliminarlos (tras "
-"comprobar que no son necesarios)."
+msgstr "A pesar de que no suelen ser dañinos, es aconsejable eliminarlos (tras comprobar que no son necesarios)."
 
 #: ../../client/text_ui.py:486
 msgid "Selective"
@@ -5894,9 +5842,7 @@ msgstr "de espacio libre"
 
 #: ../../client/text_ui.py:1553
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"No dispones de suficiente espacio para la instalación. Libera algo de "
-"espacio en"
+msgstr "No dispones de suficiente espacio para la instalación. Libera algo de espacio en"
 
 #: ../../client/text_ui.py:1563
 msgid "Would you like to execute the queue ?"
@@ -6029,9 +5975,7 @@ msgstr "Empezando la eliminación en"
 
 #: ../../client/text_ui.py:2260
 msgid "Running unused packages test, pay attention, there are false positives"
-msgstr ""
-"Ejecutando el test de paquetes sin usar. Presta atención, hay falsos "
-"positivos"
+msgstr "Ejecutando el test de paquetes sin usar. Presta atención, hay falsos positivos"
 
 #: ../../client/text_ui.py:2286
 msgid "Running dependency test"
@@ -6561,9 +6505,7 @@ msgstr "Comprimiendo paquetes"
 
 #: ../../server/eit/commands/commit.py:404
 msgid "Ignoring broken Spm entry, please recompile it"
-msgstr ""
-"Ignorando la entrada del Administrador de Paquetes Fuente rota, recompílalo "
-"por favor"
+msgstr "Ignorando la entrada del Administrador de Paquetes Fuente rota, recompílalo por favor"
 
 #: ../../server/eit/commands/commit.py:411
 msgid "Nothing to do, check later."
@@ -7135,9 +7077,7 @@ msgstr "Identificador del repositorio"
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
-msgstr ""
-"Hay paquetes que no pueden ser instalados al mismo tiempo y que están "
-"bloqueando tu petición:"
+msgstr "Hay paquetes que no pueden ser instalados al mismo tiempo y que están bloqueando tu petición:"
 
 #: ../../sulfur/src/sulfur/packages.py:150
 msgid "These are the needed packages"
@@ -7145,11 +7085,9 @@ msgstr "Estos son los paquetes requeridos"
 
 #: ../../sulfur/src/sulfur/packages.py:151
 msgid ""
-"These packages must be removed from the removal queue because they depend on "
-"your last selection. Do you agree?"
-msgstr ""
-"Estos paquetes deben ser eliminados de la cola de eliminación porque "
-"dependen de tu última elección. ¿Estás de acuerdo?"
+"These packages must be removed from the removal queue because they depend on"
+" your last selection. Do you agree?"
+msgstr "Estos paquetes deben ser eliminados de la cola de eliminación porque dependen de tu última elección. ¿Estás de acuerdo?"
 
 #: ../../sulfur/src/sulfur/packages.py:216
 msgid "These packages must be excluded"
@@ -7159,17 +7097,13 @@ msgstr "Estos paquetes deben ser excluidos"
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
-msgstr ""
-"Estos paquetes deben ser eliminados de la cola de eliminación porque "
-"dependen de tu última elección. ¿Estás de acuerdo?"
+msgstr "Estos paquetes deben ser eliminados de la cola de eliminación porque dependen de tu última elección. ¿Estás de acuerdo?"
 
 #: ../../sulfur/src/sulfur/packages.py:433
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
-msgstr ""
-"No se pudieron encontrar algunas dependencias. Puede deberse a que están "
-"enmascaradas o a que no están en ningún repositorio activo."
+msgstr "No se pudieron encontrar algunas dependencias. Puede deberse a que están enmascaradas o a que no están en ningún repositorio activo."
 
 #: ../../sulfur/src/sulfur/packages.py:455
 msgid "Conflicting packages were pulled in, in the same key and slot"
@@ -7298,9 +7232,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:225
 msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
-msgstr ""
-"¡1 de Abril! Hoy es el Pescado de abril (April fools' day).\n"
-"Se borrarán los discos duros de muchos usuarios no hispanohablantes."
+msgstr "¡1 de Abril! Hoy es el Pescado de abril (April fools' day).\nSe borrarán los discos duros de muchos usuarios no hispanohablantes."
 
 #: ../../sulfur/src/sulfur/__init__.py:227
 msgid "Love love love... <3"
@@ -7363,9 +7295,7 @@ msgstr "Ordenar por grupos"
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
-msgstr ""
-"Los repositorios mostrados están configurados pero no están disponibles. "
-"Deben ser descargados."
+msgstr "Los repositorios mostrados están configurados pero no están disponibles. Deben ser descargados."
 
 #: ../../sulfur/src/sulfur/__init__.py:697
 msgid "If you don't do this now, you won't be able to use them."
@@ -7443,11 +7373,9 @@ msgstr "Error guardando las preferencias"
 
 #: ../../sulfur/src/sulfur/__init__.py:1358
 msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-"Estos paquetes están enmascarados por defecto por tu propia decisión. Ten "
-"cuidado."
+"These packages are masked either by default or due to your choice. Please be"
+" careful, at least."
+msgstr "Estos paquetes están enmascarados por defecto por tu propia decisión. Ten cuidado."
 
 #: ../../sulfur/src/sulfur/__init__.py:1414
 msgid "Generating metadata. Please wait."
@@ -7486,9 +7414,7 @@ msgstr "Se debe actualizar sys-apps/entropy lo antes posible."
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
-msgstr ""
-"Hay otra instancia de Entropy bloqueando esta tarea. Vuelve a intentarlo en "
-"unos minutos."
+msgstr "Hay otra instancia de Entropy bloqueando esta tarea. Vuelve a intentarlo en unos minutos."
 
 #: ../../sulfur/src/sulfur/__init__.py:1582
 msgid "Updating repositories..."
@@ -7511,16 +7437,13 @@ msgstr "No se han encontrado dependencias perdidas."
 
 #: ../../sulfur/src/sulfur/__init__.py:1661
 msgid "Missing dependencies found, but none of them are on the repositories."
-msgstr ""
-"Se han encontrado dependencias perdidas pero ninguna se encuentra disponible."
+msgstr "Se han encontrado dependencias perdidas pero ninguna se encuentra disponible."
 
 #: ../../sulfur/src/sulfur/__init__.py:1668
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
-msgstr ""
-"Algunas dependencias perdidas no se han podido hacer coincidir; otras se "
-"añadirán a la cola."
+msgstr "Algunas dependencias perdidas no se han podido hacer coincidir; otras se añadirán a la cola."
 
 #: ../../sulfur/src/sulfur/__init__.py:1671
 msgid "All the missing dependencies are going to be added to the queue"
@@ -7538,9 +7461,7 @@ msgstr "Test de comprobación de bibliotecas abortado"
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
-msgstr ""
-"Algunos paquetes rotos no se han podido hacer coincidir; otros se añadirán a "
-"la cola."
+msgstr "Algunos paquetes rotos no se han podido hacer coincidir; otros se añadirán a la cola."
 
 #: ../../sulfur/src/sulfur/__init__.py:1735
 msgid "All the broken packages are going to be added to the queue"
@@ -7583,8 +7504,7 @@ msgstr "Mostrando"
 
 #: ../../sulfur/src/sulfur/__init__.py:1976
 msgid "No packages need or can be queued at the moment."
-msgstr ""
-"No hay paquetes que necesiten o puedan ser puestos en cola en este momento."
+msgstr "No hay paquetes que necesiten o puedan ser puestos en cola en este momento."
 
 #: ../../sulfur/src/sulfur/__init__.py:2074
 msgid "Name and description"
@@ -7653,9 +7573,7 @@ msgstr ""
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
-msgstr ""
-"Atención: Entropy se ha actualizado.\n"
-"Sulfur se volverá a cargar."
+msgstr "Atención: Entropy se ha actualizado.\nSulfur se volverá a cargar."
 
 #: ../../sulfur/src/sulfur/__init__.py:2386
 msgid "Processing Packages in queue"
@@ -7673,25 +7591,19 @@ msgstr "Omitiendo el mirror actual."
 msgid ""
 "Did you know that you can comment, vote and add documents to applications "
 "like in a wiki?"
-msgstr ""
-"¿Sabías que puedes comentar, votar y añadir documentos a los paquetes como "
-"en una wiki?"
+msgstr "¿Sabías que puedes comentar, votar y añadir documentos a los paquetes como en una wiki?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:77
 msgid ""
 "Did you know that you can add icons or files to applications by simply "
 "dropping images from your Desktop onto them?"
-msgstr ""
-"¿Sabías que puedes añadir iconos o archivos a los paquetes simplemente "
-"soltando imágenes sobre ellos desde el escritorio?"
+msgstr "¿Sabías que puedes añadir iconos o archivos a los paquetes simplemente soltando imágenes sobre ellos desde el escritorio?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:78
 msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"¿Sabías que Sulfur tiene un modo avanzado? Simplemente haz clic en Sulfur -> "
-"Modo Avanzado"
+"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced"
+" mode?"
+msgstr "¿Sabías que Sulfur tiene un modo avanzado? Simplemente haz clic en Sulfur -> Modo Avanzado"
 
 #: ../../sulfur/src/sulfur/dialogs.py:79
 msgid ""
@@ -7708,9 +7620,7 @@ msgstr ""
 msgid ""
 "Did you know that you can customize interface colors by enabling Advanced "
 "mode and going to Preferences tab?"
-msgstr ""
-"¿Sabías que puedes personalizar los colores del interfaz en la pestaña de "
-"Preferencias tras habilitar el Modo Avanzado?"
+msgstr "¿Sabías que puedes personalizar los colores del interfaz en la pestaña de Preferencias tras habilitar el Modo Avanzado?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:177
 msgid "No Repository Identifier"
@@ -7782,13 +7692,9 @@ msgstr "Tablón de Anuncios de los Repositorios"
 
 #: ../../sulfur/src/sulfur/dialogs.py:329
 msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
+"Here below you will find a list of important news directly issued by your applications maintainers.\n"
 "Double click on each item to retrieve detailed info."
-msgstr ""
-"Aquí encontrarás una lista con noticias importantes envíadas directamente "
-"por los mantenedores de los programas.\n"
-"Haz doble clic en cada una para obtener información detallada."
+msgstr "Aquí encontrarás una lista con noticias importantes envíadas directamente por los mantenedores de los programas.\nHaz doble clic en cada una para obtener información detallada."
 
 #: ../../sulfur/src/sulfur/dialogs.py:358
 msgid "Notice"
@@ -7951,8 +7857,7 @@ msgstr "En el repositorio"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2356
 msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Estos son los paquetes que deben habilitarse para satisfacer la petición"
+msgstr "Estos son los paquetes que deben habilitarse para satisfacer la petición"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2358
 msgid "Some packages are masked"
@@ -8154,7 +8059,8 @@ msgstr "¿Actualizar el sistema ahora?"
 
 #: ../../sulfur/src/sulfur/events.py:759
 msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
+"You have chosen to interrupt the processing. Are you sure you want to do it "
+"?"
 msgstr "Has elegido interrumpir el proceso. ¿Estás seguro?"
 
 #: ../../sulfur/src/sulfur/events.py:892
@@ -8228,9 +8134,7 @@ msgstr "la última versión disponible es"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Es recomendable que actualices a la última versión antes de actualizar "
-"cualquier otro paquete"
+msgstr "Es recomendable que actualices a la última versión antes de actualizar cualquier otro paquete"
 
 #: ../../magneto/src/magneto/kde/components.py:83
 msgid "Close"
@@ -8449,16 +8353,13 @@ msgstr "0 = sin límite; 100 = 100 kB/seg"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:2
 msgid "<b>Entropy database backup tool</b>"
-msgstr ""
-"<b>Herramienta de copia de seguridad de la base de datos de Entropy</b>"
+msgstr "<b>Herramienta de copia de seguridad de la base de datos de Entropy</b>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:3
 msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
-msgstr ""
-"<small>Usando esta herramienta, podrás copiar y restaurar la base de datos "
-"de paquetes del Sistema Operativo.</small>"
+msgstr "<small>Usando esta herramienta, podrás copiar y restaurar la base de datos de paquetes del Sistema Operativo.</small>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:4
 msgid "Add Document"
@@ -8470,8 +8371,7 @@ msgstr "Añadir/Editar Repositorio"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-"Añadir <b>nuevos repositorios</b> te permite acceder a <b>más software</b>"
+msgstr "Añadir <b>nuevos repositorios</b> te permite acceder a <b>más software</b>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Advanced Mode"
@@ -8588,10 +8488,7 @@ msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
-msgstr ""
-"Deshabilitada\n"
-"Sólo eliminar\n"
-"Instalar+Eliminar"
+msgstr "Deshabilitada\nSólo eliminar\nInstalar+Eliminar"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:49
 msgid "Discard login information"
@@ -8631,9 +8528,7 @@ msgstr "API de Entropy"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:59
 msgid "Entropy can keep a backup of your updated configuration files"
-msgstr ""
-"Entropy puede mantener una copia de seguridad de tus archivos de "
-"configuración actualizados"
+msgstr "Entropy puede mantener una copia de seguridad de tus archivos de configuración actualizados"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:61
 msgid "Error message"
@@ -8844,8 +8739,7 @@ msgstr "Confirma por favor"
 #: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid ""
 "Please submit this error to us providing as much information as possible."
-msgstr ""
-"Por favor, envíanos este error añadiendo toda la información que puedas."
+msgstr "Por favor, envíanos este error añadiendo toda la información que puedas."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Preferences"
@@ -8853,8 +8747,7 @@ msgstr "Preferencias"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Prevents files belonging to a package being overwritten by another"
-msgstr ""
-"Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
+msgstr "Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Process details"
@@ -9186,9 +9079,7 @@ msgstr "Lo que estabas haciendo"
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
-msgstr ""
-"Debes <b>aceptar</b> las siguientes licencias.\n"
-"Por favor, léelas cuidadosamente y <b>toma tu decisión</b>."
+msgstr "Debes <b>aceptar</b> las siguientes licencias.\nPor favor, léelas cuidadosamente y <b>toma tu decisión</b>."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Your E-mail"

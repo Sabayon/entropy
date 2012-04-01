@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Patrik Karlsson <patrik@trixon.se>, 2010.
 msgid ""
@@ -12,10 +12,10 @@ msgstr ""
 "PO-Revision-Date: 2012-03-31 22:06+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -2474,7 +2474,8 @@ msgstr "Ger upp"
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr "Kom ihåg att verifiera importerade nycklar och sätta passande nivåer"
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
@@ -3843,9 +3844,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:295
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Vänligen välj en fil för uppdatering genom att ange dess "
-"identifikationsnummer."
+msgstr "Vänligen välj en fil för uppdatering genom att ange dess identifikationsnummer."
 
 #: ../../client/text_configuration.py:296
 msgid "Other options are:"
@@ -4450,7 +4449,8 @@ msgstr ""
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
 msgstr ""
 
 #: ../../client/text_rescue.py:230
@@ -4761,7 +4761,8 @@ msgstr ""
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr ""
 
 #: ../../client/text_smart.py:328
@@ -5282,7 +5283,8 @@ msgstr ""
 
 #: ../../client/equo.py:243
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
 msgstr ""
 
 #: ../../client/equo.py:244
@@ -5441,7 +5443,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr "-- ÄVEN OM JAG INTE VILL ATT DU SKICKAR SAMMA RAPPORT FLERA GÅNGER --"
 
 #: ../../client/equo.py:684
@@ -5452,9 +5455,7 @@ msgstr ""
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Ja ja, jag kan inte ens skriva till /tmp. Kopiera gärna felet och skicka det "
-"till lxnay@sabayon.org."
+msgstr "Ja ja, jag kan inte ens skriva till /tmp. Kopiera gärna felet och skicka det till lxnay@sabayon.org."
 
 #: ../../client/equo.py:712
 msgid "Of course you are on the Internet..."
@@ -5463,8 +5464,7 @@ msgstr ""
 #: ../../client/equo.py:713
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/equo.py:715
@@ -7085,8 +7085,8 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/packages.py:151
 msgid ""
-"These packages must be removed from the removal queue because they depend on "
-"your last selection. Do you agree?"
+"These packages must be removed from the removal queue because they depend on"
+" your last selection. Do you agree?"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/packages.py:216
@@ -7373,8 +7373,8 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1358
 msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
+"These packages are masked either by default or due to your choice. Please be"
+" careful, at least."
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1414
@@ -7591,47 +7591,36 @@ msgstr ""
 msgid ""
 "Did you know that you can comment, vote and add documents to applications "
 "like in a wiki?"
-msgstr ""
-"Visste du att du kan skriva kommentarer, rösta och lägga till dokument till "
-"ett program, som i en wiki?"
+msgstr "Visste du att du kan skriva kommentarer, rösta och lägga till dokument till ett program, som i en wiki?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:77
 msgid ""
 "Did you know that you can add icons or files to applications by simply "
 "dropping images from your Desktop onto them?"
-msgstr ""
-"Visste du att  du kan lägga till ikoner och filer till program bara genom "
-"att släppa bilder från ditt skrivbord på dem?"
+msgstr "Visste du att  du kan lägga till ikoner och filer till program bara genom att släppa bilder från ditt skrivbord på dem?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:78
 msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"Visste du att Sulfur har ett avancerat läge? Klicka Sulfur->Avancerat läge."
+"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced"
+" mode?"
+msgstr "Visste du att Sulfur har ett avancerat läge? Klicka Sulfur->Avancerat läge."
 
 #: ../../sulfur/src/sulfur/dialogs.py:79
 msgid ""
 "Did you know that the guy who wrote this tip was really asleep at the time?"
-msgstr ""
-"Visste du att den som skrev det här tipset i själva verket sov vid "
-"tillfället?"
+msgstr "Visste du att den som skrev det här tipset i själva verket sov vid tillfället?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:80
 msgid ""
 "Did you know that you can backup your installed application repository by "
 "enabling Advanced mode and going to Preferences tab?"
-msgstr ""
-"Visste du att du kan säkerhetskopiera installerade programförråd genom att "
-"aktivera Avancerat läge och gå till inställningsfliken?"
+msgstr "Visste du att du kan säkerhetskopiera installerade programförråd genom att aktivera Avancerat läge och gå till inställningsfliken?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:81
 msgid ""
 "Did you know that you can customize interface colors by enabling Advanced "
 "mode and going to Preferences tab?"
-msgstr ""
-"Visste du att du kan anpassa gränssnittets färger genom att aktivera "
-"Avancerat läge och gå till inställningsfliken?"
+msgstr "Visste du att du kan anpassa gränssnittets färger genom att aktivera Avancerat läge och gå till inställningsfliken?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:177
 msgid "No Repository Identifier"
@@ -7703,8 +7692,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/dialogs.py:329
 msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
+"Here below you will find a list of important news directly issued by your applications maintainers.\n"
 "Double click on each item to retrieve detailed info."
 msgstr ""
 
@@ -8071,7 +8059,8 @@ msgstr "Uppdatera ditt system nu?"
 
 #: ../../sulfur/src/sulfur/events.py:759
 msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
+"You have chosen to interrupt the processing. Are you sure you want to do it "
+"?"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/events.py:892
@@ -8245,8 +8234,7 @@ msgstr "Entropy D-Bus-tjänst startad"
 
 #: ../../magneto/src/magneto/core/interfaces.py:208
 msgid "your Sabayon will notify you once updates are available"
-msgstr ""
-"Din Sabayon kommer att underrätta dig när uppdateringar finns tillgängliga"
+msgstr "Din Sabayon kommer att underrätta dig när uppdateringar finns tillgängliga"
 
 #: ../../magneto/src/magneto/core/interfaces.py:224
 #, python-format
@@ -8405,8 +8393,7 @@ msgstr "Alla"
 msgid ""
 "Applications can alter your system configuration, merge requested changes "
 "manually"
-msgstr ""
-"Program kan ändra dina systeminställningar, sammanfoga förfrågningar manuellt"
+msgstr "Program kan ändra dina systeminställningar, sammanfoga förfrågningar manuellt"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:17
 msgid "Background error message"
@@ -8501,10 +8488,7 @@ msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
-msgstr ""
-"Avaktiverad\n"
-"Enbart borttagning\n"
-"Installation+borttagning"
+msgstr "Avaktiverad\nEnbart borttagning\nInstallation+borttagning"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:49
 msgid "Discard login information"
@@ -8821,9 +8805,7 @@ msgstr "Ominstallera valt paket"
 msgid ""
 "Reliable\n"
 "Relaxed"
-msgstr ""
-"Pålitlig\n"
-"Avslappnad"
+msgstr "Pålitlig\nAvslappnad"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Remove"
@@ -9097,9 +9079,7 @@ msgstr "Vad gör du"
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
-msgstr ""
-"Du <b>måste acceptera</b> följande licenser.\n"
-"Läs dem noga och <b>gör ditt val</b>."
+msgstr "Du <b>måste acceptera</b> följande licenser.\nLäs dem noga och <b>gör ditt val</b>."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Your E-mail"

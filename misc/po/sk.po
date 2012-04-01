@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
@@ -11,10 +11,10 @@ msgstr ""
 "PO-Revision-Date: 2012-03-31 22:05+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: sk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -2475,10 +2475,9 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Uistite sa overením pridaného kľúča a nastavením vhodných úrovní "
-"dôveryhodnosti"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Uistite sa overením pridaného kľúča a nastavením vhodných úrovní dôveryhodnosti"
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
 msgid "This repository suports GPG-signed packages"
@@ -3849,8 +3848,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:295
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Prosím vyberte súbor k aktualizácii napísaním jeho identifikačného čísla."
+msgstr "Prosím vyberte súbor k aktualizácii napísaním jeho identifikačného čísla."
 
 #: ../../client/text_configuration.py:296
 msgid "Other options are:"
@@ -4456,7 +4454,8 @@ msgstr ""
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
 msgstr ""
 
 #: ../../client/text_rescue.py:230
@@ -4767,7 +4766,8 @@ msgstr ""
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr ""
 
 #: ../../client/text_smart.py:328
@@ -5288,7 +5288,8 @@ msgstr ""
 
 #: ../../client/equo.py:243
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
 msgstr ""
 
 #: ../../client/equo.py:244
@@ -5447,7 +5448,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 
 #: ../../client/equo.py:684
@@ -5467,8 +5469,7 @@ msgstr ""
 #: ../../client/equo.py:713
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/equo.py:715
@@ -7082,9 +7083,7 @@ msgstr "Identifikátor repozitáru"
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
-msgstr ""
-"Tu sú balíčky, ktoré nemôžu byť nainštalované súčasne, takže blokujú vašu "
-"požiadavku:"
+msgstr "Tu sú balíčky, ktoré nemôžu byť nainštalované súčasne, takže blokujú vašu požiadavku:"
 
 #: ../../sulfur/src/sulfur/packages.py:150
 msgid "These are the needed packages"
@@ -7092,11 +7091,9 @@ msgstr "Toto sú potrebné balíčky"
 
 #: ../../sulfur/src/sulfur/packages.py:151
 msgid ""
-"These packages must be removed from the removal queue because they depend on "
-"your last selection. Do you agree?"
-msgstr ""
-"Tieto balíčky musia byť vymazané z fronty na vymazanie, pretože závisia na "
-"vašom poslednom výbere. Súhlasíte?"
+"These packages must be removed from the removal queue because they depend on"
+" your last selection. Do you agree?"
+msgstr "Tieto balíčky musia byť vymazané z fronty na vymazanie, pretože závisia na vašom poslednom výbere. Súhlasíte?"
 
 #: ../../sulfur/src/sulfur/packages.py:216
 msgid "These packages must be excluded"
@@ -7106,17 +7103,13 @@ msgstr "Tieto balíčky musia byť vyňaté"
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
-msgstr ""
-"Tieto balíčky musia byť vymazané z fronty pretože závisia na vašom poslednom "
-"výbere. Súhlasíte?"
+msgstr "Tieto balíčky musia byť vymazané z fronty pretože závisia na vašom poslednom výbere. Súhlasíte?"
 
 #: ../../sulfur/src/sulfur/packages.py:433
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
-msgstr ""
-"Niektoré závislosti nie je možné nájsť. Môže to byť tým, že sú skryté, alebo "
-"že nie sú v žiadnom aktívnom repozitári."
+msgstr "Niektoré závislosti nie je možné nájsť. Môže to byť tým, že sú skryté, alebo že nie sú v žiadnom aktívnom repozitári."
 
 #: ../../sulfur/src/sulfur/packages.py:455
 msgid "Conflicting packages were pulled in, in the same key and slot"
@@ -7308,9 +7301,7 @@ msgstr "Zoraď podľa skupín"
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
-msgstr ""
-"Dole uvedené repozitáre sú nastavené, ale nie sú dostupné. Mali by sa "
-"stiahnut."
+msgstr "Dole uvedené repozitáre sú nastavené, ale nie sú dostupné. Mali by sa stiahnut."
 
 #: ../../sulfur/src/sulfur/__init__.py:697
 msgid "If you don't do this now, you won't be able to use them."
@@ -7388,10 +7379,9 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1358
 msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-"Tieto balíčky sú predvolene skryté alebo vašou voľbou. Prosím buďte opatrní."
+"These packages are masked either by default or due to your choice. Please be"
+" careful, at least."
+msgstr "Tieto balíčky sú predvolene skryté alebo vašou voľbou. Prosím buďte opatrní."
 
 #: ../../sulfur/src/sulfur/__init__.py:1414
 msgid "Generating metadata. Please wait."
@@ -7453,16 +7443,13 @@ msgstr "Neboli nájdené žiadne chýbajúce závislosti."
 
 #: ../../sulfur/src/sulfur/__init__.py:1661
 msgid "Missing dependencies found, but none of them are on the repositories."
-msgstr ""
-"Boli zistené chýbajúce závislosti, ale niektoré z nich nie sú v repozitároch."
+msgstr "Boli zistené chýbajúce závislosti, ale niektoré z nich nie sú v repozitároch."
 
 #: ../../sulfur/src/sulfur/__init__.py:1668
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
-msgstr ""
-"Niektoré chýbajúce závislosti neboli uzavreté, ostatné budú pridané do "
-"fronty."
+msgstr "Niektoré chýbajúce závislosti neboli uzavreté, ostatné budú pridané do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1671
 msgid "All the missing dependencies are going to be added to the queue"
@@ -7480,8 +7467,7 @@ msgstr "Test knižníc bol prerušený"
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
-msgstr ""
-"Niektoré poškodené balíčky neboli uzavreté, ostatné budú pridané do fronty."
+msgstr "Niektoré poškodené balíčky neboli uzavreté, ostatné budú pridané do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1735
 msgid "All the broken packages are going to be added to the queue"
@@ -7524,8 +7510,7 @@ msgstr "Zobrazenie"
 
 #: ../../sulfur/src/sulfur/__init__.py:1976
 msgid "No packages need or can be queued at the moment."
-msgstr ""
-"Vtomto momente žiaden balíček nie je potrebné alebo možné pridať do fronty."
+msgstr "Vtomto momente žiaden balíček nie je potrebné alebo možné pridať do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:2074
 msgid "Name and description"
@@ -7576,17 +7561,13 @@ msgstr ""
 msgid ""
 "Attention. An error occured while processing the queue.\n"
 "Please have a look at the terminal."
-msgstr ""
-"Pozor. Vyskytla sa chyba počas spracovania fronty.\n"
-"Prosím pozrite sa na terminál."
+msgstr "Pozor. Vyskytla sa chyba počas spracovania fronty.\nProsím pozrite sa na terminál."
 
 #: ../../sulfur/src/sulfur/__init__.py:2288
 msgid ""
 "Attention. Something really bad happened.\n"
 "Please have a look at the terminal."
-msgstr ""
-"Pozor. Stalo sa niečo zlé.\n"
-"Prosím pozrite sa na terminál."
+msgstr "Pozor. Stalo sa niečo zlé.\nProsím pozrite sa na terminál."
 
 #: ../../sulfur/src/sulfur/__init__.py:2299
 msgid ""
@@ -7598,9 +7579,7 @@ msgstr ""
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
-msgstr ""
-"Pozor. Aktualizovali ste Entropy.\n"
-"Sulfur bude znovu načítaný."
+msgstr "Pozor. Aktualizovali ste Entropy.\nSulfur bude znovu načítaný."
 
 #: ../../sulfur/src/sulfur/__init__.py:2386
 msgid "Processing Packages in queue"
@@ -7618,25 +7597,19 @@ msgstr "Preskočenie súčasného zrkadla."
 msgid ""
 "Did you know that you can comment, vote and add documents to applications "
 "like in a wiki?"
-msgstr ""
-"Vedeli ste, že možete komentovať, hlasovať a pridávať dokumenty k aplikáciam "
-"ako na wiki?"
+msgstr "Vedeli ste, že možete komentovať, hlasovať a pridávať dokumenty k aplikáciam ako na wiki?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:77
 msgid ""
 "Did you know that you can add icons or files to applications by simply "
 "dropping images from your Desktop onto them?"
-msgstr ""
-"Vedeli ste, že múžete pridávať ikony alebo súbory k aplikáciam jednoduchým "
-"pretiahnutím obrázkov z vašej plochy na ne?"
+msgstr "Vedeli ste, že múžete pridávať ikony alebo súbory k aplikáciam jednoduchým pretiahnutím obrázkov z vašej plochy na ne?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:78
 msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"Vedeli ste, že Sulfur má pokročilý režim? len kliknite Sulfur -> Pokročilý "
-"režim"
+"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced"
+" mode?"
+msgstr "Vedeli ste, že Sulfur má pokročilý režim? len kliknite Sulfur -> Pokročilý režim"
 
 #: ../../sulfur/src/sulfur/dialogs.py:79
 msgid ""
@@ -7647,17 +7620,13 @@ msgstr "Vedeli ste, že chlapík čo napísal tento tip vtedy spal?"
 msgid ""
 "Did you know that you can backup your installed application repository by "
 "enabling Advanced mode and going to Preferences tab?"
-msgstr ""
-"Vedeli ste, že môžete zálohovať váš repozitár nainštalovaných aplikácií na "
-"karte Predvoľby po zapnutí Pokročilého režimu?"
+msgstr "Vedeli ste, že môžete zálohovať váš repozitár nainštalovaných aplikácií na karte Predvoľby po zapnutí Pokročilého režimu?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:81
 msgid ""
 "Did you know that you can customize interface colors by enabling Advanced "
 "mode and going to Preferences tab?"
-msgstr ""
-"Vedeli ste, že si môžete upraviť farby rozhrania na karte Predvoľby po "
-"zapnutí Pokročilého režimu?"
+msgstr "Vedeli ste, že si môžete upraviť farby rozhrania na karte Predvoľby po zapnutí Pokročilého režimu?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:177
 msgid "No Repository Identifier"
@@ -7729,12 +7698,9 @@ msgstr "Vývesná tabuľa repozitárov"
 
 #: ../../sulfur/src/sulfur/dialogs.py:329
 msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
+"Here below you will find a list of important news directly issued by your applications maintainers.\n"
 "Double click on each item to retrieve detailed info."
-msgstr ""
-"Tu nájdete zoznam dôležitých správ práve vydaných vašim správcom aplikácií.\n"
-"Dvojtým kliknutím na jednotlivé položky získate podrobnejšie informácie."
+msgstr "Tu nájdete zoznam dôležitých správ práve vydaných vašim správcom aplikácií.\nDvojtým kliknutím na jednotlivé položky získate podrobnejšie informácie."
 
 #: ../../sulfur/src/sulfur/dialogs.py:358
 msgid "Notice"
@@ -7897,8 +7863,7 @@ msgstr "V repozitári"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2356
 msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Toto sú balíčky, ktoré musia byť aktivované, aby bola splnená vaša požiadavka"
+msgstr "Toto sú balíčky, ktoré musia byť aktivované, aby bola splnená vaša požiadavka"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2358
 msgid "Some packages are masked"
@@ -8100,7 +8065,8 @@ msgstr "Aktualizovať váš systém teraz?"
 
 #: ../../sulfur/src/sulfur/events.py:759
 msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
+"You have chosen to interrupt the processing. Are you sure you want to do it "
+"?"
 msgstr "Vybrali ste prerušiť spracovanie. Ste si istí že to chcete urobiť?"
 
 #: ../../sulfur/src/sulfur/events.py:892
@@ -8174,9 +8140,7 @@ msgstr "najnovšia dostupná verzia je"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"Je doporučované aktualizovať na najnovšiu verziu pred aktualizáciou iných "
-"balíčkov"
+msgstr "Je doporučované aktualizovať na najnovšiu verziu pred aktualizáciou iných balíčkov"
 
 #: ../../magneto/src/magneto/kde/components.py:83
 msgid "Close"
@@ -8276,8 +8240,7 @@ msgstr "služba Entropy DBus je načítaná"
 
 #: ../../magneto/src/magneto/core/interfaces.py:208
 msgid "your Sabayon will notify you once updates are available"
-msgstr ""
-"váš Sabayon vás bude informovať ihneď ako budú aktualizácie k dispozícii"
+msgstr "váš Sabayon vás bude informovať ihneď ako budú aktualizácie k dispozícii"
 
 #: ../../magneto/src/magneto/core/interfaces.py:224
 #, python-format
@@ -8404,9 +8367,7 @@ msgstr "<b>Nástroj zálohovania Entropy databázy</b>"
 msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
-msgstr ""
-"<small>Ak použijete tento nástroj, budete mocť zálohovať a obnoviť databázu "
-"balíčkov vášho Operačného systému.</small>"
+msgstr "<small>Ak použijete tento nástroj, budete mocť zálohovať a obnoviť databázu balíčkov vášho Operačného systému.</small>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:4
 msgid "Add Document"
@@ -8418,8 +8379,7 @@ msgstr "Pridať/Upraviť Repozitár"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-"Pridanie <b>nového repozitára</b> vám umožní prístup k <b>extra softvéru</b>"
+msgstr "Pridanie <b>nového repozitára</b> vám umožní prístup k <b>extra softvéru</b>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Advanced Mode"
@@ -8441,8 +8401,7 @@ msgstr "Všetky"
 msgid ""
 "Applications can alter your system configuration, merge requested changes "
 "manually"
-msgstr ""
-"Aplikácie môžu zmeniť konfiguráciu vášho systému, zlúčte žiadané zmeny ručne"
+msgstr "Aplikácie môžu zmeniť konfiguráciu vášho systému, zlúčte žiadané zmeny ručne"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:17
 msgid "Background error message"
@@ -8537,10 +8496,7 @@ msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
-msgstr ""
-"Zablokovaný\n"
-"Iba odstránenie\n"
-"Inštalácia+Odstránenie"
+msgstr "Zablokovaný\nIba odstránenie\nInštalácia+Odstránenie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:49
 msgid "Discard login information"
@@ -8857,9 +8813,7 @@ msgstr "Preinštalovať vybraný balíček"
 msgid ""
 "Reliable\n"
 "Relaxed"
-msgstr ""
-"Spoľahlivý\n"
-"Uvoľnený"
+msgstr "Spoľahlivý\nUvoľnený"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Remove"
@@ -9133,9 +9087,7 @@ msgstr "Čo ste robili"
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
-msgstr ""
-"Je <b>potrebné prijať</b> nasledovné licencie.\n"
-"Prosím pozorne si ich prečítajte a <b>rozhodnite sa</b>."
+msgstr "Je <b>potrebné prijať</b> nasledovné licencie.\nProsím pozorne si ich prečítajte a <b>rozhodnite sa</b>."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Your E-mail"

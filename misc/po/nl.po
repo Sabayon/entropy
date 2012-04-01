@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Parhan <dyingmuppet@sabayon.org>, 2008.
 msgid ""
@@ -11,11 +11,11 @@ msgstr ""
 "POT-Creation-Date: 2012-03-31 20:31+0200\n"
 "PO-Revision-Date: 2012-03-31 22:03+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: nl\n"
+"Language-Team: Dutch (http://www.transifex.net/projects/p/sabayon-entropy/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: nl\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -596,8 +596,7 @@ msgstr "controlesom komt niet overeen. opnieuw downloaden..."
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:648
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr ""
-"blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
+msgstr "blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:710
 msgid "mirror hasn't valid repository revision file"
@@ -1248,9 +1247,7 @@ msgstr "Notitie"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr ""
-"alle oude pakketten met conflicterende scope zullen worden verwijderd van de "
-"bestemming repo tenzij geinjecteerd"
+msgstr "alle oude pakketten met conflicterende scope zullen worden verwijderd van de bestemming repo tenzij geinjecteerd"
 
 #: ../../lib/entropy/server/interfaces/main.py:2423
 msgid "new tag"
@@ -2095,8 +2092,7 @@ msgstr "Database actualiseren"
 #: ../../lib/entropy/client/interfaces/package.py:2223
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
-msgstr ""
-"%s is een bestand maar moet een map zijn !! verwijderen in 20 seconden..."
+msgstr "%s is een bestand maar moet een map zijn !! verwijderen in 20 seconden..."
 
 #: ../../lib/entropy/client/interfaces/package.py:2248
 msgid "directory expected, symlink found"
@@ -2164,8 +2160,7 @@ msgstr "Lokale pad"
 
 #: ../../lib/entropy/client/interfaces/package.py:2985
 msgid "Package cannot be fetched. Try to update repositories"
-msgstr ""
-"Pakket kan niet worden binnengehaald. Probeer de repositories te vernieuwen"
+msgstr "Pakket kan niet worden binnengehaald. Probeer de repositories te vernieuwen"
 
 #: ../../lib/entropy/client/interfaces/package.py:3004
 msgid "archive"
@@ -2471,9 +2466,7 @@ msgstr "FOUT"
 
 #: ../../lib/entropy/client/interfaces/db.py:1144
 msgid "An error occured while checking repository integrity"
-msgstr ""
-"Een fout deed zich voor tijdens het controleren van de repositorie "
-"integriteit"
+msgstr "Een fout deed zich voor tijdens het controleren van de repositorie integriteit"
 
 #: ../../lib/entropy/client/interfaces/db.py:1145
 msgid "Giving up"
@@ -2481,9 +2474,9 @@ msgstr "Opgeven"
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Controleer de geimporteerde sleutel en stel een geldig vertrouwens level in"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Controleer de geimporteerde sleutel en stel een geldig vertrouwens level in"
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
 msgid "This repository suports GPG-signed packages"
@@ -2491,8 +2484,7 @@ msgstr "Deze repositorie ondersteund GPG-ondertekende pakketten"
 
 #: ../../lib/entropy/client/interfaces/db.py:1193
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
-"Om gebruik te maken van deze functionaliteit dien je GnuPG te installeren"
+msgstr "Om gebruik te maken van deze functionaliteit dien je GnuPG te installeren"
 
 #: ../../lib/entropy/client/interfaces/db.py:1227
 #: ../../lib/entropy/security.py:318
@@ -3200,9 +3192,7 @@ msgstr "pakketten met verdere afhankelijkheden (knooppunt)"
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
-"pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen "
-"(circulair)"
+msgstr "pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen (circulair)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
@@ -3372,9 +3362,7 @@ msgstr "Opzoeken van beschadigde opstartbestanden"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
-"later."
+msgstr "maak je geen zorgen over bibliotheken die hier worden getoond maar niet later."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -3856,8 +3844,7 @@ msgstr "Interactief samenvoegen"
 
 #: ../../client/text_configuration.py:295
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
+msgstr "Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
 
 #: ../../client/text_configuration.py:296
 msgid "Other options are:"
@@ -4458,15 +4445,13 @@ msgstr "Verschillen tabel her gegenereerd. Kijk hierboven voor fouten."
 msgid ""
 "The installed package database will be resurrected, this will take a LOT of "
 "time."
-msgstr ""
-"De geinstalleerde pakket database wordt tot leven gewekt, dit kan LANGE tijd "
-"duren."
+msgstr "De geinstalleerde pakket database wordt tot leven gewekt, dit kan LANGE tijd duren."
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
-msgstr ""
-"Gebruik deze functie ALLEEN met een distributie die van Entropy af weet"
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
+msgstr "Gebruik deze functie ALLEEN met een distributie die van Entropy af weet"
 
 #: ../../client/text_rescue.py:230
 msgid "Can I continue ?"
@@ -4556,14 +4541,11 @@ msgstr "Database herinitialisatie succesvol"
 msgid ""
 "Keep in mind that virtual packages couldn't be matched. They don't own any "
 "files."
-msgstr ""
-"Onthoud dat virtuele pakketten niet konden worden vergeleken. Ze bezitten "
-"geen enkel bestand."
+msgstr "Onthoud dat virtuele pakketten niet konden worden vergeleken. Ze bezitten geen enkel bestand."
 
 #: ../../client/text_rescue.py:386
 msgid "Scanning Source Package Manager and Entropy databases for differences"
-msgstr ""
-"Scannen van Source Pakket Manager en Entropy databases voor verschillen"
+msgstr "Scannen van Source Pakket Manager en Entropy databases voor verschillen"
 
 #: ../../client/text_rescue.py:394
 msgid "Collecting Source Package Manager metadata"
@@ -4629,17 +4611,13 @@ msgstr "Database update voltooid"
 msgid ""
 "The installed package repository will be regenerated using Source Package "
 "Manager"
-msgstr ""
-"De geinstalleerd pakket repositorie zal opnieuw worden gegenereerd middels "
-"de Source Pakket Manager"
+msgstr "De geinstalleerd pakket repositorie zal opnieuw worden gegenereerd middels de Source Pakket Manager"
 
 #: ../../client/text_rescue.py:602
 msgid ""
 "If you dont know what you're doing just, don't do this. Really. I'm not "
 "joking."
-msgstr ""
-"Als je niet weet waar je mee bezig bent, doe het dan niet. Serieus. Ik maak "
-"geen grap."
+msgstr "Als je niet weet waar je mee bezig bent, doe het dan niet. Serieus. Ik maak geen grap."
 
 #: ../../client/text_rescue.py:603
 msgid "Understood ?"
@@ -4783,7 +4761,8 @@ msgstr "Entropy metadata uitgepakt vanaf"
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr "De volgende pakketten zullen worden samengevoegd in een enkel pakket"
 
 #: ../../client/text_smart.py:328
@@ -5015,8 +4994,7 @@ msgstr "gebruik mtime in plaats van SA256 (onjuiste calculatie mogelijk)"
 
 #: ../../client/equo.py:112
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"update hashes en mtime (handig na het aanpassen van configuratie bestanden)"
+msgstr "update hashes en mtime (handig na het aanpassen van configuratie bestanden)"
 
 #: ../../client/equo.py:113
 msgid "reinstall faulty packages"
@@ -5085,8 +5063,7 @@ msgstr "neem ook build-time afhankelijkheden mee"
 
 #: ../../client/equo.py:135
 msgid "used with --resume, makes the first package in queue to be skipped"
-msgstr ""
-"in combinatie met --resume, wordt het eerste pakket in rij overgeslagen"
+msgstr "in combinatie met --resume, wordt het eerste pakket in rij overgeslagen"
 
 #: ../../client/equo.py:136
 msgid "remove downloaded packages after being used"
@@ -5122,14 +5099,11 @@ msgstr "verwijder een of meerdere pakketten"
 
 #: ../../client/equo.py:164
 msgid "also pull unused dependencies where reverse deps list is empty"
-msgstr ""
-"neem ook ongebruikte afhankelijkheden mee waar tegengestelde afhankelijken "
-"lijst leeg is"
+msgstr "neem ook ongebruikte afhankelijkheden mee waar tegengestelde afhankelijken lijst leeg is"
 
 #: ../../client/equo.py:165
 msgid "when used with --deep, helps the removal of virtual packages"
-msgstr ""
-"in combinatie met --deep is het mogelijk virtuele pakketten te verwijderen"
+msgstr "in combinatie met --deep is het mogelijk virtuele pakketten te verwijderen"
 
 #: ../../client/equo.py:166
 msgid "makes configuration files to be removed"
@@ -5245,8 +5219,7 @@ msgstr "zoek tussen geinstalleerde pakketten"
 
 #: ../../client/equo.py:215
 msgid "associate given file paths to applications able to read them"
-msgstr ""
-"verbind gegeven bestand paden aan applicaties zodat deze ze kunnen uitlezen"
+msgstr "verbind gegeven bestand paden aan applicaties zodat deze ze kunnen uitlezen"
 
 #: ../../client/equo.py:217
 msgid "show runtime libraries needed by the provided atoms"
@@ -5278,20 +5251,15 @@ msgstr "geef pakketten weer behorend aan de gegeven tags"
 
 #: ../../client/equo.py:224
 msgid "show direct depdendencies tree for provided installable atoms"
-msgstr ""
-"geef directe afhankelijkheden boom weer voor gegeven installeer-bare atomen"
+msgstr "geef directe afhankelijkheden boom weer voor gegeven installeer-bare atomen"
 
 #: ../../client/equo.py:225 ../../client/equo.py:227
 msgid "include system packages, build deps and circularity information"
-msgstr ""
-"Neem systeem pakketten mee, opbouwen afhankelijkheden en circulaire "
-"informatie"
+msgstr "Neem systeem pakketten mee, opbouwen afhankelijkheden en circulaire informatie"
 
 #: ../../client/equo.py:226
 msgid "show reverse depdendencies tree for provided installed atoms"
-msgstr ""
-"geef tegengestelde afhankelijkheden boom weer voor gegeven geinstalleerde "
-"atomen"
+msgstr "geef tegengestelde afhankelijkheden boom weer voor gegeven geinstalleerde atomen"
 
 #: ../../client/equo.py:228 ../../client/equo.py:278
 msgid "show more details"
@@ -5315,10 +5283,9 @@ msgstr "behandelt uitgebreide functionaliteiten"
 
 #: ../../client/equo.py:243
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
-"maak een 'smart' pakket voor de gegeven atomen (meerdere pakketten in een "
-"bestand)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
+msgstr "maak een 'smart' pakket voor de gegeven atomen (meerdere pakketten in een bestand)"
 
 #: ../../client/equo.py:244
 msgid "recreate an Entropy package from your System"
@@ -5331,13 +5298,11 @@ msgstr "sla nieuwe pakketten op in de gespecificeerde map"
 #: ../../client/equo.py:246
 msgid ""
 "convert provided Source Package Manager package files into Entropy packages"
-msgstr ""
-"zet gegeven Source Pakket Beheerder pakket bestanden om in Entropy pakketten"
+msgstr "zet gegeven Source Pakket Beheerder pakket bestanden om in Entropy pakketten"
 
 #: ../../client/equo.py:248
 msgid "convert provided Entropy packages into Source Package Manager ones"
-msgstr ""
-"converteer gegeven Entropy pakketten naar die van de Source Pakketten Manager"
+msgstr "converteer gegeven Entropy pakketten naar die van de Source Pakketten Manager"
 
 #: ../../client/equo.py:250
 msgid "extract Entropy metadata from provided Entropy package files"
@@ -5358,24 +5323,18 @@ msgstr "Geinstalleerde Pakketten"
 #: ../../client/equo.py:255
 msgid ""
 "remove installed packages repository internal indexes to save disk space"
-msgstr ""
-"verwijder geinstalleerde interne pakketten repositorie indexen on ruimte te "
-"besparen"
+msgstr "verwijder geinstalleerde interne pakketten repositorie indexen on ruimte te besparen"
 
 #: ../../client/equo.py:256
 msgid ""
 "generate installed packages database using Source Package Manager "
 "repositories"
-msgstr ""
-"genereer geinstalleerde pakketten database door middel van Bron Pakketten "
-"Beheer repositories"
+msgstr "genereer geinstalleerde pakketten database door middel van Bron Pakketten Beheer repositories"
 
 #: ../../client/equo.py:257
 msgid ""
 "generate installed packages database using files on the system [last hope]"
-msgstr ""
-"genereer geinstalleerde pakketten database door middel van bestanden op het "
-"systeem [laatste hoop]"
+msgstr "genereer geinstalleerde pakketten database door middel van bestanden op het systeem [laatste hoop]"
 
 #: ../../client/equo.py:258
 msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
@@ -5383,8 +5342,7 @@ msgstr "hergenereer SPM UIDs overzicht (SPM <-> Entropy pakketten)"
 
 #: ../../client/equo.py:259
 msgid "makes Entropy aware of your Source Package Manager updated packages"
-msgstr ""
-"maakt Entropy bewust van jouw Source Pakket Manager bijgewerkte pakketten"
+msgstr "maakt Entropy bewust van jouw Source Pakket Manager bijgewerkte pakketten"
 
 #: ../../client/equo.py:260
 msgid "backup the current Entropy installed packages database"
@@ -5392,8 +5350,7 @@ msgstr "back up de huidige Entropy geinstalleerde pakketten database"
 
 #: ../../client/equo.py:261
 msgid "restore a previously backed up Entropy installed packages database"
-msgstr ""
-"herstel een eerdere back up van de Entropy geinstalleerde pakketten database"
+msgstr "herstel een eerdere back up van de Entropy geinstalleerde pakketten database"
 
 #: ../../client/equo.py:263
 msgid "handles User Generated Content features"
@@ -5415,28 +5372,20 @@ msgstr "forceer actie"
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
-msgstr ""
-"beheer pakket documenten voor de geselecteerde repositorie (commentaar, "
-"bestanden, video's)"
+msgstr "beheer pakket documenten voor de geselecteerde repositorie (commentaar, bestanden, video's)"
 
 #: ../../client/equo.py:268
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"haal beschikbare documenten op voor de gespecificeerde pakket sleutel "
-"(example: x11-libs/qt)"
+msgstr "haal beschikbare documenten op voor de gespecificeerde pakket sleutel (example: x11-libs/qt)"
 
 #: ../../client/equo.py:269
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr ""
-"voeg een nieuw document to aan de gespecificeerde pakket sleutel (voorbeeld: "
-"x11-libs/qt)"
+msgstr "voeg een nieuw document to aan de gespecificeerde pakket sleutel (voorbeeld: x11-libs/qt)"
 
 #: ../../client/equo.py:270
 msgid "remove documents from database using their identifiers"
-msgstr ""
-"verwijder documenten van de database door middel van hun "
-"identificatiemiddelen"
+msgstr "verwijder documenten van de database door middel van hun identificatiemiddelen"
 
 #: ../../client/equo.py:271
 msgid "manage package votes for the selected repository"
@@ -5444,14 +5393,11 @@ msgstr "beheer pakket stemmen voor de geselecteerde repositorie"
 
 #: ../../client/equo.py:272
 msgid "get vote for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"haal stemmen voor de geselecteerde pakket sleutel op (voorbeeld: x11-libs/qt)"
+msgstr "haal stemmen voor de geselecteerde pakket sleutel op (voorbeeld: x11-libs/qt)"
 
 #: ../../client/equo.py:273
 msgid "add vote for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"voeg een stem toe voor de gespecificeerde pakket sleutel (voorbeeld: x11-"
-"libs/qt)"
+msgstr "voeg een stem toe voor de gespecificeerde pakket sleutel (voorbeeld: x11-libs/qt)"
 
 #: ../../client/equo.py:276
 msgid "handles Entropy cache"
@@ -5475,8 +5421,7 @@ msgstr "onvoldoende parameters"
 
 #: ../../client/equo.py:633
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-"Geinstalleerde pakketten repositorie corrupt. Genereer a.u.b. een nieuwe"
+msgstr "Geinstalleerde pakketten repositorie corrupt. Genereer a.u.b. een nieuwe"
 
 #: ../../client/equo.py:670
 msgid "Your hard drive is full! Your fault!"
@@ -5490,9 +5435,7 @@ msgstr "Onvoldoende geheugen"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
-msgstr ""
-"He. Mijn naam is Bug Reporter. Het spijt me dat ik je moet informeren dat "
-"Equo is gecrashed. Nou ja, weet je, shit happens."
+msgstr "He. Mijn naam is Bug Reporter. Het spijt me dat ik je moet informeren dat Equo is gecrashed. Nou ja, weet je, shit happens."
 
 #: ../../client/equo.py:682
 msgid ""
@@ -5500,23 +5443,19 @@ msgid ""
 msgstr "Maar er is iets dat je kan doen om Equo een beter programma te maken."
 
 #: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
-msgstr ""
-"-- OOK AL WIL IK NIET DAT JE MEERDERE KEREN HETZELFDE RAPPORT STUURT --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgstr "-- OOK AL WIL IK NIET DAT JE MEERDERE KEREN HETZELFDE RAPPORT STUURT --"
 
 #: ../../client/equo.py:684
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te "
-"helpen."
+msgstr "Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te helpen."
 
 #: ../../client/equo.py:693
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail "
-"hem naar lxnay@sabayon.org."
+msgstr "Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail hem naar lxnay@sabayon.org."
 
 #: ../../client/equo.py:712
 msgid "Of course you are on the Internet..."
@@ -5525,12 +5464,8 @@ msgstr "Natuurlijk zijn we verbonden met Internet..."
 #: ../../client/equo.py:713
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Erm... Kan ik de fout sturen, samen met wat extra informatie\n"
-"over je hardware, naar mijn makers zodat zij me kunnen repareren? (Uw IP "
-"wordt gelogged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+msgstr "Erm... Kan ik de fout sturen, samen met wat extra informatie\nover je hardware, naar mijn makers zodat zij me kunnen repareren? (Uw IP wordt gelogged)"
 
 #: ../../client/equo.py:715
 msgid "Ok, ok ok ok... Sorry!"
@@ -5540,9 +5475,7 @@ msgstr "ok, ok ok ok... Sorry!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan "
-"ook deze vragen:"
+msgstr "Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan ook deze vragen:"
 
 #: ../../client/equo.py:720
 msgid "Your Full name:"
@@ -5560,17 +5493,13 @@ msgstr "Waar was je mee bezig:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo "
-"snel mogelijk verholpen."
+msgstr "Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo snel mogelijk verholpen."
 
 #: ../../client/equo.py:741
 msgid ""
 "Ugh. Cannot send the report. When you want, mail the file below to "
 "lxnay@sabayon.org."
-msgstr ""
-"Ouch. Kan rapport niet verzenden. Als je wil, mail dan het volgende bestand "
-"naar lxnay@sabayon.org."
+msgstr "Ouch. Kan rapport niet verzenden. Als je wil, mail dan het volgende bestand naar lxnay@sabayon.org."
 
 #: ../../client/equo.py:760
 msgid "Entropy/Equo version mismatch"
@@ -5661,9 +5590,7 @@ msgstr "Niets te updaten"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op "
-"de online repositories"
+msgstr "Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op de online repositories"
 
 #: ../../client/text_ui.py:471
 msgid ""
@@ -5915,8 +5842,7 @@ msgstr "aan vrije ruimte"
 
 #: ../../client/text_ui.py:1553
 msgid "You don't have enough space for the installation. Free some space into"
-msgstr ""
-"Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
+msgstr "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
 
 #: ../../client/text_ui.py:1563
 msgid "Would you like to execute the queue ?"
@@ -6049,9 +5975,7 @@ msgstr "Start verwijderen in"
 
 #: ../../client/text_ui.py:2260
 msgid "Running unused packages test, pay attention, there are false positives"
-msgstr ""
-"Starten van ongebruikte pakketten test, houdt aandacht, er zijn valse "
-"positieven"
+msgstr "Starten van ongebruikte pakketten test, houdt aandacht, er zijn valse positieven"
 
 #: ../../client/text_ui.py:2286
 msgid "Running dependency test"
@@ -7153,9 +7077,7 @@ msgstr "Repositorie Identifier"
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
-msgstr ""
-"Er zijn pakketten die niet tegelijkertijd geinstalleerd kunnen worden. De "
-"volgende pakketten veroorzaken het probleem:"
+msgstr "Er zijn pakketten die niet tegelijkertijd geinstalleerd kunnen worden. De volgende pakketten veroorzaken het probleem:"
 
 #: ../../sulfur/src/sulfur/packages.py:150
 msgid "These are the needed packages"
@@ -7163,11 +7085,9 @@ msgstr "Dit zijn de benodigde pakketten"
 
 #: ../../sulfur/src/sulfur/packages.py:151
 msgid ""
-"These packages must be removed from the removal queue because they depend on "
-"your last selection. Do you agree?"
-msgstr ""
-"Deze pakketten moeten worden verwijderd uit de verwijderings wachtrij omdat "
-"ze afhankelijk zijn van je laatste selectie. Mee eens?"
+"These packages must be removed from the removal queue because they depend on"
+" your last selection. Do you agree?"
+msgstr "Deze pakketten moeten worden verwijderd uit de verwijderings wachtrij omdat ze afhankelijk zijn van je laatste selectie. Mee eens?"
 
 #: ../../sulfur/src/sulfur/packages.py:216
 msgid "These packages must be excluded"
@@ -7177,17 +7097,13 @@ msgstr "Deze Pakketten moeten worden uitgesloten"
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
-msgstr ""
-"Deze pakketten moeten worden verwijderd uit de wachtrij omdat ze afhankelijk "
-"zijn van je laatste selectie. Mee eens?"
+msgstr "Deze pakketten moeten worden verwijderd uit de wachtrij omdat ze afhankelijk zijn van je laatste selectie. Mee eens?"
 
 #: ../../sulfur/src/sulfur/packages.py:433
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
-msgstr ""
-"Sommige afhankelijkheden konden niet worden gevonden. Wellicht zijn ze "
-"gemaskeerd of ontbreken in de actieve repositorie."
+msgstr "Sommige afhankelijkheden konden niet worden gevonden. Wellicht zijn ze gemaskeerd of ontbreken in de actieve repositorie."
 
 #: ../../sulfur/src/sulfur/packages.py:455
 msgid "Conflicting packages were pulled in, in the same key and slot"
@@ -7211,9 +7127,7 @@ msgstr "Kan pakketten niet verwijderen"
 
 #: ../../sulfur/src/sulfur/packages.py:570
 msgid "Some dependencies couldn't be removed because they are vital."
-msgstr ""
-"Sommige afhankelijkheden konden niet worden verwijderd omdat ze belangrijk "
-"zijn."
+msgstr "Sommige afhankelijkheden konden niet worden verwijderd omdat ze belangrijk zijn."
 
 #: ../../sulfur/src/sulfur/packages.py:625
 msgid "Freed space"
@@ -7381,9 +7295,7 @@ msgstr "Sorteren op groep"
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
-msgstr ""
-"De repositories hier onder zijn geconfigureerd maar niet beschikbaar. Ze "
-"moeten worden gedownload."
+msgstr "De repositories hier onder zijn geconfigureerd maar niet beschikbaar. Ze moeten worden gedownload."
 
 #: ../../sulfur/src/sulfur/__init__.py:697
 msgid "If you don't do this now, you won't be able to use them."
@@ -7461,11 +7373,9 @@ msgstr "Fout bij opslaan eigenschappen"
 
 #: ../../sulfur/src/sulfur/__init__.py:1358
 msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-"Deze pakketten zijn standaard afgeschermd of wegens jouw keuze. Wees "
-"voorzichtig."
+"These packages are masked either by default or due to your choice. Please be"
+" careful, at least."
+msgstr "Deze pakketten zijn standaard afgeschermd of wegens jouw keuze. Wees voorzichtig."
 
 #: ../../sulfur/src/sulfur/__init__.py:1414
 msgid "Generating metadata. Please wait."
@@ -7504,9 +7414,7 @@ msgstr "sys-apps/entropy dient zo spoedig mogelijk geupdate te worden!"
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
-msgstr ""
-"Een andere instantie van Entropy blokkeert deze optie. Probeer het in een "
-"aantal minuten."
+msgstr "Een andere instantie van Entropy blokkeert deze optie. Probeer het in een aantal minuten."
 
 #: ../../sulfur/src/sulfur/__init__.py:1582
 msgid "Updating repositories..."
@@ -7529,22 +7437,17 @@ msgstr "Geen missende afhankelijkheden gevonden."
 
 #: ../../sulfur/src/sulfur/__init__.py:1661
 msgid "Missing dependencies found, but none of them are on the repositories."
-msgstr ""
-"Missende afhankelijkheden gevonden, maar geen een van hen bestaan in de "
-"repositories."
+msgstr "Missende afhankelijkheden gevonden, maar geen een van hen bestaan in de repositories."
 
 #: ../../sulfur/src/sulfur/__init__.py:1668
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
-msgstr ""
-"Sommige missende afhankelijkheden komen niet overeen, anderen zullen worden "
-"toegevoegd aan de wachtrij."
+msgstr "Sommige missende afhankelijkheden komen niet overeen, anderen zullen worden toegevoegd aan de wachtrij."
 
 #: ../../sulfur/src/sulfur/__init__.py:1671
 msgid "All the missing dependencies are going to be added to the queue"
-msgstr ""
-"Alle missende afhankelijkheden zullen worden toegevoegd aan de wachtrij"
+msgstr "Alle missende afhankelijkheden zullen worden toegevoegd aan de wachtrij"
 
 #: ../../sulfur/src/sulfur/__init__.py:1688
 msgid "Testing libraries..."
@@ -7558,9 +7461,7 @@ msgstr "Bibliotheken test geannuleerd"
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
-msgstr ""
-"Sommige gebroken pakketten komen niet overeen, anderen zullen worden "
-"toegevoegd aan de wachtrij."
+msgstr "Sommige gebroken pakketten komen niet overeen, anderen zullen worden toegevoegd aan de wachtrij."
 
 #: ../../sulfur/src/sulfur/__init__.py:1735
 msgid "All the broken packages are going to be added to the queue"
@@ -7574,9 +7475,7 @@ msgstr "Deze pakketten zijn niet langer beschikbaar"
 msgid ""
 "These packages should be removed (if you agree) because support has been "
 "dropped. Do you want to remove them?"
-msgstr ""
-"Deze pakketten moeten worden verwijderd (als u akkoord gaat) omdat "
-"ondersteuning is vervallen. Wilt u ze verwijderen?"
+msgstr "Deze pakketten moeten worden verwijderd (als u akkoord gaat) omdat ondersteuning is vervallen. Wilt u ze verwijderen?"
 
 #: ../../sulfur/src/sulfur/__init__.py:1857
 msgid "These are orphaned vital packages"
@@ -7585,9 +7484,7 @@ msgstr "Dit zijn de geinstalleerde pakketten"
 #: ../../sulfur/src/sulfur/__init__.py:1858
 msgid ""
 "You should make sure that they are no longer needed and remove manually."
-msgstr ""
-"U moet er zeker van zijn dat ze niet langer meer nodig zijn en daarna "
-"handmatig verwijderen."
+msgstr "U moet er zeker van zijn dat ze niet langer meer nodig zijn en daarna handmatig verwijderen."
 
 #: ../../sulfur/src/sulfur/__init__.py:1866
 msgid "These are packages from unavailable repositories"
@@ -7607,9 +7504,7 @@ msgstr "Weergeven"
 
 #: ../../sulfur/src/sulfur/__init__.py:1976
 msgid "No packages need or can be queued at the moment."
-msgstr ""
-"Er zijn op dit moment geen pakketten die aan de wachtlijst kunnen worden "
-"toegevoegd."
+msgstr "Er zijn op dit moment geen pakketten die aan de wachtlijst kunnen worden toegevoegd."
 
 #: ../../sulfur/src/sulfur/__init__.py:2074
 msgid "Name and description"
@@ -7650,9 +7545,7 @@ msgstr "Er is iets ernstig mis gegaan."
 #: ../../sulfur/src/sulfur/__init__.py:2211
 msgid ""
 "Something bad happened, have a look at the messages in the terminal below."
-msgstr ""
-"Er is iets vreselijks gebeurt. Kijk in het terminal venster voor meer "
-"informatie."
+msgstr "Er is iets vreselijks gebeurt. Kijk in het terminal venster voor meer informatie."
 
 #: ../../sulfur/src/sulfur/__init__.py:2212
 msgid "Don't feel guilty, it's all my fault!"
@@ -7662,34 +7555,25 @@ msgstr "Wees gerust, dit is allemaal mijn fout!"
 msgid ""
 "Attention. An error occured while processing the queue.\n"
 "Please have a look at the terminal."
-msgstr ""
-"Attentie! Er is een fout opgetreden tijdens het verwerken van de "
-"wachtlijst.\n"
-" Kijk in het terminal venster voor meer informatie"
+msgstr "Attentie! Er is een fout opgetreden tijdens het verwerken van de wachtlijst.\n Kijk in het terminal venster voor meer informatie"
 
 #: ../../sulfur/src/sulfur/__init__.py:2288
 msgid ""
 "Attention. Something really bad happened.\n"
 "Please have a look at the terminal."
-msgstr ""
-"Er is iets vreselijks gebeurt.\n"
-" Kijk in het terminal venster voor meer informatie."
+msgstr "Er is iets vreselijks gebeurt.\n Kijk in het terminal venster voor meer informatie."
 
 #: ../../sulfur/src/sulfur/__init__.py:2299
 msgid ""
 "Attention. Other updates that must be installed.\n"
 "Sulfur will be reloaded."
-msgstr ""
-"Attentie. Andere updates moeten worden geinstalleerd. \n"
-"Sulfur wordt opnieuw geladen."
+msgstr "Attentie. Andere updates moeten worden geinstalleerd. \nSulfur wordt opnieuw geladen."
 
 #: ../../sulfur/src/sulfur/__init__.py:2305
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
-msgstr ""
-"Attentie. Nieuwe versie van Entropy!\n"
-"Sulfur wordt herstart."
+msgstr "Attentie. Nieuwe versie van Entropy!\nSulfur wordt herstart."
 
 #: ../../sulfur/src/sulfur/__init__.py:2386
 msgid "Processing Packages in queue"
@@ -7707,48 +7591,36 @@ msgstr "Huidige spiegel wordt overgeslagen."
 msgid ""
 "Did you know that you can comment, vote and add documents to applications "
 "like in a wiki?"
-msgstr ""
-"Wist je dat je kan reageren, stemmen en documenten kan toevoegen aan "
-"applicaties net als in de wiki?"
+msgstr "Wist je dat je kan reageren, stemmen en documenten kan toevoegen aan applicaties net als in de wiki?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:77
 msgid ""
 "Did you know that you can add icons or files to applications by simply "
 "dropping images from your Desktop onto them?"
-msgstr ""
-"Wist je dat je icoontjes en bestanden kan toevoegen aan applicaties door ze "
-"simpel weg er naar toe te slepen?"
+msgstr "Wist je dat je icoontjes en bestanden kan toevoegen aan applicaties door ze simpel weg er naar toe te slepen?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:78
 msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"Wist u dat Sulfur een geavanceerde modus heeft, klik gewoon op Sulfur -> "
-"Geavanceerde modus?"
+"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced"
+" mode?"
+msgstr "Wist u dat Sulfur een geavanceerde modus heeft, klik gewoon op Sulfur -> Geavanceerde modus?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:79
 msgid ""
 "Did you know that the guy who wrote this tip was really asleep at the time?"
-msgstr ""
-"Wist u dat de persoon die dit schreef eigenlijk aan het slapen was op dat "
-"moment?"
+msgstr "Wist u dat de persoon die dit schreef eigenlijk aan het slapen was op dat moment?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:80
 msgid ""
 "Did you know that you can backup your installed application repository by "
 "enabling Advanced mode and going to Preferences tab?"
-msgstr ""
-"Wist u dat u uw geinstalleerde bestanden repositorie kan back-uppen door in "
-"de Geavanceerde modus naar het Eigenschappen tabblad te gaan?"
+msgstr "Wist u dat u uw geinstalleerde bestanden repositorie kan back-uppen door in de Geavanceerde modus naar het Eigenschappen tabblad te gaan?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:81
 msgid ""
 "Did you know that you can customize interface colors by enabling Advanced "
 "mode and going to Preferences tab?"
-msgstr ""
-"Wist u dat u zelf ingestelde kleuren kan activeren in de Geavanceerde modus "
-"onder het Eigenschappen tabblad?"
+msgstr "Wist u dat u zelf ingestelde kleuren kan activeren in de Geavanceerde modus onder het Eigenschappen tabblad?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:177
 msgid "No Repository Identifier"
@@ -7820,13 +7692,9 @@ msgstr "Repositories Notitie Bord"
 
 #: ../../sulfur/src/sulfur/dialogs.py:329
 msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
+"Here below you will find a list of important news directly issued by your applications maintainers.\n"
 "Double click on each item to retrieve detailed info."
-msgstr ""
-"Hier onder vind je een lijst met belangrijk nieuws afkomstig van de "
-"applicatie onderhouders.\n"
-"Dubbel klikken om gedetailleerde info van elk item te zien."
+msgstr "Hier onder vind je een lijst met belangrijk nieuws afkomstig van de applicatie onderhouders.\nDubbel klikken om gedetailleerde info van elk item te zien."
 
 #: ../../sulfur/src/sulfur/dialogs.py:358
 msgid "Notice"
@@ -7989,9 +7857,7 @@ msgstr "In repositorie"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2356
 msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te "
-"voldoen"
+msgstr "Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te voldoen"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2358
 msgid "Some packages are masked"
@@ -8193,10 +8059,9 @@ msgstr "Je systeem nu updaten?"
 
 #: ../../sulfur/src/sulfur/events.py:759
 msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
-msgstr ""
-"Je hebt ervoor gekozen de behandeling stop te zetten. Weet je zeker dat je "
-"dit wilt ?"
+"You have chosen to interrupt the processing. Are you sure you want to do it "
+"?"
+msgstr "Je hebt ervoor gekozen de behandeling stop te zetten. Weet je zeker dat je dit wilt ?"
 
 #: ../../sulfur/src/sulfur/events.py:892
 msgid "UGC credentials cleared"
@@ -8494,9 +8359,7 @@ msgstr "Entropy database back up gereedschap"
 msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
-msgstr ""
-"<small>Met dit gereedschap, is het mogelijk om back ups te maken en te "
-"herstellen van jouw Besturings Systeem pakketten database.</small>"
+msgstr "<small>Met dit gereedschap, is het mogelijk om back ups te maken en te herstellen van jouw Besturings Systeem pakketten database.</small>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:4
 msgid "Add Document"
@@ -8508,9 +8371,7 @@ msgstr "Repositorie Toevoegen/Bewerken"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-"Het toevoegen van een <b>nieuwe repositorie</b> geeft toegang tot <b>extra "
-"software</b>"
+msgstr "Het toevoegen van een <b>nieuwe repositorie</b> geeft toegang tot <b>extra software</b>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Advanced Mode"
@@ -8532,9 +8393,7 @@ msgstr "Alles"
 msgid ""
 "Applications can alter your system configuration, merge requested changes "
 "manually"
-msgstr ""
-"Applicaties kunnen uw systeem configuraties aanpassen, pas gevraagde "
-"veranderingen handmatig aan"
+msgstr "Applicaties kunnen uw systeem configuraties aanpassen, pas gevraagde veranderingen handmatig aan"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:17
 msgid "Background error message"
@@ -8629,10 +8488,7 @@ msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
-msgstr ""
-"Uitschakelen\n"
-"Alleen verwijderen\n"
-"Installeer+Verwijderen"
+msgstr "Uitschakelen\nAlleen verwijderen\nInstalleer+Verwijderen"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:49
 msgid "Discard login information"
@@ -8694,9 +8550,7 @@ msgstr "FTP proxy"
 msgid ""
 "Filter currently shown items, or paste entropy:// action strings (for eg. "
 "entropy://amarok, to install Amarok!)"
-msgstr ""
-"Filter huidig weergegeven items, of plak entropy:// actie gegeven (bijv. "
-"entropy://amarok, om Amarok te installeren!)"
+msgstr "Filter huidig weergegeven items, of plak entropy:// actie gegeven (bijv. entropy://amarok, om Amarok te installeren!)"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:66
 msgid "General"
@@ -8893,9 +8747,7 @@ msgstr "Voorkeuren"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Prevents files belonging to a package being overwritten by another"
-msgstr ""
-"Beschermd bestanden behorende tot een pakket tegen overschrijving door een "
-"ander"
+msgstr "Beschermd bestanden behorende tot een pakket tegen overschrijving door een ander"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Process details"
@@ -8953,9 +8805,7 @@ msgstr "Herinstalleer geselecteerd pakket"
 msgid ""
 "Reliable\n"
 "Relaxed"
-msgstr ""
-"Vertrouwd\n"
-"Gemakkelijk"
+msgstr "Vertrouwd\nGemakkelijk"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Remove"
@@ -9229,9 +9079,7 @@ msgstr "Waar was je mee bezig"
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
-msgstr ""
-"Je <b>moet</b> onderstaande licentie accepteren.\n"
-"Lees goed door <b>en maak een keuze</b>."
+msgstr "Je <b>moet</b> onderstaande licentie accepteren.\nLees goed door <b>en maak een keuze</b>."
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Your E-mail"
