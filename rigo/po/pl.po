@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
@@ -10,14 +10,12 @@ msgstr ""
 "POT-Creation-Date: 2012-03-31 19:57+0200\n"
 "PO-Revision-Date: 2012-03-31 22:36+0000\n"
 "Last-Translator: Enlik <slawomir.nizio@sabayon.org>\n"
-"Language-Team: Polish (http://www.transifex.net/projects/p/sabayon-rigo/"
-"language/pl/)\n"
-"Language: pl\n"
+"Language-Team: Polish (http://www.transifex.net/projects/p/sabayon-rigo/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2)\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
 #: ../RigoDaemon/app.py:565
 msgid "Not authorized"
@@ -227,20 +225,14 @@ msgstr "No to OK"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"jest częścią systemu bazowego i <b>nie może</b> by usunięte"
+msgstr "<b>%s</b>\njest częścią systemu bazowego i <b>nie może</b> by usunięte"
 
 #: ../rigo/controllers/daemon.py:1480
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"nie może być zainstalowane w tym czasie ze względu na <b>brakujące/"
-"zamaskowane</b> lub <b>konfliktujące</b> zależności"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nnie może być zainstalowane w tym czasie ze względu na <b>brakujące/zamaskowane</b> lub <b>konfliktujące</b> zależności"
 
 #: ../rigo/controllers/daemon.py:1495
 #, python-format
@@ -264,8 +256,7 @@ msgstr[2] ", <b>%i</b> aplikacji w kolejce jak dotąd..."
 
 #: ../rigo/controllers/daemon.py:1878
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-"<b>Aktualizacja systemu</b> rozpoczęta, teraz możesz iść zrobić sobie kawę"
+msgstr "<b>Aktualizacja systemu</b> rozpoczęta, teraz możesz iść zrobić sobie kawę"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:309
 msgid "Repositories Update in <b>progress</b>..."
@@ -389,9 +380,7 @@ msgstr "Niepowodzenie przy logowaniu. Twój <b>komentarz</b> nie został dodany"
 
 #: ../rigo/ui/gtk3/controllers/application.py:634
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr ""
-"<i>Żadne <b>komentarze</b> dla tej aplikacji nie zostały dodane... jak dotąd!"
-"</i>"
+msgstr "<i>Żadne <b>komentarze</b> dla tej aplikacji nie zostały dodane... jak dotąd!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:683
 msgid "Older comments"
@@ -403,9 +392,7 @@ msgstr "Ładowanie starszych komentarzy..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:734
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
-"<i>Żadne <b>obrazki</b> dla tej aplikacji nie zostały dodane... jak dotąd!</"
-"i>"
+msgstr "<i>Żadne <b>obrazki</b> dla tej aplikacji nie zostały dodane... jak dotąd!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:742
 msgid "Older images"
@@ -575,9 +562,7 @@ msgstr "<b>Błąd</b> logowania!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Nie można połączyć się z usługą sieciową Entropy. Jesteś połączony do "
-"<b>Internetu</b>?"
+msgstr "Nie można połączyć się z usługą sieciową Entropy. Jesteś połączony do <b>Internetu</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:391
 msgid "Don't ask me..."
@@ -596,18 +581,14 @@ msgstr "Jeśli patrzysz, jak woda się gotuje, trwa to dłużej"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Najpierw musisz <b>przejrzeć</b> i <b>zaakceptować</b> następujące licencje: "
-"%s"
+msgstr "Najpierw musisz <b>przejrzeć</b> i <b>zaakceptować</b> następujące licencje: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:467
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> Aplikacja lub któraś z jej zależności rozpowszechniana jest z "
-"następującymi licencjami: %s"
+msgstr "<b>%s</b> Aplikacja lub któraś z jej zależności rozpowszechniana jest z następującymi licencjami: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:483
 msgid "Make sure to review all the licenses"
@@ -634,13 +615,10 @@ msgstr "Zamknij"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:632
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Znaleziono w twoim <b>systemie</b> kilka <b>aplikacji</b>, które nie są już "
-"utrzymywane w ramach tej dystrybucji. Usunięcie niektórych z nich może "
-"wymagać <b>ręcznego sprawdzenia</b>. Kliknij na aplikacji, aby rozwinąć."
+msgstr "Znaleziono w twoim <b>systemie</b> kilka <b>aplikacji</b>, które nie są już utrzymywane w ramach tej dystrybucji. Usunięcie niektórych z nich może wymagać <b>ręcznego sprawdzenia</b>. Kliknij na aplikacji, aby rozwinąć."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:640
 msgid "Manual review"
