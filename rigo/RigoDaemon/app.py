@@ -58,7 +58,7 @@ from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
-    ReadersWritersSemaphore
+    ReadersWritersSemaphore, DirectoryMonitor
 from entropy.fetchers import UrlFetcher
 from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
@@ -449,14 +449,23 @@ class RigoDaemonService(dbus.service.Object):
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         self._fakeout = FakeOutFile(self._entropy)
+        exec_path = sys.argv[0]
         write_output(
-            "__init__: dbus service loaded, pid: %d, ppid: %d" %  (
-                os.getpid(), os.getppid(),)
-                )
+            "__init__: dbus service loaded, "
+            "pid: %d, ppid: %d, exec: %s" %  (
+                os.getpid(), os.getppid(), exec_path,)
+            )
 
         self._deferred_shutdown = False
         self._deferred_shutdown_mutex = Lock()
         signal.signal(signal.SIGUSR2, self._activate_deferred_shutdown)
+
+        flags = DirectoryMonitor.DN_MODIFY | DirectoryMonitor.DN_DELETE | \
+            DirectoryMonitor.DN_RENAME | DirectoryMonitor.DN_CREATE
+        self._mon = DirectoryMonitor(
+            os.path.dirname(exec_path),
+            self._activate_deferred_shutdown,
+            event_flags=flags)
 
     def _activate_deferred_shutdown(self, *args):
         """
@@ -569,6 +578,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("stop(): called", debug=True)
         with self._activity_mutex:
+            GLib.idle_add(self._mon.close)
             self._stop_signal = True
             self._action_queue_waiter.release()
             self._close_local_resources()
