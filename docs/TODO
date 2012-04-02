@@ -10,12 +10,11 @@ Backlog (raw)
           - signal unavailable space (also before upgrade)
     - [F] Configuration files Update
 
-    - preferences:
+    - [F] Preferences:
        - clean metadata cache
        - clean recent searches
        - logout (clean session info)
        - update repositories
-       - reload RigoDaemon (via reload())
 
     magneto:
       - migrate to RigoDaemon as soon as it's available!
