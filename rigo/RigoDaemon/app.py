@@ -319,12 +319,12 @@ class RigoDaemonService(dbus.service.Object):
     class ActionQueueItem(object):
 
         def __init__(self, package_id, repository_id, action,
-                     simulate, sender):
+                     simulate, pid):
             self._package_id = package_id
             self._repository_id = repository_id
             self._action = action
             self._simulate = simulate
-            self._sender = sender
+            self._pid = pid
 
         @property
         def pkg(self):
@@ -351,11 +351,11 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._simulate
 
-        def sender(self):
+        def pid(self):
             """
-            Return the Dbus Sender Id.
+            Return the PID of the client requesting this Action.
             """
-            return self._sender
+            return self._pid
 
         def __str__(self):
             """
@@ -372,9 +372,9 @@ class RigoDaemonService(dbus.service.Object):
 
     class UpgradeActionQueueItem(object):
 
-        def __init__(self, simulate, sender):
+        def __init__(self, simulate, pid):
             self._simulate = simulate
-            self._sender = sender
+            self._pid = pid
 
         def simulate(self):
             """
@@ -382,11 +382,11 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._simulate
 
-        def sender(self):
+        def pid(self):
             """
-            Return the Dbus Sender Id.
+            Return the PID of the client requesting this Action.
             """
-            return self._sender
+            return self._pid
 
         def __str__(self):
             """
@@ -542,7 +542,7 @@ class RigoDaemonService(dbus.service.Object):
             'org.freedesktop.DBus').GetConnectionUnixProcessID(
             sender)
 
-    def _authorize(self, sender, action_id):
+    def _authorize(self, pid, action_id):
         """
         Authorize privileged Activity.
         Return True for success, False for failure.
@@ -557,7 +557,6 @@ class RigoDaemonService(dbus.service.Object):
             auth_res['result'] = result
             auth_res['sem'].release()
 
-        pid = self._get_caller_pid(sender)
         write_output("_authorize: got pid: %s" % (pid,), debug=True)
         GLib.idle_add(
             self._auth.authenticate,
@@ -588,7 +587,7 @@ class RigoDaemonService(dbus.service.Object):
             # use kill so that GObject main loop will quit as well
             os.kill(os.getpid(), signal.SIGTERM)
 
-    def _update_repositories(self, repositories, force, activity, sender):
+    def _update_repositories(self, repositories, force, activity, pid):
         """
         Repositories Update execution code.
         """
@@ -601,7 +600,7 @@ class RigoDaemonService(dbus.service.Object):
             acquired_exclusive = False
             try:
                 authorized = self._authorize(
-                    sender,
+                    pid,
                     PolicyActions.UPDATE_REPOSITORIES)
                 if not authorized:
                     result = 401
@@ -717,11 +716,11 @@ class RigoDaemonService(dbus.service.Object):
         if isinstance(item, RigoDaemonService.ActionQueueItem):
             activity = ActivityStates.MANAGING_APPLICATIONS
             policy = PolicyActions.MANAGE_APPLICATIONS
-            sender = item.sender()
+            pid = item.pid()
         elif isinstance(item, RigoDaemonService.UpgradeActionQueueItem):
             activity = ActivityStates.UPGRADING_SYSTEM
             policy = PolicyActions.UPGRADE_SYSTEM
-            sender = item.sender()
+            pid = item.pid()
             is_app = False
         else:
             raise AssertionError("wtf?")
@@ -730,7 +729,7 @@ class RigoDaemonService(dbus.service.Object):
         self._enable_stdout_stderr_redirect()
         acquired_exclusive = False
         try:
-            authorized = self._authorize(sender, policy)
+            authorized = self._authorize(pid, policy)
             if not authorized:
                 # this is required in order to let clients know
                 # that their scheduled app action just failed
@@ -1448,8 +1447,9 @@ class RigoDaemonService(dbus.service.Object):
         At the end of the execution, the "repositories_updated"
         signal will be raised.
         """
-        write_output("update_repositories called: %s" % (
-                repositories,), debug=True)
+        pid = self._get_caller_pid(sender)
+        write_output("update_repositories called: %s, client pid: %s" % (
+                repositories, pid,), debug=True)
 
         activity = ActivityStates.UPDATING_REPOSITORIES
         try:
@@ -1466,7 +1466,7 @@ class RigoDaemonService(dbus.service.Object):
             return False
 
         task = ParallelTask(self._update_repositories, repositories,
-                            force, activity, sender)
+                            force, activity, pid)
         task.daemon = True
         task.name = "UpdateRepositoriesThread"
         task.start()
@@ -1480,7 +1480,9 @@ class RigoDaemonService(dbus.service.Object):
         Request RigoDaemon to enqueue a new Application Action, if
         possible.
         """
-        write_output("enqueue_application_action called: %s, %s" % (
+        pid = self._get_caller_pid(sender)
+        write_output("enqueue_application_action called: "
+                     "%s, %s, client pid: %s" % (
                 (package_id, repository_id), action,), debug=True)
 
         with self._enqueue_action_busy_hold_mutex:
@@ -1503,7 +1505,7 @@ class RigoDaemonService(dbus.service.Object):
                 str(repository_id),
                 action,
                 bool(simulate),
-                sender)
+                pid)
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True
@@ -1514,8 +1516,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         Request RigoDaemon to Upgrade the whole System.
         """
-        write_output("upgrade_system called: simulate: %s" % (
-                (simulate,)), debug=True)
+        pid = self._get_caller_pid(sender)
+        write_output("upgrade_system called: "
+                     "simulate: %s, client pid: %s" % (
+                (simulate, pid,)), debug=True)
 
         with self._enqueue_action_busy_hold_mutex:
 
@@ -1533,7 +1537,7 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
                 return False
 
-            item = self.UpgradeActionQueueItem(bool(simulate), sender)
+            item = self.UpgradeActionQueueItem(bool(simulate), pid)
             self._action_queue.append(item)
             self._action_queue_waiter.release()
             return True
