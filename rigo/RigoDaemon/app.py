@@ -319,12 +319,12 @@ class RigoDaemonService(dbus.service.Object):
     class ActionQueueItem(object):
 
         def __init__(self, package_id, repository_id, action,
-                     simulate, pid):
+                     simulate, authorized):
             self._package_id = package_id
             self._repository_id = repository_id
             self._action = action
             self._simulate = simulate
-            self._pid = pid
+            self._authorized = authorized
 
         @property
         def pkg(self):
@@ -351,11 +351,11 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._simulate
 
-        def pid(self):
+        def authorized(self):
             """
-            Return the PID of the client requesting this Action.
+            Return True, if Action has been authorized.
             """
-            return self._pid
+            return self._authorized
 
         def __str__(self):
             """
@@ -372,9 +372,9 @@ class RigoDaemonService(dbus.service.Object):
 
     class UpgradeActionQueueItem(object):
 
-        def __init__(self, simulate, pid):
+        def __init__(self, simulate, authorized):
             self._simulate = simulate
-            self._pid = pid
+            self._authorized = authorized
 
         def simulate(self):
             """
@@ -382,11 +382,11 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._simulate
 
-        def pid(self):
+        def authorized(self):
             """
-            Return the PID of the client requesting this Action.
+            Return True, if Action has been authorized.
             """
-            return self._pid
+            return self._authorized
 
         def __str__(self):
             """
@@ -439,7 +439,7 @@ class RigoDaemonService(dbus.service.Object):
 
         self._action_queue = deque()
         self._action_queue_waiter = Semaphore(0)
-        self._enqueue_action_busy_hold_mutex = Lock()
+        self._enqueue_action_busy_hold_sem = Semaphore()
         self._action_queue_task = ParallelTask(
             self._action_queue_worker_thread)
         self._action_queue_task.name = "ActionQueueWorkerThread"
@@ -591,23 +591,30 @@ class RigoDaemonService(dbus.service.Object):
         """
         Repositories Update execution code.
         """
+        authorized = self._authorize(
+            pid, PolicyActions.UPDATE_REPOSITORIES)
+        if not authorized:
+            write_output("_update_repositories: not authorized",
+                         debug=True)
+            try:
+                self._unbusy(activity)
+            except ActivityStates.AlreadyAvailableError:
+                write_output("_update_repositories._unbusy: already "
+                             "available, wtf !?!?")
+                # wtf??
+            self.activity_progress(activity, 100)
+            self.activity_completed(activity, False)
+            self.repositories_updated(401, _("Not authorized"))
+            return
+
         with self._activity_mutex:
 
             # ask clients to release their locks
             self._enable_stdout_stderr_redirect()
             result = 500
             msg = ""
-            acquired_exclusive = False
+            self._acquire_exclusive(activity)
             try:
-                authorized = self._authorize(
-                    pid,
-                    PolicyActions.UPDATE_REPOSITORIES)
-                if not authorized:
-                    result = 401
-                    msg = _("Not authorized")
-                    return
-                self._acquire_exclusive(activity)
-                acquired_exclusive = True
                 self._close_local_resources()
                 self._entropy_setup()
                 self.activity_started(activity)
@@ -647,8 +654,7 @@ class RigoDaemonService(dbus.service.Object):
                     write_output("_update_repositories._unbusy: already "
                                  "available, wtf !?!?")
                     # wtf??
-                if acquired_exclusive:
-                    self._release_exclusive(activity)
+                self._release_exclusive(activity)
                 self.activity_progress(activity, 100)
                 self.activity_completed(activity, result == 0)
                 self.repositories_updated(result, msg)
@@ -687,7 +693,8 @@ class RigoDaemonService(dbus.service.Object):
         Action Queue worker code.
         """
         def _action_queue_finally(exclusive, activity, outcome):
-            with self._enqueue_action_busy_hold_mutex:
+            self._disable_stdout_stderr_redirect()
+            with self._enqueue_action_busy_hold_sem:
                 # unbusy?
                 has_more = self._action_queue_waiter.acquire(False)
                 if has_more:
@@ -700,8 +707,7 @@ class RigoDaemonService(dbus.service.Object):
                         write_output("_action_queue_worker_thread"
                                      "._unbusy: already "
                                      "available, wtf !?!?")
-                        # wtf??
-                    self._disable_stdout_stderr_redirect()
+                            # wtf??
                     if exclusive:
                         self._release_exclusive(activity)
                     success = outcome == AppTransactionOutcome.SUCCESS
@@ -716,11 +722,9 @@ class RigoDaemonService(dbus.service.Object):
         if isinstance(item, RigoDaemonService.ActionQueueItem):
             activity = ActivityStates.MANAGING_APPLICATIONS
             policy = PolicyActions.MANAGE_APPLICATIONS
-            pid = item.pid()
         elif isinstance(item, RigoDaemonService.UpgradeActionQueueItem):
             activity = ActivityStates.UPGRADING_SYSTEM
             policy = PolicyActions.UPGRADE_SYSTEM
-            pid = item.pid()
             is_app = False
         else:
             raise AssertionError("wtf?")
@@ -729,19 +733,14 @@ class RigoDaemonService(dbus.service.Object):
         self._enable_stdout_stderr_redirect()
         acquired_exclusive = False
         try:
-            authorized = self._authorize(pid, policy)
-            if not authorized:
-                # this is required in order to let clients know
-                # that their scheduled app action just failed
+
+            if not item.authorized():
+                # then return Permission Denined
                 outcome = AppTransactionOutcome.PERMISSION_DENIED
-                if is_app:
-                    _pkg_id, _repo_id = item.pkg
-                    self.application_processed(
-                        _pkg_id, _repo_id, item.action(), outcome)
                 return
+
             self._acquire_exclusive(activity)
             acquired_exclusive = True
-
             self._close_local_resources()
             self._entropy_setup()
             self.activity_started(activity)
@@ -1483,16 +1482,17 @@ class RigoDaemonService(dbus.service.Object):
         pid = self._get_caller_pid(sender)
         write_output("enqueue_application_action called: "
                      "%s, %s, client pid: %s" % (
-                (package_id, repository_id), action,), debug=True)
+                (package_id, repository_id), action, pid), debug=True)
 
-        with self._enqueue_action_busy_hold_mutex:
-
+        self._enqueue_action_busy_hold_sem.acquire()
+        try:
             activity = ActivityStates.MANAGING_APPLICATIONS
             try:
                 self._busy(activity)
             except ActivityStates.BusyError:
                 # I am already busy doing other stuff, cannot
                 # satisfy request
+                self._enqueue_action_busy_hold_sem.release()
                 return False
             except ActivityStates.SameError:
                 # I am already busy doing this, so just enqueue
@@ -1500,15 +1500,31 @@ class RigoDaemonService(dbus.service.Object):
                              "already busy, just enqueue",
                              debug=True)
 
-            item = self.ActionQueueItem(
-                int(package_id),
-                str(repository_id),
-                action,
-                bool(simulate),
-                pid)
-            self._action_queue.append(item)
-            self._action_queue_waiter.release()
+            def _enqueue():
+                try:
+                    authorized = self._authorize(
+                        pid, PolicyActions.MANAGE_APPLICATIONS)
+                    item = self.ActionQueueItem(
+                        int(package_id),
+                        str(repository_id),
+                        action,
+                        bool(simulate),
+                        authorized)
+                    self._action_queue.append(item)
+                    self._action_queue_waiter.release()
+                finally:
+                    self._enqueue_action_busy_hold_sem.release()
+
+            task = ParallelTask(_enqueue)
+            task.name = "EnqueueApplicationActionThread"
+            task.daemon = True
+            task.start()
+            # keeping the sem down
             return True
+
+        except Exception:
+            self._enqueue_action_busy_hold_sem.release()
+            raise
 
     @dbus.service.method(BUS_NAME, in_signature='b',
         out_signature='b', sender_keyword='sender')
@@ -1521,26 +1537,45 @@ class RigoDaemonService(dbus.service.Object):
                      "simulate: %s, client pid: %s" % (
                 (simulate, pid,)), debug=True)
 
-        with self._enqueue_action_busy_hold_mutex:
-
+        self._enqueue_action_busy_hold_sem.acquire()
+        try:
             activity = ActivityStates.UPGRADING_SYSTEM
             try:
                 self._busy(activity)
             except ActivityStates.BusyError:
                 # I am already busy doing other stuff, cannot
                 # satisfy request
+                self._enqueue_action_busy_hold_sem.release()
                 return False
             except ActivityStates.SameError:
                 # I am already busy doing this
                 write_output("upgrade_system: "
                              "already doing it, failing",
                              debug=True)
+                self._enqueue_action_busy_hold_sem.release()
                 return False
 
-            item = self.UpgradeActionQueueItem(bool(simulate), pid)
-            self._action_queue.append(item)
-            self._action_queue_waiter.release()
+            def _enqueue():
+                try:
+                    authorized = self._authorize(
+                        pid, PolicyActions.UPGRADE_SYSTEM)
+                    item = self.UpgradeActionQueueItem(
+                        bool(simulate), authorized)
+                    self._action_queue.append(item)
+                    self._action_queue_waiter.release()
+                finally:
+                    self._enqueue_action_busy_hold_sem.release()
+
+            task = ParallelTask(_enqueue)
+            task.name = "UpgradeSystemThread"
+            task.daemon = True
+            task.start()
+            # keeping the sem down
             return True
+
+        except Exception:
+            self._enqueue_action_busy_hold_sem.release()
+            raise
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='i')
