@@ -878,7 +878,7 @@ class RigoDaemonService(dbus.service.Object):
             manual_remove, remove = \
                 self._entropy.calculate_orphaned_packages()
             if manual_remove or remove:
-                self.unsupported_applications(manual_removal, remove)
+                self.unsupported_applications(manual_remove, remove)
 
             return AppTransactionOutcome.SUCCESS
 
