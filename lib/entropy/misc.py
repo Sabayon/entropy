@@ -16,6 +16,7 @@ import os
 import sys
 import time
 import fcntl
+import signal
 import errno
 import codecs
 if sys.hexversion >= 0x3000000:
@@ -297,7 +298,6 @@ class TimeScheduled(threading.Thread):
                 if do_break:
                     break
 
-
     def __do_delay(self):
         """ Executes the delay """
         while self.__paused:
@@ -341,6 +341,66 @@ class TimeScheduled(threading.Thread):
         # at this point run() is called or start() hasn't been called
         # we're allowed to kill
         self.__alive = 0
+
+
+class DirectoryMonitor:
+
+    """
+    DirectoryMonitor uses Linux dnotify facility to signal
+    file change events for the monitored directory.
+    However, this class attaches the event callback to SIGIO,
+    thus it is not safe to have multiple instances of it around
+    because there is no real event dispatching.
+    """
+
+    # A File in the dir has been read
+    DN_ACCESS = fcntl.DN_ACCESS
+    # A File has been modified (w, t)
+    DN_MODIFY = fcntl.DN_MODIFY
+    # A File has been created
+    DN_CREATE = fcntl.DN_CREATE
+    # A File has been deleted
+    DN_DELETE = fcntl.DN_DELETE
+    # A File has been renamed
+    DN_RENAME = fcntl.DN_RENAME
+    # A file has got its attrs changed (perms, ownership)
+    DN_ATTRIB = fcntl.DN_ATTRIB
+
+    def __init__(self, directory_path, callback, event_flags=None):
+        """
+        DirectoryMonitor constructor.
+
+        @param directory_path: path of the directory to monitor
+        @type directory_path: string
+        @param callback: function called on events. The signature is:
+        void function()
+        @type callback: function
+        @keyword event_flags: specify an alternative flag mask, default is:
+        DN_ACCESS | DN_MODIFY | DN_CREATE | DN_DELETE | DN_RENAME
+        | DN_ATTRIB
+        @type event_flags: int
+        """
+        self._directory_path = directory_path
+        self._callback = callback
+        if event_flags:
+            self._flags = event_flags
+        else:
+            self._flags = self.DN_ACCESS | self.DN_MODIFY | \
+                self.DN_CREATE | self.DN_DELETE | self.DN_RENAME | \
+                self.DN_ATTRIB
+        self._fd = os.open(self._directory_path, os.O_RDONLY)
+        fcntl.fcntl(self._fd, fcntl.F_NOTIFY, self._flags)
+        def _forward(signum, frame):
+            self._callback()
+        signal.signal(signal.SIGIO, _forward)
+
+    def close(self):
+        """
+        Terminate the listeners and release all the allocated resources.
+        """
+        signal.signal(signal.SIGIO, signal.SIG_DFL)
+        os.close(self._fd)
+
 
 class ParallelTask(threading.Thread):
 
