@@ -59,7 +59,7 @@ from entropy.exceptions import DependenciesNotFound, \
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore, DirectoryMonitor
-from entropy.fetchers import UrlFetcher
+from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
 from entropy.services.client import WebService
@@ -118,8 +118,11 @@ class Entropy(Client):
     _DAEMON = None
 
     def init_singleton(self):
-        Client.init_singleton(self, load_ugc=False,
-            url_fetcher=DaemonUrlFetcher, repo_validation=False)
+        Client.init_singleton(
+            self, load_ugc=False,
+            url_fetcher=DaemonUrlFetcher,
+            multiple_url_fetcher=DaemonMultipleUrlFetcher,
+            repo_validation=False)
         write_output(
             "Loading Entropy Rigo daemon: logfile: %s" % (
                 DAEMON_LOGFILE,)
@@ -132,6 +135,7 @@ class Entropy(Client):
         """
         Entropy._DAEMON = daemon
         DaemonUrlFetcher.set_daemon(daemon)
+        DaemonMultipleUrlFetcher.set_daemon(daemon)
 
     def output(self, text, header = "", footer = "", back = False,
                importance = 0, level = "info", count = None,
@@ -146,6 +150,7 @@ class Entropy(Client):
                 level, count_c, count_t, percent, _raw)
 
 Client.__singleton_class__ = Entropy
+
 
 class DaemonUrlFetcher(UrlFetcher):
 
@@ -193,6 +198,54 @@ class DaemonUrlFetcher(UrlFetcher):
             self.__average, self.__downloadedsize,
             int(self.__remotesize), int(self.__datatransfer),
             self.__time_remaining)
+
+class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
+
+    daemon_last_avg = 100
+    __average = 0
+    __downloadedsize = 0
+    __remotesize = 0
+    __datatransfer = 0
+    __time_remaining = ""
+    __last_t = None
+
+    _DAEMON = None
+
+    @staticmethod
+    def set_daemon(daemon):
+        """
+        Bind RigoDaemon instance to this class.
+        """
+        DaemonMultipleUrlFetcher._DAEMON = daemon
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__average = average
+        self.__downloadedsize = downloaded_size
+        self.__remotesize = total_size
+        self.__datatransfer = data_transfer
+        self.__time_remaining = time_remaining
+
+    def update(self):
+        if self._DAEMON is None:
+            return
+
+        # avoid flooding clients
+        average = self.__average
+        if average > 0.2 and average < 99.8:
+            last_t = self.__last_t
+            cur_t = time.time()
+            if last_t is not None:
+                if (cur_t - last_t) < 0.5:
+                    return # dont flood
+            self.__last_t = cur_t
+
+        self._DAEMON.transfer_output(
+            self.__average, self.__downloadedsize,
+            int(self.__remotesize), int(self.__datatransfer),
+            self.__time_remaining)
+
 
 class FakeOutFile(object):
 
@@ -1684,6 +1737,7 @@ class RigoDaemonService(dbus.service.Object):
         Entropy Library output text signal. Clients will be required to
         forward this message to User.
         """
+        write_output("output() issued", debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='iiiis')
@@ -1694,6 +1748,7 @@ class RigoDaemonService(dbus.service.Object):
         Entropy UrlFetchers output signals. Clients will be required to
         forward this message to User in Progress Bar form.
         """
+        write_output("transfer_output() issued", debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='is')
