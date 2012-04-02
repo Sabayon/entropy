@@ -192,8 +192,15 @@ Client.__singleton_class__ = Entropy
 class UpdatesDaemon(dbus.service.Object):
 
     def __init__(self):
+        # start dbus service
+        object_path = "/notifier"
+        dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
+        system_bus = dbus.SystemBus(mainloop = dbus_loop)
+        name = dbus.service.BusName("org.entropy.Client",
+                                    bus = system_bus)
+        dbus.service.Object.__init__(self, name, object_path)
+        write_output("__init__: dbus service loaded")
 
-        gobject.threads_init()
         # do not load/unload every time, this avoids
         # memleaks:
         # https://forum.sabayon.org/viewtopic.php?f=24&t=26171
@@ -219,19 +226,6 @@ class UpdatesDaemon(dbus.service.Object):
         self.__system_db_hash = None
         self.__last_system_repo_checksum = None
         self.__got_client_ping = True
-
-        # start dbus service
-        object_path = "/notifier"
-        dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
-        system_bus = dbus.SystemBus(mainloop = dbus_loop)
-        name = dbus.service.BusName("org.entropy.Client", bus = system_bus)
-        dbus.service.Object.__init__ (self, system_bus, object_path)
-        write_output("__init__: dbus service loaded")
-
-        # this seems to avoid race conditions
-        # with dbus service not being available
-        time.sleep(2)
-
 
     def start(self):
         self.stop()
@@ -733,6 +727,7 @@ if __name__ == "__main__":
         ud_i = UpdatesDaemon()
     except dbus.exceptions.DBusException:
         raise SystemExit(1)
+    gobject.threads_init()
     ud_i.start()
     main_loop = gobject.MainLoop()
     main_loop.run()
