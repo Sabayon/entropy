@@ -3,18 +3,11 @@ Backlog (raw)
   1.0:
 
     rigo:
-    - requires pygobject[cairo,introspection]
-    - requires dbus
-    - requires polkit [introspection]
-    - install simulation -> rigo:simulate:i:<dep>
-    - removal simulation -> rigo:simulate:r:<dep>
-    - upgrade simulation -> rigo:simulate:u
-    - orphan simulation -> rigo:simulate:o:<dep>
-
     - [F] App Install support
           - make possible to undo accidental enqueue, give 5 seconds?
             -> Undo feature via NotificationBox?
-
+          - red button -> terminate queue instantly
+          - signal unavailable space (also before upgrade)
     - [F] Configuration files Update
 
     - preferences:
