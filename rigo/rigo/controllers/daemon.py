@@ -20,7 +20,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 
 import time
-from threading import Lock, Semaphore
+from threading import Lock, Semaphore, current_thread
 
 import dbus
 
@@ -269,11 +269,13 @@ class RigoServiceController(GObject.Object):
         Return whether the RigoDaemon dbus service is
         available.
         """
-        try:
-            self._entropy_bus
-            return True
-        except dbus.exceptions.DBusException:
-            return False
+        def _available():
+            try:
+                self._entropy_bus
+                return True
+            except dbus.exceptions.DBusException:
+                return False
+        return self._execute_mainloop(_available)
 
     def busy(self, local_activity):
         """
@@ -1105,17 +1107,21 @@ class RigoServiceController(GObject.Object):
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
         values).
         """
-        return dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).activity()
+        def _activity():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).activity()
+        return self._execute_mainloop(_activity)
 
     def action_queue_length(self):
         """
         Return the current size of the RigoDaemon Application Action Queue.
         """
-        return dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).action_queue_length()
+        def _action_queue_length():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).action_queue_length()
+        return self._execute_mainloop(_action_queue_length)
 
     def action(self, app):
         """
@@ -1123,27 +1129,52 @@ class RigoServiceController(GObject.Object):
         value).
         """
         package_id, repository_id = app.get_details().pkg
-        return dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).action(
-            package_id, repository_id)
+        def _action():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).action(
+                package_id, repository_id)
+        return self._execute_mainloop(_action)
 
     def exclusive(self):
         """
         Return whether RigoDaemon is running in with
         Entropy Resources acquired in exclusive mode.
         """
-        return dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).exclusive()
+        def _exclusive():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).exclusive()
+        return self._execute_mainloop(_exclusive)
 
     def api(self):
         """
         Return RigoDaemon API version
         """
-        return dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).api()
+        def _api():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).api()
+        return self._execute_mainloop(_api)
+
+    def _execute_mainloop(self, function, *args, **kwargs):
+        """
+        Execute a function inside the MainLoop and return
+        the result to the caller.
+        """
+        if current_thread().name == "MainThread":
+            return function(*args, **kwargs)
+
+        sem_data = {
+            'sem': Semaphore(0),
+            'res': None,
+        }
+        def _wrapper():
+            sem_data['res'] = function(*args, **kwargs)
+            sem_data['sem'].release()
+        GLib.idle_add(_wrapper)
+        sem_data['sem'].acquire()
+        return sem_data['res']
 
     def _release_local_resources(self, clear_avc=True):
         """
@@ -1289,7 +1320,8 @@ class RigoServiceController(GObject.Object):
 
         with self._registered_signals_mutex:
             # connect our signal
-            sig_match = self._entropy_bus.connect_to_signal(
+            sig_match = self._execute_mainloop(
+                self._entropy_bus.connect_to_signal,
                 self._REPOSITORIES_UPDATED_SIGNAL,
                 _repositories_updated_signal,
                 dbus_interface=self.DBUS_INTERFACE)
@@ -1314,10 +1346,13 @@ class RigoServiceController(GObject.Object):
 
         accepted = True
         if master:
-            accepted = dbus.Interface(
-                self._entropy_bus,
-                dbus_interface=self.DBUS_INTERFACE
-                ).update_repositories(repositories, force)
+            def _enqueue():
+                return dbus.Interface(
+                    self._entropy_bus,
+                    dbus_interface=self.DBUS_INTERFACE
+                    ).update_repositories(repositories, force)
+            accepted = self._execute_mainloop(_enqueue)
+
         else:
             # check if we need to cope with races
             self._update_repositories_signal_check(
@@ -1438,10 +1473,12 @@ class RigoServiceController(GObject.Object):
         """
         Accept the given list of license ids.
         """
-        dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).accept_licenses(
-            license_list)
+        def _accept():
+            dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).accept_licenses(
+                license_list)
+        self._execute_mainloop(_accept)
 
     def _application_request_install_checks(self, app):
         """
@@ -1578,7 +1615,8 @@ class RigoServiceController(GObject.Object):
 
             with self._registered_signals_mutex:
                 # connect our signal
-                sig_match = self._entropy_bus.connect_to_signal(
+                sig_match = self._execute_mainloop(
+                    self._entropy_bus.connect_to_signal,
                     self._APPLICATIONS_MANAGED_SIGNAL,
                     _applications_managed_signal,
                     dbus_interface=self.DBUS_INTERFACE)
@@ -1594,12 +1632,14 @@ class RigoServiceController(GObject.Object):
 
         accepted = True
         if master:
-            accepted = dbus.Interface(
-                self._entropy_bus,
-                dbus_interface=self.DBUS_INTERFACE
-                ).enqueue_application_action(
+            def _enqueue():
+                return dbus.Interface(
+                    self._entropy_bus,
+                    dbus_interface=self.DBUS_INTERFACE
+                    ).enqueue_application_action(
                     package_id, repository_id, daemon_action,
                     simulate)
+            accepted = self._execute_mainloop(_enqueue)
             const_debug_write(
                 __name__,
                 "service enqueue_application_action, got: %s, type: %s" % (
@@ -1852,7 +1892,8 @@ class RigoServiceController(GObject.Object):
 
         with self._registered_signals_mutex:
             # connect our signal
-            sig_match = self._entropy_bus.connect_to_signal(
+            sig_match = self._execute_mainloop(
+                self._entropy_bus.connect_to_signal,
                 self._APPLICATIONS_MANAGED_SIGNAL,
                 _applications_managed_signal,
                 dbus_interface=self.DBUS_INTERFACE)
@@ -1868,10 +1909,13 @@ class RigoServiceController(GObject.Object):
 
         accepted = True
         if master:
-            accepted = dbus.Interface(
-                self._entropy_bus,
-                dbus_interface=self.DBUS_INTERFACE
-                ).upgrade_system(simulate)
+            def _upgrade():
+                return dbus.Interface(
+                    self._entropy_bus,
+                    dbus_interface=self.DBUS_INTERFACE
+                    ).upgrade_system(simulate)
+            accepted = self._execute_mainloop(_upgrade)
+
             const_debug_write(
                 __name__,
                 "service upgrade_system, accepted: %s" % (
