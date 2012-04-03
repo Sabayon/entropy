@@ -571,6 +571,10 @@ class RigoServiceController(GObject.Object):
                 msg = prepare_markup(
                     _("<b>%s</b> dependencies not removable error")) % (
                         app.name,)
+            elif app_outcome == \
+                DaemonAppTransactionOutcome.DISK_FULL_ERROR:
+                msg = prepare_markup(
+                    _("Disk full, cannot download nor unpack Applications"))
 
             box = NotificationBox(
                 msg,
