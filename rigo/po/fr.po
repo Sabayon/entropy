@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-31 19:57+0200\n"
-"PO-Revision-Date: 2012-03-31 18:27+0000\n"
+"POT-Creation-Date: 2012-04-03 15:02+0200\n"
+"PO-Revision-Date: 2012-04-03 13:02+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,27 +17,27 @@ msgstr ""
 "Language: fr\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 
-#: ../RigoDaemon/app.py:565
+#: ../RigoDaemon/app.py:661
 msgid "Not authorized"
 msgstr ""
 
-#: ../RigoDaemon/app.py:592
+#: ../RigoDaemon/app.py:695
 msgid "No repositories configured"
 msgstr ""
 
-#: ../RigoDaemon/app.py:597
+#: ../RigoDaemon/app.py:700
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:947
+#: ../RigoDaemon/app.py:1051
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1166
+#: ../RigoDaemon/app.py:1344
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1258
+#: ../RigoDaemon/app.py:1436
 msgid "Application Install"
 msgstr ""
 
@@ -165,94 +165,98 @@ msgid "<b>%s</b> dependencies not removable error"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:577
+msgid "Disk full, cannot download nor unpack Applications"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:581
 msgid "An error occurred"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:582
+#: ../rigo/controllers/daemon.py:586
 #: ../rigo/ui/gtk3/controllers/application.py:388
 #: ../rigo/ui/gtk3/controllers/application.py:475
 #: ../rigo/ui/gtk3/controllers/application.py:558
 msgid "Ok, thanks"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:583
+#: ../rigo/controllers/daemon.py:587
 #: ../rigo/ui/gtk3/controllers/notifications.py:313
 #: ../rigo/ui/gtk3/controllers/notifications.py:325
 #: ../rigo/ui/gtk3/controllers/notifications.py:337
 msgid "Show me"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:644
+#: ../rigo/controllers/daemon.py:648
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:645
+#: ../rigo/controllers/daemon.py:649
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../rigo/controllers/daemon.py:1165
+#: ../rigo/controllers/daemon.py:1169
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1235 ../rigo/controllers/daemon.py:1737
-#: ../rigo/controllers/daemon.py:1955
+#: ../rigo/controllers/daemon.py:1239 ../rigo/controllers/daemon.py:1741
+#: ../rigo/controllers/daemon.py:1959
 msgid "Another activity is currently in progress"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1237 ../rigo/controllers/daemon.py:1740
-#: ../rigo/controllers/daemon.py:1958
+#: ../rigo/controllers/daemon.py:1241 ../rigo/controllers/daemon.py:1744
+#: ../rigo/controllers/daemon.py:1962
 msgid "K thanks"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1371
+#: ../rigo/controllers/daemon.py:1375
 msgid "Yes, thanks"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1372
+#: ../rigo/controllers/daemon.py:1376
 msgid "No, sorry"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1388
+#: ../rigo/controllers/daemon.py:1392
 msgid "Ok then"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1420
+#: ../rigo/controllers/daemon.py:1424
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1480
+#: ../rigo/controllers/daemon.py:1484
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1495
+#: ../rigo/controllers/daemon.py:1499
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1606
+#: ../rigo/controllers/daemon.py:1610
 #, python-format
 msgid "<b>%s</b> action enqueued"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1610
+#: ../rigo/controllers/daemon.py:1614
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../rigo/controllers/daemon.py:1878
+#: ../rigo/controllers/daemon.py:1882
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr ""
 

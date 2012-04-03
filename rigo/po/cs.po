@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-31 19:57+0200\n"
-"PO-Revision-Date: 2012-03-31 20:40+0000\n"
-"Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
+"POT-Creation-Date: 2012-04-03 15:02+0200\n"
+"PO-Revision-Date: 2012-04-03 13:02+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-rigo/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
-#: ../RigoDaemon/app.py:565
+#: ../RigoDaemon/app.py:661
 msgid "Not authorized"
 msgstr "Přístup nepovolen"
 
-#: ../RigoDaemon/app.py:592
+#: ../RigoDaemon/app.py:695
 msgid "No repositories configured"
 msgstr "Repozitář není nastaven"
 
-#: ../RigoDaemon/app.py:597
+#: ../RigoDaemon/app.py:700
 msgid "Unhandled Exception"
 msgstr "Nezpracovaná vyjímka"
 
-#: ../RigoDaemon/app.py:947
+#: ../RigoDaemon/app.py:1051
 msgid "Application Removal"
 msgstr "Odstranění aplikace"
 
-#: ../RigoDaemon/app.py:1166
+#: ../RigoDaemon/app.py:1344
 msgid "Application download"
 msgstr "Stažení aplikace"
 
-#: ../RigoDaemon/app.py:1258
+#: ../RigoDaemon/app.py:1436
 msgid "Application Install"
 msgstr "Instalace aplikace"
 
@@ -166,28 +166,32 @@ msgid "<b>%s</b> dependencies not removable error"
 msgstr "<b>%s</b> chyba neodstranitelných závislostí"
 
 #: ../rigo/controllers/daemon.py:577
+msgid "Disk full, cannot download nor unpack Applications"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:581
 msgid "An error occurred"
 msgstr "Vyskytla se chyba"
 
-#: ../rigo/controllers/daemon.py:582
+#: ../rigo/controllers/daemon.py:586
 #: ../rigo/ui/gtk3/controllers/application.py:388
 #: ../rigo/ui/gtk3/controllers/application.py:475
 #: ../rigo/ui/gtk3/controllers/application.py:558
 msgid "Ok, thanks"
 msgstr "Ok, Díky"
 
-#: ../rigo/controllers/daemon.py:583
+#: ../rigo/controllers/daemon.py:587
 #: ../rigo/ui/gtk3/controllers/notifications.py:313
 #: ../rigo/ui/gtk3/controllers/notifications.py:325
 #: ../rigo/ui/gtk3/controllers/notifications.py:337
 msgid "Show me"
 msgstr "Zobrazit"
 
-#: ../rigo/controllers/daemon.py:644
+#: ../rigo/controllers/daemon.py:648
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
 msgstr "Činnost <b>Aktualizace systému</b> se <i>restartuje</i>"
 
-#: ../rigo/controllers/daemon.py:645
+#: ../rigo/controllers/daemon.py:649
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
@@ -195,59 +199,59 @@ msgstr[0] "Je zde <b>%i</b> další aktualizace"
 msgstr[1] "Jsou zde <b>%i</b> další aktualizace"
 msgstr[2] "Je zde <b>%i</b> dalších aktualizací"
 
-#: ../rigo/controllers/daemon.py:1165
+#: ../rigo/controllers/daemon.py:1169
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr "Čekáme na <b>RigoDaemon</b>, čekejte prosím..."
 
-#: ../rigo/controllers/daemon.py:1235 ../rigo/controllers/daemon.py:1737
-#: ../rigo/controllers/daemon.py:1955
+#: ../rigo/controllers/daemon.py:1239 ../rigo/controllers/daemon.py:1741
+#: ../rigo/controllers/daemon.py:1959
 msgid "Another activity is currently in progress"
 msgstr "Právě probíhá jiná aktivita"
 
-#: ../rigo/controllers/daemon.py:1237 ../rigo/controllers/daemon.py:1740
-#: ../rigo/controllers/daemon.py:1958
+#: ../rigo/controllers/daemon.py:1241 ../rigo/controllers/daemon.py:1744
+#: ../rigo/controllers/daemon.py:1962
 msgid "K thanks"
 msgstr "Ok díky"
 
-#: ../rigo/controllers/daemon.py:1371
+#: ../rigo/controllers/daemon.py:1375
 msgid "Yes, thanks"
 msgstr "Ano, díky"
 
-#: ../rigo/controllers/daemon.py:1372
+#: ../rigo/controllers/daemon.py:1376
 msgid "No, sorry"
 msgstr "Ne, lituji"
 
-#: ../rigo/controllers/daemon.py:1388
+#: ../rigo/controllers/daemon.py:1392
 msgid "Ok then"
 msgstr "Dobrá"
 
-#: ../rigo/controllers/daemon.py:1420
+#: ../rigo/controllers/daemon.py:1424
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
 msgstr "<b>%s</b>\nje částí základního systému a <b>nelze</b> odstranit"
 
-#: ../rigo/controllers/daemon.py:1480
+#: ../rigo/controllers/daemon.py:1484
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr "<b>%s</b>\nnemůže být nainstalován, z důvodů <b>chybějících/skrytých</b> závislostí, nebo <b>konfliktu</b> závislostí"
 
-#: ../rigo/controllers/daemon.py:1495
+#: ../rigo/controllers/daemon.py:1499
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
 msgstr "Instalace <b>%s</b> by způsobila odebrání následujících aplikací: %s"
 
-#: ../rigo/controllers/daemon.py:1606
+#: ../rigo/controllers/daemon.py:1610
 #, python-format
 msgid "<b>%s</b> action enqueued"
 msgstr "<b>%s</b> činnost zařazena"
 
-#: ../rigo/controllers/daemon.py:1610
+#: ../rigo/controllers/daemon.py:1614
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
@@ -255,7 +259,7 @@ msgstr[0] ", <b>%i</b> zařazená aplikace..."
 msgstr[1] ", <b>%i</b> zařazené aplikace..."
 msgstr[2] ", <b>%i</b> zařazených aplikací..."
 
-#: ../rigo/controllers/daemon.py:1878
+#: ../rigo/controllers/daemon.py:1882
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr "<b>Aktualizace systému</b> byla zahájena, a teď si běžte udělat nějakou kávu"
 
