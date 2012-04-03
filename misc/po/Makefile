@@ -22,8 +22,20 @@ POTFILES.in:
 $(NLSPACKAGE).pot: $(POTFILES) POTFILES.in
 	intltool-update --gettext-package=$(NLSPACKAGE) --pot
 
-update-po: Makefile $(NLSPACKAGE).pot
-	./transifex_pull.sh
+transifex-pull:
+	tx pull -a -f
+
+transifex-push:
+	tx push -s
+
+validate:
+	catalogs='$(CATALOGS)'; \
+	for cat in $$catalogs; do \
+		lang=`basename $$cat .po`; \
+		msgfmt -c $$lang.po -o /dev/null || exit 1; \
+	done
+
+update-po: Makefile $(NLSPACKAGE).pot transifex-pull
 
 refresh-po: Makefile POTFILES.in
 	catalogs='$(CATALOGS)'; \
