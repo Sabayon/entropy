@@ -1,3 +1,150 @@
+commit bdecb8c969971ba1061150a4ee3f2e2e35382906
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 16:06:21 2012 +0200
+
+    Release Entropy 1.0_rc92
+
+commit 5ca0d79f2ef1edc67e9ce9a853c25f9f7fe115b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 16:03:52 2012 +0200
+
+    [scripts] tag-version.sh: validate .po files before tagging
+
+commit cd299d0495fd737159d4d20e4cdd04501e32b738
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 16:03:06 2012 +0200
+
+    [po] move transifex scripts to Makefile, add "validate" Makefile target
+
+commit 2459f6ea1cdae64c55948aab02dd4d9fff224485
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 15:57:58 2012 +0200
+
+    [Rigo] po: move transifex scripts to Makefile, add "validate" Makefile target
+
+commit 67f5372bc4ab66653cf243bd86acb7f3ebdf64de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 15:28:39 2012 +0200
+
+    [Rigo] po: update translations (and cross fingers)
+
+commit 64de366bfc615666b7635ff215158c59e77c7b47
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 15:03:00 2012 +0200
+
+    [Rigo] update rigo.pot with latest changes
+
+commit 4137d73c704be5cb8e29f14be70ede7d2222335e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 15:02:15 2012 +0200
+
+    [todo] update TODO
+
+commit 78b2a7773b0beee8bdf6dfa2a56e5375ec800fc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 15:00:44 2012 +0200
+
+    [Rigo] handle disk full transaction error
+
+commit 316893517d86b1b54142ce2fcf8d18074100c891
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 14:59:01 2012 +0200
+
+    [RigoDaemon] add free disk space checks before starting to install
+
+commit 4dcafcbc1d878dd6d814b0e7689cdd308e6cad14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 14:58:41 2012 +0200
+
+    [RigoDaemon] fix a bunch of undefined references
+
+commit 1785f9d876467b9c979da97af48fab3f674b31f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 3 14:52:52 2012 +0200
+
+    [entropy.client.interfaces.package] expose Package.splitdebug_enabled()
+
+commit 98742665a59b779cb6c2df86c455a812275c9455
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 21:43:47 2012 +0200
+
+    [RigoDaemon] fix undefined reference
+
+commit 759fe170593e3f5d873a617af32b428d893218fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 21:35:16 2012 +0200
+
+    [RigoDaemon] implement custom MultipleUrlFetcher
+
+commit e0a9a6c0d687509595b683130737b66232c2eda0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 21:20:04 2012 +0200
+
+    [RigoDaemon] devel-start-daemon.sh: add instructions to run app inside gdb
+
+commit 16e16f8711ce4dde2657fddde59b48f5ba951b09
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 21:19:31 2012 +0200
+
+    [RigoDaemon] rework polkit auth mechanism to be more responsive and robust
+
+commit c70420a69d4477d5229a68682ba27090c3e148c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 20:19:50 2012 +0200
+
+    [RigoDaemon] get client PID as soon as possible in order to avoid SIGSEGV
+
+commit a623fb15fec887ccd7343c66939d5016ceca3f8b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 17:51:04 2012 +0200
+
+    [Rigo] add "applications-other.svg" to the bundled icons
+
+commit 1369a06c6e2aaaff7caa7701ee5dec463757f475
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 15:20:12 2012 +0200
+
+    [todo] update TODO
+
+commit f716248e9160d137987f3764ce88584d95e3761d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 15:18:53 2012 +0200
+
+    [RigoDaemon] wrap the dbus service executable around a script, source /etc/env.d/02locale
+
+commit b24e478b21f78d1f8425d4e4d55251381b134591
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 14:36:22 2012 +0200
+
+    [services] entropy-updates-service: initialize the dbus service ASAP
+    
+    This, and passing the correct service name, could make clients more
+    robust
+
+commit 9c7c56396130478466838f7bef92597c18d936df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 14:14:56 2012 +0200
+
+    [todo] update TODO
+
+commit e6fa2fb1cf54d536278bd591573094b3da03bded
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 14:09:21 2012 +0200
+
+    [RigoDaemon] automatically shutdown on executable change
+
+commit 58efd1cc9d1c89e007f1497c448b7022043f5e79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 2 14:07:04 2012 +0200
+
+    [entropy.misc] add DirectoryMonitor class
+
+commit ff734d250acd58602fef306118bd105e37d35a5a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 1 20:20:56 2012 +0200
+
+    Tagging Entropy version 1.0_rc91
+
 commit 7335c0e0eb90a1ec9f90800d97c2177de662aa8a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Apr 1 20:20:55 2012 +0200
