@@ -541,44 +541,48 @@ class RigoServiceController(GObject.Object):
                   app_outcome)
 
         if app_outcome != DaemonAppTransactionOutcome.SUCCESS:
-            self._notify_app_management_outcome(app_outcome)
+            self._notify_app_management_outcome(app, app_outcome)
 
-    def _notify_app_management_outcome(self, app_outcome):
+    def _notify_app_management_outcome(self, app, app_outcome):
         """
         Notify User about Application Management errors.
         """
+        if app is None:
+            app_name = _("Application")
+        else:
+            app_name = app.name
         msg = prepare_markup(_("An <b>unknown error</b> occurred"))
         if app_outcome == DaemonAppTransactionOutcome.DOWNLOAD_ERROR:
             msg = prepare_markup(_("<b>%s</b> download failed")) % (
-                app.name,)
+                app_name,)
         elif app_outcome == DaemonAppTransactionOutcome.INSTALL_ERROR:
             msg = prepare_markup(_("<b>%s</b> install failed")) % (
-                app.name,)
+                app_name,)
         elif app_outcome == DaemonAppTransactionOutcome.REMOVE_ERROR:
             msg = prepare_markup(_("<b>%s</b> removal failed")) % (
-                app.name,)
+                app_name,)
         elif app_outcome == \
                 DaemonAppTransactionOutcome.PERMISSION_DENIED:
             msg = prepare_markup(_("<b>%s</b>, not authorized")) % (
-                app.name,)
+                app_name,)
         elif app_outcome == DaemonAppTransactionOutcome.INTERNAL_ERROR:
             msg = prepare_markup(_("<b>%s</b>, internal error")) % (
-                app.name,)
+                app_name,)
         elif app_outcome == \
             DaemonAppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR:
             msg = prepare_markup(
                 _("<b>%s</b> dependencies not found")) % (
-                    app.name,)
+                    app_name,)
         elif app_outcome == \
             DaemonAppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR:
             msg = prepare_markup(
                 _("<b>%s</b> dependencies collision error")) % (
-                    app.name,)
+                    app_name,)
         elif app_outcome == \
             DaemonAppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR:
             msg = prepare_markup(
                 _("<b>%s</b> dependencies not removable error")) % (
-                    app.name,)
+                    app_name,)
         elif app_outcome == \
             DaemonAppTransactionOutcome.DISK_FULL_ERROR:
             msg = prepare_markup(
@@ -636,7 +640,7 @@ class RigoServiceController(GObject.Object):
             # because the error happened earlier, thus, re-notify
             # user here.
             if outcome != DaemonAppTransactionOutcome.SUCCESS:
-                self._notify_app_management_outcome(outcome)
+                self._notify_app_management_outcome(None, outcome)
 
             # we don't expect to fail here, it would
             # mean programming error.
