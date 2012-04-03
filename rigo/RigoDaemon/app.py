@@ -580,7 +580,7 @@ class RigoDaemonService(dbus.service.Object):
                     "unbusy from: %s, current: %s" % (
                         activity, self._current_activity,))
             if activity == ActivityStates.AVAILABLE and not _force:
-                raise ActivityStates.AlreadyAvailabileError()
+                raise ActivityStates.AlreadyAvailableError()
             self._current_activity = ActivityStates.AVAILABLE
 
     def _get_caller_pid(self, sender):
@@ -983,7 +983,7 @@ class RigoDaemonService(dbus.service.Object):
             except DependenciesNotRemovable as dnr:
                 write_output(
                     "_process_remove_action, DependenciesNotRemovable: "
-                    "%s" % (dnf,))
+                    "%s" % (dnr,))
                 outcome = \
                     AppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR
                 return outcome
