@@ -760,7 +760,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         Action Queue worker code.
         """
-        def _action_queue_finally(exclusive, activity, outcome):
+        def _action_queue_finally(activity, outcome):
             self._disable_stdout_stderr_redirect()
             with self._enqueue_action_busy_hold_sem:
                 # unbusy?
@@ -776,8 +776,7 @@ class RigoDaemonService(dbus.service.Object):
                                      "._unbusy: already "
                                      "available, wtf !?!?")
                             # wtf??
-                    if exclusive:
-                        self._release_exclusive(activity)
+                    self._release_exclusive(activity)
                     success = outcome == AppTransactionOutcome.SUCCESS
                     write_output("_action_queue_worker_thread"
                                  "._action_queue_finally: "
@@ -801,7 +800,6 @@ class RigoDaemonService(dbus.service.Object):
 
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         self._enable_stdout_stderr_redirect()
-        acquired_exclusive = False
         try:
 
             if not item.authorized():
@@ -810,7 +808,6 @@ class RigoDaemonService(dbus.service.Object):
                 return
 
             self._acquire_exclusive(activity)
-            acquired_exclusive = True
             self._close_local_resources()
             self._entropy_setup()
             GLib.idle_add(
@@ -830,7 +827,7 @@ class RigoDaemonService(dbus.service.Object):
                 self._rwsem.reader_release()
 
         finally:
-            _action_queue_finally(acquired_exclusive, activity, outcome)
+            _action_queue_finally(activity, outcome)
 
     def _process_action(self, item, activity, is_app):
         """
