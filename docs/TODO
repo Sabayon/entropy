@@ -4,10 +4,8 @@ Backlog (raw)
 
     rigo:
     - [F] App Install support
-          - make possible to undo accidental enqueue, give 5 seconds?
-            -> Undo feature via NotificationBox?
+          - make possible to undo accidental enqueue, give 5 seconds
           - red button -> terminate queue instantly
-          - signal unavailable space (also before upgrade)
     - [F] Configuration files Update
 
     - [F] Preferences:
@@ -20,7 +18,6 @@ Backlog (raw)
       - migrate to RigoDaemon as soon as it's available!
         - and also Equo (text_repositories)
       - gtk3 version
-      - singleton!
 
     - make security advisories caching faster (cache server-side?)
 
