@@ -786,7 +786,7 @@ class RigoDaemonService(dbus.service.Object):
                     GLib.idle_add(
                         self.activity_completed, activity, success)
                     GLib.idle_add(
-                        self.applications_managed, success)
+                        self.applications_managed, outcome)
 
         is_app = True
         if isinstance(item, RigoDaemonService.ActionQueueItem):
@@ -1250,9 +1250,10 @@ class RigoDaemonService(dbus.service.Object):
 
             # package size and unpack size calculation
             down_url = repo.retrieveDownloadURL(pkg_id)
-            unpack_size += repo.retrieveSize(pkg_id)
+            pkg_size = repo.retrieveSize(pkg_id)
+            unpack_size += pkg_size
             pkg_size = _account_package_size(
-                down_url, unpack_size)
+                down_url, pkg_size)
             extra_downloads = repo.retrieveExtraDownload(pkg_id)
             for extra_download in extra_downloads:
                 if not splitdebug and (extra_download['type'] == "debug"):
@@ -1284,7 +1285,8 @@ class RigoDaemonService(dbus.service.Object):
             download_path, download_size):
             write_output(
                 "_process_install_disk_size_check: "
-                "not enough download space", debug=True)
+                "not enough download space, required: %d" % (
+                    download_size,), debug=True)
             return False
 
         return True
@@ -1886,8 +1888,8 @@ class RigoDaemonService(dbus.service.Object):
                      " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='b')
-    def applications_managed(self, success):
+        signature='s')
+    def applications_managed(self, outcome):
         """
         Enqueued Application actions have been completed.
         """

@@ -541,55 +541,61 @@ class RigoServiceController(GObject.Object):
                   app_outcome)
 
         if app_outcome != DaemonAppTransactionOutcome.SUCCESS:
-            msg = prepare_markup(_("An <b>unknown error</b> occurred"))
-            if app_outcome == DaemonAppTransactionOutcome.DOWNLOAD_ERROR:
-                msg = prepare_markup(_("<b>%s</b> download failed")) % (
-                    app.name,)
-            elif app_outcome == DaemonAppTransactionOutcome.INSTALL_ERROR:
-                msg = prepare_markup(_("<b>%s</b> install failed")) % (
-                    app.name,)
-            elif app_outcome == DaemonAppTransactionOutcome.REMOVE_ERROR:
-                msg = prepare_markup(_("<b>%s</b> removal failed")) % (
-                    app.name,)
-            elif app_outcome == \
-                    DaemonAppTransactionOutcome.PERMISSION_DENIED:
-                msg = prepare_markup(_("<b>%s</b>, not authorized")) % (
-                    app.name,)
-            elif app_outcome == DaemonAppTransactionOutcome.INTERNAL_ERROR:
-                msg = prepare_markup(_("<b>%s</b>, internal error")) % (
-                    app.name,)
-            elif app_outcome == \
-                DaemonAppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR:
-                msg = prepare_markup(
-                    _("<b>%s</b> dependencies not found")) % (
-                        app.name,)
-            elif app_outcome == \
-                DaemonAppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR:
-                msg = prepare_markup(
-                    _("<b>%s</b> dependencies collision error")) % (
-                        app.name,)
-            elif app_outcome == \
-                DaemonAppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR:
-                msg = prepare_markup(
-                    _("<b>%s</b> dependencies not removable error")) % (
-                        app.name,)
-            elif app_outcome == \
-                DaemonAppTransactionOutcome.DISK_FULL_ERROR:
-                msg = prepare_markup(
-                    _("Disk full, cannot download nor unpack Applications"))
+            self._notify_app_management_outcome(app_outcome)
 
-            box = NotificationBox(
-                msg,
-                tooltip=_("An error occurred"),
-                message_type=Gtk.MessageType.ERROR,
-                context_id="ApplicationProcessedSignalError")
-            def _show_me(*args):
-                self._bottom_nc.emit("show-work-view")
-            box.add_destroy_button(_("Ok, thanks"))
-            box.add_button(_("Show me"), _show_me)
-            self._nc.append(box)
+    def _notify_app_management_outcome(self, app_outcome):
+        """
+        Notify User about Application Management errors.
+        """
+        msg = prepare_markup(_("An <b>unknown error</b> occurred"))
+        if app_outcome == DaemonAppTransactionOutcome.DOWNLOAD_ERROR:
+            msg = prepare_markup(_("<b>%s</b> download failed")) % (
+                app.name,)
+        elif app_outcome == DaemonAppTransactionOutcome.INSTALL_ERROR:
+            msg = prepare_markup(_("<b>%s</b> install failed")) % (
+                app.name,)
+        elif app_outcome == DaemonAppTransactionOutcome.REMOVE_ERROR:
+            msg = prepare_markup(_("<b>%s</b> removal failed")) % (
+                app.name,)
+        elif app_outcome == \
+                DaemonAppTransactionOutcome.PERMISSION_DENIED:
+            msg = prepare_markup(_("<b>%s</b>, not authorized")) % (
+                app.name,)
+        elif app_outcome == DaemonAppTransactionOutcome.INTERNAL_ERROR:
+            msg = prepare_markup(_("<b>%s</b>, internal error")) % (
+                app.name,)
+        elif app_outcome == \
+            DaemonAppTransactionOutcome.DEPENDENCIES_NOT_FOUND_ERROR:
+            msg = prepare_markup(
+                _("<b>%s</b> dependencies not found")) % (
+                    app.name,)
+        elif app_outcome == \
+            DaemonAppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR:
+            msg = prepare_markup(
+                _("<b>%s</b> dependencies collision error")) % (
+                    app.name,)
+        elif app_outcome == \
+            DaemonAppTransactionOutcome.DEPENDENCIES_NOT_REMOVABLE_ERROR:
+            msg = prepare_markup(
+                _("<b>%s</b> dependencies not removable error")) % (
+                    app.name,)
+        elif app_outcome == \
+            DaemonAppTransactionOutcome.DISK_FULL_ERROR:
+            msg = prepare_markup(
+                _("Disk full, cannot download nor unpack Applications"))
 
-    def _applications_managed_signal(self, success, local_activity):
+        box = NotificationBox(
+            msg,
+            tooltip=_("An error occurred"),
+            message_type=Gtk.MessageType.ERROR,
+            context_id="ApplicationOutcomeSignalError")
+        def _show_me(*args):
+            self._bottom_nc.emit("show-work-view")
+        box.add_destroy_button(_("Ok, thanks"))
+        box.add_button(_("Show me"), _show_me)
+        self._nc.append(box)
+
+    def _applications_managed_signal(self, outcome, local_activity):
         """
         Signal coming from RigoDaemon notifying us that the
         MANAGING_APPLICATIONS is over.
@@ -626,6 +632,12 @@ class RigoServiceController(GObject.Object):
             if self._wc is not None:
                 self._wc.reset_progress()
 
+            # application_processed() might have not been called
+            # because the error happened earlier, thus, re-notify
+            # user here.
+            if outcome != DaemonAppTransactionOutcome.SUCCESS:
+                self._notify_app_management_outcome(outcome)
+
             # we don't expect to fail here, it would
             # mean programming error.
             self.unbusy(local_activity)
@@ -633,6 +645,7 @@ class RigoServiceController(GObject.Object):
             # 2 -- ACTIVITY CRIT :: OFF
             self._activity_rwsem.writer_release()
 
+            success = outcome == DaemonAppTransactionOutcome.SUCCESS
             self.emit("applications-managed", success, local_activity)
 
             const_debug_write(
@@ -1604,14 +1617,14 @@ class RigoServiceController(GObject.Object):
 
             signal_sem = Semaphore(1)
 
-            def _applications_managed_signal(success):
+            def _applications_managed_signal(outcome):
                 if not signal_sem.acquire(False):
                     # already called, no need to call again
                     return
                 # this is done in order to have it called
                 # only once by two different code paths
                 self._applications_managed_signal(
-                    success, LocalActivityStates.MANAGING_APPLICATIONS)
+                    outcome, LocalActivityStates.MANAGING_APPLICATIONS)
 
             with self._registered_signals_mutex:
                 # connect our signal
@@ -1697,7 +1710,8 @@ class RigoServiceController(GObject.Object):
         # Run in the main loop, to avoid calling a signal
         # callback in random threads.
         GLib.idle_add(self._applications_managed_signal,
-                      True, local_activity)
+                      DaemonAppTransactionOutcome.SUCCESS,
+                      local_activity)
 
     def _application_request(self, app, app_action, simulate=False,
                              master=True):
@@ -1881,14 +1895,14 @@ class RigoServiceController(GObject.Object):
 
         signal_sem = Semaphore(1)
 
-        def _applications_managed_signal(success):
+        def _applications_managed_signal(outcome):
             if not signal_sem.acquire(False):
                 # already called, no need to call again
                 return
             # this is done in order to have it called
             # only once by two different code paths
             self._applications_managed_signal(
-                success, LocalActivityStates.UPGRADING_SYSTEM)
+                outcome, LocalActivityStates.UPGRADING_SYSTEM)
 
         with self._registered_signals_mutex:
             # connect our signal
