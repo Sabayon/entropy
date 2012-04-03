@@ -41,6 +41,7 @@ class TerminalWidget(Vte.Terminal):
         self.set_opacity(65535)
         self.get_font().set_size(9000)
         self.set_scrollback_lines(10000)
+        self.set_scroll_on_output(True)
 
     def reset(self):
         Vte.Terminal.reset(self, True, True)
