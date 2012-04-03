@@ -3,7 +3,6 @@ RigoDaemon/enums.py
 RigoDaemon/__init__.py
 RigoDaemon/config.py
 RigoDaemon/authentication.py
-RigoDaemon/shutdown.py
 rigo/paths.py
 rigo/enums.py
 rigo/utils.py
