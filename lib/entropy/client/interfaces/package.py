@@ -3715,14 +3715,14 @@ class Package:
         # generate metadata dictionary
         self._generate_metadata()
 
-    def _package_splitdebug_enabled(self, pkg_match):
+    @staticmethod
+    def splitdebug_enabled(entropy_client, pkg_match):
         """
-        Determine if splitdebug is enabled for the package being installed
-        or just fetched. This method should be called only if system-wide
-        splitdebug setting in client.conf is enabled already.
+        Return whether splitdebug is enabled for package.
         """
+        settings = entropy_client.Settings()
         # this is a SystemSettings.CachingList object
-        split_data = self._settings['splitdebug']
+        split_data = settings['splitdebug']
         if not split_data:
             # no entries, consider splitdebug always enabled
             return True
@@ -3732,13 +3732,13 @@ class Package:
         if pkg_matches is None:
             # compute the package matching then
             pkg_matches = set()
-            for dep in self._settings['splitdebug']:
+            for dep in settings['splitdebug']:
                 dep, repo_ids = entropy.dep.dep_get_match_in_repos(dep)
                 if repo_ids is not None:
                     if pkg_repo not in repo_ids:
                         # skip entry, not me
                         continue
-                dep_matches, rc = self._entropy.atom_match(
+                dep_matches, rc = entropy_client.atom_match(
                     dep, multi_match=True, multi_repo=True)
                 pkg_matches |= dep_matches
             # set cache back
@@ -3746,6 +3746,14 @@ class Package:
         # determine if it's enabled then
         enabled = pkg_match in pkg_matches
         return enabled
+
+    def _package_splitdebug_enabled(self, pkg_match):
+        """
+        Determine if splitdebug is enabled for the package being installed
+        or just fetched. This method should be called only if system-wide
+        splitdebug setting in client.conf is enabled already.
+        """
+        return Package.splitdebug_enabled(self._entropy, pkg_match)
 
     def __get_base_metadata(self, action):
         def get_splitdebug_data():
