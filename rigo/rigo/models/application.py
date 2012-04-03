@@ -1201,7 +1201,7 @@ class Application(object):
             else:
                 inst_app = self._get_installed()
                 if inst_app is not None:
-                    ver = inst_app.get_details().version
+                    ver = inst_app.get_details()._version
                     installed_str = "\n" + prepare_markup(
                         _("<b>%s</b> is installed") % (ver,))
 
@@ -1703,14 +1703,21 @@ class AppDetails(object):
         """
         self._entropy.rwsem().reader_acquire()
         try:
-            repo = self._entropy.open_repository(self._repo_id)
-            ver = repo.retrieveVersion(self._pkg_id)
-            tag = repo.retrieveTag(self._pkg_id)
-            if tag:
-                ver += etpConst['entropytagprefix'] + tag
-            return ver
+            return self._version
         finally:
             self._entropy.rwsem().reader_release()
+
+    @property
+    def _version(self):
+        """
+        Return Application version (without revision and tag).
+        """
+        repo = self._entropy.open_repository(self._repo_id)
+        ver = repo.retrieveVersion(self._pkg_id)
+        tag = repo.retrieveTag(self._pkg_id)
+        if tag:
+            ver += etpConst['entropytagprefix'] + tag
+        return ver
 
     @property
     def website(self):
