@@ -12,6 +12,12 @@ for cur_tag in `git tag`; do
 	[[ "$cur_tag" == "$new_tag" ]] && echo "$new_tag already tagged" && exit 1
 done
 
+# Validate Entropy po files
+( cd misc/po && make validate ) || exit 1
+
+# Validate Rigo po files
+( cd rigo/po && make validate ) || exit 1
+
 # Update ChangeLog
 echo "Updating ChangeLog for $new_tag"
 for revision in client/revision server/revision sulfur/src/sulfur/revision lib/entropy/revision; do
