@@ -62,6 +62,7 @@ from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
+from entropy.client.interfaces.package import Package
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
 from entropy.cli import get_entropy_webservice
@@ -935,6 +936,13 @@ class RigoDaemonService(dbus.service.Object):
                 AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
             return outcome
 
+        validated = self._process_install_disk_size_check(
+            install)
+        if not validated:
+            outcome = \
+                AppTransactionOutcome.DISK_FULL_ERROR
+            return outcome
+
         # mark transactions
         for _package_id, _repository_id in install:
             self._txs.set(_package_id, _repository_id,
@@ -1146,6 +1154,13 @@ class RigoDaemonService(dbus.service.Object):
                     AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
                 return outcome
 
+            validated = self._process_install_disk_size_check(
+                install)
+            if not validated:
+                outcome = \
+                    AppTransactionOutcome.DISK_FULL_ERROR
+                return outcome
+
             # mark transactions
             for _package_id, _repository_id in install:
                 self._txs.set(_package_id, _repository_id,
@@ -1173,6 +1188,73 @@ class RigoDaemonService(dbus.service.Object):
             self.application_processed(
                 package_id, repository_id, action, outcome)
             self.activity_progress(activity, 100)
+
+    def _process_install_disk_size_check(self, install_queue):
+        """
+        Determine if the filesystem has enough space to download and
+        unpack packages to disk.
+        Return true if enough space is found.
+        """
+        def _account_package_size(down_url, pkg_size):
+            # if the package is already downloaded, don't account this part
+            down_path = Package.get_standard_fetch_disk_path(down_url)
+            try:
+                f_size = entropy.tools.get_file_size(down_path)
+            except (OSError, IOError):
+                return pkg_size
+            pkg_size -= f_size
+            return pkg_size
+
+        inst_repo = self._entropy.installed_repository()
+
+        download_size = 0
+        unpack_size = 0
+        for pkg_id, pkg_repo in install_queue:
+            splitdebug = Package.splitdebug_enabled(
+                self._entropy, (pkg_id, pkg_repo))
+            repo = self._entropy.open_repository(pkg_repo)
+            key, slot = repo.retrieveKeySlot(pkg_id)
+
+            # package size and unpack size calculation
+            down_url = repo.retrieveDownloadURL(pkg_id)
+            unpack_size += repo.retrieveSize(pkg_id)
+            pkg_size = _account_package_size(
+                down_url, unpack_size)
+            extra_downloads = repo.retrieveExtraDownload(pkg_id)
+            for extra_download in extra_downloads:
+                if not splitdebug and (extra_download['type'] == "debug"):
+                    continue
+                extra_pkg_size = extra_download['size']
+                unpack_size += extra_pkg_size
+                pkg_size += _account_package_size(
+                    extra_download['download'],
+                    extra_pkg_size)
+            download_size += pkg_size
+
+        # check unpack
+        unpack_size = unpack_size * 1.5 # more likely...
+        target_dir = etpConst['entropyunpackdir']
+        while not os.path.isdir(target_dir):
+            target_dir = os.path.dirname(target_dir)
+        if not entropy.tools.check_required_space(
+            target_dir, unpack_size):
+            write_output(
+                "_process_install_disk_size_check: "
+                "not enough unpack space", debug=True)
+            return False
+
+        # check download size
+        download_path = Package.get_standard_fetch_disk_path("")
+        while not os.path.isdir(download_path):
+            download_path = os.path.dirname(download_path)
+        if not entropy.tools.check_required_space(
+            download_path, download_size):
+            write_output(
+                "_process_install_disk_size_check: "
+                "not enough download space", debug=True)
+            return False
+
+        return True
 
     def _process_install_fetch_action(self, install_queue, activity,
                                       action):

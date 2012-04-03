@@ -65,6 +65,7 @@ class AppTransactionOutcome:
     DEPENDENCIES_NOT_FOUND_ERROR = "dependencies-not-found"
     DEPENDENCIES_NOT_REMOVABLE_ERROR = "dependencies-not-removable"
     DEPENDENCIES_COLLISION_ERROR = "dependencies-collision"
+    DISK_FULL_ERROR = "disk-full"
     DOWNLOAD_ERROR = "download-error"
     INSTALL_ERROR = "install-error"
     REMOVE_ERROR = "remove-error"
