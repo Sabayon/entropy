@@ -24,9 +24,10 @@ import cairo
 
 import logging
 import gettext
-from gettext import gettext as _
 
 from gi.repository import Gtk, Gdk, GObject
+
+from entropy.i18n import _
 
 from rigo.shapes import ShapeStar
 from rigo.em import StockEms, em, small_em, big_em
