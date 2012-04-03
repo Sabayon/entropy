@@ -45,7 +45,7 @@ class EitRemove(EitCommand):
         parser.add_argument("packages", nargs='+', metavar="<package>",
                             help=_("package name"))
         parser.add_argument("--from", metavar="<repository>",
-                            help=_("inject into given repository"),
+                            help=_("remove from given repository"),
                             dest="fromrepo", default=None)
         parser.add_argument("--nodeps", action="store_true",
                             help=_("do not include reverse dependencies"),

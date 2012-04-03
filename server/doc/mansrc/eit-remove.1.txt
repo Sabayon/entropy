@@ -37,7 +37,7 @@ OPTIONAL ARGUMENTS
     show this help message and exit
 
 *--from*=<repository>::
-    inject into given repository
+    remove from given repository
 
 *--nodeps*::
     do not include reverse dependencies
