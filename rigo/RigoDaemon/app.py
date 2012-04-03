@@ -146,7 +146,8 @@ class Entropy(Client):
             count_t = 0
             if count is not None:
                 count_c, count_t = count
-            self._DAEMON.output(
+            GLib.idle_add(
+                self._DAEMON.output,
                 text, header, footer, back, importance,
                 level, count_c, count_t, percent, _raw)
 
@@ -195,10 +196,12 @@ class DaemonUrlFetcher(UrlFetcher):
                     return # dont flood
             self.__last_t = cur_t
 
-        self._DAEMON.transfer_output(
+        GLib.idle_add(
+            self._DAEMON.transfer_output,
             self.__average, self.__downloadedsize,
             int(self.__remotesize), int(self.__datatransfer),
             self.__time_remaining)
+
 
 class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
 
@@ -242,7 +245,8 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
                     return # dont flood
             self.__last_t = cur_t
 
-        self._DAEMON.transfer_output(
+        GLib.idle_add(
+            self._DAEMON.transfer_output,
             self.__average, self.__downloadedsize,
             int(self.__remotesize), int(self.__datatransfer),
             self.__time_remaining)
@@ -532,7 +536,9 @@ class RigoDaemonService(dbus.service.Object):
             self._deferred_shutdown = True
 
         write_output("Activating deferred shutdown...", debug=True)
-        task = TimeScheduled(30.0, self.ping)
+        def _ping():
+            GLib.idle_add(self.ping)
+        task = TimeScheduled(30.0, _ping)
         task.set_delay_before(False)
         task.name = "ShutdownPinger"
         task.daemon = True
@@ -656,9 +662,12 @@ class RigoDaemonService(dbus.service.Object):
                 write_output("_update_repositories._unbusy: already "
                              "available, wtf !?!?")
                 # wtf??
-            self.activity_progress(activity, 100)
-            self.activity_completed(activity, False)
-            self.repositories_updated(401, _("Not authorized"))
+            GLib.idle_add(
+                self.activity_progress, activity, 100)
+            GLib.idle_add(
+                self.activity_completed, activity, False)
+            GLib.idle_add(
+                self.repositories_updated, 401, _("Not authorized"))
             return
 
         with self._activity_mutex:
@@ -671,8 +680,10 @@ class RigoDaemonService(dbus.service.Object):
             try:
                 self._close_local_resources()
                 self._entropy_setup()
-                self.activity_started(activity)
-                self.activity_progress(activity, 0)
+                GLib.idle_add(
+                    self.activity_started, activity)
+                GLib.idle_add(
+                    self.activity_progress, activity, 0)
 
                 self._rwsem.reader_acquire()
                 try:
@@ -709,9 +720,12 @@ class RigoDaemonService(dbus.service.Object):
                                  "available, wtf !?!?")
                     # wtf??
                 self._release_exclusive(activity)
-                self.activity_progress(activity, 100)
-                self.activity_completed(activity, result == 0)
-                self.repositories_updated(result, msg)
+                GLib.idle_add(
+                    self.activity_progress, activity, 100)
+                GLib.idle_add(
+                    self.activity_completed, activity, result == 0)
+                GLib.idle_add(
+                    self.repositories_updated, result, msg)
 
     def _action_queue_worker_thread(self):
         """
@@ -769,8 +783,10 @@ class RigoDaemonService(dbus.service.Object):
                                  "._action_queue_finally: "
                                  "outcome: %s" % (outcome,),
                                  debug=True)
-                    self.activity_completed(activity, success)
-                    self.applications_managed(success)
+                    GLib.idle_add(
+                        self.activity_completed, activity, success)
+                    GLib.idle_add(
+                        self.applications_managed, success)
 
         is_app = True
         if isinstance(item, RigoDaemonService.ActionQueueItem):
@@ -797,7 +813,8 @@ class RigoDaemonService(dbus.service.Object):
             acquired_exclusive = True
             self._close_local_resources()
             self._entropy_setup()
-            self.activity_started(activity)
+            GLib.idle_add(
+                self.activity_started, activity)
 
             write_output("_action_queue_worker_thread: "
                          "doing %s" % (
@@ -856,7 +873,8 @@ class RigoDaemonService(dbus.service.Object):
         Process System Upgrade Action.
         """
         outcome = AppTransactionOutcome.INTERNAL_ERROR
-        self.activity_progress(activity, 0)
+        GLib.idle_add(
+            self.activity_progress, activity, 0)
         try:
 
             outcome = self._process_upgrade_merge_action(
@@ -870,7 +888,8 @@ class RigoDaemonService(dbus.service.Object):
                 return AppTransactionOutcome.INTERNAL_ERROR
             update, remove, fine, spm_fine = metadata
             if update:
-                self.restarting_system_upgrade(len(update))
+                GLib.idle_add(
+                    self.restarting_system_upgrade, len(update))
                 outcome = self._process_upgrade_merge_action(
                     activity, simulate)
                 if outcome != AppTransactionOutcome.SUCCESS:
@@ -879,7 +898,9 @@ class RigoDaemonService(dbus.service.Object):
             manual_remove, remove = \
                 self._entropy.calculate_orphaned_packages()
             if manual_remove or remove:
-                self.unsupported_applications(manual_remove, remove)
+                GLib.idle_add(
+                    self.unsupported_applications,
+                    manual_remove, remove)
 
             return AppTransactionOutcome.SUCCESS
 
@@ -887,7 +908,8 @@ class RigoDaemonService(dbus.service.Object):
             write_output("_process_upgrade_action, finally, "
                          "outcome: %s" % (
                     outcome,), debug=True)
-            self.activity_progress(activity, 100)
+            GLib.idle_add(
+                self.activity_progress, activity, 100)
 
     def _process_upgrade_action_calculate(self):
         """
@@ -966,14 +988,17 @@ class RigoDaemonService(dbus.service.Object):
         """
         Process Application Remove Action.
         """
-        self.activity_progress(activity, 0)
+        GLib.idle_add(
+            self.activity_progress, activity, 0)
 
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         pkg_match = (package_id, repository_id)
-        self.activity_progress(activity, 0)
+        GLib.idle_add(
+            self.activity_progress, activity, 0)
         self._txs.set(package_id, repository_id, AppActions.REMOVE)
 
-        self.processing_application(
+        GLib.idle_add(
+            self.processing_application,
             package_id, repository_id,
             AppActions.REMOVE,
             AppTransactionStates.MANAGE)
@@ -1010,9 +1035,10 @@ class RigoDaemonService(dbus.service.Object):
             write_output("_process_remove_action, finally, "
                          "action: %s, outcome: %s" % (
                     action, outcome,), debug=True)
-            self.application_processed(
+            GLib.idle_add(self.application_processed,
                 package_id, repository_id, action, outcome)
-            self.activity_progress(activity, 100)
+            GLib.idle_add(
+                self.activity_progress, activity, 100)
 
     def _process_remove_merge_action(self, removal_queue, activity,
                                       action, simulate):
@@ -1021,7 +1047,8 @@ class RigoDaemonService(dbus.service.Object):
         """
 
         def _signal_merge_process(_package_id, _repository_id, amount):
-            self.application_processing_update(
+            GLib.idle_add(
+                self.application_processing_update,
                 _package_id, _repository_id,
                 AppTransactionStates.MANAGE, amount)
 
@@ -1043,7 +1070,8 @@ class RigoDaemonService(dbus.service.Object):
                 # signal progress
                 count += 1
                 progress = int(round(float(count) / total * 100, 0))
-                self.activity_progress(activity, progress)
+                GLib.idle_add(
+                    self.activity_progress, activity, progress)
 
                 pkg = self._entropy.Package()
                 pkg.prepare((package_id,), "remove", {})
@@ -1052,7 +1080,8 @@ class RigoDaemonService(dbus.service.Object):
                 self._entropy.output(msg, count=(count, total),
                                      importance=1, level="info")
 
-                self.processing_application(
+                GLib.idle_add(
+                    self.processing_application,
                     package_id, repository_id, action,
                     AppTransactionStates.MANAGE)
                 _signal_merge_process(package_id, repository_id, 50)
@@ -1068,7 +1097,8 @@ class RigoDaemonService(dbus.service.Object):
                     _signal_merge_process(package_id, repository_id, -1)
 
                     outcome = AppTransactionOutcome.REMOVE_ERROR
-                    self.application_processed(
+                    GLib.idle_add(
+                        self.application_processed,
                         package_id, repository_id, action,
                         outcome)
 
@@ -1093,7 +1123,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 _signal_merge_process(package_id, repository_id, 100)
 
-                self.application_processed(
+                GLib.idle_add(
+                    self.application_processed,
                     package_id, repository_id, action,
                     AppTransactionOutcome.SUCCESS)
 
@@ -1112,14 +1143,14 @@ class RigoDaemonService(dbus.service.Object):
         """
         Process Application Install Action.
         """
-        self.activity_progress(activity, 0)
-
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         pkg_match = (package_id, repository_id)
-        self.activity_progress(activity, 0)
+        GLib.idle_add(
+            self.activity_progress, activity, 0)
         self._txs.set(package_id, repository_id, AppActions.INSTALL)
         # initial transaction state is always download
-        self.processing_application(
+        GLib.idle_add(
+            self.processing_application,
             package_id, repository_id,
             AppActions.INSTALL,
             AppTransactionStates.DOWNLOAD)
@@ -1185,9 +1216,11 @@ class RigoDaemonService(dbus.service.Object):
             write_output("_process_install_action, finally, "
                          "action: %s, outcome: %s" % (
                     action, outcome,), debug=True)
-            self.application_processed(
+            GLib.idle_add(
+                self.application_processed,
                 package_id, repository_id, action, outcome)
-            self.activity_progress(activity, 100)
+            GLib.idle_add(
+                self.activity_progress, activity, 100)
 
     def _process_install_disk_size_check(self, install_queue):
         """
@@ -1265,12 +1298,14 @@ class RigoDaemonService(dbus.service.Object):
             if is_multifetch:
                 for pkg_match in opaque:
                     package_id, repository_id = pkg_match
-                    self.application_processing_update(
+                    GLib.idle_add(
+                        self.application_processing_update,
                         package_id, repository_id,
                         AppTransactionStates.DOWNLOAD, amount)
             else:
                 package_id, repository_id = opaque
-                self.application_processing_update(
+                GLib.idle_add(
+                    self.application_processing_update,
                     package_id, repository_id,
                     AppTransactionStates.DOWNLOAD, amount)
 
@@ -1336,7 +1371,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 _count += 1
                 progress = int(round(float(_count) / total * 100, 0))
-                self.activity_progress(activity, progress)
+                GLib.idle_add(
+                    self.activity_progress, activity, progress)
 
                 pkg = self._entropy.Package()
                 pkg.prepare(opaque, pkg_action, {})
@@ -1409,7 +1445,8 @@ class RigoDaemonService(dbus.service.Object):
         """
 
         def _signal_merge_process(_package_id, _repository_id, amount):
-            self.application_processing_update(
+            GLib.idle_add(
+                self.application_processing_update,
                 _package_id, _repository_id,
                 AppTransactionStates.MANAGE, amount)
 
@@ -1428,7 +1465,8 @@ class RigoDaemonService(dbus.service.Object):
                 # signal progress
                 count += 1
                 progress = int(round(float(count) / total * 100, 0))
-                self.activity_progress(activity, progress)
+                GLib.idle_add(
+                    self.activity_progress, activity, progress)
 
                 pkg = self._entropy.Package()
                 pkg.prepare(pkg_match, "install", {})
@@ -1437,7 +1475,8 @@ class RigoDaemonService(dbus.service.Object):
                 self._entropy.output(msg, count=(count, total),
                                      importance=1, level="info")
 
-                self.processing_application(
+                GLib.idle_add(
+                    self.processing_application,
                     package_id, repository_id, action,
                     AppTransactionStates.MANAGE)
                 _signal_merge_process(package_id, repository_id, 50)
@@ -1453,7 +1492,8 @@ class RigoDaemonService(dbus.service.Object):
                     _signal_merge_process(package_id, repository_id, -1)
 
                     outcome = AppTransactionOutcome.INSTALL_ERROR
-                    self.application_processed(
+                    GLib.idle_add(
+                        self.application_processed,
                         package_id, repository_id, action,
                         outcome)
 
@@ -1479,7 +1519,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 _signal_merge_process(package_id, repository_id, 100)
 
-                self.application_processed(
+                GLib.idle_add(
+                    self.application_processed,
                     package_id, repository_id, action,
                     AppTransactionOutcome.SUCCESS)
 
@@ -1534,7 +1575,8 @@ class RigoDaemonService(dbus.service.Object):
             if not acquired:
                 write_output("_acquire_exclusive: asking to unlock",
                              debug=True)
-                self.resources_unlock_request(activity)
+                GLib.idle_add(
+                    self.resources_unlock_request, activity)
                 self._entropy.lock_resources(
                     blocking=True,
                     shared=False)
@@ -1550,7 +1592,8 @@ class RigoDaemonService(dbus.service.Object):
         # as there is activity
         with self._acquired_exclusive_mutex:
             if self._acquired_exclusive:
-                self.resources_lock_request(activity)
+                GLib.idle_add(
+                    self.resources_lock_request, activity)
                 self._entropy.unlock_resources()
                 # now we got the exclusive lock
                 self._acquired_exclusive = False
