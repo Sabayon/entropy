@@ -154,6 +154,7 @@ class RigoServiceController(GObject.Object):
     _ACTIVITY_STARTED_SIGNAL = "activity_started"
     _ACTIVITY_PROGRESS_SIGNAL = "activity_progress"
     _ACTIVITY_COMPLETED_SIGNAL = "activity_completed"
+    _APPLICATION_ENQUEUED_SIGNAL = "application_enqueued"
     _PROCESSING_APPLICATION_SIGNAL = "processing_application"
     _APPLICATION_PROCESSING_UPDATE = "application_processing_update"
     _APPLICATION_PROCESSED_SIGNAL = "application_processed"
@@ -445,6 +446,14 @@ class RigoServiceController(GObject.Object):
                     self._restarting_system_upgrade_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that a requested
+                # Application action has been enqueued and
+                # authorized
+                self.__entropy_bus.connect_to_signal(
+                    self._APPLICATION_ENQUEUED_SIGNAL,
+                    self._application_enqueued_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -463,6 +472,35 @@ class RigoServiceController(GObject.Object):
         self.application_request(app, app_action)
 
     ### DBUS SIGNALS
+
+    def _application_enqueued_signal(self, package_id, repository_id,
+                                     daemon_action):
+        const_debug_write(
+            __name__,
+            "_application_enqueued_signal: received for "
+            "%d, %s, action: %s" % (
+                package_id, repository_id, daemon_action))
+
+        queue_len = self.action_queue_length()
+        if self._wc is not None:
+            # also update application status
+            self._wc.update_queue_information(queue_len)
+
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (package_id, repository_id))
+
+        msg = prepare_markup(_("<b>%s</b> action enqueued") % (
+                app.name,))
+        if queue_len > 0:
+            msg += prepare_markup(ngettext(
+                    ", <b>%i</b> Application enqueued so far...",
+                    ", <b>%i</b> Applications enqueued so far...",
+                    queue_len)) % (queue_len,)
+        box = self.ServiceNotificationBox(
+            msg, Gtk.MessageType.INFO,
+            context_id="ApplicationEnqueuedContextId")
+        self._nc.append(box, timeout=10)
 
     def _processing_application_signal(self, package_id, repository_id,
                                        daemon_action, daemon_tx_state):
@@ -1661,21 +1699,6 @@ class RigoServiceController(GObject.Object):
                 __name__,
                 "service enqueue_application_action, got: %s, type: %s" % (
                     accepted, type(accepted),))
-
-            def _notify():
-                queue_len = self.action_queue_length()
-                msg = prepare_markup(_("<b>%s</b> action enqueued") % (
-                        app.name,))
-                if queue_len > 0:
-                    msg += prepare_markup(ngettext(
-                        ", <b>%i</b> Application enqueued so far...",
-                        ", <b>%i</b> Applications enqueued so far...",
-                        queue_len)) % (queue_len,)
-                box = self.ServiceNotificationBox(
-                    msg, Gtk.MessageType.INFO)
-                self._nc.append(box, timeout=10)
-            if accepted:
-                GLib.idle_add(_notify)
 
         else:
             self._applications_managed_signal_check(
