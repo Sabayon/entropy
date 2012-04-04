@@ -496,6 +496,8 @@ class RigoDaemonService(dbus.service.Object):
         self._acquired_exclusive_mutex = Lock()
 
         self._action_queue = deque()
+        self._action_queue_length_mutex = Lock()
+        self._action_queue_length = 0
         self._action_queue_waiter = Semaphore(0)
         self._enqueue_action_busy_hold_sem = Semaphore()
         self._action_queue_task = ParallelTask(
@@ -760,7 +762,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         Action Queue worker code.
         """
-        def _action_queue_finally(activity, outcome):
+        def _action_queue_finally(item, activity, outcome):
+            if item.authorized():
+                with self._action_queue_length_mutex:
+                    self._action_queue_length -= 1
             self._disable_stdout_stderr_redirect()
             with self._enqueue_action_busy_hold_sem:
                 # unbusy?
@@ -800,6 +805,7 @@ class RigoDaemonService(dbus.service.Object):
 
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         self._enable_stdout_stderr_redirect()
+        item = None
         try:
 
             if not item.authorized():
@@ -827,7 +833,7 @@ class RigoDaemonService(dbus.service.Object):
                 self._rwsem.reader_release()
 
         finally:
-            _action_queue_finally(activity, outcome)
+            _action_queue_finally(item, activity, outcome)
 
     def _process_action(self, item, activity, is_app):
         """
@@ -1688,6 +1694,9 @@ class RigoDaemonService(dbus.service.Object):
                         bool(simulate),
                         authorized)
                     self._action_queue.append(item)
+                    if authorized:
+                        with self._action_queue_length_mutex:
+                            self._action_queue_length += 1
                     self._action_queue_waiter.release()
                 finally:
                     self._enqueue_action_busy_hold_sem.release()
@@ -1739,6 +1748,9 @@ class RigoDaemonService(dbus.service.Object):
                     item = self.UpgradeActionQueueItem(
                         bool(simulate), authorized)
                     self._action_queue.append(item)
+                    if authorized:
+                        with self._action_queue_length_mutex:
+                            self._action_queue_length += 1
                     self._action_queue_waiter.release()
                 finally:
                     self._enqueue_action_busy_hold_sem.release()
@@ -1771,7 +1783,8 @@ class RigoDaemonService(dbus.service.Object):
         Return the current size of the Application Action Queue.
         """
         write_output("action_queue_length called", debug=True)
-        return len(self._action_queue)
+        # might temporarily go to -1 ?
+        return max(0, self._action_queue_length)
 
     @dbus.service.method(BUS_NAME, in_signature='is',
         out_signature='s')
