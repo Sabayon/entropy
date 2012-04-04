@@ -23,7 +23,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, Gdk, GObject, Pango
 
-from rigo.em import EM
+from rigo.em import Ems
 from rigo.models.application import CategoryRowReference
 from rigo.utils import escape_markup
 
@@ -46,7 +46,10 @@ class CellRendererAppView(Gtk.CellRendererText):
 
     # ratings
     MAX_STARS = 5
-    STAR_SIZE = EM
+
+    @property
+    def STAR_SIZE(self):
+        return Ems.EM
 
     __gproperties__ = {
         'application' : (GObject.TYPE_PYOBJECT, 'document',
@@ -210,7 +213,8 @@ class CellRendererAppView(Gtk.CellRendererText):
                  - self.apptitle_width
                  - star_width)
 
-        y = cell_area.y + ypad + (self.apptitle_height-self.STAR_SIZE)/2
+        star_size = self.STAR_SIZE
+        y = cell_area.y + ypad + (self.apptitle_height - star_size)/2
 
         sr.rating = stats.ratings_average
         sr.render_star(context, cr, x, y)
