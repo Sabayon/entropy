@@ -130,7 +130,7 @@ class UpperNotificationViewController(NotificationViewController):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._updates = None
-        self._security_updates = None
+        self._security_updates = []
 
     def setup(self):
         """
@@ -199,7 +199,9 @@ class UpperNotificationViewController(NotificationViewController):
             updates, removal, fine, spm_fine = \
                 self._entropy.calculate_updates()
             self._updates = self.__order_updates(updates)
-            self._security_updates = self._entropy.calculate_security_updates()
+            # this is too slow at the moment (when uncached)
+            #`self._security_updates = \
+            #    self._entropy.calculate_security_updates()
         finally:
             self._entropy.rwsem().reader_release()
             #self._activity_rwsem.reader_release()
