@@ -47,6 +47,7 @@ class WorkViewController(GObject.Object):
         self._stars = None
         self._terminal = None
         self._terminal_menu = None
+        self._last_daemon_action = None
 
     def _setup_terminal_menu(self):
         """
@@ -252,11 +253,11 @@ class WorkViewController(GObject.Object):
             self._app_image.set_from_pixbuf(
                 self._missing_icon)
 
-    def set_application(self, app, daemon_action):
+    def update_queue_information(self, queue_len):
         """
-        Set Application information by providing its Application
-        object.
+        Update Action Queue related info.
         """
+        daemon_action = self._last_daemon_action
         msg = None
         if daemon_action == DaemonAppActions.INSTALL:
             msg = _("Installing")
@@ -264,8 +265,9 @@ class WorkViewController(GObject.Object):
             msg = _("Removing")
 
         if msg is not None:
-            queue_len = self._service.action_queue_length()
             more_msg = ""
+            queue_len -= 1
+            queue_len = max(0, queue_len)
             if queue_len:
                 more_msg = ngettext(
                     ", and <b>%d</b> <i>more in queue</i>",
@@ -277,6 +279,16 @@ class WorkViewController(GObject.Object):
                 "<big><b>%s</b>%s</big>" % (
                     escape_markup(msg),
                     more_msg,))
+
+    def set_application(self, app, daemon_action, queue_len=None):
+        """
+        Set Application information by providing its Application
+        object.
+        """
+        # this is used to update action_label
+        self._last_daemon_action = daemon_action
+        queue_len = self._service.action_queue_length()
+        self.update_queue_information(queue_len)
 
         extended_markup = app.get_extended_markup()
 
