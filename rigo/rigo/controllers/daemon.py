@@ -58,15 +58,19 @@ class RigoServiceController(GObject.Object):
     """
 
     NOTIFICATION_CONTEXT_ID = "RigoServiceControllerContextId"
+    ANOTHER_ACTIVITY_CONTEXT_ID = "AnotherActivityNotificationContextId"
+    SYSTEM_UPGRADE_CONTEXT_ID = "SystemUpgradeContextId"
 
     class ServiceNotificationBox(NotificationBox):
 
-        def __init__(self, message, message_type):
+        def __init__(self, message, message_type, context_id=None):
+            if context_id is None:
+                context_id = RigoServiceController.NOTIFICATION_CONTEXT_ID
             NotificationBox.__init__(
                 self, message,
                 tooltip=_("Good luck!"),
                 message_type=message_type,
-                context_id=RigoServiceController.NOTIFICATION_CONTEXT_ID)
+                context_id=context_id)
 
     class SharedLocker(object):
 
@@ -707,7 +711,8 @@ class RigoServiceController(GObject.Object):
                          "There are <b>%i</b> more updates",
                          int(updates_amount)) % (updates_amount,),)
             box = self.ServiceNotificationBox(
-                prepare_markup(msg), Gtk.MessageType.INFO)
+                prepare_markup(msg), Gtk.MessageType.INFO,
+                context_id=self.SYSTEM_UPGRADE_CONTEXT_ID)
             self._nc.append(box, timeout=20)
 
     def _unsupported_applications_signal(self, manual_package_ids,
@@ -1323,7 +1328,8 @@ class RigoServiceController(GObject.Object):
                 box = self.ServiceNotificationBox(
                     prepare_markup(
                         _("Another activity is currently in progress")),
-                    Gtk.MessageType.ERROR)
+                    Gtk.MessageType.ERROR,
+                    context_id=self.ANOTHER_ACTIVITY_CONTEXT_ID)
                 box.add_destroy_button(_("K thanks"))
                 self._nc.append(box)
             GLib.idle_add(_notify)
@@ -1450,7 +1456,8 @@ class RigoServiceController(GObject.Object):
         answer.
         """
         box = self.ServiceNotificationBox(
-            prepare_markup(message), message_type)
+            prepare_markup(message), message_type,
+            context_id="BlockingQuestion-%d" % (id(ask_meta),))
 
         def _say_yes(widget):
             ask_meta['res'] = True
@@ -1472,7 +1479,8 @@ class RigoServiceController(GObject.Object):
         acknowledgement.
         """
         box = self.ServiceNotificationBox(
-            prepare_markup(message), message_type)
+            prepare_markup(message), message_type,
+            context_id="BlockingMessage-%d" % (id(sem),))
 
         def _say_kay(widget):
             self._nc.remove(box)
@@ -1821,7 +1829,8 @@ class RigoServiceController(GObject.Object):
                         prepare_markup(
                             _("Another activity is currently in progress")
                         ),
-                        Gtk.MessageType.ERROR)
+                        Gtk.MessageType.ERROR,
+                        context_id=self.ANOTHER_ACTIVITY_CONTEXT_ID)
                     box.add_destroy_button(_("K thanks"))
                     self._nc.append(box)
                 if do_notify:
@@ -1967,7 +1976,9 @@ class RigoServiceController(GObject.Object):
                     _("<b>System Upgrade</b> has begun, "
                       "now go make some coffee"))
                 box = self.ServiceNotificationBox(
-                    msg, Gtk.MessageType.INFO)
+                    msg, Gtk.MessageType.INFO,
+                    context_id=self.SYSTEM_UPGRADE_CONTEXT_ID
+                    )
                 self._nc.append(box, timeout=10)
             if accepted:
                 GLib.idle_add(_notify)
@@ -2043,7 +2054,8 @@ class RigoServiceController(GObject.Object):
                     prepare_markup(
                         _("Another activity is currently in progress")
                     ),
-                    Gtk.MessageType.ERROR)
+                    Gtk.MessageType.ERROR,
+                    context_id=self.ANOTHER_ACTIVITY_CONTEXT_ID)
                 box.add_destroy_button(_("K thanks"))
                 self._nc.append(box)
             if do_notify:
