@@ -473,7 +473,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         if manual_removal:
             _show_package_removal_info(
                 entropy_client, manual_removal, manual = True)
-        if removal:
+        if remove:
             _show_package_removal_info(entropy_client, remove)
 
     if remove and allow_run:
