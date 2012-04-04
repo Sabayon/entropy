@@ -646,6 +646,12 @@ class RigoServiceController(GObject.Object):
         Signal coming from RigoDaemon notifying us that the
         MANAGING_APPLICATIONS is over.
         """
+        const_debug_write(
+            __name__,
+            "_applications_managed_signal: outcome: "
+            "%s, local_activity: %s" % (
+                outcome, local_activity))
+
         with self._registered_signals_mutex:
             our_signals = self._registered_signals.get(
                 self._APPLICATIONS_MANAGED_SIGNAL)
@@ -704,6 +710,10 @@ class RigoServiceController(GObject.Object):
         being available. This happens when RigoDaemon processed critical
         updates during the previous activity execution.
         """
+        const_debug_write(
+            __name__,
+            "_restarting_system_upgrade_signal: "
+            "updates_amount: %s" % (updates_amount,))
         if self._nc is not None:
             msg = "%s. %s" % (
                 _("<b>System Upgrade</b> Activity is being <i>restarted</i>"),
@@ -753,6 +763,10 @@ class RigoServiceController(GObject.Object):
         Signal coming from RigoDaemon notifying us that repositories have
         been updated.
         """
+        const_debug_write(
+            __name__,
+            "_repositories_updated_signal: "
+            "result: %s, message: %s" % (result, message,))
         with self._registered_signals_mutex:
             our_signals = self._registered_signals.get(
                 self._REPOSITORIES_UPDATED_SIGNAL)
