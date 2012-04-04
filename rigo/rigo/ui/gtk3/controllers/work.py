@@ -280,7 +280,7 @@ class WorkViewController(GObject.Object):
                     escape_markup(msg),
                     more_msg,))
 
-    def set_application(self, app, daemon_action, queue_len=None):
+    def set_application(self, app, daemon_action):
         """
         Set Application information by providing its Application
         object.
