@@ -762,7 +762,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         Action Queue worker code.
         """
-        def _action_queue_finally(item, activity, outcome):
+        def _action_queue_finally(activity, outcome):
             if item.authorized():
                 with self._action_queue_length_mutex:
                     self._action_queue_length -= 1
@@ -805,7 +805,6 @@ class RigoDaemonService(dbus.service.Object):
 
         outcome = AppTransactionOutcome.INTERNAL_ERROR
         self._enable_stdout_stderr_redirect()
-        item = None
         try:
 
             if not item.authorized():
@@ -833,7 +832,7 @@ class RigoDaemonService(dbus.service.Object):
                 self._rwsem.reader_release()
 
         finally:
-            _action_queue_finally(item, activity, outcome)
+            _action_queue_finally(activity, outcome)
 
     def _process_action(self, item, activity, is_app):
         """
@@ -1697,6 +1696,9 @@ class RigoDaemonService(dbus.service.Object):
                     if authorized:
                         with self._action_queue_length_mutex:
                             self._action_queue_length += 1
+                        GLib.idle_add(
+                            self.application_enqueued,
+                            package_id, repository_id, action)
                     self._action_queue_waiter.release()
                 finally:
                     self._enqueue_action_busy_hold_sem.release()
@@ -1983,6 +1985,18 @@ class RigoDaemonService(dbus.service.Object):
         write_output("activity_completed() issued for %d,"
                      " success: %s" % (
                 activity, success,), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='iss')
+    def application_enqueued(self, package_id, repository_id, action):
+        """
+        Signal all the connected Clients that a requested Application
+        action has been accepted and the same enqueued.
+        """
+        write_output("application_enqueued(): %i,"
+                     "%s, action: %s" % (
+                package_id, repository_id, action,),
+                     debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='isss')
