@@ -1876,7 +1876,6 @@ class RigoDaemonService(dbus.service.Object):
         Entropy Library output text signal. Clients will be required to
         forward this message to User.
         """
-        write_output("output() issued", debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='iiiis')
@@ -1887,7 +1886,6 @@ class RigoDaemonService(dbus.service.Object):
         Entropy UrlFetchers output signals. Clients will be required to
         forward this message to User in Progress Bar form.
         """
-        write_output("transfer_output() issued", debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='is')
