@@ -4,6 +4,7 @@ Backlog (raw)
 
     rigo:
     - [F] App Install support
+          - when installing App, ask user to validate the deps
           - make possible to undo accidental enqueue, give 5 seconds
           - red button -> terminate queue instantly
     - [F] Configuration files Update
