@@ -223,6 +223,7 @@ class Rigo(Gtk.Application):
         self._service.set_work_controller(self._work_view_c)
 
         self._bottom_nc.connect("show-work-view", self._on_show_work_view)
+        self._bottom_nc.connect("work-interrupt", self._on_work_interrupt)
 
     def is_ui_locked(self):
         """
@@ -263,6 +264,23 @@ class Rigo(Gtk.Application):
             self._search_entry.set_sensitive(False)
         if state is not None:
             self._change_view_state(state, lock=lock)
+
+    def _on_work_interrupt(self, widget):
+        """
+        We've been explicitly asked to interrupt the currently
+        ongoing work
+        """
+        rc = self._show_yesno_dialog(
+            self._window,
+            escape_markup(_("Activity Interruption")),
+            escape_markup(
+                _("Are you sure you want to interrupt"
+                  " the ongoing Activity? The interruption will"
+                  " occur as soon as possible, potentially not"
+                  " immediately.")))
+        if rc == Gtk.ResponseType.NO:
+            return
+        self._service.interrupt_activity()
 
     def _on_show_work_view(self, widget):
         """

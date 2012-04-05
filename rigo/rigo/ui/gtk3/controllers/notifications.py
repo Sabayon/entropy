@@ -290,6 +290,10 @@ class BottomNotificationViewController(NotificationViewController):
                             None,
                             tuple(),
                             ),
+        "work-interrupt" : (GObject.SignalFlags.RUN_LAST,
+                            None,
+                            tuple(),
+                            ),
     }
 
     def __init__(self, notification_box):
@@ -302,6 +306,12 @@ class BottomNotificationViewController(NotificationViewController):
         User is asking to show the Work View.
         """
         self.emit("show-work-view")
+
+    def _on_work_interrupt(self, widget):
+        """
+        User is asking to interrupt the Work.
+        """
+        self.emit("work-interrupt")
 
     def _append_repositories_update(self):
         """
@@ -325,6 +335,7 @@ class BottomNotificationViewController(NotificationViewController):
             msg, message_type=Gtk.MessageType.INFO,
             context_id=self.UNIQUE_CONTEXT_ID)
         box.add_button(_("Show me"), self._on_work_view_show)
+        box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 
     def _append_upgrading_system(self):
@@ -337,6 +348,7 @@ class BottomNotificationViewController(NotificationViewController):
             msg, message_type=Gtk.MessageType.INFO,
             context_id=self.UNIQUE_CONTEXT_ID)
         box.add_button(_("Show me"), self._on_work_view_show)
+        box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 
     def set_activity(self, local_activity):

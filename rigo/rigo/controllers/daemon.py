@@ -1177,6 +1177,16 @@ class RigoServiceController(GObject.Object):
         task.daemon = True
         task.start()
 
+    def interrupt_activity(self):
+        """
+        Interrupt any RigoDaemon activity.
+        """
+        def _interrupt():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).interrupt_activity()
+        return self._execute_mainloop(_interrupt)
+
     def activity(self):
         """
         Return RigoDaemon activity states (any of RigoDaemon.ActivityStates
