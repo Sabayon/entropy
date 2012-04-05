@@ -21,6 +21,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 import os
 import subprocess
 import tempfile
+import time
+from threading import Timer, Semaphore, Lock
 
 from gi.repository import Gtk, GLib, GObject, Pango
 
@@ -34,7 +36,7 @@ from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
 from entropy.i18n import _, ngettext
 from entropy.services.client import WebService
-from entropy.misc import ParallelTask
+from entropy.misc import ParallelTask, TimeScheduled
 
 import entropy.tools
 
@@ -805,4 +807,143 @@ class InstallNotificationBox(NotificationBox):
             self._entropy, self._entropy_ws,
             (pkg_id, pkg_repo))
         self._apc.emit("application-activated", app)
+        return True
+
+
+class QueueActionNotificationBox(NotificationBox):
+
+    TIMER_SECONDS = 10.0
+
+    def __init__(self, app, daemon_action, callback, undo_outcome):
+        self._app = app
+        self._action = daemon_action
+        self._undo_outcome = undo_outcome
+
+        self._callback_mutex = Lock()
+        self._callback_called = False
+        self._callback_sync_sem = Semaphore(0)
+        self._callback_outcome = None
+        self._callback = callback
+
+        self._update_timer_elapsed = 0.0
+        self._update_timer_refresh = 0.5
+        self._update_timer = TimeScheduled(
+            self._update_timer_refresh,
+            self._update_countdown_wrapper)
+        self._update_timer.set_delay_before(True)
+        self._update_timer.daemon = True
+        self._update_timer.name = "QueueActionNotificationBoxUpdateTimer"
+
+        self._timer = Timer(self.TIMER_SECONDS + 1, self._callback_wrapper)
+        self._action_label = Gtk.Label()
+        self._action_label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        self._action_label.set_line_wrap(True)
+        self._action_label.set_property("expand", True)
+        self._action_label.set_alignment(0.02, 0.50)
+        self._update_countdown(self.TIMER_SECONDS)
+
+        pkg = self._app.get_details().pkg
+        context_id = "QueueActionNotificationContextId-%s" % (
+            pkg,)
+        NotificationBox.__init__(
+            self, None, message_widget=self._action_label,
+            message_type=Gtk.MessageType.WARNING,
+            context_id=context_id)
+
+        self.add_button(_("Confirm"), self._on_confirm)
+        self.add_button(_("Undo"), self._on_undo)
+
+    def render(self):
+        """
+        Overridden from NotificationBox
+        """
+        outcome = NotificationBox.render(self)
+        self._start_time = time.time()
+        self._update_timer.start()
+        self._timer.start()
+        return outcome
+
+    def destroy(self):
+        """
+        Overridden from NotificationBox
+        """
+        self._update_timer.kill()
+        return NotificationBox.destroy(self)
+
+    def acquire(self):
+        """
+        Acquire Callback outcome, when callback is eventually
+        spawned.
+        """
+        self._callback_sync_sem.acquire()
+        return self._callback_outcome
+
+    def _callback_wrapper(self):
+        """
+        Wrapper method that spawns the callback and stores the
+        outcome into _callback_outcome, releasing the Semaphore
+        once done.
+        """
+        if self._callback_called:
+            return
+
+        with self._callback_mutex:
+            if self._callback_called:
+                return
+            self._callback_outcome = self._callback()
+            self._callback_called = True
+            GLib.idle_add(self.destroy)
+        self._callback_sync_sem.release()
+
+    def _update_countdown_wrapper(self):
+        """
+        Wrapper function that is called every 0.5 seconds
+        updating the countdown status.
+        """
+        self._update_timer_elapsed += self._update_timer_refresh
+        remaining = self.TIMER_SECONDS - self._update_timer_elapsed
+        if remaining < 0.1:
+            self._update_timer.kill()
+            return
+        GLib.idle_add(self._update_countdown, int(remaining))
+
+    def _update_countdown(self, seconds):
+        """
+        Update Countdown message.
+        """
+        msg = prepare_markup(
+            _("<b>%s</b> Application Action will start "
+              "in <big><b>%d</b></big> seconds"))
+        msg = msg % (self._app.name, seconds,)
+        self._action_label.set_markup(prepare_markup(msg))
+
+    def _on_confirm(self, widget):
+        """
+        Action has been confirmed.
+        """
+        self._timer.cancel()
+        self._update_timer.kill()
+        self._callback_wrapper()
+
+    def _on_undo(self, widget):
+        """
+        Action has been cancelled.
+        """
+        self._timer.cancel()
+        self._update_timer.kill()
+
+        if self._callback_called:
+            return
+        with self._callback_mutex:
+            if self._callback_called:
+                return
+            self._callback_outcome = self._undo_outcome
+            self._callback_called = True
+            GLib.idle_add(self.destroy)
+        self._callback_sync_sem.release()
+
+    def is_managed(self):
+        """
+        This NotificationBox cannot be destroyed easily.
+        """
         return True
