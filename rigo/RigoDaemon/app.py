@@ -415,6 +415,12 @@ class RigoDaemonService(dbus.service.Object):
             """
             return self._authorized
 
+        def set_authorized(self, val):
+            """
+            Set a new authorization value.
+            """
+            self._authorized = val
+
         def __str__(self):
             """
             Show item in human readable way
@@ -445,6 +451,12 @@ class RigoDaemonService(dbus.service.Object):
             Return True, if Action has been authorized.
             """
             return self._authorized
+
+        def set_authorized(self, val):
+            """
+            Set a new authorization value.
+            """
+            self._authorized = val
 
         def __str__(self):
             """
@@ -479,6 +491,8 @@ class RigoDaemonService(dbus.service.Object):
         self._txs = ApplicationsTransaction()
         # used by non-daemon thread to exit
         self._stop_signal = False
+        # used by clients to interrupt an ongoing activity
+        self._interrupt_activity = False
 
         # original standard output and error files
         self._old_stdout = sys.stdout
@@ -736,7 +750,12 @@ class RigoDaemonService(dbus.service.Object):
         """
         while True:
 
-            self._action_queue_waiter.acquire() # CANBLOCK
+            acquired = self._action_queue_waiter.acquire(False)
+            if not acquired:
+                # this means that the queue is empty, and
+                # we can turn off the activity interruption signal
+                self._interrupt_activity = False
+                self._action_queue_waiter.acquire() # CANBLOCK
             if self._stop_signal:
                 write_output("_action_queue_worker_thread: bye bye!",
                              debug=True)
@@ -746,10 +765,14 @@ class RigoDaemonService(dbus.service.Object):
             try:
                 item = self._action_queue.popleft()
             except IndexError:
-                # mumble, no more items, this shouldn't have happened
+                # no more items
                 write_output("_action_queue_worker_thread: "
-                             "no item popped!", debug=True)
-                continue
+                             "empty pop", debug=True)
+                break
+
+            # change execution authorization
+            if self._interrupt_activity:
+                item.set_authorized(False)
 
             write_output("_action_queue_worker_thread: "
                          "got: %s" % (item,), debug=True)
@@ -1767,6 +1790,15 @@ class RigoDaemonService(dbus.service.Object):
         except Exception:
             self._enqueue_action_busy_hold_sem.release()
             raise
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def interrupt_activity(self):
+        """
+        Interrupt any ongoing Activity
+        """
+        write_output("interrupt_activity called", debug=True)
+        self._interrupt_activity = True
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='i')
