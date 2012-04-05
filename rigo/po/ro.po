@@ -1,0 +1,693 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 
+# Translators:
+#   <dmfkun@gmail.com>, 2012.
+# Stefan Cristian <stevencristian@hotmail.com>, 2012.
+#   <unknerror@alternativefuse.com>, 2012.
+msgid ""
+msgstr ""
+"Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-04-03 15:02+0200\n"
+"PO-Revision-Date: 2012-04-03 13:02+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"Language-Team: Romanian (http://www.transifex.net/projects/p/sabayon-rigo/language/ro/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1))\n"
+
+#: ../RigoDaemon/app.py:661
+msgid "Not authorized"
+msgstr "Neautorizat"
+
+#: ../RigoDaemon/app.py:695
+msgid "No repositories configured"
+msgstr "Nici un repositoriu configurat"
+
+#: ../RigoDaemon/app.py:700
+msgid "Unhandled Exception"
+msgstr "Exceptie Negestionata"
+
+#: ../RigoDaemon/app.py:1051
+msgid "Application Removal"
+msgstr "Eliminare Aplicatie"
+
+#: ../RigoDaemon/app.py:1344
+msgid "Application download"
+msgstr "Descarcare Aplicatie"
+
+#: ../RigoDaemon/app.py:1436
+msgid "Application Install"
+msgstr "Instalare Aplicatie"
+
+#: ../rigo/models/application.py:129
+msgid "Uncategorized"
+msgstr "Necategorizat"
+
+#: ../rigo/models/application.py:866 ../rigo/models/application.py:1123
+#: ../rigo/models/application.py:1163 ../rigo/models/application.py:1195
+#: ../rigo/models/application.py:1261
+msgid "N/A"
+msgstr "Indisponibil"
+
+#: ../rigo/models/application.py:1131 ../rigo/models/application.py:1186
+msgid "No description"
+msgstr "Fara descriptie"
+
+#: ../rigo/models/application.py:1200
+msgid "Installed"
+msgstr "Instalat"
+
+#: ../rigo/models/application.py:1206
+#, python-format
+msgid "<b>%s</b> is installed"
+msgstr "<b>%s</b> este instalat"
+
+#: ../rigo/models/application.py:1208
+msgid "from"
+msgstr "De la"
+
+#: ../rigo/models/application.py:1238
+msgid "License"
+msgstr "Licenta"
+
+#: ../rigo/models/application.py:1249
+msgid "Required space"
+msgstr "Spatiu necesar"
+
+#: ../rigo/models/application.py:1256
+msgid "Download size"
+msgstr "Marime descarcare"
+
+#: ../rigo/models/application.py:1263
+msgid "Checksum"
+msgstr "Suma de Control"
+
+#: ../rigo/models/application.py:1274
+msgid "USE flags"
+msgstr "Indicator USE"
+
+#: ../rigo/models/application.py:1278
+msgid "No use flags"
+msgstr "Nici un Indicator USE"
+
+#: ../rigo/models/application.py:1296
+msgid "Runtime dependencies"
+msgstr "Dependente secventiale"
+
+#: ../rigo/models/application.py:1297
+msgid "Build dependencies"
+msgstr "Constructie dependente"
+
+#: ../rigo/models/application.py:1298
+msgid "Post dependencies"
+msgstr "Dependente ulterioare"
+
+#: ../rigo/models/application.py:1299
+msgid "Staff dependencies"
+msgstr "Dependente de Baza"
+
+#: ../rigo/models/application.py:1321
+msgid "Click here for more details"
+msgstr "Clic aici pentru mai multe detalii"
+
+#: ../rigo/models/application.py:1566
+msgid "Application not found"
+msgstr "Aplicatia nu a fost gasita"
+
+#: ../rigo/controllers/daemon.py:67
+msgid "Good luck!"
+msgstr "Succes !"
+
+#: ../rigo/controllers/daemon.py:542
+msgid "An <b>unknown error</b> occurred"
+msgstr "O <b>eroare necunoscuta</b> a aparut"
+
+#: ../rigo/controllers/daemon.py:544
+#, python-format
+msgid "<b>%s</b> download failed"
+msgstr "Descararea <b>%s</b> a esuat"
+
+#: ../rigo/controllers/daemon.py:547
+#, python-format
+msgid "<b>%s</b> install failed"
+msgstr "Instalarea <b>%s</b> a esuat"
+
+#: ../rigo/controllers/daemon.py:550
+#, python-format
+msgid "<b>%s</b> removal failed"
+msgstr "Stergerea <b>%s</b> a esuat"
+
+#: ../rigo/controllers/daemon.py:554
+#, python-format
+msgid "<b>%s</b>, not authorized"
+msgstr "Nu esti autorizat pentru <b>%s</b>"
+
+#: ../rigo/controllers/daemon.py:557
+#, python-format
+msgid "<b>%s</b>, internal error"
+msgstr "Eroare interna la <b>%s</b>"
+
+#: ../rigo/controllers/daemon.py:562
+#, python-format
+msgid "<b>%s</b> dependencies not found"
+msgstr "Dependentele lui <b>%s</b> nu au fost gasite"
+
+#: ../rigo/controllers/daemon.py:567
+#, python-format
+msgid "<b>%s</b> dependencies collision error"
+msgstr "Eroare coliziune de dependente pentru <b>%s</b>"
+
+#: ../rigo/controllers/daemon.py:572
+#, python-format
+msgid "<b>%s</b> dependencies not removable error"
+msgstr "Eroare dependentele nu pot fi sterse pentru <b>%s</b>"
+
+#: ../rigo/controllers/daemon.py:577
+msgid "Disk full, cannot download nor unpack Applications"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:581
+msgid "An error occurred"
+msgstr "O eroare a aparut"
+
+#: ../rigo/controllers/daemon.py:586
+#: ../rigo/ui/gtk3/controllers/application.py:388
+#: ../rigo/ui/gtk3/controllers/application.py:475
+#: ../rigo/ui/gtk3/controllers/application.py:558
+msgid "Ok, thanks"
+msgstr "Bine, multumesc"
+
+#: ../rigo/controllers/daemon.py:587
+#: ../rigo/ui/gtk3/controllers/notifications.py:313
+#: ../rigo/ui/gtk3/controllers/notifications.py:325
+#: ../rigo/ui/gtk3/controllers/notifications.py:337
+msgid "Show me"
+msgstr "Arata-mi"
+
+#: ../rigo/controllers/daemon.py:648
+msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
+msgstr "<b>Actualizare Sistem</b> Activitatea este in curs de <i>reincepere</i>"
+
+#: ../rigo/controllers/daemon.py:649
+#, python-format
+msgid "There is <b>%i</b> more update"
+msgid_plural "There are <b>%i</b> more updates"
+msgstr[0] "Este inca o actualizare pentru <b>%i</b> "
+msgstr[1] "Sunt cateva actualizari pentru <b>%i</b>"
+msgstr[2] "Sunt mai multe actualizari pentru <b>%i</b>"
+
+#: ../rigo/controllers/daemon.py:1169
+msgid "Waiting for <b>RigoDaemon</b>, please wait..."
+msgstr "Va rog sa asteptati pentru <b>RigoDaemon</b>..."
+
+#: ../rigo/controllers/daemon.py:1239 ../rigo/controllers/daemon.py:1741
+#: ../rigo/controllers/daemon.py:1959
+msgid "Another activity is currently in progress"
+msgstr "Este deja o activitate in curs"
+
+#: ../rigo/controllers/daemon.py:1241 ../rigo/controllers/daemon.py:1744
+#: ../rigo/controllers/daemon.py:1962
+msgid "K thanks"
+msgstr "Bine multumesc"
+
+#: ../rigo/controllers/daemon.py:1375
+msgid "Yes, thanks"
+msgstr "Da, multumesc"
+
+#: ../rigo/controllers/daemon.py:1376
+msgid "No, sorry"
+msgstr "Nu, scuze"
+
+#: ../rigo/controllers/daemon.py:1392
+msgid "Ok then"
+msgstr "Bine atunci"
+
+#: ../rigo/controllers/daemon.py:1424
+#, python-format
+msgid ""
+"<b>%s</b>\n"
+"is part of the Base System and <b>cannot</b> be removed"
+msgstr "<b>%s</b>⏎\nface parte din Sistemul de Baza si <b>nu poate fi</b> inlaturat"
+
+#: ../rigo/controllers/daemon.py:1484
+#, python-format
+msgid ""
+"<b>%s</b>\n"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>⏎\nnu poate fi instalat deoarece in acest timp datorita unui fisier <b>sters/mascat</b>, dependenta sau dependentele sunt in <b>conflict</b>"
+
+#: ../rigo/controllers/daemon.py:1499
+#, python-format
+msgid ""
+"Installing <b>%s</b> would cause the removal of the following Applications: "
+"%s"
+msgstr "Instalarea aplicatiei <b>%s</b> ar putea cauza inlaturarea urmatoarelor elemente:\nAplicatii: %s"
+
+#: ../rigo/controllers/daemon.py:1610
+#, python-format
+msgid "<b>%s</b> action enqueued"
+msgstr "Actiunea <b>%s</b> este in curs de rulare"
+
+#: ../rigo/controllers/daemon.py:1614
+#, python-format
+msgid ", <b>%i</b> Application enqueued so far..."
+msgid_plural ", <b>%i</b> Applications enqueued so far..."
+msgstr[0] "Pana acum e aplicatia <b>%i</b> in curs de rulare"
+msgstr[1] "Pana acum sunt cateva aplicatii <b>%i</b> in curs de rulare"
+msgstr[2] "Pana acum sunt aplicatiile <b>%i</b> in curs de rulare"
+
+#: ../rigo/controllers/daemon.py:1882
+msgid "<b>System Upgrade</b> has begun, now go make some coffee"
+msgstr "<b>Actualizarea de Sistem</b> a inceput, puteţi merge la o cafea"
+
+#: ../rigo/ui/gtk3/controllers/notifications.py:309
+msgid "Repositories Update in <b>progress</b>..."
+msgstr "Actualizarea Arhivelor in <b>progres<b>..."
+
+#: ../rigo/ui/gtk3/controllers/notifications.py:321
+msgid "<b>Application Management</b> in progress..."
+msgstr "<b>Administrarea Aplicatiilor</b> in curs de desfasurare..."
+
+#: ../rigo/ui/gtk3/controllers/notifications.py:333
+msgid "<b>System Upgrade</b> in progress..."
+msgstr "<b>Actualizare Sistem</b> in curs de desfasurare..."
+
+#: ../rigo/ui/gtk3/controllers/work.py:262
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:98
+msgid "Installing"
+msgstr "Instalare"
+
+#: ../rigo/ui/gtk3/controllers/work.py:264
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:99
+msgid "Removing"
+msgstr "Inlaturare"
+
+#: ../rigo/ui/gtk3/controllers/work.py:271
+#, python-format
+msgid ", and <b>%d</b> <i>more in queue</i>"
+msgid_plural ", and <b>%d</b> <i>more in queue</i>"
+msgstr[0] "Inca un <b>%d</b> <i>in curs<i>"
+msgstr[1] "Mai sunt cateva <b>%d</b> <i>in curs<i>"
+msgstr[2] "Mai sunt inca <b>%d</b> <i>in curs<i>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:290
+#, python-format
+msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
+msgstr "Logat ca si <b>%s</b>! Doriti sa <b>votati</b>?"
+
+#: ../rigo/ui/gtk3/controllers/application.py:297
+msgid "_Vote now"
+msgstr "_Votati acum"
+
+#: ../rigo/ui/gtk3/controllers/application.py:299
+#: ../rigo/ui/gtk3/controllers/application.py:334
+#: ../rigo/ui/gtk3/controllers/application.py:498
+#: ../rigo/ui/gtk3/controllers/application.py:603
+msgid "_Later"
+msgstr "_MaiTarziu"
+
+#: ../rigo/ui/gtk3/controllers/application.py:307
+msgid "Login failed. Your <b>vote</b> hasn't been added"
+msgstr "Autentificare nereusita. <b>Votul</b> nu a fost adaugat"
+
+#: ../rigo/ui/gtk3/controllers/application.py:310
+#: ../rigo/ui/gtk3/controllers/application.py:614
+#: ../rigo/ui/gtk3/widgets/comments.py:98
+msgid "_Ok, thanks"
+msgstr "_Ok, multumesc"
+
+#: ../rigo/ui/gtk3/controllers/application.py:318
+#, python-format
+msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
+msgstr "Evaluati <b>%s</b> ca </b>%s</b>. cu <b>%d</b> stele?"
+
+#: ../rigo/ui/gtk3/controllers/application.py:326
+#: ../rigo/ui/gtk3/controllers/application.py:490
+msgid "_Ok, cool!"
+msgstr "_Ok, super!"
+
+#: ../rigo/ui/gtk3/controllers/application.py:332
+#: ../rigo/ui/gtk3/controllers/application.py:496
+msgid "_No, logout!"
+msgstr "_Nu, logare afara"
+
+#: ../rigo/ui/gtk3/controllers/application.py:370
+msgid "Your vote has been added!"
+msgstr "Votul a fost adaugat!"
+
+#: ../rigo/ui/gtk3/controllers/application.py:373
+#: ../rigo/ui/gtk3/controllers/application.py:549
+msgid "Ok, great!"
+msgstr "Bine, superb!"
+
+#: ../rigo/ui/gtk3/controllers/application.py:380
+msgid "You already voted this <b>Application</b>"
+msgstr "Ati votat deja aceasta <b>Aplicatie</b>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:385
+#, python-format
+msgid "Vote error: <i>%s</i>"
+msgstr "Eroare vot:<i>%s</i>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:471
+msgid "Entropy Web Services not available for repository"
+msgstr "Entropy Web Services nu sunt disponibile pentru repositoriu"
+
+#: ../rigo/ui/gtk3/controllers/application.py:483
+#, python-format
+msgid "You are about to add a <b>comment</b> as <b>%s</b>."
+msgstr "Esti pe cale sa adaugi un <b>comentariu</b> ca si <b>%s</b>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:546
+msgid "Your comment has been submitted!"
+msgstr "Comentariul a fost adaugat!"
+
+#: ../rigo/ui/gtk3/controllers/application.py:555
+#, python-format
+msgid "Comment submit error: <i>%s</i>"
+msgstr "Eroare la adaugarea comentariului:<i>%s</i>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:596
+#, python-format
+msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
+msgstr "Logat ca si <b>%s</b>! Ce ziceati de <b>comentariul</b> vostru?"
+
+#: ../rigo/ui/gtk3/controllers/application.py:602
+msgid "_Send now"
+msgstr "_Trimite acum"
+
+#: ../rigo/ui/gtk3/controllers/application.py:611
+msgid "Login failed. Your <b>comment</b> hasn't been added"
+msgstr "Autentificare nereusita. <b>Comentariul</b> nu a fost adaugat"
+
+#: ../rigo/ui/gtk3/controllers/application.py:634
+msgid "<i>No <b>comments</b> for this Application, yet!</i>"
+msgstr "<i>Inca nu exista <b>comentarii</b> pentru aceasta aplicatie</i>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:683
+msgid "Older comments"
+msgstr "Comentarii vechi"
+
+#: ../rigo/ui/gtk3/controllers/application.py:690
+msgid "Loading older comments..."
+msgstr "Incarcare comentarii vechi..."
+
+#: ../rigo/ui/gtk3/controllers/application.py:734
+msgid "<i>No <b>images</b> for this Application, yet!</i>"
+msgstr "<i>Inca nu exista <b>imagini</b> pentru aceasta Aplicatie!</i>"
+
+#: ../rigo/ui/gtk3/controllers/application.py:742
+msgid "Older images"
+msgstr "Imagini vechi"
+
+#: ../rigo/ui/gtk3/controllers/application.py:748
+msgid "Loading older images..."
+msgstr "Incarcare imagini vechi..."
+
+#: ../rigo/ui/gtk3/controllers/application.py:813
+msgid "Update"
+msgstr "Actualizare"
+
+#: ../rigo/ui/gtk3/controllers/application.py:823
+msgid "Reinstall"
+msgstr "Reinstalare"
+
+#: ../rigo/ui/gtk3/controllers/application.py:833
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:97
+msgid "Remove"
+msgstr "Inlaturare"
+
+#: ../rigo/ui/gtk3/controllers/application.py:843
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:96
+msgid "Install"
+msgstr "Instalare"
+
+#: ../rigo/ui/gtk3/controllers/application.py:858
+msgid "Not available"
+msgstr "Indisponibil"
+
+#: ../rigo/ui/gtk3/controllers/application.py:860
+msgid "Never downloaded"
+msgstr "Niciodata descarcat"
+
+#: ../rigo/ui/gtk3/controllers/application.py:864
+msgid "downloads"
+msgstr "descarcari"
+
+#: ../rigo/ui/gtk3/controllers/application.py:912
+msgid "Want to add images, etc?"
+msgstr "Vrei sa adaugi imagini, etc?"
+
+#: ../rigo/ui/gtk3/controllers/application.py:914
+msgid "click here!"
+msgstr "clic aici!"
+
+#: ../rigo/ui/gtk3/controllers/application.py:925
+msgid "Loading comments..."
+msgstr "Incarcare comentarii..."
+
+#: ../rigo/ui/gtk3/controllers/applications.py:367
+msgid "Nothing found for"
+msgstr "Nimic gasit pentru"
+
+#: ../rigo/ui/gtk3/controllers/applications.py:377
+#, python-format
+msgid "did you mean <a href=\"%s\">%s</a>?"
+msgstr "te refereai la <a href=\"%s\">%s</a>?"
+
+#: ../rigo/ui/gtk3/controllers/applications.py:409
+msgid "Not found"
+msgstr "Negasit"
+
+#. TRANSLATORS: this is an accessibility description for eg orca and
+#. is not visible in the ui
+#: ../rigo/ui/gtk3/widgets/buttons.py:237
+#, python-format
+msgid "%(stars)d stars - %(reviews)d reviews"
+msgstr "%(stars)d stele - %(reviews)d recenzii"
+
+#: ../rigo/ui/gtk3/widgets/buttons.py:252
+#: ../rigo/ui/gtk3/widgets/buttons.py:254
+#: ../rigo/ui/gtk3/widgets/buttons.py:255
+msgid "Free"
+msgstr "Liber"
+
+#: ../rigo/ui/gtk3/widgets/buttons.py:574
+msgid "More"
+msgstr "Mai mult"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:171
+#, python-format
+msgid "There is <b>%d</b> update"
+msgid_plural "There are <b>%d</b> updates"
+msgstr[0] "Exista <b>%d</b> actualizare"
+msgstr[1] "Exista <b>%d</b> actualizari"
+msgstr[2] "Exista <b>%d</b> actualizari"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:177
+#, python-format
+msgid "and <b>%d</b> security update"
+msgid_plural "and <b>%d</b> security updates"
+msgstr[0] "si <b>%d</b> actualizare de securitate"
+msgstr[1] "si <b>%d</b> actualizari de securitate"
+msgstr[2] "si <b>%d</b> actualizari de securitate"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:183
+msgid "What to do?"
+msgstr "Ce sa fac?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:186
+msgid "Updates available, how about installing them?"
+msgstr "Actualizari disponibile, le instalati ?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:189
+msgid "_Update System"
+msgstr "_Actualizeaza Sistemul"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:190
+msgid "_Show"
+msgstr "_Afiseaza"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:191
+msgid "_Ignore"
+msgstr "_Ignorat"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:221
+msgid "The list of available Applications is old, <b>update now</b>?"
+msgstr "Lista aplicatiilor disponibile este veche, <b>actualizati acum</b>?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:224
+msgid "Repositories should be downloaded, <b>update now</b>?"
+msgstr "Repositoriile ar trebui sa fie descarcate, <b>actualizati acum</b>?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:227
+msgid "I dunno dude, I'd say Yes"
+msgstr "Nu stiu omule, eu as zice Da"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:230
+msgid "_Yes, why not?"
+msgstr "_Da, de ce nu?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:231
+msgid "_No, thanks"
+msgstr "_Nu, multumesc"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:270
+msgid "You need to login to Entropy Web Services"
+msgstr "Este nevoie sa te loghezi pe Entropy Web Services"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:274
+msgid "_Login"
+msgstr "_Logare"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:275
+msgid "Register"
+msgstr "Registrare"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:280
+msgid "_Cancel"
+msgstr "_Anuleaza"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:291
+msgid "Username"
+msgstr "NumeUtilizator"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:301
+msgid "Password"
+msgstr "Parola"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:333
+msgid "Login <b>error</b>!"
+msgstr "<b>Eroare</b> de logare!"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:387
+msgid ""
+"Cannot connect to Entropy Web Services, are you connected to the "
+"<b>interweb</b>?"
+msgstr "Nu se poate conecta la Entropy Web Services, sunteti conectat la <b>web</b>?"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:391
+msgid "Don't ask me..."
+msgstr "Nu ma intreba pe mine..."
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:394
+msgid "_Of course not"
+msgstr "_Desigur nu"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:402
+msgid "A watched pot never boils"
+msgstr "Un cazan supravegheat, niciodata nu fierbe"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:462
+#, python-format
+msgid ""
+"You are required to <b>review</b> and <b>accept</b> the following licenses "
+"before continuing: %s"
+msgstr "Trebuie sa <b>analizati</b> si sa <b>acceptati</b> urmatoarele licente inainte de a continua:%s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:467
+#, python-format
+msgid ""
+"<b>%s</b> Application or one of its dependencies is distributed with the "
+"following licenses: %s"
+msgstr "Aplicatia <b>%s</b> sau una din dependentele ei este distribuita sub licenta:%s"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:483
+msgid "Make sure to review all the licenses"
+msgstr "Asigura-te ca toate licentele sunt recenziate"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:487
+msgid "Accept"
+msgstr "Accept"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:488
+msgid "Accept forever"
+msgstr "Accepta pentru totdeauna"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:490
+msgid "Decline"
+msgstr "Respinge"
+
+#. if apps:
+#. self.add_button(_("Remove safe"), self._on_remove_safe)
+#. self.add_button(_("Remove All"), self._on_remove_all)
+#: ../rigo/ui/gtk3/widgets/notifications.py:615
+msgid "Close"
+msgstr "Inchide"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:632
+msgid ""
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
+"review</b> before being uninstalled. Click on the Apps to expand."
+msgstr "Mai multe <b>Aplicatii</b>, ce nu mai sunt sustinute in aceasta distributie au fost gasite in <b>Sistemul</b> tau. Unele pot avea nevoie de <b>recenzie manuala</b> inainte de a fi dezinstalate. Apasati pe Apps pentru extindere."
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:640
+msgid "Manual review"
+msgstr "Recenzie manuala"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:644
+msgid "Safe to drop"
+msgstr "Se poate renunta in siguranta"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:399
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i apreciere"
+msgstr[1] "%(nr_ratings)i aprecieri"
+msgstr[2] "%(nr_ratings)i aprecieri"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:499
+msgid "Hint: Click a star to rate this app"
+msgstr "O idee: Clic steluta pentru a aprecia"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Awful"
+msgstr "Groaznic"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Poor"
+msgstr "Slab"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Adequate"
+msgstr "Adecvat"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Good"
+msgstr "Bine"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Excellent"
+msgstr "Excelent"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "Nu pot inlatura comentariul"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "inlatura"
+
+#: ../rigo/ui/gtk3/widgets/images.py:206
+msgid "Keywords"
+msgstr "Cuvinte cheie"
+
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:91
+msgid "More Info"
+msgstr "Mai multe info"
+
+#: ../rigo/ui/gtk3/widgets/welcome.py:39
+msgid "<i>Browse <b>Applications</b> with ease</i>"
+msgstr "<i>Exploreaza <b>Aplicatia</b> cu usurinta<i>"
