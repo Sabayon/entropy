@@ -31,7 +31,8 @@ from rigo.enums import AppActions, RigoViewStates, \
 from rigo.models.application import Application
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
-    OrphanedAppsNotificationBox, InstallNotificationBox
+    OrphanedAppsNotificationBox, InstallNotificationBox, \
+    QueueActionNotificationBox
 
 from rigo.utils import prepare_markup
 
@@ -1697,6 +1698,7 @@ class RigoServiceController(GObject.Object):
         else:
             package_id, repository_id = None, None
 
+        sig_match = None
         if busied:
             if self._wc is not None:
                 GLib.idle_add(self._wc.activate_progress_bar)
@@ -1749,6 +1751,8 @@ class RigoServiceController(GObject.Object):
 
         accepted = True
         if master:
+            # disable the please wait signal
+            self._please_wait(False)
             def _enqueue():
                 return dbus.Interface(
                     self._entropy_bus,
@@ -1756,7 +1760,23 @@ class RigoServiceController(GObject.Object):
                     ).enqueue_application_action(
                     package_id, repository_id, daemon_action,
                     simulate)
-            accepted = self._execute_mainloop(_enqueue)
+            def _enqueue_callback():
+                return self._execute_mainloop(_enqueue)
+
+            box = QueueActionNotificationBox(
+                app, daemon_action,
+                _enqueue_callback, None)
+            self._nc.append_safe(box)
+            const_debug_write(
+                __name__,
+                "service enqueue_application_action, about to sleep")
+            accepted = box.acquire()
+            if not accepted and sig_match is not None:
+                # Undo request or not accepted, remove our signal handler
+                # here
+                sig_match.remove()
+            # re-enable it
+            self._please_wait(True)
             const_debug_write(
                 __name__,
                 "service enqueue_application_action, got: %s, type: %s" % (
@@ -1873,6 +1893,10 @@ class RigoServiceController(GObject.Object):
                 accepted = self._application_request_unlocked(
                     app, daemon_action, master,
                     busied, simulate)
+                if accepted is None:
+                    # undo action requested by user
+                    do_notify = False
+                    accepted = False
 
             if not accepted:
                 with self._application_request_mutex:
