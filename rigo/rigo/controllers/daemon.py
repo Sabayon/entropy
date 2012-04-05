@@ -1532,7 +1532,8 @@ class RigoServiceController(GObject.Object):
         block until User answers.
         """
         box = InstallNotificationBox(
-            self._avc, app, self._entropy, install)
+            self._apc, self._avc, app, self._entropy,
+            self._entropy_ws, install)
 
         def _accepted(widget):
             ask_meta['res'] = True

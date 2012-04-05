@@ -725,15 +725,17 @@ class InstallNotificationBox(NotificationBox):
                       ),
     }
 
-    def __init__(self, avc, app, entropy_client, install):
+    def __init__(self, apc, avc, app, entropy_client, entropy_ws, install):
         """
         InstallNotificationBox constructor.
 
         @param entropy_client: Entropy Client object
         @param install: Application Install queue
         """
+        self._apc = apc
         self._avc = avc
         self._app = app
+        self._entropy_ws = entropy_ws
         self._entropy = entropy_client
         self._install = sorted(
             install, key = lambda x: x.name)
