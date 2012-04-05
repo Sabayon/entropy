@@ -37,7 +37,7 @@ from entropy.const import etpConst, const_debug_write, \
     const_debug_enabled, const_convert_to_unicode, const_isunicode
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask
-from entropy.i18n import _
+from entropy.i18n import _, ngettext
 
 import entropy.tools
 
@@ -314,10 +314,11 @@ class ApplicationViewController(GObject.Object):
         """
         Notify User about Comment submission with current credentials.
         """
-        box = NotificationBox(
-            _("Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?") \
-                % (app.name, escape_markup(username),
-                   vote,),
+        msg = ngettext("Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?",
+                       "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?",
+                       vote)
+        msg = msg % (app.name, escape_markup(username), vote,)
+        box = NotificationBox(msg,
             message_type=Gtk.MessageType.INFO,
             context_id=self.VOTE_NOTIFICATION_CONTEXT_ID)
 

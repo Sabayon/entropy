@@ -912,8 +912,11 @@ class QueueActionNotificationBox(NotificationBox):
         Update Countdown message.
         """
         msg = prepare_markup(
-            _("<b>%s</b> Application Action will start "
-              "in <big><b>%d</b></big> seconds"))
+            ngettext("<b>%s</b> Application Action will start "
+              "in <big><b>%d</b></big> seconds",
+              "<b>%s</b> Application Action will start "
+              "in <big><b>%d</b></big> second",
+              seconds))
         msg = msg % (self._app.name, seconds,)
         self._action_label.set_markup(prepare_markup(msg))
 
