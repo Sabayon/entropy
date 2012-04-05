@@ -840,7 +840,7 @@ class QueueActionNotificationBox(NotificationBox):
         self._action_label.set_line_wrap(True)
         self._action_label.set_property("expand", True)
         self._action_label.set_alignment(0.02, 0.50)
-        self._update_countdown(self.TIMER_SECONDS)
+        self._update_countdown(int(self.TIMER_SECONDS))
 
         pkg = self._app.get_details().pkg
         context_id = "QueueActionNotificationContextId-%s" % (
