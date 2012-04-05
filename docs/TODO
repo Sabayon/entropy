@@ -3,8 +3,6 @@ Backlog (raw)
   1.0:
 
     rigo:
-    - [F] App Install support
-          - red button -> terminate queue instantly
     - [F] Configuration files Update
 
     - [F] Preferences:
