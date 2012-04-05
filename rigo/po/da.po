@@ -4,14 +4,15 @@
 # 
 # Translators:
 #   <Danielbygmarsh@gmail.com>, 2012.
+#   <niclasoverby@gmail.com>, 2012.
 # Tim Lauridsen <tla@rasmil.dk>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-03 15:02+0200\n"
-"PO-Revision-Date: 2012-04-04 05:59+0000\n"
-"Last-Translator: GigoloJoe <Danielbygmarsh@gmail.com>\n"
+"POT-Creation-Date: 2012-04-05 17:11+0200\n"
+"PO-Revision-Date: 2012-04-05 15:10+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Danish (http://www.transifex.net/projects/p/sabayon-rigo/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,282 +20,291 @@ msgstr ""
 "Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: ../RigoDaemon/app.py:661
+#: ../RigoDaemon/app.py:686
 msgid "Not authorized"
 msgstr "Ikke autoriseret"
 
-#: ../RigoDaemon/app.py:695
+#: ../RigoDaemon/app.py:722
 msgid "No repositories configured"
-msgstr "Ingen arkiver konfigureret"
+msgstr "Ingen programarkiver konfigureret"
 
-#: ../RigoDaemon/app.py:700
+#: ../RigoDaemon/app.py:727
 msgid "Unhandled Exception"
 msgstr "Uafviklet undtagelse"
 
-#: ../RigoDaemon/app.py:1051
+#: ../RigoDaemon/app.py:1104
 msgid "Application Removal"
-msgstr ""
+msgstr "Fjern Programmer"
 
-#: ../RigoDaemon/app.py:1344
+#: ../RigoDaemon/app.py:1407
 msgid "Application download"
-msgstr ""
+msgstr "Download Programmer"
 
-#: ../RigoDaemon/app.py:1436
+#: ../RigoDaemon/app.py:1501
 msgid "Application Install"
-msgstr ""
+msgstr "Installer Programmer"
 
 #: ../rigo/models/application.py:129
 msgid "Uncategorized"
 msgstr "Ikke kategoriseret"
 
-#: ../rigo/models/application.py:866 ../rigo/models/application.py:1123
-#: ../rigo/models/application.py:1163 ../rigo/models/application.py:1195
-#: ../rigo/models/application.py:1261
+#: ../rigo/models/application.py:866 ../rigo/models/application.py:1182
+#: ../rigo/models/application.py:1222 ../rigo/models/application.py:1254
+#: ../rigo/models/application.py:1320
 msgid "N/A"
-msgstr "I/T"
+msgstr "Ikke tilgængelig"
 
-#: ../rigo/models/application.py:1131 ../rigo/models/application.py:1186
+#: ../rigo/models/application.py:1190 ../rigo/models/application.py:1245
 msgid "No description"
 msgstr "Ingen beskrivelse"
 
-#: ../rigo/models/application.py:1200
+#: ../rigo/models/application.py:1259
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../rigo/models/application.py:1206
+#: ../rigo/models/application.py:1265
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr ""
+msgstr "<b>%s</b> er installeret"
 
-#: ../rigo/models/application.py:1208
+#: ../rigo/models/application.py:1267
 msgid "from"
-msgstr "Fra"
+msgstr "fra"
 
-#: ../rigo/models/application.py:1238
+#: ../rigo/models/application.py:1297
 msgid "License"
 msgstr "Licens"
 
-#: ../rigo/models/application.py:1249
+#: ../rigo/models/application.py:1308
 msgid "Required space"
 msgstr "Nødvendig plads"
 
-#: ../rigo/models/application.py:1256
+#: ../rigo/models/application.py:1315
 msgid "Download size"
 msgstr "Download størrelse"
 
-#: ../rigo/models/application.py:1263
+#: ../rigo/models/application.py:1322
 msgid "Checksum"
 msgstr "Checksum"
 
-#: ../rigo/models/application.py:1274
+#: ../rigo/models/application.py:1333
 msgid "USE flags"
 msgstr "USE flags"
 
-#: ../rigo/models/application.py:1278
+#: ../rigo/models/application.py:1337
 msgid "No use flags"
 msgstr "Ingen use flags"
 
-#: ../rigo/models/application.py:1296
+#: ../rigo/models/application.py:1355
 msgid "Runtime dependencies"
-msgstr ""
+msgstr "Run-time afhængigheder"
 
-#: ../rigo/models/application.py:1297
+#: ../rigo/models/application.py:1356
 msgid "Build dependencies"
-msgstr ""
+msgstr "Kompileringsafhængigheder"
 
-#: ../rigo/models/application.py:1298
+#: ../rigo/models/application.py:1357
 msgid "Post dependencies"
-msgstr ""
+msgstr "Post afhængigheder"
 
-#: ../rigo/models/application.py:1299
+#: ../rigo/models/application.py:1358
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Staff afhængigheder"
 
-#: ../rigo/models/application.py:1321
+#: ../rigo/models/application.py:1380
 msgid "Click here for more details"
 msgstr "Klik her for flere detaljer"
 
-#: ../rigo/models/application.py:1566
+#: ../rigo/models/application.py:1625
 msgid "Application not found"
 msgstr "Program ikke fundet"
 
-#: ../rigo/controllers/daemon.py:67
+#: ../rigo/controllers/daemon.py:72
 msgid "Good luck!"
 msgstr "Held og lykke!"
 
-#: ../rigo/controllers/daemon.py:542
+#: ../rigo/controllers/daemon.py:498
+#, python-format
+msgid "<b>%s</b> action enqueued"
+msgstr "<b>%s</b> handling er sat i kø"
+
+#: ../rigo/controllers/daemon.py:502
+#, python-format
+msgid ", <b>%i</b> Application enqueued so far..."
+msgid_plural ", <b>%i</b> Applications enqueued so far..."
+msgstr[0] ", <b>%i</b> Program er sat i kø lige nu..."
+msgstr[1] ", <b>%i</b> Programmer er sat i kø lige nu..."
+
+#: ../rigo/controllers/daemon.py:594
+msgid "Application"
+msgstr "Programmer"
+
+#: ../rigo/controllers/daemon.py:597
 msgid "An <b>unknown error</b> occurred"
 msgstr "En <b>ukendt fejl</b> opstod"
 
-#: ../rigo/controllers/daemon.py:544
+#: ../rigo/controllers/daemon.py:599
 #, python-format
 msgid "<b>%s</b> download failed"
 msgstr "<b>%s</b> download mislykkedes"
 
-#: ../rigo/controllers/daemon.py:547
+#: ../rigo/controllers/daemon.py:602
 #, python-format
 msgid "<b>%s</b> install failed"
 msgstr "<b>%s</b> installation mislykkedes"
 
-#: ../rigo/controllers/daemon.py:550
+#: ../rigo/controllers/daemon.py:605
 #, python-format
 msgid "<b>%s</b> removal failed"
 msgstr "<b>%s</b> fjernelse mislykkedes"
 
-#: ../rigo/controllers/daemon.py:554
+#: ../rigo/controllers/daemon.py:609
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr ""
+msgstr "<b>%s</b>, er ikke autoriseret"
 
-#: ../rigo/controllers/daemon.py:557
+#: ../rigo/controllers/daemon.py:612
 #, python-format
 msgid "<b>%s</b>, internal error"
 msgstr "<b>%s</b>, intern fejl"
 
-#: ../rigo/controllers/daemon.py:562
+#: ../rigo/controllers/daemon.py:617
 #, python-format
 msgid "<b>%s</b> dependencies not found"
 msgstr "<b>%s</b> afhængigheder ikke fundet"
 
-#: ../rigo/controllers/daemon.py:567
+#: ../rigo/controllers/daemon.py:622
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr ""
+msgstr "<b>%s</b> kollisionsfejl i afhængigheder"
 
-#: ../rigo/controllers/daemon.py:572
+#: ../rigo/controllers/daemon.py:627
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr ""
+msgstr "<b>%s</b> fejl ved at afhængigheder ikke kan fjernes"
 
-#: ../rigo/controllers/daemon.py:577
+#: ../rigo/controllers/daemon.py:632
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr ""
+msgstr "Disken er fuld, kan ikke downloade eller udpakke Programmer"
 
-#: ../rigo/controllers/daemon.py:581
+#: ../rigo/controllers/daemon.py:636
 msgid "An error occurred"
 msgstr "Der opstod en fejl"
 
-#: ../rigo/controllers/daemon.py:586
+#: ../rigo/controllers/daemon.py:641
 #: ../rigo/ui/gtk3/controllers/application.py:388
 #: ../rigo/ui/gtk3/controllers/application.py:475
 #: ../rigo/ui/gtk3/controllers/application.py:558
 msgid "Ok, thanks"
 msgstr "Ok, tak"
 
-#: ../rigo/controllers/daemon.py:587
-#: ../rigo/ui/gtk3/controllers/notifications.py:313
+#: ../rigo/controllers/daemon.py:642
 #: ../rigo/ui/gtk3/controllers/notifications.py:325
 #: ../rigo/ui/gtk3/controllers/notifications.py:337
+#: ../rigo/ui/gtk3/controllers/notifications.py:350
 msgid "Show me"
 msgstr "Vis mig"
 
-#: ../rigo/controllers/daemon.py:648
+#: ../rigo/controllers/daemon.py:720
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
+msgstr "<b>Systemopdatering</b> Aktivitet bliver <i>genstartet</i>"
 
-#: ../rigo/controllers/daemon.py:649
+#: ../rigo/controllers/daemon.py:721
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] "Der er <b>%i</b> mere opdatering"
-msgstr[1] "Der er <b>%i</b> flere opdateringer"
+msgstr[0] "Der er <b>%i</b> opdatering mere"
+msgstr[1] "Der er <b>%i</b> opdateringer mere"
 
-#: ../rigo/controllers/daemon.py:1169
+#: ../rigo/controllers/daemon.py:1285
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "Venter på <b>Rigo Tjenesten</b>, vent venligst..."
 
-#: ../rigo/controllers/daemon.py:1239 ../rigo/controllers/daemon.py:1741
-#: ../rigo/controllers/daemon.py:1959
+#: ../rigo/controllers/daemon.py:1355 ../rigo/controllers/daemon.py:1918
+#: ../rigo/controllers/daemon.py:2143
 msgid "Another activity is currently in progress"
-msgstr ""
+msgstr "En anden aktivitet er i øjeblikket i gang"
 
-#: ../rigo/controllers/daemon.py:1241 ../rigo/controllers/daemon.py:1744
-#: ../rigo/controllers/daemon.py:1962
+#: ../rigo/controllers/daemon.py:1358 ../rigo/controllers/daemon.py:1922
+#: ../rigo/controllers/daemon.py:2147
 msgid "K thanks"
-msgstr ""
+msgstr "Okay tak"
 
-#: ../rigo/controllers/daemon.py:1375
+#: ../rigo/controllers/daemon.py:1497
 msgid "Yes, thanks"
-msgstr ""
+msgstr "Jo, tak"
 
-#: ../rigo/controllers/daemon.py:1376
+#: ../rigo/controllers/daemon.py:1498
 msgid "No, sorry"
-msgstr ""
+msgstr "Nej, undskyld"
 
-#: ../rigo/controllers/daemon.py:1392
+#: ../rigo/controllers/daemon.py:1515
 msgid "Ok then"
-msgstr ""
+msgstr "Okay så"
 
-#: ../rigo/controllers/daemon.py:1424
+#: ../rigo/controllers/daemon.py:1570
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\ner en del af grundsystemet og kan <b>ikke</b> fjernes"
+msgstr "<b>%s</b>\ner en del af Grundsystemet og kan <b>ikke</b> fjernes"
 
-#: ../rigo/controllers/daemon.py:1484
+#: ../rigo/controllers/daemon.py:1602
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr ""
+msgstr "<b>%s</b>\nkan ikke installeres på nuværende tidspunkt på grund af <b>manglende/maskerede</b> afhængigheder eller på grund af <b>afhængighedskonflikt</b>"
 
-#: ../rigo/controllers/daemon.py:1499
+#: ../rigo/controllers/daemon.py:1664
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
+msgstr "Installering af <b>%s</b> vil medføre fjernelsen af følgende Programmer: %s"
 
-#: ../rigo/controllers/daemon.py:1610
-#, python-format
-msgid "<b>%s</b> action enqueued"
-msgstr ""
-
-#: ../rigo/controllers/daemon.py:1614
-#, python-format
-msgid ", <b>%i</b> Application enqueued so far..."
-msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] ""
-msgstr[1] ""
-
-#: ../rigo/controllers/daemon.py:1882
+#: ../rigo/controllers/daemon.py:2064
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-
-#: ../rigo/ui/gtk3/controllers/notifications.py:309
-msgid "Repositories Update in <b>progress</b>..."
-msgstr ""
+msgstr "<b>Systemopgradering</b> er begyndt. Gå ud og få dig en kop kaffe."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:321
-msgid "<b>Application Management</b> in progress..."
-msgstr ""
+msgid "Repositories Update in <b>progress</b>..."
+msgstr "Opdatering af Programarkiverne er <b>i gang</b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:333
-msgid "<b>System Upgrade</b> in progress..."
+msgid "<b>Application Management</b> in progress..."
+msgstr "<b>Programhåndtering</b> i gang..."
+
+#: ../rigo/ui/gtk3/controllers/notifications.py:338
+#: ../rigo/ui/gtk3/controllers/notifications.py:351
+msgid "Interrupt"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/work.py:262
+#: ../rigo/ui/gtk3/controllers/notifications.py:346
+msgid "<b>System Upgrade</b> in progress..."
+msgstr "<b>Systemopgradering</b> i gang..."
+
+#: ../rigo/ui/gtk3/controllers/work.py:263
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:98
 msgid "Installing"
 msgstr "Installerer"
 
-#: ../rigo/ui/gtk3/controllers/work.py:264
+#: ../rigo/ui/gtk3/controllers/work.py:265
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:99
 msgid "Removing"
-msgstr "Sletter"
+msgstr "Fjerner"
 
-#: ../rigo/ui/gtk3/controllers/work.py:271
+#: ../rigo/ui/gtk3/controllers/work.py:273
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] ", og <b>%d</b> <i>mere i kø</i>"
+msgstr[1] ", og <b>%d</b> <i>mere i kø</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:290
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr ""
+msgstr "Logged ind som <b>%s</b>! Har du lyst til at <b>stemme</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:297
 msgid "_Vote now"
@@ -309,28 +319,28 @@ msgstr "_Senere"
 
 #: ../rigo/ui/gtk3/controllers/application.py:307
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr ""
+msgstr "Login mislykkedes. Din <b>stemme</b> er ikke blevet tilføjet"
 
 #: ../rigo/ui/gtk3/controllers/application.py:310
 #: ../rigo/ui/gtk3/controllers/application.py:614
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
-msgstr ""
+msgstr "_Ok, tak"
 
 #: ../rigo/ui/gtk3/controllers/application.py:318
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr ""
+msgstr "Bedøm <b>%s</b> som <b>%s</b> med <b>%d</b> stjerner?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:326
 #: ../rigo/ui/gtk3/controllers/application.py:490
 msgid "_Ok, cool!"
-msgstr ""
+msgstr "_Ok, fedt!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:332
 #: ../rigo/ui/gtk3/controllers/application.py:496
 msgid "_No, logout!"
-msgstr "_Nej, logud"
+msgstr "_Nej, log af!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:370
 msgid "Your vote has been added!"
@@ -339,25 +349,25 @@ msgstr "Din stemme er blevet tilføjet!"
 #: ../rigo/ui/gtk3/controllers/application.py:373
 #: ../rigo/ui/gtk3/controllers/application.py:549
 msgid "Ok, great!"
-msgstr ""
+msgstr "Ok godt!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:380
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Du har alleredet stemt på dette <b>Program</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:385
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Fejl ved afstemning: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:471
 msgid "Entropy Web Services not available for repository"
-msgstr ""
+msgstr "Entropy Web Tjenester er ikke tilgængelig for de nuværende Programarkiver"
 
 #: ../rigo/ui/gtk3/controllers/application.py:483
 #, python-format
 msgid "You are about to add a <b>comment</b> as <b>%s</b>."
-msgstr ""
+msgstr "Du er ved at tilføje en <b>kommentar</b> som <b>%s</b>."
 
 #: ../rigo/ui/gtk3/controllers/application.py:546
 msgid "Your comment has been submitted!"
@@ -366,16 +376,16 @@ msgstr "Din kommentar er blevet sendt!"
 #: ../rigo/ui/gtk3/controllers/application.py:555
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr ""
+msgstr "Fejl ved indsendelse af kommentar: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:596
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
-msgstr ""
+msgstr "Logget ind som <b>%s</b>! Hvorfor ikke <b>kommentere</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:602
 msgid "_Send now"
-msgstr ""
+msgstr "_Send nu"
 
 #: ../rigo/ui/gtk3/controllers/application.py:611
 msgid "Login failed. Your <b>comment</b> hasn't been added"
@@ -383,7 +393,7 @@ msgstr "Login mislykkedes. Din <b>kommentar</b> er ikke blevet tilføjet"
 
 #: ../rigo/ui/gtk3/controllers/application.py:634
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Der er ingen <b>kommentarer</b> for dette Program endnu!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:683
 msgid "Older comments"
@@ -395,7 +405,7 @@ msgstr "Indlæser ældre kommentarer..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:734
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Der er ingen <b>billeder</b> for dette Program endnu!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:742
 msgid "Older images"
@@ -403,7 +413,7 @@ msgstr "Ældre billeder"
 
 #: ../rigo/ui/gtk3/controllers/application.py:748
 msgid "Loading older images..."
-msgstr "Indlæser ældre billeder"
+msgstr "Indlæser ældre billeder..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:813
 msgid "Update"
@@ -429,7 +439,7 @@ msgstr "Ikke tilgængelig"
 
 #: ../rigo/ui/gtk3/controllers/application.py:860
 msgid "Never downloaded"
-msgstr ""
+msgstr "Aldrig downloadet"
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
 msgid "downloads"
@@ -437,11 +447,11 @@ msgstr "downloads"
 
 #: ../rigo/ui/gtk3/controllers/application.py:912
 msgid "Want to add images, etc?"
-msgstr ""
+msgstr "Vil du tilføje billeder mm.?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:914
 msgid "click here!"
-msgstr "Klik her!"
+msgstr "klik her!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:925
 msgid "Loading comments..."
@@ -465,203 +475,230 @@ msgstr "Ikke fundet"
 #: ../rigo/ui/gtk3/widgets/buttons.py:237
 #, python-format
 msgid "%(stars)d stars - %(reviews)d reviews"
-msgstr ""
+msgstr "%(stars)d stjerner - %(reviews)d bedømmelser"
 
 #: ../rigo/ui/gtk3/widgets/buttons.py:252
 #: ../rigo/ui/gtk3/widgets/buttons.py:254
 #: ../rigo/ui/gtk3/widgets/buttons.py:255
 msgid "Free"
-msgstr ""
+msgstr "Frit"
 
 #: ../rigo/ui/gtk3/widgets/buttons.py:574
 msgid "More"
 msgstr "Mere"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:171
+#: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Der er <b>%d</b> opdatering"
+msgstr[1] "Der er <b>%d</b> opdateringer"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:177
+#: ../rigo/ui/gtk3/widgets/notifications.py:179
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "og <b>%d</b> sikkerhedsopdatering"
+msgstr[1] "og <b>%d</b> sikkerhedsopdateringer"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:183
+#: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
-msgstr ""
+msgstr "Hvad skal jeg gøre?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:186
+#: ../rigo/ui/gtk3/widgets/notifications.py:188
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Opdateringer er tilgængelige. Vil du installere dem?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:189
+#: ../rigo/ui/gtk3/widgets/notifications.py:191
 msgid "_Update System"
-msgstr ""
+msgstr "_Opdater System"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:190
+#: ../rigo/ui/gtk3/widgets/notifications.py:192
 msgid "_Show"
 msgstr "_Vis"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:191
+#: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "_Ignore"
 msgstr "_Ignorer"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:221
+#: ../rigo/ui/gtk3/widgets/notifications.py:223
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
+msgstr "Oversigten af tilgængelige Programmer er gammel, <b>opdater nu</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:224
+#: ../rigo/ui/gtk3/widgets/notifications.py:226
 msgid "Repositories should be downloaded, <b>update now</b>?"
-msgstr ""
+msgstr "Programarkiverne bør downloades, <b>opdater nu</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:227
+#: ../rigo/ui/gtk3/widgets/notifications.py:229
 msgid "I dunno dude, I'd say Yes"
-msgstr ""
+msgstr "Jeg ved det ikke, men siger Ja"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:230
+#: ../rigo/ui/gtk3/widgets/notifications.py:232
 msgid "_Yes, why not?"
 msgstr "_Ja, hvorfor ikke?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:231
+#: ../rigo/ui/gtk3/widgets/notifications.py:233
 msgid "_No, thanks"
-msgstr ""
+msgstr "_Nej, tak"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:270
+#: ../rigo/ui/gtk3/widgets/notifications.py:272
 msgid "You need to login to Entropy Web Services"
-msgstr ""
+msgstr "Du er nød til at logge ind på Entropy Web Tjenester"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:274
+#: ../rigo/ui/gtk3/widgets/notifications.py:276
 msgid "_Login"
-msgstr ""
+msgstr "_Log ind"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:275
+#: ../rigo/ui/gtk3/widgets/notifications.py:277
 msgid "Register"
-msgstr ""
+msgstr "Tilmeld"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:280
+#: ../rigo/ui/gtk3/widgets/notifications.py:282
 msgid "_Cancel"
 msgstr "_Annuller"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:291
+#: ../rigo/ui/gtk3/widgets/notifications.py:293
 msgid "Username"
 msgstr "Brugernavn"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:301
+#: ../rigo/ui/gtk3/widgets/notifications.py:303
 msgid "Password"
 msgstr "Adgangskode"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:333
+#: ../rigo/ui/gtk3/widgets/notifications.py:335
 msgid "Login <b>error</b>!"
 msgstr "Login <b>fejl</b>!"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:387
+#: ../rigo/ui/gtk3/widgets/notifications.py:389
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
+msgstr "Kan ikke forbinde til Entropy Web Tjenester. Er du forbundet til <b>internettet</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:391
+#: ../rigo/ui/gtk3/widgets/notifications.py:393
 msgid "Don't ask me..."
-msgstr ""
+msgstr "Spørg mig ikke..."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:394
+#: ../rigo/ui/gtk3/widgets/notifications.py:396
 msgid "_Of course not"
-msgstr ""
+msgstr "_Selvfølgelig ikke"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:402
+#: ../rigo/ui/gtk3/widgets/notifications.py:404
 msgid "A watched pot never boils"
-msgstr ""
+msgstr "En overvåget gryde koger aldrig over"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:462
+#: ../rigo/ui/gtk3/widgets/notifications.py:464
 #, python-format
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
+msgstr "Du er nød til at <b>gennemlæse</b> og <b>acceptere</b> følgende licenser for at fortsætte: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:467
+#: ../rigo/ui/gtk3/widgets/notifications.py:469
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
+msgstr "<b>%s</b> Programmet eller en af dens afhængigheder er distribrueret med følgende licenser: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:483
+#: ../rigo/ui/gtk3/widgets/notifications.py:485
 msgid "Make sure to review all the licenses"
-msgstr ""
+msgstr "Sørg for at gennemlæse alle licenserne"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:487
+#: ../rigo/ui/gtk3/widgets/notifications.py:489
+#: ../rigo/ui/gtk3/widgets/notifications.py:775
 msgid "Accept"
 msgstr "Accepter"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:488
+#: ../rigo/ui/gtk3/widgets/notifications.py:490
 msgid "Accept forever"
 msgstr "Accepter altid"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:490
+#: ../rigo/ui/gtk3/widgets/notifications.py:492
+#: ../rigo/ui/gtk3/widgets/notifications.py:776
 msgid "Decline"
 msgstr "Afvis"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
 #. self.add_button(_("Remove All"), self._on_remove_all)
-#: ../rigo/ui/gtk3/widgets/notifications.py:615
+#: ../rigo/ui/gtk3/widgets/notifications.py:617
 msgid "Close"
 msgstr "Luk"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:632
+#: ../rigo/ui/gtk3/widgets/notifications.py:634
 msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
+msgstr "Flere <b>Programmer</b>, som ikke vedligeholdes længere af denne distribution, er blevet fundet i dit <b>System</b>. Nogle af dem kræver måske en <b>manuel revurdering</b> før de bliver afinstalleret. Klik på Programmerne for mere info."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:640
+#: ../rigo/ui/gtk3/widgets/notifications.py:642
 msgid "Manual review"
-msgstr ""
+msgstr "Manuel revurdering"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:644
+#: ../rigo/ui/gtk3/widgets/notifications.py:646
 msgid "Safe to drop"
+msgstr "Sikkert at droppe"
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:746
+#, python-format
+msgid ""
+"<b>%s</b> Application requires the installation of the following "
+"Applications: %s"
 msgstr ""
 
-#: ../rigo/ui/gtk3/widgets/stars.py:399
+#: ../rigo/ui/gtk3/widgets/notifications.py:758
+msgid "Show full list"
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:853
+msgid "Confirm"
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:854
+msgid "Undo"
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/notifications.py:915
+#, python-format
+msgid ""
+"<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
 msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(nr_ratings)i bedømmelse"
+msgstr[1] "%(nr_ratings)i bedømmelser"
 
-#: ../rigo/ui/gtk3/widgets/stars.py:499
+#: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
-msgstr ""
+msgstr "Tip: Klik på en stjerne for at bedømme dette program"
 
 #. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:500
+#: ../rigo/ui/gtk3/widgets/stars.py:501
 msgid "Awful"
 msgstr "Forfærdelig"
 
 #. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:501
+#: ../rigo/ui/gtk3/widgets/stars.py:502
 msgid "Poor"
 msgstr "Dårlig"
 
 #. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
+#: ../rigo/ui/gtk3/widgets/stars.py:503
 msgid "Adequate"
 msgstr "Tilstrækkelig"
 
 #. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
+#: ../rigo/ui/gtk3/widgets/stars.py:504
 msgid "Good"
 msgstr "God"
 
 #. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
+#: ../rigo/ui/gtk3/widgets/stars.py:505
 msgid "Excellent"
 msgstr "Fremragende"
 
@@ -671,7 +708,7 @@ msgstr "Kan ikke fjerne kommentar"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
-msgstr "Fjern"
+msgstr "fjern"
 
 #: ../rigo/ui/gtk3/widgets/images.py:206
 msgid "Keywords"
@@ -683,4 +720,4 @@ msgstr "Mere Info"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
-msgstr ""
+msgstr "<i>Find <b>Programmer</b> med lethed</i>"
