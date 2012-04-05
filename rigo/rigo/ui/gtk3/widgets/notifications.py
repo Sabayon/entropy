@@ -708,3 +708,99 @@ class OrphanedAppsNotificationBox(NotificationBox):
             (pkg_id, pkg_repo))
         self._apc.emit("application-activated", app)
         return True
+
+
+class InstallNotificationBox(NotificationBox):
+
+    __gsignals__ = {
+        # Licenses have been accepted
+        "accepted" : (GObject.SignalFlags.RUN_LAST,
+                      None,
+                      tuple(),
+                      ),
+        # Licenses have been declined
+        "declined" : (GObject.SignalFlags.RUN_LAST,
+                      None,
+                      tuple(),
+                      ),
+    }
+
+    def __init__(self, avc, app, entropy_client, install):
+        """
+        InstallNotificationBox constructor.
+
+        @param entropy_client: Entropy Client object
+        @param install: Application Install queue
+        """
+        self._avc = avc
+        self._app = app
+        self._entropy = entropy_client
+        self._install = sorted(
+            install, key = lambda x: x.name)
+
+        msg = prepare_markup(
+            _("<b>%s</b> Application requires the installation "
+              "of the following Applications: %s"))
+        if len(self._install) <= 20:
+            app_txts = []
+            for _app in self._install:
+                _pkg_id, _repo_id = _app.get_details().pkg
+                app_txt = "<a href=\"%d|%s\">%s</a>" % (
+                    _pkg_id, _repo_id, _app.name,)
+                app_txts.append(app_txt)
+            txt = ", ".join(app_txts)
+        else:
+            txt = "<a href=\"%s\">%s</a>" % (
+                "full", _("Show full list"))
+
+        msg = msg % (self._app.name, prepare_markup(txt),)
+
+        label = Gtk.Label()
+        label.set_markup(msg)
+        label.set_line_wrap_mode(Pango.WrapMode.WORD)
+        label.set_line_wrap(True)
+        label.set_property("expand", True)
+        label.set_alignment(0.02, 0.50)
+        label.connect("activate-link", self._on_app_activate)
+
+        NotificationBox.__init__(
+            self, None, message_widget=label,
+            message_type=Gtk.MessageType.WARNING,
+            context_id="InstallNotificationBox")
+
+        self.add_button(_("Accept"), self._on_accept)
+        self.add_button(_("Decline"), self._on_decline)
+
+    def _on_accept(self, widget):
+        """
+        Licenses have been accepted.
+        """
+        self.emit("accepted")
+
+    def _on_decline(self, widget):
+        """
+        Licenses have been declined.
+        """
+        self.emit("declined")
+
+    def is_managed(self):
+        """
+        This NotificationBox cannot be destroyed easily.
+        """
+        return True
+
+    def _on_app_activate(self, widget, uri):
+        """
+        License link clicked.
+        """
+        if uri == "full":
+            self._avc.set_many(
+                [x.get_details().pkg for x in self._install])
+            return True
+        pkg_id, pkg_repo = uri.split("|", 1)
+        pkg_id = int(pkg_id)
+        app = Application(
+            self._entropy, self._entropy_ws,
+            (pkg_id, pkg_repo))
+        self._apc.emit("application-activated", app)
+        return True

@@ -1043,6 +1043,7 @@ class Application(object):
         """
         self._entropy.rwsem().reader_acquire()
         try:
+
             apps = []
             queues = self._get_install_queue()
             if queues is None:
@@ -1058,6 +1059,72 @@ class Application(object):
                     (inst_pkg_id, inst_repo_id))
                 apps.append(app)
             return apps
+
+        except DependenciesNotFound:
+            return None
+        except DependenciesCollision:
+            return None
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    def get_install_queue(self):
+        """
+        Return a tuple composed by a list of Applications that
+        would be installed and a list of Applications that would
+        be removed.
+        Please note that if the Application is not installable,
+        None is returned.
+        """
+        app_install, app_remove = [], []
+        self._entropy.rwsem().reader_acquire()
+        try:
+            queues = self._get_install_queue()
+            if queues is None:
+                return None
+            install, removal = queues
+
+            for pkg_match in install:
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    pkg_match)
+                app_install.append(app)
+
+            inst_repo = self._entropy.installed_repository()
+            inst_repo_id = inst_repo.repository_id()
+            for inst_pkg_id in removal:
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    (inst_pkg_id, inst_repo_id))
+                app_remove.append(app)
+
+            return app_install, app_remove
+
+        except DependenciesNotFound:
+            return None
+        except DependenciesCollision:
+            return None
+
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    def accept_licenses(self, install_queue):
+        """
+        Return a mapping representing the licenses to accept,
+        composed by license id as key and Application list as
+        value.
+        """
+        pkg_map = dict((x.get_details().pkg, x) for x in install_queue)
+        self._entropy.rwsem().reader_acquire()
+        try:
+            license_map = {}
+            licenses = self._entropy.get_licenses_to_accept(
+                list(pkg_map.keys()))
+            if licenses:
+                for lic_id, pkg_matches in licenses.items():
+                    obj = license_map.setdefault(lic_id, [])
+                    for pkg_match in pkg_matches:
+                        obj.append(pkg_map[pkg_match])
+            return license_map
         finally:
             self._entropy.rwsem().reader_release()
 
@@ -1074,16 +1141,8 @@ class Application(object):
             install, removal = queues
 
             # check licenses
-            licenses = self._entropy.get_licenses_to_accept(install)
-            if licenses:
-                license_map = {}
-                for lic_id, pkg_matches in licenses.items():
-                    obj = license_map.setdefault(lic_id, [])
-                    for pkg_match in pkg_matches:
-                        app = Application(
-                            self._entropy, self._entropy_ws,
-                            pkg_match)
-                        obj.append(app)
+            license_map = self.accept_licenses(install)
+            if license_map:
                 raise Application.AcceptLicenseError(license_map)
 
         except DependenciesNotFound:

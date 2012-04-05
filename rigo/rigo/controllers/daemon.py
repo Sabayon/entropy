@@ -31,7 +31,7 @@ from rigo.enums import AppActions, RigoViewStates, \
 from rigo.models.application import Application
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
-    OrphanedAppsNotificationBox
+    OrphanedAppsNotificationBox, InstallNotificationBox
 
 from rigo.utils import prepare_markup
 
@@ -1526,6 +1526,28 @@ class RigoServiceController(GObject.Object):
         box.connect("declined", _license_declined)
         self._nc.append(box)
 
+    def _notify_blocking_install(self, ask_meta, app, install):
+        """
+        Notify licenses that have to be accepted for Application and
+        block until User answers.
+        """
+        box = InstallNotificationBox(
+            self._avc, app, self._entropy, install)
+
+        def _accepted(widget):
+            ask_meta['res'] = True
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        def _declined(widget):
+            ask_meta['res'] = False
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        box.connect("accepted", _accepted)
+        box.connect("declined", _declined)
+        self._nc.append(box)
+
     def _application_request_removal_checks(self, app):
         """
         Examine Application Removal Request on behalf of
@@ -1562,12 +1584,45 @@ class RigoServiceController(GObject.Object):
         Examine Application Install Request on behalf of
         _application_request_checks().
         """
-        installable = True
-        try:
-            installable = app.is_installable()
-        except Application.AcceptLicenseError as err:
-            # can be installed, but licenses have to be accepted
-            license_map = err.get()
+        queues = app.get_install_queue()
+        if queues is None:
+            msg = prepare_markup(
+                _("<b>%s</b>\ncannot be installed at this time"
+                    " due to <b>missing/masked</b> dependencies or"
+                    " dependency <b>conflict</b>"))
+            msg = msg % (app.get_markup(),)
+            message_type = Gtk.MessageType.ERROR
+
+            GLib.idle_add(
+                self._notify_blocking_message,
+                None, msg, message_type)
+            return False
+
+        install, conflicting_apps = queues
+
+        if len(install) > 1:
+            const_debug_write(
+                __name__,
+                "_application_request_install_checks: "
+                "need to ack queue: %s" % (install,))
+            ask_meta = {
+                'sem': Semaphore(0),
+                'res': None,
+            }
+            GLib.idle_add(self._notify_blocking_install,
+                          ask_meta, app, install)
+            ask_meta['sem'].acquire()
+
+            const_debug_write(
+                __name__,
+                "_application_request_install_checks: "
+                "queue acked?: %s" % (ask_meta['res'],))
+
+            if not ask_meta['res']:
+                return False
+
+        license_map = app.accept_licenses(install)
+        if license_map:
             const_debug_write(
                 __name__,
                 "_application_request_install_checks: "
@@ -1591,23 +1646,7 @@ class RigoServiceController(GObject.Object):
                 return False
             if ask_meta['forever']:
                 self._accept_licenses(license_map.keys())
-            return True
 
-        if not installable:
-            msg = prepare_markup(
-                _("<b>%s</b>\ncannot be installed at this time"
-                    " due to <b>missing/masked</b> dependencies or"
-                    " dependency <b>conflict</b>"))
-            msg = msg % (app.get_markup(),)
-            message_type = Gtk.MessageType.ERROR
-
-            GLib.idle_add(
-                self._notify_blocking_message,
-                None, msg, message_type)
-
-            return False
-
-        conflicting_apps = app.get_install_conflicts()
         if conflicting_apps:
             msg = prepare_markup(
                 _("Installing <b>%s</b> would cause the removal"
