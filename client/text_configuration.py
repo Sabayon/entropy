@@ -22,7 +22,8 @@ else:
 
 from entropy.const import etpConst
 from entropy.output import red, darkred, brown, green, darkgreen, blue, \
-    purple, darkblue, print_info, print_error, print_warning, readtext
+    purple, teal, darkblue, print_info, print_error, print_warning, \
+    readtext
 from entropy.i18n import _
 
 import entropy.tools
@@ -51,9 +52,7 @@ def configurator(options):
             return 1
 
         cmd = options.pop(0)
-        if cmd == "info":
-            rc = confinfo(etp_client)
-        elif cmd == "update":
+        if cmd == "update":
             rc = update(etp_client)
         else:
             rc = -10
@@ -66,33 +65,39 @@ def configurator(options):
     return rc
 
 
-'''
-   @description: scan for files that need to be merged
-   @output: dictionary using filename as key
-'''
 def update(entropy_client, cmd = None):
 
-    cache_status = False
     docmd = False
     if cmd != None:
         docmd = True
 
-    file_updates = entropy_client.PackageFileUpdates()
+    updates = entropy_client.ConfigurationUpdates()
+    paths_map = {}
+    first_pass = True
+
     while True:
         print_info(brown(" @@ ") + \
             darkgreen("%s ..." % (_("Scanning filesystem"),)))
-        scandata = file_updates.scan(dcache = cache_status)
-        if cache_status:
-            for x in scandata:
-                print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) ) + \
-                    etpConst['systemroot'] + scandata[x]['destination'])
-        cache_status = True
 
-        if (not scandata):
+        scandata = updates.get()
+        if not scandata:
             print_info(darkred(_("All fine baby. Nothing to do!")))
             break
+        root = scandata.root()
 
-        keys = list(scandata.keys())
+        if first_pass:
+            paths_map.update(dict(enumerate(sorted(scandata.keys()), 1)))
+        first_pass = False
+
+        for idx in sorted(paths_map.keys()):
+            x = paths_map[idx]
+            obj = scandata[x]
+            file_path = root + obj['destination']
+            print_info(
+                "(" + blue(str(idx)) + ") " + \
+                    red(" %s: " % (_("file"),) ) + \
+                x)
+
         if not docmd:
             cmd = selfile()
         else:
@@ -100,197 +105,335 @@ def update(entropy_client, cmd = None):
         try:
             cmd = int(cmd)
         except:
-            print_error(_("Type a number."))
+            print_error(_("Type a number"))
             continue
 
         # actions
         if cmd == -1:
             # exit
             return -1
+
         elif cmd in (-3, -5):
             # automerge files asking one by one
-            for key in keys:
-                if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    file_updates.ignore(key)
-                    scandata = file_updates.scan()
-                    continue
-                print_info(darkred("%s: " % (_("Configuration file"),) ) + \
-                    darkgreen(etpConst['systemroot']+scandata[key]['destination']))
-                if cmd == -3:
-                    rc = entropy_client.ask_question(
-                        ">>   %s" % (_("Overwrite ?"),) )
-                    if rc == _("No"):
-                        continue
-                print_info(darkred("%s " % (_("Moving"),) ) + \
-                    darkgreen(etpConst['systemroot'] + \
-                    scandata[key]['source']) + \
-                    darkred(" %s " % (_("to"),) ) + \
-                    brown(etpConst['systemroot'] + \
-                    scandata[key]['destination']))
-
-                file_updates.merge(key)
-                scandata = file_updates.scan()
-
+            _automerge(cmd, entropy_client, root, paths_map, scandata)
             break
 
         elif cmd in (-7, -9):
-            for key in keys:
-
-                if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    file_updates.ignore(key)
-                    scandata = file_updates.scan()
-                    continue
-
-                print_info(darkred("%s: " % (_("Configuration file"),) ) + \
-                    darkgreen(etpConst['systemroot']+scandata[key]['destination']))
-                if cmd == -7:
-                    rc = entropy_client.ask_question(
-                        ">>   %s" % (_("Discard ?"),) )
-                    if rc == _("No"):
-                        continue
-                print_info(darkred("%s " % (_("Discarding"),) ) + \
-                    darkgreen(etpConst['systemroot']+scandata[key]['source']))
-
-                file_updates.remove(key)
-                scandata = file_updates.scan()
-
+            _autodiscard(cmd, entropy_client, root, paths_map, scandata)
             break
 
         elif cmd > 0:
-            if scandata.get(cmd):
+            if _handle_command(
+                cmd, entropy_client, root, paths_map, scandata):
+                continue
+            break
 
-                # do files exist?
-                if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
+def _handle_command(idx, entropy_client, root, paths_map, scandata):
+    """
+    Execute > 0 commands.
+    """
+    try:
+        source = paths_map[idx]
+    except KeyError:
+        return True
 
-                    file_updates.ignore(cmd)
-                    scandata = file_updates.scan()
+    source_path = root + source
+    if not scandata.exists(source):
+        print_info(
+            "%s: %s" % (
+                darkred(_("Discarding")),
+                teal(source_path),)
+            )
+        scandata.remove(source)
+        del paths_map[idx]
+        return True
 
-                    continue
-                if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
-                    print_info(darkred("%s: " % (_("Automerging file"),) ) + \
-                        darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+    dest = scandata[source]['destination']
+    dest_path = root + dest
+    if not scandata.exists(dest):
+        print_info(
+            "%s: %s" % (
+                darkred(_("Automerging")),
+                teal(source_path),)
+            )
+        scandata.merge(source)
+        del paths_map[idx]
+        return True
 
-                    file_updates.merge(cmd)
-                    scandata = file_updates.scan()
-                    continue
+    diff = showdiff(dest_path, source_path)
+    if not diff:
+        print_info(
+            "%s: %s" % (
+                darkred(_("Automerging")),
+                teal(source_path),)
+            )
+        scandata.merge(source)
+        del paths_map[idx]
+        return True
 
-                # end check
+    mytxt = "%s: %s" % (
+        darkred(_("Selected file")),
+        darkgreen(source_path),
+    )
+    print_info(mytxt)
 
-                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],
-                    etpConst['systemroot']+scandata[cmd]['source'])
-                if (not diff):
-                    print_info(darkred("%s " % (_("Automerging file"),) ) + \
-                        darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+    comeback = False
+    while True:
+        action = selaction()
+        try:
+            action = int(action)
+        except:
+            print_error(_("Type a number"))
+            continue
 
-                    file_updates.merge(cmd)
-                    scandata = file_updates.scan()
+        # actions handling
+        if action == -1:
+            comeback = True
+            break
 
-                    continue
+        elif action == 1:
+            print_info(
+                _("Replacing %s with %s") % (
+                    darkgreen(dest_path),
+                    darkred(source_path),))
 
-                mytxt = "%s: %s" % (
-                    darkred(_("Selected file")),
-                    darkgreen(etpConst['systemroot']+scandata[cmd]['source']),
-                )
-                print_info(mytxt)
+            merged = scandata.merge(source)
+            if not merged:
+                print_warning(
+                    _("Cannot merge %s") % (
+                        darkred(source_path),))
+            del paths_map[idx]
+            comeback = True
+            break
 
-                comeback = False
-                while True:
-                    action = selaction()
-                    try:
-                        action = int(action)
-                    except:
-                        print_error(_("You don't have typed a number."))
-                        continue
+        elif action == 2:
+            print_info(
+                _("Deleting %s") % (
+                    darkgreen(source_path),))
 
-                    # actions handling
-                    if action == -1:
-                        comeback = True
-                        break
-                    elif action == 1:
-                        print_info(darkred("%s " % (_("Replacing"),) ) + darkgreen(etpConst['systemroot'] + \
-                            scandata[cmd]['destination']) + darkred(" %s " % (_("with"),) ) + \
-                            darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
+            removed = scandata.remove(source)
+            if not removed:
+                print_warning(
+                    _("Cannot remove %s") % (
+                        darkred(source_path),))
+            del paths_map[idx]
+            comeback = True
+            break
 
-                        file_updates.merge(cmd)
-                        scandata = file_updates.scan()
+        elif action == 3:
+            comeback, _continue = _edit_file(
+                idx, entropy_client, root, source, dest,
+                paths_map, scandata)
+            if _continue:
+                continue
+            break
 
-                        comeback = True
-                        break
+        elif action == 4:
+            comeback, _continue = _interactive_merge(
+                idx, entropy_client, root, source, dest,
+                paths_map, scandata)
+            if _continue:
+                continue
+            break
 
-                    elif action == 2:
-                        print_info(darkred("%s " % (_("Deleting file"),) ) + \
-                            darkgreen(etpConst['systemroot'] + \
-                            scandata[cmd]['source'])
-                        )
+        elif action == 5:
+            # show diff again
+            diff = showdiff(dest_path, source_path)
+            continue
 
-                        file_updates.remove(cmd)
-                        scandata = file_updates.scan()
+    if comeback:
+        return True
+    return False
 
-                        comeback = True
-                        break
+def _interactive_merge(idx, entropy_client, root, source, dest,
+               paths_map, scandata):
+    """
+    Interactively merge config file.
+    """
+    source_path = root + source
+    dest_path = root + dest
 
-                    elif action == 3:
-                        print_info(darkred("%s " % (_("Editing file"),) ) + \
-                            darkgreen(etpConst['systemroot']+scandata[cmd]['source'])
-                        )
+    print_info(
+        "%s: %s" % (
+            darkred(_("Interactive merge")),
+            darkgreen(source_path),)
+        )
 
-                        entropy_client.edit_file(
-                            etpConst['systemroot']+scandata[cmd]['source'])
+    merge_outcome_path, exit_status = interactive_merge(
+        source_path, dest_path)
+    if exit_status in (2, 130):
+        # quit
+        return False, True
 
-                        print_info(darkred("%s " % (_("Edited file"),) ) + darkgreen(etpConst['systemroot'] + \
-                            scandata[cmd]['source']) + darkred(" - %s:" % (_("showing differencies"),) )
-                        )
-                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'], etpConst['systemroot'] + \
-                            scandata[cmd]['source'])
-                        if not diff:
-                            print_info(darkred("%s " % (_("Automerging file"),) ) + \
-                                darkgreen(scandata[cmd]['source']))
+    try:
+        entropy.tools.rename_keep_permissions(
+            merge_outcome_path, source_path)
+    except OSError as err:
+        print_error(
+            "%s: %s" % (
+                darkred(_("OSError during interactive merge")),
+                repr(err),))
+        return False, True
+    except IOError as err:
+        print_error(
+            "%s: %s" % (
+                darkred(_("IOError during interactive merge")),
+                repr(err),))
+        return False, True
 
-                            file_updates.merge(cmd)
-                            scandata = file_updates.scan()
+    merged = scandata.merge(source)
+    del paths_map[idx]
+    if not merged:
+        print_error(
+            "%s: %s" % (
+                darkred(_("Unable to merge file")),
+                darkgreen(source_path),))
+    return True, False
 
-                            comeback = True
-                            break
 
-                        continue
+def _edit_file(idx, entropy_client, root, source, dest,
+               paths_map, scandata):
+    """
+    Edit the given source file.
+    """
+    source_path = root + source
+    dest_path = root + dest
 
-                    elif action == 4:
-                        source = etpConst['systemroot']+scandata[cmd]['source']
-                        dest = etpConst['systemroot']+scandata[cmd]['destination']
-                        print_info(darkred("%s " % (_("Interactively merge"),) ) + \
-                            darkgreen(source)
-                        )
-                        merge_outcome_path, exit_status = interactive_merge(
-                            source, dest)
-                        if exit_status in (2, 130):
-                            # quit
-                            continue
-                        else: # ok
-                            try:
-                                os.rename(merge_outcome_path, source)
-                            except OSError:
-                                shutil.move(merge_outcome_path, source)
-                            file_updates.merge(cmd)
-                            scandata = file_updates.scan()
+    print_info(
+        "%s: %s" % (
+            darkred(_("Editing file")),
+            darkgreen(source_path),))
 
-                            comeback = True
-                            break
+    entropy_client.edit_file(source_path)
 
-                    elif action == 5:
-                        # show diffs again
-                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],
-                            etpConst['systemroot'] + scandata[cmd]['source'])
-                        continue
+    print_info(
+        "%s: %s, %s" % (
+            darkred(_("Edited file")),
+            darkgreen(source_path),
+            darkred(_("showing difference")))
+        )
 
-                if (comeback):
-                    continue
+    diff = showdiff(dest_path, source_path)
+    if not diff:
+        print_info(
+            "%s: %s" % (
+                darkred(_("Automerging")),
+                teal(source_path),)
+            )
+        scandata.merge(source)
+        del paths_map[idx]
+        return True, False
 
-                break
+    return False, True
 
-'''
-   @description: show files commands and let the user to choose
-   @output: action number
-'''
+def _automerge(cmd, entropy_client, root, paths_map, scandata):
+    """
+    Execute -3 and -5 actions.
+    """
+    idxs = sorted(paths_map.keys())
+    for idx in idxs:
+        _merge(cmd, entropy_client, root, paths_map, idx, scandata)
+
+def _merge(cmd, entropy_client, root, paths_map, idx, scandata):
+    """
+    Execute the config file merge action.
+    """
+    try:
+        source = paths_map[idx]
+    except KeyError:
+        # idiot
+        return
+
+    data = scandata.get(source)
+    if data is None:
+        return
+
+    source_path = root + source
+    destination_path = root + data['destination']
+
+    print_info(
+        "%s: %s" % (
+            darkred(_("Source file")),
+            teal(source_path),)
+    )
+    print_info(
+        "%s: %s" % (
+            darkred(_("Destination file")),
+            purple(destination_path),)
+    )
+    if cmd == -3:
+        rc = entropy_client.ask_question(
+            ">>   %s" % (_("Overwrite ?"),) )
+        if rc == _("No"):
+            return
+
+    merged = scandata.merge(source)
+    del paths_map[idx]
+    if not merged:
+        print_warning(
+            "%s: %s" % (
+                darkred(_("Cannot merge")),
+                brown(source_path),))
+
+    print_info("--")
+
+def _autodiscard(cmd, entropy_client, root, paths_map, scandata):
+    """
+    Execute -7 and -9 actions.
+    """
+    idxs = sorted(paths_map.keys())
+    for idx in idxs:
+        _discard(cmd, entropy_client, root, paths_map, idx, scandata)
+
+def _discard(cmd, entropy_client, root, paths_map, idx, scandata):
+    """
+    Execute the config file discard action.
+    """
+    try:
+        source = paths_map[idx]
+    except KeyError:
+        # idiot
+        return
+
+    data = scandata.get(source)
+    if data is None:
+        return
+
+    source_path = root + source
+    destination_path = root + data['destination']
+
+    print_info(
+        "%s: %s" % (
+            darkred(_("Source file")),
+            teal(source_path),)
+    )
+    print_info(
+        "%s: %s" % (
+            darkred(_("Destination file")),
+            purple(destination_path),)
+    )
+    if cmd == -3:
+        rc = entropy_client.ask_question(
+            ">>   %s" % (_("Discard ?"),) )
+        if rc == _("No"):
+            return
+
+    print_info(
+        "%s: %s" % (
+            darkred(_("Discarding")),
+            teal(source_path),)
+    )
+
+    removed = scandata.remove(source)
+    del paths_map[idx]
+    if not removed:
+        print_warning(
+            "%s: %s" % (
+                darkred(_("Cannot remove")),
+                brown(source_path),))
+
+    print_info("--")
+
 def selfile():
     print_info(darkred(_("Please choose a file to update by typing its identification number.")))
     print_info(darkred(_("Other options are:")))
@@ -303,10 +446,7 @@ def selfile():
     action = readtext(_("Your choice (type a number and press enter):")+" ")
     return action
 
-'''
-   @description: show actions for a chosen file
-   @output: action number
-'''
+
 def selaction():
     print_info(darkred(_("Please choose an action to take for the selected file.")))
     print_info("  ("+blue("-1")+") "+darkgreen(_("Come back to the files list")))
@@ -329,7 +469,7 @@ def showdiff(fromfile, tofile):
         if line.startswith("---"):
             line = darkred(line)
         elif line.startswith("+++"):
-            line = red(line)
+            line = darkgreen(line)
         elif line.startswith("@@"):
             line = brown(line)
         elif line.startswith("-"):
@@ -371,30 +511,11 @@ def interactive_merge(source, destination):
     args = ("/usr/bin/sdiff", "-o", tmp_path, source, destination)
     try:
         rc = subprocess.call(args)
-    except OSError:
+    except OSError as err:
         if err.errno != errno.ENOENT:
             raise
         rc = 2
         os.remove(tmp_path)
     finally:
         os.close(tmp_fd)
-
     return tmp_path, rc
-
-'''
-   @description: prints information about config files that should be updated
-'''
-def confinfo(entropy_client):
-    print_info(brown(" @@ ")+darkgreen(_("These are the files that would be updated:")))
-    data = entropy_client.PackageFileUpdates().scan(dcache = False)
-    counter = 0
-    for item in data:
-        counter += 1
-        print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" %s: " % (_("file"),) )+str(item))
-    print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be update"),) )+red(str(len(data))))
-    automerge = 0
-    for x in data:
-        if data[x]['automerge']:
-            automerge += 1
-    print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be automerged"),) )+green(str(automerge)))
-    return 0

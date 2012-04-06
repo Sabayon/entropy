@@ -625,10 +625,6 @@ configuration files update tool
 
 =over
 
-=item [2] B<info>
-
-show configuration files to be updated
-
 =item [2] B<update>
 
 run the configuration files update function

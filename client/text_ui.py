@@ -296,41 +296,29 @@ def package(options):
 
 def show_config_files_to_update(entropy_client):
 
-    if not etpUi['quiet']:
-        print_info(red(" @@ ") + \
+    if etpUi['quiet']:
+        return
+
+    print_info(
+        red(" @@ ") + \
             blue(_("Scanning configuration files to update")), back = True)
 
-    try:
-        file_updates = entropy_client.PackageFileUpdates()
-        while True:
-            try:
-                scandata = file_updates.scan(dcache = True, quiet = True)
-                break
-            except KeyboardInterrupt:
-                continue
-    except:
-        entropy.tools.print_traceback()
-        if not etpUi['quiet']:
-            print_warning(red(" @@ ") + \
-                blue(_("Unable to scan configuration files to update.")))
-        return
+    updates = entropy_client.ConfigurationUpdates()
+    scandata = updates.get()
+    print_info(
+        red(" @@ ") + blue(_("Configuration files scan complete.")))
 
-    if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue(_("Configuration files scan complete.")))
+    if scandata: # strict check
+        mytxt = ngettext(
+            "There is %s configuration file needing update",
+            "There are %s configuration files needing update",
+            len(scandata)) % (len(scandata),)
+        print_warning(darkgreen(mytxt))
+        mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
+        print_warning(mytxt)
 
-    if scandata is None:
-        return
-
-    if len(scandata) > 0: # strict check
-        if not etpUi['quiet']:
-            mytxt = ngettext("There is %s configuration file needing update",
-                "There are %s configuration files needing update",
-                len(scandata)) % len(scandata)
-            print_warning(darkgreen(mytxt))
-            mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
-            print_warning(mytxt)
-
-def _upgrade_package_handle_calculation(entropy_client, resume, replay, onlyfetch):
+def _upgrade_package_handle_calculation(
+    entropy_client, resume, replay, onlyfetch):
     if not resume:
 
         with entropy_client.Cacher():

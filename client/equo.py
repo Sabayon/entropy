@@ -195,7 +195,6 @@ help_opts = [
         (2, '--pretend', 1, _('just show what would be done')),
     None,
     (1, 'conf', 2, _('configuration files update tool')),
-    (2, 'info', 2, _('show configuration files to be updated')),
     (2, 'update', 2, _('run the configuration files update function')),
     None,
     (1, 'query', 2, _('do misc queries on repository and local databases')),
