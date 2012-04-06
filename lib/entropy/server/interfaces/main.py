@@ -48,6 +48,7 @@ from entropy.db.exceptions import ProgrammingError
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository, \
     GenericRepository
+from entropy.client.misc import ConfigurationUpdates, ConfigurationFiles
 
 import entropy.dep
 import entropy.tools
@@ -1189,6 +1190,22 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         return SERVER_QA_PLUGIN
 
 
+class ServerConfigurationFiles(ConfigurationFiles):
+
+    """
+    Subclass Entropy Client version in order to return
+    our repository identifiers
+    """
+
+    @property
+    def _repository_ids(self):
+        """
+        Return a the list of repository identifiers the object
+        is using.
+        """
+        return self._entropy.repositories()
+
+
 class Server(Client):
 
     # Entropy Server cache directory, mainly used for storing commit changes
@@ -1725,6 +1742,13 @@ class Server(Client):
         Get Source Package Manager interface class.
         """
         return get_spm_class()
+
+    def ConfigurationUpdates(self):
+        """
+        Return Entropy Configuration File Updates management object.
+        """
+        return ConfigurationUpdates(
+            self, _config_class=ServerConfigurationFiles)
 
     def Transceiver(self, uri):
         """

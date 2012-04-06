@@ -27,7 +27,7 @@ class LoadersMixin:
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         from entropy.client.interfaces.sets import Sets
-        from entropy.client.misc import FileUpdates
+        from entropy.client.misc import FileUpdates, ConfigurationUpdates
         from entropy.client.services.interfaces import \
             ClientWebServiceFactory, RepositoryWebServiceFactory
         self.__package_loader = Package
@@ -35,6 +35,7 @@ class LoadersMixin:
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
         self.__package_files_loader = FileUpdates
+        self.__configuration_updates_loader = ConfigurationUpdates
         self.__webservice_factory = ClientWebServiceFactory
         self.__repo_webservice_factory = RepositoryWebServiceFactory
 
@@ -149,9 +150,7 @@ class LoadersMixin:
 
     def PackageFileUpdates(self, repository_ids = None):
         """
-        Load Entropy Package Files instance object. Through this interface,
-        you can scan for package files updates (usually configuration files)
-        and let user merge, remove them interactively.
+        @deprecated: use ConfigurationUpdates()
 
         @keyword repository_ids: list of valid repository identifiers from
             where reading the list of protected directories and files
@@ -160,6 +159,12 @@ class LoadersMixin:
         """
         return self.__package_files_loader(self,
             repository_ids = repository_ids)
+
+    def ConfigurationUpdates(self):
+        """
+        Return Entropy Configuration File Updates management object.
+        """
+        return self.__configuration_updates_loader(self)
 
     def Settings(self):
         """
