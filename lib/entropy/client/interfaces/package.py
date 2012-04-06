@@ -2578,7 +2578,8 @@ class Package:
             items_installed.add(item_inst)
             file_items_installed.add(item_inst)
 
-            if protected:
+            if protected and \
+                    os.getenv("ENTROPY_CLIENT_ENABLE_OLD_FILEUPDATES"):
                 # add to disk cache
                 file_updates = self._entropy.PackageFileUpdates()
                 file_updates.add(tofile, quiet = True)
