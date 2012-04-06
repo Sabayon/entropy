@@ -490,7 +490,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
                 do_run = False
             elif rc == 3: # selective
                 new_remove = []
-                c_repo = installed_repo
+                c_repo = entropy_client.installed_repository()
                 for idpackage in remove:
                     c_atom = c_repo.retrieveAtom(idpackage)
                     if c_atom is None:
