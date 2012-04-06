@@ -5832,10 +5832,9 @@ class Server(Client):
             back = True
         )
         # scanning for config files not updated
-        file_updates = self.PackageFileUpdates(
-            repository_ids = self.repositories())
-        scandata = file_updates.scan(dcache = False)
-        if scandata:
+        updates = self.ConfigurationUpdates()
+        file_updates = updates.get()
+        if file_updates:
             self.output(
                 "[%s] %s" % (
                     red(_("config files")), # something short please
@@ -5845,10 +5844,9 @@ class Server(Client):
                 level = "error",
                 header = darkred(" @@ ")
             )
-            for key in scandata:
+            for val in file_updates.values():
                 self.output(
-                    "%s" % (brown(etpConst['systemroot'] + \
-                        scandata[key]['destination'])),
+                    val['destination']),
                     importance = 1,
                     level = "info",
                     header = "\t"
