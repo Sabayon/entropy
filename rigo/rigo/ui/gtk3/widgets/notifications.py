@@ -30,7 +30,7 @@ from rigo.em import StockEms
 from rigo.utils import build_register_url, open_url, escape_markup, \
     prepare_markup
 from rigo.models.application import Application
-from rigo.enums import AppActions, LocalActivityStates
+from rigo.enums import AppActions, LocalActivityStates, RigoViewStates
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_debug_write
@@ -184,8 +184,9 @@ class UpdatesNotificationBox(NotificationBox):
 
         msg += ". " + _("What to do?")
 
-        NotificationBox.__init__(self, msg,
-            tooltip=_("Updates available, how about installing them?"),
+        NotificationBox.__init__(self, prepare_markup(msg),
+            tooltip=prepare_markup(
+                _("Updates available, how about installing them?")),
             message_type=Gtk.MessageType.WARNING,
             context_id="UpdatesNotificationBox")
         self.add_button(_("_Update System"), self._update)
@@ -226,7 +227,7 @@ class RepositoriesUpdateNotificationBox(NotificationBox):
             msg = _("Repositories should be downloaded, <b>update now</b>?")
 
         NotificationBox.__init__(self, msg,
-            tooltip=_("I dunno dude, I'd say Yes"),
+            tooltip=prepare_markup(_("I dunno dude, I'd say Yes")),
             message_type=Gtk.MessageType.ERROR,
             context_id="RepositoriesUpdateNotificationBox")
         self.add_button(_("_Yes, why not?"), self._update)
@@ -269,7 +270,8 @@ class LoginNotificationBox(NotificationBox):
 
         NotificationBox.__init__(self, None,
             message_widget=self._make_login_box(),
-            tooltip=_("You need to login to Entropy Web Services"),
+            tooltip=prepare_markup(
+                _("You need to login to Entropy Web Services")),
             message_type=Gtk.MessageType.WARNING,
             context_id=context_id)
 
@@ -390,7 +392,7 @@ class ConnectivityNotificationBox(NotificationBox):
                 "are you connected to the <b>interweb</b>?")
 
         NotificationBox.__init__(self, msg,
-            tooltip=_("Don't ask me..."),
+            tooltip=prepare_markup(_("Don't ask me...")),
             message_type=Gtk.MessageType.ERROR,
             context_id="ConnectivityNotificationBox")
         self.add_destroy_button(_("_Of course not"))
@@ -401,7 +403,7 @@ class PleaseWaitNotificationBox(NotificationBox):
     def __init__(self, message, context_id):
 
         NotificationBox.__init__(self, message,
-            tooltip=_("A watched pot never boils"),
+            tooltip=prepare_markup(_("A watched pot never boils")),
             message_type=Gtk.MessageType.INFO,
             context_id=context_id)
         self._spinner = Gtk.Spinner()
@@ -482,7 +484,8 @@ class LicensesNotificationBox(NotificationBox):
 
         NotificationBox.__init__(
             self, None, message_widget=label,
-            tooltip=_("Make sure to review all the licenses"),
+            tooltip=prepare_markup(
+                _("Make sure to review all the licenses")),
             message_type=Gtk.MessageType.WARNING,
             context_id="LicensesNotificationBox")
 
@@ -944,6 +947,48 @@ class QueueActionNotificationBox(NotificationBox):
             self._callback_called = True
             GLib.idle_add(self.destroy)
         self._callback_sync_sem.release()
+
+    def is_managed(self):
+        """
+        This NotificationBox cannot be destroyed easily.
+        """
+        return True
+
+
+class ConfigUpdatesNotificationBox(NotificationBox):
+
+    def __init__(self, entropy_client, avc, updates_len):
+        self._entropy = entropy_client
+        self._avc = avc
+
+        msg = ngettext("There is <b>%d</b> configuration file update",
+                       "There are <b>%d</b> configuration file updates",
+                       updates_len)
+        msg = msg % (updates_len,)
+
+        msg += ".\n\n<small>"
+        msg += _("It is <b>extremely</b> important to"
+                 " update these configuration files before"
+                 " <b>rebooting</b> the System.")
+        msg += "</small>"
+
+        context_id = "ConfigUpdatesNotificationContextId"
+        NotificationBox.__init__(
+            self, prepare_markup(msg),
+            message_type=Gtk.MessageType.WARNING,
+            context_id=context_id)
+
+        self.add_button(_("Let me see"), self._on_show_me)
+        self.add_destroy_button(_("Happily ignore"))
+
+    def _on_show_me(self, widget):
+        """
+        Show the proposed configuration file updates
+        """
+        self._avc.emit(
+            "view-want-change",
+            RigoViewStates.CONFUPDATES_VIEW_STATE,
+            None)
 
     def is_managed(self):
         """

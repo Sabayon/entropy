@@ -36,25 +36,12 @@ class Icons:
     MISSING_PKG = "dialog-question"   # XXX: Not used?
     GENERIC_MISSING = "gtk-missing-image"
     INSTALLED_OVERLAY = "rigo-installed"
-
-# visibility of non applications in the search results
-class NonAppVisibility:
-    (ALWAYS_VISIBLE,
-     MAYBE_VISIBLE,
-     NEVER_VISIBLE) = range (3)
+    CONFIGURATION_FILE = "text-plain"
 
 # application actions
 class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
-
-# transaction types
-class TransactionTypes:
-    INSTALL = "install"
-    REMOVE = "remove"
-    UPGRADE = "upgrade"
-    APPLY = "apply_changes"
-    REPAIR = "repair_dependencies"
 
 from .version import VERSION, DISTRO, RELEASE, CODENAME
 USER_AGENT="Entropy Rigo/%s (N;) %s/%s (%s)" % (
@@ -70,7 +57,8 @@ class RigoViewStates:
         STATIC_VIEW_STATE,
         APPLICATION_VIEW_STATE,
         WORK_VIEW_STATE,
-    ) = range(4)
+        CONFUPDATES_VIEW_STATE,
+    ) = range(5)
 
 class LocalActivityStates:
     (

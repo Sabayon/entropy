@@ -55,7 +55,8 @@ class ApplicationsViewController(GObject.Object):
         # View has been filled
         "view-want-change" : (GObject.SignalFlags.RUN_LAST,
                           None,
-                          (GObject.TYPE_PYOBJECT,),
+                          (GObject.TYPE_PYOBJECT,
+                           GObject.TYPE_PYOBJECT,),
                           ),
         # User logged in to Entropy Web Services
         "logged-in"  : (GObject.SignalFlags.RUN_LAST,
@@ -288,12 +289,11 @@ class ApplicationsViewController(GObject.Object):
             return
         elif text == "rigo:vte":
             GLib.idle_add(self.emit, "view-want-change",
-                          RigoViewStates.WORK_VIEW_STATE)
+                          RigoViewStates.WORK_VIEW_STATE,
+                          None)
             return
-        elif text == "rigo:output":
-            GLib.idle_add(self.emit, "view-want-change",
-                          RigoViewStates.WORK_VIEW_STATE)
-            GLib.idle_add(self._service.output_test)
+        elif text == "rigo:confupdate":
+            self._service.configuration_updates()
             return
         elif text.startswith("rigo:simulate:i:"):
             sim_str = text[len("rigo:simulate:i:"):].strip()

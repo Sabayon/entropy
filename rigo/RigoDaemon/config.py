@@ -21,3 +21,4 @@ class PolicyActions:
     UPDATE_REPOSITORIES = "org.sabayon.RigoDaemon.update"
     UPGRADE_SYSTEM = "org.sabayon.RigoDaemon.upgrade"
     MANAGE_APPLICATIONS = "org.sabayon.RigoDaemon.manage"
+    MANAGE_CONFIGURATION = "org.sabayon.RigoDaemon.configuration"

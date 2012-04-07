@@ -29,6 +29,7 @@ from gi.repository import Gtk, GLib, GObject
 from rigo.enums import AppActions, RigoViewStates, \
     LocalActivityStates
 from rigo.models.application import Application
+from rigo.models.configupdate import ConfigUpdate
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
@@ -69,7 +70,7 @@ class RigoServiceController(GObject.Object):
                 context_id = RigoServiceController.NOTIFICATION_CONTEXT_ID
             NotificationBox.__init__(
                 self, message,
-                tooltip=_("Good luck!"),
+                tooltip=prepare_markup(_("Good luck!")),
                 message_type=message_type,
                 context_id=context_id)
 
@@ -166,6 +167,7 @@ class RigoServiceController(GObject.Object):
     _APPLICATIONS_MANAGED_SIGNAL = "applications_managed"
     _UNSUPPORTED_APPLICATIONS_SIGNAL = "unsupported_applications"
     _RESTARTING_UPGRADE_SIGNAL = "restarting_system_upgrade"
+    _CONFIGURATION_UPDATES_SIGNAL = "configuration_updates_available"
     _SUPPORTED_APIS = [0]
 
     def __init__(self, rigo_app, activity_rwsem,
@@ -174,6 +176,7 @@ class RigoServiceController(GObject.Object):
         self._rigo = rigo_app
         self._activity_rwsem = activity_rwsem
         self._nc = None
+        self._confc = None
         self._bottom_nc = None
         self._wc = None
         self._avc = None
@@ -217,15 +220,21 @@ class RigoServiceController(GObject.Object):
 
     def set_applications_controller(self, avc):
         """
-        Bind ApplicationsViewController object to this class.
+        Bind an ApplicationsViewController object to this class.
         """
         self._avc = avc
 
     def set_application_controller(self, apc):
         """
-        Bind ApplicationViewController object to this class.
+        Bind an ApplicationViewController object to this class.
         """
         self._apc = apc
+
+    def set_configuration_controller(self, confc):
+        """
+        Bind a ConfigUpdatesViewController object to this class.
+        """
+        self._confc = confc
 
     def set_terminal(self, terminal):
         """
@@ -459,6 +468,13 @@ class RigoServiceController(GObject.Object):
                     self._application_enqueued_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that there are configuration
+                # file updates available
+                self.__entropy_bus.connect_to_signal(
+                    self._CONFIGURATION_UPDATES_SIGNAL,
+                    self._configuration_updates_available_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -633,7 +649,7 @@ class RigoServiceController(GObject.Object):
 
         box = NotificationBox(
             msg,
-            tooltip=_("An error occurred"),
+            tooltip=prepare_markup(_("An error occurred")),
             message_type=Gtk.MessageType.ERROR,
             context_id="ApplicationOutcomeSignalError")
         def _show_me(*args):
@@ -725,6 +741,25 @@ class RigoServiceController(GObject.Object):
                 prepare_markup(msg), Gtk.MessageType.INFO,
                 context_id=self.SYSTEM_UPGRADE_CONTEXT_ID)
             self._nc.append(box, timeout=20)
+
+    def _configuration_updates_available_signal(self, updates):
+        const_debug_write(
+            __name__,
+            "_configuration_updates_available_signal: "
+            "updates: %s" % (updates,))
+
+        if self._confc is not None:
+            config_updates = []
+            for root, source, dest, pkg_ids, auto in updates:
+                meta = {
+                    'root': root,
+                    'destination': dest,
+                    'automerge': auto,
+                    'package_ids': pkg_ids,
+                }
+                cu = ConfigUpdate(source, meta, self)
+                config_updates.append(cu)
+            self._confc.notify_updates(config_updates)
 
     def _unsupported_applications_signal(self, manual_package_ids,
                                          package_ids):
@@ -1176,6 +1211,16 @@ class RigoServiceController(GObject.Object):
         task.name = "UpdateRepositoriesThread"
         task.daemon = True
         task.start()
+
+    def configuration_updates(self):
+        """
+        Request pending Configuration File Updates.
+        """
+        def _config():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).configuration_updates()
+        return self._execute_mainloop(_config)
 
     def interrupt_activity(self):
         """

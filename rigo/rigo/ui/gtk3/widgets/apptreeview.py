@@ -21,7 +21,6 @@ this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
 from gi.repository import Gtk, Gdk, GObject
-import logging
 import os
 
 from entropy.i18n import _
@@ -31,7 +30,7 @@ from cellrenderers import CellRendererAppView, CellButtonRenderer, \
 
 from rigo.em import em, StockEms
 from rigo.enums import Icons, AppActions
-from rigo.models.application import CategoryRowReference, Application
+from rigo.models.application import Application
 
 from RigoDaemon.enums import AppActions as DaemonAppActions
 
@@ -50,7 +49,6 @@ class AppTreeView(Gtk.TreeView):
     def __init__(self, entropy_client, backend, apc, icons, show_ratings,
                  icon_size, store=None):
         Gtk.TreeView.__init__(self)
-        self._logger = logging.getLogger(__name__)
 
         self._entropy = entropy_client
         self._apc = apc
@@ -66,8 +64,9 @@ class AppTreeView(Gtk.TreeView):
         try:
             self.set_property("ubuntu-almost-fixed-height-mode", True)
             self.set_fixed_height_mode(True)
-        except:
-            self._logger.warn("ubuntu-almost-fixed-height-mode extension not available")
+            print("MEEP")
+        except Exception:
+            pass
 
         self.set_headers_visible(False)
 
@@ -189,9 +188,6 @@ class AppTreeView(Gtk.TreeView):
         if path == None: return None
         return model[path][COL_ROW_DATA]
 
-    def rowref_is_category(self, rowref):
-        return isinstance(rowref, CategoryRowReference)
-
     def _calc_row_heights(self, tr):
         ypad = StockEms.SMALL
         tr.set_property('xpad', StockEms.MEDIUM)
@@ -228,10 +224,6 @@ class AppTreeView(Gtk.TreeView):
         if not rowref:
             return
 
-        if self.rowref_is_category(rowref):
-            window.set_cursor(None)
-            return
-
         use_hand = False
         for btn in tr.get_buttons():
             if btn.state == Gtk.StateFlags.INSENSITIVE:
@@ -261,11 +253,8 @@ class AppTreeView(Gtk.TreeView):
         rowref = self.get_rowref(model, path)
         if not rowref: return
 
-        if self.has_focus(): self.grab_focus()
-
-        if self.rowref_is_category(rowref):
-            self.expand_path(None)
-            return
+        if self.has_focus():
+            self.grab_focus()
 
         sel.select_path(path)
         self._update_selected_row(view, tr, path)
@@ -279,17 +268,10 @@ class AppTreeView(Gtk.TreeView):
         if not rows:
             return False
         row = rows[0]
-        if self.rowref_is_category(row):
-            return False
 
         # update active app, use row-ref as argument
         self.expand_path(row)
-
         pkg_match = model[row][COL_ROW_DATA]
-
-        # make sure this is not a category (LP: #848085)
-        if self.rowref_is_category(pkg_match):
-            return False
 
         action_btn = tr.get_button_by_name(
                             CellButtonIDs.ACTION)
@@ -338,8 +320,6 @@ class AppTreeView(Gtk.TreeView):
         if not rowref:
             return
 
-        if self.rowref_is_category(rowref): return
-
         x, y = self.get_pointer()
         for btn in tr.get_buttons():
             if btn.point_in(x, y):
@@ -359,9 +339,7 @@ class AppTreeView(Gtk.TreeView):
 
         # check the path is valid and is not a category row
         path = res[0]
-        is_cat = self.rowref_is_category(
-            self.get_rowref(view.get_model(), path))
-        if path is None or is_cat:
+        if path is None:
             return False
 
         # only act when the selection is already there
@@ -483,13 +461,8 @@ class AppTreeView(Gtk.TreeView):
         return
 
     def _app_activated_cb(self, btn, btn_id, pkg_match, store, path):
-        if self.rowref_is_category(pkg_match):
-            return
 
-        # FIXME: would be nice if that would be more elegant
-        # because we use a treefilter we need to get the "real"
-        # model first
-        if type(store) is Gtk.TreeModelFilter:
+        if isinstance(store, Gtk.TreeModelFilter):
             store = store.get_model()
 
         app = self.appmodel.get_application(pkg_match)

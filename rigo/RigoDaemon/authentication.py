@@ -71,3 +71,30 @@ class AuthenticationController(object):
                 None, # Gio.Cancellable()
                 _polkit_auth_callback,
                 self._mainloop)
+
+    def authenticate_sync(self, pid, action_id):
+        """
+        Authenticate current User asking Administrator
+        passwords.
+        Return True if authenticated, False if not.
+        """
+        authority = Polkit.Authority.get()
+        subject = Polkit.UnixProcess.new(pid)
+        result = authority.check_authorization_sync(
+                subject,
+                action_id,
+                None,
+                Polkit.CheckAuthorizationFlags.ALLOW_USER_INTERACTION,
+                None)
+
+        authenticated = False
+        try:
+            if result.get_is_authorized():
+                authenticated = True
+            elif result.get_is_challenge():
+                authenticated = True
+        except GObject.GError as err:
+            const_debug_write(
+                __name__,
+                "_polkit_auth_callback: error: %s" % (err,))
+        return authenticated

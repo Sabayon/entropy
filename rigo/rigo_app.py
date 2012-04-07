@@ -41,11 +41,14 @@ from rigo.paths import DATA_DIR
 from rigo.enums import RigoViewStates, LocalActivityStates
 from rigo.entropyapi import EntropyWebService, EntropyClient as Client
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
+from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 from rigo.ui.gtk3.controllers.applications import \
     ApplicationsViewController
 from rigo.ui.gtk3.controllers.application import \
     ApplicationViewController
+from rigo.ui.gtk3.controllers.confupdate import \
+    ConfigUpdatesViewController
 
 from rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
@@ -53,6 +56,7 @@ from rigo.ui.gtk3.controllers.work import \
     WorkViewController
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
+from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
 from rigo.utils import escape_markup
@@ -110,6 +114,9 @@ class Rigo(Gtk.Application):
             RigoViewStates.WORK_VIEW_STATE: (
                 self._enter_work_state,
                 self._exit_work_state),
+            RigoViewStates.CONFUPDATES_VIEW_STATE: (
+                self._enter_confupdates_state,
+                self._exit_confupdates_state,)
         }
         self._state_mutex = Lock()
 
@@ -136,6 +143,12 @@ class Rigo(Gtk.Application):
         self._app_view_port = self._builder.get_object("appViewVport")
         self._app_view_port.set_name("rigo-view")
         self._not_found_box = self._builder.get_object("appsViewNotFoundVbox")
+
+        self._config_scrolled_view = self._builder.get_object(
+            "configViewScrolledWindow")
+        self._config_view = self._builder.get_object("configViewVbox")
+        self._config_view.set_name("rigo-view")
+
         self._search_entry = self._builder.get_object("searchEntry")
         self._search_entry_completion = self._builder.get_object(
             "searchEntryCompletion")
@@ -167,6 +180,18 @@ class Rigo(Gtk.Application):
         self._app_view_c.set_store(self._app_store)
         self._app_view_c.connect("application-show",
             self._on_application_show)
+
+        # Configuration file updates model, view and controller
+        self._config_store = ConfigUpdatesListStore()
+        self._view_config = ConfigUpdatesTreeView(
+            icons, ConfigUpdatesListStore.ICON_SIZE)
+        self._config_scrolled_view.add(self._view_config)
+        def _config_queue_draw(*args):
+            self._view_config.queue_draw()
+        self._config_store.connect("redraw-request", _config_queue_draw)
+        self._config_view_c = ConfigUpdatesViewController(
+            self._entropy, self._config_store, self._view_config)
+        self._service.set_configuration_controller(self._config_view_c)
 
         self._welcome_box = WelcomeBox()
 
@@ -207,6 +232,9 @@ class Rigo(Gtk.Application):
 
         self._app_view_c.set_notification_controller(self._nc)
         self._app_view_c.set_applications_controller(self._avc)
+
+        self._config_view_c.set_notification_controller(self._nc)
+        self._config_view_c.set_applications_controller(self._avc)
 
         self._service.set_applications_controller(self._avc)
         self._service.set_application_controller(self._app_view_c)
@@ -349,8 +377,8 @@ class Rigo(Gtk.Application):
     def _on_view_filled(self, *args):
         self._change_view_state(RigoViewStates.BROWSER_VIEW_STATE)
 
-    def _on_view_change(self, widget, state):
-        self._change_view_state(state)
+    def _on_view_change(self, widget, state, payload):
+        self._change_view_state(state, payload=payload)
 
     def _on_application_show(self, *args):
         self._change_view_state(RigoViewStates.APPLICATION_VIEW_STATE)
@@ -368,6 +396,20 @@ class Rigo(Gtk.Application):
         state (or mode).
         """
         self._apps_view.show()
+
+    def _exit_confupdates_state(self):
+        """
+        Action triggered when UI exits the Configuration Updates
+        state (or mode).
+        """
+        self._config_view.hide()
+
+    def _enter_confupdates_state(self):
+        """
+        Action triggered when UI enters the Configuration Updates
+        state (or mode).
+        """
+        self._config_view.show()
 
     def _exit_static_state(self):
         """
@@ -427,7 +469,8 @@ class Rigo(Gtk.Application):
         """
         self._work_view.hide()
 
-    def _change_view_state(self, state, lock=False, _ignore_lock=False):
+    def _change_view_state(self, state, lock=False, _ignore_lock=False,
+                           payload=None):
         """
         Change Rigo Application UI state.
         You can pass a custom widget that will be shown in case
@@ -444,8 +487,9 @@ class Rigo(Gtk.Application):
                 raise AttributeError("wrong view state")
             enter_st, exit_st = txc
 
-            current_enter_st, current_exit_st = self._state_transactions.get(
-                self._current_state)
+            current_enter_st, current_exit_st = \
+                self._state_transactions.get(
+                    self._current_state)
             # exit from current state
             current_exit_st()
             # enter the new state
@@ -615,6 +659,7 @@ class Rigo(Gtk.Application):
             return
 
         self._thread_dumper()
+        self._config_view_c.setup()
         self._app_view_c.setup()
         self._avc.setup()
         self._nc.setup()

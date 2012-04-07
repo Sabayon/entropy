@@ -107,33 +107,6 @@ class ReviewStats(object):
                 (self.app, self.ratings_average, self.downloads_total,
                 self.rating_spread, self.dampened_rating))
 
-class CategoryRowReference:
-    """ A simple container for Category properties to be
-        displayed in a AppListStore or AppTreeStore
-    """
-
-    def __init__(self, untranslated_name, display_name, subcats, pkg_count):
-        self.untranslated_name = untranslated_name
-        self.display_name = escape_markup(display_name)
-        #self.subcategories = subcats
-        self.pkg_count = pkg_count
-        self.vis_count = pkg_count
-        return
-
-class UncategorisedRowRef(CategoryRowReference):
-
-    def __init__(self, untranslated_name=None, display_name=None, pkg_count=0):
-        if untranslated_name is None:
-            untranslated_name = 'Uncategorised'
-        if display_name is None:
-            display_name = _("Uncategorized")
-
-        CategoryRowReference.__init__(self,
-                                      untranslated_name,
-                                      display_name,
-                                      None, pkg_count)
-        return
-
 class ApplicationMetadata(object):
     """
     This is the Entropy metadata manager for Application objects.

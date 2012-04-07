@@ -31,6 +31,35 @@
        <arg name="length" type="i" direction="out"/>
     </method>
 
+    <method name="merge_configuration">
+       <arg name="source" type="s" direction="in"/>
+       <arg name="accepted" type="b" direction="out"/>
+    </method>
+
+    <method name="diff_configuration">
+       <arg name="source" type="s" direction="in"/>
+       <arg name="path" type="s" direction="out"/>
+    </method>
+
+    <method name="view_configuration_source">
+       <arg name="source" type="s" direction="in"/>
+       <arg name="path" type="s" direction="out"/>
+    </method>
+
+    <method name="view_configuration_destination">
+       <arg name="destination" type="s" direction="in"/>
+       <arg name="path" type="s" direction="out"/>
+    </method>
+
+    <method name="discard_configuration">
+       <arg name="source" type="s" direction="in"/>
+       <arg name="accepted" type="b" direction="out"/>
+    </method>
+
+    <method name="configuration_updates"/>
+
+    <method name="reload_configuration_updates"/>
+
     <method name="action">
        <arg name="package_id" type="i" direction="in"/>
        <arg name="repository_id" type="s" direction="in"/>

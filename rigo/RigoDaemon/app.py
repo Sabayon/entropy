@@ -16,8 +16,12 @@ import os
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
 
 import sys
+import pwd
 import time
 import signal
+import tempfile
+import shutil
+import subprocess
 from threading import Lock, Timer, Semaphore
 from collections import deque
 
@@ -509,6 +513,9 @@ class RigoDaemonService(dbus.service.Object):
         self._acquired_exclusive = False
         self._acquired_exclusive_mutex = Lock()
 
+        self._config_updates = None
+        self._config_updates_mutex = Lock()
+
         self._action_queue = deque()
         self._action_queue_length_mutex = Lock()
         self._action_queue_length = 0
@@ -616,6 +623,18 @@ class RigoDaemonService(dbus.service.Object):
         return dbus.Interface(
             bus,
             'org.freedesktop.DBus').GetConnectionUnixProcessID(
+            sender)
+
+    def _get_caller_user(self, sender):
+        """
+        Return the username of the caller (through Dbus).
+        """
+        bus = self._bus.get_object(
+            'org.freedesktop.DBus',
+            '/org/freedesktop/DBus')
+        return dbus.Interface(
+            bus,
+            'org.freedesktop.DBus').GetConnectionUnixUser(
             sender)
 
     def _authorize(self, pid, action_id):
@@ -814,6 +833,7 @@ class RigoDaemonService(dbus.service.Object):
                         self.activity_completed, activity, success)
                     GLib.idle_add(
                         self.applications_managed, outcome)
+                    self._maybe_signal_configuration_updates()
 
         is_app = True
         if isinstance(item, RigoDaemonService.ActionQueueItem):
@@ -1561,6 +1581,62 @@ class RigoDaemonService(dbus.service.Object):
                     count, total), debug=True)
             self._entropy.installed_repository().commit()
 
+    def _maybe_signal_configuration_updates(self):
+        """
+        Signal Configuration Files Updates if needed.
+        """
+        scandata = self._configuration_updates(_force=True)
+        if scandata:
+            GLib.idle_add(
+                self.configuration_updates_available,
+                self._dbus_prepare_configuration_files(
+                    scandata.root(), scandata))
+
+    def _dbus_prepare_configuration_files(self, root, scandata):
+        """
+        Prepare the ConfigurationFiles object for sending through
+        dbus.
+        """
+        updates = [(root, source, x['destination'], \
+                    x['package_ids'], x['automerge']) for source, x \
+                       in scandata.items()]
+        return updates
+
+    def _configuration_updates(self, _force=False):
+        """
+        Return the latest (or a new one if not initialized yet)
+        ConfigurationFiles object.
+        """
+        self._rwsem.reader_acquire()
+        try:
+            with self._config_updates_mutex:
+                if self._config_updates is None or _force:
+                    updates = self._entropy.ConfigurationUpdates()
+                    scandata = self._enrich_configuration_updates(
+                        updates.get())
+                    self._config_updates = scandata
+                else:
+                    scandata = self._config_updates
+        finally:
+            self._rwsem.reader_release()
+        return scandata
+
+    def _enrich_configuration_updates(self, scandata):
+        """
+        Enrich ConfigurationFiles object returned by Entropy Client
+        with extended information.
+        """
+        _cache = {}
+        inst_repo = self._entropy.installed_repository()
+        for k, v in scandata.items():
+            dest = v['destination']
+            pkg_ids = _cache.get(dest)
+            if pkg_ids is None:
+                pkg_ids = list(inst_repo.searchBelongs(dest))
+                _cache[dest] = pkg_ids
+            v['package_ids'] = pkg_ids
+        del _cache
+        return scandata
 
     def _close_local_resources(self):
         """
@@ -1853,6 +1929,207 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "AcceptLicensesThread"
         task.start()
 
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='b', sender_keyword='sender')
+    def merge_configuration(self, source, sender=None):
+        """
+        Move configuration file from source path over to
+        destination, keeping destination path permissions.
+        """
+        write_output("move_configuration called: %s" % (locals(),),
+                     debug=True)
+        pid = self._get_caller_pid(sender)
+        authenticated = self._auth.authenticate_sync(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authenticated:
+            return False
+        updates = self._configuration_updates()
+        return updates.merge(source)
+
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='s', sender_keyword='sender')
+    def diff_configuration(self, source, sender=None):
+        """
+        Generate a diff between destination -> source file paths and
+        return a path containing the output to caller. If diff cannot
+        be run, return empty string.
+        """
+        write_output("diff_configuration called: %s" % (locals(),),
+                     debug=True)
+        pid = self._get_caller_pid(sender)
+        authenticated = self._auth.authenticate_sync(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authenticated:
+            return ""
+
+        updates = self._configuration_updates()
+        root = update.root()
+        obj = updates.get(source)
+        if obj is None:
+            return ""
+
+        uid = self._get_caller_user(sender)
+        source_path = root + source
+        dest_path = root + obj['destination']
+
+        rc = None
+        tmp_fd, tmp_path = None, None
+        path = ""
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="RigoDaemon")
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                rc = subprocess.call(
+                    ["/usr/bin/diff", "-Nu", dest_path, source_path],
+                    stdout = tmp_f)
+            if rc == os.EX_OK:
+                path = self._prepare_configuration_file(
+                    tmp_path, uid)
+
+        except (OSError, IOError,) as err:
+            write_output("cannot diff_configuration: %s" % (
+                    repr(err),), debug=True)
+
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except (OSError, IOError):
+                    pass
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+
+        return path
+
+    def _view_configuration_file(self, source, sender, dest=False):
+        """
+        View a source or destination configuration file
+        """
+        pid = self._get_caller_pid(sender)
+
+        authenticated = self._auth.authenticate_sync(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authenticated:
+            return ""
+
+        updates = self._configuration_updates()
+        root = updates.root()
+        obj = updates.get(source)
+        if obj is None:
+            return ""
+
+        uid = self._get_caller_user(sender)
+        if dest:
+            source_path = root + obj['destination']
+        else:
+            source_path = root + source
+        return self._prepare_configuration_file(source_path, uid)
+
+    def _prepare_configuration_file(self, path, uid):
+        """
+        Prepare the given configuration file copying it to
+        a temporary path and setting proper permissions.
+        """
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="RigoDaemon")
+        try:
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                with open(path, "rb") as path_f:
+                    shutil.copyfileobj(path_f, tmp_f)
+            # fixup perms
+            os.chown(tmp_path, uid, -1)
+            path = tmp_path
+        except (OSError, IOError) as err:
+            try:
+                os.close(tmp_fd)
+            except OSError:
+                pass
+            try:
+                os.remove(tmp_path)
+            except OSError:
+                pass
+            write_output("cannot _prepare_configuration_file: %s" % (
+                    repr(err),), debug=True)
+            path = ""
+        return path
+
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='s', sender_keyword='sender')
+    def view_configuration_source(self, source, sender=None):
+        """
+        Copy configuration source file to a temporary path featuring
+        caller ownership. If file cannot be copied, empty string is
+        returned.
+        """
+        write_output("view_configuration_source called: %s" % (locals(),),
+                     debug=True)
+        return self._view_configuration_file(source, sender)
+
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='s', sender_keyword='sender')
+    def view_configuration_destination(self, source, sender=None):
+        """
+        Copy configuration destination file to a temporary path featuring
+        caller ownership. If file cannot be copied, empty string is
+        returned.
+        """
+        write_output("view_configuration_destination called: %s" % (
+                locals(),),
+                     debug=True)
+        return self._view_configuration_file(source, sender, dest=True)
+
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='b', sender_keyword='sender')
+    def discard_configuration(self, source, sender=None):
+        """
+        Remove configuration file from source path.
+        """
+        write_output("discard_configuration called: %s" % (locals(),),
+                     debug=True)
+        pid = self._get_caller_pid(sender)
+        authenticated = self._auth.authenticate_sync(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authenticated:
+            return False
+        updates = self._configuration_updates()
+        return updates.remove(source)
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def configuration_updates(self):
+        """
+        Return the last generated (if any, or create a new one)
+        ConfigurationFiles object.
+        """
+        write_output("configuration_updates called", debug=True)
+        task = ParallelTask(self._maybe_signal_configuration_updates)
+        task.name = "ConfigurationUpdatesSignal"
+        task.daemon = True
+        task.start()
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def reload_configuration_updates(self):
+        """
+        Load a new ConfigurationFiles object.
+        """
+        write_output("reload_configuration_updates called", debug=True)
+        def _reload():
+            self._rwsem.reader_acquire()
+            try:
+                updates = self._entropy.ConfigurationUpdates()
+                with self._config_updates_mutex:
+                    scandata = updates.get()
+                    self._config_updates = scandata
+            finally:
+                self._rwsem.reader_release()
+
+        task = ParallelTask(_reload)
+        task.name = "ReloadConfigurationUpdates"
+        task.daemon = True
+        task.start()
+
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='b')
     def exclusive(self):
@@ -1948,6 +2225,17 @@ class RigoDaemonService(dbus.service.Object):
         "package_ids" denotes those safe to be removed.
         """
         write_output("unsupported_applications() issued, args:"
+                     " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='a(sssaib)')
+    def configuration_updates_available(self, updates):
+        """
+        Notify the presence of configuration files that should be updated.
+        The payload is a list of tuples, each one composed by:
+        (root, source, destination, installed_package_ids, auto-mergeable)
+        """
+        write_output("configuration_updates_available() issued, args:"
                      " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
