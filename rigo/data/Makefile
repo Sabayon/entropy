@@ -18,4 +18,8 @@ install:
 	install -m 644 ui/gtk3/rigo.ui \
 		$(DESTDIR)$(PREFIX)/share/rigo/ui/gtk3/
 
+	install -d $(DESTDIR)$(PREFIX)/share/applications/
+	install -m 644 desktop/rigo.desktop \
+		$(DESTDIR)$(PREFIX)/share/applications/
+
 clean:

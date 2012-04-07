@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Rigo Application Browser
+Comment=Browse and Install Applications
+Categories=Application;System;Settings
+Icon=system-software-update
+Exec=rigo
+Type=Application
+Terminal=false
+MimeType=application/entropy-package;application/entropy-webinstall
+InitialPreference=100
