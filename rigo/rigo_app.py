@@ -665,7 +665,26 @@ class Rigo(Gtk.Application):
         self._nc.setup()
         self._work_view_c.setup()
         self._service.setup(acquired)
+        self._easter_eggs()
         self._window.show()
+
+    def _easter_eggs(self):
+        """
+        Moo!
+        """
+        msg = None
+        if entropy.tools.is_st_valentine():
+            msg = escape_markup(_("Happy St. Valentine <3 <3 !"))
+        elif entropy.tools.is_xmas():
+            msg = escape_markup(_("Merry Xmas \o/ !"))
+        elif entropy.tools.is_april_first():
+            msg = escape_markup(_("<=|=< (this is optimistically a fish)"))
+        if msg is not None:
+            box = NotificationBox(
+                msg, message_type=Gtk.MessageType.INFO,
+                context_id="EasterEggs")
+            box.add_destroy_button(_("Woot, thanks"))
+            self._nc.append(box)
 
     def run(self):
         """
