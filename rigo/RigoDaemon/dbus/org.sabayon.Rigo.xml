@@ -51,6 +51,12 @@
        <arg name="path" type="s" direction="out"/>
     </method>
 
+    <method name="save_configuration_source">
+       <arg name="source" type="s" direction="in"/>
+       <arg name="path" type="s" direction="out"/>
+       <arg name="saved" type="b" direction="out"/>
+    </method>
+
     <method name="discard_configuration">
        <arg name="source" type="s" direction="in"/>
        <arg name="accepted" type="b" direction="out"/>

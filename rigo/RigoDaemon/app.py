@@ -666,6 +666,14 @@ class RigoDaemonService(dbus.service.Object):
 
         return auth_res['result']
 
+    def _authorize_sync(self, pid, action_id):
+        """
+        Authorize privileged Activity (synchronous method).
+        Return True for success, False for failure.
+        """
+        return self._auth.authenticate_sync(
+            pid, action_id)
+
     def stop(self):
         """
         RigoDaemon exit method.
@@ -1939,7 +1947,7 @@ class RigoDaemonService(dbus.service.Object):
         write_output("move_configuration called: %s" % (locals(),),
                      debug=True)
         pid = self._get_caller_pid(sender)
-        authenticated = self._auth.authenticate_sync(
+        authenticated = self._authorize_sync(
             pid, PolicyActions.MANAGE_CONFIGURATION)
         if not authenticated:
             return False
@@ -1957,13 +1965,13 @@ class RigoDaemonService(dbus.service.Object):
         write_output("diff_configuration called: %s" % (locals(),),
                      debug=True)
         pid = self._get_caller_pid(sender)
-        authenticated = self._auth.authenticate_sync(
+        authenticated = self._authorize_sync(
             pid, PolicyActions.MANAGE_CONFIGURATION)
         if not authenticated:
             return ""
 
         updates = self._configuration_updates()
-        root = update.root()
+        root = updates.root()
         obj = updates.get(source)
         if obj is None:
             return ""
@@ -1976,14 +1984,22 @@ class RigoDaemonService(dbus.service.Object):
         tmp_fd, tmp_path = None, None
         path = ""
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="RigoDaemon")
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="RigoDaemon", suffix=".diff")
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 rc = subprocess.call(
                     ["/usr/bin/diff", "-Nu", dest_path, source_path],
                     stdout = tmp_f)
             if rc == os.EX_OK:
+                # no differences
+                pass
+            elif rc == 1:
+                # differences were found
                 path = self._prepare_configuration_file(
                     tmp_path, uid)
+            else:
+                write_output("cannot diff_configuration: %s" % (
+                        rc,), debug=True)
 
         except (OSError, IOError,) as err:
             write_output("cannot diff_configuration: %s" % (
@@ -2009,7 +2025,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         pid = self._get_caller_pid(sender)
 
-        authenticated = self._auth.authenticate_sync(
+        authenticated = self._authorize_sync(
             pid, PolicyActions.MANAGE_CONFIGURATION)
         if not authenticated:
             return ""
@@ -2066,6 +2082,32 @@ class RigoDaemonService(dbus.service.Object):
                      debug=True)
         return self._view_configuration_file(source, sender)
 
+    @dbus.service.method(BUS_NAME, in_signature='ss',
+        out_signature='b', sender_keyword='sender')
+    def save_configuration_source(self, source, path, sender=None):
+        """
+        Save a new proposed source configuration file to the given
+        source file, if exists.
+        """
+        write_output("save_configuration_source called: %s" % (locals(),),
+                     debug=True)
+        pid = self._get_caller_pid(sender)
+        authenticated = self._authorize_sync(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authenticated:
+            return False
+        updates = self._configuration_updates()
+        obj = updates.get(source)
+        if obj is None:
+            return False
+        try:
+            entropy.tools.rename_keep_permissions(path, source)
+        except OSError as err:
+            write_output("cannot save_configuration_source: %s" % (
+                    repr(err),), debug=True)
+            return False
+        return True
+
     @dbus.service.method(BUS_NAME, in_signature='s',
         out_signature='s', sender_keyword='sender')
     def view_configuration_destination(self, source, sender=None):
@@ -2088,7 +2130,7 @@ class RigoDaemonService(dbus.service.Object):
         write_output("discard_configuration called: %s" % (locals(),),
                      debug=True)
         pid = self._get_caller_pid(sender)
-        authenticated = self._auth.authenticate_sync(
+        authenticated = self._authorize_sync(
             pid, PolicyActions.MANAGE_CONFIGURATION)
         if not authenticated:
             return False
@@ -2096,26 +2138,40 @@ class RigoDaemonService(dbus.service.Object):
         return updates.remove(source)
 
     @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='')
-    def configuration_updates(self):
+        out_signature='', sender_keyword='sender')
+    def configuration_updates(self, sender=None):
         """
         Return the last generated (if any, or create a new one)
         ConfigurationFiles object.
         """
         write_output("configuration_updates called", debug=True)
-        task = ParallelTask(self._maybe_signal_configuration_updates)
+        def _signal(pid):
+            authorized = self._authorize(
+                pid, PolicyActions.MANAGE_CONFIGURATION)
+            if not authorized:
+                return
+            self._maybe_signal_configuration_updates()
+
+        task = ParallelTask(
+            _signal,
+            self._get_caller_pid(sender))
         task.name = "ConfigurationUpdatesSignal"
         task.daemon = True
         task.start()
 
     @dbus.service.method(BUS_NAME, in_signature='',
-        out_signature='')
-    def reload_configuration_updates(self):
+        out_signature='', sender_keyword='sender')
+    def reload_configuration_updates(self, sender=None):
         """
         Load a new ConfigurationFiles object.
         """
         write_output("reload_configuration_updates called", debug=True)
         def _reload():
+            authorized = self._authorize(
+                pid, PolicyActions.MANAGE_CONFIGURATION)
+            if not authorized:
+                return
+
             self._rwsem.reader_acquire()
             try:
                 updates = self._entropy.ConfigurationUpdates()
