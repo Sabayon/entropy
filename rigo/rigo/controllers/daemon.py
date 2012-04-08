@@ -44,7 +44,7 @@ from RigoDaemon.enums import ActivityStates as DaemonActivityStates, \
 from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import const_debug_write, \
-    const_debug_enabled
+    const_debug_enabled, etpConst
 from entropy.misc import ParallelTask
 
 from entropy.i18n import _, ngettext
@@ -150,6 +150,7 @@ class RigoServiceController(GObject.Object):
 
     DBUS_INTERFACE = DaemonDbusConfig.BUS_NAME
     DBUS_PATH = DaemonDbusConfig.OBJECT_PATH
+    _ASYNC_DBUS_METHOD_TIMEOUT = 60
 
     _OUTPUT_SIGNAL = "output"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
@@ -217,6 +218,12 @@ class RigoServiceController(GObject.Object):
         self._daemon_transaction_app = None
         self._daemon_transaction_app_state = None
         self._daemon_transaction_app_progress = -1
+
+    def _dbus_to_unicode(self, dbus_string):
+        """
+        Convert dbus.String() to unicode object
+        """
+        return dbus_string.decode(etpConst['conf_encoding'])
 
     def set_applications_controller(self, avc):
         """
@@ -748,16 +755,30 @@ class RigoServiceController(GObject.Object):
             "_configuration_updates_available_signal: "
             "updates: %s" % (updates,))
 
-        if self._confc is not None:
+        if self._confc is not None and self._nc is not None:
+
+            self._entropy.rwsem().reader_acquire()
+            try:
+                repository_id = self._entropy.installed_repository(
+                    ).repository_id()
+            finally:
+                self._entropy.rwsem().reader_release()
+
             config_updates = []
             for root, source, dest, pkg_ids, auto in updates:
+                apps = []
+                for package_id in pkg_ids:
+                    app = Application(
+                        self._entropy, self._entropy_ws,
+                        (int(package_id), repository_id))
+                    apps.append(app)
                 meta = {
-                    'root': root,
-                    'destination': dest,
-                    'automerge': auto,
-                    'package_ids': pkg_ids,
+                    'root': self._dbus_to_unicode(root),
+                    'destination': self._dbus_to_unicode(dest),
+                    'automerge': bool(auto),
+                    'apps': apps,
                 }
-                cu = ConfigUpdate(source, meta, self)
+                cu = ConfigUpdate(source, meta, self, self._nc)
                 config_updates.append(cu)
             self._confc.notify_updates(config_updates)
 
@@ -1112,7 +1133,6 @@ class RigoServiceController(GObject.Object):
                     "not accepting RigoDaemon resources unlock request, "
                     "local activity: %s" % (local_activity,))
 
-
     def _activity_started_signal(self, activity):
         """
         RigoDaemon is telling us that the scheduled activity,
@@ -1217,10 +1237,127 @@ class RigoServiceController(GObject.Object):
         Request pending Configuration File Updates.
         """
         def _config():
+            dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).configuration_updates()
+        return self._execute_mainloop(_config)
+
+    def merge_configuration(self, source, reply_handler=None,
+                            error_handler=None):
+        """
+        Move configuration file from source path over to
+        destination, keeping destination path permissions.
+        """
+        def _merge():
             return dbus.Interface(
                 self._entropy_bus,
-                dbus_interface=self.DBUS_INTERFACE).configuration_updates()
-        return self._execute_mainloop(_config)
+                dbus_interface=self.DBUS_INTERFACE
+                ).merge_configuration(
+                    source,
+                    reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+        return self._execute_mainloop(_merge)
+
+    def diff_configuration(self, source, reply_handler=None,
+                           error_handler=None):
+        """
+        Generate a diff between destination -> source file paths and
+        return a path containing the output to caller. If diff cannot
+        be run, return empty string.
+        """
+        def _diff():
+            outcome = dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).diff_configuration(
+                    source, reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+            if outcome is not None:
+                return self._dbus_to_unicode(outcome)
+        return self._execute_mainloop(_diff)
+
+    def view_configuration_destination(self, source, reply_handler=None,
+                                       error_handler=None):
+        """
+        Copy configuration destination file to a temporary path featuring
+        caller ownership. If file cannot be copied, empty string is
+        returned.
+        """
+        def _view():
+            outcome = dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).view_configuration_destination(
+                    source, reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+            if outcome is not None:
+                return self._dbus_to_unicode(outcome)
+        return self._execute_mainloop(_view)
+
+    def view_configuration_source(self, source, reply_handler=None,
+                                  error_handler=None):
+        """
+        Copy configuration source file to a temporary path featuring
+        caller ownership. If file cannot be copied, empty string is
+        returned.
+        """
+        def _view():
+            outcome = dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).view_configuration_source(
+                    source, reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+            if outcome is not None:
+                return self._dbus_to_unicode(outcome)
+        return self._execute_mainloop(_view)
+
+    def save_configuration_source(self, source, path, reply_handler=None,
+                                  error_handler=None):
+        """
+        Save a new proposed source configuration file to the given
+        source file, if exists.
+        """
+        def _save():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).save_configuration_source(
+                    source, path, reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+        return self._execute_mainloop(_save)
+
+    def discard_configuration(self, source, reply_handler=None,
+                              error_handler=None):
+        """
+        Remove configuration file from source path.
+        """
+        def _discard():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).discard_configuration(
+                    source, reply_handler=reply_handler,
+                    error_handler=error_handler,
+                    timeout=self._ASYNC_DBUS_METHOD_TIMEOUT)
+        return self._execute_mainloop(_discard)
+
+    def reload_configuration_updates(self):
+        """
+        Load a new ConfigurationFiles object.
+        """
+        def _reload():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).reload_configuration_updates()
+        self._execute_mainloop(_reload)
 
     def interrupt_activity(self):
         """
@@ -1298,12 +1435,19 @@ class RigoServiceController(GObject.Object):
         sem_data = {
             'sem': Semaphore(0),
             'res': None,
+            'exc': None,
         }
         def _wrapper():
-            sem_data['res'] = function(*args, **kwargs)
-            sem_data['sem'].release()
+            try:
+                sem_data['res'] = function(*args, **kwargs)
+            except Exception as exc:
+                sem_data['exc'] = exc
+            finally:
+                sem_data['sem'].release()
         GLib.idle_add(_wrapper)
         sem_data['sem'].acquire()
+        if sem_data['exc'] is not None:
+            raise sem_data['exc']
         return sem_data['res']
 
     def _release_local_resources(self, clear_avc=True):

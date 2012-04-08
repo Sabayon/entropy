@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
+Copyright (C) 2009 Canonical
 Copyright (C) 2012 Fabio Erculiani
 
 Authors:
+  Michael Vogt
   Fabio Erculiani
 
 This program is free software; you can redistribute it and/or modify it under
@@ -37,22 +39,26 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
         # Source configuration file edit signal
         "source-edit" : (GObject.SignalFlags.RUN_LAST,
                          None,
-                         (GObject.TYPE_PYOBJECT,),
+                         (GObject.TYPE_PYOBJECT,
+                          GObject.TYPE_PYOBJECT),
                          ),
         # Show diff signal
         "show-diff" : (GObject.SignalFlags.RUN_LAST,
-                  None,
-                  (GObject.TYPE_PYOBJECT,),
-                  ),
+                       None,
+                       (GObject.TYPE_PYOBJECT,
+                        GObject.TYPE_PYOBJECT),
+                       ),
         # Merge source configuration file signal
         "source-merge" : (GObject.SignalFlags.RUN_LAST,
-                           None,
-                           (GObject.TYPE_PYOBJECT,),
-                           ),
+                          None,
+                          (GObject.TYPE_PYOBJECT,
+                           GObject.TYPE_PYOBJECT),
+                          ),
         # Discard source configuration file signal
         "source-discard" : (GObject.SignalFlags.RUN_LAST,
                             None,
-                            (GObject.TYPE_PYOBJECT,),
+                            (GObject.TYPE_PYOBJECT,
+                             GObject.TYPE_PYOBJECT),
                             ),
     }
 
@@ -259,7 +265,7 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
         for btn in tr.get_buttons():
             if btn.point_in(x, y):
                 return
-        # FIXME: show source?
+        self.emit("source-edit", path, rowref)
 
     def _on_button_event_get_path(self, view, event):
         if event.button != 1:
@@ -269,11 +275,7 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
         if not res:
             return False
 
-        # check the path is valid and is not a category row
         path = res[0]
-        if path is None:
-            return False
-
         # only act when the selection is already there
         selection = view.get_selection()
         if not selection.path_is_selected(path):
@@ -318,43 +320,30 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
     def _init_activated(self, btn, model, path):
         cu = model[path][self.COL_ROW_DATA]
         s = Gtk.Settings.get_default()
-        GObject.timeout_add(s.get_property("gtk-timeout-initial"),
-                            self._confupdate_activated_cb,
-                            btn,
-                            btn.name,
-                            cu,
-                            model,
-                            path)
+        GObject.timeout_add(
+            s.get_property("gtk-timeout-initial"),
+            self._confupdate_activated_cb,
+            btn, btn.name, cu, model, path)
 
     def _cell_data_func_cb(self, col, cell, model, it, user_data):
-
         path = model.get_path(it)
-
-        if model[path][0] is None:
-            indices = path.get_indices()
-            model.load_range(indices, 5)
-
         is_active = path == self.expanded_path
         cell.set_property('isactive', is_active)
-        return
 
     def _confupdate_activated_cb(self, btn, btn_id, cu, store, path):
-
         if isinstance(store, Gtk.TreeModelFilter):
             store = store.get_model()
-
         if btn_id == ConfigUpdateCellButtonIDs.EDIT:
-            self.emit("source-edit", cu)
+            self.emit("source-edit", path, cu)
         elif btn_id == ConfigUpdateCellButtonIDs.DIFF:
-            self.emit("show-diff", cu)
+            self.emit("show-diff", path, cu)
         elif btn_id == ConfigUpdateCellButtonIDs.MERGE:
-            self.emit("source-merge", cu)
+            self.emit("source-merge", path, cu)
         elif btn_id == ConfigUpdateCellButtonIDs.DISCARD:
-            self.emit("source-discard", cu)
+            self.emit("source-discard", path, cu)
         return False
 
     def _set_cursor(self, btn, cursor):
-        # make sure we have a window instance (LP: #617004)
         window = self.get_window()
         if isinstance(window, Gdk.Window):
             x, y = self.get_pointer()
@@ -363,7 +352,6 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
 
     def _xy_is_over_focal_row(self, x, y):
         res = self.get_path_at_pos(x, y)
-        #cur = self.get_cursor()
         if not res:
             return False
         return self.get_path_at_pos(x, y)[0] == self.get_cursor()[0]

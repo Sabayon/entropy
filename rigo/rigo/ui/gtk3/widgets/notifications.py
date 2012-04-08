@@ -560,7 +560,7 @@ class LicensesNotificationBox(NotificationBox):
                     tmp_f.write("-" * 79 + "\n")
                     tmp_f.write(license_text)
                     tmp_f.flush()
-                subprocess.call(["xdg-open", tmp_path])
+                open_url(tmp_path)
             else:
                 const_debug_write(
                     __name__,

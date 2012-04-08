@@ -18,10 +18,15 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-from gi.repository import GObject
+from gi.repository import GObject, Gtk, GLib
 
 from rigo.ui.gtk3.widgets.notifications import \
-    ConfigUpdatesNotificationBox
+    ConfigUpdatesNotificationBox, NotificationBox
+from rigo.utils import prepare_markup
+
+from entropy.i18n import _
+from entropy.const import const_debug_write
+from entropy.misc import ParallelTask
 
 class ConfigUpdatesViewController(GObject.Object):
 
@@ -33,11 +38,116 @@ class ConfigUpdatesViewController(GObject.Object):
         self._nc = None
         self._avc = None
 
+    def _notify_error(self, message):
+        """
+        Notify a generic configuration management action error.
+        """
+        box = NotificationBox(
+            prepare_markup(message),
+            message_type=Gtk.MessageType.ERROR,
+            context_id="ConfigUpdateErrorContextId")
+        self._nc.append(box, timeout=10)
+
+    def _remove_path(self, path):
+        """
+        Remove the given object path from model
+        """
+        iterator = self._store.get_iter(path)
+        if iterator is not None:
+            self._store.remove(iterator)
+
+    def _on_source_edit(self, widget, path, cu):
+        """
+        Source File Edit request.
+        """
+        const_debug_write(__name__, "Confc: _on_source_edit: %s" % (cu,))
+        def _edit():
+            if not cu.edit():
+                def _notify():
+                    msg = "%s: <i>%s</i>" % (
+                        _("Cannot <b>edit</b> configuration file"),
+                        cu.source(),)
+                    self._notify_error(msg)
+                GLib.idle_add(_notify)
+
+        task = ParallelTask(_edit)
+        task.name = "OnSourceEdit"
+        task.daemon = True
+        task.start()
+
+    def _on_show_diff(self, widget, path, cu):
+        """
+        Diff request.
+        """
+        const_debug_write(__name__, "Confc: _on_show_diff: %s" % (cu,))
+        def _diff():
+            if not cu.diff():
+                def _notify():
+                    msg = "%s: <i>%s</i>" % (
+                        _("Cannot <b>show</b> configuration "
+                          "files difference"),
+                        cu.source(),)
+                    self._notify_error(msg)
+                GLib.idle_add(_notify)
+
+        task = ParallelTask(_diff)
+        task.name = "OnShowDiff"
+        task.daemon = True
+        task.start()
+
+    def _on_source_merge(self, widget, path, cu):
+        """
+        Source file merge request.
+        """
+        const_debug_write(__name__, "Confc: _on_source_merge: %s" % (cu,))
+        def _merge():
+            if not cu.merge():
+                def _notify():
+                    msg = "%s: <i>%s</i>" % (
+                        _("Cannot <b>merge</b> configuration file"),
+                        cu.source(),)
+                    self._notify_error(msg)
+                GLib.idle_add(_notify)
+            else:
+                GLib.idle_add(self._remove_path, path)
+
+        task = ParallelTask(_merge)
+        task.name = "OnSourceMerge"
+        task.daemon = True
+        task.start()
+
+    def _on_source_discard(self, widget, path, cu):
+        """
+        Source file discard request.
+        """
+        const_debug_write(
+            __name__, "Confc: _on_source_discard: %s" % (cu,))
+        def _discard():
+            if not cu.discard():
+                def _notify():
+                    msg = "%s: <i>%s</i>" % (
+                        _("Cannot <b>discard</b> configuration file"),
+                        cu.source(),)
+                    self._notify_error(msg)
+                GLib.idle_add(_notify)
+            else:
+                GLib.idle_add(self._remove_path, path)
+
+        task = ParallelTask(_discard)
+        task.name = "OnSourceDiscard"
+        task.daemon = True
+        task.start()
+
     def setup(self):
         """
         Setup the ConfigUpdatesViewController resources.
         """
         self._view.set_model(self._store)
+
+        self._view.connect("source-edit", self._on_source_edit)
+        self._view.connect("show-diff", self._on_show_diff)
+        self._view.connect("source-merge", self._on_source_merge)
+        self._view.connect("source-discard", self._on_source_discard)
         self._view.show()
 
     def set_notification_controller(self, nc):
@@ -106,7 +216,6 @@ class ConfigUpdatesViewController(GObject.Object):
         """
         Notify Configuration File Updates to User.
         """
-        # setup store
         self.set_many(config_updates)
         if self._nc is not None and self._avc is not None:
             box = ConfigUpdatesNotificationBox(
