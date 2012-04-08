@@ -341,7 +341,7 @@ class ApplicationsViewController(GObject.Object):
         Setup UI in order to show a "not found" message if required.
         """
         nf_box = self._not_found_box
-        if items_count:
+        if items_count or text is None:
             nf_box.set_property("expand", False)
             nf_box.hide()
             self._view.get_parent().show()
@@ -559,9 +559,8 @@ class ApplicationsViewController(GObject.Object):
         self._view.clear_model()
         ApplicationMetadata.discard()
         self.append_many(opaque_list)
-        if _from_search:
-            self._setup_search_view(
-                len(opaque_list), _from_search)
+        self._setup_search_view(
+            len(opaque_list), _from_search)
 
     def clear_safe(self):
         GLib.idle_add(self.clear)
