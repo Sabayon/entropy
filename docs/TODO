@@ -3,18 +3,22 @@ Backlog (raw)
   1.0:
 
     rigo:
-    - [F] Configuration files Update
+
+    - [F] Install support for webinst and entropy packages
+          (see sulfur/misc)
+    - [F] Notice Board
 
     - [F] Preferences:
        - clean metadata cache
        - clean recent searches
        - logout (clean session info)
        - update repositories
+       - show confupdates
 
     magneto:
+      - gtk3 version
       - migrate to RigoDaemon as soon as it's available!
         - and also Equo (text_repositories)
-      - gtk3 version
 
     - make security advisories caching faster (cache server-side?)
 
