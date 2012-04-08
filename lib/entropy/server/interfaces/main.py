@@ -5846,7 +5846,7 @@ class Server(Client):
             )
             for val in file_updates.values():
                 self.output(
-                    val['destination']),
+                    val['destination'],
                     importance = 1,
                     level = "info",
                     header = "\t"
