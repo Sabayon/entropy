@@ -958,6 +958,37 @@ class Application(object):
         finally:
             self._entropy.rwsem().reader_release()
 
+    def _get_removal_queue(self):
+        """
+        Return Application removal queue.
+        """
+        try:
+            return self._entropy.get_reverse_queue(
+                [(self._pkg_id, self._repo_id)])
+        except DependenciesNotRemovable:
+            return None
+
+    def get_removal_queue(self):
+        """
+        Return a list of Applications that would be removed.
+        Please note that if the Application is not removable,
+        None is returned.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            queue = self._get_removal_queue()
+            if queue is None:
+                return None
+            remove = []
+            for pkg_match in queue:
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    pkg_match)
+                remove.append(app)
+            return remove
+        finally:
+            self._entropy.rwsem().reader_release()
+
     def is_removable(self):
         """
         Return if Application can be removed or it's part of
@@ -975,8 +1006,7 @@ class Application(object):
                 return True
 
             try:
-                self._entropy.get_reverse_queue(
-                    [(self._pkg_id, self._repo_id)])
+                self._get_removal_queue()
                 return True
             except DependenciesNotRemovable:
                 return False

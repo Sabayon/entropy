@@ -33,7 +33,7 @@ from rigo.models.configupdate import ConfigUpdate
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
-    QueueActionNotificationBox
+    RemovalNotificationBox, QueueActionNotificationBox
 
 from rigo.utils import prepare_markup
 
@@ -1728,12 +1728,33 @@ class RigoServiceController(GObject.Object):
 
     def _notify_blocking_install(self, ask_meta, app, install):
         """
-        Notify licenses that have to be accepted for Application and
-        block until User answers.
+        Ask User to acknowledge the proposed install queue.
         """
         box = InstallNotificationBox(
             self._apc, self._avc, app, self._entropy,
             self._entropy_ws, install)
+
+        def _accepted(widget):
+            ask_meta['res'] = True
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        def _declined(widget):
+            ask_meta['res'] = False
+            self._nc.remove(box)
+            ask_meta['sem'].release()
+
+        box.connect("accepted", _accepted)
+        box.connect("declined", _declined)
+        self._nc.append(box)
+
+    def _notify_blocking_removal(self, ask_meta, app, remove):
+        """
+        Ask User to acknowledge the proposed removal queue.
+        """
+        box = RemovalNotificationBox(
+            self._apc, self._avc, app, self._entropy,
+            self._entropy_ws, remove)
 
         def _accepted(widget):
             ask_meta['res'] = True
@@ -1754,8 +1775,8 @@ class RigoServiceController(GObject.Object):
         Examine Application Removal Request on behalf of
         _application_request_checks().
         """
-        removable = app.is_removable()
-        if not removable:
+        queue = app.get_removal_queue()
+        if queue is None:
             msg = _("<b>%s</b>\nis part of the Base"
                     " System and <b>cannot</b> be removed")
             msg = msg % (app.get_markup(),)
@@ -1766,6 +1787,27 @@ class RigoServiceController(GObject.Object):
                 None, msg, message_type)
 
             return False
+
+        if len(queue) > 1:
+            const_debug_write(
+                __name__,
+                "_application_request_removal_checks: "
+                "need to ack queue: %s" % (queue,))
+            ask_meta = {
+                'sem': Semaphore(0),
+                'res': None,
+            }
+            GLib.idle_add(self._notify_blocking_removal,
+                          ask_meta, app, queue)
+            ask_meta['sem'].acquire()
+
+            const_debug_write(
+                __name__,
+                "_application_request_removal_checks: "
+                "queue acked?: %s" % (ask_meta['res'],))
+
+            if not ask_meta['res']:
+                return False
 
         return True
 

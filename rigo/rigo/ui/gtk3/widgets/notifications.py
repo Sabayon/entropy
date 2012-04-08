@@ -730,7 +730,8 @@ class InstallNotificationBox(NotificationBox):
                       ),
     }
 
-    def __init__(self, apc, avc, app, entropy_client, entropy_ws, install):
+    def __init__(self, apc, avc, app, entropy_client, entropy_ws,
+                 install, _message=None):
         """
         InstallNotificationBox constructor.
 
@@ -745,9 +746,12 @@ class InstallNotificationBox(NotificationBox):
         self._install = sorted(
             install, key = lambda x: x.name)
 
-        msg = prepare_markup(
-            _("<b>%s</b> Application requires the installation "
-              "of the following Applications: %s"))
+        if _message is None:
+            msg = prepare_markup(
+                _("<b>%s</b> Application requires the installation "
+                  "of the following Applications: %s"))
+        else:
+            msg = _message
         if len(self._install) <= 20:
             app_txts = []
             for _app in self._install:
@@ -811,6 +815,18 @@ class InstallNotificationBox(NotificationBox):
             (pkg_id, pkg_repo))
         self._apc.emit("application-activated", app)
         return True
+
+
+class RemovalNotificationBox(InstallNotificationBox):
+
+    def __init__(self, apc, avc, app, entropy_client, entropy_ws,
+                 removal):
+        message = prepare_markup(
+                _("<b>%s</b> Application requires the removal "
+                  "of the following Applications: %s"))
+        InstallNotificationBox.__init__(
+            self, apc, avc, app, entropy_client,
+            entropy_ws, removal, _message=message)
 
 
 class QueueActionNotificationBox(NotificationBox):
