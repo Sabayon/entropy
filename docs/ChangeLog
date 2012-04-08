@@ -1,3 +1,217 @@
+commit f8aceb4379a69125eb14e617811ef6cb89685d9d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 19:53:01 2012 +0200
+
+    Release Entropy 1.0_rc95
+
+commit 17ab3579acf83bc9b6f4a7058a0768aadef7f3f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 19:51:37 2012 +0200
+
+    [todo] update TODO
+
+commit 5f3079db0c3335b45acae88dcec33de37ca2addc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 19:13:43 2012 +0200
+
+    [Rigo] update translations, add Spanish (Chile)
+
+commit 4a44fb7d3cdfa116944469d6d55c759597dba7f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 19:11:48 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 20e39ebcb3a7cc7fec7f16c5cba220a0de3deaec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 19:03:56 2012 +0200
+
+    [Rigo] make sure to always show Applications when set_many() is called
+
+commit fe8f71d205f30d77353a0a97498011b56ae7b67c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 18:53:40 2012 +0200
+
+    [Rigo] require User to validate the removal queue before proceeding
+
+commit 9334433e7c0056cf747aeacb83f69adb7c6b8716
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 18:13:32 2012 +0200
+
+    [Rigo] complete configuration file updates implementation
+
+commit 415c5af799ae382074e4c57d05714a3dbcc7142e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 8 18:13:09 2012 +0200
+
+    [RigoDaemon] complete configuration file updates implementation
+
+commit 9c93587dd4621df46728fb1c1a1a9115d473d3b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 7 23:39:52 2012 +0200
+
+    [Rigo] add easter eggs
+
+commit 95b34b6e558a64eed7a6c573e5d0aec61876e77c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 7 23:31:36 2012 +0200
+
+    [Rigo] rigo.ui: rename to Rigo Application Browser
+
+commit e55b09836fefac1754fa634fd2d42ae0955190fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 7 23:31:21 2012 +0200
+
+    [Rigo] add .desktop file
+
+commit 8a34b071b06451bbb5b22e2cc3ddc7e85a481148
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 7 19:33:28 2012 +0200
+
+    [Rigo/RigoDaemon] partially implement configuration file updates management
+
+commit c5ab6083ea976473a090ac2ffc46b819c5fc696b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:53:26 2012 +0200
+
+    [equo] fix undefined reference
+
+commit 08eec23067fe1fcd16c2b07503cc6397412efe7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:52:42 2012 +0200
+
+    [sulfur] make it use the old, deprecated FileUpdates class
+    
+    Sulfur will die anyway, no reason to port it over
+
+commit 6669a7e80c3352b55c5a614b5e59df1832788813
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:41:57 2012 +0200
+
+    [entropy.client] migrate to the new ConfigurationUpdates class
+
+commit 52aa120a9a5df7a5c58c6220087e86364bd53154
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:41:36 2012 +0200
+
+    [entropy.server] migrate to the new ConfigurationUpdates class
+
+commit 6c1a21d1df9d26ffff2cd85214f2a42501c59749
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:40:52 2012 +0200
+
+    [equo] migrate to ConfigurationUpdates class (from FileUpdates)
+
+commit e10b6e264efd3211ac722d852f50039599f4b36a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 6 16:38:10 2012 +0200
+
+    [entropy.client] introduce ConfigurationUpdates class
+    
+    This is a complete rewrite of the now old FileUpdates class,
+    aiming to become easier to use and concurrently deal with.
+    Client code must be updated to use the new ConfigurationUpdates
+    class before 2012-12-31, backward compatibility won't be guaranteed
+    after this date.
+
+commit c7cab4b163e4f1978ae3beb5ef0869ac731ae972
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Thu Apr 5 23:55:28 2012 +0200
+
+    [Rigo] fix ngettext args (singular first)
+
+commit 18fde35b353c89eb632a90be9d9a07099e86ab5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 23:51:59 2012 +0200
+
+    [Rigo] QueueActionNotificationBox: pass int type to _update_countdown
+    
+    Thanks to Enlik
+
+commit 95df02246cf965147ac7ba2a847c2b1b13969c9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 23:49:48 2012 +0200
+
+    [Rigo] use ngettext in NotificationBox widgets, thanks to Enlik
+
+commit e28abc2fb41a46a41049919033b39967dae16a88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:18:39 2012 +0200
+
+    [todo] update TODO
+
+commit 6ce071616e53d575c9cecc825a092606feeccfe4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:15:25 2012 +0200
+
+    [Rigo] po: update translations
+
+commit ac0eab4bd4e702b5dade5251f90e8b3bed695987
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:11:11 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 4cd8101b11292feae054949c125fdb824b8d5255
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:10:42 2012 +0200
+
+    [Rigo] add Romanian, Lithuanian and Bulgarian translations
+
+commit 40dc9f6948284ab9e326456dbdb4dfc52be2709d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:10:11 2012 +0200
+
+    [Rigo] implement support to App Management Activity interruption
+
+commit d845fce5a3d84d3f25f69dde66f6bcf933f3021d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 17:09:41 2012 +0200
+
+    [RigoDaemon] make possible to interrupt the Application Management activity
+
+commit fac687326f672504726b8039f1757f10036e8a2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 15:13:54 2012 +0200
+
+    [todo] update TODO
+
+commit e6c69bbefde87ea7dbd2145aa0f4803ab7031ee2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 15:12:47 2012 +0200
+
+    [Rigo] let the user undo an Application Action within 10 seconds
+
+commit 8fb2708a9373fde107f347b9bcbf443e0debfada
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 15:12:28 2012 +0200
+
+    [Rigo] add QueueActionNotificationBox widget
+
+commit 77b958f12035707325ccf0dc6a87f8ca0bb0ecc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 15:11:37 2012 +0200
+
+    [Rigo] fix typos in InstallNotificationBox handling
+
+commit 172f49534dd4802d104e2b71f138651680c46e9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 5 09:29:25 2012 +0200
+
+    [Rigo] let the user review the install queue before submitting it to RigoDaemon
+
+commit ea4de116847c9c6852060b4fa9b9026abd752373
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 4 22:35:56 2012 +0200
+
+    [Rigo] add debug output to every dbus signal handler
+
+commit 1acde40ac07d42adce508a38184d1de7ceed0ed7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 4 21:06:01 2012 +0200
+
+    Tagging Entropy version 1.0_rc94
+
 commit 1208861ca9596e1241e99530e72fbed5b98f76d5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 4 21:05:54 2012 +0200
