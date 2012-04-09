@@ -34,7 +34,8 @@ from rigo.models.configupdate import ConfigUpdate
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
-    RemovalNotificationBox, QueueActionNotificationBox
+    RemovalNotificationBox, QueueActionNotificationBox, \
+    UpdatesNotificationBox, RepositoriesUpdateNotificationBox
 
 from rigo.utils import prepare_markup
 
@@ -172,7 +173,10 @@ class RigoServiceController(GObject.Object):
     _UNSUPPORTED_APPLICATIONS_SIGNAL = "unsupported_applications"
     _RESTARTING_UPGRADE_SIGNAL = "restarting_system_upgrade"
     _CONFIGURATION_UPDATES_SIGNAL = "configuration_updates_available"
-    _SUPPORTED_APIS = [1]
+    _UPDATES_AVAILABLE_SIGNAL = "updates_available"
+    _UNAVAILABLE_REPOSITORIES_SIGNAL = "unavailable_repositories"
+    _OLD_REPOSITORIES_SIGNAL = "old_repositories"
+    _SUPPORTED_APIS = [2]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -487,6 +491,26 @@ class RigoServiceController(GObject.Object):
                     self._configuration_updates_available_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that there are app updates
+                # available
+                self.__entropy_bus.connect_to_signal(
+                    self._UPDATES_AVAILABLE_SIGNAL,
+                    self._updates_available_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon tells us that there are unavailable
+                # repositories
+                self.__entropy_bus.connect_to_signal(
+                    self._UNAVAILABLE_REPOSITORIES_SIGNAL,
+                    self._unavailable_repositories_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon tells us that there are old repositories
+                self.__entropy_bus.connect_to_signal(
+                    self._OLD_REPOSITORIES_SIGNAL,
+                    self._old_repositories_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -754,6 +778,74 @@ class RigoServiceController(GObject.Object):
                 prepare_markup(msg), Gtk.MessageType.INFO,
                 context_id=self.SYSTEM_UPGRADE_CONTEXT_ID)
             self._nc.append(box, timeout=20)
+
+    def _updates_available_signal(self, update, remove):
+        const_debug_write(
+            __name__,
+            "_updates_available_signal: "
+            "update: %s, remove: %s" % (update, remove,))
+        if not update:
+            return
+        update = [(int(x), self._dbus_to_unicode(y)) for x, y \
+                      in update]
+        remove = [int(x) for x in remove]
+
+        if self._nc is not None:
+
+            self._entropy.rwsem().reader_acquire()
+            try:
+                def _key_func(x):
+                    return self._entropy.open_repository(
+                        x[1]).retrieveName(x[0]).lower()
+                update.sort(key=_key_func)
+            finally:
+                self._entropy.rwsem().reader_release()
+
+            def _on_upgrade(box):
+                self._nc.remove(box)
+                self.upgrade_system()
+
+            def _on_update_show(box):
+                if self._avc is not None:
+                    self._avc.set_many(update)
+
+            box = UpdatesNotificationBox(
+                self._entropy, self._avc,
+                len(update), 0)
+            box.connect("upgrade-request", _on_upgrade)
+            box.connect("show-request", _on_update_show)
+            self._nc.append(box)
+
+    def _unavailable_repositories_signal(self, repositories):
+        const_debug_write(
+            __name__,
+            "_unavailable_repositories_signal: "
+            "repositories: %s" % (repositories,))
+
+        repositories = [self._dbus_to_unicode(x) for x in repositories]
+        if self._nc is not None and self._avc is not None:
+            def _on_update(box):
+                self._nc.remove(box)
+                self.update_repositories(repositories, True)
+
+            box = RepositoriesUpdateNotificationBox(
+                self._entropy, self._avc, unavailable=repositories)
+            box.connect("update-request", _on_update)
+            self._nc.append(box)
+
+    def _old_repositories_signal(self):
+        const_debug_write(
+            __name__,
+            "_old_repositories_signal: called")
+        if self._nc is not None and self._avc is not None:
+            def _on_update(box):
+                self._nc.remove(box)
+                self.update_repositories([], True)
+
+            box = RepositoriesUpdateNotificationBox(
+                self._entropy, self._avc)
+            box.connect("update-request", _on_update)
+            self._nc.append(box)
 
     def _configuration_updates_available_signal(self, updates):
         const_debug_write(
@@ -1441,6 +1533,17 @@ class RigoServiceController(GObject.Object):
                 dbus_interface=self.DBUS_INTERFACE).api()
         return self._execute_mainloop(_api)
 
+    def hello(self):
+        """
+        Say hello to RigoDaemon. This causes the sending of
+        several welcome signals, such as updates notification.
+        """
+        def _hello():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).hello()
+        self._execute_mainloop(_hello)
+
     def _execute_mainloop(self, function, *args, **kwargs):
         """
         Execute a function inside the MainLoop and return
@@ -1492,7 +1595,7 @@ class RigoServiceController(GObject.Object):
         """
         self._entropy.rwsem().writer_acquire()
         try:
-            if clear_avc:
+            if clear_avc and self._avc is not None:
                 self._avc.clear_safe()
             self._entropy.close_repositories()
         finally:

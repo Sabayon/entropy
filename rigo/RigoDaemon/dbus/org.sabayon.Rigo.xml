@@ -85,8 +85,9 @@
        <arg name="version" type="i" direction="out"/>
     </method>
 
-    <method name="reload">
-    </method>
+    <method name="hello"/>
+
+    <method name="reload"/>
 
     <method name="pong"/>
   </interface>

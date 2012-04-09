@@ -68,6 +68,7 @@ from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package
+from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
 from entropy.cli import get_entropy_webservice
@@ -368,7 +369,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 1
+    API_VERSION = 2
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -523,6 +524,8 @@ class RigoDaemonService(dbus.service.Object):
 
         self._config_updates = None
         self._config_updates_mutex = Lock()
+
+        self._greetings_serializer = Lock()
 
         self._action_queue = deque()
         self._action_queue_length_mutex = Lock()
@@ -1755,12 +1758,52 @@ class RigoDaemonService(dbus.service.Object):
         self._entropy.reopen_installed_repository()
         self._entropy.close_repositories()
 
+    def _acquire_shared(self, blocking=True):
+        """
+        Acquire Shared access to Entropy Resources.
+        This method must be called with activity_mutex held
+        to avoid races with _acquire_exclusive().
+        """
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_acquire_shared: "
+                "Activity mutex not acquired!")
+        self._entropy.lock_resources(
+            blocking=blocking, shared=True)
+
+    def _release_shared(self):
+        """
+        Release Shared access to Entropy Resources.
+        This method must be called with activity_mutex held
+        to avoid races with _acquire_exclusive().
+        """
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_acquire_shared: "
+                "Activity mutex not acquired!")
+        self._entropy.unlock_resources()
+
     def _acquire_exclusive(self, activity):
         """
         Acquire Exclusive access to Entropy Resources.
         Note: this is blocking and will issue the
         exclusive_acquired() signal when done.
+        This method must be called with activity_mutex held
+        to avoid races with _acquire_shared().
         """
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_acquire_exclusive: "
+                "Activity mutex not acquired!")
         acquire = False
         with self._acquired_exclusive_mutex:
             if not self._acquired_exclusive:
@@ -1790,6 +1833,14 @@ class RigoDaemonService(dbus.service.Object):
         """
         Release Exclusive access to Entropy Resources.
         """
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_acquire_exclusive: "
+                "Activity mutex not acquired!")
+
         # make sure to not release locks as long
         # as there is activity
         with self._acquired_exclusive_mutex:
@@ -1815,6 +1866,37 @@ class RigoDaemonService(dbus.service.Object):
         finally:
             self._rwsem.writer_release()
             write_output("_entropy_setup(): complete", debug=True)
+
+    def _send_greetings(self):
+        """
+        Send connected clients several welcome signals.
+        """
+        with self._greetings_serializer:
+            with self._activity_mutex:
+                self._acquire_shared()
+                try:
+                    self._close_local_resources()
+                    self._entropy_setup()
+
+                    unavailable_repositories = \
+                        self._entropy.unavailable_repositories()
+                    if unavailable_repositories:
+                        GLib.idle_add(
+                            self.unavailable_repositories,
+                                unavailable_repositories)
+
+                    if Repository.are_repositories_old():
+                        GLib.idle_add(self.old_repositories)
+
+                    # signal updates available
+                    update, remove, fine, spm_fine = \
+                        self._entropy.calculate_updates()
+                    if update or remove:
+                        GLib.idle_add(self.updates_available,
+                                      update, remove)
+
+                finally:
+                    self._release_shared()
 
     ### DBUS METHODS
 
@@ -2340,6 +2422,19 @@ class RigoDaemonService(dbus.service.Object):
                 self._ping_timer.cancel()
                 self._ping_timer = None
 
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def hello(self):
+        """
+        Somebody is greeting us, need to dispatch some
+        welcome signals.
+        """
+        write_output("hello() received", debug=True)
+        task = ParallelTask(self._send_greetings)
+        task.name = "SendGreetings"
+        task.daemon = True
+        task.start()
+
     ### DBUS SIGNALS
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
@@ -2523,6 +2618,35 @@ class RigoDaemonService(dbus.service.Object):
                 package_id, repository_id, action, app_outcome,),
                      debug=True)
 
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='a(is)ai')
+    def updates_available(self, update, remove):
+        """
+        Signal all the connected Clients that there are updates
+        available.
+        """
+        write_output("updates_available(): %s" % (locals(),),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='as')
+    def unavailable_repositories(self, repositories):
+        """
+        Signal all the connected Clients that there are updates
+        unavailable repositories that would need to be downloaded.
+        """
+        write_output("unavailable_repositories(): %s" % (locals(),),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def old_repositories(self):
+        """
+        Signal all the connected Clients that available repositories
+        are old and should be updated.
+        """
+        write_output("old_repositories(): %s" % (locals(),),
+                     debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='')

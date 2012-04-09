@@ -77,7 +77,7 @@ class ApplicationsViewController(GObject.Object):
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
-                 rigo_service, icons, nf_box,
+                 nc, rigo_service, icons, nf_box,
                  search_entry, search_entry_completion,
                  search_entry_store, store, view):
         GObject.Object.__init__(self)
@@ -93,7 +93,7 @@ class ApplicationsViewController(GObject.Object):
         self._nf_box = nf_box
         self._not_found_search_box = None
         self._not_found_label = None
-        self._nc = None
+        self._nc = nc
 
         self._cacher = EntropyCacher()
         self._search_thread_mutex = Lock()
@@ -102,12 +102,6 @@ class ApplicationsViewController(GObject.Object):
         self._search_completion_model = search_entry_store
         self._search_writeback_mutex = Lock()
         self._search_writeback_thread = None
-
-    def set_notification_controller(self, nc):
-        """
-        Bind a NotificationViewController to this object.
-        """
-        self._nc = nc
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
         """

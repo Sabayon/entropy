@@ -23,10 +23,8 @@ from gi.repository import Gtk, GLib, GObject
 
 from rigo.enums import LocalActivityStates
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
-    RepositoriesUpdateNotificationBox, UpdatesNotificationBox, \
     ConnectivityNotificationBox
 
-from entropy.client.interfaces.repository import Repository
 from entropy.misc import ParallelTask
 from entropy.i18n import _
 
@@ -118,37 +116,22 @@ class UpperNotificationViewController(NotificationViewController):
     but also accepts external NotificationBox instances as well.
     """
 
-    def __init__(self, activity_rwsem, entropy_client, entropy_ws,
-                 rigo_service, avc, notification_box):
+    def __init__(self, entropy_client, entropy_ws,
+                 notification_box):
 
         NotificationViewController.__init__(
             self, notification_box)
 
-        self._avc = avc
-        self._service = rigo_service
-        self._activity_rwsem = activity_rwsem
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
-        self._updates = None
-        self._security_updates = []
 
     def setup(self):
         """
         Reimplemented from NotificationViewController.
         """
-        GLib.timeout_add_seconds(1, self._calculate_updates)
-        GLib.idle_add(self._check_connectivity)
-
-    def _check_connectivity(self):
         th = ParallelTask(self.__check_connectivity)
         th.daemon = True
         th.name = "CheckConnectivity"
-        th.start()
-
-    def _calculate_updates(self):
-        th = ParallelTask(self.__calculate_updates)
-        th.daemon = True
-        th.name = "CalculateUpdates"
         th.start()
 
     def __check_connectivity(self):
@@ -173,41 +156,6 @@ class UpperNotificationViewController(NotificationViewController):
         finally:
             self._entropy.rwsem().reader_release()
 
-    def __order_updates(self, updates):
-        """
-        Order updates using PN.
-        """
-        def _key_func(x):
-            return self._entropy.open_repository(
-                x[1]).retrieveName(x[0]).lower()
-        return sorted(updates, key=_key_func)
-
-    def __calculate_updates(self):
-        #self._activity_rwsem.reader_acquire()
-        self._entropy.rwsem().reader_acquire()
-        try:
-            unavailable_repositories = \
-                self._entropy.unavailable_repositories()
-            if unavailable_repositories:
-                GLib.idle_add(self._notify_unavailable_repositories_safe,
-                              unavailable_repositories)
-                return
-            if Repository.are_repositories_old():
-                GLib.idle_add(self._notify_old_repositories_safe)
-                return
-
-            updates, removal, fine, spm_fine = \
-                self._entropy.calculate_updates()
-            self._updates = self.__order_updates(updates)
-            # this is too slow at the moment (when uncached)
-            #`self._security_updates = \
-            #    self._entropy.calculate_security_updates()
-        finally:
-            self._entropy.rwsem().reader_release()
-            #self._activity_rwsem.reader_release()
-
-        GLib.idle_add(self._notify_updates_safe)
-
     def _notify_connectivity_issues(self):
         """
         Cannot connect to Entropy Web Services.
@@ -215,63 +163,6 @@ class UpperNotificationViewController(NotificationViewController):
         box = ConnectivityNotificationBox()
         self.append(box)
 
-    def _notify_updates_safe(self):
-        """
-        Add NotificationBox signaling the user that updates
-        are available.
-        """
-        updates_len = len(self._updates)
-        if updates_len == 0:
-            # no updates, do not show anything
-            return
-
-        box = UpdatesNotificationBox(
-            self._entropy, self._avc,
-            updates_len, len(self._security_updates))
-        box.connect("upgrade-request", self._on_upgrade)
-        box.connect("show-request", self._on_update_show)
-        self.append(box)
-
-    def _notify_old_repositories_safe(self):
-        """
-        Add a NotificationBox signaling the User that repositories
-        are old..
-        """
-        box = RepositoriesUpdateNotificationBox(
-            self._entropy, self._avc)
-        box.connect("update-request", self._on_update)
-        self.append(box)
-
-    def _notify_unavailable_repositories_safe(self, unavailable):
-        """
-        Add a NotificationBox signaling the User that some repositories
-        are unavailable..
-        """
-        box = RepositoriesUpdateNotificationBox(
-            self._entropy, self._avc, unavailable=unavailable)
-        box.connect("update-request", self._on_update)
-        self.append(box)
-
-    def _on_upgrade(self, box):
-        """
-        Callback requesting Packages Update.
-        """
-        self.remove(box)
-        self._service.upgrade_system()
-
-    def _on_update(self, box):
-        """
-        Callback requesting Repositories Update.
-        """
-        self.remove(box)
-        self._service.update_repositories([], True)
-
-    def _on_update_show(self, *args):
-        """
-        Callback from UpdatesNotification "Show" button.
-        Showing updates.
-        """
-        self._avc.set_many_safe(self._updates)
 
 class BottomNotificationViewController(NotificationViewController):
 

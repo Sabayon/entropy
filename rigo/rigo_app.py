@@ -206,9 +206,12 @@ class Rigo(Gtk.Application):
                                  Gdk.Screen.get_default(),
                                  DATA_DIR)
 
+        self._nc = UpperNotificationViewController(
+            self._entropy, self._entropy_ws, self._notification)
+
         self._avc = ApplicationsViewController(
             self._activity_rwsem,
-            self._entropy, self._entropy_ws, self._service,
+            self._entropy, self._entropy_ws, self._nc, self._service,
             icons, self._not_found_box,
             self._search_entry, self._search_entry_completion,
             self._search_entry_store, self._app_store, self._view)
@@ -216,12 +219,6 @@ class Rigo(Gtk.Application):
         self._avc.connect("view-cleared", self._on_view_cleared)
         self._avc.connect("view-filled", self._on_view_filled)
         self._avc.connect("view-want-change", self._on_view_change)
-
-        self._nc = UpperNotificationViewController(
-            self._activity_rwsem, self._entropy,
-            self._entropy_ws, self._service,
-            self._avc, self._notification)
-        self._avc.set_notification_controller(self._nc)
 
         # Bottom NotificationBox controller.
         # Bottom notifications are only used for
@@ -697,7 +694,9 @@ class Rigo(Gtk.Application):
         self._service.setup(acquired)
         self._easter_eggs()
         self._window.show()
-        self._start_managing()
+        managing = self._start_managing()
+        if not managing:
+            self._service.hello()
 
     def _easter_eggs(self):
         """
@@ -721,6 +720,8 @@ class Rigo(Gtk.Application):
         """
         Start managing applications passed via argv.
         """
+        managing = False
+
         if self._nsargs.install:
             dependency = self._nsargs.install
             task = ParallelTask(
@@ -728,6 +729,7 @@ class Rigo(Gtk.Application):
             task.name = "AppInstall-%s" % (dependency,)
             task.daemon = True
             task.start()
+            managing = True
 
         if self._nsargs.remove:
             dependency = self._nsargs.remove
@@ -736,6 +738,7 @@ class Rigo(Gtk.Application):
             task.name = "AppRemove-%s" % (dependency,)
             task.daemon = True
             task.start()
+            managing = True
 
         if self._nsargs.package:
             path = self._nsargs.package.name
@@ -745,6 +748,9 @@ class Rigo(Gtk.Application):
             task.name = "AppInstallPackage-%s" % (path,)
             task.daemon = True
             task.start()
+            managing = True
+
+        return managing
 
     def run(self):
         """
