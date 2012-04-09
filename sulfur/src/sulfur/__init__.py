@@ -38,7 +38,7 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
-os.environ["ENTROPY_CLIENT_ENABLE_OLD_FILEUPDATES"] = 1
+os.environ["ENTROPY_CLIENT_ENABLE_OLD_FILEUPDATES"] = "1"
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied
 import entropy.tools
