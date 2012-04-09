@@ -4,9 +4,8 @@ Backlog (raw)
 
     rigo:
 
-    - [F] Install support for webinst and entropy packages
-          (see sulfur/misc)
     - [F] Notice Board
+    - [F] move install/removal checks to RigoDaemon
 
     - [F] Preferences:
        - clean metadata cache
