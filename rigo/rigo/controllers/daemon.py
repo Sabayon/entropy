@@ -21,6 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 import time
 from threading import Lock, Semaphore, current_thread
+from collections import deque
 
 import dbus
 
@@ -46,6 +47,7 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 from entropy.const import const_debug_write, \
     const_debug_enabled, etpConst
 from entropy.misc import ParallelTask
+from entropy.exceptions import EntropyPackageException
 
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, brown, darkred, red, blue
@@ -62,6 +64,7 @@ class RigoServiceController(GObject.Object):
     NOTIFICATION_CONTEXT_ID = "RigoServiceControllerContextId"
     ANOTHER_ACTIVITY_CONTEXT_ID = "AnotherActivityNotificationContextId"
     SYSTEM_UPGRADE_CONTEXT_ID = "SystemUpgradeContextId"
+    PKG_INSTALL_CONTEXT_ID = "PackageInstallContextId"
 
     class ServiceNotificationBox(NotificationBox):
 
@@ -169,7 +172,7 @@ class RigoServiceController(GObject.Object):
     _UNSUPPORTED_APPLICATIONS_SIGNAL = "unsupported_applications"
     _RESTARTING_UPGRADE_SIGNAL = "restarting_system_upgrade"
     _CONFIGURATION_UPDATES_SIGNAL = "configuration_updates_available"
-    _SUPPORTED_APIS = [0]
+    _SUPPORTED_APIS = [1]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -191,6 +194,8 @@ class RigoServiceController(GObject.Object):
         self.__entropy_bus_mutex = Lock()
         self._registered_signals = {}
         self._registered_signals_mutex = Lock()
+
+        self._package_repositories = deque()
 
         self._local_transactions = {}
         self._local_activity = LocalActivityStates.READY
@@ -702,6 +707,7 @@ class RigoServiceController(GObject.Object):
             # This way repository in-RAM caches are reset
             # otherwise installed repository metadata becomes
             # inconsistent
+            self._release_local_package_repositories()
             self._release_local_resources(clear_avc=False)
 
             # reset progress bar, we're done with it
@@ -1211,6 +1217,17 @@ class RigoServiceController(GObject.Object):
         task.daemon = True
         task.start()
 
+    def package_install_request(self, package_path, simulate=False):
+        """
+        Start Application Install Action for package file.
+        """
+        task = ParallelTask(self._package_install_request,
+                            package_path, simulate=simulate)
+        task.name = "PackageInstallRequest{%s, %s}" % (
+            package_path, simulate,)
+        task.daemon = True
+        task.start()
+
     def upgrade_system(self, simulate=False):
         """
         Start a System Upgrade.
@@ -1449,6 +1466,22 @@ class RigoServiceController(GObject.Object):
         if sem_data['exc'] is not None:
             raise sem_data['exc']
         return sem_data['res']
+
+    def _release_local_package_repositories(self):
+        """
+        Release all the local package file repositories.
+        """
+        self._entropy.rwsem().writer_acquire()
+        try:
+            while True:
+                try:
+                    repository_id = self._package_repositories.popleft()
+                except IndexError:
+                    break
+                self._entropy.remove_repository(
+                    repository_id)
+        finally:
+            self._entropy.rwsem().writer_release()
 
     def _release_local_resources(self, clear_avc=True):
         """
@@ -1936,8 +1969,12 @@ class RigoServiceController(GObject.Object):
         """
         if app is not None:
             package_id, repository_id = app.get_details().pkg
+            package_path = app.path
         else:
             package_id, repository_id = None, None
+            package_path = None
+        if package_path is None:
+            package_path = ""
 
         sig_match = None
         if busied:
@@ -1999,8 +2036,9 @@ class RigoServiceController(GObject.Object):
                     self._entropy_bus,
                     dbus_interface=self.DBUS_INTERFACE
                     ).enqueue_application_action(
-                    package_id, repository_id, daemon_action,
-                    simulate)
+                        package_id, repository_id,
+                        package_path, daemon_action,
+                        simulate)
             def _enqueue_callback():
                 return self._execute_mainloop(_enqueue)
 
@@ -2062,6 +2100,56 @@ class RigoServiceController(GObject.Object):
         GLib.idle_add(self._applications_managed_signal,
                       DaemonAppTransactionOutcome.SUCCESS,
                       local_activity)
+
+    def _package_install_request(self, package_path, simulate=False):
+        """
+        Forward Application Package Install request to RigoDaemon.
+        """
+        self._entropy.rwsem().writer_acquire()
+        try:
+            package_matches = self._entropy.add_package_repository(
+                package_path)
+        except EntropyPackageException as exc:
+            def _notify():
+                msg = _("Package Install Error: <i>%s</i>") % (exc,)
+                box = self.ServiceNotificationBox(
+                    prepare_markup(msg),
+                    Gtk.MessageType.ERROR,
+                    context_id=self.PKG_INSTALL_CONTEXT_ID)
+                box.add_destroy_button(_("Okay"))
+                self._nc.append(box)
+            GLib.idle_add(_notify)
+            return
+        finally:
+            self._entropy.rwsem().writer_release()
+
+        accepted = False
+        accepted_count = 0
+        repository_ids = set()
+        for package_match in package_matches:
+            pkg_id, pkg_repo = package_match
+            repository_ids.add(pkg_repo)
+            app = Application(self._entropy, self._entropy_ws,
+                              package_match,
+                              package_path=package_path)
+            accepted = self._application_request(
+                app, AppActions.INSTALL, simulate=simulate)
+            if not accepted:
+                break
+            accepted_count += 1
+
+        if accepted_count == 0:
+            self._entropy.rwsem().writer_acquire()
+            try:
+                for repository_id in repository_ids:
+                    self._entropy.remove_repository(
+                        repository_id)
+            finally:
+                self._entropy.rwsem().writer_release()
+        else:
+            for repository_id in repository_ids:
+                self._package_repositories.append(
+                    repository_id)
 
     def _application_request(self, app, app_action, simulate=False,
                              master=True):

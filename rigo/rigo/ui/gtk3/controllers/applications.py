@@ -30,7 +30,8 @@ from rigo.paths import CONF_DIR
 from rigo.enums import RigoViewStates, AppActions
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.utils import escape_markup, prepare_markup
-from rigo.ui.gtk3.widgets.notifications import OrphanedAppsNotificationBox
+from rigo.ui.gtk3.widgets.notifications import \
+    NotificationBox
 
 from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_debug_write, \
@@ -92,6 +93,7 @@ class ApplicationsViewController(GObject.Object):
         self._nf_box = nf_box
         self._not_found_search_box = None
         self._not_found_label = None
+        self._nc = None
 
         self._cacher = EntropyCacher()
         self._search_thread_mutex = Lock()
@@ -100,6 +102,12 @@ class ApplicationsViewController(GObject.Object):
         self._search_completion_model = search_entry_store
         self._search_writeback_mutex = Lock()
         self._search_writeback_thread = None
+
+    def set_notification_controller(self, nc):
+        """
+        Bind a NotificationViewController to this object.
+        """
+        self._nc = nc
 
     def _search_icon_release(self, search_entry, icon_pos, _other):
         """
@@ -178,15 +186,17 @@ class ApplicationsViewController(GObject.Object):
         finally:
             self._entropy.rwsem().reader_release()
 
-    def __simulate_app_install(self, text):
-
+    def install(self, dependency, simulate=False):
+        """
+        Try to match dependency to an Application and then install
+        it, if possible.
+        """
         const_debug_write(
             __name__,
-            "__simulate_app_install: "
-            "%s" % (text,))
+            "install: %s" % (dependency,))
         self._entropy.rwsem().reader_acquire()
         try:
-            pkg_match = self._entropy.atom_match(text)
+            pkg_match = self._entropy.atom_match(dependency)
         finally:
             self._entropy.rwsem().reader_release()
 
@@ -194,60 +204,102 @@ class ApplicationsViewController(GObject.Object):
         if pkg_id == -1:
             const_debug_write(
                 __name__,
-                "__simulate_app_install: "
-                "no match for: %s" % (text,))
+                "install: "
+                "no match for: %s" % (dependency,))
+            def _notify():
+                msg = _("Application <b>%s</b> not found")
+                msg = msg % (dependency,)
+                box = NotificationBox(
+                    prepare_markup(msg), Gtk.MessageType.ERROR,
+                    context_id="AppInstallNotFoundContextId")
+                self._nc.append(box, timeout=10)
+            if self._nc is not None:
+                GLib.idle_add(_notify)
             return
 
         app = Application(
             self._entropy, self._entropy_ws,
             pkg_match)
         self._service.application_request(
-            app, AppActions.INSTALL, simulate=True)
+            app, AppActions.INSTALL, simulate=simulate)
 
         const_debug_write(
             __name__,
-            "__simulate_app_install: "
+            "install: "
             "application_request() sent for: %s, %s" % (
-                text, app,))
+                dependency, app,))
 
-    def __simulate_app_removal(self, text):
+    def install_package(self, package_path, simulate=False):
+        """
+        Install Entropy Package file.
+        """
+        const_debug_write(
+            __name__,
+            "install_package: %s" % (package_path,))
+
+        self._service.package_install_request(
+            package_path, simulate=simulate)
 
         const_debug_write(
             __name__,
-            "__simulate_app_removal: "
-            "%s" % (text,))
+            "install_package: "
+            "package_install_request() sent for: %s" % (
+                package_path,))
+
+    def remove(self, dependency, simulate=False):
+        """
+        Try to match dependency to an Application and then remove
+        it, if possible.
+        """
+        const_debug_write(
+            __name__,
+            "remove: %s" % (dependency,))
         self._entropy.rwsem().reader_acquire()
         try:
-            pkg_match = self._entropy.atom_match(text)
+            inst_repo = self._entropy.installed_repository()
+            pkg_repo = inst_repo.repository_id()
+            pkg_id, rc = inst_repo.atomMatch(dependency)
         finally:
             self._entropy.rwsem().reader_release()
 
-        pkg_id, pkg_repo = pkg_match
         if pkg_id == -1:
             const_debug_write(
                 __name__,
-                "__simulate_app_removal: "
-                "no match for: %s" % (text,))
+                "remove: "
+                "no match for: %s" % (dependency,))
+            def _notify():
+                msg = _("Application <b>%s</b> not found")
+                msg = msg % (dependency,)
+                box = NotificationBox(
+                    prepare_markup(msg), Gtk.MessageType.ERROR,
+                    context_id="AppRemoveNotFoundContextId")
+                self._nc.append(box, timeout=10)
+            if self._nc is not None:
+                GLib.idle_add(_notify)
             return
 
         app = Application(
             self._entropy, self._entropy_ws,
-            pkg_match)
-        app = app.get_installed()
-        if app is None:
-            const_debug_write(
-                __name__,
-                "__simulate_app_removal: "
-                "not installed: %s" % (text,))
-            return
+            (pkg_id, pkg_repo))
         self._service.application_request(
-            app, AppActions.REMOVE, simulate=True)
+            app, AppActions.REMOVE, simulate=simulate)
 
         const_debug_write(
             __name__,
-            "__simulate_app_removal: "
+            "remove: "
             "application_request() sent for: %s, %s" % (
-                text, app,))
+                dependency, app,))
+
+    def upgrade(self, simulate=False):
+        """
+        Launch a System Upgrade activity.
+        """
+        const_debug_write(
+            __name__, "upgrade")
+        self._service.upgrade_system(simulate=simulate)
+        const_debug_write(
+            __name__, "upgrade:"
+            " upgrade_system() sent")
 
     def __simulate_orphaned_apps(self, text):
 
@@ -272,38 +324,34 @@ class ApplicationsViewController(GObject.Object):
             __name__,
             "__simulate_orphaned_apps: completed")
 
-    def __simulate_system_upgrade(self):
-
-        const_debug_write(
-            __name__, "__simulate_system_upgrade")
-        self._service.upgrade_system(simulate=True)
-        const_debug_write(
-            __name__, "__simulate_system_upgrade:"
-            " upgrade_system() sent")
-
     def __search_thread(self, text):
 
         ## special keywords hook
         if text == "rigo:update":
             self._update_repositories_safe()
             return
+        if text == "rigo:upgrade":
+            self.upgrade()
+            return
+        elif text == "rigo:confupdate":
+            self._service.configuration_updates()
+            return
+
+        # debug, simulation
         elif text == "rigo:vte":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE,
                           None)
             return
-        elif text == "rigo:confupdate":
-            self._service.configuration_updates()
-            return
         elif text.startswith("rigo:simulate:i:"):
             sim_str = text[len("rigo:simulate:i:"):].strip()
             if sim_str:
-                self.__simulate_app_install(sim_str)
+                self.install(sim_str, simulate=True)
                 return
         elif text.startswith("rigo:simulate:r:"):
             sim_str = text[len("rigo:simulate:r:"):].strip()
             if sim_str:
-                self.__simulate_app_removal(sim_str)
+                self.remove(sim_str, simulate=True)
                 return
         elif text.startswith("rigo:simulate:o:"):
             sim_str = text[len("rigo:simulate:o:"):].strip()
@@ -311,7 +359,7 @@ class ApplicationsViewController(GObject.Object):
                 self.__simulate_orphaned_apps(sim_str)
                 return
         if text == "rigo:simulate:u":
-            self.__simulate_system_upgrade()
+            self.upgrade(simulate=True)
             return
 
         # serialize searches to avoid segfaults with sqlite3

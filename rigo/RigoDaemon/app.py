@@ -59,7 +59,8 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write
 from entropy.exceptions import DependenciesNotFound, \
-    DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError
+    DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
+    EntropyPackageException
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore, DirectoryMonitor
@@ -367,7 +368,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 0
+    API_VERSION = 1
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -380,10 +381,11 @@ class RigoDaemonService(dbus.service.Object):
 
     class ActionQueueItem(object):
 
-        def __init__(self, package_id, repository_id, action,
-                     simulate, authorized):
+        def __init__(self, package_id, repository_id, package_path,
+                     action, simulate, authorized):
             self._package_id = package_id
             self._repository_id = repository_id
+            self._path = package_path
             self._action = action
             self._simulate = simulate
             self._authorized = authorized
@@ -400,6 +402,12 @@ class RigoDaemonService(dbus.service.Object):
             Return Repository Identifier of package.
             """
             return self._repository_id
+
+        def path(self):
+            """
+            Return Application Package file path, if any.
+            """
+            return self._path
 
         def action(self):
             """
@@ -637,6 +645,12 @@ class RigoDaemonService(dbus.service.Object):
             'org.freedesktop.DBus').GetConnectionUnixUser(
             sender)
 
+    def _dbus_to_unicode(self, dbus_string):
+        """
+        Convert dbus.String() to unicode object
+        """
+        return dbus_string.decode(etpConst['conf_encoding'])
+
     def _authorize(self, pid, action_id):
         """
         Authorize privileged Activity.
@@ -770,6 +784,66 @@ class RigoDaemonService(dbus.service.Object):
                 GLib.idle_add(
                     self.repositories_updated, result, msg)
 
+    def _maybe_setup_package_repository(self, app_item):
+        """
+        Setup the Entropy Repository for the Application in
+        the ActionQueueItem if path() is valid.
+        """
+        path = app_item.path()
+        if app_item.action() == AppActions.INSTALL \
+                and path is not None:
+            write_output("_maybe_setup_package_repository: "
+                         "this is a package file, generating "
+                         "repo", debug=True)
+
+            self._rwsem.writer_acquire()
+            try:
+                pkg_matches = self._entropy.add_package_repository(
+                    path)
+                return pkg_matches, True
+            except EntropyPackageException as err:
+                write_output("_maybe_setup_package_repository: "
+                             "invalid package file, "
+                             "%s" % (err,), debug=True)
+                return None, False
+            except Exception as err:
+                write_output("_maybe_setup_package_repository: "
+                             "error during repository setup (err), "
+                             "%s" % (repr(err),), debug=True)
+                return None, False
+            finally:
+                self._rwsem.writer_release()
+
+        return None, True
+
+    def _maybe_dismantle_package_repository(self, pkg_matches):
+        """
+        Dismantle the Entropy Repository previously configured
+        by _maybe_setup_package_repository()
+        """
+        repository_ids = set((x[1] for x in pkg_matches))
+        write_output(
+            "_maybe_dismantle_package_repository: "
+            "about to acquire rwsem for %s" % (pkg_matches,),
+            debug=True)
+        self._rwsem.writer_acquire()
+        try:
+            write_output(
+                "_maybe_dismantle_package_repository: "
+                "acquired rwsem for %s" % (pkg_matches,),
+                debug=True)
+            for repository_id in repository_ids:
+                try:
+                    self._entropy.remove_repository(repository_id)
+                except Exception as err:
+                    write_output(
+                        "_maybe_dismantle_package_repository: "
+                        "error during repository removal (err), "
+                        "%s" % (repr(err),), debug=True)
+        finally:
+            self._rwsem.writer_release()
+
+
     def _action_queue_worker_thread(self):
         """
         Worker thread that handles Application Action requests
@@ -873,6 +947,15 @@ class RigoDaemonService(dbus.service.Object):
                          "doing %s" % (
                     item,), debug=True)
 
+            # Package file installation support
+            generated = True
+            if is_app:
+                pkg_matches, generated = \
+                    self._maybe_setup_package_repository(item)
+            if not generated:
+                outcome = AppTransactionOutcome.INSTALL_ERROR
+                return
+
             self._rwsem.reader_acquire()
             try:
                 outcome = self._process_action(item, activity, is_app)
@@ -881,6 +964,8 @@ class RigoDaemonService(dbus.service.Object):
                         outcome,), debug=True)
             finally:
                 self._rwsem.reader_release()
+                if is_app and pkg_matches:
+                    self._maybe_dismantle_package_repository(pkg_matches)
 
         finally:
             _action_queue_finally(activity, outcome)
@@ -892,10 +977,12 @@ class RigoDaemonService(dbus.service.Object):
         if is_app:
             package_id, repository_id = item.pkg
             action = item.action()
+            path = item.path()
         else:
             # upgrade
             package_id, repository_id = None, None
             action = None
+            path = None
         simulate = item.simulate()
 
         self._txs.reset()
@@ -905,13 +992,17 @@ class RigoDaemonService(dbus.service.Object):
 
             if is_app:
                 if action == AppActions.REMOVE:
+                    if path is not None:
+                        # error, cannot remove an app from
+                        # package path
+                        return outcome
                     outcome = self._process_remove_action(
                         activity, action, simulate,
                         package_id, repository_id)
                 elif action == AppActions.INSTALL:
                     outcome = self._process_install_action(
                         activity, action, simulate,
-                        package_id, repository_id)
+                        package_id, repository_id, path)
             else:
                 # upgrade
                 outcome = self._process_upgrade_action(
@@ -1192,7 +1283,7 @@ class RigoDaemonService(dbus.service.Object):
             self._entropy.installed_repository().commit()
 
     def _process_install_action(self, activity, action, simulate,
-                                package_id, repository_id):
+                                package_id, repository_id, path):
         """
         Process Application Install Action.
         """
@@ -1760,10 +1851,11 @@ class RigoDaemonService(dbus.service.Object):
         task.start()
         return True
 
-    @dbus.service.method(BUS_NAME, in_signature='issb',
+    @dbus.service.method(BUS_NAME, in_signature='isssb',
         out_signature='b', sender_keyword='sender')
     def enqueue_application_action(self, package_id, repository_id,
-                                   action, simulate, sender=None):
+                                   package_path, action,
+                                   simulate, sender=None):
         """
         Request RigoDaemon to enqueue a new Application Action, if
         possible.
@@ -1771,7 +1863,8 @@ class RigoDaemonService(dbus.service.Object):
         pid = self._get_caller_pid(sender)
         write_output("enqueue_application_action called: "
                      "%s, %s, client pid: %s" % (
-                (package_id, repository_id), action, pid), debug=True)
+                (package_id, repository_id, package_path),
+                action, pid), debug=True)
 
         self._enqueue_action_busy_hold_sem.acquire()
         try:
@@ -1789,15 +1882,27 @@ class RigoDaemonService(dbus.service.Object):
                              "already busy, just enqueue",
                              debug=True)
 
-            def _enqueue():
+            def _enqueue(package_id, repository_id, package_path,
+                         action, simulate):
+
+                if not package_path:
+                    package_path = None
+                else:
+                    self._dbus_to_unicode(package_path)
+                repository_id = self._dbus_to_unicode(repository_id)
+                package_id = int(package_id)
+                simulate = bool(simulate)
+                action = self._dbus_to_unicode(action)
+
                 try:
                     authorized = self._authorize(
                         pid, PolicyActions.MANAGE_APPLICATIONS)
                     item = self.ActionQueueItem(
-                        int(package_id),
-                        str(repository_id),
+                        package_id,
+                        repository_id,
+                        package_path,
                         action,
-                        bool(simulate),
+                        simulate,
                         authorized)
                     self._action_queue.append(item)
                     if authorized:
@@ -1810,7 +1915,9 @@ class RigoDaemonService(dbus.service.Object):
                 finally:
                     self._enqueue_action_busy_hold_sem.release()
 
-            task = ParallelTask(_enqueue)
+            task = ParallelTask(_enqueue, package_id,
+                                repository_id, package_path,
+                                action, simulate)
             task.name = "EnqueueApplicationActionThread"
             task.daemon = True
             task.start()
@@ -2166,7 +2273,7 @@ class RigoDaemonService(dbus.service.Object):
         Load a new ConfigurationFiles object.
         """
         write_output("reload_configuration_updates called", debug=True)
-        def _reload():
+        def _reload(pid):
             authorized = self._authorize(
                 pid, PolicyActions.MANAGE_CONFIGURATION)
             if not authorized:
@@ -2181,7 +2288,9 @@ class RigoDaemonService(dbus.service.Object):
             finally:
                 self._rwsem.reader_release()
 
-        task = ParallelTask(_reload)
+        task = ParallelTask(
+            _reload,
+            self._get_caller_pid(sender))
         task.name = "ReloadConfigurationUpdates"
         task.daemon = True
         task.start()

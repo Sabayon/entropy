@@ -821,11 +821,12 @@ class Application(object):
             return self._licenses
 
     def __init__(self, entropy_client, entropy_ws, package_match,
-                 redraw_callback=None):
+                 redraw_callback=None, package_path=None):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
+        self._path = package_path
         self._redraw_callback = redraw_callback
 
     @property
@@ -842,6 +843,14 @@ class Application(object):
             return escape_markup(name)
         finally:
             self._entropy.rwsem().reader_release()
+
+    @property
+    def path(self):
+        """
+        If this Application comes from a single package file,
+        return the package path.
+        """
+        return self._path
 
     def is_installed(self):
         """
@@ -1102,9 +1111,15 @@ class Application(object):
 
             return app_install, app_remove
 
-        except DependenciesNotFound:
+        except DependenciesNotFound as err:
+            const_debug_write(
+                __name__,
+                "get_install_queue: DependenciesNotFound: %s" % (err,))
             return None
-        except DependenciesCollision:
+        except DependenciesCollision as err:
+            const_debug_write(
+                __name__,
+                "get_install_queue: DependenciesCollision: %s" % (err,))
             return None
 
         finally:

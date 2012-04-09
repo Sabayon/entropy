@@ -21,6 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 
 import os
+import argparse
 
 # entropy.i18n will pick this up
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
@@ -220,6 +221,7 @@ class Rigo(Gtk.Application):
             self._activity_rwsem, self._entropy,
             self._entropy_ws, self._service,
             self._avc, self._notification)
+        self._avc.set_notification_controller(self._nc)
 
         # Bottom NotificationBox controller.
         # Bottom notifications are only used for
@@ -264,7 +266,7 @@ class Rigo(Gtk.Application):
         If --dumper is in argv, a recurring thread dump
         function will be spawned every 30 seconds.
         """
-        dumper_enable = "--no-dumper" not in sys.argv
+        dumper_enable = self._nsargs.dumper
         if dumper_enable:
             task = None
 
@@ -658,6 +660,34 @@ class Rigo(Gtk.Application):
             Gtk.main_quit()
             return
 
+        parser = argparse.ArgumentParser(
+            description=_("Rigo Application Browser"))
+        parser.add_argument(
+            "--package", type=file,
+            metavar="<path>", help="package path")
+        parser.add_argument(
+            "--install",
+            metavar="<dep string>", help="install given dependency")
+        parser.add_argument(
+            "--remove",
+            metavar="<dep string>", help="remove given dependency")
+        parser.add_argument(
+            "--dumper", help="enable the main thread dumper (debug)",
+            action="store_true", default=False)
+        parser.add_argument(
+            "--debug", help="enable Entropy Library debug mode",
+            action="store_true", default=False)
+        try:
+            self._nsargs = parser.parse_args(sys.argv[1:])
+        except IOError as err:
+            self._show_ok_dialog(
+                None,
+                escape_markup(_("Rigo")),
+                escape_markup("%s" % (err,)))
+            entropy.tools.kill_threads()
+            Gtk.main_quit()
+            return
+
         self._thread_dumper()
         self._config_view_c.setup()
         self._app_view_c.setup()
@@ -667,6 +697,7 @@ class Rigo(Gtk.Application):
         self._service.setup(acquired)
         self._easter_eggs()
         self._window.show()
+        self._start_managing()
 
     def _easter_eggs(self):
         """
@@ -685,6 +716,35 @@ class Rigo(Gtk.Application):
                 context_id="EasterEggs")
             box.add_destroy_button(_("Woot, thanks"))
             self._nc.append(box)
+
+    def _start_managing(self):
+        """
+        Start managing applications passed via argv.
+        """
+        if self._nsargs.install:
+            dependency = self._nsargs.install
+            task = ParallelTask(
+                self._avc.install, dependency)
+            task.name = "AppInstall-%s" % (dependency,)
+            task.daemon = True
+            task.start()
+
+        if self._nsargs.remove:
+            dependency = self._nsargs.remove
+            task = ParallelTask(
+                self._avc.remove, dependency)
+            task.name = "AppRemove-%s" % (dependency,)
+            task.daemon = True
+            task.start()
+
+        if self._nsargs.package:
+            path = self._nsargs.package.name
+            self._nsargs.package.close() # no need, unfortunately
+            task = ParallelTask(
+                self._avc.install_package, path)
+            task.name = "AppInstallPackage-%s" % (path,)
+            task.daemon = True
+            task.start()
 
     def run(self):
         """
