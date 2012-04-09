@@ -22,4 +22,7 @@ install:
 	install -m 644 desktop/rigo.desktop \
 		$(DESTDIR)$(PREFIX)/share/applications/
 
+	install -d $(DESTDIR)/usr/share/mime/packages/
+	install -m 644 desktop/rigo-mimetypes.xml $(DESTDIR)/usr/share/mime/packages/
+
 clean:
