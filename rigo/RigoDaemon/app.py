@@ -1895,8 +1895,39 @@ class RigoDaemonService(dbus.service.Object):
                         GLib.idle_add(self.updates_available,
                                       update, remove)
 
+                    notices = []
+                    for repository in self._entropy.repositories():
+                        notice = self._entropy.get_noticeboard(
+                            repository)
+                        if not notice:
+                            continue
+                        notices.append((repository, notice))
+
+                    notices = \
+                        self._dbus_prepare_noticeboard_metadata(
+                            notices)
+                    if notices:
+                        GLib.idle_add(self.noticeboards_available,
+                                      notices)
+
                 finally:
                     self._release_shared()
+
+    def _dbus_prepare_noticeboard_metadata(self, notices):
+        """
+        Prepare Notice Board repositories metadata for sending
+        through dbus.
+        """
+        outcome = []
+        for repository, notice in notices:
+            for notice_id, data in notice.items():
+                obj = (repository, notice_id,
+                       data['guid'],
+                       data['link'], data['title'],
+                       data['description'],
+                       data['pubDate'])
+                outcome.append(obj)
+        return outcome
 
     ### DBUS METHODS
 
@@ -2616,6 +2647,17 @@ class RigoDaemonService(dbus.service.Object):
         write_output("application_processed(): %d,"
                      "%s, action: %s, outcome: %s" % (
                 package_id, repository_id, action, app_outcome,),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='a(sisssss)')
+    def noticeboards_available(self, notices):
+        """
+        Signal all the connected Clients that notice boards are
+        available. It's up to the receiver to filter relevant
+        information.
+        """
+        write_output("noticeboards_available(): %s" % (locals(),),
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
