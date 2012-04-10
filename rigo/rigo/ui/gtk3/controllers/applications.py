@@ -463,7 +463,7 @@ class ApplicationsViewController(GObject.Object):
         """
         Spawn Repository Update on RigoDaemon
         """
-        self._service.update_repositories([], True)
+        self._service.update_repositories([], False)
 
     def _update_repositories_safe(self):
         """

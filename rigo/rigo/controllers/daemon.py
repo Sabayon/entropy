@@ -840,7 +840,7 @@ class RigoServiceController(GObject.Object):
         if self._nc is not None and self._avc is not None:
             def _on_update(box):
                 self._nc.remove(box)
-                self.update_repositories([], True)
+                self.update_repositories([], False)
 
             box = RepositoriesUpdateNotificationBox(
                 self._entropy, self._avc)
