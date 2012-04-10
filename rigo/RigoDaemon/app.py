@@ -1871,7 +1871,12 @@ class RigoDaemonService(dbus.service.Object):
         """
         Send connected clients several welcome signals.
         """
-        with self._greetings_serializer:
+        acquired = False
+        try:
+            acquired = self._greetings_serializer.acquire(False)
+            if not acquired:
+                return
+
             with self._activity_mutex:
                 self._acquire_shared()
                 try:
@@ -1912,6 +1917,9 @@ class RigoDaemonService(dbus.service.Object):
 
                 finally:
                     self._release_shared()
+        finally:
+            if acquired:
+                self._greetings_serializer.release()
 
     def _dbus_prepare_noticeboard_metadata(self, notices):
         """
