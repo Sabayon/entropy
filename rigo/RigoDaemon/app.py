@@ -1549,6 +1549,10 @@ class RigoDaemonService(dbus.service.Object):
                 pkg.kill()
                 del pkg
 
+                if self._interrupt_activity:
+                    _outcome = AppTransactionOutcome.PERMISSION_DENIED
+                    return _count, total, _outcome
+
         finally:
             self._record_download(download_map)
 
@@ -1672,6 +1676,10 @@ class RigoDaemonService(dbus.service.Object):
                     self.application_processed,
                     package_id, repository_id, action,
                     AppTransactionOutcome.SUCCESS)
+
+                if self._interrupt_activity:
+                    outcome = AppTransactionOutcome.PERMISSION_DENIED
+                    return outcome
 
             outcome = AppTransactionOutcome.SUCCESS
             return outcome
