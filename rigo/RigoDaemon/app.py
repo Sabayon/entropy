@@ -1891,8 +1891,12 @@ class RigoDaemonService(dbus.service.Object):
                     self._close_local_resources()
                     self._entropy_setup()
 
-                    unavailable_repositories = \
-                        self._entropy.unavailable_repositories()
+                    self._rwsem.reader_acquire()
+                    try:
+                        unavailable_repositories = \
+                            self._entropy.unavailable_repositories()
+                    finally:
+                        self._rwsem.reader_release()
                     if unavailable_repositories:
                         GLib.idle_add(
                             self.unavailable_repositories,
@@ -1901,33 +1905,63 @@ class RigoDaemonService(dbus.service.Object):
                     if Repository.are_repositories_old():
                         GLib.idle_add(self.old_repositories)
 
-                    # signal updates available
-                    update, remove, fine, spm_fine = \
-                        self._entropy.calculate_updates()
-                    if update or remove:
-                        GLib.idle_add(self.updates_available,
-                                      update, remove)
+                    self._rwsem.reader_acquire()
+                    try:
+                        # signal updates available
+                        update, remove, fine, spm_fine = \
+                            self._entropy.calculate_updates()
+                        if update or remove:
+                            GLib.idle_add(self.updates_available,
+                                          update, remove)
+                    finally:
+                        self._rwsem.reader_release()
 
-                    notices = []
-                    for repository in self._entropy.repositories():
-                        notice = self._entropy.get_noticeboard(
-                            repository)
-                        if not notice:
-                            continue
-                        notices.append((repository, notice))
-
-                    notices = \
-                        self._dbus_prepare_noticeboard_metadata(
-                            notices)
-                    if notices:
-                        GLib.idle_add(self.noticeboards_available,
-                                      notices)
+                    self._maybe_signal_noticeboards_available_unlocked()
 
                 finally:
                     self._release_shared()
         finally:
             if acquired:
                 self._greetings_serializer.release()
+
+    def _maybe_signal_noticeboards_available_unlocked(self):
+        """
+        Unlocked version (no shared nor exclusive Entropy
+        Resources Lock acquired, no activity mutex acquired)
+        of _maybe_signal_noticeboards_available()
+        """
+        self._rwsem.reader_acquire()
+        try:
+            notices = []
+            for repository in self._entropy.repositories():
+                notice = self._entropy.get_noticeboard(
+                    repository)
+                if not notice:
+                    continue
+                notices.append((repository, notice))
+        finally:
+            self._rwsem.reader_release()
+
+        if notices:
+            GLib.idle_add(
+                self.noticeboards_available,
+                self._dbus_prepare_noticeboard_metadata(
+                    notices)
+                )
+
+    def _maybe_signal_noticeboards_available(self):
+        """
+        Signal (as soon as RigoDaemon can) the availability
+        of NoticeBoards among configured repositories.
+        """
+        with self._activity_mutex:
+            self._acquire_shared()
+            try:
+                self._close_local_resources()
+                self._entropy_setup()
+                self._maybe_signal_noticeboards_available_unlocked()
+            finally:
+                self._release_shared()
 
     def _dbus_prepare_noticeboard_metadata(self, notices):
         """
@@ -2381,8 +2415,8 @@ class RigoDaemonService(dbus.service.Object):
         out_signature='', sender_keyword='sender')
     def configuration_updates(self, sender=None):
         """
-        Return the last generated (if any, or create a new one)
-        ConfigurationFiles object.
+        Request RigoDaemon to signal for configuration file
+        updates, if any.
         """
         write_output("configuration_updates called", debug=True)
         def _signal(pid):
@@ -2396,6 +2430,21 @@ class RigoDaemonService(dbus.service.Object):
             _signal,
             self._get_caller_pid(sender))
         task.name = "ConfigurationUpdatesSignal"
+        task.daemon = True
+        task.start()
+
+    @dbus.service.method(BUS_NAME, in_signature='',
+        out_signature='')
+    def noticeboards(self):
+        """
+        Request RigoDaemon to signal for noticeboards
+        data, if any.
+        """
+        write_output("noticeboards called", debug=True)
+
+        task = ParallelTask(
+            self._maybe_signal_noticeboards_available)
+        task.name = "NoticeboardsAvailableSignal"
         task.daemon = True
         task.start()
 

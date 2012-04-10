@@ -67,6 +67,8 @@
 
     <method name="reload_configuration_updates"/>
 
+    <method name="noticeboards"/>
+
     <method name="action">
        <arg name="package_id" type="i" direction="in"/>
        <arg name="repository_id" type="s" direction="in"/>

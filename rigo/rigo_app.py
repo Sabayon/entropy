@@ -43,6 +43,7 @@ from rigo.enums import RigoViewStates, LocalActivityStates
 from rigo.entropyapi import EntropyWebService, EntropyClient as Client
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
+from rigo.ui.gtk3.widgets.noticeboardtreeview import NoticeBoardTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 from rigo.ui.gtk3.controllers.applications import \
     ApplicationsViewController
@@ -50,6 +51,8 @@ from rigo.ui.gtk3.controllers.application import \
     ApplicationViewController
 from rigo.ui.gtk3.controllers.confupdate import \
     ConfigUpdatesViewController
+from rigo.ui.gtk3.controllers.noticeboard import \
+    NoticeBoardViewController
 
 from rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
@@ -58,6 +61,7 @@ from rigo.ui.gtk3.controllers.work import \
 from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
+from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
 from rigo.utils import escape_markup
@@ -117,7 +121,10 @@ class Rigo(Gtk.Application):
                 self._exit_work_state),
             RigoViewStates.CONFUPDATES_VIEW_STATE: (
                 self._enter_confupdates_state,
-                self._exit_confupdates_state,)
+                self._exit_confupdates_state),
+            RigoViewStates.NOTICEBOARD_VIEW_STATE: (
+                self._enter_noticeboard_state,
+                self._exit_noticeboard_state)
         }
         self._state_mutex = Lock()
 
@@ -149,6 +156,11 @@ class Rigo(Gtk.Application):
             "configViewScrolledWindow")
         self._config_view = self._builder.get_object("configViewVbox")
         self._config_view.set_name("rigo-view")
+
+        self._notice_scrolled_view = self._builder.get_object(
+            "noticeViewScrolledWindow")
+        self._notice_view = self._builder.get_object("noticeViewVbox")
+        self._notice_view.set_name("rigo-view")
 
         self._search_entry = self._builder.get_object("searchEntry")
         self._search_entry_completion = self._builder.get_object(
@@ -197,6 +209,19 @@ class Rigo(Gtk.Application):
 
         self._service.set_configuration_controller(self._config_view_c)
 
+        # NoticeBoard model, view and controller
+        self._notice_store = NoticeBoardListStore()
+        self._view_notice = NoticeBoardTreeView(
+            icons, NoticeBoardListStore.ICON_SIZE)
+        self._notice_scrolled_view.add(self._view_notice)
+        def _notice_queue_draw(*args):
+            self._view_notice.queue_draw()
+        self._notice_store.connect("redraw-request", _notice_queue_draw)
+        self._notice_view_c = NoticeBoardViewController(
+            self._notice_store, self._view_notice)
+
+        self._service.set_noticeboard_controller(self._notice_view_c)
+
         self._welcome_box = WelcomeBox()
 
         settings = Gtk.Settings.get_default()
@@ -237,6 +262,9 @@ class Rigo(Gtk.Application):
 
         self._config_view_c.set_notification_controller(self._nc)
         self._config_view_c.set_applications_controller(self._avc)
+
+        self._notice_view_c.set_notification_controller(self._nc)
+        self._notice_view_c.set_applications_controller(self._avc)
 
         self._service.set_applications_controller(self._avc)
         self._service.set_application_controller(self._app_view_c)
@@ -412,6 +440,20 @@ class Rigo(Gtk.Application):
         state (or mode).
         """
         self._config_view.show()
+
+    def _exit_noticeboard_state(self):
+        """
+        Action triggered when UI exits the NoticeBoard
+        state (or mode).
+        """
+        self._notice_view.hide()
+
+    def _enter_noticeboard_state(self):
+        """
+        Action triggered when UI enters the NoticeBoard
+        state (or mode).
+        """
+        self._notice_view.show()
 
     def _exit_static_state(self):
         """
@@ -690,6 +732,7 @@ class Rigo(Gtk.Application):
 
         self._thread_dumper()
         self._config_view_c.setup()
+        self._notice_view_c.setup()
         self._app_view_c.setup()
         self._avc.setup()
         self._nc.setup()

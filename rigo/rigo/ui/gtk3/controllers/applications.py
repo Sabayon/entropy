@@ -330,6 +330,9 @@ class ApplicationsViewController(GObject.Object):
         elif text == "rigo:confupdate":
             self._service.configuration_updates()
             return
+        elif text == "rigo:notice":
+            self._service.noticeboards()
+            return
 
         # debug, simulation
         elif text == "rigo:vte":

@@ -1012,3 +1012,58 @@ class ConfigUpdatesNotificationBox(NotificationBox):
         This NotificationBox cannot be destroyed easily.
         """
         return True
+
+
+class NoticeBoardNotificationBox(NotificationBox):
+
+    __gsignals__ = {
+        "let-me-see" : (GObject.SignalFlags.RUN_LAST,
+                        None,
+                        tuple(),
+                        ),
+        "stop-annoying" : (GObject.SignalFlags.RUN_LAST,
+                           None,
+                           tuple(),
+                           ),
+    }
+
+    def __init__(self, avc, notices_len):
+
+        msg = ngettext("There is <b>%d</b> notice from a repository",
+                       "There are <b>%d</b> notices from repositories",
+                       notices_len)
+        msg = msg % (notices_len,)
+
+        msg += ".\n\n<small>"
+        msg += _("It is <b>extremely</b> important to"
+                 " always read them.")
+        msg += "</small>"
+
+        context_id = "NoticeBoardNotificationContextId"
+        NotificationBox.__init__(
+            self, prepare_markup(msg),
+            message_type=Gtk.MessageType.INFO,
+            context_id=context_id)
+
+        self.add_button(_("Let me see"), self._on_let_me_see)
+        self.add_button(_("Stop annoying me"), self._on_stop_annoying)
+        self.add_destroy_button(_("Close"))
+
+    def _on_stop_annoying(self, widget):
+        """
+        Stop showing this notification box as long as there are no
+        upstream updates.
+        """
+        self.emit("stop-annoying")
+
+    def _on_let_me_see(self, widget):
+        """
+        Show the proposed configuration file updates
+        """
+        self.emit("let-me-see")
+
+    def is_managed(self):
+        """
+        This NotificationBox cannot be destroyed easily.
+        """
+        return True

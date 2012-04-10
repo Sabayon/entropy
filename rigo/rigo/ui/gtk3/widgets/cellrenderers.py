@@ -69,6 +69,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.apptitle_width = 0
         self.apptitle_height = 0
+        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
         self.show_ratings = show_ratings
@@ -341,7 +342,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         if not pkg_match:
             return
 
-        self.model = widget.appmodel
+        self.model = widget.model
         app = self.model.get_application(pkg_match)
 
         context = widget.get_style_context()
@@ -432,6 +433,7 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.title_width = 0
         self.title_height = 0
+        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
 
@@ -582,7 +584,7 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
         if not cu:
             return
 
-        self.model = widget.confmodel
+        self.model = widget.model
         context = widget.get_style_context()
         xpad = self.get_property('xpad')
         ypad = self.get_property('ypad')
@@ -597,6 +599,228 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
                           is_rtl)
 
         self._render_summary(context, cr, cu,
+                             cell_area,
+                             layout,
+                             xpad, ypad,
+                             is_rtl)
+
+        # below is the stuff that is only done for the active cell
+        if not self.props.isactive:
+            return
+
+        self._render_buttons(context, cr,
+                             cell_area,
+                             layout,
+                             xpad, ypad,
+                             is_rtl)
+
+        context.restore()
+
+
+class CellRendererNoticeView(Gtk.CellRendererText):
+
+    _ICON = None
+    _ICON_MUTEX = Lock()
+
+    __gproperties__ = {
+        'notice' : (GObject.TYPE_PYOBJECT, 'document',
+                    'a Notice object',
+                    GObject.PARAM_READWRITE),
+
+        'isactive'    : (bool,'isactive', 'is cell active/selected', False,
+                         GObject.PARAM_READWRITE),
+                     }
+
+    def __init__(self, icons, icon_size, layout):
+        GObject.GObject.__init__(self)
+
+        # Icons
+        self._icons = icons
+        self._icon_size = icon_size
+
+        # geometry-state values
+        self.pixbuf_width = 0
+        self.title_width = 0
+        self.title_height = 0
+        self.markup_height = 0
+        self.normal_height = 0
+        self.selected_height = 0
+
+        # button packing
+        self.button_spacing = 0
+        self._buttons = {Gtk.PackType.START: [],
+                         Gtk.PackType.END:   []}
+        self._all_buttons = {}
+
+        # cache a layout
+        self._layout = layout
+
+    @property
+    def _icon(self):
+        if CellRendererNoticeView._ICON is not None:
+            return CellRendererNoticeView._ICON
+        with CellRendererNoticeView._ICON_MUTEX:
+            if CellRendererNoticeView._ICON is not None:
+                return CellRendererNoticeView._ICON
+            _icon = self._icons.load_icon(
+                Icons.CONFIGURATION_FILE,
+                self._icon_size, 0)
+            CellRendererNoticeView._ICON = _icon
+            return _icon
+
+    def _layout_get_pixel_width(self, layout):
+        return layout.get_size()[0] / Pango.SCALE
+
+    def _layout_get_pixel_height(self, layout):
+        return layout.get_size()[1] / Pango.SCALE
+
+    def _render_icon(self, cr, cu, cell_area, xpad, ypad, is_rtl):
+
+        icon = self._icon
+        xo = (self.pixbuf_width - icon.get_width())/2
+
+        if not is_rtl:
+            x = cell_area.x + xo + xpad
+        else:
+            x = cell_area.x + cell_area.width + xo - \
+                self.pixbuf_width - xpad
+        y = cell_area.y + ypad
+
+        Gdk.cairo_set_source_pixbuf(cr, icon, x, y)
+        cr.paint()
+
+    def _calculate_height(self, markup):
+        l = Gtk.Label()
+        l.set_markup(markup)
+        w, h = l.get_layout().get_size()
+        return h / Pango.SCALE
+
+    def _render_summary(self, context, cr, cu,
+                        cell_area, layout, xpad, ypad,
+                        is_rtl):
+
+        markup = cu.get_markup()
+        self.markup_height = self._calculate_height(markup)
+        
+
+        layout.set_markup(markup, -1)
+
+        # work out max allowable layout width
+        layout.set_width(-1)
+        lw = self._layout_get_pixel_width(layout)
+        max_layout_width = (cell_area.width - self.pixbuf_width -
+                            3 * xpad)
+        max_layout_width = cell_area.width - self.pixbuf_width - 3 * xpad
+
+        if lw >= max_layout_width:
+            layout.set_width((max_layout_width)*Pango.SCALE)
+            layout.set_ellipsize(Pango.EllipsizeMode.MIDDLE)
+            lw = max_layout_width
+
+        self.title_width = cell_area.width - self.pixbuf_width - \
+            10 * xpad
+        self.title_height = Ems.EM
+
+        if not is_rtl:
+            x = cell_area.x+2*xpad+self.pixbuf_width
+        else:
+            x = cell_area.x+cell_area.width-lw-self.pixbuf_width-2*xpad
+
+        y = cell_area.y + ypad
+
+        Gtk.render_layout(context, cr, x, y, layout)
+
+    def _render_buttons(
+        self, context, cr, cell_area, layout, xpad, ypad, is_rtl):
+
+        # layout buttons and paint
+        y = cell_area.y + cell_area.height - ypad
+        spacing = self.button_spacing
+
+        if not is_rtl:
+            start = Gtk.PackType.START
+            end = Gtk.PackType.END
+            xs = cell_area.x + 2*xpad + self.pixbuf_width
+            xb = cell_area.x + cell_area.width - xpad
+        else:
+            start = Gtk.PackType.END
+            end = Gtk.PackType.START
+            xs = cell_area.x + xpad
+            xb = cell_area.x + cell_area.width - 2*xpad - \
+                self.pixbuf_width
+
+        for btn in self._buttons[start]:
+            btn.set_position(xs, y-btn.height)
+            btn.render(context, cr, layout)
+            xs += btn.width + spacing
+
+        for btn in self._buttons[end]:
+            xb -= btn.width
+            btn.set_position(xb, y-btn.height)
+            btn.render(context, cr, layout)
+
+            xb -= spacing
+
+    def set_pixbuf_width(self, w):
+        self.pixbuf_width = w
+
+    def set_button_spacing(self, spacing):
+        self.button_spacing = spacing
+
+    def get_button_by_name(self, name):
+        if name in self._all_buttons:
+            return self._all_buttons[name]
+
+    def get_buttons(self):
+        btns = ()
+        for k, v in self._buttons.items():
+            btns += tuple(v)
+        return btns
+
+    def button_pack(self, btn, pack_type=Gtk.PackType.START):
+        self._buttons[pack_type].append(btn)
+        self._all_buttons[btn.name] = btn
+
+    def button_pack_start(self, btn):
+        self.button_pack(btn, Gtk.PackType.START)
+
+    def button_pack_end(self, btn):
+        self.button_pack(btn, Gtk.PackType.END)
+
+    def do_set_property(self, pspec, value):
+        setattr(self, pspec.name, value)
+
+    def do_get_property(self, pspec):
+        return getattr(self, pspec.name)
+
+    def do_get_preferred_height_for_width(self, treeview, width):
+        if not self.get_properties("isactive")[0]:
+            return self.normal_height, self.normal_height
+        return self.selected_height, self.selected_height
+
+    def do_render(self, cr, widget, bg_area, cell_area, flags):
+        notice = self.props.notice
+        if not notice:
+            return
+
+        widget._calc_row_heights(self)
+        
+
+        self.model = widget.model
+        context = widget.get_style_context()
+        xpad = self.get_property('xpad')
+        ypad = self.get_property('ypad')
+        is_rtl = widget.get_direction() == Gtk.TextDirection.RTL
+
+        layout = self._layout
+        context.save()
+
+        self._render_icon(cr, notice,
+                          cell_area,
+                          xpad, ypad,
+                          is_rtl)
+
+        self._render_summary(context, cr, notice,
                              cell_area,
                              layout,
                              xpad, ypad,

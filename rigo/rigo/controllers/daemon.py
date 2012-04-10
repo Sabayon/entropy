@@ -31,6 +31,7 @@ from rigo.enums import AppActions, RigoViewStates, \
     LocalActivityStates
 from rigo.models.application import Application
 from rigo.models.configupdate import ConfigUpdate
+from rigo.models.noticeboard import Notice
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
@@ -176,6 +177,7 @@ class RigoServiceController(GObject.Object):
     _UPDATES_AVAILABLE_SIGNAL = "updates_available"
     _UNAVAILABLE_REPOSITORIES_SIGNAL = "unavailable_repositories"
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
+    _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
     _SUPPORTED_APIS = [2]
 
     def __init__(self, rigo_app, activity_rwsem,
@@ -185,6 +187,7 @@ class RigoServiceController(GObject.Object):
         self._activity_rwsem = activity_rwsem
         self._nc = None
         self._confc = None
+        self._notc = None
         self._bottom_nc = None
         self._wc = None
         self._avc = None
@@ -251,6 +254,12 @@ class RigoServiceController(GObject.Object):
         Bind a ConfigUpdatesViewController object to this class.
         """
         self._confc = confc
+
+    def set_noticeboard_controller(self, notc):
+        """
+        Bind a NoticeBoardViewController object to this class.
+        """
+        self._notc = notc
 
     def set_terminal(self, terminal):
         """
@@ -509,6 +518,12 @@ class RigoServiceController(GObject.Object):
                 self.__entropy_bus.connect_to_signal(
                     self._OLD_REPOSITORIES_SIGNAL,
                     self._old_repositories_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon tells us that noticeboards are available
+                self.__entropy_bus.connect_to_signal(
+                    self._NOTICEBOARDS_AVAILABLE_SIGNAL,
+                    self._noticeboards_available_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
             return self.__entropy_bus
@@ -832,6 +847,25 @@ class RigoServiceController(GObject.Object):
                 self._entropy, self._avc, unavailable=repositories)
             box.connect("update-request", _on_update)
             self._nc.append(box)
+
+    def _noticeboards_available_signal(self, notices):
+        const_debug_write(
+            __name__,
+            "_noticeboards_available_signal: called")
+        if self._nc is not None and self._notc is not None:
+            notice_boards = []
+            for repository, notice_id, guid, link, title, desc, date in notices:
+                data = {
+                    'guid': guid,
+                    'link': link,
+                    'title': title,
+                    'description': desc,
+                    'pubDate': date
+                }
+                nb = Notice(repository, notice_id, data)
+                notice_boards.append(nb)
+            if notice_boards:
+                self._notc.notify_notices(notice_boards)
 
     def _old_repositories_signal(self):
         const_debug_write(
@@ -1354,6 +1388,17 @@ class RigoServiceController(GObject.Object):
                 dbus_interface=self.DBUS_INTERFACE
                 ).configuration_updates()
         return self._execute_mainloop(_config)
+
+    def noticeboards(self):
+        """
+        Request Repositories NoticeBoards.
+        """
+        def _notice():
+            dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).noticeboards()
+        return self._execute_mainloop(_notice)
 
     def merge_configuration(self, source, reply_handler=None,
                             error_handler=None):
