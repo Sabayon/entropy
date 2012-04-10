@@ -1964,6 +1964,42 @@ class RigoDaemonService(dbus.service.Object):
         task.start()
         return True
 
+    def _enqueue_application_action_internal(
+        self, pid, package_id, repository_id, package_path,
+        action, simulate):
+        """
+        Internal enqueue_application_action() function.
+        """
+        try:
+            if not package_path:
+                package_path = None
+            else:
+                self._dbus_to_unicode(package_path)
+            repository_id = self._dbus_to_unicode(repository_id)
+            package_id = int(package_id)
+            simulate = bool(simulate)
+            action = self._dbus_to_unicode(action)
+
+            authorized = self._authorize(
+                pid, PolicyActions.MANAGE_APPLICATIONS)
+            item = self.ActionQueueItem(
+                package_id,
+                repository_id,
+                package_path,
+                action,
+                simulate,
+                authorized)
+            self._action_queue.append(item)
+            if authorized:
+                with self._action_queue_length_mutex:
+                    self._action_queue_length += 1
+                GLib.idle_add(
+                    self.application_enqueued,
+                    package_id, repository_id, action)
+            self._action_queue_waiter.release()
+        finally:
+            self._enqueue_action_busy_hold_sem.release()
+
     @dbus.service.method(BUS_NAME, in_signature='isssb',
         out_signature='b', sender_keyword='sender')
     def enqueue_application_action(self, package_id, repository_id,
@@ -1995,42 +2031,10 @@ class RigoDaemonService(dbus.service.Object):
                              "already busy, just enqueue",
                              debug=True)
 
-            def _enqueue(package_id, repository_id, package_path,
-                         action, simulate):
-
-                if not package_path:
-                    package_path = None
-                else:
-                    self._dbus_to_unicode(package_path)
-                repository_id = self._dbus_to_unicode(repository_id)
-                package_id = int(package_id)
-                simulate = bool(simulate)
-                action = self._dbus_to_unicode(action)
-
-                try:
-                    authorized = self._authorize(
-                        pid, PolicyActions.MANAGE_APPLICATIONS)
-                    item = self.ActionQueueItem(
-                        package_id,
-                        repository_id,
-                        package_path,
-                        action,
-                        simulate,
-                        authorized)
-                    self._action_queue.append(item)
-                    if authorized:
-                        with self._action_queue_length_mutex:
-                            self._action_queue_length += 1
-                        GLib.idle_add(
-                            self.application_enqueued,
-                            package_id, repository_id, action)
-                    self._action_queue_waiter.release()
-                finally:
-                    self._enqueue_action_busy_hold_sem.release()
-
-            task = ParallelTask(_enqueue, package_id,
-                                repository_id, package_path,
-                                action, simulate)
+            task = ParallelTask(
+                self._enqueue_application_action_internal,
+                pid, package_id, repository_id, package_path,
+                action, simulate)
             task.name = "EnqueueApplicationActionThread"
             task.daemon = True
             task.start()
