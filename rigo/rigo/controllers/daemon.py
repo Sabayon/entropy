@@ -956,6 +956,9 @@ class RigoServiceController(GObject.Object):
         self.emit("repositories-updated",
                   result, message)
 
+        # send hello again in order to receive new update info
+        self.hello()
+
         const_debug_write(
             __name__,
             "_repositories_updated_signal: repositories-updated")
