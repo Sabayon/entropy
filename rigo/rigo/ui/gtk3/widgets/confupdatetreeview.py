@@ -339,8 +339,10 @@ class ConfigUpdatesTreeView(Gtk.TreeView):
             self.emit("show-diff", path, cu)
         elif btn_id == ConfigUpdateCellButtonIDs.MERGE:
             self.emit("source-merge", path, cu)
+            self.expanded_path = None
         elif btn_id == ConfigUpdateCellButtonIDs.DISCARD:
             self.emit("source-discard", path, cu)
+            self.expanded_path = None
         return False
 
     def _set_cursor(self, btn, cursor):

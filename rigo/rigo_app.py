@@ -192,6 +192,9 @@ class Rigo(Gtk.Application):
         self._config_store.connect("redraw-request", _config_queue_draw)
         self._config_view_c = ConfigUpdatesViewController(
             self._entropy, self._config_store, self._view_config)
+        self._config_view_c.connect(
+            "view-cleared", self._on_view_cleared)
+
         self._service.set_configuration_controller(self._config_view_c)
 
         self._welcome_box = WelcomeBox()

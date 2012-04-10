@@ -20,6 +20,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import GObject, Gtk, GLib
 
+from threading import Lock
+
 from rigo.ui.gtk3.widgets.notifications import \
     ConfigUpdatesNotificationBox, NotificationBox
 from rigo.utils import prepare_markup
@@ -30,6 +32,19 @@ from entropy.misc import ParallelTask
 
 class ConfigUpdatesViewController(GObject.Object):
 
+    __gsignals__ = {
+        # View has been cleared
+        "view-cleared" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          tuple(),
+                          ),
+        # View has been filled
+        "view-filled" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          tuple(),
+                          ),
+    }
+
     def __init__(self, entropy_client, config_store, config_view):
         GObject.Object.__init__(self)
         self._entropy = entropy_client
@@ -37,6 +52,8 @@ class ConfigUpdatesViewController(GObject.Object):
         self._view = config_view
         self._nc = None
         self._avc = None
+        self._box = None
+        self._box_mutex = Lock()
 
     def _notify_error(self, message):
         """
@@ -55,6 +72,14 @@ class ConfigUpdatesViewController(GObject.Object):
         iterator = self._store.get_iter(path)
         if iterator is not None:
             self._store.remove(iterator)
+            if not self._store.get_iter_first():
+                # done removing stuff, hide view
+                self.emit("view-cleared")
+                with self._box_mutex:
+                    box = self._box
+                    if box is not None and self._nc is not None:
+                        self._nc.remove(box)
+                        self._box = None
 
     def _on_source_edit(self, widget, path, cu):
         """
@@ -167,12 +192,14 @@ class ConfigUpdatesViewController(GObject.Object):
         Clear Configuration Updates
         """
         self._view.clear_model()
+        self.emit("view-cleared")
 
     def append(self, opaque):
         """
         Add a ConfigUpdate object to the store.
         """
         self._store.append([opaque])
+        self.emit("view-filled")
 
     def append_many(self, opaque_list):
         """
@@ -180,6 +207,7 @@ class ConfigUpdatesViewController(GObject.Object):
         """
         for opaque in opaque_list:
             self._store.append([opaque])
+        self.emit("view-filled")
 
     def set_many(self, opaque_list, _from_search=None):
         """
@@ -218,6 +246,8 @@ class ConfigUpdatesViewController(GObject.Object):
         """
         self.set_many(config_updates)
         if self._nc is not None and self._avc is not None:
-            box = ConfigUpdatesNotificationBox(
-                self._entropy, self._avc, len(config_updates))
-            self._nc.append(box)
+            with self._box_mutex:
+                box = ConfigUpdatesNotificationBox(
+                    self._entropy, self._avc, len(config_updates))
+                self._box = box
+                self._nc.append(box)
