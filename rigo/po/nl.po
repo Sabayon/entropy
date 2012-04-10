@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-08 19:11+0200\n"
-"PO-Revision-Date: 2012-04-08 17:11+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-04-09 05:13+0000\n"
+"Last-Translator: mali.laurent <mali.laurent@cronosproject.org>\n"
 "Language-Team: Dutch (http://www.transifex.net/projects/p/sabayon-rigo/language/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -326,8 +326,8 @@ msgstr "_Ok, bedankt"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Beoordeel <b>%s</b> als <b>%s</b>, met <b>%d</b> ster?"
+msgstr[1] "Beoordeel <b>%s</b> als <b>%s</b>, met <b>%d</b> sterren?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:327
 #: ../rigo/ui/gtk3/controllers/application.py:491
@@ -653,7 +653,7 @@ msgstr "Toon de volledige lijst"
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
+msgstr "<b>%s</b>  toepassing vereist het verwijderen van de volgende toepassingen: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:872
 msgid "Confirm"
@@ -668,29 +668,29 @@ msgstr "Ongedaan maken"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
+msgstr[1] "<b>%s</b> Toepassing actie zal starten in <big><b>%d</b></big seconden"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:980
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Er is <b>%d</b> configuratiebestand om te updaten"
+msgstr[1] "Er zijn <b>%d</b> configuratiebestanden om te updaten"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:986
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
+msgstr "Het is <b>zeer</b> belangrijk om deze configuratiebestanden te updaten, voordat u het <b>systeem opnieuw op start</b>"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:997
 msgid "Let me see"
-msgstr ""
+msgstr "Laat me zien"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:998
 msgid "Happily ignore"
-msgstr ""
+msgstr "Negeer met plezier"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
