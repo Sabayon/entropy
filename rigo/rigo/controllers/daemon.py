@@ -545,7 +545,7 @@ class RigoServiceController(GObject.Object):
 
         app = Application(
             self._entropy, self._entropy_ws,
-            (package_id, repository_id))
+            self, (package_id, repository_id))
 
         msg = prepare_markup(_("<b>%s</b> action enqueued") % (
                 app.name,))
@@ -588,7 +588,7 @@ class RigoServiceController(GObject.Object):
 
         app = Application(
             self._entropy, self._entropy_ws,
-            (package_id, repository_id),
+            self, (package_id, repository_id),
             redraw_callback=_redraw_callback)
 
         self._daemon_processing_application_state = daemon_tx_state
@@ -611,7 +611,7 @@ class RigoServiceController(GObject.Object):
 
         app = Application(
             self._entropy, self._entropy_ws,
-            (package_id, repository_id))
+            self, (package_id, repository_id))
         self._daemon_transaction_app = app
         self._daemon_transaction_app_progress = progress
         self._daemon_transaction_app_state = app_transaction_state
@@ -629,7 +629,7 @@ class RigoServiceController(GObject.Object):
         self._daemon_transaction_app_state = None
         app = Application(
             self._entropy, self._entropy_ws,
-            (package_id, repository_id),
+            self, (package_id, repository_id),
             redraw_callback=None)
 
         self.emit("application-processed", app, daemon_action,
@@ -868,7 +868,7 @@ class RigoServiceController(GObject.Object):
                 for package_id in pkg_ids:
                     app = Application(
                         self._entropy, self._entropy_ws,
-                        (int(package_id), repository_id))
+                        self, (int(package_id), repository_id))
                     apps.append(app)
                 meta = {
                     'root': self._dbus_to_unicode(root),
@@ -904,7 +904,7 @@ class RigoServiceController(GObject.Object):
                 for package_id in source_list:
                     app = Application(
                         self._entropy, self._entropy_ws,
-                        (package_id, repository_id))
+                        self, (package_id, repository_id))
                     app_list.append(app)
 
             if self._nc is not None:
@@ -1868,7 +1868,7 @@ class RigoServiceController(GObject.Object):
         """
         box = InstallNotificationBox(
             self._apc, self._avc, app, self._entropy,
-            self._entropy_ws, install)
+            self._entropy_ws, self, install)
 
         def _accepted(widget):
             ask_meta['res'] = True
@@ -1890,7 +1890,7 @@ class RigoServiceController(GObject.Object):
         """
         box = RemovalNotificationBox(
             self._apc, self._avc, app, self._entropy,
-            self._entropy_ws, remove)
+            self._entropy_ws, self, remove)
 
         def _accepted(widget):
             ask_meta['res'] = True
@@ -2233,7 +2233,7 @@ class RigoServiceController(GObject.Object):
             pkg_id, pkg_repo = package_match
             repository_ids.add(pkg_repo)
             app = Application(self._entropy, self._entropy_ws,
-                              package_match,
+                              self, package_match,
                               package_path=package_path)
             accepted = self._application_request(
                 app, AppActions.INSTALL, simulate=simulate)
@@ -2374,7 +2374,7 @@ class RigoServiceController(GObject.Object):
             for pkg_match in pkg_matches:
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    pkg_match)
+                    self, pkg_match)
                 obj.append(app)
 
         const_debug_write(

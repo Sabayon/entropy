@@ -710,7 +710,7 @@ class OrphanedAppsNotificationBox(NotificationBox):
         pkg_id = int(pkg_id)
         app = Application(
             self._entropy, self._entropy_ws,
-            (pkg_id, pkg_repo))
+            self._service, (pkg_id, pkg_repo))
         self._apc.emit("application-activated", app)
         return True
 
@@ -731,7 +731,7 @@ class InstallNotificationBox(NotificationBox):
     }
 
     def __init__(self, apc, avc, app, entropy_client, entropy_ws,
-                 install, _message=None):
+                 rigo_service, install, _message=None):
         """
         InstallNotificationBox constructor.
 
@@ -743,6 +743,7 @@ class InstallNotificationBox(NotificationBox):
         self._app = app
         self._entropy_ws = entropy_ws
         self._entropy = entropy_client
+        self._service = rigo_service
         self._install = sorted(
             install, key = lambda x: x.name)
 
@@ -812,7 +813,7 @@ class InstallNotificationBox(NotificationBox):
         pkg_id = int(pkg_id)
         app = Application(
             self._entropy, self._entropy_ws,
-            (pkg_id, pkg_repo))
+            self._service, (pkg_id, pkg_repo))
         self._apc.emit("application-activated", app)
         return True
 
@@ -820,13 +821,13 @@ class InstallNotificationBox(NotificationBox):
 class RemovalNotificationBox(InstallNotificationBox):
 
     def __init__(self, apc, avc, app, entropy_client, entropy_ws,
-                 removal):
+                 rigo_service, removal):
         message = prepare_markup(
                 _("<b>%s</b> Application requires the removal "
                   "of the following Applications: %s"))
         InstallNotificationBox.__init__(
             self, apc, avc, app, entropy_client,
-            entropy_ws, removal, _message=message)
+            entropy_ws, rigo_service, removal, _message=message)
 
 
 class QueueActionNotificationBox(NotificationBox):

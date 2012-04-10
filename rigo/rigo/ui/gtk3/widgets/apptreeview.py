@@ -46,13 +46,13 @@ class AppTreeView(Gtk.TreeView):
     VARIANT_INSTALLING = 3
     VARIANT_REMOVING = 4
 
-    def __init__(self, entropy_client, backend, apc, icons, show_ratings,
+    def __init__(self, entropy_client, rigo_service, apc, icons, show_ratings,
                  icon_size, store=None):
         Gtk.TreeView.__init__(self)
 
         self._entropy = entropy_client
         self._apc = apc
-        self._backend = backend
+        self._service = rigo_service
 
         self.pressed = False
         self.focal_btn = None
@@ -64,7 +64,6 @@ class AppTreeView(Gtk.TreeView):
         try:
             self.set_property("ubuntu-almost-fixed-height-mode", True)
             self.set_fixed_height_mode(True)
-            print("MEEP")
         except Exception:
             pass
 
@@ -121,13 +120,13 @@ class AppTreeView(Gtk.TreeView):
         # our own "activate" handler
         self.connect("row-activated", self._on_row_activated, tr)
 
-        self._backend.connect(
+        self._service.connect(
             "application-processed",
             self._on_transaction_finished, tr)
-        self._backend.connect(
+        self._service.connect(
             "application-processing",
             self._on_transaction_started, tr)
-        self._backend.connect(
+        self._service.connect(
             "application-abort",
             self._on_transaction_stopped, tr)
 
@@ -140,7 +139,7 @@ class AppTreeView(Gtk.TreeView):
         pkg_match = model.get_value(iterator, 0)
         if pkg_match is None:
             return False
-        app = Application(self._entropy, None, pkg_match)
+        app = Application(self._entropy, None, self._service, pkg_match)
         return not app.search(key)
 
     @property
@@ -170,9 +169,8 @@ class AppTreeView(Gtk.TreeView):
             try:
                 # lazy solution to Bug #846204
                 model.row_changed(old, model.get_iter(old))
-            except:
-                msg = "apptreeview.expand_path: Supplied 'old' path is an invalid tree path: '%s'" % old
-                logging.debug(msg)
+            except Exception:
+                pass
         if path == None: return
 
         model.row_changed(path, model.get_iter(path))
@@ -280,11 +278,11 @@ class AppTreeView(Gtk.TreeView):
         app = self.appmodel.get_application(pkg_match)
         app_action = self._get_app_transaction(app)
         if app_action is None:
-            if self.appmodel.is_installed(pkg_match):
+            if app.is_installed():
                 action_btn.set_variant(self.VARIANT_REMOVE)
                 action_btn.set_sensitive(True)
                 action_btn.show()
-            elif self.appmodel.is_available(pkg_match):
+            elif app.is_available():
                 action_btn.set_variant(self.VARIANT_INSTALL)
                 action_btn.set_sensitive(True)
                 action_btn.show()
@@ -476,9 +474,6 @@ class AppTreeView(Gtk.TreeView):
             # pkg with pre-existing actions
             daemon_action = self._get_app_transaction(app)
             if daemon_action is not None:
-                logging.debug(
-                    "Action already in progress for match: %s" % (
-                        (pkg_match,)))
                 return False
 
             if btn.current_variant == self.VARIANT_REMOVE:
@@ -582,10 +577,10 @@ class AppTreeView(Gtk.TreeView):
         Get Application transaction state (AppAction enum).
         """
         pkg_match = app.get_details().pkg
-        local_txs = self._backend.local_transactions()
+        local_txs = self._service.local_transactions()
         tx = local_txs.get(pkg_match)
         if tx is None:
-            tx = self._backend.action(app)
+            tx = self._service.action(app)
             if tx == DaemonAppActions.IDLE:
                 tx = None
         return tx
@@ -595,7 +590,7 @@ class AppTreeView(Gtk.TreeView):
         Set Application local transaction state (AppAction enum).
         """
         pkg_match = app.get_details().pkg
-        local_txs = self._backend.local_transactions()
+        local_txs = self._service.local_transactions()
         local_txs[pkg_match] = daemon_action
 
     def _pop_app_transaction(self, app):
@@ -603,7 +598,7 @@ class AppTreeView(Gtk.TreeView):
         Drop Application local transaction state.
         """
         pkg_match = app.get_details().pkg
-        local_txs = self._backend.local_transactions()
+        local_txs = self._service.local_transactions()
         action = local_txs.pop(pkg_match, None)
         return action
 

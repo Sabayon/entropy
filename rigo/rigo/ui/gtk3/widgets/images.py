@@ -28,8 +28,10 @@ from rigo.ui.gtk3.utils import get_sc_icon_theme
 from rigo.paths import DATA_DIR
 from rigo.enums import Icons
 from rigo.utils import open_url
+from rigo.ui.gtk3.models.appliststore import AppListStore
 
 from entropy.client.services.interfaces import Document, DocumentFactory
+from entropy.i18n import _
 
 import entropy.tools
 
@@ -134,7 +136,7 @@ class ImageBox(Gtk.VBox):
                     image_path, width, height)
             except GObject.GError:
                 try:
-                    os.remove(icon_path)
+                    os.remove(image_path)
                 except OSError:
                     pass
                 pixbuf = self._missing_icon

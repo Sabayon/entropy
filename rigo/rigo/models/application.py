@@ -820,10 +820,11 @@ class Application(object):
             """
             return self._licenses
 
-    def __init__(self, entropy_client, entropy_ws, package_match,
-                 redraw_callback=None, package_path=None):
+    def __init__(self, entropy_client, entropy_ws, rigo_service,
+                 package_match, redraw_callback=None, package_path=None):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
+        self._service = rigo_service
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
         self._path = package_path
@@ -908,6 +909,7 @@ class Application(object):
             # an installed App (is_removable() expects that)
             return self
         return Application(self._entropy, self._entropy_ws,
+                           self._service,
                            (package_id, inst_repo.repository_id()),
                            redraw_callback=self._redraw_callback)
 
@@ -992,7 +994,7 @@ class Application(object):
             for pkg_match in queue:
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    pkg_match)
+                    self._service, pkg_match)
                 remove.append(app)
             return remove
         finally:
@@ -1068,7 +1070,7 @@ class Application(object):
             for inst_pkg_id in removal:
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    (inst_pkg_id, inst_repo_id))
+                    self._service, (inst_pkg_id, inst_repo_id))
                 apps.append(app)
             return apps
 
@@ -1098,7 +1100,7 @@ class Application(object):
             for pkg_match in install:
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    pkg_match)
+                    self._service, pkg_match)
                 app_install.append(app)
 
             inst_repo = self._entropy.installed_repository()
@@ -1106,7 +1108,7 @@ class Application(object):
             for inst_pkg_id in removal:
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    (inst_pkg_id, inst_repo_id))
+                    self._service, (inst_pkg_id, inst_repo_id))
                 app_remove.append(app)
 
             return app_install, app_remove
@@ -1564,13 +1566,26 @@ class Application(object):
             return None
         return webserv.get_credentials()
 
+    def get_transaction_progress(self):
+        """
+        Retrieve Application transaction process from RigoDaemon.
+        Return -1 for no activity, and int from 0 to 100 for transaction
+        progress.
+        """
+        app, state, progress = self._service.get_transaction_state()
+        if app is None:
+            return -1
+        if app.get_details().pkg != self.get_details().pkg:
+            return -1
+        return progress
+
     # get a AppDetails object for this Applications
     def get_details(self):
         """
         Return a new AppDetails object for this application
         """
         return AppDetails(self._entropy, self._entropy_ws,
-                          self._pkg_match, self,
+                          self._service, self._pkg_match, self,
                           redraw_callback=self._redraw_callback)
 
     def __str__(self):
@@ -1593,13 +1608,14 @@ class AppDetails(object):
     we have available like website etc
     """
 
-    def __init__(self, entropy_client, entropy_ws, package_match, app,
-                 redraw_callback=None):
+    def __init__(self, entropy_client, entropy_ws, rigo_service,
+                 package_match, app, redraw_callback=None):
         """
         Create a new AppDetails object.
         """
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
+        self._service = rigo_service
         self._pkg_match = package_match
         self._pkg_id, self._repo_id = package_match
         self._app = app

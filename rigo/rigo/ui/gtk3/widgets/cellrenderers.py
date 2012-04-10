@@ -102,6 +102,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         return layout.get_size()[1] / Pango.SCALE
 
     def _render_icon(self, cr, app, cell_area, xpad, ypad, is_rtl):
+
         # calc offsets so icon is nicely centered
         icon = self.model.get_icon(app)
         xo = (self.pixbuf_width - icon.get_width())/2
@@ -117,7 +118,7 @@ class CellRendererAppView(Gtk.CellRendererText):
         cr.paint()
 
         # draw overlay if application is installed
-        if self.model.is_installed(app):
+        if app.is_installed():
             if not is_rtl:
                 x += (self.pixbuf_width - self.OVERLAY_SIZE + self.OVERLAY_XO)
             else:
@@ -131,7 +132,7 @@ class CellRendererAppView(Gtk.CellRendererText):
                         cell_area, layout, xpad, ypad,
                         star_width, is_rtl):
 
-        layout.set_markup(self.model.get_markup(app), -1)
+        layout.set_markup(app.get_markup(), -1)
 
         # work out max allowable layout width
         layout.set_width(-1)
@@ -141,13 +142,17 @@ class CellRendererAppView(Gtk.CellRendererText):
 
         max_layout_width = cell_area.width - self.pixbuf_width - 3*xpad
 
-        stats = self.model.get_review_stats(app)
+        def _still_visible():
+            return self.model.visible(app.get_details().pkg)
+        stats = app.get_review_stats(_still_visible_cb=_still_visible)
+
         if self.show_ratings and stats:
             max_layout_width -= star_width+6*xpad
 
-        if self.props.isactive and self.model.get_transaction_progress(app) > 0:
-            action_btn = self.get_button_by_name(CellButtonIDs.ACTION)
-            max_layout_width -= (xpad + action_btn.width)
+        if self.props.isactive:
+            if app.get_transaction_progress() > 0:
+                action_btn = self.get_button_by_name(CellButtonIDs.ACTION)
+                max_layout_width -= (xpad + action_btn.width)
 
         if lw >= max_layout_width:
             layout.set_width((max_layout_width)*Pango.SCALE)
@@ -180,8 +185,11 @@ class CellRendererAppView(Gtk.CellRendererText):
                        cell_area, layout, xpad, ypad,
                        star_width, star_height, is_rtl):
 
-        stats = self.model.get_review_stats(app)
-        if not stats: return
+        def _still_visible():
+            return self.model.visible(app.get_details().pkg)
+        stats = app.get_review_stats(_still_visible_cb=_still_visible)
+        if not stats:
+            return
         sr = self._stars
 
         if not is_rtl:
@@ -329,11 +337,13 @@ class CellRendererAppView(Gtk.CellRendererText):
         return self.selected_height, self.selected_height
 
     def do_render(self, cr, widget, bg_area, cell_area, flags):
-        app = self.props.application
-        if not app:
+        pkg_match = self.props.application
+        if not pkg_match:
             return
 
         self.model = widget.appmodel
+        app = self.model.get_application(pkg_match)
+
         context = widget.get_style_context()
         xpad = self.get_property('xpad')
         ypad = self.get_property('ypad')
@@ -365,7 +375,11 @@ class CellRendererAppView(Gtk.CellRendererText):
                                 star_height,
                                 is_rtl)
 
-        progress = self.model.get_transaction_progress(app)
+        # below is the stuff that is only done for the active cell
+        if not self.props.isactive:
+            return
+
+        progress = app.get_transaction_progress()
         #~ print progress
         if progress > 0:
             self._render_progress(context, cr, progress,
@@ -373,11 +387,7 @@ class CellRendererAppView(Gtk.CellRendererText):
                                   ypad,
                                   is_rtl)
 
-        # below is the stuff that is only done for the active cell
-        if not self.props.isactive:
-            return
-
-        is_available = self.model.is_available(app)
+        is_available = app.is_available()
         self._render_buttons(context, cr,
                              cell_area,
                              layout,

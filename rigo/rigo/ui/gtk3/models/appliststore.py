@@ -48,7 +48,7 @@ class AppListStore(Gtk.ListStore):
         # for given pkg_match object
         "redraw-request"  : (GObject.SignalFlags.RUN_LAST,
                              None,
-                             (GObject.TYPE_PYOBJECT, ),
+                             (GObject.TYPE_PYOBJECT,),
                              ),
     }
 
@@ -88,7 +88,7 @@ class AppListStore(Gtk.ListStore):
             AppListStore._MISSING_ICON = _missing_icon
             return _missing_icon
 
-    def _is_app_visible(self, pkg_match):
+    def visible(self, pkg_match):
         """
         Returns whether Application (through pkg_match) is still
         visible in the TreeView.
@@ -126,21 +126,15 @@ class AppListStore(Gtk.ListStore):
 
         return s_data['res']
 
-    def get_icon(self, pkg_match):
+    def get_icon(self, app):
+
+        pkg_match = app.get_details().pkg
         cached = AppListStore._ICON_CACHE.get(pkg_match)
         if cached is not None:
             return cached
 
-        def _ui_redraw_callback(*args):
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                                  "_ui_redraw_callback(), %s" % (args,))
-            GLib.idle_add(self.emit, "redraw-request", pkg_match)
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
-
         def _still_visible():
-            return self._is_app_visible(pkg_match)
+            return self.visible(pkg_match)
 
         icon, cache_hit = app.get_icon(_still_visible_cb=_still_visible)
         if const_debug_enabled():
@@ -191,54 +185,6 @@ class AppListStore(Gtk.ListStore):
         AppListStore._ICON_CACHE[pkg_match] = pixbuf
         return pixbuf
 
-    def is_installed(self, pkg_match):
-        def _ui_redraw_callback(*args):
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                                  "_ui_redraw_callback()")
-            GLib.idle_add(self.emit, "redraw-request", pkg_match)
-
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
-        return app.is_installed()
-
-    def is_available(self, pkg_match):
-        def _ui_redraw_callback(*args):
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                                  "_ui_redraw_callback()")
-            GLib.idle_add(self.emit, "redraw-request", pkg_match)
-
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
-        return app.is_available()
-
-    def get_markup(self, pkg_match):
-        def _ui_redraw_callback(*args):
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                                  "_ui_redraw_callback()")
-            GLib.idle_add(self.emit, "redraw-request", pkg_match)
-
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
-        return app.get_markup()
-
-    def get_review_stats(self, pkg_match):
-        def _ui_redraw_callback(*args):
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                                  "_ui_redraw_callback()")
-            GLib.idle_add(self.emit, "redraw-request", pkg_match)
-
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
-
-        def _still_visible():
-            return self._is_app_visible(pkg_match)
-
-        return app.get_review_stats(_still_visible_cb=_still_visible)
-
     def get_application(self, pkg_match):
         def _ui_redraw_callback(*args):
             if const_debug_enabled():
@@ -246,14 +192,7 @@ class AppListStore(Gtk.ListStore):
                                   "_ui_redraw_callback()")
             GLib.idle_add(self.emit, "redraw-request", pkg_match)
 
-        app = Application(self._entropy, self._entropy_ws, pkg_match,
+        app = Application(self._entropy, self._entropy_ws,
+                          self._service, pkg_match,
                           redraw_callback=_ui_redraw_callback)
         return app
-
-    def get_transaction_progress(self, pkg_match):
-        app, state, progress = self._service.get_transaction_state()
-        if app is None:
-            return -1
-        if app.get_details().pkg != pkg_match:
-            return -1
-        return progress

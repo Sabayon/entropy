@@ -213,7 +213,7 @@ class ApplicationsViewController(GObject.Object):
 
         app = Application(
             self._entropy, self._entropy_ws,
-            pkg_match)
+            self._service, pkg_match)
         self._service.application_request(
             app, AppActions.INSTALL, simulate=simulate)
 
@@ -274,7 +274,7 @@ class ApplicationsViewController(GObject.Object):
 
         app = Application(
             self._entropy, self._entropy_ws,
-            (pkg_id, pkg_repo))
+            self._service, (pkg_id, pkg_repo))
         self._service.application_request(
             app, AppActions.REMOVE, simulate=simulate)
 
@@ -412,7 +412,7 @@ class ApplicationsViewController(GObject.Object):
                 first_entry = meant_packages[0]
                 app = Application(
                     self._entropy, self._entropy_ws,
-                    first_entry)
+                    self._service, first_entry)
                 name = app.name
 
                 msg += ", %s" % (

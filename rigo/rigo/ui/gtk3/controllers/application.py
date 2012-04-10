@@ -246,9 +246,15 @@ class ApplicationViewController(GObject.Object):
         """
         if self._last_app is None:
             return
+
         if pkg_match == self._last_app.get_details().pkg:
-            stats = self._app_store.get_review_stats(pkg_match)
-            icon = self._app_store.get_icon(pkg_match)
+            app = self._app_store.get_application(pkg_match)
+
+            def _still_visible():
+                return self._app_store.visible(pkg_match)
+            stats = app.get_review_stats(_still_visible_cb=_still_visible)
+
+            icon = self._app_store.get_icon(app)
             self._setup_application_stats(stats, icon)
             if self._app_store is not None:
                 self._app_store.emit("redraw-request", self._app_store)
@@ -407,7 +413,7 @@ class ApplicationViewController(GObject.Object):
         metadata['homepage'] = details.website
         metadata['date'] = details.date
         # using app store here because we cache the icon pixbuf
-        metadata['icon'] = self._app_store.get_icon(details.pkg)
+        metadata['icon'] = self._app_store.get_icon(app)
         metadata['is_installed'] = app.is_installed()
         metadata['is_updatable'] = app.is_updatable()
         GLib.idle_add(self._setup_application_info, app, metadata)
