@@ -5,7 +5,6 @@ Backlog (raw)
     rigo:
 
     - [F] Notice Board
-    - [F] move install/removal checks to RigoDaemon
 
     - [F] Preferences:
        - clean metadata cache
