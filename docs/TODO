@@ -2,17 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    rigo:
-
-    - [F] Notice Board
-
-    - [F] Preferences:
-       - clean metadata cache
-       - clean recent searches
-       - logout (clean session info)
-       - update repositories
-       - show confupdates
-
     magneto:
       - require rigo instead of sulfur? (launch rigo || sulfur)
       - gtk3 version
