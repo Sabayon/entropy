@@ -186,6 +186,14 @@ class Rigo(Gtk.Application):
         self._work_view = self._builder.get_object("workViewVbox")
         self._work_view.set_name("rigo-view")
 
+        self._pref_button = self._builder.get_object(
+            "prefButton")
+        def _pref_button_activate(widget):
+            self._change_view_state(
+                RigoViewStates.PREFERENCES_VIEW_STATE)
+        self._pref_button.connect(
+            "clicked", _pref_button_activate)
+
         # Preferences model, view and controller
         self._pref_store = PreferencesListStore()
         self._view_pref = PreferencesTreeView(
