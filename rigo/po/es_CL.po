@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 11:31+0200\n"
-"PO-Revision-Date: 2012-04-11 09:32+0000\n"
+"POT-Creation-Date: 2012-04-11 23:19+0200\n"
+"PO-Revision-Date: 2012-04-11 21:18+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Spanish (Chile) (http://www.transifex.net/projects/p/sabayon-rigo/language/es_CL/)\n"
 "MIME-Version: 1.0\n"
@@ -198,9 +198,9 @@ msgid "An error occurred"
 msgstr "Ocurrió un error"
 
 #: ../rigo/controllers/daemon.py:708
-#: ../rigo/ui/gtk3/controllers/application.py:395
-#: ../rigo/ui/gtk3/controllers/application.py:482
-#: ../rigo/ui/gtk3/controllers/application.py:565
+#: ../rigo/ui/gtk3/controllers/application.py:411
+#: ../rigo/ui/gtk3/controllers/application.py:498
+#: ../rigo/ui/gtk3/controllers/application.py:581
 msgid "Ok, thanks"
 msgstr "Ok, gracias"
 
@@ -332,182 +332,255 @@ msgstr ""
 msgid "Cannot <b>discard</b> configuration file"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/application.py:296
+#: ../rigo/ui/gtk3/controllers/application.py:172
+msgid "Clean Entropy Web Service Session"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/application.py:173
+msgid ""
+"Discard any registered login credentialused to send votes and comments."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
 msgstr "¡Sesión iniciada como <b>%s</b>! ¿Qué tal si <b>votas</b>?"
 
-#: ../rigo/ui/gtk3/controllers/application.py:303
+#: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
 msgstr "_Vota ahora"
 
-#: ../rigo/ui/gtk3/controllers/application.py:305
-#: ../rigo/ui/gtk3/controllers/application.py:341
-#: ../rigo/ui/gtk3/controllers/application.py:505
-#: ../rigo/ui/gtk3/controllers/application.py:610
+#: ../rigo/ui/gtk3/controllers/application.py:321
+#: ../rigo/ui/gtk3/controllers/application.py:357
+#: ../rigo/ui/gtk3/controllers/application.py:521
+#: ../rigo/ui/gtk3/controllers/application.py:646
 msgid "_Later"
 msgstr "_Después"
 
-#: ../rigo/ui/gtk3/controllers/application.py:313
+#: ../rigo/ui/gtk3/controllers/application.py:329
 msgid "Login failed. Your <b>vote</b> hasn't been added"
 msgstr "No se pudo iniciar sesión. Tu <b>voto</b> no se contará"
 
-#: ../rigo/ui/gtk3/controllers/application.py:316
-#: ../rigo/ui/gtk3/controllers/application.py:621
+#: ../rigo/ui/gtk3/controllers/application.py:332
+#: ../rigo/ui/gtk3/controllers/application.py:657
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
 msgstr "_Ok, gracias"
 
-#: ../rigo/ui/gtk3/controllers/application.py:323
+#: ../rigo/ui/gtk3/controllers/application.py:339
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
 msgstr[0] "¿Calificar <b>%s</b> como <b>%s</b>, con <b>%d</b> estrella?"
 msgstr[1] "¿Calificar <b>%s</b> como <b>%s</b>, con <b>%d</b> estrellas?"
 
-#: ../rigo/ui/gtk3/controllers/application.py:333
-#: ../rigo/ui/gtk3/controllers/application.py:497
+#: ../rigo/ui/gtk3/controllers/application.py:349
+#: ../rigo/ui/gtk3/controllers/application.py:513
 msgid "_Ok, cool!"
 msgstr "_Ok, ¡qué bien!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:339
-#: ../rigo/ui/gtk3/controllers/application.py:503
+#: ../rigo/ui/gtk3/controllers/application.py:355
+#: ../rigo/ui/gtk3/controllers/application.py:519
 msgid "_No, logout!"
 msgstr "_No, ¡cerrar sesión!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:377
+#: ../rigo/ui/gtk3/controllers/application.py:393
 msgid "Your vote has been added!"
 msgstr "¡Tu voto fué contado!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:380
-#: ../rigo/ui/gtk3/controllers/application.py:556
+#: ../rigo/ui/gtk3/controllers/application.py:396
+#: ../rigo/ui/gtk3/controllers/application.py:572
 msgid "Ok, great!"
 msgstr "Ok, ¡grandioso!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:387
+#: ../rigo/ui/gtk3/controllers/application.py:403
 msgid "You already voted this <b>Application</b>"
 msgstr "Ya votaste por esta <b>Aplicación</b>"
 
-#: ../rigo/ui/gtk3/controllers/application.py:392
+#: ../rigo/ui/gtk3/controllers/application.py:408
 #, python-format
 msgid "Vote error: <i>%s</i>"
 msgstr "Error en la votación: <i>%s</i>"
 
-#: ../rigo/ui/gtk3/controllers/application.py:478
+#: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
 msgstr "Los Servicios Web de Entropy no están disponibles para el repositorio"
 
-#: ../rigo/ui/gtk3/controllers/application.py:490
+#: ../rigo/ui/gtk3/controllers/application.py:506
 #, python-format
 msgid "You are about to add a <b>comment</b> as <b>%s</b>."
 msgstr "Estás a punto de agregar un <b>comentario</b> como <b>%s</b>."
 
-#: ../rigo/ui/gtk3/controllers/application.py:553
+#: ../rigo/ui/gtk3/controllers/application.py:569
 msgid "Your comment has been submitted!"
 msgstr "¡Tu comentario fué enviado!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:562
+#: ../rigo/ui/gtk3/controllers/application.py:578
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
 msgstr "Ocurrió un error al enviar el comentario: <i>%s</i>"
 
-#: ../rigo/ui/gtk3/controllers/application.py:603
+#: ../rigo/ui/gtk3/controllers/application.py:639
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
 msgstr "¡Sesión iniciada como <b>%s</b>! ¿Qué tal si <b>votas</b>?"
 
-#: ../rigo/ui/gtk3/controllers/application.py:609
+#: ../rigo/ui/gtk3/controllers/application.py:645
 msgid "_Send now"
 msgstr "_Enviar ahora"
 
-#: ../rigo/ui/gtk3/controllers/application.py:618
+#: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
 msgstr "No se pudo iniciar sesión. Tu <b>comentario</b> no fué recibido"
 
-#: ../rigo/ui/gtk3/controllers/application.py:641
+#: ../rigo/ui/gtk3/controllers/application.py:677
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
 msgstr "<i>¡Aún no hay <b>comentarios</b> para esta aplicación!</i>"
 
-#: ../rigo/ui/gtk3/controllers/application.py:690
+#: ../rigo/ui/gtk3/controllers/application.py:726
 msgid "Older comments"
 msgstr "Comentarios antiguos"
 
-#: ../rigo/ui/gtk3/controllers/application.py:697
+#: ../rigo/ui/gtk3/controllers/application.py:733
 msgid "Loading older comments..."
 msgstr "Cargando comentarios antiguos..."
 
-#: ../rigo/ui/gtk3/controllers/application.py:741
+#: ../rigo/ui/gtk3/controllers/application.py:777
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
 msgstr "<i>¡Aún no hay <b>imágenes</b> para esta Aplicación!</i>"
 
-#: ../rigo/ui/gtk3/controllers/application.py:749
+#: ../rigo/ui/gtk3/controllers/application.py:785
 msgid "Older images"
 msgstr "Imágenes antiguas"
 
-#: ../rigo/ui/gtk3/controllers/application.py:755
+#: ../rigo/ui/gtk3/controllers/application.py:791
 msgid "Loading older images..."
 msgstr "Cargando comentarios antiguos..."
 
-#: ../rigo/ui/gtk3/controllers/application.py:820
+#: ../rigo/ui/gtk3/controllers/application.py:856
 msgid "Update"
 msgstr "Actualizar"
 
-#: ../rigo/ui/gtk3/controllers/application.py:830
+#: ../rigo/ui/gtk3/controllers/application.py:866
 msgid "Reinstall"
 msgstr "Reinstalar"
 
-#: ../rigo/ui/gtk3/controllers/application.py:840
+#: ../rigo/ui/gtk3/controllers/application.py:876
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:76
 msgid "Remove"
 msgstr "Desinstalar"
 
-#: ../rigo/ui/gtk3/controllers/application.py:850
+#: ../rigo/ui/gtk3/controllers/application.py:886
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:75
 msgid "Install"
 msgstr "Instalar"
 
-#: ../rigo/ui/gtk3/controllers/application.py:865
+#: ../rigo/ui/gtk3/controllers/application.py:901
 msgid "Not available"
 msgstr "No disponible"
 
-#: ../rigo/ui/gtk3/controllers/application.py:867
+#: ../rigo/ui/gtk3/controllers/application.py:903
 msgid "Never downloaded"
 msgstr "Nunca descargado"
 
-#: ../rigo/ui/gtk3/controllers/application.py:871
+#: ../rigo/ui/gtk3/controllers/application.py:907
 msgid "downloads"
 msgstr "descargas"
 
-#: ../rigo/ui/gtk3/controllers/application.py:919
+#: ../rigo/ui/gtk3/controllers/application.py:955
 msgid "Want to add images, etc?"
 msgstr "¿Quieres añadir imágenes, etc?"
 
-#: ../rigo/ui/gtk3/controllers/application.py:921
+#: ../rigo/ui/gtk3/controllers/application.py:957
 msgid "click here!"
 msgstr "¡clickea aquí!"
 
-#: ../rigo/ui/gtk3/controllers/application.py:932
+#: ../rigo/ui/gtk3/controllers/application.py:968
 msgid "Loading comments..."
 msgstr "Cargando comentarios..."
 
-#: ../rigo/ui/gtk3/controllers/applications.py:204
-#: ../rigo/ui/gtk3/controllers/applications.py:265
+#: ../rigo/ui/gtk3/controllers/applications.py:206
+#: ../rigo/ui/gtk3/controllers/applications.py:267
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:412
+#: ../rigo/ui/gtk3/controllers/applications.py:419
 msgid "Nothing found for"
 msgstr "Nada encontrado para"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:422
+#: ../rigo/ui/gtk3/controllers/applications.py:429
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr "¿quisiste decir <a href=\"%s\">%s</a>?"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:454
+#: ../rigo/ui/gtk3/controllers/applications.py:461
 msgid "Not found"
 msgstr "No encontrado"
+
+#: ../rigo/ui/gtk3/controllers/applications.py:584
+msgid "Update repositories"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:585
+msgid "Force the update of the available repositories."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:595
+msgid "Show Configuration File Updates"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:596
+msgid "Show (if any) the list of pending configuration file updates."
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/stars.py:400
+#, python-format
+msgid "%(nr_ratings)i rating"
+msgid_plural "%(nr_ratings)i ratings"
+msgstr[0] "%(nr_ratings)i valoración"
+msgstr[1] "%(nr_ratings)i valoraciones"
+
+#: ../rigo/ui/gtk3/widgets/stars.py:500
+msgid "Hint: Click a star to rate this app"
+msgstr "Sugerencia: Clickea una estrella para calificar esta aplicación"
+
+#. unrated caption
+#: ../rigo/ui/gtk3/widgets/stars.py:501
+msgid "Awful"
+msgstr "Feo"
+
+#. 1 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:502
+msgid "Poor"
+msgstr "Pobre"
+
+#. 2 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:503
+msgid "Adequate"
+msgstr "Adecuado"
+
+#. 3 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:504
+msgid "Good"
+msgstr "Bueno"
+
+#. 4 star rating
+#: ../rigo/ui/gtk3/widgets/stars.py:505
+msgid "Excellent"
+msgstr "Excelente"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:91
+msgid "Cannot remove comment"
+msgstr "No fué posible quitar el comentario"
+
+#: ../rigo/ui/gtk3/widgets/comments.py:128
+msgid "remove"
+msgstr "eliminar"
+
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
+msgid "Run"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format
@@ -734,50 +807,6 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/notifications.py:1049
 msgid "Stop annoying me"
 msgstr ""
-
-#: ../rigo/ui/gtk3/widgets/stars.py:400
-#, python-format
-msgid "%(nr_ratings)i rating"
-msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i valoración"
-msgstr[1] "%(nr_ratings)i valoraciones"
-
-#: ../rigo/ui/gtk3/widgets/stars.py:500
-msgid "Hint: Click a star to rate this app"
-msgstr "Sugerencia: Clickea una estrella para calificar esta aplicación"
-
-#. unrated caption
-#: ../rigo/ui/gtk3/widgets/stars.py:501
-msgid "Awful"
-msgstr "Feo"
-
-#. 1 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:502
-msgid "Poor"
-msgstr "Pobre"
-
-#. 2 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:503
-msgid "Adequate"
-msgstr "Adecuado"
-
-#. 3 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:504
-msgid "Good"
-msgstr "Bueno"
-
-#. 4 star rating
-#: ../rigo/ui/gtk3/widgets/stars.py:505
-msgid "Excellent"
-msgstr "Excelente"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:91
-msgid "Cannot remove comment"
-msgstr "No fué posible quitar el comentario"
-
-#: ../rigo/ui/gtk3/widgets/comments.py:128
-msgid "remove"
-msgstr "eliminar"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
