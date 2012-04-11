@@ -1779,6 +1779,8 @@ class RigoDaemonService(dbus.service.Object):
             raise AttributeError(
                 "_acquire_shared: "
                 "Activity mutex not acquired!")
+        write_output("_acquire_shared: about to acquire lock",
+                     debug=True)
         self._entropy.lock_resources(
             blocking=blocking, shared=True)
 
@@ -1788,6 +1790,8 @@ class RigoDaemonService(dbus.service.Object):
         This method must be called with activity_mutex held
         to avoid races with _acquire_exclusive().
         """
+        write_output("_release_shared: about to acquire lock",
+                     debug=True)
         act_acquired = self._activity_mutex.acquire(False)
         if act_acquired:
             # bug!
