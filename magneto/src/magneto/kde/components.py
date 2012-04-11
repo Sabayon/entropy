@@ -81,7 +81,7 @@ class AppletNoticeWindow(QWidget):
 
         self.__button_hbox = QHBoxLayout()
         self.__close_button = QPushButton(_("Close"))
-        self.__launch_pm_button = QPushButton(_("Launch Sulfur"))
+        self.__launch_pm_button = QPushButton(_("Launch Application Browser"))
         self.__button_hbox.addWidget(self.__launch_pm_button)
         self.__button_hbox.addWidget(self.__close_button)
 
@@ -99,7 +99,7 @@ class AppletNoticeWindow(QWidget):
             self.setWindowIcon(self.__window_icon)
 
         self.connect(self.__close_button, SIGNAL("clicked()"), self.on_close)
-        self.connect(self.__launch_pm_button, SIGNAL("clicked()"), self.on_sulfur)
+        self.connect(self.__launch_pm_button, SIGNAL("clicked()"), self.on_pm)
 
     def closeEvent(self, event):
         """
@@ -109,7 +109,7 @@ class AppletNoticeWindow(QWidget):
         event.ignore()
         self.on_close()
 
-    def on_sulfur(self):
+    def on_pm(self):
         self.__controller.launch_package_manager()
 
     def on_close(self):
@@ -119,5 +119,3 @@ class AppletNoticeWindow(QWidget):
         self.__list_model.setStringList(pkg_data)
         self.__critical_label.setText(critical_txt)
         self.__list_view.update()
-
-

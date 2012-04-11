@@ -24,6 +24,7 @@ from entropy.client.interfaces import Client
 from entropy.const import etpConst
 import entropy.tools
 from entropy.i18n import _, ngettext
+from entropy.misc import ParallelTask
 
 # Magneto imports
 from magneto.core import config
@@ -123,7 +124,7 @@ class MagnetoCore(MagnetoCoreUI):
         self.icons.add_file("busy", "applet-busy.png")
         self.icons.add_file("critical", "applet-critical.png")
         self.icons.add_file("disable", "applet-disable.png")
-        self.icons.add_file("sulfur", "sulfur.png")
+        self.icons.add_file("pm", "pm.png")
         self.icons.add_file("web", "applet-web.png")
         self.icons.add_file("configuration", "applet-configuration.png")
         self.applet_size = 22
@@ -347,7 +348,7 @@ class MagnetoCore(MagnetoCoreUI):
     def get_menu_image(self, name):
 
         if name == "update_now":
-            pix = self.icons.best_match("sulfur", 22)
+            pix = self.icons.best_match("pm", 22)
         elif name == "check_now":
             pix = self.icons.best_match("okay", 22)
         elif name in ["web_panel", "web_site"]:
@@ -373,7 +374,14 @@ class MagnetoCore(MagnetoCoreUI):
         subprocess.call(['xdg-open', url])
 
     def launch_package_manager(self, *data):
-        subprocess.call('sulfur &', shell = True)
+        if os.access("/usr/bin/rigo", os.X_OK | os.R_OK):
+            task = ParallelTask(subprocess.call, ["/usr/bin/rigo"])
+            task.daemon = True
+            task.start()
+        elif os.access("/usr/bin/sulfur", os.X_OK | os.R_OK):
+            task = ParallelTask(subprocess.call, ["/usr/bin/sulfur"])
+            task.daemon = True
+            task.start()
 
     def disable_applet(self):
         self.update_tooltip(_("Updates Notification Applet Disabled"))

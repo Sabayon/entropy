@@ -100,7 +100,7 @@ class AppletNoticeWindow(GladeWindow):
 
         self.xml.signal_autoconnect (
             {
-            "on_launch_sulfur_clicked": self.on_sulfur,
+            "on_launch_pm_clicked": self.on_pm,
             "on_close_clicked": self.on_close,
             })
 
@@ -115,7 +115,7 @@ class AppletNoticeWindow(GladeWindow):
     def show(self):
         self.window.show()
 
-    def on_sulfur(self, button):
+    def on_pm(self, button):
         self.__controller.launch_package_manager()
 
     def on_close(self, *args):
