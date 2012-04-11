@@ -1,3 +1,146 @@
+commit 461ddc712f7b48061b7b36568622d666f901a979
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:24:39 2012 +0200
+
+    Release Entropy 1.0_rc98
+
+commit 417e5720a8018622a10b8dcacabd9168693a1b9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:20:25 2012 +0200
+
+    [Rigo] update translations
+
+commit b95375d7802227c83ff7c6c70cb79d11df642b36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:19:27 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit f1ef6fbcbbbe43d0e8ea2afa6b51b291c4a9bf6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:18:23 2012 +0200
+
+    [Rigo] add Preferences button
+
+commit 7f9225ee4da43ea7a64a58605b971687ae39e6e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:04:51 2012 +0200
+
+    [todo] update TODO
+
+commit fc81e6bb06289c63428ca3cca911d13247d776c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:03:47 2012 +0200
+
+    [Rigo] implement Preferences View, activatable through "rigo:config" for now
+
+commit 3ea1fbb2a05ebee5398e85bb78067547c8f58978
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 18:10:30 2012 +0200
+
+    [magneto] launch Rigo instead of Sulfur if possible
+
+commit 8a877bbc1be3a6ff7ce5746498620fcc8fe91633
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 17:59:42 2012 +0200
+
+    [RigoDaemon] add more debug output
+
+commit 5a15a0bbb81f07ad436ec32cb3542348dd32d04b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 11:33:56 2012 +0200
+
+    [Rigo] update translations
+
+commit e0eb800ffc4a15d10aa679edc04ab670b31dbacf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 11:32:31 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 161f5205d8cd295f1fc4e7857cc77a0212e501cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 23:37:22 2012 +0200
+
+    [RigoDaemon/Rigo] implement Notice Board support (woot)
+
+commit 388cac91879b70f747f71ef73bbba24b417c0f1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 18:07:29 2012 +0200
+
+    [Rigo] minor bugfixes to the configuration file updates UI
+
+commit c5b55f44c635ef3ba2896e1a80317a36b11299fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 16:29:12 2012 +0200
+
+    [RigoDaemon] if interrupt_activity signal is raised, interrupt both fetch and install phases
+
+commit 350544aa9f7ab9bf40cca48c7870dfa6b0674ad2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 13:28:16 2012 +0200
+
+    [Rigo] do not force repository update when not strictly needed
+
+commit 8285ca06aec062de63e1c3f514dc8dc6b4cc8c6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 13:27:00 2012 +0200
+
+    [Rigo] send hello() again after repositories_updated() signal
+
+commit 325813243c7f56e586883afff3d6dcde0b4e58bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 13:25:52 2012 +0200
+
+    [RigoDaemon] _send_greetings: keep one and only one thread running the calculation, discard multiple concurrent requests
+
+commit 96e5add095669d9071688a66c11a44e0d69f563b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 12:52:01 2012 +0200
+
+    [todo] update TODO
+
+commit 7ab432458fde53e79f83525547ee43b5ecfdc458
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 12:51:00 2012 +0200
+
+    [RigoDaemon] split enqueue_application_action()
+
+commit 065c57ea5b30b26d4ea77f933984f70b912518f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 12:50:43 2012 +0200
+
+    [RigoDaemon] add noticeboards_available() signal
+
+commit 1e807a7ed7ab892470b5e83af71e7bfe0f54bf7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 12:08:13 2012 +0200
+
+    [Rigo] boost treeview performance, optimize several code paths and avoid duplicated calls
+
+commit 0af0c14b48c241df2fed7d42d784cf8bed46e866
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 10 10:57:58 2012 +0200
+
+    [Rigo] update translations, add es_AR
+
+commit d35d827fc73975bcc9e5ffa6656c691dd922d921
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 9 22:39:47 2012 +0200
+
+    [RigoDaemon/Rigo] move startup updates calculation and repo validation to RigoDaemon
+    
+    Calling RigoDaemon.hello() triggers several welcome signals from
+    RigoDaemon itself, such as updates availability, repositories aging
+    and repositories unavailability. This way, Rigo is completely unloaded
+    with beneficial effects wrt responsiveness.
+
+commit 539b051a2d03420d93e895c27102097f966d519e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 9 18:05:18 2012 +0200
+
+    Tagging Entropy version 1.0_rc97
+
 commit 7f273165be0fc824fe5930578a258d29230cdce9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 9 18:05:17 2012 +0200
