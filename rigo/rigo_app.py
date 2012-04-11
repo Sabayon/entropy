@@ -44,6 +44,7 @@ from rigo.entropyapi import EntropyWebService, EntropyClient as Client
 from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
 from rigo.ui.gtk3.widgets.noticeboardtreeview import NoticeBoardTreeView
+from rigo.ui.gtk3.widgets.preferencestreeview import PreferencesTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 from rigo.ui.gtk3.controllers.applications import \
     ApplicationsViewController
@@ -53,6 +54,8 @@ from rigo.ui.gtk3.controllers.confupdate import \
     ConfigUpdatesViewController
 from rigo.ui.gtk3.controllers.noticeboard import \
     NoticeBoardViewController
+from rigo.ui.gtk3.controllers.preference import \
+    PreferenceViewController
 
 from rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
@@ -62,6 +65,7 @@ from rigo.ui.gtk3.widgets.welcome import WelcomeBox
 from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
 from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
+from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
 from rigo.utils import escape_markup
@@ -124,7 +128,10 @@ class Rigo(Gtk.Application):
                 self._exit_confupdates_state),
             RigoViewStates.NOTICEBOARD_VIEW_STATE: (
                 self._enter_noticeboard_state,
-                self._exit_noticeboard_state)
+                self._exit_noticeboard_state),
+            RigoViewStates.PREFERENCES_VIEW_STATE: (
+                self._enter_preferences_state,
+                self._exit_preferences_state)
         }
         self._state_mutex = Lock()
 
@@ -162,6 +169,11 @@ class Rigo(Gtk.Application):
         self._notice_view = self._builder.get_object("noticeViewVbox")
         self._notice_view.set_name("rigo-view")
 
+        self._pref_scrolled_view = self._builder.get_object(
+            "preferencesViewScrolledWindow")
+        self._pref_view = self._builder.get_object("preferencesViewVbox")
+        self._pref_view.set_name("rigo-view")
+
         self._search_entry = self._builder.get_object("searchEntry")
         self._search_entry_completion = self._builder.get_object(
             "searchEntryCompletion")
@@ -174,9 +186,20 @@ class Rigo(Gtk.Application):
         self._work_view = self._builder.get_object("workViewVbox")
         self._work_view.set_name("rigo-view")
 
+        # Preferences model, view and controller
+        self._pref_store = PreferencesListStore()
+        self._view_pref = PreferencesTreeView(
+            icons, PreferencesListStore.ICON_SIZE)
+        self._pref_scrolled_view.add(self._view_pref)
+        def _pref_queue_draw(*args):
+            self._view_pref.queue_draw()
+        self._pref_store.connect("redraw-request", _pref_queue_draw)
+        self._pref_view_c = PreferenceViewController(
+            self._pref_store, self._view_pref)
+
         self._app_view_c = ApplicationViewController(
-            self._entropy, self._entropy_ws, self._service,
-            self._builder)
+            self._entropy, self._entropy_ws, self._pref_view_c,
+            self._service, self._builder)
 
         self._view = AppTreeView(
             self._entropy, self._service, self._app_view_c, icons,
@@ -240,7 +263,7 @@ class Rigo(Gtk.Application):
         self._avc = ApplicationsViewController(
             self._activity_rwsem,
             self._entropy, self._entropy_ws, self._nc, self._service,
-            icons, self._not_found_box,
+            self._pref_view_c, icons, self._not_found_box,
             self._search_entry, self._search_entry_completion,
             self._search_entry_store, self._app_store, self._view)
 
@@ -454,6 +477,20 @@ class Rigo(Gtk.Application):
         state (or mode).
         """
         self._notice_view.show()
+
+    def _exit_preferences_state(self):
+        """
+        Action triggered when UI exits the Preferences
+        state (or mode).
+        """
+        self._pref_view.hide()
+
+    def _enter_preferences_state(self):
+        """
+        Action triggered when UI enters the Preferences
+        state (or mode).
+        """
+        self._pref_view.show()
 
     def _exit_static_state(self):
         """
@@ -731,6 +768,7 @@ class Rigo(Gtk.Application):
             return
 
         self._thread_dumper()
+        self._pref_view_c.setup()
         self._config_view_c.setup()
         self._notice_view_c.setup()
         self._app_view_c.setup()

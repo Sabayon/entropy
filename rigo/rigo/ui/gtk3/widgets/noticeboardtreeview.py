@@ -18,15 +18,10 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-from gi.repository import Gtk, Gdk, GObject, Pango
-import os
-from threading import Lock
-
-from entropy.i18n import _
+from gi.repository import Gtk
 
 from cellrenderers import CellButtonRenderer, CellRendererNoticeView
 
-from rigo.em import em, StockEms, Ems
 from rigo.utils import open_url
 from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
 

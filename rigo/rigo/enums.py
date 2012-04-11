@@ -59,7 +59,8 @@ class RigoViewStates:
         WORK_VIEW_STATE,
         CONFUPDATES_VIEW_STATE,
         NOTICEBOARD_VIEW_STATE,
-    ) = range(6)
+        PREFERENCES_VIEW_STATE,
+    ) = range(7)
 
 class LocalActivityStates:
     (

@@ -189,6 +189,32 @@
               </packing>
             </child>
             <child>
+              <object class="GtkVBox" id="preferencesViewVbox">
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkScrolledWindow" id="preferencesViewScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="vscrollbar_policy">automatic</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="expand">True</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">6</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkScrolledWindow" id="appViewScrollWin">
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
@@ -573,7 +599,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
-                <property name="position">6</property>
+                <property name="position">7</property>
               </packing>
             </child>
           </object>

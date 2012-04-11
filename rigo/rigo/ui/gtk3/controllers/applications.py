@@ -29,6 +29,7 @@ from gi.repository import Gtk, GLib, GObject
 from rigo.paths import CONF_DIR
 from rigo.enums import RigoViewStates, AppActions
 from rigo.models.application import Application, ApplicationMetadata
+from rigo.models.preference import Preference
 from rigo.utils import escape_markup, prepare_markup
 from rigo.ui.gtk3.widgets.notifications import \
     NotificationBox
@@ -77,7 +78,7 @@ class ApplicationsViewController(GObject.Object):
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
-                 nc, rigo_service, icons, nf_box,
+                 nc, rigo_service, prefc, icons, nf_box,
                  search_entry, search_entry_completion,
                  search_entry_store, store, view):
         GObject.Object.__init__(self)
@@ -94,6 +95,7 @@ class ApplicationsViewController(GObject.Object):
         self._not_found_search_box = None
         self._not_found_label = None
         self._nc = nc
+        self._prefc = prefc
 
         self._cacher = EntropyCacher()
         self._search_thread_mutex = Lock()
@@ -329,6 +331,11 @@ class ApplicationsViewController(GObject.Object):
             return
         elif text == "rigo:confupdate":
             self._service.configuration_updates()
+            return
+        elif text == "rigo:config":
+            GLib.idle_add(self.emit, "view-want-change",
+                          RigoViewStates.PREFERENCES_VIEW_STATE,
+                          None)
             return
         elif text == "rigo:notice":
             self._service.noticeboards()
@@ -572,6 +579,24 @@ class ApplicationsViewController(GObject.Object):
 
         # not enabling because it causes SIGFPE (Gtk3 bug?)
         # self._search_entry.set_completion(self._search_completion)
+
+        pref = Preference(
+            -1, _("Update repositories"),
+             _("Force the update of the available repositories."),
+             "view-refresh", self._update_repositories)
+        self._prefc.append(pref)
+
+        def _update():
+            self.emit("view-want-change",
+                      RigoViewStates.STATIC_VIEW_STATE,
+                      None)
+            self._service.configuration_updates()
+        pref = Preference(
+            100, _("Show Configuration File Updates"),
+             _("Show (if any) the list of pending configuration file "
+               "updates."),
+             "text-plain", _update)
+        self._prefc.append(pref)
 
         self._view.set_model(self._store)
         self._search_entry.connect(

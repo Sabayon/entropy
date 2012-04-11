@@ -22,7 +22,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 from gi.repository import Gtk, Gdk, GLib, GObject
 
 from rigo.em import StockEms
-from rigo.enums import AppActions
+from rigo.enums import AppActions, RigoViewStates
 from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     LoginNotificationBox
 from rigo.ui.gtk3.widgets.stars import ReactiveStar
@@ -30,6 +30,7 @@ from rigo.ui.gtk3.widgets.comments import CommentBox
 from rigo.ui.gtk3.widgets.images import ImageBox
 from rigo.utils import build_application_store_url, \
     escape_markup, prepare_markup
+from rigo.models.preference import Preference
 
 from RigoDaemon.enums import AppActions as DaemonAppActions
 
@@ -93,12 +94,14 @@ class ApplicationViewController(GObject.Object):
     VOTE_NOTIFICATION_CONTEXT_ID = "VoteNotificationContext"
     COMMENT_NOTIFICATION_CONTEXT_ID = "CommentNotificationContext"
 
-    def __init__(self, entropy_client, entropy_ws, rigo_service, builder):
+    def __init__(self, entropy_client, entropy_ws, prefc,
+                 rigo_service, builder):
         GObject.Object.__init__(self)
         self._builder = builder
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._service = rigo_service
+        self._prefc = prefc
         self._app_store = None
         self._last_app = None
         self._nc = None
@@ -163,9 +166,22 @@ class ApplicationViewController(GObject.Object):
         self._app_store = store
 
     def setup(self):
-        self.connect("application-activated", self._on_application_activated)
-        self._app_store.connect("redraw-request", self._on_redraw_request)
-        self._app_comment_send_button.connect("clicked", self._on_send_comment)
+
+        pref = Preference(
+            50,
+            _("Clean Entropy Web Service Session"),
+            _("Discard any registered login credential"
+              "used to send votes and comments."),
+            "edit-clear", self._logout)
+        self._prefc.append(pref)
+
+        self.connect(
+            "application-activated",
+            self._on_application_activated)
+        self._app_store.connect(
+            "redraw-request", self._on_redraw_request)
+        self._app_comment_send_button.connect(
+            "clicked", self._on_send_comment)
         self._app_comment_send_button.set_sensitive(False)
         self._app_comment_text_buffer.connect(
             "changed", self._on_comment_buffer_changed)
@@ -569,6 +585,26 @@ class ApplicationViewController(GObject.Object):
             GLib.idle_add(_submit_success, new_doc)
         else:
             GLib.idle_add(_submit_fail)
+
+    def _logout(self):
+        """
+        Logout from any configured repository.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repositories = self._entropy.repositories()
+        finally:
+            self._entropy.rwsem().reader_release()
+
+        for repository in repositories:
+            webserv = self._entropy_ws.get(repository)
+            if webserv is not None:
+                webserv.remove_credentials()
+
+        GLib.idle_add(self._avc.emit, "logged-out")
+        GLib.idle_add(self._avc.emit, "view-want-change",
+                      RigoViewStates.STATIC_VIEW_STATE,
+                      None)
 
     def _logout_webservice(self, app, reinit_callback):
         """
