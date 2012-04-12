@@ -71,7 +71,7 @@ def repositories(options):
                 print_error(er_txt)
                 return 1
             if not entropy.tools.is_root():
-                rc = _do_dbus_sync()
+                rc = _do_dbus_sync(repo_names, force=e_req_force_update)
             else:
                 rc = _do_sync(entropy_client, repo_identifiers = repo_names,
                     force = e_req_force_update)
@@ -395,7 +395,7 @@ def _show_repository_info(entropy_client, reponame):
 
     return 0
 
-def _do_dbus_sync():
+def _do_dbus_sync(repositories, force=False):
 
     info_txt = \
         _("Sending the update request to Entropy Services")
@@ -428,7 +428,7 @@ def _do_dbus_sync():
         _system_bus = dbus.SystemBus(mainloop = dbus_loop)
         try:
             _entropy_dbus_object = _system_bus.get_object(
-                "org.entropy.Client", "/notifier"
+                "org.sabayon.Rigo", "/"
             )
             break
         except dbus.exceptions.DBusException as e:
@@ -439,15 +439,21 @@ def _do_dbus_sync():
 
     if _entropy_dbus_object is not None:
         iface = dbus.Interface(_entropy_dbus_object,
-            dbus_interface = "org.entropy.Client")
+            dbus_interface = "org.sabayon.Rigo")
+        accepted = False
         try:
-            iface.trigger_check()
+            accepted = iface.update_repositories(repositories, force)
         except dbus.exceptions.DBusException as err:
             bail_out(err)
             return 1
-        info_txt = _("Have a nice day")
-        print_info(brown(info_txt) + ".")
-        return 0
+        if accepted:
+            info_txt = _("Have a nice day")
+            print_info(brown(info_txt) + ".")
+            return 0
+        else:
+            info_txt = _("Repositories Updated not allowed")
+            print_error(brown(info_txt) + ".")
+            return 1
 
     bail_out(None)
     return 1
