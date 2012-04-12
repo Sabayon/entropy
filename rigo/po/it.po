@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 23:19+0200\n"
-"PO-Revision-Date: 2012-04-11 21:18+0000\n"
+"POT-Creation-Date: 2012-04-12 07:19+0200\n"
+"PO-Revision-Date: 2012-04-12 05:21+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.net/projects/p/sabayon-rigo/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -335,12 +335,12 @@ msgstr "Impossibile <b>scartare</b> il file di configurazione"
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Pulisci sessione Servizi Web Entropy"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
-"Discard any registered login credentialused to send votes and comments."
-msgstr ""
+"Discard any registered login credential used to send votes and comments."
+msgstr "Annulla qualsiasi credenziale di login registrata usata per inviare voti e commenti."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -521,19 +521,19 @@ msgstr "Non trovato"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:584
 msgid "Update repositories"
-msgstr ""
+msgstr "Aggiorna repository"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:585
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Forza l'aggiornamento delle repository disponibili."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:595
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Visualizza aggiornamenti file di configurazione"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:596
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Visualizza (se esiste) la lista degli aggiornamenti dei file di configurazione."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -581,7 +581,7 @@ msgstr "rimuovi"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr ""
+msgstr "Esegui"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format

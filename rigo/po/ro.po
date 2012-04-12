@@ -4,14 +4,15 @@
 # 
 # Translators:
 #   <dmfkun@gmail.com>, 2012.
+#   <lxnay@sabayon.org>, 2012.
 # Stefan Cristian <stevencristian@hotmail.com>, 2012.
 #   <unknerror@alternativefuse.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 23:19+0200\n"
-"PO-Revision-Date: 2012-04-11 21:18+0000\n"
+"POT-Creation-Date: 2012-04-12 07:19+0200\n"
+"PO-Revision-Date: 2012-04-12 05:22+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Romanian (http://www.transifex.net/projects/p/sabayon-rigo/language/ro/)\n"
 "MIME-Version: 1.0\n"
@@ -339,12 +340,12 @@ msgstr "Nu pot <b>renunta</b> la fisierul de configuratie"
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Curata Sesiunea Entropy Web Services"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
-"Discard any registered login credentialused to send votes and comments."
-msgstr ""
+"Discard any registered login credential used to send votes and comments."
+msgstr "Renunta la orice credential de utilizator logat folosit pentru a trimite voturi si comentarii"
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -526,19 +527,19 @@ msgstr "Negasit"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:584
 msgid "Update repositories"
-msgstr ""
+msgstr "Actualizeaza repositoriile"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:585
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Forteaza actualizarea repositoriilor disponibile"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:595
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Arata actualizarea configuratiilor fisierelor"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:596
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Arata (daca este vreouna) lista unor actualizari de configuratii ale fisierelor in asteptare"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -587,7 +588,7 @@ msgstr "inlatura"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr ""
+msgstr "Ruleaza"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format

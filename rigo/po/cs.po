@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 23:19+0200\n"
-"PO-Revision-Date: 2012-04-11 21:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"POT-Creation-Date: 2012-04-12 07:19+0200\n"
+"PO-Revision-Date: 2012-04-12 06:32+0000\n"
+"Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-rigo/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -337,12 +337,12 @@ msgstr "Nelze <b>zrušit</b> konfigurační soubor"
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Vymazat sezení k webovým službám Entropy"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
-"Discard any registered login credentialused to send votes and comments."
-msgstr ""
+"Discard any registered login credential used to send votes and comments."
+msgstr "Vymazat přihlašovací údaje použité pro posílání hlasů a komentářů."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -524,19 +524,19 @@ msgstr "Nenalezeno"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:584
 msgid "Update repositories"
-msgstr ""
+msgstr "Aktualizovat repozitáře"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:585
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Vynutit aktualizaci dostupných repozitářů"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:595
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Zobrazit aktualizace konfiguračních souborů"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:596
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Zobrazit (pokud existuje) seznam nezpracovaných aktualizací konfiguračních souborů."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -585,7 +585,7 @@ msgstr "odstranit"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr ""
+msgstr "Spustit"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format

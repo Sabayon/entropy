@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 23:19+0200\n"
-"PO-Revision-Date: 2012-04-11 21:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"POT-Creation-Date: 2012-04-12 07:19+0200\n"
+"PO-Revision-Date: 2012-04-12 15:43+0000\n"
+"Last-Translator: fleischie <dicker_karl@web.de>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/sabayon-rigo/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,15 +44,15 @@ msgstr "Installation der Anwendung"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
-msgstr ""
+msgstr "Nicht möglich Konfigurationsdatei zu speichern"
 
 #: ../rigo/models/configupdate.py:300
 msgid "Destination"
-msgstr ""
+msgstr "Ziel"
 
 #: ../rigo/models/configupdate.py:303
 msgid "Applications"
-msgstr ""
+msgstr "Anwendungen"
 
 #: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
 #: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
@@ -272,11 +272,11 @@ msgstr "Die Installation von <b>%s</b> würde zur Entfernung von folgenden Anwen
 #: ../rigo/controllers/daemon.py:2265
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
-msgstr ""
+msgstr "Paket Installationsfehler: <i>%s</i>"
 
 #: ../rigo/controllers/daemon.py:2270
 msgid "Okay"
-msgstr ""
+msgstr "Okay"
 
 #: ../rigo/controllers/daemon.py:2534
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
@@ -318,28 +318,28 @@ msgstr[1] ", und <b>%d</b> <i>weitere in Warteschlange</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
-msgstr ""
+msgstr "Nicht möglich Konfigurationsdatei zu <b>bearbeiten</b>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
+msgstr "Nicht möglich Konfigurationsdateiunterschiede <b>anzuzeigen</b>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr ""
+msgstr "Nicht möglich Konfigurationsdateien <b>zusammenzufügen</b>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
-msgstr ""
+msgstr "Nicht möglich Konfigurationsdateien <b>zu verwerfen</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Säubere Entropy Webservice Sitzung"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
-"Discard any registered login credentialused to send votes and comments."
-msgstr ""
+"Discard any registered login credential used to send votes and comments."
+msgstr "Verwerfe sämtliche registrierte Anmeldedaten, die für Wahlen und Kommentare benötigt werden."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -371,8 +371,8 @@ msgstr "_Ok, Danke"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<b>%s</b> als <b>%s</b> mit <b>%d</b> Stern bewerten?"
+msgstr[1] "<b>%s</b> als <b>%s</b> mit <b>%d</b> Sternen bewerten?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
@@ -503,7 +503,7 @@ msgstr "Lade Kommentare..."
 #: ../rigo/ui/gtk3/controllers/applications.py:267
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "Anwendung <b>%s</b> nicht gefunden"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:419
 msgid "Nothing found for"
@@ -520,19 +520,19 @@ msgstr "Nicht gefunden"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:584
 msgid "Update repositories"
-msgstr ""
+msgstr "Erneuere Repositorien"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:585
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Erzwinge die Erneuerung verfügbarer Repositorien."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:595
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Zeige Konfigurationsdatei Updates"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:596
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Zeige (falls vorhanden) die Liste der ausstehenden Updates von Konfigurationsdateien."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -743,21 +743,21 @@ msgstr "Sicher entfernbar"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
+msgstr "<b>%s</b> Anwendung benötigt die Installation folgender Anwendungen: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:766
 msgid "Show full list"
-msgstr ""
+msgstr "Zeige komplette Liste"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:826
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
+msgstr "<b>%s</b> Anwendung benötigt die Entfernung folgender Anwendungen: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:873
 msgid "Confirm"
-msgstr ""
+msgstr "Bestätige"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:874
 msgid "Undo"
@@ -768,26 +768,26 @@ msgstr ""
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "<b>%s</b> Anwendungsaktion beginnt in <big><b>%d</b></big> Sekunde"
+msgstr[1] "<b>%s</b> Anwendungsaktion beginnt in <big><b>%d</b></big> Sekunden"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:981
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Es gibt <b>%d</b> Update für Konfigurationsdateien"
+msgstr[1] "Es gibt <b>%d</b> Updates für Konfigurationsdateien"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:987
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
+msgstr "Es ist <b>unglaublich</b> wichtig, diese Konfigurationsdateien vor dem <b>Systemneustart</b> zu aktualisieren."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:998
 #: ../rigo/ui/gtk3/widgets/notifications.py:1048
 msgid "Let me see"
-msgstr ""
+msgstr "Zeig mal her"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:999
 msgid "Happily ignore"
@@ -797,28 +797,28 @@ msgstr ""
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Es gibt <b>%d</b> Mitteilung eines Repositoriums"
+msgstr[1] "Es gibt <b>%d</b> Mitteilungen von Repositorien"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1038
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "Es ist <b>unglaublich</b> wichtig, sie immer zu lesen."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1049
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Hör auf mich zu nerven"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:93
 msgid "Difference"
-msgstr ""
+msgstr "Unterschied"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:105
 msgid "Discard"
-msgstr ""
+msgstr "Verwerfen"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"

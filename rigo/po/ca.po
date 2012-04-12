@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-11 23:19+0200\n"
-"PO-Revision-Date: 2012-04-11 21:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"POT-Creation-Date: 2012-04-12 07:19+0200\n"
+"PO-Revision-Date: 2012-04-12 06:11+0000\n"
+"Last-Translator: rogerc <rcalvoi@yahoo.com>\n"
 "Language-Team: Catalan (http://www.transifex.net/projects/p/sabayon-rigo/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -45,15 +45,15 @@ msgstr "Instal·lació d'aplicació"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
-msgstr ""
+msgstr "No es pot desar el fitxer de configuració"
 
 #: ../rigo/models/configupdate.py:300
 msgid "Destination"
-msgstr ""
+msgstr "Destí"
 
 #: ../rigo/models/configupdate.py:303
 msgid "Applications"
-msgstr ""
+msgstr "Aplicacions"
 
 #: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
 #: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
@@ -144,7 +144,7 @@ msgstr[1] "<b>%i</b> aplicacions a la cua..."
 
 #: ../rigo/controllers/daemon.py:661
 msgid "Application"
-msgstr ""
+msgstr "Aplicació"
 
 #: ../rigo/controllers/daemon.py:664
 msgid "An <b>unknown error</b> occurred"
@@ -273,11 +273,11 @@ msgstr "La instal·lació de <b>%s</b> provocarà l'eliminació de les aplicacio
 #: ../rigo/controllers/daemon.py:2265
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
-msgstr ""
+msgstr "Error en la instal·lació del paquet: <i>%s</i>"
 
 #: ../rigo/controllers/daemon.py:2270
 msgid "Okay"
-msgstr ""
+msgstr "D'acord"
 
 #: ../rigo/controllers/daemon.py:2534
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
@@ -294,7 +294,7 @@ msgstr "La gestió d'aplicacions està <b>en curs</b>..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:229
 #: ../rigo/ui/gtk3/controllers/notifications.py:242
 msgid "Interrupt"
-msgstr ""
+msgstr "Interrupció"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:237
 msgid "<b>System Upgrade</b> in progress..."
@@ -319,28 +319,28 @@ msgstr[1] ", i <b>%d</b> <i> més a la cua</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
-msgstr ""
+msgstr "No es pot <b>editar</b> el fitxer de configuració"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
+msgstr "No es pot <b>mostrar</b> la diferència entre els fitxers de configuració"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr ""
+msgstr "No es pot <b>fusionar</b> el fitxer de configuració"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
-msgstr ""
+msgstr "No es pot <b>descartar</b> el fitxer de configuració"
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr ""
+msgstr "Neteja la sessió Entropy Web Service"
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
-"Discard any registered login credentialused to send votes and comments."
-msgstr ""
+"Discard any registered login credential used to send votes and comments."
+msgstr "Descarta qualsevol credencial d'accés per enviar vots i comentaris."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -372,8 +372,8 @@ msgstr "_D'acord, gràcies"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Puntua <b>%s</b> com <b>%s</b>, amb <b>%d</b> estrella"
+msgstr[1] "Puntua <b>%s</b> com <b>%s</b>, amb <b>%d</b> estrelles"
 
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
@@ -504,7 +504,7 @@ msgstr "S'estan carregant els comentaris..."
 #: ../rigo/ui/gtk3/controllers/applications.py:267
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "No es pot trobar l'aplicació <b>%s</b>"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:419
 msgid "Nothing found for"
@@ -521,19 +521,19 @@ msgstr "No s'ha trobat"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:584
 msgid "Update repositories"
-msgstr ""
+msgstr "Actualitza els repositoris"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:585
 msgid "Force the update of the available repositories."
-msgstr ""
+msgstr "Força l'actualització dels repositoris disponibles."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:595
 msgid "Show Configuration File Updates"
-msgstr ""
+msgstr "Mostra les actualitzacions dels fitxers de configuració"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:596
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
+msgstr "Mostra la llista de fitxers de configuració pendents d'actualitzar (si n'hi ha)."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -581,7 +581,7 @@ msgstr "elimina"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr ""
+msgstr "Executa"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format
@@ -744,82 +744,82 @@ msgstr "Segures per eliminar"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
+msgstr "L'aplicació <b>%s</b> requereix la instal·lació de les següents aplicacions: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:766
 msgid "Show full list"
-msgstr ""
+msgstr "Mostra la llista sencera"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:826
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
+msgstr "L'aplicació <b>%s</b> requereix l'eliminació de les aplicacions següents: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:873
 msgid "Confirm"
-msgstr ""
+msgstr "Confirma"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:874
 msgid "Undo"
-msgstr ""
+msgstr "Desfés"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:935
 #, python-format
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segon"
+msgstr[1] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segons"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:981
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Hi ha <b>%d</b> fitxer de configuració per actualitzar"
+msgstr[1] "Hi ha <b>%d</b> fitxers de configuració per actualitzar"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:987
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
+msgstr "És <b>extremadament</b> important que actualitzeu els fitxers de configuració abans de <b>reiniciar</b> el sistema."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:998
 #: ../rigo/ui/gtk3/widgets/notifications.py:1048
 msgid "Let me see"
-msgstr ""
+msgstr "A veure"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:999
 msgid "Happily ignore"
-msgstr ""
+msgstr "Ignora alegrement"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1032
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Hi ha <b>%d</b> notícia d'un repositori"
+msgstr[1] "Hi ha <b>%d</b> notícies dels repositoris"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1038
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "És <b>extremadament</b> important que els llegiu."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1049
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Deixa d'empipar-me"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
-msgstr ""
+msgstr "Edita"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:93
 msgid "Difference"
-msgstr ""
+msgstr "Diferència"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:105
 msgid "Discard"
-msgstr ""
+msgstr "Descarta"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
