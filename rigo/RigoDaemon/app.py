@@ -928,12 +928,14 @@ class RigoDaemonService(dbus.service.Object):
             GLib.idle_add(self.updates_available,
                           update, remove)
 
-    def _update_repositories(self, repositories, force, activity, pid):
+    def _update_repositories(self, repositories, force, activity, pid,
+                             authorized=False):
         """
         Repositories Update execution code.
         """
-        authorized = self._authorize(
-            pid, PolicyActions.UPDATE_REPOSITORIES)
+        if not authorized:
+            authorized = self._authorize(
+                pid, PolicyActions.UPDATE_REPOSITORIES)
         if not authorized:
             write_output("_update_repositories: not authorized",
                          debug=True)
