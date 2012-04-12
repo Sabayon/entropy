@@ -1,3 +1,155 @@
+commit 437ac32ac8f01eb05a946347dbb852c406e65a7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:58:28 2012 +0200
+
+    Release Entropy 1.0_rc99
+
+commit 73f459442ba7994f7d1527676f5651124cd9e42d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:53:50 2012 +0200
+
+    [Makefile] drop updates-daemon-install target
+
+commit 06815cdb849a0c07463ab80a4184bc16eefbaa71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:50:53 2012 +0200
+
+    [todo] update TODO
+
+commit e075c1726ab41a86d455ca1fa99d20468f70cc33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:49:59 2012 +0200
+
+    [equo] migrate unprivileged repositories update to RigoDaemon
+
+commit d59dfb92e4b199c1582a7594ff262ed6c45f1a9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:44:28 2012 +0200
+
+    [RigoDaemon] do not run automatic repositories update if on batteries
+
+commit 585730d3441729c378ffadb0adc078ab8ba9b7b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:40:43 2012 +0200
+
+    [misc] remove old cruft
+
+commit c43e5892763c1b780bf0ccdb39ce810f2c695239
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:40:20 2012 +0200
+
+    [magneto] migrate to RigoDaemon, kill entropy-updates-service (RIP!)
+
+commit a639e417d9ca1fee35f42096b304c9ec116171b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:38:38 2012 +0200
+
+    [RigoDaemon] extend updates_available() signal, bump daemon API
+
+commit d042c27d55ad579875f8b616399bd2ce15865ea0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 18:13:07 2012 +0200
+
+    [Rigo] po: update translations
+
+commit 636852835749f4685d14b9f2c9416fc04c31ae76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 18:04:17 2012 +0200
+
+    [RigoDaemon] add automatic repositories update timer (running every 4 hours)
+
+commit dab7ea2702857790d5b12ccc893ea3d026b4b18e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 18:03:48 2012 +0200
+
+    [RigoDaemon] _update_repositories(): make possible to bypass authorization
+
+commit 0ea3fbf0d85045265bd35a98740b1a27d29eb46e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 18:03:11 2012 +0200
+
+    [RigoDaemon] add docstring to _start_package_cache_timer
+
+commit 44545691fef828d6bff8fb0bc8c4ec8736968f79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 18:00:47 2012 +0200
+
+    [RigoDaemon] add non-blocking, simpler version of _acquire_exclusive() for internal use
+
+commit 64b12d5f0ccf2a0cbe4c26daa8b857d352e9bf22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 17:58:48 2012 +0200
+
+    [Rigo] show please wait notification only when the same instance generated activity
+
+commit 8464be75762668f25de7e8e23b69635186640273
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 16:21:40 2012 +0200
+
+    [RigoDaemon] add package cache cleanup timer, running every 8 hours
+
+commit aa9f195750518e15d45453c8aebb5c82791d006e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 12:48:57 2012 +0200
+
+    [todo] update TODO
+
+commit 890b447785f83c12e4ce1525c2e2c149417fc8d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 12:41:01 2012 +0200
+
+    [RigoDaemon] implement directory monitor for both executable and repositories
+    
+    This commit adds directory monitor for the Installed Packages
+    Repository in order to catch, through dnofity, repository change
+    events and signal repositories_updated() once locks are released.
+    
+    Given the current Python limitations in supporting dnotify without
+    getting dirt, DirectoryMonitor dispatches SIGIO to the callback
+    for both installed repository directory change and RigoDaemon
+    executable. It is up to the code determine what effectively changed.
+    
+    Moreover, enabling DN_MULTISHOT causes the signal handler to be
+    kept alive until the dnotified file descriptors are explicitly closed
+    (DirectoryMonitor.close()). This is of course sub-optimal because
+    we get called more than needed, but still much better than polling.
+
+commit 5f8ca3c6aaeec8c29c2218ca82d0b45242929416
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 12:40:35 2012 +0200
+
+    [RigoDaemon] fixup several minor bugs
+
+commit 043a0aeeebbbc50530ce195a4d43101327a31cd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 12:39:20 2012 +0200
+
+    [entropy.misc] DirectoryMonitor: make possible to monitor multiple dirs
+
+commit 2f475115a0701402867e02b8bf702e620ace5537
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 08:09:43 2012 +0200
+
+    [equo] use Client.installed_repository_path()
+
+commit 1f9c4fb72022fcb185da973b9ff762eeb5b56786
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 08:09:14 2012 +0200
+
+    [entropy.client] add installed_repository_path() public method
+
+commit 1fb54f5560ac3da4593c18202a092d1b7511a8de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 07:19:04 2012 +0200
+
+    [Rigo] fix typo in i18n string
+
+commit 6e3b6ba7447313aa4bdf18cd27df5094ed132e63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 11 23:24:40 2012 +0200
+
+    Tagging Entropy version 1.0_rc98
+
 commit 461ddc712f7b48061b7b36568622d666f901a979
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 11 23:24:39 2012 +0200
