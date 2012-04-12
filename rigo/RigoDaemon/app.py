@@ -698,6 +698,10 @@ class RigoDaemonService(dbus.service.Object):
         """
         Execute automatic Repositories Update Activity.
         """
+        if self._is_system_on_batteries():
+            self._start_repositories_update_timer()
+            return
+
         activity = ActivityStates.UPDATING_REPOSITORIES
         acquired = False
         busied = False
@@ -750,6 +754,18 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
             finally:
                 self._start_repositories_update_timer()
+
+    def _is_system_on_batteries(self):
+        """
+        Return whether System is running on batteries.
+        """
+        ac_powa_exec = "/usr/bin/on_ac_power"
+        if not os.access(ac_powa_exec, os.X_OK):
+            return False
+        ex_rc = os.system(ac_powa_exec)
+        if ex_rc:
+            return True
+        return False
 
     def _enable_stdout_stderr_redirect(self):
         """
