@@ -170,7 +170,7 @@ class ApplicationViewController(GObject.Object):
         pref = Preference(
             50,
             _("Clean Entropy Web Service Session"),
-            _("Discard any registered login credential"
+            _("Discard any registered login credential "
               "used to send votes and comments."),
             "edit-clear", self._logout)
         self._prefc.append(pref)
