@@ -2,9 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    magneto:
-      - gtk3 version
-
     - make security advisories caching faster (cache server-side?)
 
     - drop bashism from entropy.spm (/bin/bash used)
