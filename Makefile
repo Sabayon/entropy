@@ -73,18 +73,5 @@ equo-install:
 	install -m 644 conf/_equo $(DESTDIR)$(PREFIX)/share/zsh/site-functions/
 
 
-updates-daemon-install:
-
-	mkdir -p $(DESTDIR)/etc/dbus-1/system.d/
-	mkdir -p $(DESTDIR)$(PREFIX)/sbin/
-	mkdir -p $(DESTDIR)$(PREFIX)/libexec/
-	mkdir -p $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/
-	mkdir -p $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/
-	install -m 744 services/client-updates-daemon $(DESTDIR)$(PREFIX)/sbin/
-	install -m 744 services/entropy-updates-service $(DESTDIR)$(PREFIX)/libexec/
-	install -m 644 misc/dbus/system.d/org.entropy.Client.conf $(DESTDIR)/etc/dbus-1/system.d/
-	install -m 644 misc/dbus/system-services/org.entropy.Client.service $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/
-	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/
-
-install: all entropy-install equo-install updates-daemon-install
+install: all entropy-install equo-install
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
