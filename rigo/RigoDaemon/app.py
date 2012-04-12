@@ -1987,7 +1987,8 @@ class RigoDaemonService(dbus.service.Object):
         """
         Acquire Shared access to Entropy Resources.
         This method must be called with activity_mutex held
-        to avoid races with _acquire_exclusive().
+        to avoid races with _acquire_exclusive() and
+        _acquire_exclusive_simple_nb().
         """
         act_acquired = self._activity_mutex.acquire(False)
         if act_acquired:
@@ -2001,11 +2002,66 @@ class RigoDaemonService(dbus.service.Object):
         self._entropy.lock_resources(
             blocking=blocking, shared=True)
 
+    def _acquire_exclusive_simple_nb(self):
+        """
+        Acquire Exclusive access to Entropy Resources in
+        non-blocking mode without asking connected
+        clients to release their locks.
+        This method must be called with activity_mutex held
+        to avoid races with _acquire_exclusive() and
+        _acquire_shared().
+        """
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_acquire_exclusive_simple_nb: "
+                "Activity mutex not acquired!")
+        write_output("_acquire_exclusive_simple_nb: "
+                     "about to acquire lock",
+                     debug=True)
+
+        with self._acquired_exclusive_mutex:
+            if not self._acquired_exclusive:
+                # now we got the exclusive lock
+                acquired = self._entropy.lock_resources(
+                    blocking=False, shared=False)
+                if acquired:
+                    self._acquired_exclusive = True
+                return acquired
+            return True
+
+    def _release_exclusive_simple_nb(self):
+        """
+        Release Exclusive access to Entropy Resources previously
+        acquired through _acquire_exclusive_simple_nb().
+        This method must be called with activity_mutex held
+        to avoid races with _acquire_exclusive() and
+        _acquire_exclusive().
+        """
+        write_output("_release_exclusive_simple_nb: "
+                     "about to release lock",
+                     debug=True)
+        act_acquired = self._activity_mutex.acquire(False)
+        if act_acquired:
+            # bug!
+            self._activity_mutex.release()
+            raise AttributeError(
+                "_release_exclusive_simple_nb: "
+                "Activity mutex not acquired!")
+
+        with self._acquired_exclusive_mutex:
+            if self._acquired_exclusive:
+                self._entropy.unlock_resources()
+                self._acquired_exclusive = False
+
     def _release_shared(self):
         """
         Release Shared access to Entropy Resources.
         This method must be called with activity_mutex held
-        to avoid races with _acquire_exclusive().
+        to avoid races with _acquire_exclusive() and
+        _acquire_exclusive_simple_nb().
         """
         write_output("_release_shared: about to release lock",
                      debug=True)
@@ -2024,7 +2080,8 @@ class RigoDaemonService(dbus.service.Object):
         Note: this is blocking and will issue the
         exclusive_acquired() signal when done.
         This method must be called with activity_mutex held
-        to avoid races with _acquire_shared().
+        to avoid races with _acquire_shared() and
+        _acquire_exclusive_simple_nb().
         """
         act_acquired = self._activity_mutex.acquire(False)
         if act_acquired:
