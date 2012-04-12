@@ -1015,6 +1015,16 @@ class RepositoryMixin:
         """
         return self._installed_repository
 
+    def installed_repository_path(self):
+        """
+        Return the Entropy Client installed packages repository
+        path.
+
+        @return: repository path
+        @rtype: string
+        """
+        return etpConst['etpdatabaseclientfilepath']
+
     def _open_installed_repository(self):
 
         def load_db_from_ram():
@@ -1031,11 +1041,12 @@ class RepositoryMixin:
             self._add_plugin_to_client_repository(m_conn)
             return m_conn
 
-        db_dir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
+        repo_path = self.installed_repository_path()
+        db_dir = os.path.dirname(repo_path)
         if not os.path.isdir(db_dir):
             os.makedirs(db_dir)
 
-        db_path = etpConst['etpdatabaseclientfilepath']
+        db_path = repo_path
         if (self._installed_repo_enable) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
             entropy.tools.print_traceback(f = self.logger)
@@ -1293,7 +1304,7 @@ class RepositoryMixin:
         """
         if repository_directory is None:
             repository_directory = os.path.dirname(
-                etpConst['etpdatabaseclientfilepath'])
+                self.installed_repository_path())
 
         valid_backups = []
         for fname in os.listdir(repository_directory):
