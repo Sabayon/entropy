@@ -587,6 +587,16 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "InstalledRepositoryUpdatedWorkerFirst"
         task.start()
 
+        self._start_package_cache_timer()
+
+    def _start_package_cache_timer(self):
+        # clean entropy packages cache every 8 hours, basing
+        # on Entropy Client settings
+        task = Timer(3600*8, self._clean_package_cache)
+        task.daemon = True
+        task.name = "CleanPackageCacheTimer"
+        task.start()
+
     def _directory_monitor_handler(self):
         """
         DirectoryMonitor SIGIO handler.
@@ -646,6 +656,28 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "ShutdownPinger"
         task.daemon = True
         task.start()
+
+    def _clean_package_cache(self):
+        """
+        Clean Entropy Packages Cache, removing old package
+        files.
+        """
+        with self._activity_mutex:
+            self._acquire_shared()
+            try:
+
+                self._rwsem.reader_acquire()
+                try:
+                    self._entropy.clean_downloaded_packages()
+                except AttributeError:
+                    pass
+                finally:
+                    self._rwsem.reader_release()
+
+            finally:
+                self._release_shared()
+                # spin!
+                self._start_package_cache_timer()
 
     def _enable_stdout_stderr_redirect(self):
         """
