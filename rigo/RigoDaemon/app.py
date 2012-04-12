@@ -588,6 +588,7 @@ class RigoDaemonService(dbus.service.Object):
         task.start()
 
         self._start_package_cache_timer()
+        self._start_repositories_update_timer()
 
     def _start_package_cache_timer(self):
         """
@@ -599,6 +600,16 @@ class RigoDaemonService(dbus.service.Object):
         task = Timer(3600 * 8, self._clean_package_cache)
         task.daemon = True
         task.name = "CleanPackageCacheTimer"
+        task.start()
+
+    def _start_repositories_update_timer(self):
+        """
+        Start timer thread that handles automatic repositories
+        update.
+        """
+        task = Timer(3600 * 4, self._auto_repositories_update)
+        task.daemon = True
+        task.name = "AutoRepositoriesUpdateTimer"
         task.start()
 
     def _directory_monitor_handler(self):
@@ -682,6 +693,63 @@ class RigoDaemonService(dbus.service.Object):
                 self._release_shared()
                 # spin!
                 self._start_package_cache_timer()
+
+    def _auto_repositories_update(self):
+        """
+        Execute automatic Repositories Update Activity.
+        """
+        activity = ActivityStates.UPDATING_REPOSITORIES
+        acquired = False
+        busied = False
+        spin = False
+        with self._activity_mutex:
+            try:
+                acquired = self._acquire_exclusive_simple_nb()
+                if not acquired:
+                    write_output("_auto_update_repositories: "
+                                 "lock not acquired",
+                                 debug=True)
+                    spin = True
+                    return
+
+                try:
+                    self._busy(activity)
+                    busied = True
+                except ActivityStates.BusyError:
+                    write_output("_auto_update_repositories: I'm busy",
+                                 debug=True)
+                    spin = True
+                    return
+                except ActivityStates.SameError:
+                    write_output("_auto_update_repositories: "
+                                 "already doing it",
+                                 debug=True)
+                    spin = True
+                    return
+
+                write_output("_auto_update_repositories: "
+                             "busied: %s" % (busied,),
+                             debug=True)
+
+            finally:
+                if acquired:
+                    self._release_exclusive_simple_nb()
+                if spin:
+                    self._start_repositories_update_timer()
+
+        if busied:
+            try:
+                write_output("_auto_update_repositories: "
+                             "spawning _update_repositories",
+                             debug=True)
+                self._update_repositories(
+                    [], False, activity, None,
+                    authorized=True)
+                write_output("_auto_update_repositories: "
+                             "_update_repositories terminated",
+                             debug=True)
+            finally:
+                self._start_repositories_update_timer()
 
     def _enable_stdout_stderr_redirect(self):
         """
