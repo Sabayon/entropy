@@ -36,7 +36,7 @@ def _backup_client_repository(entropy_client):
     @return: 
     @rtype: 
     """
-    dbpath = etpConst['etpdatabaseclientfilepath']
+    dbpath = entropy_client.installed_repository_path()
     if not os.path.isfile(dbpath):
         return True
 
@@ -118,7 +118,7 @@ def database(options):
         elif cmd == "backup":
             status, err_msg = etp_client.backup_repository(
                 etpConst['clientdbid'],
-                os.path.dirname(etpConst['etpdatabaseclientfilepath']))
+                os.path.dirname(etp_client.installed_repository_path()))
             if status:
                 return 0
             return 1
@@ -193,7 +193,7 @@ def _database_restore(entropy_client):
     # make sure to commit any transaction before restoring
     entropy_client.installed_repository().commit()
     status, err_msg = entropy_client.restore_repository(backup_path,
-        etpConst['etpdatabaseclientfilepath'], etpConst['clientdbid'])
+        entropy_client.installed_repository_path(), etpConst['clientdbid'])
     if status:
         return 0
     return 1
@@ -248,14 +248,14 @@ def _database_resurrect(entropy_client):
         blue(_("Creating backup of the previous database, if exists.")))
     _backup_client_repository(entropy_client)
     try:
-        os.remove(etpConst['etpdatabaseclientfilepath'])
+        os.remove(entropy_client.installed_repository_path())
     except OSError:
         pass
 
     # Now reinitialize it
     mytxt = "  %s %s" % (
         darkred(_("Initializing the new database at")),
-        bold(etpConst['etpdatabaseclientfilepath']),
+        bold(entropy_client.installed_repository_path()),
     )
     print_info(mytxt, back = True)
     entropy_client.reopen_installed_repository()
@@ -264,7 +264,7 @@ def _database_resurrect(entropy_client):
 
     mytxt = "  %s %s" % (
         darkgreen(_("Database reinitialized correctly at")),
-        bold(etpConst['etpdatabaseclientfilepath']),
+        bold(entropy_client.installed_repository_path()),
     )
     print_info(mytxt)
 
@@ -636,14 +636,14 @@ def _database_generate(entropy_client):
         red(" @@"))
     _backup_client_repository(entropy_client)
     try:
-        os.remove(etpConst['etpdatabaseclientfilepath'])
+        os.remove(entropy_client.installed_repository_path())
     except OSError:
         pass
 
     # Now reinitialize it
     mytxt = darkred("  %s %s") % (
         _("Initializing the new database at"),
-        bold(etpConst['etpdatabaseclientfilepath']),
+        bold(entropy_client.installed_repository_path()),
     )
     print_info(mytxt, back = True)
     entropy_client.reopen_installed_repository()
@@ -652,7 +652,7 @@ def _database_generate(entropy_client):
 
     mytxt = darkred("  %s %s") % (
         _("Database reinitialized correctly at"),
-        bold(etpConst['etpdatabaseclientfilepath']),
+        bold(entropy_client.installed_repository_path()),
     )
     print_info(mytxt)
 
