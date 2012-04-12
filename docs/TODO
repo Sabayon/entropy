@@ -4,8 +4,6 @@ Backlog (raw)
 
     magneto:
       - gtk3 version
-      - migrate to RigoDaemon as soon as it's available!
-        - and also Equo (text_repositories)
 
     - make security advisories caching faster (cache server-side?)
 
