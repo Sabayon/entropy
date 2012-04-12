@@ -375,7 +375,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 2
+    API_VERSION = 3
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -993,8 +993,29 @@ class RigoDaemonService(dbus.service.Object):
         update, remove, fine, spm_fine = \
             self._entropy.calculate_updates()
         if update or remove:
-            GLib.idle_add(self.updates_available,
-                          update, remove)
+            self._signal_updates_unlocked(update, remove)
+
+    def _signal_updates_unlocked(self, update, remove):
+        """
+        Signal Updates availability.
+        """
+        update_atoms = []
+        for pkg_id, repo_id in update:
+            atom = self._entropy.open_repository(
+                repo_id).retrieveAtom(pkg_id)
+            if atom is not None:
+                update_atoms.append(atom)
+
+        remove_atoms = []
+        inst_repo = self._entropy.installed_repository()
+        for pkg_id in remove:
+            atom = inst_repo.retrieveAtom(pkg_id)
+            if atom is not None:
+                remove_atoms.append(atom)
+
+        GLib.idle_add(self.updates_available,
+                      update, update_atoms,
+                      remove, remove_atoms)
 
     def _update_repositories(self, repositories, force, activity, pid,
                              authorized=False):
@@ -2263,8 +2284,7 @@ class RigoDaemonService(dbus.service.Object):
                         update, remove, fine, spm_fine = \
                             self._entropy.calculate_updates()
                         if update or remove:
-                            GLib.idle_add(self.updates_available,
-                                          update, remove)
+                            self._signal_updates_unlocked(update, remove)
                     finally:
                         self._rwsem.reader_release()
 
@@ -3082,8 +3102,9 @@ class RigoDaemonService(dbus.service.Object):
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='a(is)ai')
-    def updates_available(self, update, remove):
+        signature='a(is)asaias')
+    def updates_available(self, update, update_atoms, remove,
+                          remove_atoms):
         """
         Signal all the connected Clients that there are updates
         available.

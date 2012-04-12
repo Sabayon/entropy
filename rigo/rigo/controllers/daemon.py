@@ -178,7 +178,7 @@ class RigoServiceController(GObject.Object):
     _UNAVAILABLE_REPOSITORIES_SIGNAL = "unavailable_repositories"
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
-    _SUPPORTED_APIS = [2]
+    _SUPPORTED_APIS = [3]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -794,7 +794,8 @@ class RigoServiceController(GObject.Object):
                 context_id=self.SYSTEM_UPGRADE_CONTEXT_ID)
             self._nc.append(box, timeout=20)
 
-    def _updates_available_signal(self, update, remove):
+    def _updates_available_signal(self, update, update_atoms, remove,
+                                  remove_atoms):
         const_debug_write(
             __name__,
             "_updates_available_signal: "
