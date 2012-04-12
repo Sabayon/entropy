@@ -590,9 +590,13 @@ class RigoDaemonService(dbus.service.Object):
         self._start_package_cache_timer()
 
     def _start_package_cache_timer(self):
+        """
+        Start timer thread that handles old package files
+        removal.
+        """
         # clean entropy packages cache every 8 hours, basing
         # on Entropy Client settings
-        task = Timer(3600*8, self._clean_package_cache)
+        task = Timer(3600 * 8, self._clean_package_cache)
         task.daemon = True
         task.name = "CleanPackageCacheTimer"
         task.start()
