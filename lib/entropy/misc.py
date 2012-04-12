@@ -365,13 +365,15 @@ class DirectoryMonitor:
     DN_RENAME = fcntl.DN_RENAME
     # A file has got its attrs changed (perms, ownership)
     DN_ATTRIB = fcntl.DN_ATTRIB
+    # Keep signaling until the handler is explicitly removed
+    DN_MULTISHOT = fcntl.DN_MULTISHOT
 
-    def __init__(self, directory_path, callback, event_flags=None):
+    def __init__(self, directory_paths, callback, event_flags=None):
         """
         DirectoryMonitor constructor.
 
-        @param directory_path: path of the directory to monitor
-        @type directory_path: string
+        @param directory_paths: list of paths of the directories to monitor
+        @type directory_paths: list
         @param callback: function called on events. The signature is:
         void function()
         @type callback: function
@@ -380,7 +382,8 @@ class DirectoryMonitor:
         | DN_ATTRIB
         @type event_flags: int
         """
-        self._directory_path = directory_path
+        self._directory_paths = directory_paths
+        self._signal_id = signal.SIGIO
         self._callback = callback
         if event_flags:
             self._flags = event_flags
@@ -388,18 +391,25 @@ class DirectoryMonitor:
             self._flags = self.DN_ACCESS | self.DN_MODIFY | \
                 self.DN_CREATE | self.DN_DELETE | self.DN_RENAME | \
                 self.DN_ATTRIB
-        self._fd = os.open(self._directory_path, os.O_RDONLY)
-        fcntl.fcntl(self._fd, fcntl.F_NOTIFY, self._flags)
+        self._fds = []
+
+        for directory_path in self._directory_paths:
+            fd = os.open(directory_path, os.O_RDONLY)
+            fcntl.fcntl(fd, fcntl.F_NOTIFY, self._flags)
+            self._fds.append(fd)
+
         def _forward(signum, frame):
             self._callback()
-        signal.signal(signal.SIGIO, _forward)
+        signal.signal(self._signal_id, _forward)
 
     def close(self):
         """
         Terminate the listeners and release all the allocated resources.
         """
-        signal.signal(signal.SIGIO, signal.SIG_DFL)
-        os.close(self._fd)
+        if self._fds:
+            signal.signal(self._signal_id, signal.SIG_DFL)
+        for fd in self._fds:
+            os.close(fd)
 
 
 class ParallelTask(threading.Thread):
@@ -588,11 +598,16 @@ class FlockFile(object):
         Acquire the lock in shared mode.
         """
         flags = fcntl.LOCK_SH
-        try:
-            fcntl.flock(self._f.fileno(), flags)
-        except IOError as err:
-            self.close()
-            raise
+        while True:
+            try:
+                fcntl.flock(self._f.fileno(), flags)
+            except IOError as err:
+                if err.errno == errno.EINTR:
+                    # interrupted system call
+                    continue
+                self.close()
+                raise
+            break
 
     def try_acquire_shared(self):
         """
@@ -605,6 +620,8 @@ class FlockFile(object):
         try:
             fcntl.flock(self._f.fileno(), flags)
         except IOError as err:
+            if err.errno == errno.EINTR:
+                return False
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
                 self.close()
@@ -617,11 +634,16 @@ class FlockFile(object):
         Acquire the lock in exclusive mode.
         """
         flags = fcntl.LOCK_EX
-        try:
-            fcntl.flock(self._f.fileno(), flags)
-        except IOError as err:
-            self.close()
-            raise
+        while True:
+            try:
+                fcntl.flock(self._f.fileno(), flags)
+            except IOError as err:
+                if err.errno == errno.EINTR:
+                    # interrupted system call
+                    continue
+                self.close()
+                raise
+            break
 
     def try_acquire_exclusive(self):
         """
@@ -634,6 +656,8 @@ class FlockFile(object):
         try:
             fcntl.flock(self._f.fileno(), flags)
         except IOError as err:
+            if err.errno == errno.EINTR:
+                return False
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
                 self.close()
