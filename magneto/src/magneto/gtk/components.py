@@ -161,6 +161,3 @@ class AppletNoticeWindow(GladeWindow):
             self.__set_critical(critical_txt)
         else:
             self.__remove_critical()
-
-
-
