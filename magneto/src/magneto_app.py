@@ -47,17 +47,25 @@ def _startup():
         from magneto.kde.interfaces import Magneto
     elif "--gtk" in sys.argv:
         from magneto.gtk.interfaces import Magneto
+    elif "--gtk3" in sys.argv:
+        from magneto.gtk3.interfaces import Magneto
     else:
         if kde_env is not None:
             # this is KDE!
             try:
                 from magneto.kde.interfaces import Magneto
             except (ImportError, RuntimeError,):
-                # try GTK
-                from magneto.gtk.interfaces import Magneto
+                # try GTK3, then GTK
+                try:
+                    from magneto.gtk3.interfaces import Magneto
+                except ImportError:
+                    from magneto.gtk.interfaces import Magneto
         else:
-            # load GTK
-            from magneto.gtk.interfaces import Magneto
+            # load GTK3, fallback to GTK2
+            try:
+                from magneto.gtk3.interfaces import Magneto
+            except ImportError:
+                from magneto.gtk.interfaces import Magneto
 
     import entropy.tools
     magneto = Magneto()
