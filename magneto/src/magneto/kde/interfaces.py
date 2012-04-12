@@ -94,24 +94,12 @@ class Magneto(MagnetoCore):
 
     def __do_first_check(self):
 
-        # if system is running on batteries,
-        # first check is skipped
-        if self.is_system_on_batteries():
-            return
-
         def _do_check():
-            self.send_check_updates_signal(startup_check=True)
+            self.send_check_updates_signal(startup_check = True)
             return False
 
         if self._dbus_service_available:
             QTimer.singleShot(10000, _do_check)
-
-    def __send_keepalive(self):
-        """
-        As per MagnetoCore specs.
-        """
-        QTimer.singleShot(60*1000, self.__send_keepalive)
-        self.send_keepalive()
 
     def startup(self):
         """
@@ -129,9 +117,6 @@ class Magneto(MagnetoCore):
         else:
             QTimer.singleShot(30000, self.show_service_available)
             self.__do_first_check()
-
-        # send Keep Alive signal
-        self.__send_keepalive()
 
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)

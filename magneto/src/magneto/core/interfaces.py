@@ -17,6 +17,7 @@ import time
 import subprocess
 import dbus
 import dbus.exceptions
+from threading import Lock
 
 # Entropy imports
 from entropy.output import nocolor
@@ -28,6 +29,10 @@ from entropy.misc import ParallelTask
 
 # Magneto imports
 from magneto.core import config
+
+# RigoDaemon imports
+from RigoDaemon.config import DbusConfig
+from RigoDaemon.enums import ActivityStates
 
 class MagnetoCoreUI:
 
@@ -97,11 +102,25 @@ class MagnetoCore(MagnetoCoreUI):
     Magneto base UI interface, must be subclassed to make it support Qt/GTK
     interfaces.
     """
+
+    _PING_SIGNAL = "ping"
+    _UPDATES_AVAILABLE_SIGNAL = "updates_available"
+    _ACTIVITY_STARTED_SIGNAL = "activity_started"
+    _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
+
+    DBUS_INTERFACE = DbusConfig.BUS_NAME
+    DBUS_PATH = DbusConfig.OBJECT_PATH
+
     def __init__(self, icon_loader_class, main_loop_class):
 
         if "--debug" not in sys.argv:
             import signal
             signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+        self.__dbus_main_loop = None
+        self.__system_bus = None
+        self.__entropy_bus = None
+        self.__entropy_bus_mutex = Lock()
 
         # Set this to True when DBus service is up
         self._dbus_service_available = False
@@ -131,11 +150,6 @@ class MagnetoCore(MagnetoCoreUI):
 
         # Dbus variables
         self._dbus_init_error_msg = 'Unknown error'
-        self._dbus_interface = "org.entropy.Client"
-        self._dbus_path = "/notifier"
-        self._signal_name = "signal_updates"
-        self._updating_signal_name = "signal_updating"
-        self._integrity_signal_name = "signal_integrity_problem"
 
         self._menu_item_list = (
             ("disable_applet", _("_Disable Notification Applet"),
@@ -156,38 +170,118 @@ class MagnetoCore(MagnetoCoreUI):
 
         self._main_loop_class = main_loop_class
 
+    @property
+    def _dbus_main_loop(self):
+        if self.__dbus_main_loop is None:
+            self.__dbus_main_loop = self._main_loop_class(
+                set_as_default=True)
+        return self.__dbus_main_loop
+
+    @property
+    def _system_bus(self):
+        if self.__system_bus is None:
+            self.__system_bus = dbus.SystemBus(
+                mainloop=self._dbus_main_loop)
+        return self.__system_bus
+
+    @property
+    def _entropy_bus(self):
+        with self.__entropy_bus_mutex:
+            if self.__entropy_bus is None:
+                self.__entropy_bus = self._system_bus.get_object(
+                    self.DBUS_INTERFACE, self.DBUS_PATH
+                    )
+
+                # ping/pong signaling, used to let
+                # RigoDaemon release exclusive locks
+                # when no client is connected
+                self.__entropy_bus.connect_to_signal(
+                    self._PING_SIGNAL, self._ping_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon is telling us that a new activity
+                # has just begun
+                self.__entropy_bus.connect_to_signal(
+                    self._ACTIVITY_STARTED_SIGNAL,
+                    self._activity_started_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon tells us that there are app updates
+                # available
+                self.__entropy_bus.connect_to_signal(
+                    self._UPDATES_AVAILABLE_SIGNAL,
+                    self._updates_available_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                self.__entropy_bus.connect_to_signal(
+                    self._REPOSITORIES_UPDATED_SIGNAL,
+                    self._repositories_updated_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+            return self.__entropy_bus
+
     def setup_dbus(self):
         """
         Dbus Setup method.
         """
-        tries = 5
-        while tries:
-            dbus_loop = self._main_loop_class(set_as_default = True)
-            self._system_bus = dbus.SystemBus(mainloop = dbus_loop)
-            try:
-                self._entropy_dbus_object = self._system_bus.get_object(
-                    self._dbus_interface, self._dbus_path
-                )
-                self._entropy_dbus_object.connect_to_signal(
-                    self._signal_name, self.new_updates_signal,
-                    dbus_interface = self._dbus_interface
-                )
-                self._entropy_dbus_object.connect_to_signal(
-                    self._updating_signal_name, self.updating_signal,
-                    dbus_interface = self._dbus_interface
-                )
-                self._entropy_dbus_object.connect_to_signal(
-                    self._integrity_signal_name, self.integrity_signal,
-                    dbus_interface = self._dbus_interface)
-            except dbus.exceptions.DBusException as e:
-                self._dbus_init_error_msg = repr(e)
-                # service not avail
-                tries -= 1
-                time.sleep(2)
-                continue
+        try:
+            self._entropy_bus
+            self._dbus_service_available = True
             return True
-        entropy.tools.print_traceback()
-        return False
+        except dbus.exceptions.DBusException as err:
+            self._dbus_service_available = False
+            self._dbus_init_error_msg = "%s" % (err,)
+            return False
+
+    def _ping_signal(self):
+        """
+        Need to call pong() as soon as possible to hold all Entropy
+        Resources allocated by RigoDaemon.
+        """
+        dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).pong()
+
+    def _activity_started_signal(self, activity):
+        """
+        RigoDaemon is telling us that the scheduled activity,
+        either by us or by another Rigo, has just begun and
+        that it, RigoDaemon, has now exclusive access to
+        Entropy Resources.
+        """
+        if activity == ActivityStates.UPDATING_REPOSITORIES:
+            self.updating_signal()
+
+    def _repositories_updated_signal(self, result, message):
+        """
+        Repositories have been updated, ask for info
+        """
+        self._hello()
+
+    def _hello(self):
+        """
+        Say hello to RigoDaemon. This causes the sending of
+        several welcome signals, such as updates notification.
+        """
+        return dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).hello()
+
+    def _update_repositories(self):
+        """
+        Spawn Repositories Update on RigoDaemon.
+        """
+        accepted = dbus.Interface(
+            self._entropy_bus,
+            dbus_interface=self.DBUS_INTERFACE).update_repositories(
+            [], False)
+        return accepted
+
+    def _updates_available_signal(self, update, update_atoms,
+                                  remove, remove_atoms):
+        if not update_atoms:
+            return
+        self.new_updates_signal(update_atoms)
 
     def show_service_not_available(self):
         # inform user about missing Entropy service
@@ -210,16 +304,14 @@ class MagnetoCore(MagnetoCoreUI):
             )
         )
 
-    def new_updates_signal(self):
+    def new_updates_signal(self, update_atoms):
         if not config.settings['APPLET_ENABLED']:
             return
-        iface = dbus.Interface(
-            self._entropy_dbus_object, dbus_interface="org.entropy.Client")
-        updates = iface.get_updates_atoms()
-        avail = [str(x) for x in updates]
+
+        avail = [str(x) for x in update_atoms]
         del self.package_updates[:]
         self.package_updates.extend(avail)
-        upd_len = len(updates)
+        upd_len = len(update_atoms)
 
         if upd_len:
             self.update_tooltip(ngettext("There is %s update available",
@@ -256,15 +348,6 @@ class MagnetoCore(MagnetoCoreUI):
             _("Repositories are being updated automatically")
         )
 
-    def integrity_signal(self):
-        # all fine, no updates
-        self.update_tooltip(
-            _("Installed Packages Repository Integrity Problem"))
-        self.show_alert(
-            _("Installed Packages Repository Integrity"),
-            _("Integrity corruption detected, this might indicate a filesystem or system issue")
-        )
-
     def is_system_on_batteries(self):
         """
         Return whether System is running on batteries.
@@ -279,30 +362,6 @@ class MagnetoCore(MagnetoCoreUI):
         if ex_rc:
             return True
         return False
-
-    def is_system_changed(self):
-
-        # enable applet if disabled
-        if not config.settings['APPLET_ENABLED']:
-            return False
-
-        # dbus daemon not available
-        if not self._dbus_service_available:
-            return False
-
-        iface = dbus.Interface(
-            self._entropy_dbus_object, dbus_interface="org.entropy.Client")
-        return iface.is_system_changed()
-
-    def send_keepalive(self):
-        """
-        MagnetoCore users must spawn this function every 60 seconds (with a
-        timer).
-        """
-        if self._dbus_service_available:
-            iface = dbus.Interface(
-                self._entropy_dbus_object, dbus_interface="org.entropy.Client")
-            iface.client_ping()
 
     def send_check_updates_signal(self, widget=None, startup_check=False):
 
@@ -320,12 +379,10 @@ class MagnetoCore(MagnetoCoreUI):
         self.last_trigger_check_t = cur_t
 
         if self._dbus_service_available:
-            iface = dbus.Interface(
-                self._entropy_dbus_object, dbus_interface="org.entropy.Client")
             if startup_check:
-                iface.trigger_check()
+                self._hello()
             else:
-                iface.trigger_startup_check()
+                self._update_repositories()
             self.manual_check_triggered = True
 
     def set_state(self, new_state, use_busy_icon = 0):
@@ -371,17 +428,15 @@ class MagnetoCore(MagnetoCoreUI):
         self.load_url(etpConst['distro_website_url'])
 
     def load_url(self, url):
-        subprocess.call(['xdg-open', url])
+        task = ParallelTask(
+            subprocess.call, ['xdg-open', url])
+        task.daemon = True
+        task.start()
 
     def launch_package_manager(self, *data):
-        if os.access("/usr/bin/rigo", os.X_OK | os.R_OK):
-            task = ParallelTask(subprocess.call, ["/usr/bin/rigo"])
-            task.daemon = True
-            task.start()
-        elif os.access("/usr/bin/sulfur", os.X_OK | os.R_OK):
-            task = ParallelTask(subprocess.call, ["/usr/bin/sulfur"])
-            task.daemon = True
-            task.start()
+        task = ParallelTask(subprocess.call, ["/usr/bin/rigo"])
+        task.daemon = True
+        task.start()
 
     def disable_applet(self):
         self.update_tooltip(_("Updates Notification Applet Disabled"))
@@ -418,49 +473,4 @@ class MagnetoCore(MagnetoCoreUI):
         raise SystemExit(0)
 
     def close_service(self):
-        if self._dbus_service_available:
-            iface = dbus.Interface(
-                self._entropy_dbus_object, dbus_interface="org.entropy.Client")
-            try:
-                iface.close_connection()
-            except dbus.exceptions.DBusException:
-                pass
         entropy.tools.kill_threads()
-
-class Entropy(Client):
-
-    """
-    @deprecated
-    """
-
-    def init_singleton(self, magneto):
-        Client.init_singleton(self,  installed_repo = False)
-        self.__magneto = magneto
-        self.progress_tooltip = self.__magneto.update_tooltip
-        self.progress_tooltip_message_title = _("Updates Notification")
-        self.applet_last_message = ''
-        nocolor()
-
-    def output(self, text, header = "", footer = "", back = False,
-            importance = 0, level = "info", count = [], percent = False):
-
-        count_str = ""
-        if count:
-            if percent:
-                count_str = str(int(round((float(count[0])/count[1])*100, 1)))+"% "
-            else:
-                count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
-
-        message = count_str+_(text)
-        #if importance in (1,2):
-        if importance == 2:
-            self.progress_tooltip_message_title = message
-            self.__do_applet_print(self.applet_last_message)
-        else:
-            self.__do_applet_print(message)
-
-    def __do_applet_print(self, message):
-        self.applet_last_message = message
-        self.__magneto.show_alert(self.progress_tooltip_message_title,
-            message)
-Client.__singleton_class__ = Entropy

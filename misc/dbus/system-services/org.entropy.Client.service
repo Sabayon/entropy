@@ -1,4 +1,0 @@
-[D-BUS Service]
-Name=org.entropy.Client
-Exec=/usr/sbin/client-updates-daemon
-User=root

@@ -27,7 +27,7 @@ magneto-loader-install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/etc/xdg/autostart/.
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)$(PREFIX)/share/applications/.
-	install -m755 src/magneto.py $(DESTDIR)/$(LIBDIR)/entropy/magneto/.
+	install -m755 src/magneto_app.py $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto.py
 	install -m755 $(MISCDIR)/magneto $(DESTDIR)$(BINDIR)/.
 
 magneto-gtk-install:

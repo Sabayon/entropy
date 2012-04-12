@@ -72,17 +72,12 @@ class Magneto(MagnetoCore):
 
     def __do_first_check(self):
 
-        # if system is running on batteries,
-        # first check is skipped
-        if self.is_system_on_batteries():
-            return
-
         def _do_check():
-            self.send_check_updates_signal(startup_check=True)
+            self.send_check_updates_signal(startup_check = True)
             return False
 
         if self._dbus_service_available:
-            # after 20 seconds
+            # after 10 seconds
             gobject.timeout_add(10000, _do_check)
 
     def startup(self):
@@ -99,9 +94,6 @@ class Magneto(MagnetoCore):
             gobject.timeout_add(30000, self.show_service_available)
             self.__do_first_check()
 
-        # send Keep Alive signal
-        self.__send_keepalive()
-
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)
 
@@ -110,14 +102,6 @@ class Magneto(MagnetoCore):
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-
-    def __send_keepalive(self):
-        """
-        As per MagnetoCore specs.
-        """
-        gobject.timeout_add(60*1000, self.__send_keepalive)
-        self.send_keepalive()
-        return False
 
     def close_service(self):
         MagnetoCore.close_service(self)

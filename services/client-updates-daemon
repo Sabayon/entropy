@@ -1,8 +1,0 @@
-#!/bin/sh
-
-lang_id="en_US.UTF-8"
-export LC_ALL="${lang_id}"
-export LANG="${lang_id}"
-export LANGUAGE="${lang_id}"
-
-exec /usr/libexec/entropy-updates-service ${@}

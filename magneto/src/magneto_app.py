@@ -18,12 +18,14 @@ import time
 # point and will cause lock stealing.
 
 def _startup():
+    sys.path.insert(0, "/usr/lib/rigo")
     sys.path.insert(0, '/usr/lib/entropy/client')
     sys.path.insert(0, '/usr/lib/entropy/lib')
     sys.path.insert(0, '/usr/lib/entropy/magneto')
+    sys.path.insert(0, '../rigo')
     sys.path.insert(0, '../../client')
     sys.path.insert(0, '../../lib')
-    sys.path.insert(0, '../')
+    sys.path.insert(0, './')
 
     startup_delay = None
     for arg in sys.argv[1:]:
@@ -57,6 +59,7 @@ def _startup():
             # load GTK
             from magneto.gtk.interfaces import Magneto
 
+    import entropy.tools
     magneto = Magneto()
     try:
         magneto.startup()
