@@ -3,7 +3,6 @@ Backlog (raw)
   1.0:
 
     magneto:
-      - require rigo instead of sulfur? (launch rigo || sulfur)
       - gtk3 version
       - migrate to RigoDaemon as soon as it's available!
         - and also Equo (text_repositories)
