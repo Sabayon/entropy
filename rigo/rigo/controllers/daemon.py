@@ -1713,7 +1713,8 @@ class RigoServiceController(GObject.Object):
             self._activity_rwsem.writer_release()
             return False
 
-        self._please_wait(True)
+        if master:
+            self._please_wait(True)
         accepted = self._update_repositories_unlocked(
             repositories, force, master)
 
@@ -2369,7 +2370,8 @@ class RigoServiceController(GObject.Object):
                         accepted,))
 
             if accepted:
-                self._please_wait(True)
+                if master:
+                    self._please_wait(True)
                 accepted = self._application_request_unlocked(
                     app, daemon_action, master,
                     busied, simulate)
@@ -2599,7 +2601,8 @@ class RigoServiceController(GObject.Object):
                     accepted,))
 
         if accepted:
-            self._please_wait(True)
+            if master:
+                self._please_wait(True)
             accepted = self._upgrade_system_unlocked(
                 master, simulate)
 
