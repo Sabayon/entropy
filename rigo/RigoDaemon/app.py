@@ -15,6 +15,7 @@ import os
 # entropy.i18n will pick this up
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
 
+import errno
 import sys
 import pwd
 import time
@@ -274,7 +275,12 @@ class FakeOutFile(object):
 
     def _pusher(self):
         while True:
-            chunk = os.read(self._rfd, 512) # BLOCKS
+            try:
+                chunk = os.read(self._rfd, 512) # BLOCKS
+            except IOError as err:
+                if err.errno == errno.EINTR:
+                    continue
+                raise
             self._entropy.output(chunk, _raw=True)
 
     def close(self):
@@ -1790,7 +1796,7 @@ class RigoDaemonService(dbus.service.Object):
         This method must be called with activity_mutex held
         to avoid races with _acquire_exclusive().
         """
-        write_output("_release_shared: about to acquire lock",
+        write_output("_release_shared: about to release lock",
                      debug=True)
         act_acquired = self._activity_mutex.acquire(False)
         if act_acquired:
@@ -2770,13 +2776,12 @@ class RigoDaemonService(dbus.service.Object):
         Ping RigoDaemon dbus clients for answer.
         If no clients respond within 15 seconds,
         RigoDaemon will terminate.
-        This signal is spawned after having
-        received SIGUSR2.
         """
         write_output("ping() issued", debug=True)
         with self._ping_timer_mutex:
             if self._ping_timer is None:
                 self._ping_timer = Timer(15.0, self.stop)
+                self._ping_timer.daemon = True
                 self._ping_timer.start()
 
 if __name__ == "__main__":
