@@ -547,23 +547,86 @@ class RigoDaemonService(dbus.service.Object):
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         self._fakeout = FakeOutFile(self._entropy)
-        exec_path = sys.argv[0]
+        self._executable_path = sys.argv[0]
         write_output(
             "__init__: dbus service loaded, "
             "pid: %d, ppid: %d, exec: %s" %  (
-                os.getpid(), os.getppid(), exec_path,)
+                os.getpid(), os.getppid(),
+                self._executable_path,)
             )
 
+        # optimist
+        self._executable_mtime = os.path.getmtime(
+            self._executable_path)
         self._deferred_shutdown = False
         self._deferred_shutdown_mutex = Lock()
-        signal.signal(signal.SIGUSR2, self._activate_deferred_shutdown)
 
-        flags = DirectoryMonitor.DN_MODIFY | DirectoryMonitor.DN_DELETE | \
-            DirectoryMonitor.DN_RENAME | DirectoryMonitor.DN_CREATE
+        # monitor daemon executable changes and installed
+        # repository changes
+        # the latter is mainly for lockless clients
+        self._installed_repository_updated_serializer = Lock()
+        self._installed_repository_mtime = None
+        repo_path = self._entropy.installed_repository_path()
+
+        flags = DirectoryMonitor.DN_MODIFY | \
+            DirectoryMonitor.DN_MULTISHOT
+
+        paths = [os.path.dirname(self._executable_path),
+                 os.path.dirname(repo_path)]
+
+        self._directory_monitor_serializer = Lock()
         self._mon = DirectoryMonitor(
-            os.path.dirname(exec_path),
-            self._activate_deferred_shutdown,
+            paths, self._directory_monitor_handler,
             event_flags=flags)
+
+        # populate _installed_repository_mtime
+        task = ParallelTask(
+            self._installed_repository_updated_worker,
+            signal=False)
+        task.daemon = True
+        task.name = "InstalledRepositoryUpdatedWorkerFirst"
+        task.start()
+
+    def _directory_monitor_handler(self):
+        """
+        DirectoryMonitor SIGIO handler.
+        """
+        # determine if executable changed, we cannot lose
+        # any tick
+        if not self._deferred_shutdown:
+            try:
+                exec_mtime = os.path.getmtime(self._executable_path)
+            except (OSError, IOError):
+                exec_mtime = None
+            if exec_mtime != self._executable_mtime and \
+                    exec_mtime is not None:
+                task = ParallelTask(
+                    self._activate_deferred_shutdown)
+                task.name = "ActivateDeferredShutdown"
+                task.start()
+
+        acquired = self._directory_monitor_serializer.acquire(False)
+        if not acquired:
+            return
+
+        def _installed_repository_check():
+            try:
+                self._rwsem.reader_acquire()
+                try:
+                    changed, mtime = \
+                        self._installed_repository_changed_unlocked()
+                finally:
+                    self._rwsem.reader_release()
+                if changed and mtime != -1:
+                    self._installed_repository_updated()
+
+            finally:
+                self._directory_monitor_serializer.release()
+
+        task = ParallelTask(_installed_repository_check)
+        task.name = "InstalledRepositoryCheckHandler"
+        task.daemon = True
+        task.start()
 
     def _activate_deferred_shutdown(self, *args):
         """
@@ -712,6 +775,122 @@ class RigoDaemonService(dbus.service.Object):
             entropy.tools.kill_threads()
             # use kill so that GObject main loop will quit as well
             os.kill(os.getpid(), signal.SIGTERM)
+
+    def _installed_repository_updated(self, *args):
+        """
+        Callback spawned when Installed Repository directory content
+        changes.
+        """
+        # Cannot block inside this method because it's running off
+        # the main thread, so execute NB checks and spawn a new
+        # thread only if these shallow checks are passed.
+        if self._acquired_exclusive:
+            # it's us
+            write_output("_installed_repository_updated: it's us",
+                         debug=True)
+            return
+        if self._activity_mutex.locked():
+            write_output("_installed_repository_updated: "
+                         "busy checking or sleeping or us",
+                         debug=True)
+            return
+        if self._installed_repository_updated_serializer.locked():
+            write_output("_installed_repository_updated: skipping",
+                         debug=True)
+            return
+
+        write_output("_installed_repository_updated: checking...",
+                     debug=True)
+        task = ParallelTask(
+            self._installed_repository_updated_worker)
+        task.daemon = True
+        task.name = "InstalledRepositoryUpdatedWorker"
+        task.start()
+
+    def _installed_repository_changed_unlocked(self):
+        """
+        Determine whether Installed Repository is changed.
+        """
+        try:
+            mtime = self._entropy.installed_repository().mtime()
+        except OSError as err:
+            write_output("%s: %s" % (repr(err), err.errno,))
+            # well, we expected to have the installed repo here
+            # but got OSError, something happened for sure
+            return True, -1
+
+        if self._installed_repository_mtime is None:
+            write_output("_installed_repository_changed_unlocked:"
+                         " first run.",
+                         debug=True)
+            # not changed, first run
+            self._installed_repository_mtime = mtime
+            return False, mtime
+        if mtime == self._installed_repository_mtime:
+            write_output("_installed_repository_changed_unlocked:"
+                         " same mtime.",
+                         debug=True)
+            return False, mtime
+        return True, mtime
+
+    def _installed_repository_updated_worker(self, signal=True):
+        """
+        Determine if Installed Repository has changed and
+        recalculate updates and signal updates_available()
+        """
+        with self._installed_repository_updated_serializer:
+
+            # first determine if installed repository
+            # changed. without doing expensive and
+            # unneded locking.
+            self._rwsem.reader_acquire()
+            try:
+                changed, mtime = \
+                    self._installed_repository_changed_unlocked()
+            finally:
+                self._rwsem.reader_release()
+            if not changed:
+                return
+
+            with self._activity_mutex:
+                self._acquire_shared()
+                try:
+                    self._close_local_resources()
+                    self._entropy_setup()
+
+                    self._rwsem.reader_acquire()
+                    try:
+                        self._installed_repository_updated_unlocked(
+                            mtime, signal)
+                    finally:
+                        self._rwsem.reader_release()
+                finally:
+                    self._release_shared()
+
+    def _installed_repository_updated_unlocked(self, mtime, signal):
+        """
+        Unlocked (not activity mutex, no shared locking, no
+        rwsem) version of _installed_repository_updated_worker()
+        """
+        write_output("_installed_repository_updated_unlocked:"
+                     " mtime changed, sending signal",
+                     debug=True)
+        self._installed_repository_mtime = mtime
+
+        if mtime == -1: # do not calculate updates
+            write_output("_installed_repository_updated_unlocked:"
+                         " bogus mtime, repo is broken, not signaling")
+            return
+
+        if not signal:
+            return
+
+        # signal updates available
+        update, remove, fine, spm_fine = \
+            self._entropy.calculate_updates()
+        if update or remove:
+            GLib.idle_add(self.updates_available,
+                          update, remove)
 
     def _update_repositories(self, repositories, force, activity, pid):
         """
