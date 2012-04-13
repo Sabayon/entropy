@@ -1,3 +1,45 @@
+commit a0d9458212a3c25fc0acbc636121896ff923567f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 12:15:51 2012 +0200
+
+    Release Entropy 1.0_rc100
+
+commit 086cca6cf22535a141d7d4b170013bb604ea7f97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 08:24:54 2012 +0200
+
+    [magneto] add magneto-gtk3-install target to Makefile
+
+commit 5707d2e157d303db89f60dd8645ac7647fcbd6ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 08:24:32 2012 +0200
+
+    [magneto] rename .glade file into .ui
+
+commit 03f9ff292e3b048ed5f4009819857528fec44a2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 00:32:46 2012 +0200
+
+    [todo] update TODO
+
+commit d2be035aba150d9c3e73fd1b6df830c3478aa054
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 00:24:00 2012 +0200
+
+    [magneto] add Gtk3 frontend
+
+commit 081f4b3aae00ed354edb03a4237fac1211738fa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 00:23:31 2012 +0200
+
+    [magneto] remove trailing empty lines
+
+commit 9727fce2fc28464405d2ae4cedaf027bb924ca1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 12 19:58:29 2012 +0200
+
+    Tagging Entropy version 1.0_rc99
+
 commit 437ac32ac8f01eb05a946347dbb852c406e65a7b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Apr 12 19:58:28 2012 +0200
