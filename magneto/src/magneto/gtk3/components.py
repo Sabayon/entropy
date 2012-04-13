@@ -53,7 +53,7 @@ class AppletIconPixbuf:
         return best
 
 
-class GladeWindow:
+class BuilderWindow:
 
     def __init__(self, filename, window_name):
 
@@ -73,10 +73,10 @@ class GladeWindow:
         return self.xml.get_object(widget)
 
 
-class AppletNoticeWindow(GladeWindow):
+class AppletNoticeWindow(BuilderWindow):
 
     def __init__(self, controller):
-        GladeWindow.__init__(self, "magneto.glade", "notice_window_2")
+        BuilderWindow.__init__(self, "magneto.ui", "notice_window_2")
 
         self.__controller = controller
         self.window.connect('delete-event', self.on_close)
