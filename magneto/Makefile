@@ -36,6 +36,12 @@ magneto-gtk-install:
 	install -m644 src/magneto/gtk/*.py $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/gtk/.
 	install -m644 src/magneto/gtk/*.glade $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/gtk/.
 
+magneto-gtk3-install:
+
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/gtk3
+	install -m644 src/magneto/gtk3/*.py $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/gtk3/.
+	install -m644 src/magneto/gtk3/*.ui $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/gtk3/.
+
 magneto-kde-install:
 
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/kde
@@ -45,5 +51,5 @@ magneto-kde-install:
 	install -m644 $(MISCDIR)/magneto.notifyrc $(DESTDIR)$(PREFIX)/share/apps/magneto/.
 
 
-install: magneto-core-install magneto-loader-install magneto-gtk-install magneto-kde-install
+install: magneto-core-install magneto-loader-install magneto-gtk-install magneto-gtk3-install magneto-kde-install
 	
