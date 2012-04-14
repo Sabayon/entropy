@@ -15,14 +15,14 @@ clean:
 
 entropy-install:
 
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/lib
-	mkdir -p $(DESTDIR)$(PREFIX)/sbin
-	mkdir -p $(DESTDIR)$(BINDIR)
-	mkdir -p $(DESTDIR)/etc/entropy
-	mkdir -p $(DESTDIR)/etc/env.d
-	mkdir -p $(DESTDIR)/etc/init.d
-	mkdir -p $(DESTDIR)/etc/logrotate.d
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib
+	install -d $(DESTDIR)$(PREFIX)/sbin
+	install -d $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)/etc/entropy
+	install -d $(DESTDIR)/etc/env.d
+	install -d $(DESTDIR)/etc/init.d
+	install -d $(DESTDIR)/etc/logrotate.d
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/services
 
 	cp lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/ -Ra
 	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
@@ -50,11 +50,11 @@ entropy-install:
 
 equo-install:
 
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/client
-	mkdir -p $(DESTDIR)/etc/portage
-	mkdir -p $(DESTDIR)/etc/entropy
-	mkdir -p $(DESTDIR)$(BINDIR)
-	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/client
+	install -d $(DESTDIR)/etc/portage
+	install -d $(DESTDIR)/etc/entropy
+	install -d $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(PREFIX)/share/man/man1
 
 	# copying portage bashrc
 	install -m 644 conf/bashrc.entropy $(DESTDIR)/etc/portage/bashrc.entropy
@@ -69,7 +69,7 @@ equo-install:
 	install -m 644 docs/man/man1/equo.1 $(DESTDIR)$(PREFIX)/share/man/man1/
 
 	# copy zsh completion
-	mkdir -p $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+	install -d $(DESTDIR)$(PREFIX)/share/zsh/site-functions
 	install -m 644 conf/_equo $(DESTDIR)$(PREFIX)/share/zsh/site-functions/
 
 
