@@ -1,3 +1,111 @@
+commit b52a1bdde73d1cfc76ccf15345952810fb274a43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 17:34:42 2012 +0200
+
+    Release Entropy 1.0_rc101
+
+commit 7c064a6749b2510ffc64f9fc3b034623fd51f7e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 16:41:05 2012 +0200
+
+    [todo] update TODO
+
+commit 292af94cf003f4bfe03d86e6f20015c333ce62aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 16:40:33 2012 +0200
+
+    [entropy.spm] PortagePlugin: read CATEGORY, PF, C*FLAGS from environment if files are missing
+
+commit 38f36b39cf28920fc8367a35ca6ebf797f729db7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 16:06:10 2012 +0200
+
+    [todo] update TODO
+
+commit d3aa4af5c41495ba399e41b46b65d8d8e5823c6b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 16:04:25 2012 +0200
+
+    [entropy.spm] move Portage bashism to external script
+    
+    Portage stores package environment variables inside it's environment
+    file that has to be sourced in order to correctly retrieve the
+    variable value
+
+commit 0da7c251f2aa16bb72f17086200ec1c8756c2ba0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 13:56:05 2012 +0200
+
+    [conf] drop portage bashrc example file
+
+commit ab832f1cf0ad72251233a673b51230bd93b51adc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 13:52:35 2012 +0200
+
+    [entropy.misc] EINTR can be raised by both IOError and OSError
+
+commit 5fa2dd4780ad74d71630374b4f3b7cb60690d85f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 13:49:37 2012 +0200
+
+    [RigoDaemon] EINTR can be raised by both OSError and IOError
+
+commit 0173ea4d00b5a15fa9c82373fa0d1de2917a3032
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 13:48:57 2012 +0200
+
+    [Rigo] po: fix several markup bugs in the Italian translation
+
+commit c6aae48363da4bfdcf0a35b345037b91b9cf2422
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 13:42:08 2012 +0200
+
+    [Rigo] po: update rigo.pot
+
+commit 0b523fed0b93fb0cdad7561b4ea7d5baedb82ce8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 11:08:35 2012 +0200
+
+    [Rigo] po: update translations
+
+commit 49563c82060ecfa1c418d7fd9057fac95cedebc2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 11:06:45 2012 +0200
+
+    [Rigo] ApplicationViewController: exit view when required
+    
+    Exit view when Application shown is from installed packages repo
+    and it's being scheduled for removal
+
+commit d0d3a72d16b47e6a8b75d6a30020347d4fedf203
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 11:06:32 2012 +0200
+
+    [Rigo] ApplicationsViewController: emit view-cleared
+    
+    Emit view-cleared When model is empty and primary search button is
+    clicked.
+
+commit 8a3c13183acbf7ce9d2aa9a99780cdd5715c5fdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 08:32:45 2012 +0200
+
+    [entropy.const] do not change entropy directory permissions on every library load
+    
+    The logic has been moved to Makefile and upstream ebuilds.
+
+commit eb89d4f8f603a83e1dd6e66ef644d8f7d954f187
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 07:58:49 2012 +0200
+
+    [Makefile] use install -d instead of mkdir
+
+commit d8329833c82e3937fe8f99fdd475654f89116ca6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 13 12:15:58 2012 +0200
+
+    Tagging Entropy version 1.0_rc100
+
 commit a0d9458212a3c25fc0acbc636121896ff923567f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 13 12:15:51 2012 +0200
