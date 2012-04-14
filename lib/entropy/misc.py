@@ -601,7 +601,7 @@ class FlockFile(object):
         while True:
             try:
                 fcntl.flock(self._f.fileno(), flags)
-            except IOError as err:
+            except (IOError, OSError) as err:
                 if err.errno == errno.EINTR:
                     # interrupted system call
                     continue
@@ -619,7 +619,7 @@ class FlockFile(object):
         flags = fcntl.LOCK_SH | fcntl.LOCK_NB
         try:
             fcntl.flock(self._f.fileno(), flags)
-        except IOError as err:
+        except (IOError, OSError) as err:
             if err.errno == errno.EINTR:
                 return False
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
@@ -637,7 +637,7 @@ class FlockFile(object):
         while True:
             try:
                 fcntl.flock(self._f.fileno(), flags)
-            except IOError as err:
+            except (IOError, OSError) as err:
                 if err.errno == errno.EINTR:
                     # interrupted system call
                     continue
@@ -655,7 +655,7 @@ class FlockFile(object):
         flags = fcntl.LOCK_EX | fcntl.LOCK_NB
         try:
             fcntl.flock(self._f.fileno(), flags)
-        except IOError as err:
+        except (IOError, OSError) as err:
             if err.errno == errno.EINTR:
                 return False
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
