@@ -19,11 +19,8 @@ Backlog (raw)
   1.1:
 
     - pkgcore spm plugin
-        PF CATEGORY CFLAGS CXXFLAGS NEEDED are missing
+        NEEDED are missing
     - python 3.x support -> more tests
 
   break backward compat:
-      - deprecate "repository =" statements from repositories.conf
       - enable baseinfo-extrainfo-2010 tables
-        test removal (reverse deps could be problematic?) -- add resolved dep
-        instead of full conditional?
