@@ -5,6 +5,7 @@ SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py s
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
+VARDIR = /var
 DESTDIR = 
 
 all:
@@ -18,11 +19,24 @@ entropy-install:
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib
 	install -d $(DESTDIR)$(PREFIX)/sbin
 	install -d $(DESTDIR)$(BINDIR)
-	install -d $(DESTDIR)/etc/entropy
+	install -d -m 775 $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)/etc/env.d
 	install -d $(DESTDIR)/etc/init.d
 	install -d $(DESTDIR)/etc/logrotate.d
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/services
+
+	# Empty directories that should be created and kept
+	install -d -m 775 $(DESTDIR)$(VARDIR)/tmp/entropy
+	touch $(DESTDIR)$(VARDIR)/tmp/entropy/.keep
+
+	install -d -m 775 $(DESTDIR)$(VARDIR)/lib/entropy
+	touch $(DESTDIR)$(VARDIR)/lib/entropy/.keep
+
+	install -d -m 775 $(DESTDIR)/$(VARDIR)/lib/entropy/client/packages
+	touch $(DESTDIR)/$(VARDIR)/lib/entropy/client/packages/.keep
+
+	install -d -m 775 $(DESTDIR)/$(VARDIR)/log/entropy
+	touch $(DESTDIR)/$(VARDIR)/log/entropy/.keep
 
 	cp lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/ -Ra
 	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
@@ -51,8 +65,8 @@ entropy-install:
 equo-install:
 
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/client
+	install -d -m 775 $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)/etc/portage
-	install -d $(DESTDIR)/etc/entropy
 	install -d $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(PREFIX)/share/man/man1
 

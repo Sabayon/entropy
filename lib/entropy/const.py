@@ -1006,12 +1006,12 @@ def const_create_working_dirs():
     @return: None
     """
 
-    # handle pid file
-    piddir = os.path.dirname(etpConst['pidfile'])
-    if not os.path.exists(piddir) and (etpConst['uid'] == 0):
-        os.makedirs(piddir)
+    # handle pid file, this is /var/run and usually tmpfs
+    piddir = etpConst['pidfiledir']
+    if etpConst['uid'] == 0:
+        const_setup_directory(piddir)
 
-    # create user if it doesn't exist
+    # create group if it doesn't exist
     gid = None
     try:
         gid = const_get_entropy_gid()
@@ -1034,68 +1034,11 @@ def const_create_working_dirs():
                 nopriv_gid = const_get_entropy_nopriv_gid()
             except KeyError:
                 pass
-    if nopriv_gid:
-        etpConst['entropygid_nopriv'] = nopriv_gid
 
-    # Create paths
-    keys = [x for x in etpConst if const_isstring(etpConst[x])]
-    for key in keys:
-
-        if not etpConst[key] or \
-        etpConst[key].endswith(".conf") or \
-        not os.path.isabs(etpConst[key]) or \
-        etpConst[key].endswith(".cfg") or \
-        etpConst[key].endswith(".tmp") or \
-        etpConst[key].find(".db") != -1 or \
-        etpConst[key].find(".log") != -1 or \
-        os.path.isdir(etpConst[key]) or \
-        not key.endswith("dir"):
-            continue
-
-        # allow users to create dirs in custom paths,
-        # so don't fail here even if we don't have permissions
-        try:
-            key_dir = etpConst[key]
-            d_paths = []
-            while not os.path.isdir(key_dir):
-                d_paths.append(key_dir)
-                key_dir = os.path.dirname(key_dir)
-            d_paths = sorted(d_paths)
-            for d_path in d_paths:
-                os.mkdir(d_path)
-                const_setup_file(d_path, gid, 0o775)
-        except (OSError, IOError,):
-            pass
-
-    if gid:
+    if gid is not None:
         etpConst['entropygid'] = gid
-        if not os.path.isdir(etpConst['entropyworkdir']):
-            try:
-                os.makedirs(etpConst['entropyworkdir'], 0o775)
-            except OSError:
-                pass
-        w_gid = os.stat(etpConst['entropyworkdir'])[stat.ST_GID]
-        if w_gid != gid:
-            const_setup_perms(etpConst['entropyworkdir'], gid,
-                recursion = False)
-
-        if not os.path.isdir(etpConst['entropyunpackdir']):
-            try:
-                os.makedirs(etpConst['entropyunpackdir'])
-            except OSError:
-                pass
-        try:
-            w_gid = os.stat(etpConst['entropyunpackdir'])[stat.ST_GID]
-            if w_gid != gid:
-                if os.path.isdir(etpConst['entropyunpackdir']):
-                    const_setup_perms(etpConst['entropyunpackdir'], gid)
-        except OSError:
-            pass
-        # always setup /var/lib/entropy/client permissions
-        if not const_islive():
-            # aufs/unionfs will start to leak otherwise
-            const_setup_perms(etpConst['etpdatabaseclientdir'], gid,
-                f_perms = 0o644, uid = etpConst['uid'])
+    if nopriv_gid is not None:
+        etpConst['entropygid_nopriv'] = nopriv_gid
 
 def const_convert_log_level(entropy_log_level):
     """
