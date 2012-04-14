@@ -972,30 +972,17 @@ class PortagePlugin(SpmPlugin):
             return defaults[0]
 
     def __source_env_get_var(self, env_file, env_var):
-        cmd = "/bin/bash -c \"source " + env_file + \
-            " && echo ${" + env_var + "}\""
-        tmp_fd, tmp_file = tempfile.mkstemp(prefix = "etp_portage")
-        try:
-            with os.fdopen(tmp_fd, "w") as std_f:
-                proc = subprocess.Popen(shlex.split(cmd), stdout = std_f,
-                    stderr = std_f)
-                sts = proc.wait()
-                std_f.flush()
-
-            enc = etpConst['conf_encoding']
-            with codecs.open(tmp_file, "r", encoding=enc) as std_f:
-                output = std_f.read()
-        finally:
-            try:
-                os.close(tmp_fd)
-            except OSError:
-                pass
-            os.remove(tmp_file)
-
+        current_mod = sys.modules[__name__].__file__
+        dirname = os.path.dirname(current_mod)
+        exec_path = os.path.join(dirname, "env_sourcer.sh")
+        args = [exec_path, env_file, env_var]
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        sts = proc.wait()
         if sts != 0:
-            raise IOError("cannot source %s and get %s => %s" % (env_file,
-                env_var, repr(output)))
-        return output.strip()
+            raise IOError("cannot source %s and get %s" % (
+                    env_file, env_var,))
+        output = proc.stdout.read().strip()
+        return output
 
     def __pkg_sources_filtering(self, sources):
         sources.discard("->")

@@ -38,7 +38,9 @@ entropy-install:
 	install -d -m 775 $(DESTDIR)/$(VARDIR)/log/entropy
 	touch $(DESTDIR)/$(VARDIR)/log/entropy/.keep
 
-	cp lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/ -Ra
+	chmod +x lib/entropy/spm/plugins/interfaces/portage_plugin/env_sourcer.sh
+	cp -Ra lib/entropy $(DESTDIR)/$(LIBDIR)/entropy/lib/
+
 	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
 	install -m 755 misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
