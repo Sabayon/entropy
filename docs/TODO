@@ -4,7 +4,6 @@ Backlog (raw)
 
     - make security advisories caching faster (cache server-side?)
 
-    - drop bashism from entropy.spm (/bin/bash used)
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
@@ -21,7 +20,6 @@ Backlog (raw)
 
     - pkgcore spm plugin
         PF CATEGORY CFLAGS CXXFLAGS NEEDED are missing
-    - ditch close_repositories() for commit_repositories() when possible
     - python 3.x support -> more tests
 
   break backward compat:
