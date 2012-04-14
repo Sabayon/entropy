@@ -1,3 +1,0 @@
-post_pkg_postrm() {
-	equo rescue spmsync
-}

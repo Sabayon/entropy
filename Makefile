@@ -66,12 +66,10 @@ equo-install:
 
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/client
 	install -d -m 775 $(DESTDIR)/etc/entropy
-	install -d $(DESTDIR)/etc/portage
 	install -d $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(PREFIX)/share/man/man1
 
 	# copying portage bashrc
-	install -m 644 conf/bashrc.entropy $(DESTDIR)/etc/portage/bashrc.entropy
 	install -m 644 conf/client.conf $(DESTDIR)/etc/entropy/
 
 	install -m 644 client/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/
