@@ -277,7 +277,8 @@ class FakeOutFile(object):
         while True:
             try:
                 chunk = os.read(self._rfd, 512) # BLOCKS
-            except IOError as err:
+            except (IOError, OSError) as err:
+                # both can raise EINTR
                 if err.errno == errno.EINTR:
                     continue
                 raise
