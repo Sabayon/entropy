@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Aleksey Baranov <>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-12 07:19+0200\n"
-"PO-Revision-Date: 2012-04-12 05:20+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2012-04-13 11:06+0000\n"
+"Last-Translator: Aleksey Baranov <>\n"
+"Language-Team: Ukrainian (http://www.transifex.net/projects/p/sabayon-rigo/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,39 +20,39 @@ msgstr ""
 
 #: ../RigoDaemon/app.py:730
 msgid "Not authorized"
-msgstr ""
+msgstr "Не авторизовано"
 
 #: ../RigoDaemon/app.py:766
 msgid "No repositories configured"
-msgstr ""
+msgstr "Немає налаштованих репозиторіїв"
 
 #: ../RigoDaemon/app.py:771
 msgid "Unhandled Exception"
-msgstr ""
+msgstr "Неочікувана помилка"
 
 #: ../RigoDaemon/app.py:1226
 msgid "Application Removal"
-msgstr ""
+msgstr "Видалення програми"
 
 #: ../RigoDaemon/app.py:1529
 msgid "Application download"
-msgstr ""
+msgstr "Скачати програму"
 
 #: ../RigoDaemon/app.py:1627
 msgid "Application Install"
-msgstr ""
+msgstr "Встановити програму"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
-msgstr ""
+msgstr "Неможливо зберегти конфігураційний файл"
 
 #: ../rigo/models/configupdate.py:300
 msgid "Destination"
-msgstr ""
+msgstr "Призначення"
 
 #: ../rigo/models/configupdate.py:303
 msgid "Applications"
-msgstr ""
+msgstr "Програми"
 
 #: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
 #: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
@@ -70,7 +71,7 @@ msgstr "Встановлено"
 #: ../rigo/models/application.py:1285
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr ""
+msgstr "<b>%s</b> встановлено"
 
 #: ../rigo/models/application.py:1287
 msgid "from"
@@ -82,7 +83,7 @@ msgstr "Ліцензія"
 
 #: ../rigo/models/application.py:1328
 msgid "Required space"
-msgstr ""
+msgstr "Потрібне місце на диску"
 
 #: ../rigo/models/application.py:1335
 msgid "Download size"
@@ -98,19 +99,19 @@ msgstr "USE-прапорці"
 
 #: ../rigo/models/application.py:1357
 msgid "No use flags"
-msgstr ""
+msgstr "Без use-прапорців"
 
 #: ../rigo/models/application.py:1375
 msgid "Runtime dependencies"
-msgstr ""
+msgstr "Залежності Runtime"
 
 #: ../rigo/models/application.py:1376
 msgid "Build dependencies"
-msgstr ""
+msgstr "Залежності Build"
 
 #: ../rigo/models/application.py:1377
 msgid "Post dependencies"
-msgstr ""
+msgstr "Залежності Post"
 
 #: ../rigo/models/application.py:1378
 msgid "Staff dependencies"
@@ -118,157 +119,157 @@ msgstr ""
 
 #: ../rigo/models/application.py:1400
 msgid "Click here for more details"
-msgstr ""
+msgstr "Натисніть, щоб отримати деталі"
 
 #: ../rigo/models/application.py:1659
 msgid "Application not found"
-msgstr ""
+msgstr "Програма не знайдена"
 
 #: ../rigo/controllers/daemon.py:78
 msgid "Good luck!"
-msgstr ""
+msgstr "Нехай щастить!"
 
 #: ../rigo/controllers/daemon.py:565
 #, python-format
 msgid "<b>%s</b> action enqueued"
-msgstr ""
+msgstr "Дія <b>%s</b> поставлена в чергу"
 
 #: ../rigo/controllers/daemon.py:569
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "<b>%i</b> програма зараз в черзі..."
+msgstr[1] "<b>%i</b> програми зараз в черзі..."
+msgstr[2] "<b>%i</b> програм зараз в черзі"
 
 #: ../rigo/controllers/daemon.py:661
 msgid "Application"
-msgstr ""
+msgstr "Програма"
 
 #: ../rigo/controllers/daemon.py:664
 msgid "An <b>unknown error</b> occurred"
-msgstr ""
+msgstr "Відбулася <b>невідома помилка</b>"
 
 #: ../rigo/controllers/daemon.py:666
 #, python-format
 msgid "<b>%s</b> download failed"
-msgstr ""
+msgstr "<b>%s</b> завантаження неуспішне"
 
 #: ../rigo/controllers/daemon.py:669
 #, python-format
 msgid "<b>%s</b> install failed"
-msgstr ""
+msgstr "<b>%s</b> встановлення неуспішне"
 
 #: ../rigo/controllers/daemon.py:672
 #, python-format
 msgid "<b>%s</b> removal failed"
-msgstr ""
+msgstr "<b>%s</b> видалення неуспішне"
 
 #: ../rigo/controllers/daemon.py:676
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr ""
+msgstr "<b>%s</b>, не авторизовано"
 
 #: ../rigo/controllers/daemon.py:679
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr ""
+msgstr "<b>%s</b>, внутрішня помилка"
 
 #: ../rigo/controllers/daemon.py:684
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr ""
+msgstr "<b>%s</b> залежності не знайдені"
 
 #: ../rigo/controllers/daemon.py:689
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr ""
+msgstr "Колізія <b>%s</b> залежностей"
 
 #: ../rigo/controllers/daemon.py:694
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr ""
+msgstr "Помилка видалення <b>%s</b> залежностей"
 
 #: ../rigo/controllers/daemon.py:699
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr ""
+msgstr "Диск повний, неможливо скачати чи розпакувати Програму"
 
 #: ../rigo/controllers/daemon.py:703
 msgid "An error occurred"
-msgstr ""
+msgstr "Відбулася помилка"
 
 #: ../rigo/controllers/daemon.py:708
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
 #: ../rigo/ui/gtk3/controllers/application.py:581
 msgid "Ok, thanks"
-msgstr ""
+msgstr "Дуже дякую"
 
 #: ../rigo/controllers/daemon.py:709
 #: ../rigo/ui/gtk3/controllers/notifications.py:216
 #: ../rigo/ui/gtk3/controllers/notifications.py:228
 #: ../rigo/ui/gtk3/controllers/notifications.py:241
 msgid "Show me"
-msgstr ""
+msgstr "Покажіть мені"
 
 #: ../rigo/controllers/daemon.py:788
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
+msgstr "<b>Апгрейд системи</b> рестартує"
 
 #: ../rigo/controllers/daemon.py:789
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Ще <b>%i</b> оновлення"
+msgstr[1] "Ще <b>%i</b> оновлення"
+msgstr[2] "Ще <b>%i</b> оновлень"
 
 #: ../rigo/controllers/daemon.py:1658
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "Очікую на <b>RigoDaemon</b>, зачекайте..."
 
 #: ../rigo/controllers/daemon.py:1728 ../rigo/controllers/daemon.py:2388
 #: ../rigo/controllers/daemon.py:2613
 msgid "Another activity is currently in progress"
-msgstr ""
+msgstr "Інша дія в процессі"
 
 #: ../rigo/controllers/daemon.py:1731 ../rigo/controllers/daemon.py:2392
 #: ../rigo/controllers/daemon.py:2617
 msgid "K thanks"
-msgstr ""
+msgstr "К дякую"
 
 #: ../rigo/controllers/daemon.py:1870
 msgid "Yes, thanks"
-msgstr ""
+msgstr "Так, дякую"
 
 #: ../rigo/controllers/daemon.py:1871
 msgid "No, sorry"
-msgstr ""
+msgstr "Ні, дякую"
 
 #: ../rigo/controllers/daemon.py:1888
 msgid "Ok then"
-msgstr ""
+msgstr "Тоді добре"
 
 #: ../rigo/controllers/daemon.py:1964
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
+msgstr "<b>%s</b>\nє частиною Базової системи та <b>не може</b> бути видалено"
 
 #: ../rigo/controllers/daemon.py:2017
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr ""
+msgstr "<b>%s</b>\nнаразі не може бути встановлено через <b>неіснуючі/замасковані</b> залежності або <b>конфлікт</b> залежностей"
 
 #: ../rigo/controllers/daemon.py:2079
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
+msgstr "Для встановлення <b>%s</b> необхідно буде видалити наступні програми: %s"
 
 #: ../rigo/controllers/daemon.py:2265
 #, python-format
@@ -281,7 +282,7 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:2534
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
+msgstr "<b>Оновлення Системи</b> розпочалося. Тим часом зробіть собі смачного кофійку =)"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:212
 msgid "Repositories Update in <b>progress</b>..."
@@ -294,11 +295,11 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/notifications.py:229
 #: ../rigo/ui/gtk3/controllers/notifications.py:242
 msgid "Interrupt"
-msgstr ""
+msgstr "Перервати"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:237
 msgid "<b>System Upgrade</b> in progress..."
-msgstr ""
+msgstr "<b>Оновлення системи</b> триває..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:263
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:77
@@ -496,11 +497,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:957
 msgid "click here!"
-msgstr ""
+msgstr "клацніть сюди"
 
 #: ../rigo/ui/gtk3/controllers/application.py:968
 msgid "Loading comments..."
-msgstr ""
+msgstr "Завантаження коментарів..."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:206
 #: ../rigo/ui/gtk3/controllers/applications.py:267
@@ -510,12 +511,12 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:419
 msgid "Nothing found for"
-msgstr ""
+msgstr "Нічого не знайдено для"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:429
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
-msgstr ""
+msgstr "можливо, ви мали на увазі <a href=\"%s\">%s</a>?"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:461
 msgid "Not found"
@@ -604,7 +605,7 @@ msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
-msgstr ""
+msgstr "Що робити?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
 msgid "Updates available, how about installing them?"
@@ -710,16 +711,16 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/notifications.py:783
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:99
 msgid "Accept"
-msgstr ""
+msgstr "Прийняти"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:493
 msgid "Accept forever"
-msgstr ""
+msgstr "Прийняти назавжди"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:495
 #: ../rigo/ui/gtk3/widgets/notifications.py:784
 msgid "Decline"
-msgstr ""
+msgstr "Відхилити"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
@@ -749,11 +750,11 @@ msgstr ""
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
+msgstr "<b>%s</b> Програма потребує встановлення наступних додаткових програм: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:766
 msgid "Show full list"
-msgstr ""
+msgstr "Показати повний список"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:826
 #, python-format
@@ -763,7 +764,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:873
 msgid "Confirm"
-msgstr ""
+msgstr "Підтвердити"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:874
 msgid "Undo"
@@ -835,7 +836,7 @@ msgstr "Ключові слова"
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:70
 msgid "More Info"
-msgstr ""
+msgstr "Додаткова інформація"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
