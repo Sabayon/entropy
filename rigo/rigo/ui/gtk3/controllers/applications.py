@@ -119,6 +119,8 @@ class ApplicationsViewController(GObject.Object):
         elif self._store.get_iter_first():
             # primary icon click will force UI to switch to Browser mode
             self.emit("view-filled")
+        else:
+            self.emit("view-cleared")
 
     def _search_changed(self, search_entry):
         GLib.timeout_add(700, self._search, search_entry.get_text())
