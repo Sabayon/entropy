@@ -1038,6 +1038,12 @@ class PortagePlugin(SpmPlugin):
         except tarfile.ReadError:
             empty_content = True
 
+        env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
+        uncompressed_env_file = None
+        if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
+            # when extracting fake metadata, env_bz2 can be unavailable
+            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
+
         # package injection status always false by default
         # developer can change metadatum after this function
         data['injected'] = False
@@ -1055,7 +1061,13 @@ class PortagePlugin(SpmPlugin):
                     value = item_f.readline().strip()
             except IOError:
                 if portage_entries[item]['critical']:
-                    raise
+                    if uncompressed_env_file is None:
+                        raise
+                    env_var = portage_entries[item].get('env')
+                    if env_var is None:
+                        raise
+                    value = self.__source_env_get_var(
+                        uncompressed_env_file, env_var)
             data[item] = value
 
         #if not data['chost']:
@@ -1068,12 +1080,6 @@ class PortagePlugin(SpmPlugin):
 
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
-
-        env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
-        uncompressed_env_file = None
-        if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
-            # when extracting fake metadata, env_bz2 can be unavailable
-            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
 
         if not data['sources'] and (uncompressed_env_file is not None):
             # when extracting fake metadata, env_bz2 can be unavailable
@@ -4037,6 +4043,7 @@ class PortagePlugin(SpmPlugin):
             'pf': {
                 'path': PortagePlugin.xpak_entries['pf'],
                 'critical': True,
+                'env': "PF",
             },
             'chost': {
                 'path': PortagePlugin.xpak_entries['chost'],
@@ -4057,14 +4064,17 @@ class PortagePlugin(SpmPlugin):
             'cflags': {
                 'path': PortagePlugin.xpak_entries['cflags'],
                 'critical': False,
+                'env': "CFLAGS",
             },
             'cxxflags': {
                 'path': PortagePlugin.xpak_entries['cxxflags'],
                 'critical': False,
+                'env': "CXXFLAGS",
             },
             'category': {
                 'path': PortagePlugin.xpak_entries['category'],
                 'critical': True,
+                'env': "CATEGORY",
             },
             'rdepend': {
                 'path': PortagePlugin.xpak_entries['rdepend'],
@@ -4428,7 +4438,6 @@ responsible in any way.""" % (mylicense, mylicense,)
             return ebuild_tag
 
         enc = etpConst['conf_encoding']
-        
         with codecs.open(ebuild, "r", encoding=enc) as f:
             tags = [x.strip() for x in f.readlines() \
                         if x.strip() and x.strip().startswith(search_tag)]
