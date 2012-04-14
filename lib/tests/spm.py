@@ -10,6 +10,9 @@ import tests._misc as _misc
 import tempfile
 import shutil
 
+from entropy.spm.plugins.interfaces.portage_plugin import \
+    PortageEntropyDepTranslator
+
 class SpmTest(unittest.TestCase):
 
     def setUp(self):
@@ -34,6 +37,26 @@ class SpmTest(unittest.TestCase):
         # right before terminating the process
         self.Client.destroy()
         self.Client.shutdown()
+
+    def test_portage_translator(self):
+        deps = {
+           """|| ( app-emulation/virtualbox
+                 >=app-emulation/virtualbox-bin-2.2.0
+           )""": \
+"( app-emulation/virtualbox | >=app-emulation/virtualbox-bin-2.2.0 )",
+
+           """|| ( ( gnome-extra/zenity ) ( kde-base/kdialog ) )
+""": \
+"( ( gnome-extra/zenity ) | ( kde-base/kdialog ) )",
+
+           """|| ( <media-libs/xine-lib-1.2
+                   ( >=media-libs/xine-lib-1.2 virtual/ffmpeg ) )
+           """: \
+"( <media-libs/xine-lib-1.2 | ( >=media-libs/xine-lib-1.2 & virtual/ffmpeg ) )",
+        }
+        for dep, expected in deps.items():
+            tr = PortageEntropyDepTranslator(dep)
+            self.assertEqual(expected, tr.translate())
 
     def test_init(self):
         spm = self.Client.Spm()
