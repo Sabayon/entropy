@@ -820,8 +820,16 @@ class ApplicationViewController(GObject.Object):
         """
         Remove the given Application.
         """
+        inst_app = app.get_installed()
         self.emit("application-request-action",
-                  app.get_installed(), AppActions.REMOVE)
+                  inst_app, AppActions.REMOVE)
+        if app.get_details().pkg == inst_app.get_details().pkg:
+            # on remove, we should return back to browser view
+            # if the Application shown is being removed
+            self._avc.emit(
+                "view-want-change",
+                RigoViewStates.STATIC_VIEW_STATE,
+                None)
 
     def _on_app_install(self, widget, app):
         """
