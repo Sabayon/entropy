@@ -2,11 +2,13 @@ Backlog (raw)
 
   1.0:
 
-    - make security advisories caching faster (cache server-side?)
-
     - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
+
+    - dump Sulfur
+      once done, rewrite entropy.Security() interface
+      to be O(1).
 
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
