@@ -3902,14 +3902,14 @@ class PortagePlugin(SpmPlugin):
     def _paren_choose(self, dep_list):
         newlist = []
         do_skip = False
-        for idx in range(len(dep_list)):
+        for idx, item in enumerate(dep_list):
 
             if do_skip:
                 do_skip = False
                 continue
 
-            item = dep_list[idx]
-            if item == "||": # or
+            # OR, no conditional deps support
+            if item == "||":
                 next_item = dep_list[idx+1]
                 # || ( asd? ( atom ) dsa? ( atom ) )
                 # => [] if use asd and dsa are disabled
@@ -3925,6 +3925,7 @@ class PortagePlugin(SpmPlugin):
                 else:
                     newlist += item
                 do_skip = True
+
             elif isinstance(item, list): # and
                 item = self._dep_and_select(item)
                 newlist += item
@@ -3936,13 +3937,12 @@ class PortagePlugin(SpmPlugin):
     def _dep_and_select(self, and_list):
         do_skip = False
         newlist = []
-        for idx in range(len(and_list)):
+        for idx, x in enumerate(and_list):
 
             if do_skip:
                 do_skip = False
                 continue
 
-            x = and_list[idx]
             if x == "||":
                 x = self._dep_or_select(and_list[idx+1])
                 do_skip = True
