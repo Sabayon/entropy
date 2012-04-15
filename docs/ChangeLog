@@ -1,3 +1,51 @@
+commit 6b79a4674636890df1bccfd88a48e919525ea114
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 18:18:23 2012 +0200
+
+    Release Entropy 1.0_rc103
+
+commit 144846906b12b48577d072b9f9c344a526182a0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 18:17:30 2012 +0200
+
+    [conf] server.conf: update repository example string
+
+commit 49361bb91e2cc7dafee9ff4d4667feb219314113
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 18:16:51 2012 +0200
+
+    [Rigo] actually install .po files
+
+commit f47d538713ad0113ed8bfba51686b22d028a203a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 17:57:53 2012 +0200
+
+    [Rigo] Application: fix two minor unicode decode issues
+
+commit db5259e65fc61d2a3da0ab5747f0de27fe1d5abd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 17:34:54 2012 +0200
+
+    [todo] update TODO
+
+commit ae3a431d8489cac56b0f85a202b20050cbe1905f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 17:34:34 2012 +0200
+
+    [entropy.security] rename filter_advisories() to _filter_advisories()
+
+commit 4a8c53af085ee997028057fcc512584d831e85fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 17:34:13 2012 +0200
+
+    [entropy.client] Repository: do not generate Security Advisories cache
+
+commit 3aff0f760289f206196872951922385fd30442a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:31:22 2012 +0200
+
+    Tagging Entropy version 1.0_rc102
+
 commit 728726128b98881344c31a031a5eb6b95ba93dd4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Apr 15 12:31:22 2012 +0200
