@@ -1315,9 +1315,9 @@ class Application(object):
             licenses = repo.retrieveLicense(self._pkg_id)
             if licenses:
                 licenses_txt = "<b>%s</b>: " % (escape_markup(_("License")),)
-                licenses_txt += ", ".join(sorted([
+                licenses_txt += prepare_markup(", ".join(sorted([
                             "<a href=\"%s%s\">%s</a>" % (lic_url, x, x) \
-                                for x in licenses.split()]))
+                                for x in licenses.split()])))
             else:
                 licenses_txt = ""
 
@@ -1396,7 +1396,7 @@ class Application(object):
                 more_txt = ""
             else:
                 more_txt = "<a href=\"%s\"><b>%s</b></a>" % (
-                    app_store_url,
+                    prepare_markup(app_store_url),
                     escape_markup(_("Click here for more details")),)
 
             text = "<small>%s\n%s\n%s\n%s\n%s\n%s%s</small>" % (
