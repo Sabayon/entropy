@@ -212,20 +212,42 @@ class SpmTest(unittest.TestCase):
         sources = ""
         eapi = "2"
 
-        portage_metadata = spm._calculate_dependencies(iuse, use, license,
-            depend, rdepend, pdepend, provide, sources, eapi)
+        os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE'] = "1"
+        try:
+            portage_metadata = spm._calculate_dependencies(
+                iuse, use, license,
+                depend, rdepend, pdepend, provide, sources, eapi)
+        finally:
+            del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
 
-        resolved_deps = ['>=mail-client/thunderbird-3.1.1-r1[-system-sqlite]',
-            '>=app-crypt/gnupg-2.0', 'app-crypt/pinentry-base',
-            'x11-libs/libXrender', 'x11-libs/libXt', 'x11-libs/libXmu',
-            '>=sys-libs/zlib-1.1.4', 'x11-libs/libXrender', 'x11-libs/libXt',
-            'x11-libs/libXmu', 'virtual/jpeg', 'dev-libs/expat', 'app-arch/zip',
-            'app-arch/unzip', '>=x11-libs/gtk+-2.8.6', '>=dev-libs/glib-2.8.2',
-            '>=x11-libs/pango-1.10.1', '>=dev-libs/libIDL-0.8.0',
-            '>=dev-libs/dbus-glib-0.72', '>=x11-libs/startup-notification-0.8',
-            '!<x11-base/xorg-x11-6.7.0-r2', '>=x11-libs/cairo-1.6.0']
-        rdepend_split = portage_metadata['RDEPEND'].split()
-        self.assertEqual(rdepend_split, resolved_deps)
+        expected_deps = [
+            '>=mail-client/thunderbird-3.1.1-r1[-system-sqlite]',
+            '( ( >=app-crypt/gnupg-2.0 & ( app-crypt/pinentry | app-crypt/pinentry-base ) ) | ( app-crypt/pinentry & app-crypt/pinentry-base ) | =app-crypt/gnupg-1.4* )',
+            'x11-libs/libXrender',
+            'x11-libs/libXt',
+            'x11-libs/libXmu',
+            '>=sys-libs/zlib-1.1.4',
+            'x11-libs/libXrender',
+            'x11-libs/libXt',
+            'x11-libs/libXmu',
+            'virtual/jpeg',
+            'dev-libs/expat',
+            'app-arch/zip',
+            'app-arch/unzip',
+            '>=x11-libs/gtk+-2.8.6',
+            '>=dev-libs/glib-2.8.2',
+            '>=x11-libs/pango-1.10.1',
+            '>=dev-libs/libIDL-0.8.0',
+            '>=dev-libs/dbus-glib-0.72',
+            '>=x11-libs/startup-notification-0.8',
+            '!<x11-base/xorg-x11-6.7.0-r2',
+            '>=x11-libs/cairo-1.6.0']
+        expected_deps.sort()
+
+        resolved_deps = portage_metadata['RDEPEND']
+        resolved_deps.sort()
+
+        self.assertEqual(resolved_deps, expected_deps)
 
     def test_portage_or_selector(self):
         spm_class = self.Client.Spm_class()
@@ -233,9 +255,14 @@ class SpmTest(unittest.TestCase):
             return
         spm = self.Client.Spm()
 
-        or_deps = ['x11-foo/foo', 'x11-bar/bar']
-        self.assertEqual(spm._dep_or_select(or_deps, top_level = True),
-            ["x11-foo/foo;x11-bar/bar?"])
+        os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE'] = "1"
+        try:
+            or_deps = ['x11-foo/foo', 'x11-bar/bar']
+            self.assertEqual(spm._dep_or_select(
+                    or_deps, top_level = True),
+                             ["( x11-foo/foo | x11-bar/bar )"])
+        finally:
+            del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

@@ -3958,7 +3958,55 @@ class PortagePlugin(SpmPlugin):
 
         return newlist
 
+    def _dep_or_select_conditional(self, or_list):
+
+        def _flatten_rec(idx, item, parent_list, accum):
+            if isinstance(item, const_get_stringtype()):
+                accum.append(item)
+                if item == "||":
+                    # or
+                    accum.append("(")
+                    next_item = parent_list[idx + 1]
+                    for _idx, _item in enumerate(next_item):
+                        _flatten_rec(_idx, _item, next_item, accum)
+                    accum.append(")")
+            elif isinstance(item, (list, set, frozenset, tuple)):
+                # and
+                accum.append("(")
+                for _idx, _item in enumerate(item):
+                    _flatten_rec(_idx, _item, item, accum)
+                accum.append(")")
+            else:
+                raise PortageEntropyDepTranslator.ParseError(
+                    "WTF error")
+
+        deps = []
+        try:
+            for idx, item in enumerate(or_list):
+                _flatten_rec(idx, item, or_list, deps)
+        except PortageEntropyDepTranslator.ParseError:
+            return None
+
+        dep_string = "|| ( " + " ".join(deps) + " )"
+        tr = PortageEntropyDepTranslator(dep_string)
+        try:
+            return tr.translate()
+        except PortageEntropyDepTranslator.ParseError as err:
+            sys.stderr.write("%s: %s, %s\n" % (
+                "ParseError", err,
+                or_list,)
+            )
+            return None
+
     def _dep_or_select(self, or_list, top_level = False):
+
+        conditional_deps_enable = os.getenv(
+            "ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE")
+        if conditional_deps_enable:
+            dep = self._dep_or_select_conditional(or_list)
+            if not dep:
+                return []
+            return [dep]
 
         if top_level:
             simple_or_list = [x for x in or_list if \
