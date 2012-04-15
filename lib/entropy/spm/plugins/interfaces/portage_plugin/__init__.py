@@ -1226,8 +1226,8 @@ class PortagePlugin(SpmPlugin):
             data['eapi']
         )
 
-        data['provide'] = set(portage_metadata['PROVIDE'].split())
-        data['license'] = portage_metadata['LICENSE']
+        data['provide'] = set(portage_metadata['PROVIDE'])
+        data['license'] = " ".join(portage_metadata['LICENSE'])
         data['useflags'] = []
         data['useflags'].extend(portage_metadata['ENABLED_USE'])
         # consider forced use flags always on
@@ -1238,7 +1238,7 @@ class PortagePlugin(SpmPlugin):
         # useflags must be a set, as returned by entropy.db.getPackageData
         data['useflags'] = set(data['useflags'])
         # sources must be a set, as returned by entropy.db.getPackageData
-        data['sources'] = set(portage_metadata['SRC_URI'].split())
+        data['sources'] = set(portage_metadata['SRC_URI'])
         data['sources'] = self.__pkg_sources_filtering(data['sources'])
         data['dependencies'] = {}
 
@@ -1248,14 +1248,14 @@ class PortagePlugin(SpmPlugin):
             "DEPEND": etpConst['dependency_type_ids']['bdepend_id'],
         }
         for dep_key, dep_val in dep_keys.items():
-            for x in portage_metadata[dep_key].split():
+            for x in portage_metadata[dep_key]:
                 if x.startswith("!") or (x in ("(", "||", ")", "")):
                     continue
                 data['dependencies'][x] = dep_val
 
         data['conflicts'] = [x.replace("!", "") for x in \
-            portage_metadata['RDEPEND'].split() + \
-            portage_metadata['PDEPEND'].split() if \
+            portage_metadata['RDEPEND'] + \
+            portage_metadata['PDEPEND'] if \
             x.startswith("!") and not x in ("(", "||", ")", "")]
 
         if kern_dep_key is not None:
@@ -3742,8 +3742,10 @@ class PortagePlugin(SpmPlugin):
         use = raw_use + [x for x in use_force if x not in raw_use]
         metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use])
         metadata['USE_FORCE'] = sorted(use_force)
+        variables = "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", \
+            "PROVIDE", "SRC_URI"
 
-        for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
+        for k in variables:
             try:
                 deps = self._portage.dep.use_reduce(metadata[k],
                     uselist = enabled_use, is_src_uri = (k == "SRC_URI"),
@@ -3754,7 +3756,6 @@ class PortagePlugin(SpmPlugin):
                     deps = self._paren_choose(deps)
                 if k.endswith("DEPEND"):
                     deps = self._usedeps_reduce(deps, enabled_use)
-                deps = ' '.join(deps)
             except Exception as e:
                 entropy.tools.print_traceback()
                 self.__output.output(
