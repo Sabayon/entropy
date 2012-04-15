@@ -232,10 +232,12 @@ class PortageEntropyDepTranslator(object):
             if sub == "||": # or
                 try:
                     next_sub = split_sub[sub_idx+1]
-                except IndexError:
-                    raise PortageEntropyDepTranslator.ParseError()
+                except IndexError as err:
+                    raise PortageEntropyDepTranslator.ParseError(
+                        "Index Error")
                 if next_sub != "(":
-                    raise PortageEntropyDepTranslator.ParseError()
+                    raise PortageEntropyDepTranslator.ParseError(
+                        "Syntax Error")
 
                 local_sub_count, sub_scope = self.__extract_scope(
                     split_sub[sub_idx+2:])
