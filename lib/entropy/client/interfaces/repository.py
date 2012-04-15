@@ -297,9 +297,9 @@ class Repository:
         try:
             security_intf = self._entropy.Security()
             if _unlocked:
-                security_intf.unlocked_sync()
+                security_intf.unlocked_sync(do_cache = False)
             else:
-                security_intf.sync()
+                security_intf.sync(do_cache = False)
         except Exception as e:
             entropy.tools.print_traceback(f = self._entropy.logger)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
