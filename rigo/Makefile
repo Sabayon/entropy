@@ -1,4 +1,4 @@
-SUBDIRS = data
+SUBDIRS = data po
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
