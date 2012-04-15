@@ -1,3 +1,76 @@
+commit 728726128b98881344c31a031a5eb6b95ba93dd4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:31:22 2012 +0200
+
+    Release Entropy 1.0_rc102
+
+commit 34c9632fb51b671273ccb588fffb5be9c00c9da0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:28:40 2012 +0200
+
+    [todo] update TODO
+
+commit 8f0c37323a851a98f61a0bad49f110e764debc28
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:24:20 2012 +0200
+
+    [entropy.spm] PortagePlugin: introduce conditional deps support
+    
+    Introduce Entropy conditional dependencies supoort if
+    ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE is set in the environment.
+    This feature is disabled by default because it braks backward
+    compatibility and older Entropy Clients are broken wrt this.
+
+commit 58846f12ad24315c4607224090abb7761e4c398d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:13:45 2012 +0200
+
+    [entropy.spm] PortagePlugin: use enumerate() instead of range(len())
+
+commit 6dd6cb23cba4fd6127f5238efbf1ffe6239ec5f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:12:13 2012 +0200
+
+    [entropy.spm] PortagePlugin._usedeps_reduce: fix usage with conditional dependencies
+
+commit d1a61e20c6b20a797dc99abb85d813005676f2ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:08:56 2012 +0200
+
+    [entropy.spm] PortagePlugin._calculate_dependencies: return list for everything
+    
+    Do not return strings for *DEPEND, LICENSE, PROVIDE and SRC_URI
+
+commit 5ba0b0771cd5fc476a1de2eb99d6928be20b092f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:07:24 2012 +0200
+
+    [entropy.spm] PortagePlugin: fix ParseError exception initialization
+
+commit 736ee363bf57bcc22e4238178dfb9c457a4afaba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 12:04:26 2012 +0200
+
+    [entropy.dep] fix DependencyStringParser usage by expand_dependencies()
+
+commit c6d3ecfd56e506ea962dcbeea6bdfa962a80eb3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 08:58:31 2012 +0200
+
+    [Rigo] install .desktop file and mimetype info
+
+commit cdf6be90bebb9dd0c667da91d82c31713dce9001
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 17:49:18 2012 +0200
+
+    [tests] Spm: add PortageEntropyDepTranslator tests
+
+commit 3f0e4007ef0fc449f0de3717e6a1f27176fdb9d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 14 17:34:43 2012 +0200
+
+    Tagging Entropy version 1.0_rc101
+
 commit b52a1bdde73d1cfc76ccf15345952810fb274a43
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 14 17:34:42 2012 +0200
