@@ -1124,9 +1124,11 @@ def expand_dependencies(dependencies, entropy_repository_list,
                 dep = dep[0]
             else:
                 raise AttributeError("malformed input dependencies")
+
         if dep.startswith("("):
+            _matched = False
             try:
-                deps = DependencyStringParser(dep,
+                _matched, deps = DependencyStringParser(dep,
                     entropy_repository_list,
                     selected_matches = selected_matches).parse()
             except DependencyStringParser.MalformedDependency:
@@ -1136,10 +1138,15 @@ def expand_dependencies(dependencies, entropy_repository_list,
                 else:
                     pkg_deps.append((dep, dep_type))
                 continue
+            if not _matched:
+                # if not matched, hold the original
+                # conditional dependency.
+                deps = [dep]
             if dep_type is None:
                 pkg_deps.extend(deps)
             else:
                 pkg_deps.extend([(x, dep_type) for x in deps])
+
         elif dep_type is None:
             pkg_deps.append(dep)
         else:
