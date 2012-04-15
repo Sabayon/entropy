@@ -3842,18 +3842,30 @@ class PortagePlugin(SpmPlugin):
             filtered_deps = []
             for depstring in split_deps:
 
-                use_deps = entropy.dep.dep_getusedeps(depstring)
-                if use_deps:
+                new_depstring = []
+                # conditional deps support
+                for _depstring in depstring.split():
+                    if _depstring in ("(", ")", "&", "|"):
+                        new_depstring.append(_depstring)
+                        continue
 
-                    new_use_deps = filter_use_deps(depstring)
+                    use_deps = entropy.dep.dep_getusedeps(_depstring)
+                    if not use_deps:
+                        new_depstring.append(_depstring)
+                        continue
+
+                    new_use_deps = filter_use_deps(_depstring)
 
                     if new_use_deps:
-                        depstring = "%s[%s]" % (
-                            entropy.dep.remove_usedeps(depstring),
+                        _depstring = "%s[%s]" % (
+                            entropy.dep.remove_usedeps(_depstring),
                             ','.join(new_use_deps),
-                        )
+                            )
                     else:
-                        depstring = entropy.dep.remove_usedeps(depstring)
+                        _depstring = entropy.dep.remove_usedeps(
+                            _depstring)
+                    new_depstring.append(_depstring)
+                depstring = " ".join(new_depstring)
 
                 filtered_deps.append(depstring)
 
