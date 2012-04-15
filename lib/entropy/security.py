@@ -670,12 +670,12 @@ class System:
                 continue
             adv_metadata.update(xml_metadata)
 
-        adv_metadata = self.filter_advisories(adv_metadata)
+        adv_metadata = self._filter_advisories(adv_metadata)
         self.set_advisories_cache(adv_metadata)
         self.adv_metadata = adv_metadata.copy()
         return adv_metadata
 
-    def filter_advisories(self, adv_metadata):
+    def _filter_advisories(self, adv_metadata):
         """
         This function filters advisories metadata dict removing non-applicable
         ones.
