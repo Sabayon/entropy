@@ -35,6 +35,11 @@ install:
 		$(DESTDIR)$(RIGODIR)/rigo/ui/gtk3/widgets/
 
 	install -m 755 rigo_app.py $(DESTDIR)$(BINDIR)/rigo
+	install -d $(DESTDIR)/usr/share/applications
+	install -d $(DESTDIR)/usr/share/mime/packages
+	install -m 644 data/desktop/rigo.desktop $(DESTDIR)/usr/share/applications/
+	install -m 644 data/desktop/rigo-mimetypes.xml $(DESTDIR)/usr/share/mime/packages/
+
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
 
 clean:
