@@ -4158,6 +4158,17 @@ class Server(Client):
             instance = self._server_dbcache.pop(found)
             instance.close()
 
+    def repository_metadata(self, repository_id):
+        """
+        Return Entropy Server repository configuration metadata.
+
+        @return: repository configuration metadata
+        @rtype: dict
+        @raise KeyError: if repository is not configured or available
+        """
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        return srv_set['repositories'][repository_id]
+
     def available_repositories(self):
         """
         Return a dictionary representing available repositories metadata.
