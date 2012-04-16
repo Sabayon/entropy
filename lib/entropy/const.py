@@ -677,6 +677,8 @@ def const_default_settings(rootdir):
         'clientdbid': "__system__", # these two values have to match!
         'serverdbid': "__server__",
         'genericdbid': "__generic__",
+        'spmdbid': "spm-db",
+        'spmetprev': 9999,
         'systemreleasefile': "/etc/sabayon-release",
 
         'install_sources': {
