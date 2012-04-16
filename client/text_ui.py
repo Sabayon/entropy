@@ -449,14 +449,15 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         remove.sort()
         manual_removal.sort()
 
-        print_info(red(" @@ ") + \
-            blue("%s." % (
+        if manual_removal or remove:
+            print_info(red(" @@ ") + \
+                blue("%s." % (
                     _("On the system there are packages that are not available anymore in the online repositories"),
                 )
             )
         )
-        print_info(red(" @@ ")+blue(
-            _("Even if they are usually harmless, it is suggested (after proper verification) to remove them.")))
+            print_info(red(" @@ ")+blue(
+                _("Even if they are usually harmless, it is suggested (after proper verification) to remove them.")))
 
         if manual_removal:
             _show_package_removal_info(

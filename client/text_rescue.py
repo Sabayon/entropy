@@ -568,7 +568,7 @@ def _database_spmsync(entropy_client):
             if oldidpackages:
                 oldidpackage = oldidpackages[-1]
 
-            mydata['revision'] = 9999 # can't do much more
+            mydata['revision'] = etpConst['spmetprev'] # can't do much more
             if oldidpackage:
                 mydata['revision'] = \
                     entropy_client.installed_repository().retrieveRevision(
@@ -579,7 +579,7 @@ def _database_spmsync(entropy_client):
             idpk = entropy_client.installed_repository().handlePackage(mydata,
                 forcedRevision = mydata['revision'])
             entropy_client.installed_repository().storeInstalledPackage(idpk,
-                "spm-db")
+                etpConst['spmdbid'])
             os.remove(temp_pkg_path)
 
         print_info(brown(" @@ ") + \
@@ -692,7 +692,7 @@ def _database_generate(entropy_client):
             continue
 
         # Try to see if it's possible to use the revision of a possible old db
-        mydata['revision'] = 9999
+        mydata['revision'] = etpConst['spmetprev']
         # create atom string
         myatom = entropy.dep.create_package_atom_string(mydata['category'],
             mydata['name'], mydata['version'], mydata['versiontag'])
@@ -712,7 +712,7 @@ def _database_generate(entropy_client):
         idpk = entropy_client.installed_repository().addPackage(mydata,
             revision = mydata['revision'], do_commit = False)
         entropy_client.installed_repository().storeInstalledPackage(idpk,
-            "spm-db")
+            etpConst['spmdbid'])
         os.remove(temp_pkg_path)
 
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))

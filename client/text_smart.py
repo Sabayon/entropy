@@ -236,9 +236,9 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
             back = True
         )
         # append arbitrary revision
-        mydata['revision'] = 9999
+        mydata['revision'] = etpConst['spmetprev']
         mydata['download'] = mydata['download'][:-len(etpConst['packagesext'])] + \
-            "~9999" + etpConst['packagesext']
+            "~" + str(etpConst['spmetprev']) + etpConst['packagesext']
         # migrate to the proper format
         final_tbz2path = os.path.join(os.path.dirname(etptbz2path),
                                       os.path.basename(mydata['download']))
