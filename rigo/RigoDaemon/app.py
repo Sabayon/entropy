@@ -650,6 +650,7 @@ class RigoDaemonService(dbus.service.Object):
                 return
             self._deferred_shutdown = True
 
+        GLib.idle_add(self.deferred_shutdown)
         write_output("Activating deferred shutdown...", debug=True)
         def _ping():
             GLib.idle_add(self.ping)
@@ -878,7 +879,18 @@ class RigoDaemonService(dbus.service.Object):
             self._close_local_resources()
             write_output("stop(): activity mutex acquired, quitting",
                          debug=True)
+
             entropy.tools.kill_threads()
+
+            sem = Semaphore(0)
+            def _shutdown(_sem):
+                self.shutdown()
+                _sem.release()
+            GLib.idle_add(_shutdown, sem)
+            sem.acquire()
+            # give receivers some time
+            time.sleep(2.0)
+
             # use kill so that GObject main loop will quit as well
             os.kill(os.getpid(), signal.SIGTERM)
 
@@ -3097,6 +3109,24 @@ class RigoDaemonService(dbus.service.Object):
                 self._ping_timer = Timer(15.0, self.stop)
                 self._ping_timer.daemon = True
                 self._ping_timer.start()
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def deferred_shutdown(self):
+        """
+        Signal that the deferred shutdown procedure has started.
+        """
+        write_output("deferred_shutdown(): %s" % (locals(),),
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def shutdown(self):
+        """
+        Signal that RigoDaemon is shutting down in seconds.
+        """
+        write_output("shutdown(): %s" % (locals(),),
+                     debug=True)
 
 if __name__ == "__main__":
     if os.getuid() != 0:
