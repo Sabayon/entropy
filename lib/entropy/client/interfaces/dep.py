@@ -829,7 +829,8 @@ class CalculatorsMixin:
 
                 # check against SPM downgrades and ignore_spm_downgrades
                 if (vcmp < 0) and ignore_spm_downgrades and \
-                    (installed_rev == 9999) and (installed_rev != repo_pkgrev):
+                    (installed_rev == etpConst['spmetprev']) \
+                    and (installed_rev != repo_pkgrev):
                     # In this case, do not override Source Package Manager
                     # installed pkgs
                     if const_debug_enabled():
@@ -2671,7 +2672,8 @@ class CalculatorsMixin:
                     continue
                 if cl_revision != revision:
                     # different revision
-                    if cl_revision == 9999 and ignore_spm_downgrades:
+                    if cl_revision == etpConst['spmetprev'] \
+                            and ignore_spm_downgrades:
                         # no difference, we're ignoring revision 9999
                         fine.append(cl_atom)
                         if (m_idpackage, repoid) not in update:
@@ -2769,9 +2771,25 @@ class CalculatorsMixin:
         # repositories, this is mainly required to allow
         # 3rd party packages installation without
         # erroneously inform user about unavailability.
-        unavail_pkgs = [x for x in remove if \
-            installed_repo.getInstalledPackageRepository(x) \
-                not in self.repositories()]
+        unavail_pkgs = []
+        manual_unavail_pkgs = []
+        repos = self.repositories()
+        for package_id in remove:
+            repo_id = installed_repo.getInstalledPackageRepository(
+                package_id)
+            if not repo_id:
+                continue
+            if repo_id in repos:
+                continue
+            if repo_id == etpConst['spmdbid']:
+                etp_rev = installed_repo.retrieveRevision(
+                    package_id)
+                if etp_rev == etpConst['spmetprev']:
+                    unavail_pkgs.append(package_id)
+                    continue
+            unavail_pkgs.append(package_id)
+            manual_unavail_pkgs.append(package_id)
+
         remove = [x for x in remove if x not in unavail_pkgs]
         # drop system packages for automatic removal,
         # user has to do it manually.
@@ -2780,10 +2798,10 @@ class CalculatorsMixin:
         remove = [x for x in remove if x not in system_unavail_pkgs]
 
         manual_removal = []
-        if (unavail_pkgs or remove or system_unavail_pkgs) and \
+        if (manual_unavail_pkgs or remove or system_unavail_pkgs) and \
                 self.repositories():
             manual_removal.extend(sorted(
-                set(unavail_pkgs + system_unavail_pkgs)))
+                set(manual_unavail_pkgs + system_unavail_pkgs)))
 
         return manual_removal, remove
 
