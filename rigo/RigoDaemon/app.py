@@ -945,8 +945,7 @@ class RigoDaemonService(dbus.service.Object):
         # signal updates available
         update, remove, fine, spm_fine = \
             self._entropy.calculate_updates()
-        if update or remove:
-            self._signal_updates_unlocked(update, remove)
+        self._signal_updates_unlocked(update, remove)
 
     def _signal_updates_unlocked(self, update, remove):
         """
@@ -2236,8 +2235,7 @@ class RigoDaemonService(dbus.service.Object):
                         # signal updates available
                         update, remove, fine, spm_fine = \
                             self._entropy.calculate_updates()
-                        if update or remove:
-                            self._signal_updates_unlocked(update, remove)
+                        self._signal_updates_unlocked(update, remove)
                     finally:
                         self._rwsem.reader_release()
 
