@@ -277,11 +277,16 @@ class MagnetoCore(MagnetoCoreUI):
             [], False)
         return accepted
 
+    def _dbus_to_unicode(self, dbus_string):
+        """
+        Convert dbus.String() to unicode object
+        """
+        return dbus_string.decode(etpConst['conf_encoding'])
+
     def _updates_available_signal(self, update, update_atoms,
                                   remove, remove_atoms):
-        if not update_atoms:
-            return
-        self.new_updates_signal(update_atoms)
+        updates = [self._dbus_to_unicode(x) for x in update_atoms]
+        self.new_updates_signal(updates)
 
     def show_service_not_available(self):
         # inform user about missing Entropy service
@@ -308,9 +313,8 @@ class MagnetoCore(MagnetoCoreUI):
         if not config.settings['APPLET_ENABLED']:
             return
 
-        avail = [str(x) for x in update_atoms]
         del self.package_updates[:]
-        self.package_updates.extend(avail)
+        self.package_updates.extend(update_atoms)
         upd_len = len(update_atoms)
 
         if upd_len:
