@@ -106,6 +106,7 @@
 ../server/eit/commands/cleanup.py
 ../server/eit/commands/files.py
 ../server/eit/commands/descriptor.py
+../server/eit/commands/remote.py
 ../server/eit/commands/remove.py
 ../server/eit/commands/deps.py
 ../server/eit/commands/cp.py
