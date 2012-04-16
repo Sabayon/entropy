@@ -22,7 +22,7 @@ from threading import Lock
 # Entropy imports
 from entropy.output import nocolor
 from entropy.client.interfaces import Client
-from entropy.const import etpConst
+from entropy.const import etpConst, const_debug_write
 import entropy.tools
 from entropy.i18n import _, ngettext
 from entropy.misc import ParallelTask
@@ -40,6 +40,12 @@ class MagnetoCoreUI:
     Methods in this class are inherited by MagnetoCore and should be
     reimplemented by its subclasses.
     """
+
+    def set_unlock_callback(self, unlock_callback):
+        """
+        Set the Magneto execution Lock unlock callback.
+        """
+        self._unlock_callback = unlock_callback
 
     def startup(self):
         """
@@ -103,10 +109,10 @@ class MagnetoCore(MagnetoCoreUI):
     interfaces.
     """
 
-    _PING_SIGNAL = "ping"
     _UPDATES_AVAILABLE_SIGNAL = "updates_available"
     _ACTIVITY_STARTED_SIGNAL = "activity_started"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
+    _SHUTDOWN_SIGNAL = "shutdown"
 
     DBUS_INTERFACE = DbusConfig.BUS_NAME
     DBUS_PATH = DbusConfig.OBJECT_PATH
@@ -117,6 +123,7 @@ class MagnetoCore(MagnetoCoreUI):
             import signal
             signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        self._unlock_callback = None
         self.__dbus_main_loop = None
         self.__system_bus = None
         self.__entropy_bus = None
@@ -192,12 +199,9 @@ class MagnetoCore(MagnetoCoreUI):
                     self.DBUS_INTERFACE, self.DBUS_PATH
                     )
 
-                # ping/pong signaling, used to let
-                # RigoDaemon release exclusive locks
-                # when no client is connected
-                self.__entropy_bus.connect_to_signal(
-                    self._PING_SIGNAL, self._ping_signal,
-                    dbus_interface=self.DBUS_INTERFACE)
+                const_debug_write(
+                    __name__,
+                    "_entropy_bus: loading RigoDaemon DBus Object")
 
                 # RigoDaemon is telling us that a new activity
                 # has just begun
@@ -218,6 +222,11 @@ class MagnetoCore(MagnetoCoreUI):
                     self._repositories_updated_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                self.__entropy_bus.connect_to_signal(
+                    self._SHUTDOWN_SIGNAL,
+                    self._shutdown_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     def setup_dbus(self):
@@ -233,14 +242,18 @@ class MagnetoCore(MagnetoCoreUI):
             self._dbus_init_error_msg = "%s" % (err,)
             return False
 
-    def _ping_signal(self):
+    def _shutdown_signal(self):
         """
-        Need to call pong() as soon as possible to hold all Entropy
-        Resources allocated by RigoDaemon.
+        Discard RigoDaemon bus object if shutdown() arrived.
         """
-        dbus.Interface(
-            self._entropy_bus,
-            dbus_interface=self.DBUS_INTERFACE).pong()
+        self.__entropy_bus_mutex.acquire()
+        const_debug_write(
+            __name__,
+            "shutdown() arrived, reloading in 2 seconds")
+        time.sleep(2)
+        if self._unlock_callback is not None:
+            self._unlock_callback()
+        os.execvp("magneto", sys.argv)
 
     def _activity_started_signal(self, activity):
         """

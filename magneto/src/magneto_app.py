@@ -17,7 +17,7 @@ import time
 # never load entropy package here, --no-pid-handling is added below after this
 # point and will cause lock stealing.
 
-def _startup():
+def _startup(unlock_callback):
     sys.path.insert(0, "/usr/lib/rigo")
     sys.path.insert(0, '/usr/lib/entropy/client')
     sys.path.insert(0, '/usr/lib/entropy/lib')
@@ -69,6 +69,7 @@ def _startup():
 
     import entropy.tools
     magneto = Magneto()
+    magneto.set_unlock_callback(unlock_callback)
     try:
         magneto.startup()
         magneto.close_service()
@@ -81,6 +82,9 @@ def _startup():
     raise SystemExit(0)
 
 if __name__ == "__main__":
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     # acquire lock
     magneto_lock_dir = "/tmp"
     magneto_lock_file = ".magneto.lock"
@@ -89,17 +93,21 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
+
     sys.argv.append('--no-pid-handling')
     import entropy.tools
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
     acquired = entropy.tools.acquire_lock(magneto_lock, lock_map)
+    def _unlock_func():
+        entropy.tools.release_lock(magneto_lock, lock_map)
+
     try:
         if acquired:
-            _startup()
+            _startup(_unlock_func)
         else:
             sys.stderr.write("Warning: another Magneto instance is already running.\n")
             raise SystemExit(1)
     finally:
         if acquired:
-            entropy.tools.release_lock(magneto_lock, lock_map)
+            _unlock_func()
