@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - eit remote (for handling repos in server.conf)
     - rework client/ code, as done with eit
       - ditch etpUi
 
