@@ -117,6 +117,9 @@ COMMANDS
 *query [q]*::
     miscellaneous package metadata queries
 
+*remote*::
+    manage repositories
+
 *remove [rm]*::
     remove packages from repository
 
@@ -168,7 +171,7 @@ SEE ALSO
     eit-commit(1), eit-cp(1), eit-deps(1), eit-files(1), eit-graph(1)
     eit-init(1), eit-inject(1), eit-list(1), eit-lock(1), eit-log(1)
     eit-match(1), eit-merge(1), eit-mv(1), eit-notice(1), eit-own(1)
-    eit-pkgmove(1), eit-pull(1), eit-push(1), eit-query(1), eit-remove(1)
-    eit-repack(1), eit-repo(1), eit-reset(1), eit-revgraph(1), eit-search(1)
-    eit-status(1), eit-test(1), eit-unlock(1), eit-vacuum(1)
+    eit-pkgmove(1), eit-pull(1), eit-push(1), eit-query(1), eit-remote(1)
+    eit-remove(1), eit-repack(1), eit-repo(1), eit-reset(1), eit-revgraph(1)
+    eit-search(1), eit-status(1), eit-test(1), eit-unlock(1), eit-vacuum(1)
     
