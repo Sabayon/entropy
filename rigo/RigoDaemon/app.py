@@ -34,7 +34,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 
-from gi.repository import GLib, GObject
+from gi.repository import GLib, GObject, Gio
 
 DAEMON_LOGGING = False
 DAEMON_DEBUG = False
@@ -64,7 +64,7 @@ from entropy.exceptions import DependenciesNotFound, \
     EntropyPackageException
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
-    ReadersWritersSemaphore, DirectoryMonitor
+    ReadersWritersSemaphore
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple
 from entropy.client.interfaces import Client
@@ -545,48 +545,41 @@ class RigoDaemonService(dbus.service.Object):
         self._action_queue_task.daemon = True
         self._action_queue_task.start()
 
+        self._deferred_shutdown = False
+        self._deferred_shutdown_mutex = Lock()
+
         Entropy.set_daemon(self)
         self._entropy = Entropy()
         self._fakeout = FakeOutFile(self._entropy)
-        self._executable_path = sys.argv[0]
+
+        executable_path = sys.argv[0]
         write_output(
             "__init__: dbus service loaded, "
             "pid: %d, ppid: %d, exec: %s" %  (
                 os.getpid(), os.getppid(),
-                self._executable_path,)
+                executable_path,)
             )
-
-        # optimist
-        self._executable_mtime = os.path.getmtime(
-            self._executable_path)
-        self._deferred_shutdown = False
-        self._deferred_shutdown_mutex = Lock()
 
         # monitor daemon executable changes and installed
         # repository changes
         # the latter is mainly for lockless clients
-        self._installed_repository_updated_serializer = Lock()
-        self._installed_repository_mtime = None
         repo_path = self._entropy.installed_repository_path()
+        self._installed_repository_updated_serializer = Lock()
+        self._inst_mon = None
+        if os.path.isfile(repo_path):
+            inst_repo_file = Gio.file_new_for_path(repo_path)
+            self._inst_mon = inst_repo_file.monitor_file(
+                Gio.FileMonitorFlags.NONE, None)
+            self._inst_mon.connect(
+                "changed", self._installed_repository_changed)
 
-        flags = DirectoryMonitor.DN_MODIFY | \
-            DirectoryMonitor.DN_MULTISHOT
-
-        paths = [os.path.dirname(self._executable_path),
-                 os.path.dirname(repo_path)]
-
-        self._directory_monitor_serializer = Lock()
-        self._mon = DirectoryMonitor(
-            paths, self._directory_monitor_handler,
-            event_flags=flags)
-
-        # populate _installed_repository_mtime
-        task = ParallelTask(
-            self._installed_repository_updated_worker,
-            signal=False)
-        task.daemon = True
-        task.name = "InstalledRepositoryUpdatedWorkerFirst"
-        task.start()
+        self._exec_mon = None
+        if os.path.isfile(executable_path):
+            exec_file = Gio.file_new_for_path(executable_path)
+            self._exec_mon = exec_file.monitor_file(
+                Gio.FileMonitorFlags.NONE, None)
+            self._exec_mon.connect(
+                "changed", self._rigo_daemon_executable_changed)
 
         self._start_package_cache_timer()
         self._start_repositories_update_timer()
@@ -613,46 +606,39 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "AutoRepositoriesUpdateTimer"
         task.start()
 
-    def _directory_monitor_handler(self):
+    def _installed_repository_changed(self, mon, gio_f, data, event):
         """
-        DirectoryMonitor SIGIO handler.
+        Gio handler for Installed Packages Repository
+        modification events.
         """
-        # determine if executable changed, we cannot lose
-        # any tick
-        if not self._deferred_shutdown:
-            try:
-                exec_mtime = os.path.getmtime(self._executable_path)
-            except (OSError, IOError):
-                exec_mtime = None
-            if exec_mtime != self._executable_mtime and \
-                    exec_mtime is not None:
-                task = ParallelTask(
-                    self._activate_deferred_shutdown)
-                task.name = "ActivateDeferredShutdown"
-                task.start()
-
-        acquired = self._directory_monitor_serializer.acquire(False)
-        if not acquired:
+        if self._installed_repository_updated_serializer.locked():
+            write_output("_installed_repository_changed: "
+                         "serializer locked, skipping",
+                         debug=True)
             return
 
-        def _installed_repository_check():
-            try:
-                self._rwsem.reader_acquire()
-                try:
-                    changed, mtime = \
-                        self._installed_repository_changed_unlocked()
-                finally:
-                    self._rwsem.reader_release()
-                if changed and mtime != -1:
-                    self._installed_repository_updated()
+        events = [
+            Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
+            Gio.FileMonitorEvent.CHANGED]
+        if event in events:
+            write_output("Installed Packages Repository changed, "
+                         "%s" % (locals(),), debug=True)
+            task = ParallelTask(self._installed_repository_updated)
+            task.name = "InstalledRepositoryCheckHandler"
+            task.daemon = True
+            task.start()
 
-            finally:
-                self._directory_monitor_serializer.release()
-
-        task = ParallelTask(_installed_repository_check)
-        task.name = "InstalledRepositoryCheckHandler"
-        task.daemon = True
-        task.start()
+    def _rigo_daemon_executable_changed(self, mon, gio_f, data, event):
+        """
+        Gio handler for RigoDaemon executable modification events.
+        """
+        write_output("RigoDaemon executable changed, "
+                     "%s" % (locals(),), debug=True)
+        if not self._deferred_shutdown:
+            task = ParallelTask(
+                self._activate_deferred_shutdown)
+            task.name = "ActivateDeferredShutdown"
+            task.start()
 
     def _activate_deferred_shutdown(self, *args):
         """
@@ -887,7 +873,6 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("stop(): called", debug=True)
         with self._activity_mutex:
-            GLib.idle_add(self._mon.close)
             self._stop_signal = True
             self._action_queue_waiter.release()
             self._close_local_resources()
@@ -928,51 +913,12 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "InstalledRepositoryUpdatedWorker"
         task.start()
 
-    def _installed_repository_changed_unlocked(self):
-        """
-        Determine whether Installed Repository is changed.
-        """
-        try:
-            mtime = self._entropy.installed_repository().mtime()
-        except OSError as err:
-            write_output("%s: %s" % (repr(err), err.errno,))
-            # well, we expected to have the installed repo here
-            # but got OSError, something happened for sure
-            return True, -1
-
-        if self._installed_repository_mtime is None:
-            write_output("_installed_repository_changed_unlocked:"
-                         " first run.",
-                         debug=True)
-            # not changed, first run
-            self._installed_repository_mtime = mtime
-            return False, mtime
-        if mtime == self._installed_repository_mtime:
-            write_output("_installed_repository_changed_unlocked:"
-                         " same mtime.",
-                         debug=True)
-            return False, mtime
-        return True, mtime
-
-    def _installed_repository_updated_worker(self, signal=True):
+    def _installed_repository_updated_worker(self):
         """
         Determine if Installed Repository has changed and
         recalculate updates and signal updates_available()
         """
         with self._installed_repository_updated_serializer:
-
-            # first determine if installed repository
-            # changed. without doing expensive and
-            # unneded locking.
-            self._rwsem.reader_acquire()
-            try:
-                changed, mtime = \
-                    self._installed_repository_changed_unlocked()
-            finally:
-                self._rwsem.reader_release()
-            if not changed:
-                return
-
             with self._activity_mutex:
                 self._acquire_shared()
                 try:
@@ -981,30 +927,20 @@ class RigoDaemonService(dbus.service.Object):
 
                     self._rwsem.reader_acquire()
                     try:
-                        self._installed_repository_updated_unlocked(
-                            mtime, signal)
+                        self._installed_repository_updated_unlocked()
                     finally:
                         self._rwsem.reader_release()
                 finally:
                     self._release_shared()
 
-    def _installed_repository_updated_unlocked(self, mtime, signal):
+    def _installed_repository_updated_unlocked(self):
         """
         Unlocked (not activity mutex, no shared locking, no
         rwsem) version of _installed_repository_updated_worker()
         """
         write_output("_installed_repository_updated_unlocked:"
-                     " mtime changed, sending signal",
+                     " changed, sending signal",
                      debug=True)
-        self._installed_repository_mtime = mtime
-
-        if mtime == -1: # do not calculate updates
-            write_output("_installed_repository_updated_unlocked:"
-                         " bogus mtime, repo is broken, not signaling")
-            return
-
-        if not signal:
-            return
 
         # signal updates available
         update, remove, fine, spm_fine = \
