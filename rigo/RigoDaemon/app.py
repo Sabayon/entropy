@@ -11,6 +11,7 @@
 
 """
 import os
+import stat
 
 # entropy.i18n will pick this up
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
@@ -265,8 +266,10 @@ class FakeOutFile(object):
     Fake Standard Output / Error file object
     """
 
-    def __init__(self, entropy_client):
+    def __init__(self, entropy_client, app_mgmt_mutex, app_mgmt_notes):
         self._entropy = entropy_client
+        self._app_mgmt_mutex = app_mgmt_mutex
+        self._app_mgmt_notes = app_mgmt_notes
         self._rfd, self._wfd = os.pipe()
         task = ParallelTask(self._pusher)
         task.name = "FakeOutFilePusher"
@@ -282,6 +285,16 @@ class FakeOutFile(object):
                 if err.errno == errno.EINTR:
                     continue
                 raise
+            # record to App Management Log, if enabled
+            with self._app_mgmt_mutex:
+                fobj = self._app_mgmt_notes['fobj']
+                if fobj is not None:
+                    try:
+                        fobj.write(chunk)
+                    except (OSError, IOError) as err:
+                        write_output("_pusher thread: "
+                                     "cannot write to app log: "
+                                     "%s" % (repr(err),))
             self._entropy.output(chunk, _raw=True)
 
     def close(self):
@@ -376,7 +389,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 3
+    API_VERSION = 4
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -548,9 +561,18 @@ class RigoDaemonService(dbus.service.Object):
         self._deferred_shutdown = False
         self._deferred_shutdown_mutex = Lock()
 
+        self._app_mgmt_mutex = Lock()
+        self._app_mgmt_notes = {
+            'fobj': None,
+            'path': None
+        }
+
         Entropy.set_daemon(self)
         self._entropy = Entropy()
-        self._fakeout = FakeOutFile(self._entropy)
+        self._fakeout = FakeOutFile(
+            self._entropy,
+            self._app_mgmt_mutex,
+            self._app_mgmt_notes)
 
         executable_path = sys.argv[0]
         write_output(
@@ -1177,6 +1199,41 @@ class RigoDaemonService(dbus.service.Object):
                     # put it back
                     self._action_queue_waiter.release()
                 else:
+
+                    # before unbusy, read App Management Notes
+                    with self._app_mgmt_mutex:
+                        # 0o644
+                        perms = stat.S_IREAD | stat.S_IWRITE \
+                            | stat.S_IRGRP | stat.S_IROTH
+
+                        fobj = self._app_mgmt_notes['fobj']
+                        app_log_path = self._app_mgmt_notes['path']
+                        if fobj is not None:
+                            try:
+                                fobj.close()
+                            except OSError:
+                                write_output(
+                                    "_action_queue_finally: "
+                                    "unexpected close() error %s" % (
+                                        repr(err),))
+                            self._app_mgmt_notes['fobj'] = None
+
+                        # root is already owning it
+                        try:
+                            os.chmod(app_log_path, perms)
+                        except OSError as err:
+                            if err.errno == errno.ENOENT:
+                                # wtf, file vanished?
+                                app_log_path = ""
+                            elif err.errno == errno.EPERM:
+                                # somebody changed the permissions
+                                app_log_path = ""
+                            else:
+                                write_output(
+                                    "_action_queue_finally: "
+                                    "unexpected error %s" % (repr(err),))
+                                app_log_path = ""
+
                     try:
                         self._unbusy(activity)
                     except ActivityStates.AlreadyAvailableError:
@@ -1193,7 +1250,7 @@ class RigoDaemonService(dbus.service.Object):
                     GLib.idle_add(
                         self.activity_completed, activity, success)
                     GLib.idle_add(
-                        self.applications_managed, outcome)
+                        self.applications_managed, outcome, app_log_path)
                     self._maybe_signal_configuration_updates()
 
         is_app = True
@@ -2403,8 +2460,10 @@ class RigoDaemonService(dbus.service.Object):
         self._enqueue_action_busy_hold_sem.acquire()
         try:
             activity = ActivityStates.MANAGING_APPLICATIONS
+            busied = False
             try:
                 self._busy(activity)
+                busied = True
             except ActivityStates.BusyError:
                 # I am already busy doing other stuff, cannot
                 # satisfy request
@@ -2415,6 +2474,39 @@ class RigoDaemonService(dbus.service.Object):
                 write_output("enqueue_application_action: "
                              "already busy, just enqueue",
                              debug=True)
+
+            if busied:
+                # Setup Application Management
+                # Install/Remove notes
+                tmp_fd, tmp_path = tempfile.mkstemp(
+                    prefix="RigoDaemonAppMgmt",
+                    suffix=".notes")
+                with self._app_mgmt_mutex:
+                    fobj = self._app_mgmt_notes['fobj']
+                    path = self._app_mgmt_notes['path']
+                    if fobj is not None:
+                        try:
+                            fobj.close()
+                        except (OSError, IOError):
+                            write_output(
+                                "enqueue_application_action: "
+                                "busied, but cannot close previous fd")
+                    if path is not None:
+                        try:
+                            os.remove(path)
+                        except (OSError, IOError):
+                            write_output(
+                                "enqueue_application_action: "
+                                "busied, but cannot remove previous path")
+                    try:
+                        fobj = os.fdopen(tmp_fd, "w")
+                    except OSError as err:
+                        write_output(
+                            "enqueue_application_action: "
+                            "cannot open tmp_fd: %s" % (repr(err),))
+                        fobj = None
+                    self._app_mgmt_notes['fobj'] = fobj
+                    self._app_mgmt_notes['path'] = tmp_path
 
             task = ParallelTask(
                 self._enqueue_application_action_internal,
@@ -2902,8 +2994,8 @@ class RigoDaemonService(dbus.service.Object):
                      " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='s')
-    def applications_managed(self, outcome):
+        signature='ss')
+    def applications_managed(self, outcome, app_log_path):
         """
         Enqueued Application actions have been completed.
         """

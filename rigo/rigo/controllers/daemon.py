@@ -18,8 +18,9 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-
+import sys
 import time
+import codecs
 from threading import Lock, Semaphore, current_thread
 from collections import deque
 
@@ -178,7 +179,7 @@ class RigoServiceController(GObject.Object):
     _UNAVAILABLE_REPOSITORIES_SIGNAL = "unavailable_repositories"
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
-    _SUPPORTED_APIS = [3]
+    _SUPPORTED_APIS = [4]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -709,7 +710,8 @@ class RigoServiceController(GObject.Object):
         box.add_button(_("Show me"), _show_me)
         self._nc.append(box)
 
-    def _applications_managed_signal(self, outcome, local_activity):
+    def _applications_managed_signal(self, outcome, app_log_path,
+                                     local_activity):
         """
         Signal coming from RigoDaemon notifying us that the
         MANAGING_APPLICATIONS is over.
@@ -758,6 +760,28 @@ class RigoServiceController(GObject.Object):
             # user here.
             if outcome != DaemonAppTransactionOutcome.SUCCESS:
                 self._notify_app_management_outcome(None, outcome)
+
+            # Send Application Management notes to Terminal.
+            if app_log_path:
+                enc = etpConst['conf_encoding']
+                app_notes = None
+                try:
+                    with codecs.open(app_log_path, encoding=enc) as log_f:
+                        app_notes = log_f.read()
+                except (IOError, OSError,) as err:
+                    const_debug_write(
+                        __name__,
+                        "_applications_managed_signal: "
+                        "cannot read app_log_path: %s" % (repr(err),))
+                if app_notes is not None:
+                    if len(app_notes) > 3: # chars
+                        if self._terminal is not None:
+                            self._terminal.reset()
+                        self._output_signal(
+                            app_notes, None, None, False, 0, "info",
+                            0, 0, False, True)
+                        if self._wc is not None:
+                            self._wc.expand_terminal()
 
             # we don't expect to fail here, it would
             # mean programming error.
@@ -2154,14 +2178,15 @@ class RigoServiceController(GObject.Object):
 
             signal_sem = Semaphore(1)
 
-            def _applications_managed_signal(outcome):
+            def _applications_managed_signal(outcome, app_log_path):
                 if not signal_sem.acquire(False):
                     # already called, no need to call again
                     return
                 # this is done in order to have it called
                 # only once by two different code paths
                 self._applications_managed_signal(
-                    outcome, LocalActivityStates.MANAGING_APPLICATIONS)
+                    outcome, app_log_path,
+                    LocalActivityStates.MANAGING_APPLICATIONS)
 
             with self._registered_signals_mutex:
                 # connect our signal
@@ -2252,7 +2277,7 @@ class RigoServiceController(GObject.Object):
         # callback in random threads.
         GLib.idle_add(self._applications_managed_signal,
                       DaemonAppTransactionOutcome.SUCCESS,
-                      local_activity)
+                      "", local_activity)
 
     def _package_install_request(self, package_path, simulate=False):
         """
@@ -2492,14 +2517,15 @@ class RigoServiceController(GObject.Object):
 
         signal_sem = Semaphore(1)
 
-        def _applications_managed_signal(outcome):
+        def _applications_managed_signal(outcome, app_log_path):
             if not signal_sem.acquire(False):
                 # already called, no need to call again
                 return
             # this is done in order to have it called
             # only once by two different code paths
             self._applications_managed_signal(
-                outcome, LocalActivityStates.UPGRADING_SYSTEM)
+                outcome, app_log_path,
+                LocalActivityStates.UPGRADING_SYSTEM)
 
         with self._registered_signals_mutex:
             # connect our signal
