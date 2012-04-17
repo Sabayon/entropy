@@ -76,6 +76,12 @@ class WorkViewController(GObject.Object):
         """
         Setup TerminalWidget area (including ScrollBar).
         """
+        terminal_align = Gtk.Alignment()
+        terminal_align.set_padding(10, 0, 0, 0)
+        self._terminal_expander = Gtk.Expander.new(
+            prepare_markup(
+                _("<i>Show <b>Application Management</b> Progress</i>")))
+        self._terminal_expander.set_use_markup(True)
         hbox = Gtk.HBox()
 
         self._terminal = TerminalWidget()
@@ -87,9 +93,11 @@ class WorkViewController(GObject.Object):
 
         scrollbar = Gtk.VScrollbar.new(self._terminal.adjustment)
         hbox.pack_start(scrollbar, False, False, 0)
-        hbox.show_all()
+        self._terminal_expander.add(hbox)
+        terminal_align.add(self._terminal_expander)
+        terminal_align.show_all()
 
-        return hbox
+        return terminal_align
 
     def _setup_progress_area(self):
         """
@@ -98,11 +106,13 @@ class WorkViewController(GObject.Object):
         self._progress_box = Gtk.VBox()
 
         progress_align = Gtk.Alignment()
-        progress_align.set_padding(10, 10, 0, 0)
+        progress_align.set_padding(10, 0, 0, 0)
+        self._progress_bar_shown = True
         self._progress_bar = Gtk.ProgressBar()
         progress_align.add(self._progress_bar)
         self._progress_box.pack_start(progress_align, False, False, 0)
         self._progress_box.show_all()
+        self.reset_progress() # hide progress bar
 
         return self._progress_box
 
@@ -280,6 +290,12 @@ class WorkViewController(GObject.Object):
                     escape_markup(msg),
                     more_msg,))
 
+    def expand_terminal(self):
+        """
+        Expand Terminal widget.
+        """
+        self._terminal_expander.set_expanded(True)
+
     def set_application(self, app, daemon_action):
         """
         Set Application information by providing its Application
@@ -309,6 +325,8 @@ class WorkViewController(GObject.Object):
         """
         self._progress_bar.set_show_text(False)
         self._progress_bar.set_fraction(0.0)
+        self._progress_bar.hide()
+        self._progress_bar_shown = False
 
     def set_progress(self, fraction, text=None):
         """
@@ -317,6 +335,9 @@ class WorkViewController(GObject.Object):
         the same time, the same will be escaped and cleaned out
         by the callee.
         """
+        if not self._progress_bar_shown:
+            self._progress_bar.show()
+            self._progress_bar_shown = True
         self._progress_bar.set_fraction(fraction)
         if text is not None:
             self._progress_bar.set_text(escape_markup(text))
@@ -327,6 +348,9 @@ class WorkViewController(GObject.Object):
         Set Progress Bar text. The same will be escaped and cleaned out by
         the callee.
         """
+        if not self._progress_bar_shown:
+            self._progress_bar.show()
+            self._progress_bar_shown = True
         self._progress_bar.set_text(escape_markup(text))
 
     def _on_terminal_click(self, widget, event):
