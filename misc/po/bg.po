@@ -1,22 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# Tsetso Zdravkov <vyrgozunqk@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Sabayon Entropy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-17 21:41+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"Language-Team: Bulgarian (http://www.transifex.net/projects/p/sabayon-"
+"entropy/language/bg/)\n"
+"Language: bg\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -25,7 +26,7 @@ msgstr ""
 #: ../../lib/entropy/db/__init__.py:5098
 #: ../../lib/entropy/client/interfaces/db.py:284
 msgid "please wait"
-msgstr ""
+msgstr "моля изчакайте"
 
 #: ../../lib/entropy/db/__init__.py:5113
 msgid "Removing entry"
@@ -37,11 +38,11 @@ msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5209
 msgid "Exporting database table"
-msgstr ""
+msgstr "Изнасяне на базата данни"
 
 #: ../../lib/entropy/db/__init__.py:5249
 msgid "Database Export complete."
-msgstr ""
+msgstr "Изнасянето на базата данни е завършено."
 
 #: ../../lib/entropy/db/__init__.py:5897 ../../lib/entropy/db/__init__.py:5910
 #: ../../lib/entropy/db/__init__.py:5986 ../../lib/entropy/db/__init__.py:6085
@@ -52,19 +53,19 @@ msgstr ""
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:598 ../../client/text_rescue.py:804
 msgid "ATTENTION"
-msgstr ""
+msgstr "ВНИМАНИЕ"
 
 #: ../../lib/entropy/db/__init__.py:5898
 msgid "Spm error occured"
-msgstr ""
+msgstr "Появи се Spm грешка"
 
 #: ../../lib/entropy/db/__init__.py:5911
 msgid "Spm Unique Identifier not found for"
-msgstr ""
+msgstr "Уникалният Spm идентификатор не е намерен"
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr ""
+msgstr "обновяват се данните на хранилището, моля изчакайте!"
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
@@ -72,38 +73,38 @@ msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1639 ../../lib/entropy/db/skel.py:1986
 msgid "SPM"
-msgstr ""
+msgstr "SPM"
 
 #: ../../lib/entropy/db/skel.py:1640
 msgid "Running packages metadata update"
-msgstr ""
+msgstr "Тече обновяване на метаданните, на пакетите"
 
 #: ../../lib/entropy/db/skel.py:1641
 msgid "it could take a while"
-msgstr ""
+msgstr "може да отнеме известно време"
 
 #: ../../lib/entropy/db/skel.py:1661 ../../lib/entropy/db/skel.py:1686
 #: ../../lib/entropy/db/skel.py:1709
 msgid "ENTROPY"
-msgstr ""
+msgstr "ENTROPY"
 
 #: ../../lib/entropy/db/skel.py:1662
 msgid "action"
-msgstr ""
+msgstr "действие"
 
 #: ../../lib/entropy/db/skel.py:1687
 msgid "package move actions complete"
-msgstr ""
+msgstr "преместването на пакетите е завършено"
 
 #: ../../lib/entropy/db/skel.py:1701
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2428
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2623
 msgid "WARNING"
-msgstr ""
+msgstr "ВНИМАНИЕ"
 
 #: ../../lib/entropy/db/skel.py:1702
 msgid "Cannot run SPM cleanup, error"
-msgstr ""
+msgstr "Не мога да изчистя SPM, грешка!"
 
 #: ../../lib/entropy/db/skel.py:1710
 msgid "package moves completed successfully"
@@ -111,11 +112,11 @@ msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1987
 msgid "Moving old entry"
-msgstr ""
+msgstr "Местене на стари записи"
 
 #: ../../lib/entropy/db/skel.py:1989
 msgid "to"
-msgstr ""
+msgstr "до"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:52
 msgid "Accessibility"
@@ -127,107 +128,107 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:58
 msgid "Office"
-msgstr ""
+msgstr "Офис"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:59
 msgid "Applications used in office environments"
-msgstr ""
+msgstr "Приложения използвани в офлайн среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:65
 msgid "Development"
-msgstr ""
+msgstr "Разработка"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:66
 msgid "Applications or system libraries"
-msgstr ""
+msgstr "Приложения или системни библиотеки"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:70
 msgid "System"
-msgstr ""
+msgstr "Система"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:71
 msgid "System applications or libraries"
-msgstr ""
+msgstr "Системни приложения или библиотеки"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:75
 msgid "Games"
-msgstr ""
+msgstr "Игри"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:76
 msgid "Games, enjoy your spare time"
-msgstr ""
+msgstr "Игри, наслаждавайте се на свободното си време"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:80
 msgid "GNOME Desktop"
-msgstr ""
+msgstr "GNOME графична среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:82
 msgid "Applications and libraries for the GNOME Desktop"
-msgstr ""
+msgstr "Приложения и библиотеки за GNOME "
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:86
 msgid "KDE Desktop"
-msgstr ""
+msgstr "KDE графична среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:88
 msgid "Applications and libraries for the KDE Desktop"
-msgstr ""
+msgstr "Приложения и библиотеки за KDE графичната среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:92
 msgid "XFCE Desktop"
-msgstr ""
+msgstr "XFCE графична среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:94
 msgid "Applications and libraries for the XFCE Desktop"
-msgstr ""
+msgstr "Приложения и библиотеки за XFCE"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:98
 msgid "LXDE Desktop"
-msgstr ""
+msgstr "LXDE графична среда"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:100
 msgid "Applications and libraries for the LXDE Desktop"
-msgstr ""
+msgstr "Приложения и библиотеки за LXDE "
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:104
 msgid "Multimedia"
-msgstr ""
+msgstr "Мултимедия"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:106
 msgid "Applications and libraries for Multimedia"
-msgstr ""
+msgstr "Мултимедийни приложения и библиотеки"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:110
 msgid "Networking"
-msgstr ""
+msgstr "Мрежи"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:112
 msgid "Applications and libraries for Networking"
-msgstr ""
+msgstr "Приложения и библиотеки за мрежово свързване"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:116
 msgid "Science"
-msgstr ""
+msgstr "Наука"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:118
 msgid "Scientific applications and libraries"
-msgstr ""
+msgstr "Научни приложения и библиотеки"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:122
 msgid "Security"
-msgstr ""
+msgstr "Сигурност"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:124
 msgid "Security oriented applications"
-msgstr ""
+msgstr "Приложения ориентирани към сигурността"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:128
 msgid "X11"
-msgstr ""
+msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:130
 msgid "Applications and libraries for X11"
-msgstr ""
+msgstr "Приложения и библиотеки за X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:412
 msgid "Reloading Portage modules"
@@ -452,27 +453,27 @@ msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:264
 msgid "successful"
-msgstr ""
+msgstr "успешно"
 
 #: ../../lib/entropy/server/transceivers.py:282
 msgid "failed, retrying"
-msgstr ""
+msgstr "провалено, опитвам отново"
 
 #: ../../lib/entropy/server/transceivers.py:316
 msgid "not critical"
-msgstr ""
+msgstr "не е критично"
 
 #: ../../lib/entropy/server/transceivers.py:318
 msgid "continuing"
-msgstr ""
+msgstr "продължаване"
 
 #: ../../lib/entropy/server/transceivers.py:414
 msgid "connecting to mirror"
-msgstr ""
+msgstr "свързване с огледалото"
 
 #: ../../lib/entropy/server/transceivers.py:425
 msgid "setting directory to"
-msgstr ""
+msgstr "задаване директорията на"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:59
 msgid "Entropy Server Mirrors Interface loaded"
@@ -480,56 +481,56 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:67
 msgid "repository mirror"
-msgstr ""
+msgstr "огледало на хранилището"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:76
 msgid "packages mirror"
-msgstr ""
+msgstr "огледало на пакетите"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:114
 msgid "looking for file in mirror"
-msgstr ""
+msgstr "търсене на файл в огледалото"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:201
 #: ../../lib/entropy/server/interfaces/mirrors.py:286
 msgid "unlocking"
-msgstr ""
+msgstr "отключване"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:203
 #: ../../lib/entropy/server/interfaces/mirrors.py:288
 #: ../../lib/entropy/server/interfaces/mirrors.py:849
 #: ../../lib/entropy/server/interfaces/mirrors.py:869
 msgid "locking"
-msgstr ""
+msgstr "заключване"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:209
 msgid "mirror"
-msgstr ""
+msgstr "огледало"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:294
 msgid "mirror for download"
-msgstr ""
+msgstr "огледало за изтегляне"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:326
 msgid "mirror already locked for download"
-msgstr ""
+msgstr "огледалото е вече заключено за изтегляне"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:339
 msgid "mirror already unlocked for download"
-msgstr ""
+msgstr "огледалото е вече отключено за изтегляне"
 
 #. locking/unlocking mirror1 for download
 #: ../../lib/entropy/server/interfaces/mirrors.py:387
 msgid "for download"
-msgstr ""
+msgstr "за изтегляне"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:402
 msgid "mirror successfully locked"
-msgstr ""
+msgstr "огледалото е успешно заключено"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:416
 msgid "mirror not locked"
-msgstr ""
+msgstr "огледалото не е заключено"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:464
 msgid "mirror successfully unlocked"
@@ -537,7 +538,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:483
 msgid "unlock error"
-msgstr ""
+msgstr "грешка при отключването"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:485
 msgid "mirror not unlocked"
@@ -675,7 +676,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1077
 msgid "Total download size"
-msgstr ""
+msgstr "Приложения и библиотеки за X11"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1131
 msgid "Remote statistics for"

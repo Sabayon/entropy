@@ -1,22 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
+# Translators:
+# coldnew  <coldnew.tw@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Sabayon Entropy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-17 21:41+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/sabayon-"
+"entropy/language/zh_TW/)\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=1; plural=0\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -25,7 +26,7 @@ msgstr ""
 #: ../../lib/entropy/db/__init__.py:5098
 #: ../../lib/entropy/client/interfaces/db.py:284
 msgid "please wait"
-msgstr ""
+msgstr "請稍等"
 
 #: ../../lib/entropy/db/__init__.py:5113
 msgid "Removing entry"
@@ -52,7 +53,7 @@ msgstr ""
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:598 ../../client/text_rescue.py:804
 msgid "ATTENTION"
-msgstr ""
+msgstr "注意"
 
 #: ../../lib/entropy/db/__init__.py:5898
 msgid "Spm error occured"
@@ -99,7 +100,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2428
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2623
 msgid "WARNING"
-msgstr ""
+msgstr "警告"
 
 #: ../../lib/entropy/db/skel.py:1702
 msgid "Cannot run SPM cleanup, error"
@@ -143,7 +144,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:70
 msgid "System"
-msgstr ""
+msgstr "系統"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:71
 msgid "System applications or libraries"
@@ -151,7 +152,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:75
 msgid "Games"
-msgstr ""
+msgstr "遊戲"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:76
 msgid "Games, enjoy your spare time"
@@ -159,7 +160,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:80
 msgid "GNOME Desktop"
-msgstr ""
+msgstr "GNOME 桌面環境"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:82
 msgid "Applications and libraries for the GNOME Desktop"
@@ -167,7 +168,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:86
 msgid "KDE Desktop"
-msgstr ""
+msgstr "KDE 桌面環境"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:88
 msgid "Applications and libraries for the KDE Desktop"
@@ -175,7 +176,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:92
 msgid "XFCE Desktop"
-msgstr ""
+msgstr "XFCE 桌面環境"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:94
 msgid "Applications and libraries for the XFCE Desktop"
@@ -183,7 +184,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:98
 msgid "LXDE Desktop"
-msgstr ""
+msgstr "LXDE 桌面環境"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:100
 msgid "Applications and libraries for the LXDE Desktop"
@@ -191,7 +192,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:104
 msgid "Multimedia"
-msgstr ""
+msgstr "多媒體"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:106
 msgid "Applications and libraries for Multimedia"
@@ -223,7 +224,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:128
 msgid "X11"
-msgstr ""
+msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:130
 msgid "Applications and libraries for X11"
@@ -312,7 +313,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2431
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2626
 msgid "do it manually"
-msgstr ""
+msgstr "手動執行"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2449
 msgid "package files rebuild did not run properly"
@@ -320,11 +321,11 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2450
 msgid "Please update packages manually"
-msgstr ""
+msgstr "請手動更新packages"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2587
 msgid "forcing package updates"
-msgstr ""
+msgstr "強制升級packages"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2588
 msgid "Syncing with"
@@ -376,11 +377,11 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/mirrors.py:565
 #: ../../client/text_security.py:116 ../../client/text_smart.py:108
 msgid "does not exist"
-msgstr ""
+msgstr "不存在"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3335
 msgid "Overwriting"
-msgstr ""
+msgstr "覆蓋中"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3381
 msgid "variable differs"
@@ -389,7 +390,7 @@ msgstr ""
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3381
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3470
 msgid "Updating"
-msgstr ""
+msgstr "更新中"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3396
 msgid "updating critical variables"
@@ -452,7 +453,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:264
 msgid "successful"
-msgstr ""
+msgstr "成功"
 
 #: ../../lib/entropy/server/transceivers.py:282
 msgid "failed, retrying"
@@ -504,7 +505,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:209
 msgid "mirror"
-msgstr ""
+msgstr "鏡像"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:294
 msgid "mirror for download"
@@ -565,7 +566,6 @@ msgstr ""
 msgid "package"
 msgid_plural "packages"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:584
 msgid "is not listed in the repository !"
@@ -577,7 +577,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:616
 msgid "downloaded successfully"
-msgstr ""
+msgstr "下載成功"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:631
 msgid "checksum does not match. re-downloading..."
@@ -632,18 +632,18 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/db.py:1398
 #: ../../lib/entropy/server/interfaces/db.py:1418
 msgid "upload"
-msgstr ""
+msgstr "上傳"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:989
 #: ../../lib/entropy/server/interfaces/db.py:689
 #: ../../lib/entropy/server/interfaces/main.py:3546
 #: ../../lib/entropy/server/interfaces/main.py:4458
 msgid "download"
-msgstr ""
+msgstr "下載"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1003
 msgid "copy"
-msgstr ""
+msgstr "複製"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1017
 #: ../../lib/entropy/server/interfaces/mirrors.py:2131
@@ -651,7 +651,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:1620
 #: ../../client/text_ui.py:2219 ../../server/eit/commands/status.py:190
 msgid "remove"
-msgstr ""
+msgstr "移除"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1028
 msgid "Packages to be removed"
@@ -720,7 +720,7 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/db.py:1820
 #: ../../lib/entropy/server/interfaces/db.py:1834
 msgid "sync"
-msgstr ""
+msgstr "同步"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1400
 #: ../../lib/entropy/server/interfaces/main.py:2962
@@ -2543,7 +2543,6 @@ msgstr ""
 msgid "archive"
 msgid_plural "archives"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/package.py:3022
 msgid "Some packages cannot be fetched"
@@ -2749,13 +2748,11 @@ msgstr ""
 msgid "there is"
 msgid_plural "there are"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:196
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:209
 msgid "Packages are stored in"
@@ -2819,7 +2816,6 @@ msgstr ""
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../lib/entropy/security.py:350
 msgid "GPG key EXPIRED for URL"
@@ -3552,7 +3548,6 @@ msgstr ""
 msgid "entry"
 msgid_plural "entries"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../client/text_query.py:263
 msgid "entries"
@@ -5488,7 +5483,6 @@ msgstr ""
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../client/text_ui.py:317
 msgid "Please run"
@@ -7081,7 +7075,6 @@ msgstr ""
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:340
 msgid "Sabayon updates available"
@@ -7092,7 +7085,6 @@ msgstr ""
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
 msgstr[0] ""
-msgstr[1] ""
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:349
