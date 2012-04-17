@@ -187,8 +187,9 @@ class BottomNotificationViewController(NotificationViewController):
                             ),
     }
 
-    def __init__(self, notification_box):
+    def __init__(self, window, notification_box):
 
+        self._window = window
         NotificationViewController.__init__(
             self, notification_box)
 
@@ -225,7 +226,11 @@ class BottomNotificationViewController(NotificationViewController):
         box = NotificationBox(
             msg, message_type=Gtk.MessageType.INFO,
             context_id=self.UNIQUE_CONTEXT_ID)
-        box.add_button(_("Show me"), self._on_work_view_show)
+        def _show_me(widget):
+            self._on_work_view_show(widget)
+            w, h = self._window.get_size()
+            self._window.resize(w, 1)
+        box.add_button(_("Show me"), _show_me)
         box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 
@@ -238,7 +243,11 @@ class BottomNotificationViewController(NotificationViewController):
         box = NotificationBox(
             msg, message_type=Gtk.MessageType.INFO,
             context_id=self.UNIQUE_CONTEXT_ID)
-        box.add_button(_("Show me"), self._on_work_view_show)
+        def _show_me(widget):
+            self._on_work_view_show(widget)
+            w, h = self._window.get_size()
+            self._window.resize(w, 1)
+        box.add_button(_("Show me"), _show_me)
         box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 
