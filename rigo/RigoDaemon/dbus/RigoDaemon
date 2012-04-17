@@ -1,17 +1,6 @@
 #!/bin/sh
 
-lang_file="/etc/env.d/02locale"
-if [ -f "${lang_file}" ]; then
-	. "${lang_file}"
+if [ -f "/etc/profile" ]; then
+	. /etc/profile
 fi
-if [ -n "${LANG}" ]; then
-	export LANG
-fi
-if [ -n "${LANGUAGE}" ]; then
-	export LANGUAGE
-fi
-if [ -n "${LC_ALL}" ]; then
-	export LC_ALL
-fi
-
 exec /usr/lib/rigo/RigoDaemon/app.py "$@"
