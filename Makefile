@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = server magneto misc/po
+SUBDIRS = server magneto client/po
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py server_query.py
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
