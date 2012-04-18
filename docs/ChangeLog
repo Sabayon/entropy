@@ -1,3 +1,23 @@
+commit 8ec4415612c29c2558fddbe1ba617162021d6c11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 12:56:11 2012 +0200
+
+    Release Entropy 1.0_rc105
+
+commit 7404ad967177aa26282c316727b8ccef9d723c1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 12:54:45 2012 +0200
+
+    [Rigo] make TerminalWidget work with both Vte 0.30.x and 0.32.x
+    
+    Say thanks to upstream (sarcastic)
+
+commit 41b3e9dbaf8244d11077364ffdefb369c3791989
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 10:45:48 2012 +0200
+
+    Tagging Entropy version 1.0_rc104
+
 commit 9745fa37f7031d941287cd9e32671bf773a5713a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 18 10:45:43 2012 +0200
