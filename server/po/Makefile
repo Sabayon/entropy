@@ -1,41 +1,29 @@
-DESTDIR = 
+DESTDIR =
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALLNLSDIR = $(DESTDIR)/usr/share/locale
-top_srcdir = "."
 MSGMERGE = intltool-update -x --gettext-package=$(NLSPACKAGE) --dist
-NLSPACKAGE = entropy
+NLSPACKAGE = entropy-server
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
-GLADEFILES = $(wildcard ../../magneto/src/magneto/gtk/*.glade)
-PYFILES = $(wildcard ../../lib/entropy/db/*.py) \
+
+PYFILES =  $(wildcard ../../lib/entropy/transceivers/uri_handlers/*.py) \
+	$(wildcard ../../lib/entropy/transceivers/uri_handlers/plugins/*.py) \
+	$(wildcard ../../lib/entropy/transceivers/*.py) \
+	$(wildcard ../../lib/entropy/db/*.py) \
 	$(wildcard ../../lib/entropy/core/*.py) \
 	$(wildcard ../../lib/entropy/core/settings/*.py) \
 	$(wildcard ../../lib/entropy/core/settings/plugins/*.py) \
 	$(wildcard ../../lib/entropy/core/settings/plugins/interfaces/*.py) \
-	$(wildcard ../../lib/entropy/spm/*.py) \
-	$(wildcard ../../lib/entropy/spm/plugins/*.py) \
-	$(wildcard ../../lib/entropy/spm/plugins/portage_plugin/*.py) \
-	$(wildcard ../../lib/entropy/spm/plugins/interfaces/portage_plugin/*.py) \
-	$(wildcard ../../lib/entropy/spm/plugins/interfaces/*.py) \
-	$(wildcard ../../lib/entropy/services/system/*.py) \
-	$(wildcard ../../lib/entropy/services/ugc/*.py) \
-	$(wildcard ../../lib/entropy/services/repository/*.py) \
-	$(wildcard ../../lib/entropy/services/*.py) \
-	$(wildcard ../../lib/entropy/client/services/ugc/*.py) \
-	$(wildcard ../../lib/entropy/client/services/system/*.py) \
-	$(wildcard ../../lib/entropy/client/services/*.py) \
-	$(wildcard ../../lib/entropy/client/*.py) \
-	$(wildcard ../../lib/entropy/client/interfaces/*.py) \
+	$(wildcard ../../lib/entropy/server/*.py) \
+	$(wildcard ../../lib/entropy/server/interfaces/*.py) \
 	$(wildcard ../../lib/entropy/*.py) \
-	$(wildcard ../../client/*.py) \
-	$(wildcard ../../magneto/src/magneto/kde/*.py) \
-	$(wildcard ../../magneto/src/magneto/gtk/*.py) \
-	$(wildcard ../../magneto/src/magneto/core/*.py) \
-	../../services/kernel-switcher
+	$(wildcard ../../server/*.py) \
+	$(wildcard ../../server/eit/*.py) \
+	$(wildcard ../../server/eit/commands/*.py)
 
-POTFILES = $(PYFILES) $(GLADEFILES)
+POTFILES = $(PYFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)
 
@@ -80,11 +68,11 @@ report:
 	@for cat in *.po ; do \
 		echo -n "$$cat: "; \
 		msgfmt --statistics -o /dev/null $$cat; \
-	done    
+	done
 
 clean:
 	@rm -fv *mo *~ .depend *.autosave
-   
+
 distclean: clean
 	rm -f *mo .depend Makefile $(NLSPACKAGE).pot POTFILES.in
 

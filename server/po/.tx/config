@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.net
+
+[sabayon-entropy-server.entropy-server-pot-file]
+file_filter = <lang>.po
+source_file = entropy-server.pot
+source_lang = en
+

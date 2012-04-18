@@ -1,5 +1,5 @@
 PKGNAME = entropy
-SUBDIRS = doc
+SUBDIRS = doc po
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib

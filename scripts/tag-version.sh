@@ -12,8 +12,11 @@ for cur_tag in `git tag`; do
 	[[ "$cur_tag" == "$new_tag" ]] && echo "$new_tag already tagged" && exit 1
 done
 
-# Validate Entropy po files
+# Validate Entropy Client po files
 ( cd misc/po && make validate ) || exit 1
+
+# Validate Entropy Server po files
+( cd server/po && make validate ) || exit 1
 
 # Validate Rigo po files
 ( cd rigo/po && make validate ) || exit 1

@@ -1,11 +1,11 @@
-URL: https://www.transifex.net/projects/p/sabayon-entropy
+URL: https://www.transifex.net/projects/p/sabayon-entropy-server
 :: Transifex .po files management workflow ::
 
 UPLOAD
 ======
 .pot file is generated via:
 
-    $ make entropy.pot
+    $ make entropy-server.pot
 
 and pushed using:
 

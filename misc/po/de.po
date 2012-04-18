@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-17 21:41+0200\n"
+"POT-Creation-Date: 2012-04-18 20:01+0200\n"
 "PO-Revision-Date: 2012-04-16 20:08+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/sabayon-entropy/"
@@ -238,17 +238,12 @@ msgid "Reloading Portage modules"
 msgstr "Neuladen der Portage-Module"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:879
-#: ../../lib/entropy/server/transceivers.py:302
-#: ../../lib/entropy/server/interfaces/mirrors.py:1849
-#: ../../lib/entropy/server/interfaces/mirrors.py:1871
-#: ../../lib/entropy/server/interfaces/db.py:1106
 msgid "error"
 msgstr "Fehler"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:881
 #: ../../lib/entropy/client/interfaces/package.py:381
 #: ../../lib/entropy/client/interfaces/package.py:1053
-#: ../../server/eit/commands/deps.py:143
 msgid "not found"
 msgstr "nicht gefunden"
 
@@ -297,7 +292,6 @@ msgstr "Kann SPM Einstellungsphase nicht ausführen für"
 #: ../../lib/entropy/client/interfaces/package.py:3475
 #: ../../lib/entropy/client/interfaces/trigger.py:73
 #: ../../lib/entropy/security.py:654 ../../client/text_rescue.py:748
-#: ../../server/eit/commands/pull.py:168 ../../server/eit/commands/push.py:249
 msgid "Error"
 msgstr "Fehler"
 
@@ -359,7 +353,6 @@ msgid "Portage world file is corrupted"
 msgstr "Portage World Datei ist beschädigt"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3199
-#: ../../lib/entropy/server/interfaces/main.py:1822
 #: ../../lib/entropy/client/interfaces/db.py:400
 #: ../../lib/entropy/client/interfaces/db.py:464
 #: ../../lib/entropy/client/interfaces/db.py:518
@@ -377,7 +370,6 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3335
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3485
-#: ../../lib/entropy/server/interfaces/mirrors.py:565
 #: ../../client/text_security.py:116 ../../client/text_smart.py:108
 msgid "does not exist"
 msgstr "existiert nicht"
@@ -417,7 +409,6 @@ msgid "Error calculating dependencies"
 msgstr "Fehler beim Berechnen der Abhängigkeiten"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4246
-#: ../../lib/entropy/server/interfaces/main.py:3074
 msgid "not supported"
 msgstr "nicht unterstützt"
 
@@ -432,1387 +423,6 @@ msgstr "Ein-/Ausgabefehler während des Lesens"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4516
 msgid "illegal Entropy package tag in ebuild"
 msgstr "illegales Entropy Paket-Etikett im Ebuild"
-
-#: ../../lib/entropy/server/transceivers.py:90
-msgid "verifying upload (if supported)"
-msgstr "verifiziere Upload (wenn unterstützt)"
-
-#: ../../lib/entropy/server/transceivers.py:113
-#: ../../lib/entropy/server/transceivers.py:131
-#: ../../lib/entropy/server/transceivers.py:146
-msgid "digest verification"
-msgstr "Indexüberprüfung"
-
-#: ../../lib/entropy/server/transceivers.py:115
-msgid "so far, so good!"
-msgstr "so weit, so gut!"
-
-#: ../../lib/entropy/server/transceivers.py:133
-msgid "malformed md5 provided to function"
-msgstr "missgestaltetes md5 an Funktion übergeben"
-
-#: ../../lib/entropy/server/transceivers.py:148
-msgid "remote md5 is invalid"
-msgstr "entferntes md5 ist ungültig"
-
-#: ../../lib/entropy/server/transceivers.py:264
-msgid "successful"
-msgstr "erfolgreich"
-
-#: ../../lib/entropy/server/transceivers.py:282
-msgid "failed, retrying"
-msgstr "fehlgeschlagen, versuche erneut"
-
-#: ../../lib/entropy/server/transceivers.py:316
-msgid "not critical"
-msgstr "nicht kritisch"
-
-#: ../../lib/entropy/server/transceivers.py:318
-msgid "continuing"
-msgstr "wird fortgesetzt"
-
-#: ../../lib/entropy/server/transceivers.py:414
-msgid "connecting to mirror"
-msgstr "verbinde mit Spiegelserver"
-
-#: ../../lib/entropy/server/transceivers.py:425
-msgid "setting directory to"
-msgstr "ändere Verzeichnis in"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:59
-msgid "Entropy Server Mirrors Interface loaded"
-msgstr "Entropy Spiegelserver-Schnittstelle geladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:67
-msgid "repository mirror"
-msgstr "Repositoriums-Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:76
-msgid "packages mirror"
-msgstr "Paket-Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:114
-msgid "looking for file in mirror"
-msgstr "halte Ausschau nach Datei auf Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:201
-#: ../../lib/entropy/server/interfaces/mirrors.py:286
-msgid "unlocking"
-msgstr "entsperre"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:203
-#: ../../lib/entropy/server/interfaces/mirrors.py:288
-#: ../../lib/entropy/server/interfaces/mirrors.py:849
-#: ../../lib/entropy/server/interfaces/mirrors.py:869
-msgid "locking"
-msgstr "sperre"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:209
-msgid "mirror"
-msgstr "Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:294
-msgid "mirror for download"
-msgstr "Spiegelserver für Download"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:326
-msgid "mirror already locked for download"
-msgstr "Spiegelserver bereits gesperrt für Download"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:339
-msgid "mirror already unlocked for download"
-msgstr "Spiegel bereits freigegeben für Download"
-
-#. locking/unlocking mirror1 for download
-#: ../../lib/entropy/server/interfaces/mirrors.py:387
-msgid "for download"
-msgstr "für Download"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:402
-msgid "mirror successfully locked"
-msgstr "Spiegelserver erfolgreich gesperrt"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:416
-msgid "mirror not locked"
-msgstr "Spiegelserver nicht gesperrt"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:464
-msgid "mirror successfully unlocked"
-msgstr "Spiegelserver erfolgreich freigegeben"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:483
-msgid "unlock error"
-msgstr "Freigabefehler"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:485
-msgid "mirror not unlocked"
-msgstr "Spiegelserver nicht freigegeben"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:522
-msgid "connecting to download package"
-msgstr "verbinde um Paket herunterzuladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:544
-msgid "downloading package"
-msgstr "lade Paket herunter"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:563
-#: ../../lib/entropy/server/interfaces/mirrors.py:582
-#: ../../lib/entropy/server/interfaces/mirrors.py:614
-#: ../../lib/entropy/server/interfaces/mirrors.py:629
-#: ../../lib/entropy/server/interfaces/mirrors.py:646
-#: ../../lib/entropy/server/interfaces/main.py:3090
-#: ../../lib/entropy/server/interfaces/main.py:3233
-#: ../../lib/entropy/client/interfaces/package.py:3520
-#: ../../lib/entropy/client/interfaces/package.py:3540
-#: ../../client/text_query.py:508 ../../client/text_ui.py:1134
-#: ../../server/eit/commands/branch.py:147
-msgid "package"
-msgid_plural "packages"
-msgstr[0] "Paket"
-msgstr[1] "Pakete"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:584
-msgid "is not listed in the repository !"
-msgstr "ist nicht im aktuellen Repositorium enthalten!"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:598
-msgid "verifying checksum of package"
-msgstr "verifiziere Prüfsumme des Pakets"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:616
-msgid "downloaded successfully"
-msgstr "erfolgreich heruntergeladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:631
-msgid "checksum does not match. re-downloading..."
-msgstr "Prüfsumme stimmt nicht überein. Erneuter Download..."
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:648
-msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr ""
-"scheint fehlerhaft zu sein. Ziehe in Erwägung, es neu zu bauen. Ich gebe auf!"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:710
-msgid "mirror hasn't valid repository revision file"
-msgstr "Spiegelserver hat keine gültige Repositoriums-Revisionsdatei"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:729
-msgid "unable to download repository revision"
-msgstr "vermag nicht Repositoriums-Revision herunterzuladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:743
-msgid "mirror doesn't have valid revision file"
-msgstr "Spiegelserver besitzt keine gültige Revisionsdatei"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:850
-msgid "mirror already locked"
-msgstr "Spiegelserver bereits gesperrt"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:851
-msgid "waiting up to 2 minutes before giving up"
-msgstr "warte noch 2 Minuten bevor ich aufgebe"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:870
-msgid "mirror unlocked"
-msgstr "Spiegelserver freigegeben"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:933
-msgid "Local statistics"
-msgstr "Lokale Statistik"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:941
-msgid "upload directory"
-msgstr "Upload-Verzeichnis"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:943
-#: ../../lib/entropy/server/interfaces/mirrors.py:954
-msgid "files ready"
-msgstr "Dateien bereit"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:952
-msgid "packages directory"
-msgstr "Paketverzeichnis"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:973
-#: ../../lib/entropy/server/interfaces/db.py:1398
-#: ../../lib/entropy/server/interfaces/db.py:1418
-msgid "upload"
-msgstr "Upload"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:989
-#: ../../lib/entropy/server/interfaces/db.py:689
-#: ../../lib/entropy/server/interfaces/main.py:3546
-#: ../../lib/entropy/server/interfaces/main.py:4458
-msgid "download"
-msgstr "herunterladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1003
-msgid "copy"
-msgstr "kopiere"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1017
-#: ../../lib/entropy/server/interfaces/mirrors.py:2131
-#: ../../lib/entropy/server/interfaces/main.py:2487
-#: ../../lib/entropy/client/interfaces/package.py:1620
-#: ../../client/text_ui.py:2219 ../../server/eit/commands/status.py:190
-msgid "remove"
-msgstr "entfernen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1028
-msgid "Packages to be removed"
-msgstr "Pakete zum entfernen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1037
-msgid "Packages to be moved locally"
-msgstr "Pakete die lokal verschoben werden"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1046
-msgid "Packages to be uploaded"
-msgstr "Pakete zum hochladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1056
-msgid "Total removal size"
-msgstr "Gesamtgröße entfernbarer Dateien"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1068
-msgid "Total upload size"
-msgstr "Gesamtgröße des Uploads"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1077
-msgid "Total download size"
-msgstr "Gesamtgröße des Downloads"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1131
-msgid "Remote statistics for"
-msgstr "Enfernte Statistiken für"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1145
-msgid "remote packages"
-msgstr "entfernte Pakete"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1147
-msgid "files stored"
-msgstr "Dateien gespeichert"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1155
-msgid "Calculating queues"
-msgstr "Berechne Warteschlangen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1381
-msgid "removing package+hash"
-msgstr "entferne Paket+Hash"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1398
-#: ../../lib/entropy/server/interfaces/mirrors.py:1553
-#: ../../lib/entropy/server/interfaces/mirrors.py:1569
-#: ../../lib/entropy/server/interfaces/mirrors.py:1666
-#: ../../lib/entropy/server/interfaces/mirrors.py:1692
-#: ../../lib/entropy/server/interfaces/mirrors.py:1710
-#: ../../lib/entropy/server/interfaces/mirrors.py:1728
-#: ../../lib/entropy/server/interfaces/mirrors.py:1759
-#: ../../lib/entropy/server/interfaces/mirrors.py:1826
-#: ../../lib/entropy/server/interfaces/mirrors.py:1845
-#: ../../lib/entropy/server/interfaces/mirrors.py:1867
-#: ../../lib/entropy/server/interfaces/mirrors.py:1893
-#: ../../lib/entropy/server/interfaces/db.py:1638
-#: ../../lib/entropy/server/interfaces/db.py:1651
-#: ../../lib/entropy/server/interfaces/db.py:1669
-#: ../../lib/entropy/server/interfaces/db.py:1683
-#: ../../lib/entropy/server/interfaces/db.py:1733
-#: ../../lib/entropy/server/interfaces/db.py:1758
-#: ../../lib/entropy/server/interfaces/db.py:1775
-#: ../../lib/entropy/server/interfaces/db.py:1794
-#: ../../lib/entropy/server/interfaces/db.py:1820
-#: ../../lib/entropy/server/interfaces/db.py:1834
-msgid "sync"
-msgstr "synchronisieren"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1400
-#: ../../lib/entropy/server/interfaces/main.py:2962
-msgid "removal complete"
-msgstr "Entfernen vollständig"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1422
-msgid "copying file+hash to repository"
-msgstr "kopiere Datei+Hash ins Repositorium"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1480
-msgid "upload errors"
-msgstr "Fehler beim Hochladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1482
-#: ../../lib/entropy/server/interfaces/mirrors.py:1557
-#: ../../lib/entropy/server/interfaces/mirrors.py:2208
-#: ../../lib/entropy/server/interfaces/db.py:743
-#: ../../lib/entropy/server/interfaces/db.py:1582
-#: ../../lib/entropy/server/interfaces/main.py:2227
-msgid "reason"
-msgstr "Grund"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1494
-msgid "upload completed successfully"
-msgstr "Upload erfolgreich abgeschlossen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1555
-#: ../../lib/entropy/server/interfaces/main.py:2226
-msgid "download errors"
-msgstr "Fehler beim Herunterladen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1571
-#: ../../lib/entropy/server/interfaces/main.py:2244
-msgid "download completed successfully"
-msgstr "Download erfolgreich abgeschlossen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1592
-msgid "QA checking package file"
-msgstr "QA überprüft Paketdatei"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1612
-msgid "faulty package file, please fix"
-msgstr "fehlerhafte Paketdate, bitte verbessern"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1667
-msgid "starting packages sync"
-msgstr "starte Paket-Synchronisierung"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1694
-msgid "packages sync"
-msgstr "Paket-Synchronisierung"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1712
-msgid "socket error"
-msgstr "Sockel-Fehler"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1714
-msgid "on"
-msgstr "an"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1730
-msgid "nothing to do on"
-msgstr "nichts zu tun an"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1741
-msgid "Expanding queues"
-msgstr "Erweitere Warteschlangen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1761
-msgid "nothing to sync for"
-msgstr "nichts zu synchronisieren"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1778
-msgid "Would you like to run the steps above ?"
-msgstr "Möchtest du die oben genannten Schritte durchführen?"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1779
-#: ../../lib/entropy/server/interfaces/mirrors.py:2145
-#: ../../lib/entropy/server/interfaces/main.py:1940
-#: ../../lib/entropy/server/interfaces/main.py:2136
-#: ../../lib/entropy/server/interfaces/main.py:2545
-#: ../../lib/entropy/server/interfaces/main.py:3017
-#: ../../lib/entropy/server/interfaces/main.py:3558
-#: ../../lib/entropy/server/interfaces/main.py:4245
-#: ../../lib/entropy/output.py:742 ../../client/text_configuration.py:367
-#: ../../client/text_configuration.py:418 ../../client/text_rescue.py:231
-#: ../../client/text_rescue.py:235 ../../client/text_rescue.py:239
-#: ../../client/text_rescue.py:521 ../../client/text_rescue.py:604
-#: ../../client/text_rescue.py:607 ../../client/text_rescue.py:611
-#: ../../client/text_smart.py:141 ../../client/text_smart.py:329
-#: ../../client/equo.py:713 ../../client/text_ui.py:475
-#: ../../client/text_ui.py:944 ../../client/text_ui.py:1553
-#: ../../client/text_ui.py:1835 ../../client/text_ui.py:1919
-#: ../../client/text_ui.py:2057 ../../client/text_ui.py:2064
-#: ../../client/text_ui.py:2156 ../../client/text_ui.py:2328
-#: ../../client/text_ui.py:2438 ../../server/eit/commands/remove.py:125
-#: ../../server/eit/commands/pull.py:198 ../../server/eit/commands/push.py:307
-#: ../../server/eit/commands/pkgmove.py:275
-#: ../../server/eit/commands/pkgmove.py:283
-#: ../../server/eit/commands/notice.py:195
-#: ../../server/eit/commands/notice.py:203
-#: ../../server/eit/commands/commit.py:370
-#: ../../server/eit/commands/branch.py:156
-#: ../../server/eit/commands/deps.py:217 ../../server/eit/commands/key.py:167
-#: ../../server/eit/commands/key.py:264
-msgid "No"
-msgstr "Nein"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1828
-msgid "keyboard interrupt !"
-msgstr "Unterbrechung durch Tastendruck!"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1847
-msgid "you must package them again"
-msgstr "du mußt sie neu packen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1869
-msgid "exception caught"
-msgstr "Ausnahmefehler aufgetreten"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:1896
-msgid "at least one mirror synced properly!"
-msgstr "wenigstens ein Spiegelserver wurde erfolgreich synchronisiert!"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2025
-msgid "tidy"
-msgstr "sauber"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2027
-msgid "collecting expired packages"
-msgstr "sammle abgelaufene Pakete"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2041
-msgid "collecting expired packages in the selected branches"
-msgstr "sammle abgelaufene Pakete im ausgewählten Zweig"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2110
-msgid "nothing to remove on this branch"
-msgstr "in diesem Zweig gibt es nichts zu entfernen"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2121
-msgid "these are the expired packages"
-msgstr "dies sind die abgelaufenen Pakete"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2144
-#: ../../lib/entropy/server/interfaces/main.py:2135
-#: ../../lib/entropy/server/interfaces/main.py:2544
-#: ../../lib/entropy/server/interfaces/main.py:3016
-#: ../../lib/entropy/server/interfaces/main.py:3557
-#: ../../client/text_ui.py:943 ../../server/eit/commands/remove.py:124
-#: ../../server/eit/commands/branch.py:155
-msgid "Would you like to continue ?"
-msgstr "Würdest du gerne fortfahren ?"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2174
-msgid "removing packages remotely"
-msgstr "entferne entfernte Pakete"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2206
-msgid "remove errors"
-msgstr "entferne Fehler"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2220
-msgid "removing packages locally"
-msgstr "entferne Pakete lokal"
-
-#. this means that user is asking to remove dep_pattern
-#: ../../lib/entropy/server/interfaces/mirrors.py:2252
-#: ../../lib/entropy/server/interfaces/main.py:6159
-#: ../../lib/entropy/server/interfaces/main.py:6261
-msgid "removed"
-msgstr "entfernt"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2279
-msgid "downloading notice board from mirrors to"
-msgstr "lade Schwarzes Brett vom Spiegelserver nach"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2306
-msgid "notice board downloaded successfully from"
-msgstr "Schwarzes Brett erfolgreich herabgeladen von"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2339
-msgid "removing notice board from"
-msgstr "entferne Schwarzes Brett von"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2368
-msgid "notice board removal failed on"
-msgstr "Entfernung des Schwarzen Bretts fehlgeschlagen bei"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2379
-msgid "notice board removal success"
-msgstr "Entfernung des Schwarzen Bretts erfolgreich"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2404
-msgid "uploading notice board from"
-msgstr "lade Schwarzes Brett hoch von"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2431
-msgid "notice board upload failed on"
-msgstr "Hochladen des Notizbretts fehlgeschlagen bei"
-
-#: ../../lib/entropy/server/interfaces/mirrors.py:2442
-msgid "notice board upload success"
-msgstr "Notizbrett erfolgreich hochgeladen"
-
-#: ../../lib/entropy/server/interfaces/db.py:334
-#: ../../lib/entropy/server/interfaces/main.py:3380
-msgid "Keys for repository are expired"
-msgstr "Schlüssel für das Repositorium ist abgelaufen"
-
-#: ../../lib/entropy/server/interfaces/db.py:690
-msgid "preparing to download repository from mirror"
-msgstr "bereite Herunterladen des Repositoriums vom Spiegelserver vor"
-
-#: ../../lib/entropy/server/interfaces/db.py:699
-msgid "download path"
-msgstr "Download-Pfad"
-
-#: ../../lib/entropy/server/interfaces/db.py:735
-#: ../../lib/entropy/server/interfaces/db.py:800
-#: ../../lib/entropy/server/interfaces/db.py:1569
-msgid "errors"
-msgstr "Fehler"
-
-#: ../../lib/entropy/server/interfaces/db.py:736
-msgid "failed to download from mirror"
-msgstr "Herunterladen vom Spiegelserver fehlgeschlagen"
-
-#: ../../lib/entropy/server/interfaces/db.py:801
-msgid "failed to unpack"
-msgstr "Entpacken gescheitert"
-
-#: ../../lib/entropy/server/interfaces/db.py:1105
-msgid "Troubles with treeupdates"
-msgstr "Probleme mit treeupdates"
-
-#: ../../lib/entropy/server/interfaces/db.py:1108
-msgid "Bumping old data back"
-msgstr "Weise veraltete Daten zurück"
-
-#: ../../lib/entropy/server/interfaces/db.py:1122
-msgid "configured package sets"
-msgstr "Paketsets konfiguriert"
-
-#: ../../lib/entropy/server/interfaces/db.py:1132
-msgid "None configured"
-msgstr "Keine konfiguriert"
-
-#: ../../lib/entropy/server/interfaces/db.py:1172
-msgid "creating compressed repository dump + checksum"
-msgstr "erstelle komprimiertes Repositoriums-Abbild + Prüfsumme"
-
-#: ../../lib/entropy/server/interfaces/db.py:1179
-#: ../../lib/entropy/server/interfaces/db.py:1227
-#: ../../lib/entropy/server/interfaces/db.py:1281
-msgid "repository path"
-msgstr "Repositoriums-Pfad"
-
-#: ../../lib/entropy/server/interfaces/db.py:1186
-msgid "dump light"
-msgstr "Abbild"
-
-#: ../../lib/entropy/server/interfaces/db.py:1195
-msgid "dump light checksum"
-msgstr "Abbild-Prüfsumme"
-
-#: ../../lib/entropy/server/interfaces/db.py:1204
-#: ../../lib/entropy/server/interfaces/db.py:1260
-msgid "opener"
-msgstr "Öffner"
-
-#: ../../lib/entropy/server/interfaces/db.py:1219
-msgid "compressing repository + checksum"
-msgstr "komprimiere Repositorium + Prüfsumme"
-
-#: ../../lib/entropy/server/interfaces/db.py:1234
-msgid "compressed repository path"
-msgstr "komprimiere Repositoriums-Pfad"
-
-#: ../../lib/entropy/server/interfaces/db.py:1243
-msgid "repository checksum"
-msgstr "Repositoriums-Prüfsumme"
-
-#: ../../lib/entropy/server/interfaces/db.py:1252
-msgid "compressed checksum"
-msgstr "komprimiere Prüfsumme"
-
-#: ../../lib/entropy/server/interfaces/db.py:1274
-msgid "preparing uncompressed repository for the upload"
-msgstr "bereite unkomprimiertes Repositorium für den Upload vor"
-
-#: ../../lib/entropy/server/interfaces/db.py:1399
-msgid "disabled EAPI"
-msgstr "deaktiviertes EAPI"
-
-#: ../../lib/entropy/server/interfaces/db.py:1419
-msgid "preparing to upload repository to mirror"
-msgstr "bereite den Upload des Repositoriums auf Spiegelserver vor"
-
-#: ../../lib/entropy/server/interfaces/db.py:1570
-msgid "upload failed, locking and continuing"
-msgstr "Hochladen fehlgeschlagen, sperre und fahre fort"
-
-#. something short please
-#: ../../lib/entropy/server/interfaces/db.py:1639
-msgid "repository already in sync"
-msgstr "Repositorium ist bereits synchronisiert"
-
-#. something short please
-#: ../../lib/entropy/server/interfaces/db.py:1652
-msgid "remote repository newer than local, please pull."
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/db.py:1670
-#: ../../lib/entropy/server/interfaces/db.py:1821
-msgid "repository sync failed"
-msgstr "Repositoriums-Synchronisation fehlgeschlagen"
-
-#: ../../lib/entropy/server/interfaces/db.py:1671
-msgid "download issues"
-msgstr "Vorfälle beim Download"
-
-#. something short please
-#: ../../lib/entropy/server/interfaces/db.py:1684
-msgid "local repository newer than remote, please push."
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/db.py:1734
-#: ../../lib/entropy/server/interfaces/db.py:1759
-#: ../../lib/entropy/server/interfaces/db.py:1776
-msgid "repository sync forbidden"
-msgstr "Repositoriums-Synchronisation verboten"
-
-#: ../../lib/entropy/server/interfaces/db.py:1735
-msgid "missing package sets"
-msgstr "fehlende Paketsets"
-
-#: ../../lib/entropy/server/interfaces/db.py:1760
-msgid "dependencies test reported errors"
-msgstr "Der Abhängigkeitstest meldete Fehler."
-
-#: ../../lib/entropy/server/interfaces/db.py:1795
-msgid "these packages haven't been removed yet"
-msgstr "Diese Pakete wurden noch nicht entfernt."
-
-#: ../../lib/entropy/server/interfaces/db.py:1822
-msgid "upload issues"
-msgstr "Vorfälle beim Hochladen"
-
-#: ../../lib/entropy/server/interfaces/db.py:1835
-msgid "repository sync completed"
-msgstr "Synchronisation des Repositoriums komplett"
-
-#: ../../lib/entropy/server/interfaces/main.py:156
-msgid "mirrors have not been unlocked. Sync them."
-msgstr "Spiegelserver wurden nicht entsperrt. Synchronisiere sie."
-
-#: ../../lib/entropy/server/interfaces/main.py:247
-msgid "cannot store updates RSS cache"
-msgstr "kann RSS-Cache der Aktualisierungen nicht speichern"
-
-#: ../../lib/entropy/server/interfaces/main.py:399
-msgid "INJECT"
-msgstr "EINSPEISEN"
-
-#: ../../lib/entropy/server/interfaces/main.py:401
-msgid "has been injected"
-msgstr "wurde eingespeist"
-
-#: ../../lib/entropy/server/interfaces/main.py:402
-msgid "quickpkg manually to update embedded db"
-msgstr ""
-"Du musst quickpkg manuell ausführen um die eingebettete Datenbank zu "
-"aktualisieren"
-
-#: ../../lib/entropy/server/interfaces/main.py:403
-msgid "Repository updated anyway"
-msgstr "Repositorium trotzdem geupdatet"
-
-#: ../../lib/entropy/server/interfaces/main.py:1174
-msgid "package has no keyword set, it will be masked !"
-msgstr "Paket hat kein Schlüsselwort gesetzt, es wird maskiert werden!"
-
-#: ../../lib/entropy/server/interfaces/main.py:1300
-#: ../../lib/entropy/server/interfaces/main.py:4206
-msgid "repository not configured"
-msgstr "Repositorium nicht konfiguriert"
-
-#: ../../lib/entropy/server/interfaces/main.py:1306
-msgid "protected repository id, can't use this, sorry dude..."
-msgstr ""
-"geschützte Repositoriums-ID, kann sie nicht verwenden, sorry Kumpel ..."
-
-#: ../../lib/entropy/server/interfaces/main.py:1675
-msgid "invalid repository revision"
-msgstr "ungültige Repositoriums-Revision"
-
-#: ../../lib/entropy/server/interfaces/main.py:1677
-msgid "defaulting to 0"
-msgstr "setze standardmäßig auf 0"
-
-#: ../../lib/entropy/server/interfaces/main.py:1777
-#: ../../lib/entropy/server/interfaces/main.py:4456
-#: ../../lib/entropy/server/interfaces/main.py:4730
-#: ../../client/text_ugc.py:126 ../../server/eit/commands/test.py:76
-#: ../../server/eit/commands/test.py:85 ../../server/eit/commands/list.py:49
-#: ../../server/eit/commands/log.py:41 ../../server/eit/commands/reset.py:45
-#: ../../server/eit/commands/remote.py:208
-#: ../../server/eit/commands/pull.py:60 ../../server/eit/commands/bump.py:44
-#: ../../server/eit/commands/init.py:45 ../../server/eit/commands/push.py:65
-#: ../../server/eit/commands/pkgmove.py:48
-#: ../../server/eit/commands/notice.py:54
-#: ../../server/eit/commands/notice.py:60
-#: ../../server/eit/commands/notice.py:66
-#: ../../server/eit/commands/commit.py:54 ../../server/eit/commands/lock.py:49
-#: ../../server/eit/commands/cleanup.py:48
-#: ../../server/eit/commands/branch.py:59
-#: ../../server/eit/commands/checkout.py:41
-#: ../../server/eit/commands/status.py:46 ../../server/eit/commands/key.py:55
-#: ../../server/eit/commands/key.py:61 ../../server/eit/commands/key.py:67
-#: ../../server/eit/commands/key.py:73 ../../server/eit/commands/key.py:79
-#: ../../server/eit/commands/key.py:91 ../../server/eit/commands/key.py:100
-msgid "repository"
-msgstr "Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:1778
-msgid "syncing package sets"
-msgstr "synchronisiere Paket Sets"
-
-#: ../../lib/entropy/server/interfaces/main.py:1823
-msgid "cannot match"
-msgstr "keine Entsprechung"
-
-#: ../../lib/entropy/server/interfaces/main.py:1927
-msgid "initializing repository"
-msgstr "Initialisiere Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:1937
-msgid "do you really want to initialize this repository ?"
-msgstr "Willst du wirklich dieses Repositorium initialisieren?"
-
-#: ../../lib/entropy/server/interfaces/main.py:1962
-#: ../../server/eit/commands/commit.py:389
-msgid "Cannot create store directory"
-msgstr "Nicht möglich Speicherverzeichnis zu erstellen"
-
-#: ../../lib/entropy/server/interfaces/main.py:1975
-msgid "Cannot create upload directory"
-msgstr "Nicht möglich Uploadverzeichnis zu erstellen"
-
-#: ../../lib/entropy/server/interfaces/main.py:2004
-msgid "Invalid tag specified"
-msgstr "Kein gültiges Etikett angegeben"
-
-#: ../../lib/entropy/server/interfaces/main.py:2050
-msgid "flushing back selected packages from branches"
-msgstr "spiele ausgewählte Pakete aus den Zweigen zurück"
-
-#: ../../lib/entropy/server/interfaces/main.py:2076
-msgid "nothing to do"
-msgstr "Nichts zu tun"
-
-#: ../../lib/entropy/server/interfaces/main.py:2100
-msgid "these are the packages that will be flushed"
-msgstr "Dies sind die Pakete, welche weggespült werden"
-
-#: ../../lib/entropy/server/interfaces/main.py:2185
-msgid "checking package hash"
-msgstr "überprüfe Pakethash"
-
-#: ../../lib/entropy/server/interfaces/main.py:2204
-msgid "hash does not match for"
-msgstr "Hash stimmt nicht überein für"
-
-#: ../../lib/entropy/server/interfaces/main.py:2214
-msgid "wrong md5"
-msgstr "falsche md5"
-
-#: ../../lib/entropy/server/interfaces/main.py:2258
-msgid "error downloading packages from mirrors"
-msgstr "Fehler beim Herunterladen von Paketen am Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/main.py:2273
-msgid "working on branch"
-msgstr "arbeite auf Zweig"
-
-#: ../../lib/entropy/server/interfaces/main.py:2289
-msgid "updating package"
-msgstr "aktualisiere Paket"
-
-#: ../../lib/entropy/server/interfaces/main.py:2327
-msgid "package flushed"
-msgstr "Paket gespült"
-
-#: ../../lib/entropy/server/interfaces/main.py:2407
-msgid "Cannot touch system repository"
-msgstr "Kann Systemrepositorium nicht anfassen"
-
-#: ../../lib/entropy/server/interfaces/main.py:2422
-msgid "Preparing to move selected packages to"
-msgstr "Vorbereitung zum verschieben von ausgewählten Paketen nach"
-
-#: ../../lib/entropy/server/interfaces/main.py:2424
-msgid "Preparing to copy selected packages to"
-msgstr "Vorbereitung zum kopieren von ausgewählten Paketen nach"
-
-#: ../../lib/entropy/server/interfaces/main.py:2436
-msgid "Note"
-msgstr "Hinweis"
-
-#: ../../lib/entropy/server/interfaces/main.py:2437
-msgid ""
-"all old packages with conflicting scope will be removed from destination "
-"repo unless injected"
-msgstr ""
-"alle alten Pakete im Konfliktbereich werden vom Zielrepositorium entfernt, "
-"sofern nicht eingespeist"
-
-#: ../../lib/entropy/server/interfaces/main.py:2447
-msgid "new tag"
-msgstr "neues Etikett"
-
-#: ../../lib/entropy/server/interfaces/main.py:2519
-msgid "reverse dependency"
-msgstr "umgekehrte Abhängigkeiten"
-
-#: ../../lib/entropy/server/interfaces/main.py:2530
-msgid "dependency"
-msgstr "Abhängigkeiten"
-
-#: ../../lib/entropy/server/interfaces/main.py:2562
-msgid "switching"
-msgstr "wechseln"
-
-#: ../../lib/entropy/server/interfaces/main.py:2582
-msgid "cannot switch, package not found, skipping"
-msgstr "kann nicht wechseln, Paket nicht gefunden, überspringe"
-
-#: ../../lib/entropy/server/interfaces/main.py:2668
-msgid "moving file"
-msgstr "verschiebe Datei"
-
-#: ../../lib/entropy/server/interfaces/main.py:2684
-msgid "loading data from source repository"
-msgstr "lade Daten aus Quellrepositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:2714
-msgid "GPG key was available in"
-msgstr "GPG Schlüssel war verfügbar in"
-
-#: ../../lib/entropy/server/interfaces/main.py:2739
-msgid "injecting data to destination repository"
-msgstr "speise Daten in Zielrepositorium ein"
-
-#: ../../lib/entropy/server/interfaces/main.py:2759
-msgid "removing entry from source repository"
-msgstr "entferne Eintrag aus Quellrepositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:2777
-msgid "successfully handled atom"
-msgstr "Atom erfolgreich gehandhabt"
-
-#: ../../lib/entropy/server/interfaces/main.py:2804
-msgid "Injecting entropy metadata into built packages"
-msgstr "Speise Entropy-Metadaten in die erstellten Pakete ein"
-
-#: ../../lib/entropy/server/interfaces/main.py:2820
-msgid "JFYI, GPG infrastructure failed to load"
-msgstr "Nur zu deiner Information, das Laden der GPG ist fehlgeschlagen"
-
-#: ../../lib/entropy/server/interfaces/main.py:2874
-msgid "injecting entropy metadata"
-msgstr "speise Entropy-Metadaten ein"
-
-#: ../../lib/entropy/server/interfaces/main.py:2922
-msgid "injection complete"
-msgstr "Einspeisung vollständig"
-
-#: ../../lib/entropy/server/interfaces/main.py:2949
-msgid "removing package"
-msgstr "entferne Paket"
-
-#: ../../lib/entropy/server/interfaces/main.py:2974
-#: ../../lib/entropy/server/interfaces/main.py:3177
-msgid "Integrity verification of the selected packages"
-msgstr "Integritätsprüfung der ausgewählten Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:2989
-#: ../../lib/entropy/server/interfaces/main.py:3188
-msgid "All the packages in repository will be checked."
-msgstr "Alle Pakete im Repositorium werden überprüft."
-
-#: ../../lib/entropy/server/interfaces/main.py:2996
-msgid "This is the list of the packages that would be checked"
-msgstr "Dies ist die Liste der Pakete, die überprüft würden"
-
-#: ../../lib/entropy/server/interfaces/main.py:3030
-msgid "Working on mirror"
-msgstr "Arbeite auf Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/main.py:3057
-msgid "checking hash"
-msgstr "überprüfe Hash"
-
-#: ../../lib/entropy/server/interfaces/main.py:3072
-msgid "digest verification of"
-msgstr "Verzeichnisprüfung von"
-
-#: ../../lib/entropy/server/interfaces/main.py:3092
-msgid "NOT healthy"
-msgstr "NICHT gesund"
-
-#: ../../lib/entropy/server/interfaces/main.py:3105
-#: ../../lib/entropy/server/interfaces/main.py:3245
-msgid "This is the list of broken packages"
-msgstr "Dies ist die Liste der gebrochenen Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3114
-#: ../../lib/entropy/client/interfaces/package.py:298
-#: ../../lib/entropy/client/interfaces/package.py:960
-msgid "Mirror"
-msgstr "Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/main.py:3133
-#: ../../server/eit/commands/commit.py:425
-msgid "Statistics"
-msgstr "Statistiken"
-
-#: ../../lib/entropy/server/interfaces/main.py:3142
-msgid "Number of checked packages"
-msgstr "Zahl der überprüften Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3152
-msgid "Number of healthy packages"
-msgstr "Zahl der gesunden Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3162
-msgid "Number of broken packages"
-msgstr "Zahl der fehlerhaften Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3176
-#: ../../lib/entropy/server/interfaces/main.py:3333
-#: ../../lib/entropy/client/interfaces/db.py:1734
-msgid "local"
-msgstr "lokal"
-
-#: ../../lib/entropy/server/interfaces/main.py:3213
-msgid "checking status of"
-msgstr "überprüfe Status von"
-
-#: ../../lib/entropy/server/interfaces/main.py:3235
-msgid "is corrupted, stored checksum"
-msgstr "ist beschädigt, Prüfsumme gespeichert"
-
-#: ../../lib/entropy/server/interfaces/main.py:3272
-msgid "checked packages"
-msgstr "geprüfte Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3282
-msgid "healthy packages"
-msgstr "gesunde Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3292
-#: ../../lib/entropy/server/interfaces/main.py:3474
-msgid "broken packages"
-msgstr "fehlerhafte Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3302
-#: ../../lib/entropy/server/interfaces/main.py:3484
-msgid "downloaded packages"
-msgstr "heruntergeladene Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3312
-#: ../../lib/entropy/server/interfaces/main.py:3494
-msgid "failed downloads"
-msgstr "fehlgeschlagene Downloads"
-
-#: ../../lib/entropy/server/interfaces/main.py:3334
-msgid "GPG signing packages for repository"
-msgstr "signiere Pakete für Repositorium mit GPG"
-
-#: ../../lib/entropy/server/interfaces/main.py:3346
-msgid "All the missing packages in repository will be downloaded."
-msgstr "Alle im Repositorium fehlenden Pakete werden heruntergeladen."
-
-#: ../../lib/entropy/server/interfaces/main.py:3362
-#: ../../server/eit/commands/key.py:141
-msgid "GnuPG not available"
-msgstr "GnuPG nicht verfügbar"
-
-#: ../../lib/entropy/server/interfaces/main.py:3388
-msgid "Keys not available for"
-msgstr "Schlüssel nicht verfügbar für"
-
-#: ../../lib/entropy/server/interfaces/main.py:3419
-msgid "signing package"
-msgstr "signiere Paket"
-
-#: ../../lib/entropy/server/interfaces/main.py:3434
-msgid "Unknown error signing package"
-msgstr "Unbekannter Fehler beim Signieren des Pakets"
-
-#: ../../lib/entropy/server/interfaces/main.py:3464
-msgid "signed packages"
-msgstr "signierte Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3523
-msgid "available"
-msgstr "verfügbar"
-
-#: ../../lib/entropy/server/interfaces/main.py:3535
-msgid "upload/ignored"
-msgstr "hochladen/ignoriert"
-
-#: ../../lib/entropy/server/interfaces/main.py:3570
-msgid "Starting to download missing files"
-msgstr "Starte Herunterladen fehlender Dateien"
-
-#: ../../lib/entropy/server/interfaces/main.py:3581
-msgid "Searching missing/broken files on another mirror"
-msgstr "Suche fehlende/fehlerhafte Dateien auf anderem Spiegelserver"
-
-#: ../../lib/entropy/server/interfaces/main.py:3602
-msgid "Binary packages downloaded successfully."
-msgstr "Binärpakete erfolgreich heruntergeladen."
-
-#: ../../lib/entropy/server/interfaces/main.py:3611
-msgid "These are the packages that cannot be found online"
-msgstr "Dies sind die Pakete, die online nicht gefunden werden können."
-
-#: ../../lib/entropy/server/interfaces/main.py:3627
-msgid "They won't be checked"
-msgstr "Sie werden nicht geprüft werden"
-
-#: ../../lib/entropy/server/interfaces/main.py:3641
-msgid "Please setup your branch to"
-msgstr "Bitte stelle deinen Zweig ein auf"
-
-#: ../../lib/entropy/server/interfaces/main.py:3643
-msgid "and retry"
-msgstr "und versuche erneut"
-
-#: ../../lib/entropy/server/interfaces/main.py:3653
-msgid "Copying repository (if not exists)"
-msgstr "Kopiere Repositorium (falls nicht existent)"
-
-#: ../../lib/entropy/server/interfaces/main.py:3686
-msgid "Switching packages"
-msgstr "Wechsle Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3721
-msgid "Ignoring"
-msgstr "Ignoriere"
-
-#: ../../lib/entropy/server/interfaces/main.py:3723
-msgid "already in branch"
-msgstr "bereits im Zweig"
-
-#: ../../lib/entropy/server/interfaces/main.py:3757
-msgid "migration loop completed"
-msgstr "Migrationsschleife vollständig"
-
-#: ../../lib/entropy/server/interfaces/main.py:3775
-msgid "Running orphaned SPM packages test"
-msgstr "Test auf verwaiste SPM Pakete läuft"
-
-#: ../../lib/entropy/server/interfaces/main.py:3791
-msgid "Scanning package"
-msgstr "Durchsuche Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:3817
-msgid "not found anymore"
-msgstr "nicht mehr gefunden"
-
-#: ../../lib/entropy/server/interfaces/main.py:3829
-#: ../../lib/entropy/server/interfaces/main.py:4105
-msgid "Packages string"
-msgstr "Paketstring"
-
-#: ../../lib/entropy/server/interfaces/main.py:3860
-msgid "Checking"
-msgstr "Prüfe"
-
-#: ../../lib/entropy/server/interfaces/main.py:3925
-msgid "Running dependencies test"
-msgstr "Abhängigkeitstest läuft"
-
-#: ../../lib/entropy/server/interfaces/main.py:3957
-#: ../../client/text_ui.py:2318
-msgid "These are the dependencies not found"
-msgstr "Dies sind die nicht gefundenen Abhängigkeiten"
-
-#: ../../lib/entropy/server/interfaces/main.py:3964
-#: ../../client/text_ui.py:2322
-msgid "Needed by"
-msgstr "Benötigt von"
-
-#: ../../lib/entropy/server/interfaces/main.py:3982
-msgid "by repo"
-msgstr "von Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:3992
-msgid "Every dependency is satisfied. It's all fine."
-msgstr "Alle Abhängigkeiten sind erfüllt. Alles ist gut."
-
-#: ../../lib/entropy/server/interfaces/main.py:4018
-msgid "Broken and matched packages list"
-msgstr "Fehlerhafte und passende Pakete aufgelistet"
-
-#: ../../lib/entropy/server/interfaces/main.py:4020
-#: ../../lib/entropy/qa.py:643
-msgid "Dumping results into these files"
-msgstr "Lege Ergebnisse in Datei ab"
-
-#: ../../lib/entropy/server/interfaces/main.py:4046
-#: ../../client/text_ui.py:2374 ../../client/text_ui.py:2398
-msgid "System is healthy"
-msgstr "System ist gesund"
-
-#: ../../lib/entropy/server/interfaces/main.py:4055
-msgid "Matching libraries with Spm, please wait"
-msgstr "Vergleiche Bibliotheken mit SPM, bitte warten"
-
-#: ../../lib/entropy/server/interfaces/main.py:4069
-msgid "These are the matched packages"
-msgstr "Dies sind die passenden Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:4114
-msgid "No matched packages"
-msgstr "Keine passenden Pakete"
-
-#: ../../lib/entropy/server/interfaces/main.py:4232
-msgid "Your default repository is not initialized"
-msgstr "Dein Standard-Repositorium ist nicht initialisiert"
-
-#: ../../lib/entropy/server/interfaces/main.py:4244
-msgid "Do you want to initialize your default repository ?"
-msgstr "Willst du dein Standard-Repositorium initialisieren ?"
-
-#: ../../lib/entropy/server/interfaces/main.py:4247
-msgid "Continuing with an uninitialized repository"
-msgstr "Fahre mit einem uninitialisiertem Repositorium fort"
-
-#: ../../lib/entropy/server/interfaces/main.py:4415
-msgid "Entropy repository is already locked by you :-)"
-msgstr "Entropy-Repositorium wurde bereits von dir gesperrt :-)"
-
-#. check if the database is locked REMOTELY
-#: ../../lib/entropy/server/interfaces/main.py:4422
-msgid "Locking and Syncing Entropy repository"
-msgstr "Sperre und synchronisiere Entropy-Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:4436
-msgid "Mirrors status table"
-msgstr "Spiegelserver Statustabelle"
-
-#: ../../lib/entropy/server/interfaces/main.py:4445
-#: ../../lib/entropy/server/interfaces/main.py:4448
-#: ../../server/eit/commands/lock.py:162 ../../server/eit/commands/lock.py:177
-msgid "Unlocked"
-msgstr "Freigegeben"
-
-#: ../../lib/entropy/server/interfaces/main.py:4447
-#: ../../lib/entropy/server/interfaces/main.py:4450
-#: ../../server/eit/commands/lock.py:159 ../../server/eit/commands/lock.py:174
-msgid "Locked"
-msgstr "Gesperrt"
-
-#: ../../lib/entropy/server/interfaces/main.py:4467
-msgid "cannot lock mirror"
-msgstr "kann Spiegelserver nicht sperren"
-
-#: ../../lib/entropy/server/interfaces/main.py:4717
-msgid "Repository is corrupted!"
-msgstr "Repositorium ist fehlerhaft!"
-
-#: ../../lib/entropy/server/interfaces/main.py:4731
-msgid "indexing repository"
-msgstr "indiziere Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:4767
-msgid "Initializing an empty repository"
-msgstr "Initialisiere ein leeres Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:4780
-msgid "Entropy repository file"
-msgstr "Entropy Repositoriums-Datei"
-
-#: ../../lib/entropy/server/interfaces/main.py:4782
-msgid "successfully initialized"
-msgstr "erfolgreich initialisiert"
-
-#: ../../lib/entropy/server/interfaces/main.py:4865
-#: ../../lib/entropy/server/interfaces/main.py:5617
-msgid "adding package"
-msgstr "füge Paket hinzu"
-
-#: ../../lib/entropy/server/interfaces/main.py:4999
-msgid "added package"
-msgstr "Paket hinzugefügt"
-
-#: ../../lib/entropy/server/interfaces/main.py:5001
-msgid "rev"
-msgstr "rev"
-
-#: ../../lib/entropy/server/interfaces/main.py:5015
-msgid "manual dependencies for"
-msgstr "manuelle Abhängigkeiten für"
-
-#: ../../lib/entropy/server/interfaces/main.py:5096
-msgid "these are the missing dependencies"
-msgstr "Dies sind die nicht fehlenden Abhängigkeiten"
-
-#: ../../lib/entropy/server/interfaces/main.py:5254
-msgid "no missing dependencies !"
-msgstr "Keine fehlenden Abhängigkeiten!"
-
-#: ../../lib/entropy/server/interfaces/main.py:5269
-#: ../../server/eit/commands/pkgmove.py:273
-#: ../../server/eit/commands/notice.py:193
-msgid "Do you agree?"
-msgstr "Bist du einverstanden?"
-
-#: ../../lib/entropy/server/interfaces/main.py:5271
-#: ../../lib/entropy/server/interfaces/main.py:5277
-#: ../../lib/entropy/output.py:742 ../../lib/entropy/output.py:987
-#: ../../client/text_ugc.py:323 ../../client/text_ugc.py:557
-#: ../../client/text_ugc.py:656 ../../client/text_ugc.py:678
-#: ../../client/text_rescue.py:486 ../../client/text_rescue.py:490
-#: ../../client/text_rescue.py:517 ../../client/text_ui.py:475
-#: ../../client/text_ui.py:502 ../../server/eit/commands/pkgmove.py:275
-#: ../../server/eit/commands/pkgmove.py:281
-#: ../../server/eit/commands/notice.py:195
-#: ../../server/eit/commands/notice.py:201
-#: ../../server/eit/commands/notice.py:266
-#: ../../server/eit/commands/commit.py:238
-#: ../../server/eit/commands/commit.py:240
-#: ../../server/eit/commands/commit.py:278
-#: ../../server/eit/commands/commit.py:295
-#: ../../server/eit/commands/commit.py:297
-#: ../../server/eit/commands/commit.py:318
-msgid "Yes"
-msgstr "Ja"
-
-#: ../../lib/entropy/server/interfaces/main.py:5271
-#: ../../server/eit/commands/pkgmove.py:252
-#: ../../server/eit/commands/pkgmove.py:275
-#: ../../server/eit/commands/notice.py:195
-msgid "Repeat"
-msgstr "Wiederhole"
-
-#: ../../lib/entropy/server/interfaces/main.py:5392
-msgid "metadata QA hook"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5394
-msgid "not owned by uid and gid = 0"
-msgstr "Nicht durch uid und gid = 0 besessen"
-
-#: ../../lib/entropy/server/interfaces/main.py:5407
-msgid "using metadata QA hook"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5434
-msgid "metadata QA check for"
-msgstr "Metadaten QA Überprüfung von"
-
-#: ../../lib/entropy/server/interfaces/main.py:5483
-msgid "cannot execute metadata QA hook for"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5509
-msgid "attention, QA hook returned a warning"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5531
-msgid "attention, QA hook returned an error"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5548
-msgid "metadata QA check complete"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5631
-msgid "injected package, no separate debug package"
-msgstr ""
-
-#: ../../lib/entropy/server/interfaces/main.py:5649
-msgid "Exception caught, closing tasks"
-msgstr "Ausnahmefehler aufgetreten, schließe Aufgaben"
-
-#: ../../lib/entropy/server/interfaces/main.py:5742
-msgid "server-side repository"
-msgstr "serverseitiges Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:5745
-msgid "community repository"
-msgstr "Gemeinschafts-Repositorium"
-
-#. ..on repository: <repository_name>
-#: ../../lib/entropy/server/interfaces/main.py:5747
-msgid "Entropy Server Interface Instance on repository"
-msgstr "Entropy Server Schnittstellen-Instanz auf Repositorium"
-
-#: ../../lib/entropy/server/interfaces/main.py:5758
-msgid "current branch"
-msgstr "aktueller Zweig"
-
-#: ../../lib/entropy/server/interfaces/main.py:5760
-#: ../../server/eit/commands/deps.py:110
-msgid "type"
-msgstr "Typ"
-
-#: ../../lib/entropy/server/interfaces/main.py:5769
-msgid "Currently configured repositories"
-msgstr "Gegenwärtig konfigurierte Repositorien"
-
-#: ../../lib/entropy/server/interfaces/main.py:5805
-msgid "GPG key expired"
-msgstr "GPG Schlüssel abgelaufen"
-
-#: ../../lib/entropy/server/interfaces/main.py:5807
-msgid "please frigging fix"
-msgstr "bitte dringend korrigieren"
-
-#: ../../lib/entropy/server/interfaces/main.py:5818
-msgid "GPG got unexpected error"
-msgstr "GPG erhielt unerwarteten Fehler"
-
-#: ../../lib/entropy/server/interfaces/main.py:5820
-msgid "skipping"
-msgstr "überspringe"
-
-#: ../../lib/entropy/server/interfaces/main.py:5837
-#: ../../lib/entropy/server/interfaces/main.py:5851
-msgid "config files"
-msgstr "Konfigurationsdateien"
-
-#. something short please
-#: ../../lib/entropy/server/interfaces/main.py:5838
-msgid "checking system"
-msgstr "überprüfe System"
-
-#. something short please
-#: ../../lib/entropy/server/interfaces/main.py:5852
-msgid "there are configuration files not updated yet"
-msgstr ""
-"es existieren noch Konfigurationsdateien, die aktualisiert werden müssen"
-
-#: ../../lib/entropy/server/interfaces/main.py:6144
-msgid "found available dep_rewrites for this package"
-msgstr "fand verfügbare dep_rewrites für das Paket"
-
-#. this means that user is asking to add dep_pattern
-#. as a dependency to package
-#: ../../lib/entropy/server/interfaces/main.py:6156
-msgid "added"
-msgstr "hinzugefügt"
-
-#: ../../lib/entropy/server/interfaces/main.py:6250
-msgid "replaced"
-msgstr "ersetzt"
-
-#: ../../lib/entropy/server/interfaces/main.py:6272
-#: ../../lib/entropy/server/interfaces/main.py:6286
-msgid "No dependency rewrite made for"
-msgstr "Keine Abhängigkeits-Neuschreibung erstellt für"
-
-#: ../../lib/entropy/server/interfaces/main.py:6358
-#: ../../lib/entropy/server/interfaces/main.py:6378
-#: ../../lib/entropy/server/interfaces/main.py:6390
-msgid "sets"
-msgstr "Sets"
-
-#: ../../lib/entropy/server/interfaces/main.py:6359
-msgid "updating package sets"
-msgstr "aktualisiere Paketsets"
-
-#: ../../lib/entropy/server/interfaces/main.py:6379
-msgid "adding package set"
-msgstr "füge Paketset hinzu"
-
-#: ../../lib/entropy/server/interfaces/main.py:6391
-msgid "removing package set"
-msgstr "entferne Paketset"
 
 #: ../../lib/entropy/client/services/interfaces.py:57
 msgid "Unknown documents"
@@ -2289,6 +899,10 @@ msgstr "Repositoriums-Prüfsumme stimmt mit entfernter nicht überein"
 msgid "Repository checksum doesn't match remote."
 msgstr "Repositoriums-Prüfsumme entspricht nicht der entfernten."
 
+#: ../../lib/entropy/client/interfaces/db.py:1734
+msgid "local"
+msgstr "lokal"
+
 #: ../../lib/entropy/client/interfaces/db.py:1739
 msgid "remote"
 msgstr "auf entferntem Computer"
@@ -2308,6 +922,11 @@ msgstr "Ist bereits vorbereitet"
 #: ../../lib/entropy/client/interfaces/package.py:81
 msgid "Not yet prepared"
 msgstr "Ist noch nicht vorbereitet"
+
+#: ../../lib/entropy/client/interfaces/package.py:298
+#: ../../lib/entropy/client/interfaces/package.py:960
+msgid "Mirror"
+msgstr "Spiegelserver"
 
 #: ../../lib/entropy/client/interfaces/package.py:300
 #: ../../lib/entropy/client/interfaces/package.py:962
@@ -2468,6 +1087,11 @@ msgstr "Lösche aus Entropy"
 #: ../../lib/entropy/client/interfaces/package.py:1598
 msgid "Removing config file, never modified"
 msgstr "Entferne Konfigurationsdatei, niemals modifiziert"
+
+#: ../../lib/entropy/client/interfaces/package.py:1620
+#: ../../client/text_ui.py:2219
+msgid "remove"
+msgstr "entfernen"
 
 #: ../../lib/entropy/client/interfaces/package.py:1621
 #: ../../lib/entropy/client/interfaces/package.py:2800
@@ -2676,6 +1300,14 @@ msgstr "Lade"
 #: ../../lib/entropy/client/interfaces/package.py:3519
 msgid "Multi Fetching"
 msgstr "Multifetching"
+
+#: ../../lib/entropy/client/interfaces/package.py:3520
+#: ../../lib/entropy/client/interfaces/package.py:3540
+#: ../../client/text_query.py:508 ../../client/text_ui.py:1134
+msgid "package"
+msgid_plural "packages"
+msgstr[0] "Paket"
+msgstr[1] "Pakete"
 
 #: ../../lib/entropy/client/interfaces/package.py:3526
 msgid "Fetching sources"
@@ -3034,8 +1666,7 @@ msgid "Not installed"
 msgstr "Nicht installiert"
 
 #: ../../lib/entropy/cli.py:432 ../../lib/entropy/cli.py:433
-#: ../../lib/entropy/cli.py:680 ../../server/eit/commands/deps.py:89
-#: ../../server/eit/commands/key.py:327 ../../server/eit/commands/key.py:331
+#: ../../lib/entropy/cli.py:680
 msgid "N/A"
 msgstr "N/A"
 
@@ -3093,7 +1724,7 @@ msgstr "Download"
 msgid "Checksum"
 msgstr "Prüfsumme"
 
-#: ../../lib/entropy/cli.py:528 ../../server/eit/commands/deps.py:202
+#: ../../lib/entropy/cli.py:528
 msgid "Dependencies"
 msgstr "Abhängigkeiten"
 
@@ -3110,7 +1741,7 @@ msgid "Homepage"
 msgstr "Homepage"
 
 #: ../../lib/entropy/cli.py:560 ../../client/text_security.py:136
-#: ../../client/text_ugc.py:535 ../../server/eit/commands/key.py:334
+#: ../../client/text_ugc.py:535
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -3164,8 +1795,7 @@ msgstr "Dies sind die installierten Pakete"
 #: ../../client/text_query.py:730 ../../client/text_ui.py:1044
 #: ../../client/text_ui.py:1191 ../../client/text_ui.py:1298
 #: ../../client/text_ui.py:1799 ../../client/text_ui.py:1891
-#: ../../client/text_ui.py:1989 ../../server/eit/commands/remove.py:99
-#: ../../server/eit/commands/deps.py:147
+#: ../../client/text_ui.py:1989
 msgid "No packages found"
 msgstr "Keine Pakete gefunden"
 
@@ -3194,6 +1824,30 @@ msgstr "Entsprechend"
 #: ../../lib/entropy/output.py:604
 msgid "Entropy needs your attention"
 msgstr "Entropy benötigt deine Aufmerksamkeit"
+
+#: ../../lib/entropy/output.py:742 ../../lib/entropy/output.py:987
+#: ../../client/text_ugc.py:323 ../../client/text_ugc.py:557
+#: ../../client/text_ugc.py:656 ../../client/text_ugc.py:678
+#: ../../client/text_rescue.py:486 ../../client/text_rescue.py:490
+#: ../../client/text_rescue.py:517 ../../client/text_ui.py:475
+#: ../../client/text_ui.py:502
+msgid "Yes"
+msgstr "Ja"
+
+#: ../../lib/entropy/output.py:742 ../../client/text_configuration.py:367
+#: ../../client/text_configuration.py:418 ../../client/text_rescue.py:231
+#: ../../client/text_rescue.py:235 ../../client/text_rescue.py:239
+#: ../../client/text_rescue.py:521 ../../client/text_rescue.py:604
+#: ../../client/text_rescue.py:607 ../../client/text_rescue.py:611
+#: ../../client/text_smart.py:141 ../../client/text_smart.py:329
+#: ../../client/equo.py:713 ../../client/text_ui.py:475
+#: ../../client/text_ui.py:944 ../../client/text_ui.py:1553
+#: ../../client/text_ui.py:1835 ../../client/text_ui.py:1919
+#: ../../client/text_ui.py:2057 ../../client/text_ui.py:2064
+#: ../../client/text_ui.py:2156 ../../client/text_ui.py:2328
+#: ../../client/text_ui.py:2438
+msgid "No"
+msgstr "Nein"
 
 #: ../../lib/entropy/output.py:757
 msgid "Entropy got a question for you"
@@ -3341,6 +1995,10 @@ msgstr "Paketliste zerbrochener Symbole"
 msgid "Broken executables list"
 msgstr "Liste fehlerhafter ausführbarer Dateien"
 
+#: ../../lib/entropy/qa.py:643
+msgid "Dumping results into these files"
+msgstr "Lege Ergebnisse in Datei ab"
+
 #: ../../lib/entropy/qa.py:721
 msgid "discarding directory"
 msgstr "verwerfe Verzeichnis"
@@ -3380,9 +2038,7 @@ msgstr "Noch nicht bereit"
 #: ../../client/text_configuration.py:51 ../../client/text_ugc.py:60
 #: ../../client/text_rescue.py:86 ../../client/text_smart.py:69
 #: ../../client/equo.py:363 ../../client/text_ui.py:159
-#: ../../server/eit/commands/command.py:173
-#: ../../server/eit/commands/command.py:203 ../../services/kernel-switcher:120
-#: ../../services/kernel-switcher:197
+#: ../../services/kernel-switcher:120 ../../services/kernel-switcher:197
 msgid "Another Entropy is currently running."
 msgstr "Ein anderes Entropy läuft bereits."
 
@@ -3420,9 +2076,6 @@ msgstr "GLSA Beschreibung"
 #: ../../client/text_security.py:131 ../../client/text_repositories.py:527
 #: ../../client/text_repositories.py:559 ../../client/text_repositories.py:614
 #: ../../client/text_ugc.py:530 ../../client/text_ugc.py:750
-#: ../../server/eit/commands/notice.py:173
-#: ../../server/eit/commands/notice.py:326
-#: ../../server/eit/commands/notice.py:361
 msgid "Title"
 msgstr "Titel"
 
@@ -3843,7 +2496,7 @@ msgid "repository already enabled"
 msgstr "Repositorium bereits aktiviert"
 
 #: ../../client/text_repositories.py:216 ../../client/text_repositories.py:237
-#: ../../client/text_repositories.py:345 ../../server/eit/commands/cp.py:141
+#: ../../client/text_repositories.py:345
 msgid "repository not available"
 msgstr "Repositorium nicht verfügbar"
 
@@ -3962,8 +2615,6 @@ msgid "Unhandled exception"
 msgstr "Unerwarteter Ausnahmefehler"
 
 #: ../../client/text_repositories.py:510
-#: ../../server/eit/commands/notice.py:247
-#: ../../server/eit/commands/notice.py:298
 msgid "Notice board not available"
 msgstr "Schwarzes Brett ist nicht verfügbar"
 
@@ -3976,7 +2627,6 @@ msgid "Link"
 msgstr "Link"
 
 #: ../../client/text_repositories.py:546
-#: ../../server/eit/commands/notice.py:344
 msgid "Press Enter to continue"
 msgstr "Willst du fortfahren ?"
 
@@ -3987,7 +2637,6 @@ msgid "Exit"
 msgstr "Schließen"
 
 #: ../../client/text_repositories.py:573
-#: ../../server/eit/commands/notice.py:376
 msgid "Choose one by typing its identifier"
 msgstr "Bitte wähle durch Eingabe der jeweiligen Nummer"
 
@@ -4161,7 +2810,7 @@ msgid "Show differences again"
 msgstr "Zeige Unterschiede erneut"
 
 #: ../../client/text_ugc.py:88 ../../client/text_ugc.py:179
-#: ../../client/text_ugc.py:229 ../../server/eit/commands/test.py:164
+#: ../../client/text_ugc.py:229
 msgid "Invalid repository"
 msgstr "Ungültiges Repository"
 
@@ -4189,6 +2838,10 @@ msgstr "Kennwort"
 #: ../../client/text_ugc.py:126
 msgid "Please login against"
 msgstr "Bitte anmelden an"
+
+#: ../../client/text_ugc.py:126
+msgid "repository"
+msgstr "Repositorium"
 
 #: ../../client/text_ugc.py:134
 msgid "Login aborted. Not logged in."
@@ -4658,7 +3311,7 @@ msgstr "Gültigkeitsüberprüfung"
 msgid "installed packages repository"
 msgstr "Installierte Paketrepositorien"
 
-#: ../../client/text_rescue.py:738 ../../server/eit/commands/commit.py:183
+#: ../../client/text_rescue.py:738
 msgid "Scanning..."
 msgstr "Durchsuche..."
 
@@ -4906,7 +3559,7 @@ msgstr "Repositoriums Schwarzes Brett Leser"
 msgid "show respositories status"
 msgstr "zeige Repositories-Status"
 
-#: ../../client/equo.py:87 ../../server/eit/commands/search.py:124
+#: ../../client/equo.py:87
 msgid "search packages in repositories"
 msgstr "suche Pakete in Repositories"
 
@@ -5736,7 +4389,6 @@ msgid "These are the packages that should be MANUALLY removed"
 msgstr "Dies sind die Pakete, die MANUELL entfernt werden sollten"
 
 #: ../../client/text_ui.py:805 ../../client/text_ui.py:1454
-#: ../../server/eit/commands/remove.py:109
 msgid "These are the packages that would be removed"
 msgstr "Dies sind die Pakete, welche entfernt werden würden"
 
@@ -5781,6 +4433,10 @@ msgstr "Beteiligte Pakete"
 #: ../../client/text_ui.py:940
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Willst du mit der Berechnung der Abhägigkeiten weiterarbeiten ?"
+
+#: ../../client/text_ui.py:943
+msgid "Would you like to continue ?"
+msgstr "Würdest du gerne fortfahren ?"
 
 #: ../../client/text_ui.py:958
 msgid "When you wrote"
@@ -5963,7 +4619,7 @@ msgstr "Installation vollständig"
 msgid "These are the packages that would be masked"
 msgstr "Dies sind die Pakete die maskiert werden würden"
 
-#: ../../client/text_ui.py:1834 ../../server/eit/commands/key.py:166
+#: ../../client/text_ui.py:1834
 msgid "Would you like to continue?"
 msgstr "Möchtest du fortfahren ?"
 
@@ -5999,7 +4655,7 @@ msgstr "Entfernen untersagt"
 msgid "Would you like to calculate dependencies ?"
 msgstr "Würdest du gerne die Abhängigkeiten berechnen lassen?"
 
-#: ../../client/text_ui.py:2061 ../../server/eit/commands/commit.py:293
+#: ../../client/text_ui.py:2061
 msgid "Would you like to remove them now ?"
 msgstr "Willst du sie jetzt entfernen ?"
 
@@ -6033,6 +4689,14 @@ msgstr ""
 msgid "Running dependency test"
 msgstr "Teste auf Abhängigkeiten"
 
+#: ../../client/text_ui.py:2318
+msgid "These are the dependencies not found"
+msgstr "Dies sind die nicht gefundenen Abhängigkeiten"
+
+#: ../../client/text_ui.py:2322
+msgid "Needed by"
+msgstr "Benötigt von"
+
 #: ../../client/text_ui.py:2327
 msgid "Would you like to install the available packages ?"
 msgstr "Willst du die verfügbaren Pakete installieren ?"
@@ -6045,1024 +4709,21 @@ msgstr "Installiere verfügbare Pakete in"
 msgid "10 seconds"
 msgstr "10 Sekunden"
 
+#: ../../client/text_ui.py:2374 ../../client/text_ui.py:2398
+msgid "System is healthy"
+msgstr "System ist gesund"
+
 #: ../../client/text_ui.py:2403
 msgid "Libraries/Executables statistics"
 msgstr "Statistiken für Programmbibliotheken und ausführbare Dateien"
 
-#: ../../client/text_ui.py:2406 ../../server/eit/commands/test.py:148
-#: ../../server/eit/commands/query.py:211
-#: ../../server/eit/commands/query.py:252
-#: ../../server/eit/commands/files.py:92 ../../server/eit/commands/cp.py:154
+#: ../../client/text_ui.py:2406
 msgid "Not matched"
 msgstr "Keine Entsprechung"
 
 #: ../../client/text_ui.py:2437
 msgid "Would you like to install them ?"
 msgstr "Würdest du sie gerne installieren?"
-
-#: ../../server/eit/main.py:101
-msgid "superuser access required"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:46
-msgid "run given test"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:47
-msgid "available tests"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:50
-msgid "dependencies test"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:54
-msgid "libraries test"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:56
-msgid "dump results to file"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:60
-msgid "library linking test (using repository metadata)"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:63
-msgid "excluded soname"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:67
-msgid "library linking test (using live system)"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:70 ../../server/eit/commands/query.py:75
-#: ../../server/eit/commands/query.py:93 ../../server/eit/commands/add.py:50
-#: ../../server/eit/commands/repack.py:47
-#: ../../server/eit/commands/files.py:46
-msgid "package names"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:74
-msgid "verify local packages integrity"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:79 ../../server/eit/commands/test.py:88
-#: ../../server/eit/commands/add.py:56 ../../server/eit/commands/remove.py:55
-#: ../../server/eit/commands/reset.py:48 ../../server/eit/commands/pull.py:63
-#: ../../server/eit/commands/init.py:48 ../../server/eit/commands/push.py:68
-#: ../../server/eit/commands/merge.py:51
-#: ../../server/eit/commands/commit.py:60
-#: ../../server/eit/commands/cleanup.py:51
-#: ../../server/eit/commands/branch.py:53
-msgid "no stupid questions"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:83
-msgid "verify remote packages integrity"
-msgstr ""
-
-#: ../../server/eit/commands/test.py:188
-msgid "run QA tests"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:50
-msgid "execute query"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:51
-msgid "available queries"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:54
-msgid "search package tags"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:57 ../../server/eit/commands/query.py:70
-#: ../../server/eit/commands/query.py:82
-#: ../../server/eit/commands/query.py:100
-#: ../../server/eit/commands/query.py:116 ../../server/eit/commands/list.py:52
-#: ../../server/eit/commands/search.py:55
-#: ../../server/eit/commands/graph.py:56 ../../server/eit/commands/own.py:53
-#: ../../server/eit/commands/match.py:50 ../../server/eit/commands/lock.py:61
-#: ../../server/eit/commands/files.py:49
-#: ../../server/eit/commands/revgraph.py:57
-msgid "quiet output, for scripting purposes"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:59
-#: ../../server/eit/commands/query.py:105
-#: ../../server/eit/commands/query.py:121
-msgid "query into given repository only"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:63
-msgid "tag name"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:67
-msgid "show libraries (.so) required by matched packages"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:79
-msgid "show reverse dependencies of packages"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:85
-msgid "verbose output, show more info"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:88
-msgid "include build dependencies"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:97
-msgid "search through package sets"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:103
-msgid "verbose output, show package sets content"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:109
-msgid "package set name"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:113
-msgid "search packages through their description"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:119
-msgid "verbose output, show more information"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:125
-msgid "package description"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:185
-msgid "Nothing found for"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:231
-msgid "libraries found"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:273
-msgid "revdep(s) found"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:323
-msgid "sets found"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:357 ../../server/eit/commands/own.py:159
-msgid "packages found"
-msgstr ""
-
-#: ../../server/eit/commands/query.py:366
-msgid "miscellaneous package metadata queries"
-msgstr ""
-
-#: ../../server/eit/commands/add.py:52
-msgid "add to given repository"
-msgstr ""
-
-#: ../../server/eit/commands/add.py:76
-msgid "commit to repository the provided packages"
-msgstr ""
-
-#: ../../server/eit/commands/list.py:55 ../../server/eit/commands/own.py:56
-msgid "output more package info"
-msgstr ""
-
-#: ../../server/eit/commands/list.py:58
-msgid "only list injected packages"
-msgstr ""
-
-#: ../../server/eit/commands/list.py:95
-msgid "not available"
-msgstr "Nicht verfügbar"
-
-#: ../../server/eit/commands/list.py:139
-msgid "No packages"
-msgstr ""
-
-#: ../../server/eit/commands/list.py:147
-msgid "show repository content (packages)"
-msgstr ""
-
-#: ../../server/eit/commands/mv.py:40 ../../server/eit/commands/cp.py:50
-msgid "source repository"
-msgstr ""
-
-#: ../../server/eit/commands/mv.py:42 ../../server/eit/commands/cp.py:53
-msgid "destination repository"
-msgstr ""
-
-#: ../../server/eit/commands/mv.py:45 ../../server/eit/commands/cp.py:56
-msgid "include dependencies"
-msgstr ""
-
-#: ../../server/eit/commands/mv.py:47
-msgid "package names (all if none)"
-msgstr ""
-
-#: ../../server/eit/commands/mv.py:85
-msgid "move packages from a repository to another"
-msgstr "verschiebe Pakete von einem Repository in ein anderes"
-
-#: ../../server/eit/commands/log.py:74
-msgid "log is not available"
-msgstr ""
-
-#: ../../server/eit/commands/log.py:86
-msgid "show log for repository"
-msgstr ""
-
-#: ../../server/eit/commands/remove.py:46
-#: ../../server/eit/commands/search.py:48
-#: ../../server/eit/commands/graph.py:47 ../../server/eit/commands/match.py:46
-#: ../../server/eit/commands/deps.py:44
-#: ../../server/eit/commands/revgraph.py:48
-msgid "package name"
-msgstr ""
-
-#: ../../server/eit/commands/remove.py:48
-msgid "remove from given repository"
-msgstr ""
-
-#: ../../server/eit/commands/remove.py:51
-msgid "do not include reverse dependencies"
-msgstr "füge keine rückwärtigen Abhängigkeiten hinzu"
-
-#: ../../server/eit/commands/remove.py:138
-msgid "remove packages from repository"
-msgstr ""
-
-#: ../../server/eit/commands/search.py:50
-#: ../../server/eit/commands/graph.py:49 ../../server/eit/commands/own.py:58
-#: ../../server/eit/commands/revgraph.py:50
-msgid "search packages in given repository"
-msgstr ""
-
-#: ../../server/eit/commands/search.py:115
-#: ../../server/eit/commands/match.py:101
-msgid "Nothing found"
-msgstr "Nichts gefunden"
-
-#: ../../server/eit/commands/graph.py:53
-#: ../../server/eit/commands/revgraph.py:54
-msgid "show system packages, build deps, circular deps"
-msgstr ""
-
-#: ../../server/eit/commands/graph.py:104
-msgid "show dependency graph for packages"
-msgstr ""
-
-#: ../../server/eit/commands/reset.py:51
-msgid "do not pull the remote repository"
-msgstr ""
-
-#: ../../server/eit/commands/reset.py:129
-msgid "reset error"
-msgstr ""
-
-#: ../../server/eit/commands/reset.py:134
-msgid "local repository revision reset complete"
-msgstr ""
-
-#: ../../server/eit/commands/reset.py:145
-msgid "reset repository to remote status"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:47 ../../server/eit/commands/key.py:49
-msgid "execute action"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:48
-#: ../../server/eit/commands/notice.py:49 ../../server/eit/commands/key.py:50
-msgid "available actions"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:51
-msgid "list repositories"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:55
-msgid "add repository"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:57
-msgid "repository id"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:60
-msgid "repository description"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:62
-msgid "repository uri"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:101
-msgid "Invalid repository name"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:107
-msgid "Repository already available"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:120
-msgid "Invalid URI"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:135
-msgid "Cannot read configuration file"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:151
-msgid "no description"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:154
-msgid "Adding repository"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:165
-msgid "Configuration file"
-msgstr "Konfigurationsdatei"
-
-#: ../../server/eit/commands/remote.py:170
-msgid "Please initialize the repository using"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:214
-msgid "packages"
-msgstr ""
-
-#: ../../server/eit/commands/remote.py:224
-msgid "manage repositories"
-msgstr ""
-
-#: ../../server/eit/commands/help.py:65
-msgid "Entropy Infrastructure Toolkit"
-msgstr ""
-
-#: ../../server/eit/commands/help.py:90 ../../services/kernel-switcher:226
-msgid "this help"
-msgstr ""
-
-#: ../../server/eit/commands/pull.py:68
-#, fuzzy
-msgid "pull all the repositories"
-msgstr "_Aktualisiere Repositorien"
-
-#: ../../server/eit/commands/pull.py:178 ../../server/eit/commands/pull.py:189
-#: ../../server/eit/commands/push.py:268 ../../server/eit/commands/push.py:300
-msgid "Aborting !"
-msgstr "Breche ab!"
-
-#: ../../server/eit/commands/pull.py:197 ../../server/eit/commands/push.py:306
-msgid "Should I cleanup old packages on mirrors ?"
-msgstr ""
-
-#: ../../server/eit/commands/pull.py:213
-#, fuzzy
-msgid "pull repository packages and metadata"
-msgstr "Sammle Quell-Paketmanager Metadaten"
-
-#: ../../server/eit/commands/bump.py:47
-msgid "sync with remote repository"
-msgstr ""
-
-#: ../../server/eit/commands/bump.py:114
-msgid "Bumping repository"
-msgstr ""
-
-#: ../../server/eit/commands/bump.py:125
-msgid "bump repository revision, force push"
-msgstr ""
-
-#: ../../server/eit/commands/init.py:115
-msgid "Entropy repository has been initialized"
-msgstr "Entropy Repositorium wurde initialisiert"
-
-#: ../../server/eit/commands/init.py:125
-msgid "initialize repository (erasing all its content)"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:73
-msgid "push all the repositories"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:75
-msgid "push as fake repository"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:197
-msgid "Commit message"
-msgstr "Übergebe Nachricht"
-
-#: ../../server/eit/commands/push.py:199
-msgid "Enter the commit message"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:221
-msgid "Entropy Repository Status"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:228
-msgid "Host"
-msgstr "Wirt"
-
-#: ../../server/eit/commands/push.py:231
-msgid "Remote"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:237
-msgid "Local"
-msgstr ""
-
-#: ../../server/eit/commands/push.py:321
-msgid "push repository packages and metadata"
-msgstr ""
-
-#: ../../server/eit/commands/pkgmove.py:185
-msgid "invalid line (time field)"
-msgstr ""
-
-#: ../../server/eit/commands/pkgmove.py:193
-#, fuzzy
-msgid "invalid line (empty)"
-msgstr "Ungültiges Element."
-
-#: ../../server/eit/commands/pkgmove.py:203
-#, fuzzy
-msgid "invalid line (incomplete)"
-msgstr "Installation vollständig"
-
-#: ../../server/eit/commands/pkgmove.py:213
-#: ../../server/eit/commands/pkgmove.py:229
-#: ../../server/eit/commands/pkgmove.py:245
-#, fuzzy
-msgid "invalid line"
-msgstr "Ungültiger Titel"
-
-#: ../../server/eit/commands/pkgmove.py:219
-#: ../../server/eit/commands/pkgmove.py:235
-msgid "invalid line (copy)"
-msgstr ""
-
-#: ../../server/eit/commands/pkgmove.py:251
-msgid "Invalid syntax, what to do ?"
-msgstr ""
-
-#: ../../server/eit/commands/pkgmove.py:252
-#: ../../server/eit/commands/pkgmove.py:253
-#, fuzzy
-msgid "Abort"
-msgstr "_Abbruch"
-
-#: ../../server/eit/commands/pkgmove.py:322
-#, fuzzy
-msgid "edit automatic package moves for repository"
-msgstr "signiere Pakete für Repositorium mit GPG"
-
-#: ../../server/eit/commands/repo.py:73
-msgid "show current repository"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:48
-msgid "execute given action"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:52
-msgid "add notice-board entry"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:58
-msgid "remove notice-board entry"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:64
-msgid "show notice-board"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:181
-msgid "no URL"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:183
-#: ../../server/eit/commands/notice.py:335
-msgid "URL"
-msgstr ""
-
-#: ../../server/eit/commands/notice.py:257
-msgid "Choose the one you want to remove"
-msgstr "Wähle jenes das du entfernen möchtest"
-
-#: ../../server/eit/commands/notice.py:265
-msgid "Are you sure you want to remove this?"
-msgstr "Bist du dir sicher, dass du es entfernen möchtest?"
-
-#: ../../server/eit/commands/notice.py:369
-msgid "Exit/Commit"
-msgstr "Exit/Commit"
-
-#: ../../server/eit/commands/notice.py:392
-msgid "manage repository notice-board"
-msgstr ""
-
-#: ../../server/eit/commands/merge.py:45
-msgid "repository branch"
-msgstr ""
-
-#: ../../server/eit/commands/merge.py:47
-msgid "work inside given repository"
-msgstr ""
-
-#: ../../server/eit/commands/merge.py:96
-msgid "merge packages on other branches into current"
-msgstr ""
-
-#: ../../server/eit/commands/repack.py:49
-msgid "repack to given repository"
-msgstr ""
-
-#: ../../server/eit/commands/repack.py:71
-msgid "rebuild packages in repository"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:57
-msgid "selectively pick changes"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:157
-msgid "Cannot match"
-msgstr "Keine Entsprechung"
-
-#: ../../server/eit/commands/commit.py:177
-msgid "No valid packages to repackage."
-msgstr "Keine gültigen Pakete zum Neuverpacken."
-
-#: ../../server/eit/commands/commit.py:206
-msgid "Invalid package"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:217
-msgid "Zarro thinggz to do"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:224
-msgid "These would be marked as injected"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:236
-msgid "Do it now ?"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:247
-msgid "Transforming"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:252
-msgid "Action completed"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:263
-msgid "expired"
-msgstr "abgelaufen"
-
-#: ../../server/eit/commands/commit.py:270
-msgid "Select packages for removal"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:277
-msgid "Remove this package?"
-msgstr "Entferne dieses Paket?"
-
-#: ../../server/eit/commands/commit.py:284
-msgid "These would be removed from repository"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:309
-msgid "Select packages to add"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:317
-msgid "Add this package?"
-msgstr "Dieses Paket hinzufügen?"
-
-#: ../../server/eit/commands/commit.py:325
-msgid "These would be added or updated"
-msgstr ""
-
-#: ../../server/eit/commands/commit.py:358
-msgid "warning"
-msgstr "Warnung"
-
-#: ../../server/eit/commands/commit.py:365
-msgid "Would you like to package them now ?"
-msgstr "Willst du sie jetzt verpacken ?"
-
-#: ../../server/eit/commands/commit.py:366
-msgid "inside"
-msgstr "innen"
-
-#: ../../server/eit/commands/commit.py:379
-msgid "Compressing packages"
-msgstr "Komprimiere Pakete"
-
-#: ../../server/eit/commands/commit.py:404
-msgid "Ignoring broken Spm entry, please recompile it"
-msgstr "Ignoriere fehlerhaften Spm-Eintrag, bitte neu kompilieren"
-
-#: ../../server/eit/commands/commit.py:411
-msgid "Nothing to do, check later."
-msgstr "Nichts zu tun, schau später nochmal vorbei."
-
-#: ../../server/eit/commands/commit.py:426
-msgid "Entries handled"
-msgstr "Einträge verarbeitet"
-
-#: ../../server/eit/commands/commit.py:436
-msgid "commit changes to repository"
-msgstr ""
-
-#: ../../server/eit/commands/own.py:49
-msgid "path"
-msgstr ""
-
-#: ../../server/eit/commands/own.py:168
-msgid "search packages owning paths"
-msgstr ""
-
-#: ../../server/eit/commands/match.py:110
-msgid "match packages in repositories"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:54
-msgid "affect entropy clients only"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:57
-msgid "show current status"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:145
-msgid "Mirrors status"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:170
-msgid "server"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:185
-msgid "client"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:217
-msgid "lock repository"
-msgstr ""
-
-#: ../../server/eit/commands/lock.py:252
-msgid "unlock repository"
-msgstr ""
-
-#: ../../server/eit/commands/cleanup.py:53
-msgid "expired since how many days"
-msgstr ""
-
-#: ../../server/eit/commands/cleanup.py:127
-msgid "Removing unavailable packages overriding defaults"
-msgstr ""
-
-#: ../../server/eit/commands/cleanup.py:131
-msgid "Users with older repositories will have to update"
-msgstr ""
-
-#: ../../server/eit/commands/cleanup.py:146
-#: ../../server/eit/commands/cleanup.py:177
-msgid "clean expired packages from a repository"
-msgstr ""
-
-#: ../../server/eit/commands/files.py:111
-msgid "files found"
-msgstr ""
-
-#: ../../server/eit/commands/files.py:120
-msgid "show files owned by packages"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:56
-msgid "switch to given branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:61
-msgid "from branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:65
-msgid "don't copy packages from branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:118
-#: ../../server/eit/commands/branch.py:127
-msgid "Invalid branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:140
-msgid "No packages to copy"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:148
-msgid "would be copied to branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:165
-msgid "switched to branch"
-msgstr ""
-
-#: ../../server/eit/commands/branch.py:211
-msgid "manage repository branches"
-msgstr ""
-
-#: ../../server/eit/commands/checkout.py:116
-msgid "switch from a repository to another"
-msgstr ""
-
-#: ../../server/eit/commands/status.py:134
-msgid "local revision"
-msgstr "lokale Revision"
-
-#: ../../server/eit/commands/status.py:141
-msgid "stored packages"
-msgstr "gespeicherte Pakete"
-
-#: ../../server/eit/commands/status.py:146
-msgid "upload packages"
-msgstr "hochgeladene Pakete"
-
-#: ../../server/eit/commands/status.py:153
-msgid "unstaged packages"
-msgstr ""
-
-#: ../../server/eit/commands/status.py:185
-msgid "add"
-msgstr ""
-
-#: ../../server/eit/commands/status.py:197
-msgid "switch injected"
-msgstr ""
-
-#: ../../server/eit/commands/status.py:207
-msgid "show repository status"
-msgstr ""
-
-#: ../../server/eit/commands/deps.py:46 ../../server/eit/commands/inject.py:46
-msgid "inject into given repository"
-msgstr ""
-
-#: ../../server/eit/commands/deps.py:102
-msgid "package dependencies"
-msgstr "Paket Abhängigkeiten"
-
-#: ../../server/eit/commands/deps.py:117
-msgid "No dependencies"
-msgstr "Keine Abhängigkeiten"
-
-#: ../../server/eit/commands/deps.py:175
-msgid "Dependency type"
-msgstr "Abhängigkeitstyp"
-
-#: ../../server/eit/commands/deps.py:181
-msgid "Select a dependency type for"
-msgstr "Wähle einen Abhängigkeitstyp aus für"
-
-#: ../../server/eit/commands/deps.py:206
-msgid "Dependencies editor"
-msgstr "Abhängigkeits-Editor"
-
-#: ../../server/eit/commands/deps.py:216
-msgid "Confirm ?"
-msgstr "Bestätigen?"
-
-#: ../../server/eit/commands/deps.py:240
-msgid "dependencies updated successfully"
-msgstr "Abhängigkeiten erfolgreich aktualisiert"
-
-#: ../../server/eit/commands/deps.py:251
-msgid "edit dependencies for packages in repository"
-msgstr ""
-
-#: ../../server/eit/commands/cp.py:58
-msgid "package dependency"
-msgstr ""
-
-#: ../../server/eit/commands/cp.py:133
-msgid "source equals destination"
-msgstr ""
-
-#: ../../server/eit/commands/cp.py:162
-msgid "Considering all the packages"
-msgstr ""
-
-#: ../../server/eit/commands/cp.py:186
-msgid "copy packages from a repository to another"
-msgstr "kopiere Pakete von einem Repository in ein anderes"
-
-#: ../../server/eit/commands/revgraph.py:106
-msgid "show reverse dependency graph for packages"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:53
-msgid "create keypair for repository and packages"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:59
-msgid "delete keypair (and signatures) from repository"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:65
-msgid "show keypair status for repository"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:71
-msgid "sign packages in repository using current keypair"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:77
-msgid "import keypair, bind to given repository"
-msgstr "importiere Schlüsselpaar, verbinde es mit ausgewähltem Repositorium"
-
-#: ../../server/eit/commands/key.py:82 ../../server/eit/commands/key.py:103
-msgid "private key path"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:85 ../../server/eit/commands/key.py:94
-msgid "public key path"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:89
-msgid "export the repository public key to file"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:98
-msgid "export the repository private key to file"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:131
-msgid "GPG interface loaded, home directory"
-msgstr "GPG-Schnittstelle geladen, Heimatverzeichnis"
-
-#: ../../server/eit/commands/key.py:156
-msgid "Creating keys for repository"
-msgstr "Erstelle Schlüssel für das Repositorium"
-
-#: ../../server/eit/commands/key.py:160
-msgid "Another key already exists for repository"
-msgstr "Ein weiterer Schlüssel existiert bereits für das Repositorium"
-
-#: ../../server/eit/commands/key.py:184
-msgid "Insert e-mail"
-msgstr "E-Mail einfügen"
-
-#: ../../server/eit/commands/key.py:186
-msgid "Insert expiration days (0=no expiration)"
-msgstr "Füge Ablauftage ein (0=kein Ablauf)"
-
-#: ../../server/eit/commands/key.py:188
-msgid "Insert passphrase (empty=no passphrase)"
-msgstr "Füge Passphrase ein (leer=keine Passphrase)"
-
-#: ../../server/eit/commands/key.py:192
-msgid "Repository GPG keypair creation"
-msgstr "Repositoriums GPG Schlüssel Erstellung"
-
-#: ../../server/eit/commands/key.py:208
-msgid "Produced GPG key with fingerprint"
-msgstr "Produziere GPG Schlüssel mit Fingerabdruck"
-
-#: ../../server/eit/commands/key.py:214
-msgid "Now you should sign all the packages in it"
-msgstr "Jetzt solltest du alle Pakete darin signieren"
-
-#: ../../server/eit/commands/key.py:221
-msgid "Generate a revoke key and store it in a safe place"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:231
-msgid "You may want to send your keys to a key server"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:252
-msgid "Deleting keys for repository"
-msgstr "Lösche Schlüssel des Repositoriums"
-
-#: ../../server/eit/commands/key.py:256
-msgid "No keys available for given repository"
-msgstr "Keine Schlüssel für das angegebene Repositorium verfügbar"
-
-#: ../../server/eit/commands/key.py:263
-msgid "Are you really sure?"
-msgstr "Bist du wirklich sicher?"
-
-#: ../../server/eit/commands/key.py:271 ../../server/eit/commands/key.py:305
-msgid "Keys metadata not available for"
-msgstr "Schlüssel-Metadaten nicht verfügbar für"
-
-#: ../../server/eit/commands/key.py:285
-msgid "Deleted GPG key with fingerprint"
-msgstr "Gelöschter GPG Schlüssel mit Fingerabdruck"
-
-#: ../../server/eit/commands/key.py:313
-msgid "GPG information for repository"
-msgstr "GPG Information für Repositorium"
-
-#: ../../server/eit/commands/key.py:335
-msgid "Public key identifier"
-msgstr "Öffentlicher Schlüssel Identifizierer"
-
-#: ../../server/eit/commands/key.py:336
-msgid "Public key fingerprint"
-msgstr "Fingerabdruck des öffentlichen Schlüssels"
-
-#: ../../server/eit/commands/key.py:337
-msgid "Key size"
-msgstr "Schlüsselgröße"
-
-#: ../../server/eit/commands/key.py:338
-msgid "Creation date"
-msgstr "Erstellungsdatum"
-
-#: ../../server/eit/commands/key.py:339
-msgid "Expires on"
-msgstr "Verfällt am"
-
-#: ../../server/eit/commands/key.py:376
-msgid "Importing keypair"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:382
-msgid "Another keypair already exists"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:395
-msgid "Imported GPG key with fingerprint"
-msgstr "Importierte GPG Schlüssel samt Fingerabdrücken"
-
-#: ../../server/eit/commands/key.py:401
-msgid "Now sign all the packages in it"
-msgstr ""
-
-#: ../../server/eit/commands/key.py:444
-msgid "Exporting private key for repository"
-msgstr "Exportiere privaten Schlüssel des Repositoriums"
-
-#: ../../server/eit/commands/key.py:448
-msgid "Exporting public key for repository"
-msgstr "Exportiere öffentlichen Schlüssel des Repositoriums"
-
-#: ../../server/eit/commands/key.py:453
-msgid "No keypair available for repository"
-msgstr "Kein Schlüsselpaar verfügbar für Repositorium"
-
-#: ../../server/eit/commands/key.py:461
-msgid "Keypair is EXPIRED for repository"
-msgstr "ABGELAUFENES Schlüsselpaar für Repositorium"
-
-#: ../../server/eit/commands/key.py:482
-msgid "Unable to export GPG key for repository"
-msgstr "Export des GPG Schlüsselfs für das Repositorium ist nicht möglich"
-
-#: ../../server/eit/commands/key.py:491
-msgid "Exported GPG key for repository"
-msgstr "Exportiere GPG Schlüssel für das Repositorium"
-
-#: ../../server/eit/commands/key.py:504
-msgid "manage repository GPG keys"
-msgstr ""
-
-#: ../../server/eit/commands/inject.py:44
-msgid "package paths"
-msgstr ""
-
-#: ../../server/eit/commands/inject.py:98
-msgid "no such file or directory"
-msgstr ""
-
-#: ../../server/eit/commands/inject.py:111
-msgid "unsupported extension"
-msgstr ""
-
-#: ../../server/eit/commands/inject.py:117
-msgid "no valid package paths"
-msgstr ""
-
-#: ../../server/eit/commands/inject.py:140
-msgid "inject package files into repository"
-msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
@@ -7285,6 +4946,10 @@ msgstr ""
 msgid "list kernels"
 msgstr "Liste die verfügbaren Kernel auf"
 
+#: ../../services/kernel-switcher:226
+msgid "this help"
+msgstr ""
+
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
 msgstr "Magneto Anwendungs Update Notifier"
@@ -7297,1516 +4962,2581 @@ msgstr "Verfügbare Updates"
 msgid "_Load Package Manager"
 msgstr "_Lade Paketmanager"
 
-msgid "No description"
-msgstr "Keine Beschreibung"
+#~ msgid "verifying upload (if supported)"
+#~ msgstr "verifiziere Upload (wenn unterstützt)"
 
-msgid "entered the repository"
-msgstr "wurde dem Repositorium hinzugefügt"
+#~ msgid "digest verification"
+#~ msgstr "Indexüberprüfung"
 
-msgid "license"
-msgstr "Lizenz"
+#~ msgid "so far, so good!"
+#~ msgstr "so weit, so gut!"
 
-msgid "No category"
-msgstr "Keine Kategorie"
+#~ msgid "malformed md5 provided to function"
+#~ msgstr "missgestaltetes md5 an Funktion übergeben"
 
-msgid "Applications without a group"
-msgstr "Anwendungen ohne Gruppe"
+#~ msgid "remote md5 is invalid"
+#~ msgstr "entferntes md5 ist ungültig"
 
-msgid "Sel"
-msgstr "Sel"
+#~ msgid "successful"
+#~ msgstr "erfolgreich"
 
-msgid "Rating"
-msgstr "Bewertung"
+#~ msgid "failed, retrying"
+#~ msgstr "fehlgeschlagen, versuche erneut"
 
-msgid "These are the packages that would be disabled"
-msgstr "Dies sind die Pakete, welche deaktiviert werden würden"
+#~ msgid "not critical"
+#~ msgstr "nicht kritisch"
 
-msgid "Once confirmed, these packages will be considered masked."
-msgstr "Einmal bestätigt, werden diese Pakete als maskiert betrachtet."
+#~ msgid "continuing"
+#~ msgstr "wird fortgesetzt"
 
-msgid "Package Set has broken dependencies, Sets not found"
-msgstr "Paketset hat defekte Abhängigkeiten, Sets nicht gefunden"
+#~ msgid "connecting to mirror"
+#~ msgstr "verbinde mit Spiegelserver"
 
-msgid "There are incomplete package sets, continue at your own risk"
-msgstr "Es gibt unvollständige Paketsets, fahre auf eigene Gefahr fort"
+#~ msgid "setting directory to"
+#~ msgstr "ändere Verzeichnis in"
 
-msgid "Vote registered successfully"
-msgstr "Stimmabgabe erfolgreich registriert"
+#~ msgid "Entropy Server Mirrors Interface loaded"
+#~ msgstr "Entropy Spiegelserver-Schnittstelle geladen"
 
-msgid "Error registering vote"
-msgstr "Fehler während der Stimmabgabe"
+#~ msgid "repository mirror"
+#~ msgstr "Repositoriums-Spiegelserver"
 
-msgid "Applications"
-msgstr "Anwendungen"
+#~ msgid "packages mirror"
+#~ msgstr "Paket-Spiegelserver"
 
-msgid "Applications to remove"
-msgstr "Anwendungen zum Entfernen"
+#~ msgid "looking for file in mirror"
+#~ msgstr "halte Ausschau nach Datei auf Spiegelserver"
 
-msgid "Applications to downgrade"
-msgstr "Anwendungen zum Downgraden"
+#~ msgid "unlocking"
+#~ msgstr "entsperre"
 
-msgid "Applications to install"
-msgstr "Anwendungen zur Installation"
+#~ msgid "locking"
+#~ msgstr "sperre"
 
-msgid "Applications to update"
-msgstr "Anwendungen zur Aktualisierung"
+#~ msgid "mirror"
+#~ msgstr "Spiegelserver"
 
-msgid "Applications to reinstall"
-msgstr "Anwendungen zur erneuten Installation"
+#~ msgid "mirror for download"
+#~ msgstr "Spiegelserver für Download"
 
-msgid "Proposed"
-msgstr "Vorgeschlagen"
+#~ msgid "mirror already locked for download"
+#~ msgstr "Spiegelserver bereits gesperrt für Download"
 
-msgid "Destination"
-msgstr "Ziel"
+#~ msgid "mirror already unlocked for download"
+#~ msgstr "Spiegel bereits freigegeben für Download"
 
-msgid "Rev."
-msgstr "Version"
+#~ msgid "for download"
+#~ msgstr "für Download"
 
-msgid "Security id."
-msgstr "Sicherheits ID."
+#~ msgid "mirror successfully locked"
+#~ msgstr "Spiegelserver erfolgreich gesperrt"
 
-msgid "Application name"
-msgstr "Anwendungsname"
+#~ msgid "mirror not locked"
+#~ msgstr "Spiegelserver nicht gesperrt"
 
-msgid "Please wait, loading..."
-msgstr "Bitte warten, am laden ..."
+#~ msgid "mirror successfully unlocked"
+#~ msgstr "Spiegelserver erfolgreich freigegeben"
 
-msgid "Advisories are being loaded"
-msgstr "Ratschläge werden geladen"
+#~ msgid "unlock error"
+#~ msgstr "Freigabefehler"
 
-msgid "No advisories"
-msgstr "Keine Empfehlungen"
+#~ msgid "mirror not unlocked"
+#~ msgstr "Spiegelserver nicht freigegeben"
 
-msgid "There are no items to show"
-msgstr "Es gibt keine Einträge zu zeigen"
+#~ msgid "connecting to download package"
+#~ msgstr "verbinde um Paket herunterzuladen"
 
-msgid "Filename"
-msgstr "Dateiname"
+#~ msgid "downloading package"
+#~ msgstr "lade Paket herunter"
 
-msgid "Active"
-msgstr "Aktiv"
+#~ msgid "is not listed in the repository !"
+#~ msgstr "ist nicht im aktuellen Repositorium enthalten!"
 
-msgid "Update"
-msgstr "Aktualisierung"
+#~ msgid "verifying checksum of package"
+#~ msgstr "verifiziere Prüfsumme des Pakets"
 
-msgid "Revision"
-msgstr "Version"
+#~ msgid "downloaded successfully"
+#~ msgstr "erfolgreich heruntergeladen"
 
-msgid "Repository Identifier"
-msgstr "Repositoriums Identifizierer"
+#~ msgid "checksum does not match. re-downloading..."
+#~ msgstr "Prüfsumme stimmt nicht überein. Erneuter Download..."
 
-msgid ""
-"There are packages that can't be installed at the same time, thus are "
-"blocking your request:"
-msgstr ""
-"Es sind Pakete vorhanden, die nicht gleichzeitig installiert werden können "
-"und deshalb deine Anfrage blockieren:"
+#~ msgid "seems broken. Consider to re-package it. Giving up!"
+#~ msgstr ""
+#~ "scheint fehlerhaft zu sein. Ziehe in Erwägung, es neu zu bauen. Ich gebe "
+#~ "auf!"
 
-msgid "These are the needed packages"
-msgstr "Dies sind die benötigten Pakete"
+#~ msgid "mirror hasn't valid repository revision file"
+#~ msgstr "Spiegelserver hat keine gültige Repositoriums-Revisionsdatei"
 
-msgid ""
-"These packages must be removed from the removal queue because they depend on "
-"your last selection. Do you agree?"
-msgstr ""
-"Diese Pakete müssen aus der Warteschlange zum Entfernen gelöscht werden, "
-"weil sie von deiner letzten Auswahl abhängen. "
+#~ msgid "unable to download repository revision"
+#~ msgstr "vermag nicht Repositoriums-Revision herunterzuladen"
 
-msgid "These packages must be excluded"
-msgstr "Diese Pakete müssen ausgenommen werden"
+#~ msgid "mirror doesn't have valid revision file"
+#~ msgstr "Spiegelserver besitzt keine gültige Revisionsdatei"
 
-msgid ""
-"These packages must be removed from the queue because they depend on your "
-"last selection. Do you agree?"
-msgstr ""
-"Diese Pakete müssen aus der Warteschlange gelöscht werden, weil sie von "
-"deiner letzten Auswahl abhängen. "
+#~ msgid "mirror already locked"
+#~ msgstr "Spiegelserver bereits gesperrt"
 
-msgid ""
-"Some dependencies couldn't be found. It can either be because they are "
-"masked or because they aren't in any active repository."
-msgstr ""
-"Einige Abhängigkeiten konnten nicht aufgelöst werden. Das kann passieren "
-"weil sie maskiert oder in keinem Repository verfügbar sind."
+#~ msgid "waiting up to 2 minutes before giving up"
+#~ msgstr "warte noch 2 Minuten bevor ich aufgebe"
 
-msgid "Conflicting packages were pulled in, in the same key and slot"
-msgstr ""
-"Miteinander im Konflikt stehende Dateien wurden hereingeholt, mit demselben "
-"Schlüssel und Slot."
+#~ msgid "mirror unlocked"
+#~ msgstr "Spiegelserver freigegeben"
 
-msgid "Please mask packages that are causing the issue"
-msgstr "Bitte maskiere Pakete, die dieses Problem hervorrufen"
+#~ msgid "Local statistics"
+#~ msgstr "Lokale Statistik"
 
-msgid "Needed disk space"
-msgstr "Benötigter Festplattenspeicher"
+#~ msgid "upload directory"
+#~ msgstr "Upload-Verzeichnis"
 
-msgid "These are the packages that would be installed/updated"
-msgstr "Dies sind die Pakete, die installiert/aktualisiert werden"
+#~ msgid "files ready"
+#~ msgstr "Dateien bereit"
 
-msgid "Cannot remove packages"
-msgstr "Kann Pakete nicht entfernen"
+#~ msgid "packages directory"
+#~ msgstr "Paketverzeichnis"
 
-msgid "Some dependencies couldn't be removed because they are vital."
-msgstr ""
-"Einige Abhängigkeiten konnten nicht entfernt werden, da sie lebensnotwendig "
-"sind."
+#~ msgid "upload"
+#~ msgstr "Upload"
 
-msgid "Freed space"
-msgstr "Freigegebener Speicherplatz"
+#~ msgid "download"
+#~ msgstr "herunterladen"
 
-msgid "Needed space"
-msgstr "Benötigter Speicherplatz"
+#~ msgid "copy"
+#~ msgstr "kopiere"
 
-msgid "Set from"
-msgstr "Setze von"
+#~ msgid "Packages to be removed"
+#~ msgstr "Pakete zum entfernen"
 
-msgid "Unknown"
-msgstr "Unbekannt"
+#~ msgid "Packages to be moved locally"
+#~ msgstr "Pakete die lokal verschoben werden"
 
-msgid "User configuration"
-msgstr "Benutzerspezifische Konfigurationsdatei"
+#~ msgid "Packages to be uploaded"
+#~ msgstr "Pakete zum hochladen"
 
-msgid "Try to update your repositories"
-msgstr "Versuche deine Repositorien zu aktualisieren"
+#~ msgid "Total removal size"
+#~ msgstr "Gesamtgröße entfernbarer Dateien"
 
-msgid "No updates available"
-msgstr "Keine Aktualisierungen verfügbar"
+#~ msgid "Total upload size"
+#~ msgstr "Gesamtgröße des Uploads"
 
-msgid "It seems that your system is already up-to-date. Good!"
-msgstr ""
-"Sieht so aus als wäre dein System bereits am aktuellsten Stand. Gut so!"
+#~ msgid "Total download size"
+#~ msgstr "Gesamtgröße des Downloads"
 
-msgid "The current view is loading."
-msgstr "Die gegenwärtige Ansicht wird geladen."
+#~ msgid "Remote statistics for"
+#~ msgstr "Enfernte Statistiken für"
 
-msgid "Be patient, sit down and relax."
-msgstr "Gedulde dich, setz dich hin und entspanne."
+#~ msgid "remote packages"
+#~ msgstr "entfernte Pakete"
 
-msgid "No packages found means nothing to show!"
-msgstr "Es wurden keine Pakete gefunden, daher kann ich nichts anzeigen!"
+#~ msgid "files stored"
+#~ msgstr "Dateien gespeichert"
 
-msgid "No packages found using the provided search term"
-msgstr "Keine Pakete gefunden, die dem Suchbegriff entsprechen"
+#~ msgid "Calculating queues"
+#~ msgstr "Berechne Warteschlangen"
 
-msgid "No packages to show"
-msgstr "Keine Pakete zum anzeigen"
+#~ msgid "removing package+hash"
+#~ msgstr "entferne Paket+Hash"
 
-msgid "There are no packages that can be shown, sorry."
-msgstr "Es gibt keine Pakete die angezeigt werden können, Entschuldigung"
+#~ msgid "sync"
+#~ msgstr "synchronisieren"
 
-msgid "Programming:"
-msgstr "Programmierung:"
+#~ msgid "removal complete"
+#~ msgstr "Entfernen vollständig"
 
-msgid "Translation:"
-msgstr "Übersetzung:"
+#~ msgid "copying file+hash to repository"
+#~ msgstr "kopiere Datei+Hash ins Repositorium"
 
-msgid "Dedicated to:"
-msgstr "Gewidmet:"
+#~ msgid "upload errors"
+#~ msgstr "Fehler beim Hochladen"
 
-msgid "Recursive Package Set"
-msgstr "Rekursives Paket-Set"
+#~ msgid "reason"
+#~ msgstr "Grund"
 
-msgid "Entropy is running in safe mode"
-msgstr "Entropy läuft im Sicherheitsmodus"
+#~ msgid "upload completed successfully"
+#~ msgstr "Upload erfolgreich abgeschlossen"
 
-msgid "Please fix as soon as possible"
-msgstr "Bitte behebe dies so schnell wie möglich"
+#~ msgid "download errors"
+#~ msgstr "Fehler beim Herunterladen"
 
-msgid "Safe Mode"
-msgstr "Sicherheitsmodus"
+#~ msgid "download completed successfully"
+#~ msgstr "Download erfolgreich abgeschlossen"
 
-msgid "performance could get severely compromised"
-msgstr "die Performance könnte stark beeinträchtigt werden"
+#~ msgid "QA checking package file"
+#~ msgstr "QA überprüft Paketdatei"
 
-msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
-msgstr "1. April, jeeehaaaa! Ich werde deine Festplatte löschen!"
+#~ msgid "faulty package file, please fix"
+#~ msgstr "fehlerhafte Paketdate, bitte verbessern"
 
-msgid "Love love love... <3"
-msgstr "Liebe, Liebe, Liebe ... <3"
+#~ msgid "starting packages sync"
+#~ msgstr "starte Paket-Synchronisierung"
 
-msgid "Oh oh ooooh... Merry Xmas!"
-msgstr "Ho, ho, hoooooh! Frohe Weihnachten!"
+#~ msgid "packages sync"
+#~ msgstr "Paket-Synchronisierung"
 
-msgid "Sync"
-msgstr "Synchronisieren"
+#~ msgid "socket error"
+#~ msgstr "Sockel-Fehler"
 
-msgid "Search"
-msgstr "Suche"
+#~ msgid "on"
+#~ msgstr "an"
 
-msgid "Default packages sorting"
-msgstr "Standard Paketsortierung"
+#~ msgid "nothing to do on"
+#~ msgstr "nichts zu tun an"
 
-msgid "Sort by name [A-Z]"
-msgstr "Sortiere nach Name [A-Z]"
+#~ msgid "Expanding queues"
+#~ msgstr "Erweitere Warteschlangen"
 
-msgid "Sort by name [Z-A]"
-msgstr "Sortiere nach Name [Z-A]"
+#~ msgid "nothing to sync for"
+#~ msgstr "nichts zu synchronisieren"
 
-msgid "Sort by downloads"
-msgstr "Sortiere nach Downloads"
+#~ msgid "Would you like to run the steps above ?"
+#~ msgstr "Möchtest du die oben genannten Schritte durchführen?"
 
-msgid "Sort by votes"
-msgstr "Sortiere nach Stimmen"
+#~ msgid "keyboard interrupt !"
+#~ msgstr "Unterbrechung durch Tastendruck!"
 
-msgid "Sort by repository"
-msgstr "Sortiere nach Repositorien"
+#~ msgid "you must package them again"
+#~ msgstr "du mußt sie neu packen"
 
-msgid "Sort by date (simple)"
-msgstr "Sortiere nach Datum (einfach)"
+#~ msgid "exception caught"
+#~ msgstr "Ausnahmefehler aufgetreten"
 
-msgid "Sort by date (grouped)"
-msgstr "Sortiere nach Datum (gruppiert)"
+#~ msgid "at least one mirror synced properly!"
+#~ msgstr "wenigstens ein Spiegelserver wurde erfolgreich synchronisiert!"
 
-msgid "Sort by license (grouped)"
-msgstr "Sortiere nach Lizenz (gruppiert)"
+#~ msgid "tidy"
+#~ msgstr "sauber"
 
-msgid "Sort by Groups"
-msgstr "Sortiere nach Gruppen"
+#~ msgid "collecting expired packages"
+#~ msgstr "sammle abgelaufene Pakete"
 
-msgid ""
-"The repositories listed below are configured but not available. They should "
-"be downloaded."
-msgstr ""
-"Die unten aufgeführten Repositorien sind zwar konfiguriert, aber nicht "
-"verfügbar. Sie sollten herabgeladen werden."
+#~ msgid "collecting expired packages in the selected branches"
+#~ msgstr "sammle abgelaufene Pakete im ausgewählten Zweig"
 
-msgid "If you don't do this now, you won't be able to use them."
-msgstr ""
-"Wenn du das jetzt nicht machen möchtest, wirst du sie nicht nutzen können."
+#~ msgid "nothing to remove on this branch"
+#~ msgstr "in diesem Zweig gibt es nichts zu entfernen"
 
-msgid "Download now"
-msgstr "Lade jetzt herunter"
+#~ msgid "these are the expired packages"
+#~ msgstr "dies sind die abgelaufenen Pakete"
 
-msgid "Skip"
-msgstr "Überspringe"
+#~ msgid "removing packages remotely"
+#~ msgstr "entferne entfernte Pakete"
 
-msgid "Item"
-msgstr "Element"
+#~ msgid "remove errors"
+#~ msgstr "entferne Fehler"
 
-msgid "Database"
-msgstr "Datenbank"
+#~ msgid "removing packages locally"
+#~ msgstr "entferne Pakete lokal"
 
-msgid "Date"
-msgstr "Datum"
+#~ msgid "removed"
+#~ msgstr "entfernt"
 
-msgid "Not logged in"
-msgstr "Nicht angemeldet"
+#~ msgid "downloading notice board from mirrors to"
+#~ msgstr "lade Schwarzes Brett vom Spiegelserver nach"
 
-msgid "Logged in as"
-msgstr "Eingeloggt als"
+#~ msgid "notice board downloaded successfully from"
+#~ msgstr "Schwarzes Brett erfolgreich herabgeladen von"
 
-msgid "UGC Status"
-msgstr "UGC Status"
+#~ msgid "removing notice board from"
+#~ msgstr "entferne Schwarzes Brett von"
 
-msgid "Error setting parameter"
-msgstr "Fehler beim Setzen des Parameters"
+#~ msgid "notice board removal failed on"
+#~ msgstr "Entfernung des Schwarzen Bretts fehlgeschlagen bei"
 
-msgid "An issue occured while loading a preference"
-msgstr "Ein Problem trat beim Laden einer Voreinstellung auf"
+#~ msgid "notice board removal success"
+#~ msgstr "Entfernung des Schwarzen Bretts erfolgreich"
 
-msgid "Parameter"
-msgstr "Parameter"
+#~ msgid "uploading notice board from"
+#~ msgstr "lade Schwarzes Brett hoch von"
 
-msgid "must be of type"
-msgstr "muss sein vom Typ"
+#~ msgid "notice board upload failed on"
+#~ msgstr "Hochladen des Notizbretts fehlgeschlagen bei"
 
-msgid "got"
-msgstr "wurde"
+#~ msgid "notice board upload success"
+#~ msgstr "Notizbrett erfolgreich hochgeladen"
 
-msgid "An issue occured while saving a preference"
-msgstr "Ein Fehler ist beim Speichern der Einstellungen aufgetreten"
+#~ msgid "Keys for repository are expired"
+#~ msgstr "Schlüssel für das Repositorium ist abgelaufen"
 
-msgid "Error saving preferences"
-msgstr "Fehler beim Speichern der Einstellungen"
+#~ msgid "preparing to download repository from mirror"
+#~ msgstr "bereite Herunterladen des Repositoriums vom Spiegelserver vor"
 
-msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-"Diese Pakete sind maskiert, entweder standardmäßig oder aufgrund deiner "
-"Entscheidung. Sei zumindest vorsichtig."
+#~ msgid "download path"
+#~ msgstr "Download-Pfad"
 
-msgid "Generating metadata. Please wait."
-msgstr "Generiere Metadaten. Bitte warten."
+#~ msgid "errors"
+#~ msgstr "Fehler"
 
-msgid "Error during list population"
-msgstr "Fehler beim Füllen der Liste"
+#~ msgid "failed to download from mirror"
+#~ msgstr "Herunterladen vom Spiegelserver fehlgeschlagen"
 
-msgid "Retrying in 1 second."
-msgstr "neuer Versuch in 1 Sekunde"
+#~ msgid "failed to unpack"
+#~ msgstr "Entpacken gescheitert"
 
-msgid "Error loading advisories"
-msgstr "Fehler beim laden der Empfehlungen"
+#~ msgid "Troubles with treeupdates"
+#~ msgstr "Probleme mit treeupdates"
 
-msgid "Errors updating repositories."
-msgstr "Fehler beim Aktualisieren der Repositories"
+#~ msgid "Bumping old data back"
+#~ msgstr "Weise veraltete Daten zurück"
 
-msgid "Please check logs below for more info"
-msgstr "Bitte überprüfe die Ausgaben weiter unten für mehr Information"
+#~ msgid "configured package sets"
+#~ msgstr "Paketsets konfiguriert"
 
-msgid "Repositories updated successfully"
-msgstr "Repositories erfolgreich aktualisiert"
+#~ msgid "None configured"
+#~ msgstr "Keine konfiguriert"
 
-msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr "sys-apps/entropy sollte so schnell wie möglich aktualisiert werden."
+#~ msgid "creating compressed repository dump + checksum"
+#~ msgstr "erstelle komprimiertes Repositoriums-Abbild + Prüfsumme"
 
-msgid ""
-"Another Entropy instance is locking this task at the moment. Try in a few "
-"minutes."
-msgstr ""
-"Eine andere Entropy-Instanz sperrt die Aufgabe momentan. Versuche es in ein "
-"paar Minuten erneut."
+#~ msgid "repository path"
+#~ msgstr "Repositoriums-Pfad"
 
-msgid "Updating repositories..."
-msgstr "Update Repositorien..."
+#~ msgid "dump light"
+#~ msgstr "Abbild"
 
-msgid "Running tasks"
-msgstr "Ausführen..."
+#~ msgid "dump light checksum"
+#~ msgstr "Abbild-Prüfsumme"
 
-msgid "Testing dependencies..."
-msgstr "Teste Abhängigkeiten..."
+#~ msgid "opener"
+#~ msgstr "Öffner"
 
-msgid "No missing dependencies found."
-msgstr "Keine fehlenden Abhängigkeiten gefunden."
+#~ msgid "compressing repository + checksum"
+#~ msgstr "komprimiere Repositorium + Prüfsumme"
 
-msgid "Missing dependencies found, but none of them are on the repositories."
-msgstr ""
-"Fehlende Abhängigkeiten gefunden aber keine ist in den Repositories vorhanden"
+#~ msgid "compressed repository path"
+#~ msgstr "komprimiere Repositoriums-Pfad"
 
-msgid ""
-"Some missing dependencies have not been matched, others are going to be "
-"added to the queue."
-msgstr ""
-"Einige fehlende Pakete konnten nicht gefunden werden, es werden andere in "
-"der Warteschlange hinzugefügt."
+#~ msgid "repository checksum"
+#~ msgstr "Repositoriums-Prüfsumme"
 
-msgid "All the missing dependencies are going to be added to the queue"
-msgstr "Alle fehlenden Abhängigkeiten werden zur Warteschlange hinzugefügt"
+#~ msgid "compressed checksum"
+#~ msgstr "komprimiere Prüfsumme"
 
-msgid "Testing libraries..."
-msgstr "Teste Bibliotheken..."
+#~ msgid "preparing uncompressed repository for the upload"
+#~ msgstr "bereite unkomprimiertes Repositorium für den Upload vor"
 
-msgid "Libraries test aborted"
-msgstr "Test der Programmbibliotheken abgebrochen"
+#~ msgid "disabled EAPI"
+#~ msgstr "deaktiviertes EAPI"
 
-msgid ""
-"Some broken packages have not been matched, others are going to be added to "
-"the queue."
-msgstr ""
-"Einige fehlerhafte Pakete konnten nicht gefunden werden, es werden andere in "
-"der Warteschlange hinzugefügt."
+#~ msgid "preparing to upload repository to mirror"
+#~ msgstr "bereite den Upload des Repositoriums auf Spiegelserver vor"
 
-msgid "All the broken packages are going to be added to the queue"
-msgstr "Alle fehlerhaften Pakete werden der Warteschlange hinzugefügt"
+#~ msgid "upload failed, locking and continuing"
+#~ msgstr "Hochladen fehlgeschlagen, sperre und fahre fort"
 
-msgid "These packages are no longer available"
-msgstr "Diese Pakete sind nicht länger verfügbar"
+#~ msgid "repository already in sync"
+#~ msgstr "Repositorium ist bereits synchronisiert"
 
-msgid ""
-"These packages should be removed (if you agree) because support has been "
-"dropped. Do you want to remove them?"
-msgstr ""
-"Diese Pakete sollten entfernt werden (wenn du zustimmst), da ihre "
-"Unterstützung fallengelassen wurde. Möchtest du sie entfernen?"
+#~ msgid "repository sync failed"
+#~ msgstr "Repositoriums-Synchronisation fehlgeschlagen"
 
-msgid "These are orphaned vital packages"
-msgstr "Dies sind verwaiste, lebenswichtige Pakete"
+#~ msgid "download issues"
+#~ msgstr "Vorfälle beim Download"
 
-msgid ""
-"You should make sure that they are no longer needed and remove manually."
-msgstr ""
-"Du solltest sicherstellen, das sie nicht weiter verwendet werden und sie "
-"dann manuell entfernen."
+#~ msgid "repository sync forbidden"
+#~ msgstr "Repositoriums-Synchronisation verboten"
 
-msgid "These are packages from unavailable repositories"
-msgstr "Dies sind Pakete von nicht verfügbaren Repositorien"
+#~ msgid "missing package sets"
+#~ msgstr "fehlende Paketsets"
 
-msgid "You are not going to receive updates for the following packages."
-msgstr "Du wirst keine Updates für das folgende Paket erhalten."
+#~ msgid "dependencies test reported errors"
+#~ msgstr "Der Abhängigkeitstest meldete Fehler."
 
-msgid "updates"
-msgstr "aktualisiert"
+#~ msgid "these packages haven't been removed yet"
+#~ msgstr "Diese Pakete wurden noch nicht entfernt."
 
-msgid "Showing"
-msgstr "Zeige"
+#~ msgid "upload issues"
+#~ msgstr "Vorfälle beim Hochladen"
 
-msgid "No packages need or can be queued at the moment."
-msgstr ""
-"Es werden keine Pakete benötigt, oder es können im Moment keine aufgenommen "
-"werden."
+#~ msgid "repository sync completed"
+#~ msgstr "Synchronisation des Repositoriums komplett"
 
-msgid "Name and description"
-msgstr "Name und Beschreibung"
+#~ msgid "mirrors have not been unlocked. Sync them."
+#~ msgstr "Spiegelserver wurden nicht entsperrt. Synchronisiere sie."
 
-msgid "Search string"
-msgstr "Suchstring"
+#~ msgid "cannot store updates RSS cache"
+#~ msgstr "kann RSS-Cache der Aktualisierungen nicht speichern"
 
-msgid "Search type"
-msgstr "Suchtyp"
+#~ msgid "INJECT"
+#~ msgstr "EINSPEISEN"
 
-msgid "Entropy Search"
-msgstr "Entropy Suche"
+#~ msgid "has been injected"
+#~ msgstr "wurde eingespeist"
 
-msgid "Abort action"
-msgstr "Aktion abbrechen"
+#~ msgid "quickpkg manually to update embedded db"
+#~ msgstr ""
+#~ "Du musst quickpkg manuell ausführen um die eingebettete Datenbank zu "
+#~ "aktualisieren"
 
-msgid "Ignore"
-msgstr "Ignoriere"
+#~ msgid "Repository updated anyway"
+#~ msgstr "Repositorium trotzdem geupdatet"
 
-msgid "Tasks completed successfully."
-msgstr "Aufgabe erfolgreich durchgeführt."
+#~ msgid "package has no keyword set, it will be masked !"
+#~ msgstr "Paket hat kein Schlüsselwort gesetzt, es wird maskiert werden!"
 
-msgid "Please make sure to read all the messages in the terminal below."
-msgstr "Bitte stell sicher, daß du alle Mitteilungen im Terminal unten liest."
+#~ msgid "repository not configured"
+#~ msgstr "Repositorium nicht konfiguriert"
 
-msgid "Oh, a fairytale gone bad!"
-msgstr "Oh, ein Märchen hat ein böses Ende genommen!"
+#~ msgid "protected repository id, can't use this, sorry dude..."
+#~ msgstr ""
+#~ "geschützte Repositoriums-ID, kann sie nicht verwenden, sorry Kumpel ..."
 
-msgid ""
-"Something bad happened, have a look at the messages in the terminal below."
-msgstr ""
-"Etwas schlechtes ist passiert, wirf einen Blick auf die Mitteilungen im "
-"Terminal unten."
+#~ msgid "invalid repository revision"
+#~ msgstr "ungültige Repositoriums-Revision"
 
-msgid "Don't feel guilty, it's all my fault!"
-msgstr "Fühl dich nicht schuldig, es ist alles meine Schuld!"
+#~ msgid "defaulting to 0"
+#~ msgstr "setze standardmäßig auf 0"
 
-msgid ""
-"Attention. An error occured while processing the queue.\n"
-"Please have a look at the terminal."
-msgstr ""
-"Achtung. Ein Fehler ist beim Abarbeiten der Warteschlange aufgetreten.\n"
-"Bitte überprüfe die Ausgabe im Terminal"
+#~ msgid "syncing package sets"
+#~ msgstr "synchronisiere Paket Sets"
 
-msgid ""
-"Attention. Something really bad happened.\n"
-"Please have a look at the terminal."
-msgstr ""
-"Achtung. Etwas wirklich schlimmes ist passiert.\n"
-"Bitte wird einen Blick auf dein Terminal."
+#~ msgid "cannot match"
+#~ msgstr "keine Entsprechung"
 
-msgid ""
-"Attention. You have updated Entropy.\n"
-"Sulfur will be reloaded."
-msgstr ""
-"Achtung. Du hast Entropy aktualisiert.\n"
-"Sulfur wird neu geladen."
+#~ msgid "initializing repository"
+#~ msgstr "Initialisiere Repositorium"
 
-msgid "Processing Packages in queue"
-msgstr "Bearbeite Pakete in der Warteschlange"
+#~ msgid "do you really want to initialize this repository ?"
+#~ msgstr "Willst du wirklich dieses Repositorium initialisieren?"
 
-msgid "No packages selected"
-msgstr "Kein Paket ausgewählt"
+#~ msgid "Cannot create store directory"
+#~ msgstr "Nicht möglich Speicherverzeichnis zu erstellen"
 
-msgid "Skipping current mirror."
-msgstr "Überspringe aktuellen Spiegel."
+#~ msgid "Cannot create upload directory"
+#~ msgstr "Nicht möglich Uploadverzeichnis zu erstellen"
 
-msgid ""
-"Did you know that you can comment, vote and add documents to applications "
-"like in a wiki?"
-msgstr ""
-"Wußtest du, daß du kommentieren kannst, abstimmen und auch Dokumente zu "
-"Anwendungen hinzufügen kannst, wie in einem Wiki?"
+#~ msgid "Invalid tag specified"
+#~ msgstr "Kein gültiges Etikett angegeben"
 
-msgid ""
-"Did you know that you can add icons or files to applications by simply "
-"dropping images from your Desktop onto them?"
-msgstr ""
-"Wußtest du, daß du Icons oder Dateien zu Anwendungen hinzufügen kannst, "
-"indem du sie einfach von deinem Desktop auf sie ziehst?"
+#~ msgid "flushing back selected packages from branches"
+#~ msgstr "spiele ausgewählte Pakete aus den Zweigen zurück"
 
-msgid ""
-"Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
-"mode?"
-msgstr ""
-"Wußtest du, daß Sulfur über einen Erweiterten Modus verfügt? Klicke dafür "
-"einfach auf Sulfur->Erweiterter Modus"
+#~ msgid "nothing to do"
+#~ msgstr "Nichts zu tun"
 
-msgid ""
-"Did you know that the guy who wrote this tip was really asleep at the time?"
-msgstr ""
-"Wußtest du, daß der Typ der diesen Tip geschrieben hat, währenddessen kurz "
-"vor dem Einschlafen war?"
+#~ msgid "these are the packages that will be flushed"
+#~ msgstr "Dies sind die Pakete, welche weggespült werden"
 
-msgid ""
-"Did you know that you can backup your installed application repository by "
-"enabling Advanced mode and going to Preferences tab?"
-msgstr ""
-"Wußtest du, daß du ein Backup all deiner installierten "
-"Anwendungsrepositorien machen kannst, indem du den Erweiterten Modus "
-"einschaltest und in den Einstellungen Tab gehst?"
+#~ msgid "checking package hash"
+#~ msgstr "überprüfe Pakethash"
 
-msgid ""
-"Did you know that you can customize interface colors by enabling Advanced "
-"mode and going to Preferences tab?"
-msgstr ""
-"Wußtest du, daß du die Farben deiner Benutzerschnittstelle verändern kannst, "
-"indem du im Erweiterten Modus in den Einstellungs Tab gehst?"
+#~ msgid "hash does not match for"
+#~ msgstr "Hash stimmt nicht überein für"
 
-msgid "No Repository Identifier"
-msgstr "Kein Repositoryname"
+#~ msgid "wrong md5"
+#~ msgstr "falsche md5"
 
-msgid "Duplicated Repository Identifier"
-msgstr "Doppelter Repositoryname"
+#~ msgid "error downloading packages from mirrors"
+#~ msgstr "Fehler beim Herunterladen von Paketen am Spiegelserver"
 
-msgid "No download mirrors"
-msgstr "Keine Download-Spiegel"
+#~ msgid "working on branch"
+#~ msgstr "arbeite auf Zweig"
 
-msgid "Repository URL must be a valid URL"
-msgstr "Repositoriums-URL muß eine gültige URL sein"
+#~ msgid "updating package"
+#~ msgstr "aktualisiere Paket"
 
-msgid "Insert URL"
-msgstr "URL eingeben"
+#~ msgid "package flushed"
+#~ msgstr "Paket gespült"
 
-msgid "Enter a download mirror, HTTP or FTP"
-msgstr "Gib einen Download-Spiegelserver an, HTTP oder FTP"
+#~ msgid "Cannot touch system repository"
+#~ msgstr "Kann Systemrepositorium nicht anfassen"
 
-msgid "Enter a download mirror URL"
-msgstr "Gib die URL eines Download Spiegelservers an"
+#~ msgid "Preparing to move selected packages to"
+#~ msgstr "Vorbereitung zum verschieben von ausgewählten Paketen nach"
 
-msgid "You must enter either a valid URL."
-msgstr "Du musst eine gültige URL eingeben."
+#~ msgid "Preparing to copy selected packages to"
+#~ msgstr "Vorbereitung zum kopieren von ausgewählten Paketen nach"
 
-msgid "Insert Repository"
-msgstr "Repositorium eingeben"
+#~ msgid "Note"
+#~ msgstr "Hinweis"
 
-msgid "Insert Repository identification string"
-msgstr "Repositoriums-Identifikation eingeben"
+#~ msgid ""
+#~ "all old packages with conflicting scope will be removed from destination "
+#~ "repo unless injected"
+#~ msgstr ""
+#~ "alle alten Pakete im Konfliktbereich werden vom Zielrepositorium "
+#~ "entfernt, sofern nicht eingespeist"
 
-msgid "This Repository identification string is malformed"
-msgstr "Diese Repositoriums-Identifikation ist ungültig"
+#~ msgid "new tag"
+#~ msgstr "neues Etikett"
 
-msgid "Wrong entries, errors"
-msgstr "Falsche Einträge, Fehler"
+#~ msgid "reverse dependency"
+#~ msgstr "umgekehrte Abhängigkeiten"
 
-msgid "Repositories Notice Board"
-msgstr "Schwarzes Brett des Repositoriums"
+#~ msgid "dependency"
+#~ msgstr "Abhängigkeiten"
 
-msgid ""
-"Here below you will find a list of important news directly issued by your "
-"applications maintainers.\n"
-"Double click on each item to retrieve detailed info."
-msgstr ""
-"Hier findest du eine Liste mit wichtigen Mitteilungen direkt von den "
-"Betreuern deiner Programme.\n"
-"Doppelklicke auf einen Eintrag, um detaillierte Informationen zu erhalten."
+#~ msgid "switching"
+#~ msgstr "wechseln"
 
-msgid "Notice"
-msgstr "Hinweis"
+#~ msgid "cannot switch, package not found, skipping"
+#~ msgstr "kann nicht wechseln, Paket nicht gefunden, überspringe"
 
-msgid "Expand to browse"
-msgstr "Suche ausdehnen"
+#~ msgid "moving file"
+#~ msgstr "verschiebe Datei"
 
-msgid "Author"
-msgstr "Autor"
+#~ msgid "loading data from source repository"
+#~ msgstr "lade Daten aus Quellrepositorium"
 
-msgid "Package ChangeLog"
-msgstr "Paket Changelog"
+#~ msgid "GPG key was available in"
+#~ msgstr "GPG Schlüssel war verfügbar in"
 
-msgid "License name"
-msgstr "Lizenzname"
+#~ msgid "injecting data to destination repository"
+#~ msgstr "speise Daten in Zielrepositorium ein"
 
-msgid "Mirrors"
-msgstr "Spiegel"
+#~ msgid "removing entry from source repository"
+#~ msgstr "entferne Eintrag aus Quellrepositorium"
 
-msgid "Depends"
-msgstr "hängt ab von"
+#~ msgid "successfully handled atom"
+#~ msgstr "Atom erfolgreich gehandhabt"
 
-msgid "Needed libraries"
-msgstr "benötigte Programmbibliotheken"
+#~ msgid "Injecting entropy metadata into built packages"
+#~ msgstr "Speise Entropy-Metadaten in die erstellten Pakete ein"
 
-msgid "Protected item"
-msgstr "Geschütztes Objekt"
+#~ msgid "JFYI, GPG infrastructure failed to load"
+#~ msgstr "Nur zu deiner Information, das Laden der GPG ist fehlgeschlagen"
 
-msgid "Type"
-msgstr "Typ"
+#~ msgid "injecting entropy metadata"
+#~ msgstr "speise Entropy-Metadaten ein"
 
-msgid "File"
-msgstr "Datei"
+#~ msgid "injection complete"
+#~ msgstr "Einspeisung vollständig"
 
-msgid "Remotely"
-msgstr "Entfernt"
+#~ msgid "removing package"
+#~ msgstr "entferne Paket"
 
-msgid "Removed repository"
-msgstr "Entferntes Repositorium"
+#~ msgid "Integrity verification of the selected packages"
+#~ msgstr "Integritätsprüfung der ausgewählten Pakete"
 
-msgid "Bug"
-msgstr "Fehler"
+#~ msgid "All the packages in repository will be checked."
+#~ msgstr "Alle Pakete im Repositorium werden überprüft."
 
-msgid "Reference"
-msgstr "Referenz"
+#~ msgid "This is the list of the packages that would be checked"
+#~ msgstr "Dies ist die Liste der Pakete, die überprüft würden"
 
-msgid "impact"
-msgstr "Auswirkung"
+#~ msgid "Working on mirror"
+#~ msgstr "Arbeite auf Spiegelserver"
 
-msgid "access"
-msgstr "Zugriff"
+#~ msgid "checking hash"
+#~ msgstr "überprüfe Hash"
 
-msgid "Vulnerables"
-msgstr "Betroffen"
+#~ msgid "digest verification of"
+#~ msgstr "Verzeichnisprüfung von"
 
-msgid "Unaffected"
-msgstr "Nicht betroffen"
+#~ msgid "NOT healthy"
+#~ msgstr "NICHT gesund"
 
-msgid "Id"
-msgstr "ID"
+#~ msgid "This is the list of broken packages"
+#~ msgstr "Dies ist die Liste der gebrochenen Pakete"
 
-msgid "Write your"
-msgstr "Schreibe dein"
+#~ msgid "Statistics"
+#~ msgstr "Statistiken"
 
-msgid "Select your"
-msgstr "Wähle dein"
+#~ msgid "Number of checked packages"
+#~ msgstr "Zahl der überprüften Pakete"
 
-msgid "Submit issue"
-msgstr "Übermittle Problem"
+#~ msgid "Number of healthy packages"
+#~ msgstr "Zahl der gesunden Pakete"
 
-msgid "Empty Document"
-msgstr "Leeres Dokument"
+#~ msgid "Number of broken packages"
+#~ msgstr "Zahl der fehlerhaften Pakete"
 
-msgid "Invalid Description"
-msgstr "Ungültige Beschreibung"
+#~ msgid "checking status of"
+#~ msgstr "überprüfe Status von"
 
-msgid "Invalid Document Type"
-msgstr "Ungültiger Dokumenttyp"
+#~ msgid "is corrupted, stored checksum"
+#~ msgstr "ist beschädigt, Prüfsumme gespeichert"
 
-msgid "Do you confirm your submission?"
-msgstr "Bestätigst du deine Übermittlung?"
+#~ msgid "checked packages"
+#~ msgstr "geprüfte Pakete"
 
-msgid "Document added successfully. Thank you"
-msgstr "Dokument erfolgreich hinzugefügt. Vielen Dank"
+#~ msgid "healthy packages"
+#~ msgstr "gesunde Pakete"
 
-msgid "Success!"
-msgstr "Erfolgreich!"
+#~ msgid "broken packages"
+#~ msgstr "fehlerhafte Pakete"
 
-msgid "UGC Error"
-msgstr "UGC Fehler"
+#~ msgid "downloaded packages"
+#~ msgstr "heruntergeladene Pakete"
 
-msgid "Write your document"
-msgstr "Schreibe dein Dokument"
+#~ msgid "failed downloads"
+#~ msgstr "fehlgeschlagene Downloads"
 
-msgid "Select your file"
-msgstr "Wähle deine Datei aus"
+#~ msgid "GPG signing packages for repository"
+#~ msgstr "signiere Pakete für Repositorium mit GPG"
 
-msgid "On repository"
-msgstr "Im Repositorium"
+#~ msgid "All the missing packages in repository will be downloaded."
+#~ msgstr "Alle im Repositorium fehlenden Pakete werden heruntergeladen."
 
-msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Dies sind die Pakete, welche aktiviert werden müssen um deiner Anfrage zu "
-"entsprechen"
+#~ msgid "GnuPG not available"
+#~ msgstr "GnuPG nicht verfügbar"
 
-msgid "Some packages are masked"
-msgstr "Einige Pakete sind maskiert"
+#~ msgid "Keys not available for"
+#~ msgstr "Schlüssel nicht verfügbar für"
 
-msgid "Masked package"
-msgstr "Maskiertes Paket"
+#~ msgid "signing package"
+#~ msgstr "signiere Paket"
 
-msgid "Enabled"
-msgstr "Aktiviert"
+#~ msgid "Unknown error signing package"
+#~ msgstr "Unbekannter Fehler beim Signieren des Pakets"
 
-msgid "Please confirm the actions above"
-msgstr "Bitte bestätige die oben angeführten Aktionen"
+#~ msgid "signed packages"
+#~ msgstr "signierte Pakete"
 
-msgid "To be downgraded"
-msgstr "Wird zurückgestuft"
+#~ msgid "available"
+#~ msgstr "verfügbar"
 
-msgid "To be removed"
-msgstr "Wird entfernt"
+#~ msgid "upload/ignored"
+#~ msgstr "hochladen/ignoriert"
 
-msgid "To be reinstalled"
-msgstr "Wird neu installiert"
+#~ msgid "Starting to download missing files"
+#~ msgstr "Starte Herunterladen fehlender Dateien"
 
-msgid "To be installed"
-msgstr "Wird installiert"
+#~ msgid "Searching missing/broken files on another mirror"
+#~ msgstr "Suche fehlende/fehlerhafte Dateien auf anderem Spiegelserver"
 
-msgid "To be updated"
-msgstr "Wird aktualisiert"
+#~ msgid "Binary packages downloaded successfully."
+#~ msgstr "Binärpakete erfolgreich heruntergeladen."
 
-msgid "About"
-msgstr "Über"
+#~ msgid "These are the packages that cannot be found online"
+#~ msgstr "Dies sind die Pakete, die online nicht gefunden werden können."
 
-msgid "Sulfur file chooser"
-msgstr "Sulfur Dateiauswahl"
+#~ msgid "They won't be checked"
+#~ msgstr "Sie werden nicht geprüft werden"
 
-msgid "Sulfur Question"
-msgstr "Sulfur Frage"
+#~ msgid "Please setup your branch to"
+#~ msgstr "Bitte stelle deinen Zweig ein auf"
 
-msgid "Hey!"
-msgstr "Hey!"
+#~ msgid "and retry"
+#~ msgstr "und versuche erneut"
 
-msgid "Please fill the following form"
-msgstr "Bitte fülle folgendes Formular aus"
+#~ msgid "Copying repository (if not exists)"
+#~ msgstr "Kopiere Repositorium (falls nicht existent)"
 
-msgid "Add atom"
-msgstr "Füge atom hinzu"
+#~ msgid "Switching packages"
+#~ msgstr "Wechsle Pakete"
 
-msgid "Atom"
-msgstr "Atom"
+#~ msgid "Ignoring"
+#~ msgstr "Ignoriere"
 
-msgid "Invalid entry"
-msgstr "Ungültiger Eintrag"
+#~ msgid "already in branch"
+#~ msgstr "bereits im Zweig"
 
-msgid "Cancel"
-msgstr "Abbruch"
+#~ msgid "migration loop completed"
+#~ msgstr "Migrationsschleife vollständig"
 
-msgid "Accepted"
-msgstr "Akzeptiert"
+#~ msgid "Running orphaned SPM packages test"
+#~ msgstr "Test auf verwaiste SPM Pakete läuft"
 
-msgid "license text"
-msgstr "Lizenztext"
+#~ msgid "Scanning package"
+#~ msgstr "Durchsuche Pakete"
 
-msgid "Exception caught"
-msgstr "Ausnahmefehler aufgetreten"
+#~ msgid "not found anymore"
+#~ msgstr "nicht mehr gefunden"
 
-msgid "Sulfur crashed! An unexpected error occured."
-msgstr "Sulfur ist zusammengebrochen! An unerwarteter Fehler ist aufgetreten."
+#~ msgid "Packages string"
+#~ msgstr "Paketstring"
 
-msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr "Dein Bericht wurde erfolgreich übertragen! Vielen Dank."
+#~ msgid "Checking"
+#~ msgstr "Prüfe"
 
-msgid "Cannot submit your report. Not connected to Internet?"
-msgstr ""
-"Kann deinen Bericht nicht übertragen. Bist du nicht mit dem Internet "
-"verbunden?"
+#~ msgid "Running dependencies test"
+#~ msgstr "Abhängigkeitstest läuft"
 
-msgid "Error during backup"
-msgstr "Fehler während des Backups"
+#~ msgid "by repo"
+#~ msgstr "von Repositorium"
 
-msgid "Backup complete"
-msgstr "Backup beendet"
+#~ msgid "Every dependency is satisfied. It's all fine."
+#~ msgstr "Alle Abhängigkeiten sind erfüllt. Alles ist gut."
 
-msgid "Error during restore"
-msgstr "Fehler beim Wiederherstellen"
+#~ msgid "Broken and matched packages list"
+#~ msgstr "Fehlerhafte und passende Pakete aufgelistet"
 
-msgid "Restore complete"
-msgstr "Wiederherstellung beendet"
+#~ msgid "Matching libraries with Spm, please wait"
+#~ msgstr "Vergleiche Bibliotheken mit SPM, bitte warten"
 
-msgid "Error during removal"
-msgstr "Fehler während des Entfernens"
+#~ msgid "These are the matched packages"
+#~ msgstr "Dies sind die passenden Pakete"
 
-msgid "The chosen package is not vulnerable"
-msgstr "Das ausgewählte Paket ist nicht gefährdet"
+#~ msgid "No matched packages"
+#~ msgstr "Keine passenden Pakete"
 
-msgid "Packages in Advisory have been queued."
-msgstr "Pakete in der Empfehlung wurden zur Warteschlange hinzugefügt."
+#~ msgid "Your default repository is not initialized"
+#~ msgstr "Dein Standard-Repositorium ist nicht initialisiert"
 
-msgid "Packages in all Advisories have been queued."
-msgstr "Pakete aller Empfehlungen wurden zur Warteschlange hinzugefügt."
+#~ msgid "Do you want to initialize your default repository ?"
+#~ msgstr "Willst du dein Standard-Repositorium initialisieren ?"
 
-msgid "Are you sure ?"
-msgstr "Bist du sicher ?"
+#~ msgid "Continuing with an uninitialized repository"
+#~ msgstr "Fahre mit einem uninitialisiertem Repositorium fort"
 
-msgid "Error saving parameter"
-msgstr "Fehler beim Speichern des Parameters"
+#~ msgid "Entropy repository is already locked by you :-)"
+#~ msgstr "Entropy-Repositorium wurde bereits von dir gesperrt :-)"
 
-msgid "not saved"
-msgstr "nicht gespeichert"
+#~ msgid "Locking and Syncing Entropy repository"
+#~ msgstr "Sperre und synchronisiere Entropy-Repositorium"
 
-msgid "New"
-msgstr "Neu"
+#~ msgid "Mirrors status table"
+#~ msgstr "Spiegelserver Statustabelle"
 
-msgid "Please insert a new path"
-msgstr "Bitte gib einen neuen Pfad ein"
+#~ msgid "Unlocked"
+#~ msgstr "Freigegeben"
 
-msgid "Please edit the selected path"
-msgstr "Bitte bearbeite den ausgewählten Pfad"
+#~ msgid "Locked"
+#~ msgstr "Gesperrt"
 
-msgid "You have chosen to install this package"
-msgstr "Du hast dich entschieden, dieses Paket zu installieren"
+#~ msgid "cannot lock mirror"
+#~ msgstr "kann Spiegelserver nicht sperren"
 
-msgid "Please select at least one repository"
-msgstr "Bitte wähle zumindest ein Repository aus"
+#~ msgid "Repository is corrupted!"
+#~ msgstr "Repositorium ist fehlerhaft!"
 
-msgid "No packages in queue"
-msgstr "Keine Pakete in der Warteschlange"
+#~ msgid "indexing repository"
+#~ msgstr "indiziere Repositorium"
 
-msgid "Queue is too old. Cannot load."
-msgstr "Warteschlange ist zu alt. Kann ich nicht laden."
+#~ msgid "Initializing an empty repository"
+#~ msgstr "Initialisiere ein leeres Repositorium"
 
-msgid "Update your system now ?"
-msgstr "Dein System jetzt aktualisieren?"
+#~ msgid "Entropy repository file"
+#~ msgstr "Entropy Repositoriums-Datei"
 
-msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
-msgstr ""
-"Du hast ausgewählt die Verarbeitung zu unterbrechen. Bist du sicher, dass du "
-"das möchtest?"
+#~ msgid "successfully initialized"
+#~ msgstr "erfolgreich initialisiert"
 
-msgid "UGC credentials cleared"
-msgstr "UGC Zugriffskennungen geleert"
+#~ msgid "adding package"
+#~ msgstr "füge Paket hinzu"
 
-msgid "Choose what Package Set you want to add"
-msgstr "Wähle welche Paketsets du hinzufügen möchgtest"
+#~ msgid "added package"
+#~ msgstr "Paket hinzugefügt"
 
-msgid "Choose what Package Set you want to edit"
-msgstr "Wähle welche Paketsets du bearbeiten möchtest"
+#~ msgid "rev"
+#~ msgstr "rev"
 
-msgid "Package Set name"
-msgstr "Paketset Name"
+#~ msgid "manual dependencies for"
+#~ msgstr "manuelle Abhängigkeiten für"
 
-msgid "Package atoms"
-msgstr "Paket atoms"
+#~ msgid "these are the missing dependencies"
+#~ msgstr "Dies sind die nicht fehlenden Abhängigkeiten"
 
-msgid "No package sets available for removal."
-msgstr "Keine Paketsets zum Entfernen verfügbar."
+#~ msgid "no missing dependencies !"
+#~ msgstr "Keine fehlenden Abhängigkeiten!"
 
-msgid "Removable Package Set"
-msgstr "Entfernbares Paketset"
+#~ msgid "Do you agree?"
+#~ msgstr "Bist du einverstanden?"
 
-msgid "Choose what Package Set you want to remove"
-msgstr "Wähle das Paket-Set, dass du entfernen möchtest"
+#~ msgid "Repeat"
+#~ msgstr "Wiederhole"
 
-msgid "Error enabling masked package"
-msgstr "Fehler beim Aktivieren des maskierten Paketes"
+#~ msgid "not owned by uid and gid = 0"
+#~ msgstr "Nicht durch uid und gid = 0 besessen"
 
-msgid "dependencies not found"
-msgstr "Abhängigkeiten wurden nicht gefunden"
+#~ msgid "metadata QA check for"
+#~ msgstr "Metadaten QA Überprüfung von"
 
-msgid "Downloading sources"
-msgstr "Lade Quellen herunter"
+#~ msgid "Exception caught, closing tasks"
+#~ msgstr "Ausnahmefehler aufgetreten, schließe Aufgaben"
 
-msgid "Removing package"
-msgstr "Lösche Paket"
+#~ msgid "server-side repository"
+#~ msgstr "serverseitiges Repositorium"
 
-msgid "Add/Edit Repository"
-msgstr "Repository hinzufügen/bearbeiten"
+#~ msgid "community repository"
+#~ msgstr "Gemeinschafts-Repositorium"
 
-msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-"Hinzufügen eines <b>neuen Repositories</b> lässt dich auf <b>zusätzliche "
-"Software</b> zugreifen"
+#~ msgid "Entropy Server Interface Instance on repository"
+#~ msgstr "Entropy Server Schnittstellen-Instanz auf Repositorium"
 
-msgid "Compression"
-msgstr "Komprimierung"
+#~ msgid "current branch"
+#~ msgstr "aktueller Zweig"
 
-msgid "Identifier"
-msgstr "Bezeichner"
+#~ msgid "type"
+#~ msgstr "Typ"
 
-msgid "URI"
-msgstr "URI"
+#~ msgid "Currently configured repositories"
+#~ msgstr "Gegenwärtig konfigurierte Repositorien"
 
-msgid "Repository information"
-msgstr "Repositoriums-Informationen"
+#~ msgid "GPG key expired"
+#~ msgstr "GPG Schlüssel abgelaufen"
 
-msgid "_Insert String"
-msgstr "_String eingeben"
+#~ msgid "please frigging fix"
+#~ msgstr "bitte dringend korrigieren"
 
-msgid "Advisory information"
-msgstr "Information zur Sicherheitswarnung"
+#~ msgid "GPG got unexpected error"
+#~ msgstr "GPG erhielt unerwarteten Fehler"
 
-msgid "button"
-msgstr "Taste"
+#~ msgid "skipping"
+#~ msgstr "überspringe"
 
-msgid "_Overview"
-msgstr "Ü_bersicht"
+#~ msgid "config files"
+#~ msgstr "Konfigurationsdateien"
 
-msgid "Affected packages"
-msgstr "Betroffene Pakete"
+#~ msgid "checking system"
+#~ msgstr "überprüfe System"
 
-msgid "Bugs"
-msgstr "Fehler"
+#~ msgid "there are configuration files not updated yet"
+#~ msgstr ""
+#~ "es existieren noch Konfigurationsdateien, die aktualisiert werden müssen"
 
-msgid "_Details"
-msgstr "_Details"
+#~ msgid "found available dep_rewrites for this package"
+#~ msgstr "fand verfügbare dep_rewrites für das Paket"
 
-msgid "_More"
-msgstr "_Mehr"
+#~ msgid "added"
+#~ msgstr "hinzugefügt"
 
-msgid "Please Confirm"
-msgstr "Bitte Bestätigen"
+#~ msgid "replaced"
+#~ msgstr "ersetzt"
 
-msgid "S_end Error Report"
-msgstr "_Sende Fehlerbericht"
+#~ msgid "No dependency rewrite made for"
+#~ msgstr "Keine Abhängigkeits-Neuschreibung erstellt für"
 
-msgid ""
-"Please submit this error to us providing as much information as possible."
-msgstr "Bitte sende diesen Fehler an und, mit soviel Information wie möglich."
+#~ msgid "sets"
+#~ msgstr "Sets"
 
-msgid "What you were doing"
-msgstr "Womit warst du beschäftigt"
+#~ msgid "updating package sets"
+#~ msgstr "aktualisiere Paketsets"
 
-msgid "Your E-mail"
-msgstr "Deine E-mail"
+#~ msgid "adding package set"
+#~ msgstr "füge Paketset hinzu"
 
-msgid "Your Full Name"
-msgstr "Dein voller Name"
+#~ msgid "removing package set"
+#~ msgstr "entferne Paketset"
 
-msgid ""
-"You <b>need to accept</b> the licenses below.\n"
-"Please read them carefully and <b>make your choice</b>."
-msgstr ""
-"Es ist <b>notwendig</b> daß du die untenstehenden Lizenzbedingungen "
-"<b>akzeptierst</b>."
+#~ msgid "not available"
+#~ msgstr "Nicht verfügbar"
 
-msgid "_Read License"
-msgstr "_Lizenz lesen"
+#~ msgid "move packages from a repository to another"
+#~ msgstr "verschiebe Pakete von einem Repository in ein anderes"
 
-msgid "_Accept License"
-msgstr "_Akteptiere Lizenz"
+#~ msgid "do not include reverse dependencies"
+#~ msgstr "füge keine rückwärtigen Abhängigkeiten hinzu"
 
-msgid "Sulfur"
-msgstr "Sulfur"
+#~ msgid "Nothing found"
+#~ msgstr "Nichts gefunden"
 
-msgid "_Sulfur"
-msgstr "_Sulfur"
+#~ msgid "Configuration file"
+#~ msgstr "Konfigurationsdatei"
 
-msgid "Install from binary package..."
-msgstr "Installiere aus binärem Paket..."
+#, fuzzy
+#~ msgid "pull all the repositories"
+#~ msgstr "_Aktualisiere Repositorien"
 
-msgid "Install a stand-alone package file"
-msgstr "Installiere ein einzelnes Paket"
+#~ msgid "Aborting !"
+#~ msgstr "Breche ab!"
 
-msgid "Switch Sulfur to Advanced Mode"
-msgstr "Wechsle in Sulfurs erweiterten Modus"
+#, fuzzy
+#~ msgid "pull repository packages and metadata"
+#~ msgstr "Sammle Quell-Paketmanager Metadaten"
 
-msgid "Advanced Mode"
-msgstr "Erweiterter Modus"
+#~ msgid "Entropy repository has been initialized"
+#~ msgstr "Entropy Repositorium wurde initialisiert"
 
-msgid "S_ervices"
-msgstr "D_ienste"
+#~ msgid "Commit message"
+#~ msgstr "Übergebe Nachricht"
 
-msgid "R_epositories Notice Board"
-msgstr "Schwarzes Brett des R_epositoriums"
+#~ msgid "Host"
+#~ msgstr "Wirt"
 
-msgid "_Help"
-msgstr "_Hilfe"
+#, fuzzy
+#~ msgid "invalid line (empty)"
+#~ msgstr "Ungültiges Element."
 
-msgid "Tips 'n tricks"
-msgstr "Tips & Tricks"
+#, fuzzy
+#~ msgid "invalid line (incomplete)"
+#~ msgstr "Installation vollständig"
 
-msgid "Show Sulfur tips and tricks"
-msgstr "Zeige Sulfur Tips und Tricks"
+#, fuzzy
+#~ msgid "invalid line"
+#~ msgstr "Ungültiger Titel"
 
-msgid "Download updated repositories containing new applications"
-msgstr "Lade upgedatete Repositorien herunter die neue Anwendungen beinhalten"
+#, fuzzy
+#~ msgid "Abort"
+#~ msgstr "_Abbruch"
 
-msgid "Refresh"
-msgstr "Aktualisiere"
+#, fuzzy
+#~ msgid "edit automatic package moves for repository"
+#~ msgstr "signiere Pakete für Repositorium mit GPG"
 
-msgid "Show updates"
-msgstr "Zeiges Updates"
+#~ msgid "Choose the one you want to remove"
+#~ msgstr "Wähle jenes das du entfernen möchtest"
 
-msgid "Updates"
-msgstr "Aktualisierungen"
+#~ msgid "Are you sure you want to remove this?"
+#~ msgstr "Bist du dir sicher, dass du es entfernen möchtest?"
 
-msgid "Show available applications"
-msgstr "Zeige verfügbare Anwendungen"
+#~ msgid "Exit/Commit"
+#~ msgstr "Exit/Commit"
 
-msgid "Show installed applications"
-msgstr "Zeige installierte Anwendungen"
+#~ msgid "Cannot match"
+#~ msgstr "Keine Entsprechung"
 
-msgid "Show masked applications"
-msgstr "Zeige maskierte Anwendungen"
+#~ msgid "No valid packages to repackage."
+#~ msgstr "Keine gültigen Pakete zum Neuverpacken."
 
-msgid "Show any existing application"
-msgstr "Zeige jede verfügbare Anwendung"
+#~ msgid "expired"
+#~ msgstr "abgelaufen"
 
-msgid "All"
-msgstr "Alles"
+#~ msgid "Remove this package?"
+#~ msgstr "Entferne dieses Paket?"
 
-msgid "Show package sets (groups)"
-msgstr "Zeige Paketsets (Gruppen)"
+#~ msgid "Add this package?"
+#~ msgstr "Dieses Paket hinzufügen?"
 
-msgid "Sets"
-msgstr "Sets"
+#~ msgid "warning"
+#~ msgstr "Warnung"
 
-msgid "Click to start searching"
-msgstr "Anklicken um Suche zu starten"
+#~ msgid "Would you like to package them now ?"
+#~ msgstr "Willst du sie jetzt verpacken ?"
 
-msgid "Show install queue"
-msgstr "Zeige Installations-Warteschlange"
+#~ msgid "inside"
+#~ msgstr "innen"
 
-msgid ""
-"Filter currently shown items, or paste entropy:// action strings (for eg. "
-"entropy://amarok, to install Amarok!)"
-msgstr ""
-"Filtere gegenwärtig angezeigte Begriffe, oder füge entropy:// Handlung "
-"String (zum Beispiel entropy://amarok, um Amarok zu installieren!) ein"
+#~ msgid "Compressing packages"
+#~ msgstr "Komprimiere Pakete"
 
-msgid "_Update all"
-msgstr "_Update alle"
+#~ msgid "Ignoring broken Spm entry, please recompile it"
+#~ msgstr "Ignoriere fehlerhaften Spm-Eintrag, bitte neu kompilieren"
 
-msgid "_Remove All"
-msgstr "Alle _entfernen"
+#~ msgid "Nothing to do, check later."
+#~ msgstr "Nichts zu tun, schau später nochmal vorbei."
 
-msgid "Cl_ean"
-msgstr "Au_fräumen"
+#~ msgid "Entries handled"
+#~ msgstr "Einträge verarbeitet"
 
-msgid "Download only"
-msgstr "nur Download"
+#~ msgid "local revision"
+#~ msgstr "lokale Revision"
 
-msgid "If selected, packages will be downloaded only"
-msgstr "Falls ausgewählt, werden Pakete nur heruntergeladen"
+#~ msgid "stored packages"
+#~ msgstr "gespeicherte Pakete"
 
-msgid "Download source code"
-msgstr "Lade Quellcode herunter"
+#~ msgid "upload packages"
+#~ msgstr "hochgeladene Pakete"
 
-msgid "_Commit Actions"
-msgstr "_Übergebe Aktionen"
+#~ msgid "package dependencies"
+#~ msgstr "Paket Abhängigkeiten"
 
-msgid "_Add Set"
-msgstr "_Füge Set hinzu"
+#~ msgid "No dependencies"
+#~ msgstr "Keine Abhängigkeiten"
 
-msgid "_Remove Set"
-msgstr "Sat_z entfernen"
+#~ msgid "Dependency type"
+#~ msgstr "Abhängigkeitstyp"
 
-msgid "_Edit Set"
-msgstr "_Bearbeite Set"
+#~ msgid "Select a dependency type for"
+#~ msgstr "Wähle einen Abhängigkeitstyp aus für"
 
-msgid "Browse applications"
-msgstr "Betrachte Anwendungen"
+#~ msgid "Dependencies editor"
+#~ msgstr "Abhängigkeits-Editor"
 
-msgid "Show unapplied"
-msgstr "Zeige nicht angewandte"
+#~ msgid "Confirm ?"
+#~ msgstr "Bestätigen?"
 
-msgid "Show applied"
-msgstr "Zeige angewandte"
+#~ msgid "dependencies updated successfully"
+#~ msgstr "Abhängigkeiten erfolgreich aktualisiert"
 
-msgid "Show all"
-msgstr "Zeige alle"
+#~ msgid "copy packages from a repository to another"
+#~ msgstr "kopiere Pakete von einem Repository in ein anderes"
 
-msgid "Q_ueue packages in selected Advisory"
-msgstr "_Pakete aus der gewählten Sicherheitswarnung hinzufügen"
+#~ msgid "import keypair, bind to given repository"
+#~ msgstr "importiere Schlüsselpaar, verbinde es mit ausgewähltem Repositorium"
 
-msgid "_Queue all vulnerable packages"
-msgstr "_Alle sicherheitskritischen Pakete hinzufügen"
+#~ msgid "GPG interface loaded, home directory"
+#~ msgstr "GPG-Schnittstelle geladen, Heimatverzeichnis"
 
-msgid "Security advisories, make sure your 'puter is really secure"
-msgstr ""
-"Sicherheitshinweis, stelle sicher, daß dein Computer auch wirklich sicher ist"
+#~ msgid "Creating keys for repository"
+#~ msgstr "Erstelle Schlüssel für das Repositorium"
 
-msgid "_Force repositories update"
-msgstr "Er_zwinge Repositoriums-Aktualisierung"
+#~ msgid "Another key already exists for repository"
+#~ msgstr "Ein weiterer Schlüssel existiert bereits für das Repositorium"
 
-msgid "Repositories options"
-msgstr "Repositories Optionen"
+#~ msgid "Insert e-mail"
+#~ msgstr "E-Mail einfügen"
 
-msgid "R_egenerate Cache"
-msgstr "_Cache regenerieren"
+#~ msgid "Insert expiration days (0=no expiration)"
+#~ msgstr "Füge Ablauftage ein (0=kein Ablauf)"
 
-msgid "Update, enable, disable application repositories"
-msgstr "Aktualisiere, ermögliche, verbiete Anwendungsrepositorien"
+#~ msgid "Insert passphrase (empty=no passphrase)"
+#~ msgstr "Füge Passphrase ein (leer=keine Passphrase)"
 
-msgid "Repositories"
-msgstr "Repositorien"
+#~ msgid "Repository GPG keypair creation"
+#~ msgstr "Repositoriums GPG Schlüssel Erstellung"
 
-msgid "C_hanges"
-msgstr "Ä_nderungen"
+#~ msgid "Produced GPG key with fingerprint"
+#~ msgstr "Produziere GPG Schlüssel mit Fingerabdruck"
 
-msgid "M_erge"
-msgstr "_Mergen"
+#~ msgid "Now you should sign all the packages in it"
+#~ msgstr "Jetzt solltest du alle Pakete darin signieren"
 
-msgid "Dele_te all"
-msgstr "Alle lö_schen"
+#~ msgid "Deleting keys for repository"
+#~ msgstr "Lösche Schlüssel des Repositoriums"
 
-msgid "Merge all"
-msgstr "Alle M_ergen"
+#~ msgid "No keys available for given repository"
+#~ msgstr "Keine Schlüssel für das angegebene Repositorium verfügbar"
 
-msgid ""
-"Applications can alter your system configuration, merge requested changes "
-"manually"
-msgstr ""
-"Anwendungen könnten deine Systemkonfiguration verändern, die "
-"gewünschtenÄnderungen müssen von Hand zusammengeführt werden"
+#~ msgid "Are you really sure?"
+#~ msgstr "Bist du wirklich sicher?"
 
-msgid "System files"
-msgstr "Systemdateien"
+#~ msgid "Keys metadata not available for"
+#~ msgstr "Schlüssel-Metadaten nicht verfügbar für"
 
-msgid "Prevents files belonging to a package being overwritten by another"
-msgstr ""
-"Verhindert, dass Dateien eines Paketes von einem anderen überschrieben werden"
+#~ msgid "Deleted GPG key with fingerprint"
+#~ msgstr "Gelöschter GPG Schlüssel mit Fingerabdruck"
 
-msgid ""
-"Disabled\n"
-"Removal only\n"
-"Install+Removal"
-msgstr ""
-"Deaktiviert\n"
-"nur löschen\n"
-"installieren+löschen"
+#~ msgid "GPG information for repository"
+#~ msgstr "GPG Information für Repositorium"
 
-msgid "Collision protection"
-msgstr "Kollisionserkennung"
+#~ msgid "Public key identifier"
+#~ msgstr "Öffentlicher Schlüssel Identifizierer"
 
-msgid "This is what they call \"nice level\""
-msgstr "Das ist, was man \"nice level\" nennt"
+#~ msgid "Public key fingerprint"
+#~ msgstr "Fingerabdruck des öffentlichen Schlüssels"
 
-msgid "Process priority (nice)"
-msgstr "Prozess-Priorität (nice)"
+#~ msgid "Key size"
+#~ msgstr "Schlüsselgröße"
 
-msgid "Backup configuration files"
-msgstr "Konfigurationsdateien sichern"
+#~ msgid "Creation date"
+#~ msgstr "Erstellungsdatum"
 
-msgid "Entropy can keep a backup of your updated configuration files"
-msgstr ""
-"Entropy kann eine Sicherung deiner aktualisierten Konfigurationsdateien "
-"erstellen"
+#~ msgid "Expires on"
+#~ msgstr "Verfällt am"
 
-msgid "Dependencies algorithm"
-msgstr "Abhängigkeits-Algorithmus"
+#~ msgid "Imported GPG key with fingerprint"
+#~ msgstr "Importierte GPG Schlüssel samt Fingerabdrücken"
 
-msgid ""
-"Reliable\n"
-"Relaxed"
-msgstr ""
-"Verbindlich\n"
-"Zwanlogs"
+#~ msgid "Exporting private key for repository"
+#~ msgstr "Exportiere privaten Schlüssel des Repositoriums"
 
-msgid "Ignored protected files"
-msgstr "Ingnorierte geschützte Dateien"
+#~ msgid "Exporting public key for repository"
+#~ msgstr "Exportiere öffentlichen Schlüssel des Repositoriums"
 
-msgid "Protected files and directories mask"
-msgstr "Maske für geschützte Dateien und Verzeichnisse"
+#~ msgid "No keypair available for repository"
+#~ msgstr "Kein Schlüsselpaar verfügbar für Repositorium"
 
-msgid "Protected files and directories"
-msgstr "Geschützte Dateien und Verzeichnisse"
+#~ msgid "Keypair is EXPIRED for repository"
+#~ msgstr "ABGELAUFENES Schlüsselpaar für Repositorium"
 
-msgid "type your password here"
-msgstr "gib dein Kennwort hier ein"
+#~ msgid "Unable to export GPG key for repository"
+#~ msgstr "Export des GPG Schlüsselfs für das Repositorium ist nicht möglich"
 
-msgid "type your username here"
-msgstr "gib deinen Benutzernamen hier ein"
+#~ msgid "Exported GPG key for repository"
+#~ msgstr "Exportiere GPG Schlüssel für das Repositorium"
 
-msgid "Proxy Password"
-msgstr "Proxy Kennwort"
+#~ msgid "No description"
+#~ msgstr "Keine Beschreibung"
 
-msgid "Proxy Username"
-msgstr "Proxy Benutzername"
+#~ msgid "entered the repository"
+#~ msgstr "wurde dem Repositorium hinzugefügt"
 
-msgid "kB/sec"
-msgstr "kB/sec"
+#~ msgid "license"
+#~ msgstr "Lizenz"
 
-msgid "0 = no limit; 100 = 100kB/sec"
-msgstr "0 = ohne Limit; 100 = 100kB/sek"
+#~ msgid "No category"
+#~ msgstr "Keine Kategorie"
 
-msgid "Download speed limit"
-msgstr "Geschwindigkeitsbegrenzung für Herunterladen"
+#~ msgid "Applications without a group"
+#~ msgstr "Anwendungen ohne Gruppe"
 
-msgid "Example: http://proxy:1234"
-msgstr "Beispiel: http://proxy:1234"
+#~ msgid "Sel"
+#~ msgstr "Sel"
 
-msgid "HTTP Proxy"
-msgstr "HTTP Proxy"
+#~ msgid "Rating"
+#~ msgstr "Bewertung"
 
-msgid "FTP Proxy"
-msgstr "FTP Proxy"
+#~ msgid "These are the packages that would be disabled"
+#~ msgstr "Dies sind die Pakete, welche deaktiviert werden würden"
 
-msgid "Socket settings"
-msgstr "Socket Einstellungen"
+#~ msgid "Once confirmed, these packages will be considered masked."
+#~ msgstr "Einmal bestätigt, werden diese Pakete als maskiert betrachtet."
 
-msgid "Generate login information"
-msgstr "Erstelle Anmeldeinformation"
+#~ msgid "Package Set has broken dependencies, Sets not found"
+#~ msgstr "Paketset hat defekte Abhängigkeiten, Sets nicht gefunden"
 
-msgid "Discard login information"
-msgstr "Verwerfe Anmeldeinformationen"
+#~ msgid "There are incomplete package sets, continue at your own risk"
+#~ msgstr "Es gibt unvollständige Paketsets, fahre auf eigene Gefahr fort"
 
-msgid "Clear all credentials"
-msgstr "Lösche alle Anmeldeinformationen"
+#~ msgid "Vote registered successfully"
+#~ msgstr "Stimmabgabe erfolgreich registriert"
 
-msgid "User Generated Content"
-msgstr "nutzergenerierter Inhalt"
+#~ msgid "Error registering vote"
+#~ msgstr "Fehler während der Stimmabgabe"
 
-msgid "Terminal font"
-msgstr "Schriftart für Terminal"
+#~ msgid "Applications"
+#~ msgstr "Anwendungen"
 
-msgid "Generic title 1"
-msgstr "Generischer Titel 1"
+#~ msgid "Applications to remove"
+#~ msgstr "Anwendungen zum Entfernen"
 
-msgid "Generic title 2"
-msgstr "Generischer Titel 2"
+#~ msgid "Applications to downgrade"
+#~ msgstr "Anwendungen zum Downgraden"
 
-msgid "Background error message"
-msgstr "Fehlermeldung im Hintergrund"
+#~ msgid "Applications to install"
+#~ msgstr "Anwendungen zur Installation"
 
-msgid "Error message"
-msgstr "Fehlermeldung"
+#~ msgid "Applications to update"
+#~ msgstr "Anwendungen zur Aktualisierung"
 
-msgid "Background succ. message"
-msgstr "Erfolgsmeldung im Hintergrund"
+#~ msgid "Applications to reinstall"
+#~ msgstr "Anwendungen zur erneuten Installation"
 
-msgid "Text on succ. message"
-msgstr "Text für erfolgreiche Meldung"
+#~ msgid "Proposed"
+#~ msgstr "Vorgeschlagen"
 
-msgid "Text on error message"
-msgstr "Text für Fehlermeldung"
+#~ msgid "Destination"
+#~ msgstr "Ziel"
 
-msgid "General"
-msgstr "Generell"
+#~ msgid "Rev."
+#~ msgstr "Version"
 
-msgid "Package (default)"
-msgstr "Paket (Standard)"
+#~ msgid "Security id."
+#~ msgstr "Sicherheits ID."
 
-msgid "Package not installed"
-msgstr "Pakete nicht installiert"
+#~ msgid "Application name"
+#~ msgstr "Anwendungsname"
 
-msgid "Package removed"
-msgstr "Pakete gelöscht"
+#~ msgid "Please wait, loading..."
+#~ msgstr "Bitte warten, am laden ..."
 
-msgid "Package updated"
-msgstr "Pakete aktualisiert"
+#~ msgid "Advisories are being loaded"
+#~ msgstr "Ratschläge werden geladen"
 
-msgid "Package reinstalled"
-msgstr "Pakete erneut installiert"
+#~ msgid "No advisories"
+#~ msgstr "Keine Empfehlungen"
 
-msgid "Package description"
-msgstr "Pakete Beschreibung"
+#~ msgid "There are no items to show"
+#~ msgstr "Es gibt keine Einträge zu zeigen"
 
-msgid "Package subtitle"
-msgstr "Paket Untertitel"
+#~ msgid "Filename"
+#~ msgstr "Dateiname"
 
-msgid "Package sub-description"
-msgstr "Paket Unter-Beschreibung"
+#~ msgid "Active"
+#~ msgstr "Aktiv"
 
-msgid "Package category"
-msgstr "Paket Kategorien"
+#~ msgid "Update"
+#~ msgstr "Aktualisierung"
 
-msgid "Package downgrade"
-msgstr "Paket downgraden"
+#~ msgid "Revision"
+#~ msgstr "Version"
 
-msgid "Packages"
-msgstr "Pakete"
+#~ msgid "Repository Identifier"
+#~ msgstr "Repositoriums Identifizierer"
 
-msgid "Interface Colors"
-msgstr "Farben der Schnittstelle"
+#~ msgid ""
+#~ "There are packages that can't be installed at the same time, thus are "
+#~ "blocking your request:"
+#~ msgstr ""
+#~ "Es sind Pakete vorhanden, die nicht gleichzeitig installiert werden "
+#~ "können und deshalb deine Anfrage blockieren:"
 
-msgid "<b>Entropy database backup tool</b>"
-msgstr "<b>Entropy Datenbank Backup-Programm</b>"
+#~ msgid "These are the needed packages"
+#~ msgstr "Dies sind die benötigten Pakete"
 
-msgid ""
-"<small>Using this tool, you will be able to backup and restore your "
-"Operating System packages database.</small>"
-msgstr ""
-"<small>Mit diesem Werkzeug kannst du die Paketdatenbank des Betriebssystems "
-"sichern und wiederherstellen</small>"
+#~ msgid ""
+#~ "These packages must be removed from the removal queue because they depend "
+#~ "on your last selection. Do you agree?"
+#~ msgstr ""
+#~ "Diese Pakete müssen aus der Warteschlange zum Entfernen gelöscht werden, "
+#~ "weil sie von deiner letzten Auswahl abhängen. "
 
-msgid "New backup"
-msgstr "Neues Backup"
+#~ msgid "These packages must be excluded"
+#~ msgstr "Diese Pakete müssen ausgenommen werden"
 
-msgid "Restore selected"
-msgstr "Stelle ausgewählte wieder her"
+#~ msgid ""
+#~ "These packages must be removed from the queue because they depend on your "
+#~ "last selection. Do you agree?"
+#~ msgstr ""
+#~ "Diese Pakete müssen aus der Warteschlange gelöscht werden, weil sie von "
+#~ "deiner letzten Auswahl abhängen. "
 
-msgid "Delete selected"
-msgstr "lösche ausgewählte"
+#~ msgid ""
+#~ "Some dependencies couldn't be found. It can either be because they are "
+#~ "masked or because they aren't in any active repository."
+#~ msgstr ""
+#~ "Einige Abhängigkeiten konnten nicht aufgelöst werden. Das kann passieren "
+#~ "weil sie maskiert oder in keinem Repository verfügbar sind."
 
-msgid "Dependencies test"
-msgstr "Test Abhängigkeiten"
+#~ msgid "Conflicting packages were pulled in, in the same key and slot"
+#~ msgstr ""
+#~ "Miteinander im Konflikt stehende Dateien wurden hereingeholt, mit "
+#~ "demselben Schlüssel und Slot."
 
-msgid "System Database"
-msgstr "Systemdatenbank"
+#~ msgid "Please mask packages that are causing the issue"
+#~ msgstr "Bitte maskiere Pakete, die dieses Problem hervorrufen"
 
-msgid "Restore"
-msgstr "Wiederherstellen"
+#~ msgid "Needed disk space"
+#~ msgstr "Benötigter Festplattenspeicher"
 
-msgid "Save"
-msgstr "Speichern"
+#~ msgid "These are the packages that would be installed/updated"
+#~ msgstr "Dies sind die Pakete, die installiert/aktualisiert werden"
 
-msgid "Change Sulfur preferences"
-msgstr "Ändere Sulfur Einstellungen"
+#~ msgid "Cannot remove packages"
+#~ msgstr "Kann Pakete nicht entfernen"
 
-msgid "Preferences"
-msgstr "Einstellungen"
+#~ msgid "Some dependencies couldn't be removed because they are vital."
+#~ msgstr ""
+#~ "Einige Abhängigkeiten konnten nicht entfernt werden, da sie "
+#~ "lebensnotwendig sind."
 
-msgid "_Skip mirror"
-msgstr "Über_springe Spiegelserver"
+#~ msgid "Freed space"
+#~ msgstr "Freigegebener Speicherplatz"
 
-msgid "Process details"
-msgstr "Prozess Details"
+#~ msgid "Needed space"
+#~ msgstr "Benötigter Speicherplatz"
 
-msgid "Monitor applications install/removal execution process"
-msgstr "Überwache Installations-/Entfernungsprozess der Anwendungen"
+#~ msgid "Set from"
+#~ msgstr "Setze von"
 
-msgid "Progress"
-msgstr "Fortschritt"
+#~ msgid "Unknown"
+#~ msgstr "Unbekannt"
 
-msgid "Hide this until something new happens"
-msgstr "Blende dies aus, bis etwas neues passiert"
+#~ msgid "User configuration"
+#~ msgstr "Benutzerspezifische Konfigurationsdatei"
 
-msgid "Install the selected package"
-msgstr "Installiere ausgewähltes Paket"
+#~ msgid "Try to update your repositories"
+#~ msgstr "Versuche deine Repositorien zu aktualisieren"
 
-msgid "Undo Install"
-msgstr "Installation rückgängig machen"
+#~ msgid "No updates available"
+#~ msgstr "Keine Aktualisierungen verfügbar"
 
-msgid "Undo Install action"
-msgstr "Installationsaktion rückgängig machen"
+#~ msgid "It seems that your system is already up-to-date. Good!"
+#~ msgstr ""
+#~ "Sieht so aus als wäre dein System bereits am aktuellsten Stand. Gut so!"
 
-msgid "Disable"
-msgstr "Deaktiviert"
+#~ msgid "The current view is loading."
+#~ msgstr "Die gegenwärtige Ansicht wird geladen."
 
-msgid "Mask this package"
-msgstr "Paket maskieren"
+#~ msgid "Be patient, sit down and relax."
+#~ msgstr "Gedulde dich, setz dich hin und entspanne."
 
-msgid "Reinstall the selected package"
-msgstr "Ausgewähltes Paket neu installieren"
+#~ msgid "No packages found means nothing to show!"
+#~ msgstr "Es wurden keine Pakete gefunden, daher kann ich nichts anzeigen!"
 
-msgid "Undo Reinstall"
-msgstr "Nauinstallation rückgängig machen"
+#~ msgid "No packages found using the provided search term"
+#~ msgstr "Keine Pakete gefunden, die dem Suchbegriff entsprechen"
 
-msgid "Undo Reinstall action"
-msgstr "Neuinstallationsaktion rückgängig machen"
+#~ msgid "No packages to show"
+#~ msgstr "Keine Pakete zum anzeigen"
 
-msgid "Remove"
-msgstr "Lösche"
+#~ msgid "There are no packages that can be shown, sorry."
+#~ msgstr "Es gibt keine Pakete die angezeigt werden können, Entschuldigung"
 
-msgid "Remove the selected package"
-msgstr "Entferne das ausgewählte paket"
+#~ msgid "Programming:"
+#~ msgstr "Programmierung:"
 
-msgid "Undo Remove"
-msgstr "Entfernen rückgängig machen"
+#~ msgid "Translation:"
+#~ msgstr "Übersetzung:"
 
-msgid "Undo Remove action"
-msgstr "Entfernungsaktion rückgängig machen"
+#~ msgid "Dedicated to:"
+#~ msgstr "Gewidmet:"
 
-msgid "Purge"
-msgstr "Säubern"
+#~ msgid "Recursive Package Set"
+#~ msgstr "Rekursives Paket-Set"
 
-msgid "Remove the selected package and its configuration"
-msgstr "Entferne ausgewähltes Paket und seine Konfiguration"
+#~ msgid "Entropy is running in safe mode"
+#~ msgstr "Entropy läuft im Sicherheitsmodus"
 
-msgid "Undo Purge"
-msgstr "Säuberung rückgängig machen"
+#~ msgid "Please fix as soon as possible"
+#~ msgstr "Bitte behebe dies so schnell wie möglich"
 
-msgid "Undo Purge action"
-msgstr "Säuberungsaktion rückgängig machen"
+#~ msgid "Safe Mode"
+#~ msgstr "Sicherheitsmodus"
 
-msgid "Enable"
-msgstr "Aktivieren"
+#~ msgid "performance could get severely compromised"
+#~ msgstr "die Performance könnte stark beeinträchtigt werden"
 
-msgid "Unmask this package"
-msgstr "Paket demaskieren"
+#~ msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
+#~ msgstr "1. April, jeeehaaaa! Ich werde deine Festplatte löschen!"
 
-msgid "Mask the selected packages"
-msgstr "Maskiere das ausgewählte Paket"
+#~ msgid "Love love love... <3"
+#~ msgstr "Liebe, Liebe, Liebe ... <3"
 
-msgid "Undo Update"
-msgstr "Aktualisierung rückgängig machen"
+#~ msgid "Oh oh ooooh... Merry Xmas!"
+#~ msgstr "Ho, ho, hoooooh! Frohe Weihnachten!"
 
-msgid "Package Masking"
-msgstr "Paketmaskierung"
+#~ msgid "Sync"
+#~ msgstr "Synchronisieren"
 
-msgid "_Enable"
-msgstr "_Aktivieren"
+#~ msgid "Search"
+#~ msgstr "Suche"
 
-msgid "Enable _all"
-msgstr "Alle a_ktivieren"
+#~ msgid "Default packages sorting"
+#~ msgstr "Standard Paketsortierung"
 
-msgid "_Properties"
-msgstr "_Einstellungen"
+#~ msgid "Sort by name [A-Z]"
+#~ msgstr "Sortiere nach Name [A-Z]"
 
-msgid "Undo Install Set action"
-msgstr "Mache Set-Installations-Handlung rückgängig"
+#~ msgid "Sort by name [Z-A]"
+#~ msgstr "Sortiere nach Name [Z-A]"
 
-msgid "Undo Remove Set action"
-msgstr "Mache Set-Entfernungs-Handlung rückgängig"
+#~ msgid "Sort by downloads"
+#~ msgstr "Sortiere nach Downloads"
 
-msgid "Update the selected package"
-msgstr "Ausgewähltes Paket aktualisieren"
+#~ msgid "Sort by votes"
+#~ msgstr "Sortiere nach Stimmen"
 
-msgid "Undo Update action"
-msgstr "Aktualisierungsaktion rückgängig machen"
+#~ msgid "Sort by repository"
+#~ msgstr "Sortiere nach Repositorien"
 
-msgid "Package Information"
-msgstr "Paketinformation"
+#~ msgid "Sort by date (simple)"
+#~ msgstr "Sortiere nach Datum (einfach)"
 
-msgid "Install Size"
-msgstr "Installationsgröße"
+#~ msgid "Sort by date (grouped)"
+#~ msgstr "Sortiere nach Datum (gruppiert)"
 
-msgid "Package Size"
-msgstr "Paketgröße"
+#~ msgid "Sort by license (grouped)"
+#~ msgstr "Sortiere nach Lizenz (gruppiert)"
 
-msgid "MD5 Signature"
-msgstr "MD5 Signatur"
+#~ msgid "Sort by Groups"
+#~ msgstr "Sortiere nach Gruppen"
 
-msgid "Download Path"
-msgstr "Download Pfad"
+#~ msgid ""
+#~ "The repositories listed below are configured but not available. They "
+#~ "should be downloaded."
+#~ msgstr ""
+#~ "Die unten aufgeführten Repositorien sind zwar konfiguriert, aber nicht "
+#~ "verfügbar. Sie sollten herabgeladen werden."
 
-msgid "Entropy API"
-msgstr "Entropy API"
+#~ msgid "If you don't do this now, you won't be able to use them."
+#~ msgstr ""
+#~ "Wenn du das jetzt nicht machen möchtest, wirst du sie nicht nutzen können."
 
-msgid "Branch"
-msgstr "Branch"
+#~ msgid "Download now"
+#~ msgstr "Lade jetzt herunter"
 
-msgid "Kernel Tag"
-msgstr "Kernel-Bezeichnung"
+#~ msgid "Skip"
+#~ msgstr "Überspringe"
 
-msgid "Version"
-msgstr "Version"
+#~ msgid "Item"
+#~ msgstr "Element"
 
-msgid "Location"
-msgstr "Ort"
+#~ msgid "Database"
+#~ msgstr "Datenbank"
 
-msgid "Website"
-msgstr "Webseite"
+#~ msgid "Date"
+#~ msgstr "Datum"
 
-msgid "Show ChangeLog"
-msgstr "Zeige Änderungslog"
+#~ msgid "Not logged in"
+#~ msgstr "Nicht angemeldet"
 
-msgid "ChangeLog"
-msgstr "Changelog"
+#~ msgid "Logged in as"
+#~ msgstr "Eingeloggt als"
 
-msgid "_References"
-msgstr "_Referenzen"
+#~ msgid "UGC Status"
+#~ msgstr "UGC Status"
 
-msgid "D_ependencies"
-msgstr "_Abhängigkeiten"
+#~ msgid "Error setting parameter"
+#~ msgstr "Fehler beim Setzen des Parameters"
 
-msgid "External Trigger"
-msgstr "Externer Trigger"
+#~ msgid "An issue occured while loading a preference"
+#~ msgstr "Ein Problem trat beim Laden einer Voreinstellung auf"
 
-msgid "CONFIG_PROTECT"
-msgstr "CONFIG_PROTECT"
+#~ msgid "Parameter"
+#~ msgstr "Parameter"
 
-msgid "O_ther"
-msgstr "A_ndere"
+#~ msgid "must be of type"
+#~ msgstr "muss sein vom Typ"
 
-msgid "Add Document"
-msgstr "Füge Dokument hinzu"
+#~ msgid "got"
+#~ msgstr "wurde"
 
-msgid "Remove Selected"
-msgstr "Entferne ausgewähltes"
+#~ msgid "An issue occured while saving a preference"
+#~ msgstr "Ein Fehler ist beim Speichern der Einstellungen aufgetreten"
 
-msgid "Show Selected"
-msgstr "Zeige ausgewählte"
+#~ msgid "Error saving preferences"
+#~ msgstr "Fehler beim Speichern der Einstellungen"
 
-msgid "Load User Generated Content"
-msgstr "Lade Benutzergenerierten Inhalt"
+#~ msgid ""
+#~ "These packages are masked either by default or due to your choice. Please "
+#~ "be careful, at least."
+#~ msgstr ""
+#~ "Diese Pakete sind maskiert, entweder standardmäßig oder aufgrund deiner "
+#~ "Entscheidung. Sei zumindest vorsichtig."
 
-msgid "Notice Board Entry Information"
-msgstr "Schwarzes Brett Eintrags-Information"
+#~ msgid "Generating metadata. Please wait."
+#~ msgstr "Generiere Metadaten. Bitte warten."
 
-msgid "http://www.sabayon.org"
-msgstr "http://www.sabayon.org"
+#~ msgid "Error during list population"
+#~ msgstr "Fehler beim Füllen der Liste"
 
-msgid "Notice board Id"
-msgstr "Schwarzes Brett ID"
+#~ msgid "Retrying in 1 second."
+#~ msgstr "neuer Versuch in 1 Sekunde"
 
-msgid "Mark as read"
-msgstr "Markieren als gelesen"
+#~ msgid "Error loading advisories"
+#~ msgstr "Fehler beim laden der Empfehlungen"
 
-msgid "Close notice"
-msgstr "Schließe Notiz"
+#~ msgid "Errors updating repositories."
+#~ msgstr "Fehler beim Aktualisieren der Repositories"
 
-msgid "Sulfur tips and tricks"
-msgstr "Sulfur Tips und Tricks"
+#~ msgid "Please check logs below for more info"
+#~ msgstr "Bitte überprüfe die Ausgaben weiter unten für mehr Information"
 
-msgid "tooltip text"
-msgstr "Hinweis-Text"
+#~ msgid "Repositories updated successfully"
+#~ msgstr "Repositories erfolgreich aktualisiert"
 
-msgid "Show tips on startup"
-msgstr "Zeige Tips beim Start"
+#~ msgid "sys-apps/entropy needs to be updated as soon as possible."
+#~ msgstr "sys-apps/entropy sollte so schnell wie möglich aktualisiert werden."
 
-msgid "UGC Entry Information"
-msgstr "UGC Eintragsinformationen"
+#~ msgid ""
+#~ "Another Entropy instance is locking this task at the moment. Try in a few "
+#~ "minutes."
+#~ msgstr ""
+#~ "Eine andere Entropy-Instanz sperrt die Aufgabe momentan. Versuche es in "
+#~ "ein paar Minuten erneut."
 
-msgid "Keywords (space separated)"
-msgstr "Schlüsselwörter (kommasepariert)"
+#~ msgid "Updating repositories..."
+#~ msgstr "Update Repositorien..."
 
-msgid "_Submit Document"
-msgstr "_Übertrage Dokument"
+#~ msgid "Running tasks"
+#~ msgstr "Ausführen..."
 
-msgid "Submit a new document"
-msgstr "Reiche neues Dokument ein"
+#~ msgid "Testing dependencies..."
+#~ msgstr "Teste Abhängigkeiten..."
 
-msgid "_Open Document"
-msgstr "_Öffne Dokument"
+#~ msgid "No missing dependencies found."
+#~ msgstr "Keine fehlenden Abhängigkeiten gefunden."
+
+#~ msgid ""
+#~ "Missing dependencies found, but none of them are on the repositories."
+#~ msgstr ""
+#~ "Fehlende Abhängigkeiten gefunden aber keine ist in den Repositories "
+#~ "vorhanden"
+
+#~ msgid ""
+#~ "Some missing dependencies have not been matched, others are going to be "
+#~ "added to the queue."
+#~ msgstr ""
+#~ "Einige fehlende Pakete konnten nicht gefunden werden, es werden andere in "
+#~ "der Warteschlange hinzugefügt."
+
+#~ msgid "All the missing dependencies are going to be added to the queue"
+#~ msgstr "Alle fehlenden Abhängigkeiten werden zur Warteschlange hinzugefügt"
+
+#~ msgid "Testing libraries..."
+#~ msgstr "Teste Bibliotheken..."
+
+#~ msgid "Libraries test aborted"
+#~ msgstr "Test der Programmbibliotheken abgebrochen"
+
+#~ msgid ""
+#~ "Some broken packages have not been matched, others are going to be added "
+#~ "to the queue."
+#~ msgstr ""
+#~ "Einige fehlerhafte Pakete konnten nicht gefunden werden, es werden andere "
+#~ "in der Warteschlange hinzugefügt."
+
+#~ msgid "All the broken packages are going to be added to the queue"
+#~ msgstr "Alle fehlerhaften Pakete werden der Warteschlange hinzugefügt"
+
+#~ msgid "These packages are no longer available"
+#~ msgstr "Diese Pakete sind nicht länger verfügbar"
+
+#~ msgid ""
+#~ "These packages should be removed (if you agree) because support has been "
+#~ "dropped. Do you want to remove them?"
+#~ msgstr ""
+#~ "Diese Pakete sollten entfernt werden (wenn du zustimmst), da ihre "
+#~ "Unterstützung fallengelassen wurde. Möchtest du sie entfernen?"
+
+#~ msgid "These are orphaned vital packages"
+#~ msgstr "Dies sind verwaiste, lebenswichtige Pakete"
+
+#~ msgid ""
+#~ "You should make sure that they are no longer needed and remove manually."
+#~ msgstr ""
+#~ "Du solltest sicherstellen, das sie nicht weiter verwendet werden und sie "
+#~ "dann manuell entfernen."
+
+#~ msgid "These are packages from unavailable repositories"
+#~ msgstr "Dies sind Pakete von nicht verfügbaren Repositorien"
+
+#~ msgid "You are not going to receive updates for the following packages."
+#~ msgstr "Du wirst keine Updates für das folgende Paket erhalten."
+
+#~ msgid "updates"
+#~ msgstr "aktualisiert"
+
+#~ msgid "Showing"
+#~ msgstr "Zeige"
+
+#~ msgid "No packages need or can be queued at the moment."
+#~ msgstr ""
+#~ "Es werden keine Pakete benötigt, oder es können im Moment keine "
+#~ "aufgenommen werden."
+
+#~ msgid "Name and description"
+#~ msgstr "Name und Beschreibung"
+
+#~ msgid "Search string"
+#~ msgstr "Suchstring"
+
+#~ msgid "Search type"
+#~ msgstr "Suchtyp"
+
+#~ msgid "Entropy Search"
+#~ msgstr "Entropy Suche"
+
+#~ msgid "Abort action"
+#~ msgstr "Aktion abbrechen"
+
+#~ msgid "Ignore"
+#~ msgstr "Ignoriere"
+
+#~ msgid "Tasks completed successfully."
+#~ msgstr "Aufgabe erfolgreich durchgeführt."
+
+#~ msgid "Please make sure to read all the messages in the terminal below."
+#~ msgstr ""
+#~ "Bitte stell sicher, daß du alle Mitteilungen im Terminal unten liest."
+
+#~ msgid "Oh, a fairytale gone bad!"
+#~ msgstr "Oh, ein Märchen hat ein böses Ende genommen!"
+
+#~ msgid ""
+#~ "Something bad happened, have a look at the messages in the terminal below."
+#~ msgstr ""
+#~ "Etwas schlechtes ist passiert, wirf einen Blick auf die Mitteilungen im "
+#~ "Terminal unten."
+
+#~ msgid "Don't feel guilty, it's all my fault!"
+#~ msgstr "Fühl dich nicht schuldig, es ist alles meine Schuld!"
+
+#~ msgid ""
+#~ "Attention. An error occured while processing the queue.\n"
+#~ "Please have a look at the terminal."
+#~ msgstr ""
+#~ "Achtung. Ein Fehler ist beim Abarbeiten der Warteschlange aufgetreten.\n"
+#~ "Bitte überprüfe die Ausgabe im Terminal"
+
+#~ msgid ""
+#~ "Attention. Something really bad happened.\n"
+#~ "Please have a look at the terminal."
+#~ msgstr ""
+#~ "Achtung. Etwas wirklich schlimmes ist passiert.\n"
+#~ "Bitte wird einen Blick auf dein Terminal."
+
+#~ msgid ""
+#~ "Attention. You have updated Entropy.\n"
+#~ "Sulfur will be reloaded."
+#~ msgstr ""
+#~ "Achtung. Du hast Entropy aktualisiert.\n"
+#~ "Sulfur wird neu geladen."
+
+#~ msgid "Processing Packages in queue"
+#~ msgstr "Bearbeite Pakete in der Warteschlange"
+
+#~ msgid "No packages selected"
+#~ msgstr "Kein Paket ausgewählt"
+
+#~ msgid "Skipping current mirror."
+#~ msgstr "Überspringe aktuellen Spiegel."
+
+#~ msgid ""
+#~ "Did you know that you can comment, vote and add documents to applications "
+#~ "like in a wiki?"
+#~ msgstr ""
+#~ "Wußtest du, daß du kommentieren kannst, abstimmen und auch Dokumente zu "
+#~ "Anwendungen hinzufügen kannst, wie in einem Wiki?"
+
+#~ msgid ""
+#~ "Did you know that you can add icons or files to applications by simply "
+#~ "dropping images from your Desktop onto them?"
+#~ msgstr ""
+#~ "Wußtest du, daß du Icons oder Dateien zu Anwendungen hinzufügen kannst, "
+#~ "indem du sie einfach von deinem Desktop auf sie ziehst?"
+
+#~ msgid ""
+#~ "Did you know that Sulfur has an Advanced mode, just click Sulfur -> "
+#~ "Advanced mode?"
+#~ msgstr ""
+#~ "Wußtest du, daß Sulfur über einen Erweiterten Modus verfügt? Klicke dafür "
+#~ "einfach auf Sulfur->Erweiterter Modus"
+
+#~ msgid ""
+#~ "Did you know that the guy who wrote this tip was really asleep at the "
+#~ "time?"
+#~ msgstr ""
+#~ "Wußtest du, daß der Typ der diesen Tip geschrieben hat, währenddessen "
+#~ "kurz vor dem Einschlafen war?"
+
+#~ msgid ""
+#~ "Did you know that you can backup your installed application repository by "
+#~ "enabling Advanced mode and going to Preferences tab?"
+#~ msgstr ""
+#~ "Wußtest du, daß du ein Backup all deiner installierten "
+#~ "Anwendungsrepositorien machen kannst, indem du den Erweiterten Modus "
+#~ "einschaltest und in den Einstellungen Tab gehst?"
+
+#~ msgid ""
+#~ "Did you know that you can customize interface colors by enabling Advanced "
+#~ "mode and going to Preferences tab?"
+#~ msgstr ""
+#~ "Wußtest du, daß du die Farben deiner Benutzerschnittstelle verändern "
+#~ "kannst, indem du im Erweiterten Modus in den Einstellungs Tab gehst?"
+
+#~ msgid "No Repository Identifier"
+#~ msgstr "Kein Repositoryname"
+
+#~ msgid "Duplicated Repository Identifier"
+#~ msgstr "Doppelter Repositoryname"
+
+#~ msgid "No download mirrors"
+#~ msgstr "Keine Download-Spiegel"
+
+#~ msgid "Repository URL must be a valid URL"
+#~ msgstr "Repositoriums-URL muß eine gültige URL sein"
+
+#~ msgid "Insert URL"
+#~ msgstr "URL eingeben"
+
+#~ msgid "Enter a download mirror, HTTP or FTP"
+#~ msgstr "Gib einen Download-Spiegelserver an, HTTP oder FTP"
+
+#~ msgid "Enter a download mirror URL"
+#~ msgstr "Gib die URL eines Download Spiegelservers an"
+
+#~ msgid "You must enter either a valid URL."
+#~ msgstr "Du musst eine gültige URL eingeben."
+
+#~ msgid "Insert Repository"
+#~ msgstr "Repositorium eingeben"
+
+#~ msgid "Insert Repository identification string"
+#~ msgstr "Repositoriums-Identifikation eingeben"
+
+#~ msgid "This Repository identification string is malformed"
+#~ msgstr "Diese Repositoriums-Identifikation ist ungültig"
+
+#~ msgid "Wrong entries, errors"
+#~ msgstr "Falsche Einträge, Fehler"
+
+#~ msgid "Repositories Notice Board"
+#~ msgstr "Schwarzes Brett des Repositoriums"
+
+#~ msgid ""
+#~ "Here below you will find a list of important news directly issued by your "
+#~ "applications maintainers.\n"
+#~ "Double click on each item to retrieve detailed info."
+#~ msgstr ""
+#~ "Hier findest du eine Liste mit wichtigen Mitteilungen direkt von den "
+#~ "Betreuern deiner Programme.\n"
+#~ "Doppelklicke auf einen Eintrag, um detaillierte Informationen zu erhalten."
+
+#~ msgid "Notice"
+#~ msgstr "Hinweis"
+
+#~ msgid "Expand to browse"
+#~ msgstr "Suche ausdehnen"
+
+#~ msgid "Author"
+#~ msgstr "Autor"
+
+#~ msgid "Package ChangeLog"
+#~ msgstr "Paket Changelog"
+
+#~ msgid "License name"
+#~ msgstr "Lizenzname"
+
+#~ msgid "Mirrors"
+#~ msgstr "Spiegel"
+
+#~ msgid "Depends"
+#~ msgstr "hängt ab von"
+
+#~ msgid "Needed libraries"
+#~ msgstr "benötigte Programmbibliotheken"
+
+#~ msgid "Protected item"
+#~ msgstr "Geschütztes Objekt"
+
+#~ msgid "Type"
+#~ msgstr "Typ"
+
+#~ msgid "File"
+#~ msgstr "Datei"
+
+#~ msgid "Remotely"
+#~ msgstr "Entfernt"
+
+#~ msgid "Removed repository"
+#~ msgstr "Entferntes Repositorium"
+
+#~ msgid "Bug"
+#~ msgstr "Fehler"
+
+#~ msgid "Reference"
+#~ msgstr "Referenz"
+
+#~ msgid "impact"
+#~ msgstr "Auswirkung"
+
+#~ msgid "access"
+#~ msgstr "Zugriff"
+
+#~ msgid "Vulnerables"
+#~ msgstr "Betroffen"
+
+#~ msgid "Unaffected"
+#~ msgstr "Nicht betroffen"
+
+#~ msgid "Id"
+#~ msgstr "ID"
+
+#~ msgid "Write your"
+#~ msgstr "Schreibe dein"
+
+#~ msgid "Select your"
+#~ msgstr "Wähle dein"
+
+#~ msgid "Submit issue"
+#~ msgstr "Übermittle Problem"
+
+#~ msgid "Empty Document"
+#~ msgstr "Leeres Dokument"
+
+#~ msgid "Invalid Description"
+#~ msgstr "Ungültige Beschreibung"
+
+#~ msgid "Invalid Document Type"
+#~ msgstr "Ungültiger Dokumenttyp"
+
+#~ msgid "Do you confirm your submission?"
+#~ msgstr "Bestätigst du deine Übermittlung?"
+
+#~ msgid "Document added successfully. Thank you"
+#~ msgstr "Dokument erfolgreich hinzugefügt. Vielen Dank"
+
+#~ msgid "Success!"
+#~ msgstr "Erfolgreich!"
+
+#~ msgid "UGC Error"
+#~ msgstr "UGC Fehler"
+
+#~ msgid "Write your document"
+#~ msgstr "Schreibe dein Dokument"
+
+#~ msgid "Select your file"
+#~ msgstr "Wähle deine Datei aus"
+
+#~ msgid "On repository"
+#~ msgstr "Im Repositorium"
+
+#~ msgid "These are the packages that must be enabled to satisfy your request"
+#~ msgstr ""
+#~ "Dies sind die Pakete, welche aktiviert werden müssen um deiner Anfrage zu "
+#~ "entsprechen"
+
+#~ msgid "Some packages are masked"
+#~ msgstr "Einige Pakete sind maskiert"
+
+#~ msgid "Masked package"
+#~ msgstr "Maskiertes Paket"
+
+#~ msgid "Enabled"
+#~ msgstr "Aktiviert"
+
+#~ msgid "Please confirm the actions above"
+#~ msgstr "Bitte bestätige die oben angeführten Aktionen"
+
+#~ msgid "To be downgraded"
+#~ msgstr "Wird zurückgestuft"
+
+#~ msgid "To be removed"
+#~ msgstr "Wird entfernt"
+
+#~ msgid "To be reinstalled"
+#~ msgstr "Wird neu installiert"
+
+#~ msgid "To be installed"
+#~ msgstr "Wird installiert"
+
+#~ msgid "To be updated"
+#~ msgstr "Wird aktualisiert"
+
+#~ msgid "About"
+#~ msgstr "Über"
+
+#~ msgid "Sulfur file chooser"
+#~ msgstr "Sulfur Dateiauswahl"
+
+#~ msgid "Sulfur Question"
+#~ msgstr "Sulfur Frage"
+
+#~ msgid "Hey!"
+#~ msgstr "Hey!"
+
+#~ msgid "Please fill the following form"
+#~ msgstr "Bitte fülle folgendes Formular aus"
+
+#~ msgid "Add atom"
+#~ msgstr "Füge atom hinzu"
+
+#~ msgid "Atom"
+#~ msgstr "Atom"
+
+#~ msgid "Invalid entry"
+#~ msgstr "Ungültiger Eintrag"
+
+#~ msgid "Cancel"
+#~ msgstr "Abbruch"
+
+#~ msgid "Accepted"
+#~ msgstr "Akzeptiert"
+
+#~ msgid "license text"
+#~ msgstr "Lizenztext"
+
+#~ msgid "Exception caught"
+#~ msgstr "Ausnahmefehler aufgetreten"
+
+#~ msgid "Sulfur crashed! An unexpected error occured."
+#~ msgstr ""
+#~ "Sulfur ist zusammengebrochen! An unerwarteter Fehler ist aufgetreten."
+
+#~ msgid "Your report has been submitted successfully! Thanks a lot."
+#~ msgstr "Dein Bericht wurde erfolgreich übertragen! Vielen Dank."
+
+#~ msgid "Cannot submit your report. Not connected to Internet?"
+#~ msgstr ""
+#~ "Kann deinen Bericht nicht übertragen. Bist du nicht mit dem Internet "
+#~ "verbunden?"
+
+#~ msgid "Error during backup"
+#~ msgstr "Fehler während des Backups"
+
+#~ msgid "Backup complete"
+#~ msgstr "Backup beendet"
+
+#~ msgid "Error during restore"
+#~ msgstr "Fehler beim Wiederherstellen"
+
+#~ msgid "Restore complete"
+#~ msgstr "Wiederherstellung beendet"
+
+#~ msgid "Error during removal"
+#~ msgstr "Fehler während des Entfernens"
+
+#~ msgid "The chosen package is not vulnerable"
+#~ msgstr "Das ausgewählte Paket ist nicht gefährdet"
+
+#~ msgid "Packages in Advisory have been queued."
+#~ msgstr "Pakete in der Empfehlung wurden zur Warteschlange hinzugefügt."
+
+#~ msgid "Packages in all Advisories have been queued."
+#~ msgstr "Pakete aller Empfehlungen wurden zur Warteschlange hinzugefügt."
+
+#~ msgid "Are you sure ?"
+#~ msgstr "Bist du sicher ?"
+
+#~ msgid "Error saving parameter"
+#~ msgstr "Fehler beim Speichern des Parameters"
+
+#~ msgid "not saved"
+#~ msgstr "nicht gespeichert"
+
+#~ msgid "New"
+#~ msgstr "Neu"
+
+#~ msgid "Please insert a new path"
+#~ msgstr "Bitte gib einen neuen Pfad ein"
+
+#~ msgid "Please edit the selected path"
+#~ msgstr "Bitte bearbeite den ausgewählten Pfad"
+
+#~ msgid "You have chosen to install this package"
+#~ msgstr "Du hast dich entschieden, dieses Paket zu installieren"
+
+#~ msgid "Please select at least one repository"
+#~ msgstr "Bitte wähle zumindest ein Repository aus"
+
+#~ msgid "No packages in queue"
+#~ msgstr "Keine Pakete in der Warteschlange"
+
+#~ msgid "Queue is too old. Cannot load."
+#~ msgstr "Warteschlange ist zu alt. Kann ich nicht laden."
+
+#~ msgid "Update your system now ?"
+#~ msgstr "Dein System jetzt aktualisieren?"
+
+#~ msgid ""
+#~ "You have chosen to interrupt the processing. Are you sure you want to do "
+#~ "it ?"
+#~ msgstr ""
+#~ "Du hast ausgewählt die Verarbeitung zu unterbrechen. Bist du sicher, dass "
+#~ "du das möchtest?"
+
+#~ msgid "UGC credentials cleared"
+#~ msgstr "UGC Zugriffskennungen geleert"
+
+#~ msgid "Choose what Package Set you want to add"
+#~ msgstr "Wähle welche Paketsets du hinzufügen möchgtest"
+
+#~ msgid "Choose what Package Set you want to edit"
+#~ msgstr "Wähle welche Paketsets du bearbeiten möchtest"
+
+#~ msgid "Package Set name"
+#~ msgstr "Paketset Name"
+
+#~ msgid "Package atoms"
+#~ msgstr "Paket atoms"
+
+#~ msgid "No package sets available for removal."
+#~ msgstr "Keine Paketsets zum Entfernen verfügbar."
+
+#~ msgid "Removable Package Set"
+#~ msgstr "Entfernbares Paketset"
+
+#~ msgid "Choose what Package Set you want to remove"
+#~ msgstr "Wähle das Paket-Set, dass du entfernen möchtest"
+
+#~ msgid "Error enabling masked package"
+#~ msgstr "Fehler beim Aktivieren des maskierten Paketes"
+
+#~ msgid "dependencies not found"
+#~ msgstr "Abhängigkeiten wurden nicht gefunden"
+
+#~ msgid "Downloading sources"
+#~ msgstr "Lade Quellen herunter"
+
+#~ msgid "Removing package"
+#~ msgstr "Lösche Paket"
+
+#~ msgid "Add/Edit Repository"
+#~ msgstr "Repository hinzufügen/bearbeiten"
+
+#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+#~ msgstr ""
+#~ "Hinzufügen eines <b>neuen Repositories</b> lässt dich auf <b>zusätzliche "
+#~ "Software</b> zugreifen"
+
+#~ msgid "Compression"
+#~ msgstr "Komprimierung"
+
+#~ msgid "Identifier"
+#~ msgstr "Bezeichner"
+
+#~ msgid "URI"
+#~ msgstr "URI"
+
+#~ msgid "Repository information"
+#~ msgstr "Repositoriums-Informationen"
+
+#~ msgid "_Insert String"
+#~ msgstr "_String eingeben"
+
+#~ msgid "Advisory information"
+#~ msgstr "Information zur Sicherheitswarnung"
+
+#~ msgid "button"
+#~ msgstr "Taste"
+
+#~ msgid "_Overview"
+#~ msgstr "Ü_bersicht"
+
+#~ msgid "Affected packages"
+#~ msgstr "Betroffene Pakete"
+
+#~ msgid "Bugs"
+#~ msgstr "Fehler"
+
+#~ msgid "_Details"
+#~ msgstr "_Details"
+
+#~ msgid "_More"
+#~ msgstr "_Mehr"
+
+#~ msgid "Please Confirm"
+#~ msgstr "Bitte Bestätigen"
+
+#~ msgid "S_end Error Report"
+#~ msgstr "_Sende Fehlerbericht"
+
+#~ msgid ""
+#~ "Please submit this error to us providing as much information as possible."
+#~ msgstr ""
+#~ "Bitte sende diesen Fehler an und, mit soviel Information wie möglich."
+
+#~ msgid "What you were doing"
+#~ msgstr "Womit warst du beschäftigt"
+
+#~ msgid "Your E-mail"
+#~ msgstr "Deine E-mail"
+
+#~ msgid "Your Full Name"
+#~ msgstr "Dein voller Name"
+
+#~ msgid ""
+#~ "You <b>need to accept</b> the licenses below.\n"
+#~ "Please read them carefully and <b>make your choice</b>."
+#~ msgstr ""
+#~ "Es ist <b>notwendig</b> daß du die untenstehenden Lizenzbedingungen "
+#~ "<b>akzeptierst</b>."
+
+#~ msgid "_Read License"
+#~ msgstr "_Lizenz lesen"
+
+#~ msgid "_Accept License"
+#~ msgstr "_Akteptiere Lizenz"
+
+#~ msgid "Sulfur"
+#~ msgstr "Sulfur"
+
+#~ msgid "_Sulfur"
+#~ msgstr "_Sulfur"
+
+#~ msgid "Install from binary package..."
+#~ msgstr "Installiere aus binärem Paket..."
+
+#~ msgid "Install a stand-alone package file"
+#~ msgstr "Installiere ein einzelnes Paket"
+
+#~ msgid "Switch Sulfur to Advanced Mode"
+#~ msgstr "Wechsle in Sulfurs erweiterten Modus"
+
+#~ msgid "Advanced Mode"
+#~ msgstr "Erweiterter Modus"
+
+#~ msgid "S_ervices"
+#~ msgstr "D_ienste"
+
+#~ msgid "R_epositories Notice Board"
+#~ msgstr "Schwarzes Brett des R_epositoriums"
+
+#~ msgid "_Help"
+#~ msgstr "_Hilfe"
+
+#~ msgid "Tips 'n tricks"
+#~ msgstr "Tips & Tricks"
+
+#~ msgid "Show Sulfur tips and tricks"
+#~ msgstr "Zeige Sulfur Tips und Tricks"
+
+#~ msgid "Download updated repositories containing new applications"
+#~ msgstr ""
+#~ "Lade upgedatete Repositorien herunter die neue Anwendungen beinhalten"
+
+#~ msgid "Refresh"
+#~ msgstr "Aktualisiere"
+
+#~ msgid "Show updates"
+#~ msgstr "Zeiges Updates"
+
+#~ msgid "Updates"
+#~ msgstr "Aktualisierungen"
+
+#~ msgid "Show available applications"
+#~ msgstr "Zeige verfügbare Anwendungen"
+
+#~ msgid "Show installed applications"
+#~ msgstr "Zeige installierte Anwendungen"
+
+#~ msgid "Show masked applications"
+#~ msgstr "Zeige maskierte Anwendungen"
+
+#~ msgid "Show any existing application"
+#~ msgstr "Zeige jede verfügbare Anwendung"
+
+#~ msgid "All"
+#~ msgstr "Alles"
+
+#~ msgid "Show package sets (groups)"
+#~ msgstr "Zeige Paketsets (Gruppen)"
+
+#~ msgid "Sets"
+#~ msgstr "Sets"
+
+#~ msgid "Click to start searching"
+#~ msgstr "Anklicken um Suche zu starten"
+
+#~ msgid "Show install queue"
+#~ msgstr "Zeige Installations-Warteschlange"
+
+#~ msgid ""
+#~ "Filter currently shown items, or paste entropy:// action strings (for eg. "
+#~ "entropy://amarok, to install Amarok!)"
+#~ msgstr ""
+#~ "Filtere gegenwärtig angezeigte Begriffe, oder füge entropy:// Handlung "
+#~ "String (zum Beispiel entropy://amarok, um Amarok zu installieren!) ein"
+
+#~ msgid "_Update all"
+#~ msgstr "_Update alle"
+
+#~ msgid "_Remove All"
+#~ msgstr "Alle _entfernen"
+
+#~ msgid "Cl_ean"
+#~ msgstr "Au_fräumen"
+
+#~ msgid "Download only"
+#~ msgstr "nur Download"
+
+#~ msgid "If selected, packages will be downloaded only"
+#~ msgstr "Falls ausgewählt, werden Pakete nur heruntergeladen"
+
+#~ msgid "Download source code"
+#~ msgstr "Lade Quellcode herunter"
+
+#~ msgid "_Commit Actions"
+#~ msgstr "_Übergebe Aktionen"
+
+#~ msgid "_Add Set"
+#~ msgstr "_Füge Set hinzu"
+
+#~ msgid "_Remove Set"
+#~ msgstr "Sat_z entfernen"
+
+#~ msgid "_Edit Set"
+#~ msgstr "_Bearbeite Set"
+
+#~ msgid "Browse applications"
+#~ msgstr "Betrachte Anwendungen"
+
+#~ msgid "Show unapplied"
+#~ msgstr "Zeige nicht angewandte"
+
+#~ msgid "Show applied"
+#~ msgstr "Zeige angewandte"
+
+#~ msgid "Show all"
+#~ msgstr "Zeige alle"
+
+#~ msgid "Q_ueue packages in selected Advisory"
+#~ msgstr "_Pakete aus der gewählten Sicherheitswarnung hinzufügen"
+
+#~ msgid "_Queue all vulnerable packages"
+#~ msgstr "_Alle sicherheitskritischen Pakete hinzufügen"
+
+#~ msgid "Security advisories, make sure your 'puter is really secure"
+#~ msgstr ""
+#~ "Sicherheitshinweis, stelle sicher, daß dein Computer auch wirklich sicher "
+#~ "ist"
+
+#~ msgid "_Force repositories update"
+#~ msgstr "Er_zwinge Repositoriums-Aktualisierung"
+
+#~ msgid "Repositories options"
+#~ msgstr "Repositories Optionen"
+
+#~ msgid "R_egenerate Cache"
+#~ msgstr "_Cache regenerieren"
+
+#~ msgid "Update, enable, disable application repositories"
+#~ msgstr "Aktualisiere, ermögliche, verbiete Anwendungsrepositorien"
+
+#~ msgid "Repositories"
+#~ msgstr "Repositorien"
+
+#~ msgid "C_hanges"
+#~ msgstr "Ä_nderungen"
+
+#~ msgid "M_erge"
+#~ msgstr "_Mergen"
+
+#~ msgid "Dele_te all"
+#~ msgstr "Alle lö_schen"
+
+#~ msgid "Merge all"
+#~ msgstr "Alle M_ergen"
+
+#~ msgid ""
+#~ "Applications can alter your system configuration, merge requested changes "
+#~ "manually"
+#~ msgstr ""
+#~ "Anwendungen könnten deine Systemkonfiguration verändern, die "
+#~ "gewünschtenÄnderungen müssen von Hand zusammengeführt werden"
+
+#~ msgid "System files"
+#~ msgstr "Systemdateien"
+
+#~ msgid "Prevents files belonging to a package being overwritten by another"
+#~ msgstr ""
+#~ "Verhindert, dass Dateien eines Paketes von einem anderen überschrieben "
+#~ "werden"
+
+#~ msgid ""
+#~ "Disabled\n"
+#~ "Removal only\n"
+#~ "Install+Removal"
+#~ msgstr ""
+#~ "Deaktiviert\n"
+#~ "nur löschen\n"
+#~ "installieren+löschen"
+
+#~ msgid "Collision protection"
+#~ msgstr "Kollisionserkennung"
+
+#~ msgid "This is what they call \"nice level\""
+#~ msgstr "Das ist, was man \"nice level\" nennt"
+
+#~ msgid "Process priority (nice)"
+#~ msgstr "Prozess-Priorität (nice)"
+
+#~ msgid "Backup configuration files"
+#~ msgstr "Konfigurationsdateien sichern"
+
+#~ msgid "Entropy can keep a backup of your updated configuration files"
+#~ msgstr ""
+#~ "Entropy kann eine Sicherung deiner aktualisierten Konfigurationsdateien "
+#~ "erstellen"
+
+#~ msgid "Dependencies algorithm"
+#~ msgstr "Abhängigkeits-Algorithmus"
+
+#~ msgid ""
+#~ "Reliable\n"
+#~ "Relaxed"
+#~ msgstr ""
+#~ "Verbindlich\n"
+#~ "Zwanlogs"
+
+#~ msgid "Ignored protected files"
+#~ msgstr "Ingnorierte geschützte Dateien"
+
+#~ msgid "Protected files and directories mask"
+#~ msgstr "Maske für geschützte Dateien und Verzeichnisse"
+
+#~ msgid "Protected files and directories"
+#~ msgstr "Geschützte Dateien und Verzeichnisse"
+
+#~ msgid "type your password here"
+#~ msgstr "gib dein Kennwort hier ein"
+
+#~ msgid "type your username here"
+#~ msgstr "gib deinen Benutzernamen hier ein"
+
+#~ msgid "Proxy Password"
+#~ msgstr "Proxy Kennwort"
+
+#~ msgid "Proxy Username"
+#~ msgstr "Proxy Benutzername"
+
+#~ msgid "kB/sec"
+#~ msgstr "kB/sec"
+
+#~ msgid "0 = no limit; 100 = 100kB/sec"
+#~ msgstr "0 = ohne Limit; 100 = 100kB/sek"
+
+#~ msgid "Download speed limit"
+#~ msgstr "Geschwindigkeitsbegrenzung für Herunterladen"
+
+#~ msgid "Example: http://proxy:1234"
+#~ msgstr "Beispiel: http://proxy:1234"
+
+#~ msgid "HTTP Proxy"
+#~ msgstr "HTTP Proxy"
+
+#~ msgid "FTP Proxy"
+#~ msgstr "FTP Proxy"
+
+#~ msgid "Socket settings"
+#~ msgstr "Socket Einstellungen"
+
+#~ msgid "Generate login information"
+#~ msgstr "Erstelle Anmeldeinformation"
+
+#~ msgid "Discard login information"
+#~ msgstr "Verwerfe Anmeldeinformationen"
+
+#~ msgid "Clear all credentials"
+#~ msgstr "Lösche alle Anmeldeinformationen"
+
+#~ msgid "User Generated Content"
+#~ msgstr "nutzergenerierter Inhalt"
+
+#~ msgid "Terminal font"
+#~ msgstr "Schriftart für Terminal"
+
+#~ msgid "Generic title 1"
+#~ msgstr "Generischer Titel 1"
+
+#~ msgid "Generic title 2"
+#~ msgstr "Generischer Titel 2"
+
+#~ msgid "Background error message"
+#~ msgstr "Fehlermeldung im Hintergrund"
+
+#~ msgid "Error message"
+#~ msgstr "Fehlermeldung"
+
+#~ msgid "Background succ. message"
+#~ msgstr "Erfolgsmeldung im Hintergrund"
+
+#~ msgid "Text on succ. message"
+#~ msgstr "Text für erfolgreiche Meldung"
+
+#~ msgid "Text on error message"
+#~ msgstr "Text für Fehlermeldung"
+
+#~ msgid "General"
+#~ msgstr "Generell"
+
+#~ msgid "Package (default)"
+#~ msgstr "Paket (Standard)"
+
+#~ msgid "Package not installed"
+#~ msgstr "Pakete nicht installiert"
+
+#~ msgid "Package removed"
+#~ msgstr "Pakete gelöscht"
+
+#~ msgid "Package updated"
+#~ msgstr "Pakete aktualisiert"
+
+#~ msgid "Package reinstalled"
+#~ msgstr "Pakete erneut installiert"
+
+#~ msgid "Package description"
+#~ msgstr "Pakete Beschreibung"
+
+#~ msgid "Package subtitle"
+#~ msgstr "Paket Untertitel"
+
+#~ msgid "Package sub-description"
+#~ msgstr "Paket Unter-Beschreibung"
+
+#~ msgid "Package category"
+#~ msgstr "Paket Kategorien"
+
+#~ msgid "Package downgrade"
+#~ msgstr "Paket downgraden"
+
+#~ msgid "Packages"
+#~ msgstr "Pakete"
+
+#~ msgid "Interface Colors"
+#~ msgstr "Farben der Schnittstelle"
+
+#~ msgid "<b>Entropy database backup tool</b>"
+#~ msgstr "<b>Entropy Datenbank Backup-Programm</b>"
+
+#~ msgid ""
+#~ "<small>Using this tool, you will be able to backup and restore your "
+#~ "Operating System packages database.</small>"
+#~ msgstr ""
+#~ "<small>Mit diesem Werkzeug kannst du die Paketdatenbank des "
+#~ "Betriebssystems sichern und wiederherstellen</small>"
+
+#~ msgid "New backup"
+#~ msgstr "Neues Backup"
+
+#~ msgid "Restore selected"
+#~ msgstr "Stelle ausgewählte wieder her"
+
+#~ msgid "Delete selected"
+#~ msgstr "lösche ausgewählte"
+
+#~ msgid "Dependencies test"
+#~ msgstr "Test Abhängigkeiten"
+
+#~ msgid "System Database"
+#~ msgstr "Systemdatenbank"
+
+#~ msgid "Restore"
+#~ msgstr "Wiederherstellen"
+
+#~ msgid "Save"
+#~ msgstr "Speichern"
+
+#~ msgid "Change Sulfur preferences"
+#~ msgstr "Ändere Sulfur Einstellungen"
+
+#~ msgid "Preferences"
+#~ msgstr "Einstellungen"
+
+#~ msgid "_Skip mirror"
+#~ msgstr "Über_springe Spiegelserver"
+
+#~ msgid "Process details"
+#~ msgstr "Prozess Details"
+
+#~ msgid "Monitor applications install/removal execution process"
+#~ msgstr "Überwache Installations-/Entfernungsprozess der Anwendungen"
+
+#~ msgid "Progress"
+#~ msgstr "Fortschritt"
+
+#~ msgid "Hide this until something new happens"
+#~ msgstr "Blende dies aus, bis etwas neues passiert"
+
+#~ msgid "Install the selected package"
+#~ msgstr "Installiere ausgewähltes Paket"
+
+#~ msgid "Undo Install"
+#~ msgstr "Installation rückgängig machen"
+
+#~ msgid "Undo Install action"
+#~ msgstr "Installationsaktion rückgängig machen"
+
+#~ msgid "Disable"
+#~ msgstr "Deaktiviert"
+
+#~ msgid "Mask this package"
+#~ msgstr "Paket maskieren"
+
+#~ msgid "Reinstall the selected package"
+#~ msgstr "Ausgewähltes Paket neu installieren"
+
+#~ msgid "Undo Reinstall"
+#~ msgstr "Nauinstallation rückgängig machen"
+
+#~ msgid "Undo Reinstall action"
+#~ msgstr "Neuinstallationsaktion rückgängig machen"
+
+#~ msgid "Remove"
+#~ msgstr "Lösche"
+
+#~ msgid "Remove the selected package"
+#~ msgstr "Entferne das ausgewählte paket"
+
+#~ msgid "Undo Remove"
+#~ msgstr "Entfernen rückgängig machen"
+
+#~ msgid "Undo Remove action"
+#~ msgstr "Entfernungsaktion rückgängig machen"
+
+#~ msgid "Purge"
+#~ msgstr "Säubern"
+
+#~ msgid "Remove the selected package and its configuration"
+#~ msgstr "Entferne ausgewähltes Paket und seine Konfiguration"
+
+#~ msgid "Undo Purge"
+#~ msgstr "Säuberung rückgängig machen"
+
+#~ msgid "Undo Purge action"
+#~ msgstr "Säuberungsaktion rückgängig machen"
+
+#~ msgid "Enable"
+#~ msgstr "Aktivieren"
+
+#~ msgid "Unmask this package"
+#~ msgstr "Paket demaskieren"
+
+#~ msgid "Mask the selected packages"
+#~ msgstr "Maskiere das ausgewählte Paket"
+
+#~ msgid "Undo Update"
+#~ msgstr "Aktualisierung rückgängig machen"
+
+#~ msgid "Package Masking"
+#~ msgstr "Paketmaskierung"
+
+#~ msgid "_Enable"
+#~ msgstr "_Aktivieren"
+
+#~ msgid "Enable _all"
+#~ msgstr "Alle a_ktivieren"
+
+#~ msgid "_Properties"
+#~ msgstr "_Einstellungen"
+
+#~ msgid "Undo Install Set action"
+#~ msgstr "Mache Set-Installations-Handlung rückgängig"
+
+#~ msgid "Undo Remove Set action"
+#~ msgstr "Mache Set-Entfernungs-Handlung rückgängig"
+
+#~ msgid "Update the selected package"
+#~ msgstr "Ausgewähltes Paket aktualisieren"
+
+#~ msgid "Undo Update action"
+#~ msgstr "Aktualisierungsaktion rückgängig machen"
+
+#~ msgid "Package Information"
+#~ msgstr "Paketinformation"
+
+#~ msgid "Install Size"
+#~ msgstr "Installationsgröße"
+
+#~ msgid "Package Size"
+#~ msgstr "Paketgröße"
+
+#~ msgid "MD5 Signature"
+#~ msgstr "MD5 Signatur"
+
+#~ msgid "Download Path"
+#~ msgstr "Download Pfad"
+
+#~ msgid "Entropy API"
+#~ msgstr "Entropy API"
+
+#~ msgid "Branch"
+#~ msgstr "Branch"
+
+#~ msgid "Kernel Tag"
+#~ msgstr "Kernel-Bezeichnung"
+
+#~ msgid "Version"
+#~ msgstr "Version"
+
+#~ msgid "Location"
+#~ msgstr "Ort"
+
+#~ msgid "Website"
+#~ msgstr "Webseite"
+
+#~ msgid "Show ChangeLog"
+#~ msgstr "Zeige Änderungslog"
+
+#~ msgid "ChangeLog"
+#~ msgstr "Changelog"
+
+#~ msgid "_References"
+#~ msgstr "_Referenzen"
+
+#~ msgid "D_ependencies"
+#~ msgstr "_Abhängigkeiten"
+
+#~ msgid "External Trigger"
+#~ msgstr "Externer Trigger"
+
+#~ msgid "CONFIG_PROTECT"
+#~ msgstr "CONFIG_PROTECT"
+
+#~ msgid "O_ther"
+#~ msgstr "A_ndere"
+
+#~ msgid "Add Document"
+#~ msgstr "Füge Dokument hinzu"
+
+#~ msgid "Remove Selected"
+#~ msgstr "Entferne ausgewähltes"
+
+#~ msgid "Show Selected"
+#~ msgstr "Zeige ausgewählte"
+
+#~ msgid "Load User Generated Content"
+#~ msgstr "Lade Benutzergenerierten Inhalt"
+
+#~ msgid "Notice Board Entry Information"
+#~ msgstr "Schwarzes Brett Eintrags-Information"
+
+#~ msgid "http://www.sabayon.org"
+#~ msgstr "http://www.sabayon.org"
+
+#~ msgid "Notice board Id"
+#~ msgstr "Schwarzes Brett ID"
+
+#~ msgid "Mark as read"
+#~ msgstr "Markieren als gelesen"
+
+#~ msgid "Close notice"
+#~ msgstr "Schließe Notiz"
+
+#~ msgid "Sulfur tips and tricks"
+#~ msgstr "Sulfur Tips und Tricks"
+
+#~ msgid "tooltip text"
+#~ msgstr "Hinweis-Text"
+
+#~ msgid "Show tips on startup"
+#~ msgstr "Zeige Tips beim Start"
+
+#~ msgid "UGC Entry Information"
+#~ msgstr "UGC Eintragsinformationen"
+
+#~ msgid "Keywords (space separated)"
+#~ msgstr "Schlüsselwörter (kommasepariert)"
+
+#~ msgid "_Submit Document"
+#~ msgstr "_Übertrage Dokument"
+
+#~ msgid "Submit a new document"
+#~ msgstr "Reiche neues Dokument ein"
+
+#~ msgid "_Open Document"
+#~ msgstr "_Öffne Dokument"

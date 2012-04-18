@@ -1,5 +1,8 @@
 #!/usr/bin/python2
+import os
 import sys
+
+os.environ['ETP_GETTEXT_DOMAIN'] = "entropy-server"
 
 # Entropy imports
 sys.path.insert(0, "/usr/lib/entropy/lib")

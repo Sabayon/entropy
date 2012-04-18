@@ -12,6 +12,8 @@ import errno
 import fcntl
 from threading import Lock
 
+os.environ['ETP_GETTEXT_DOMAIN'] = "entropy-server"
+
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/lib')
 sys.path.insert(0,'/usr/lib/entropy/server')
