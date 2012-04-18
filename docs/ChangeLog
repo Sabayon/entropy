@@ -1,3 +1,166 @@
+commit 9745fa37f7031d941287cd9e32671bf773a5713a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 10:45:43 2012 +0200
+
+    Release Entropy 1.0_rc104
+
+commit 77214cbddfaf6117bb1bd135e53e72e3f10c6507
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 10:41:51 2012 +0200
+
+    [Rigo] update translations
+
+commit 8258a53f2cb44d86805dd788eb13e73e372f8bc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 10:40:38 2012 +0200
+
+    [Rigo] update entropy.pot
+
+commit 4506c5d3a8401fe474d6f8779bdea5f763ea1318
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 22:16:02 2012 +0200
+
+    [services] remove old file
+
+commit 2241c2a2c4eb7934d70ed620b76a330d8bf02f56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 22:09:28 2012 +0200
+
+    [sulfur] goodbye my friend (it's been retired [moved] to sulfur.git)
+
+commit ff3578321d6e84778c1659089959ac57379de40b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 20:36:52 2012 +0200
+
+    [RigoDaemon] set allow_active=yes for org.sabayon.RigoDaemon.update
+
+commit 375ec06f601d6caa0986f8dfa2fa5249473f543c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 20:31:24 2012 +0200
+
+    [RigoDaemon] make the dbus service executable source /etc/profile
+
+commit 5400519abcbc811ea8a5ff8760a2e1282a9cd999
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 19:53:57 2012 +0200
+
+    [RigoDaemon] feed App Management notes to clients, bump API
+    
+    Update Rigo as well and let it push the notes to the Terminal Widget
+    (they come from stdout and stderr, sorry)
+
+commit 5968ee99c487f56debcbbc6afbb4dd12cdb6ad65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 19:53:09 2012 +0200
+
+    [Rigo] be less nazi with the required Window size
+
+commit 96b410cab33f47584454401796ff78d8295f25cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 19:52:11 2012 +0200
+
+    [Rigo] make "Show me" buttons in BottomNotificationBox resize Rigo height
+
+commit 2b8e60b0e677258b466d5a32d0f5f838c51c24ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 17 19:50:07 2012 +0200
+
+    [Rigo] WorkViewController: beautify VteTerminal and Progress Bar
+    
+    Place the TerminalWidget inside a Gtk.Expander and hide it by default.
+    Hide the Progress Bar as well when no data is held by it.
+
+commit 0ff52935d74685b88d60a62ea26c41bc057ab430
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:51:08 2012 +0200
+
+    [todo] update TODO
+
+commit d397a174bd79b01683cc758e88235e085d4032d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:47:04 2012 +0200
+
+    [entropy.client.interfaces.dep] filter out spmsync'd orphaned packages
+    
+    If package has been installed from "spm-db" and Entropy revision
+    is set to "9999", do not consider it as orphaned
+
+commit d0f86c3e8d71863e34aaa7ce5760a63241c6c375
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:41:35 2012 +0200
+
+    [equo] use etpConst['spmetprev'] and etpConst['spmdbid']
+
+commit 753195d15d0c8bd4d21782fe071b27af14a3e17c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:41:21 2012 +0200
+
+    [entropy.const] move spm magic strings and numbers to etpConst
+
+commit d7bfa5f6f49573088e9ab78bcf758ab5d83b99b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:08:09 2012 +0200
+
+    [po] update entropy.pot
+
+commit ce3788aa59fc84e469fa87d8ee15822f60fbe519
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:07:27 2012 +0200
+
+    [eit] add "eit remote" command
+
+commit 79042c24e7c29cce361694b19a56515ead2e4a9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 22:03:50 2012 +0200
+
+    [entropy.server] add repository_metadata() method
+
+commit affbad3c11c2dddeabab3bab4f31618bf1ab90ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 14:51:13 2012 +0200
+
+    [magneto] remove ping/pong protocol usage in favor of shutdown() signal
+    
+    Magneto will reload itself when shutdown() arrives from RigoDaemon.
+
+commit 496af68b5012351b5050050a1e8380747021319c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 14:34:55 2012 +0200
+
+    [RigoDaemon] add deferred_shutdown() and shutdown() signals
+    
+    Both can be used as replacement for the ping/pong protocol in order
+    to let RigoDaemon shutdown.
+    This is particularly useful for notification applets, in where holding
+    RigoDaemon instance is suboptimal.
+    On the other hand, letting RigoDaemon reload may then cause API
+    mismatches with these notification applets if they don't reload
+    as well.
+
+commit 5c4fdc95db33aaf39170fb3f138fd0d12303bd6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 13:13:59 2012 +0200
+
+    [magneto] signal up-to-date system state, properly convert atoms to unicode
+
+commit 32914b7f58033ac6e78830bc73572e0fa68860f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 10:26:46 2012 +0200
+
+    [RigoDaemon] always send updates_available, even when no updates are available
+
+commit 63682a7edb0b254148cb2be0250cdcccb324f857
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 16 10:25:39 2012 +0200
+
+    [RigoDaemon] use Gio file monitoring interface instead of plain dnotify
+
+commit d59ddfdfbb07ed03266b0c24e85bae280eb07eae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 15 18:18:24 2012 +0200
+
+    Tagging Entropy version 1.0_rc103
+
 commit 6b79a4674636890df1bccfd88a48e919525ea114
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Apr 15 18:18:23 2012 +0200
