@@ -43,7 +43,6 @@ entropy-install:
 
 	ln -sf lib $(DESTDIR)/$(LIBDIR)/entropy/libraries
 	install -m 755 misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
-	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
 	install -m 755 misc/entropy_hwgen.sh $(DESTDIR)$(BINDIR)/
 	install -m 644 misc/entropy.logrotate $(DESTDIR)/etc/logrotate.d/entropy
 
