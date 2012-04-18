@@ -24,6 +24,8 @@ from gi.repository import Vte
 
 from entropy.const import etpConst, const_isunicode
 
+from rigo.utils import prepare_markup
+
 class TerminalWidget(Vte.Terminal):
 
     """
@@ -39,7 +41,7 @@ class TerminalWidget(Vte.Terminal):
         self.set_emulation("xterm")
         self.set_background_saturation(0.0)
         self.set_opacity(65535)
-        self.get_font().set_size(9000)
+        self.set_font_from_string("Monospace 9")
         self.set_scrollback_lines(10000)
         self.set_scroll_on_output(True)
 
@@ -56,4 +58,8 @@ class TerminalWidget(Vte.Terminal):
         if const_isunicode(txt):
             raw_txt_len = len(txt.encode(etpConst['conf_encoding']))
 
-        return Vte.Terminal.feed(self, txt, raw_txt_len)
+        try:
+            return Vte.Terminal.feed(self, txt, raw_txt_len)
+        except TypeError:
+            # Vte.Terminal 0.32.x
+            return Vte.Terminal.feed(self, prepare_markup(txt))
