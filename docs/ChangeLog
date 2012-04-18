@@ -1,3 +1,21 @@
+commit 4fa3cae9862ddfa63f3d022dda39d7df2d000236
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 13:17:48 2012 +0200
+
+    Release Entropy 1.0_rc106
+
+commit a322d1f28d501636dbc6b47f44194bd92dd556b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 13:17:18 2012 +0200
+
+    [Makefile] remove repository_services from init.d
+
+commit ca8ed72a2bced693bf81ba652bd2e2dca4ff6d71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 12:56:13 2012 +0200
+
+    Tagging Entropy version 1.0_rc105
+
 commit 8ec4415612c29c2558fddbe1ba617162021d6c11
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 18 12:56:11 2012 +0200
