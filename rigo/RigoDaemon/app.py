@@ -195,14 +195,12 @@ class DaemonUrlFetcher(UrlFetcher):
             return
 
         # avoid flooding clients
-        average = self.__average
-        if average > 0.2 and average < 99.8:
-            last_t = self.__last_t
-            cur_t = time.time()
-            if last_t is not None:
-                if (cur_t - last_t) < 0.5:
-                    return # dont flood
-            self.__last_t = cur_t
+        last_t = self.__last_t
+        cur_t = time.time()
+        if last_t is not None:
+            if (cur_t - last_t) < 0.5:
+                return # dont flood
+        self.__last_t = cur_t
 
         GLib.idle_add(
             self._DAEMON.transfer_output,
