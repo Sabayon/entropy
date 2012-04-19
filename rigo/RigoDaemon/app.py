@@ -96,8 +96,9 @@ if DAEMON_LOGGING:
 def write_output(message, debug=False):
     message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + message
     if DAEMON_LOGGING:
-        DAEMON_LOG.write(message)
-        DAEMON_LOG.flush()
+        if (debug and DAEMON_DEBUG) or (not debug):
+            DAEMON_LOG.write(message)
+            DAEMON_LOG.flush()
     if DAEMON_DEBUG:
         if debug:
             const_debug_write(
