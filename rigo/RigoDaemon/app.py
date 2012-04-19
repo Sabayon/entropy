@@ -1217,20 +1217,26 @@ class RigoDaemonService(dbus.service.Object):
                             self._app_mgmt_notes['fobj'] = None
 
                         # root is already owning it
-                        try:
-                            os.chmod(app_log_path, perms)
-                        except OSError as err:
-                            if err.errno == errno.ENOENT:
-                                # wtf, file vanished?
-                                app_log_path = ""
-                            elif err.errno == errno.EPERM:
-                                # somebody changed the permissions
-                                app_log_path = ""
+                        if app_log_path is not None:
+                            try:
+                                os.chmod(app_log_path, perms)
+                            except OSError as err:
+                                if err.errno == errno.ENOENT:
+                                    # wtf, file vanished?
+                                    app_log_path = ""
+                                elif err.errno == errno.EPERM:
+                                    # somebody changed the permissions
+                                    app_log_path = ""
                             else:
                                 write_output(
                                     "_action_queue_finally: "
                                     "unexpected error %s" % (repr(err),))
                                 app_log_path = ""
+                        else:
+                            write_output(
+                                "_action_queue_finally: "
+                                "unexpected app_log_path, None??")
+                            app_log_path = ""
 
                     try:
                         self._unbusy(activity)
