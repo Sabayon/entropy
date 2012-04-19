@@ -5,14 +5,12 @@ Backlog (raw)
     - rework client/ code, as done with eit
       - ditch etpUi
 
-    - dump Sulfur
-      once done, rewrite entropy.Security() interface
-      to be O(1).
-
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
       Test package generation and entropy client behaviour
       (both direct and inverse dependencies calculation)
+
+    - rewrite entropy.Security() to be O(1) (dump sulfur first)
 
   1.0, long term:
 
@@ -22,7 +20,7 @@ Backlog (raw)
   1.1:
 
     - pkgcore spm plugin
-        NEEDED are missing
+        NEEDED is missing
     - python 3.x support -> more tests
 
   break backward compat:
