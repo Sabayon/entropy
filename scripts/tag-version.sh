@@ -13,7 +13,7 @@ for cur_tag in `git tag`; do
 done
 
 # Validate Entropy Client po files
-( cd misc/po && make validate ) || exit 1
+( cd client/po && make validate ) || exit 1
 
 # Validate Entropy Server po files
 ( cd server/po && make validate ) || exit 1
