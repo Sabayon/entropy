@@ -1182,6 +1182,53 @@ class RigoDaemonService(dbus.service.Object):
             with self._activity_mutex:
                 self._action_queue_worker_unlocked(item)
 
+    def _read_app_management_notes(self):
+        """
+        Read Application Management Install notes
+        (stdout and stderr capture).
+        """
+        # before unbusy, read App Management Notes
+        with self._app_mgmt_mutex:
+            # 0o644
+            perms = stat.S_IREAD | stat.S_IWRITE \
+                | stat.S_IRGRP | stat.S_IROTH
+
+            fobj = self._app_mgmt_notes['fobj']
+            app_log_path = self._app_mgmt_notes['path']
+            if fobj is not None:
+                try:
+                    fobj.close()
+                except OSError as err:
+                    write_output(
+                        "_read_app_management_notes: "
+                        "unexpected close() error %s" % (
+                            repr(err),))
+                self._app_mgmt_notes['fobj'] = None
+
+            # root is already owning it
+            if app_log_path is not None:
+                try:
+                    os.chmod(app_log_path, perms)
+                except OSError as err:
+                    if err.errno == errno.ENOENT:
+                        # wtf, file vanished?
+                        app_log_path = ""
+                    elif err.errno == errno.EPERM:
+                        # somebody changed the permissions
+                        app_log_path = ""
+                    else:
+                        write_output(
+                            "_read_app_management_notes: "
+                            "unexpected error %s" % (repr(err),))
+                        app_log_path = ""
+            else:
+                write_output(
+                    "_read_app_management_notes: "
+                    "unexpected app_log_path, None??")
+                app_log_path = ""
+
+            return app_log_path
+
     def _action_queue_worker_unlocked(self, item):
         """
         Action Queue worker code.
@@ -1191,6 +1238,7 @@ class RigoDaemonService(dbus.service.Object):
                 with self._action_queue_length_mutex:
                     self._action_queue_length -= 1
             self._disable_stdout_stderr_redirect()
+
             with self._enqueue_action_busy_hold_sem:
                 # unbusy?
                 has_more = self._action_queue_waiter.acquire(False)
@@ -1198,47 +1246,13 @@ class RigoDaemonService(dbus.service.Object):
                     # put it back
                     self._action_queue_waiter.release()
                 else:
-
-                    # before unbusy, read App Management Notes
-                    with self._app_mgmt_mutex:
-                        # 0o644
-                        perms = stat.S_IREAD | stat.S_IWRITE \
-                            | stat.S_IRGRP | stat.S_IROTH
-
-                        fobj = self._app_mgmt_notes['fobj']
-                        app_log_path = self._app_mgmt_notes['path']
-                        if fobj is not None:
-                            try:
-                                fobj.close()
-                            except OSError:
-                                write_output(
-                                    "_action_queue_finally: "
-                                    "unexpected close() error %s" % (
-                                        repr(err),))
-                            self._app_mgmt_notes['fobj'] = None
-
-                        # root is already owning it
-                        if app_log_path is not None:
-                            try:
-                                os.chmod(app_log_path, perms)
-                            except OSError as err:
-                                if err.errno == errno.ENOENT:
-                                    # wtf, file vanished?
-                                    app_log_path = ""
-                                elif err.errno == errno.EPERM:
-                                    # somebody changed the permissions
-                                    app_log_path = ""
-                                else:
-                                    write_output(
-                                        "_action_queue_finally: "
-                                        "unexpected error %s" % (repr(err),))
-                                    app_log_path = ""
-                        else:
-                            write_output(
-                                "_action_queue_finally: "
-                                "unexpected app_log_path, None??")
-                            app_log_path = ""
-
+                    try:
+                        app_log_path = self._read_app_management_notes()
+                    except Exception as err:
+                        write_output("_action_queue_worker_thread: "
+                                     "unexpected error reading app mgmt notes "
+                                     "%s" % (repr(err),))
+                        app_log_path = ""
                     try:
                         self._unbusy(activity)
                     except ActivityStates.AlreadyAvailableError:
