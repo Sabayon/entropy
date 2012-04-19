@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-04-19 01:59+0000\n"
+"Last-Translator: dudumomo <dudumomo@gmail.com>\n"
 "Language-Team: French (http://www.transifex.net/projects/p/sabayon-rigo/language/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -44,7 +44,7 @@ msgstr "Installation d’application"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
-msgstr ""
+msgstr "Ne peut sauvegarder le fichier de configuration"
 
 #: ../rigo/models/configupdate.py:300
 msgid "Destination"
@@ -52,7 +52,7 @@ msgstr ""
 
 #: ../rigo/models/configupdate.py:303
 msgid "Applications"
-msgstr ""
+msgstr "Applications"
 
 #: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
 #: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
@@ -71,7 +71,7 @@ msgstr "Installé"
 #: ../rigo/models/application.py:1285
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr ""
+msgstr "<b>%s</b> est installé"
 
 #: ../rigo/models/application.py:1287
 msgid "from"
@@ -99,7 +99,7 @@ msgstr "Indicateurs USE"
 
 #: ../rigo/models/application.py:1357
 msgid "No use flags"
-msgstr ""
+msgstr "Pas d'USE flags"
 
 #: ../rigo/models/application.py:1375
 msgid "Runtime dependencies"
@@ -107,7 +107,7 @@ msgstr ""
 
 #: ../rigo/models/application.py:1376
 msgid "Build dependencies"
-msgstr ""
+msgstr "Construction des dépendances"
 
 #: ../rigo/models/application.py:1377
 msgid "Post dependencies"
@@ -143,41 +143,41 @@ msgstr[1] ""
 
 #: ../rigo/controllers/daemon.py:662
 msgid "Application"
-msgstr ""
+msgstr "Application"
 
 #: ../rigo/controllers/daemon.py:665
 msgid "An <b>unknown error</b> occurred"
-msgstr ""
+msgstr "Une <b>erreur inconnue</b> s'est produite"
 
 #: ../rigo/controllers/daemon.py:667
 #, python-format
 msgid "<b>%s</b> download failed"
-msgstr ""
+msgstr "<b>%s</b> téléchargement échoué"
 
 #: ../rigo/controllers/daemon.py:670
 #, python-format
 msgid "<b>%s</b> install failed"
-msgstr ""
+msgstr "<b>%s</b> installation échouée"
 
 #: ../rigo/controllers/daemon.py:673
 #, python-format
 msgid "<b>%s</b> removal failed"
-msgstr ""
+msgstr "<b>%s</b> suppression échouée"
 
 #: ../rigo/controllers/daemon.py:677
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr ""
+msgstr "<b>%s</b>, non autorisé"
 
 #: ../rigo/controllers/daemon.py:680
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr ""
+msgstr "<b>%s</b>, erreur interne"
 
 #: ../rigo/controllers/daemon.py:685
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr ""
+msgstr "<b>%s</b> dépendances non trouvées"
 
 #: ../rigo/controllers/daemon.py:690
 #, python-format
@@ -224,12 +224,12 @@ msgstr[1] ""
 
 #: ../rigo/controllers/daemon.py:1683
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "En attente de <b>RigoDaemon</b>, veuillez patienter..."
 
 #: ../rigo/controllers/daemon.py:1754 ../rigo/controllers/daemon.py:2416
 #: ../rigo/controllers/daemon.py:2643
 msgid "Another activity is currently in progress"
-msgstr ""
+msgstr "Une autre activité est actuellement en cours"
 
 #: ../rigo/controllers/daemon.py:1757 ../rigo/controllers/daemon.py:2420
 #: ../rigo/controllers/daemon.py:2647
@@ -276,7 +276,7 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:2297
 msgid "Okay"
-msgstr ""
+msgstr "D'accord"
 
 #: ../rigo/controllers/daemon.py:2563
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
@@ -284,7 +284,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:213
 msgid "Repositories Update in <b>progress</b>..."
-msgstr ""
+msgstr "Mise à jour des dépôts <b>en cours</b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 msgid "<b>Application Management</b> in progress..."
@@ -352,24 +352,24 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
-msgstr ""
+msgstr "_Votez maintenant"
 
 #: ../rigo/ui/gtk3/controllers/application.py:321
 #: ../rigo/ui/gtk3/controllers/application.py:357
 #: ../rigo/ui/gtk3/controllers/application.py:521
 #: ../rigo/ui/gtk3/controllers/application.py:646
 msgid "_Later"
-msgstr ""
+msgstr "_Plus tard"
 
 #: ../rigo/ui/gtk3/controllers/application.py:329
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr ""
+msgstr "Authentification échouée. Votre <b>vote</b> n'a pas éte ajouté"
 
 #: ../rigo/ui/gtk3/controllers/application.py:332
 #: ../rigo/ui/gtk3/controllers/application.py:657
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
-msgstr ""
+msgstr "_D'acc, merci"
 
 #: ../rigo/ui/gtk3/controllers/application.py:339
 #, python-format
@@ -381,7 +381,7 @@ msgstr[1] ""
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
 msgid "_Ok, cool!"
-msgstr ""
+msgstr "_D'acc, cool !"
 
 #: ../rigo/ui/gtk3/controllers/application.py:355
 #: ../rigo/ui/gtk3/controllers/application.py:519
@@ -390,21 +390,21 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:393
 msgid "Your vote has been added!"
-msgstr ""
+msgstr "Votre vote a été ajouté"
 
 #: ../rigo/ui/gtk3/controllers/application.py:396
 #: ../rigo/ui/gtk3/controllers/application.py:572
 msgid "Ok, great!"
-msgstr ""
+msgstr "D'accord, super !"
 
 #: ../rigo/ui/gtk3/controllers/application.py:403
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Vous avez déjà voté pour cette application"
 
 #: ../rigo/ui/gtk3/controllers/application.py:408
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Erreur de vote: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
@@ -417,12 +417,12 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:569
 msgid "Your comment has been submitted!"
-msgstr ""
+msgstr "Votre commentaire a été envoyé !"
 
 #: ../rigo/ui/gtk3/controllers/application.py:578
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr ""
+msgstr "Erreur de l'envoi du commentaire: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:639
 #, python-format
@@ -431,15 +431,15 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:645
 msgid "_Send now"
-msgstr ""
+msgstr "_Envoyer maintenant"
 
 #: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
-msgstr ""
+msgstr "Authenfication échouée. Votre <b>commentaire</b> n'a pas été ajouté"
 
 #: ../rigo/ui/gtk3/controllers/application.py:677
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Encore aucun <b>commentaire</b> pour cette application !</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:726
 msgid "Older comments"
@@ -451,7 +451,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:777
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Encore aucune <b>image</b> pour cette Application !</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:785
 msgid "Older images"
@@ -485,11 +485,11 @@ msgstr "Pas disponible"
 
 #: ../rigo/ui/gtk3/controllers/application.py:911
 msgid "Never downloaded"
-msgstr ""
+msgstr "Jamais téléchargé"
 
 #: ../rigo/ui/gtk3/controllers/application.py:915
 msgid "downloads"
-msgstr ""
+msgstr "Téléchargements"
 
 #: ../rigo/ui/gtk3/controllers/application.py:963
 msgid "Want to add images, etc?"
@@ -497,11 +497,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:965
 msgid "click here!"
-msgstr ""
+msgstr "Cliquez ici !"
 
 #: ../rigo/ui/gtk3/controllers/application.py:976
 msgid "Loading comments..."
-msgstr ""
+msgstr "Chargement des commentaires"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:208
 #: ../rigo/ui/gtk3/controllers/applications.py:269
@@ -511,7 +511,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:421
 msgid "Nothing found for"
-msgstr ""
+msgstr "Aucun résultat pour"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:431
 #, python-format
@@ -572,7 +572,7 @@ msgstr ""
 #. 4 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:505
 msgid "Excellent"
-msgstr ""
+msgstr "Excellent"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:91
 msgid "Cannot remove comment"
@@ -602,7 +602,7 @@ msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
-msgstr ""
+msgstr "Que faire ?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
 msgid "Updates available, how about installing them?"
@@ -610,15 +610,15 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:192
 msgid "_Update System"
-msgstr ""
+msgstr "_Mise à jour du système"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "_Show"
-msgstr ""
+msgstr "_Montrer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 msgid "_Ignore"
-msgstr ""
+msgstr "_Ignorer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:224
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -630,23 +630,23 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:230
 msgid "I dunno dude, I'd say Yes"
-msgstr ""
+msgstr "_J'en sais rien mec, je dirai Oui"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:233
 msgid "_Yes, why not?"
-msgstr ""
+msgstr "_Oui, pourquoi pas?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:234
 msgid "_No, thanks"
-msgstr ""
+msgstr "_Non merci"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:274
 msgid "You need to login to Entropy Web Services"
-msgstr ""
+msgstr "Vous devez vous authentifier au Entropy Web Services"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:278
 msgid "_Login"
-msgstr ""
+msgstr "_Autentification"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:279
 msgid "Register"
@@ -654,7 +654,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:284
 msgid "_Cancel"
-msgstr ""
+msgstr "_Annuler"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:295
 msgid "Username"
@@ -676,11 +676,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:395
 msgid "Don't ask me..."
-msgstr ""
+msgstr "Ne me demandez pas..."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:398
 msgid "_Of course not"
-msgstr ""
+msgstr "_Bien sur que non"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:406
 msgid "A watched pot never boils"
@@ -736,7 +736,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:645
 msgid "Manual review"
-msgstr ""
+msgstr "Revision manuelle"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:649
 msgid "Safe to drop"
@@ -761,7 +761,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:873
 msgid "Confirm"
-msgstr ""
+msgstr "Confirmer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:874
 msgid "Undo"
@@ -791,7 +791,7 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/notifications.py:998
 #: ../rigo/ui/gtk3/widgets/notifications.py:1048
 msgid "Let me see"
-msgstr ""
+msgstr "Laissez moi voir"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:999
 msgid "Happily ignore"
@@ -830,7 +830,7 @@ msgstr "Mots-clé"
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:70
 msgid "More Info"
-msgstr ""
+msgstr "Plus d'info"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"

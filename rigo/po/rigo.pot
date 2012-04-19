@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-18 10:40+0200\n"
+"POT-Creation-Date: 2012-04-19 22:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ../RigoDaemon/app.py:1028
+#: ../RigoDaemon/app.py:1027
 msgid "Not authorized"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1064
+#: ../RigoDaemon/app.py:1063
 msgid "No repositories configured"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1069
+#: ../RigoDaemon/app.py:1068
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1559
+#: ../RigoDaemon/app.py:1564
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1862
+#: ../RigoDaemon/app.py:1867
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1960
+#: ../RigoDaemon/app.py:1965
 msgid "Application Install"
 msgstr ""
 

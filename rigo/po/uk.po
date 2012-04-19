@@ -4,13 +4,15 @@
 # 
 # Translators:
 # Aleksey Baranov <>, 2012.
+# Andriy  <andriy.tsykholyas@gmail.com>, 2012.
+#   <andriy.tsykholyas@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-04-18 20:29+0000\n"
+"Last-Translator: Andriy <andriy.tsykholyas@gmail.com>\n"
 "Language-Team: Ukrainian (http://www.transifex.net/projects/p/sabayon-rigo/language/uk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -115,7 +117,7 @@ msgstr "Залежності Post"
 
 #: ../rigo/models/application.py:1378
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Залежності Staff"
 
 #: ../rigo/models/application.py:1400
 msgid "Click here for more details"
@@ -286,11 +288,11 @@ msgstr "<b>Оновлення Системи</b> розпочалося. Тим 
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:213
 msgid "Repositories Update in <b>progress</b>..."
-msgstr ""
+msgstr "Оновлення репозиторіїв <b>триває</b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:225
 msgid "<b>Application Management</b> in progress..."
-msgstr ""
+msgstr "<b>Керування програмами</b> триває..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:234
 #: ../rigo/ui/gtk3/controllers/notifications.py:251
@@ -319,9 +321,9 @@ msgstr "Видалення"
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] ", і <b>%d</b> <i>ще в черзі</i>"
+msgstr[1] ", і <b>%d</b> <i>ще в черзі</i>"
+msgstr[2] ", і <b>%d</b> <i>ще в черзі</i>"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
@@ -351,7 +353,7 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr ""
+msgstr "Увійшли яе <b>%s</b>! Може <b>проголосуємо</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
@@ -366,7 +368,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:329
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr ""
+msgstr "Невдалий вхід. Ваш <b>голос</b> не був доданий"
 
 #: ../rigo/ui/gtk3/controllers/application.py:332
 #: ../rigo/ui/gtk3/controllers/application.py:657
@@ -394,44 +396,44 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:393
 msgid "Your vote has been added!"
-msgstr ""
+msgstr "Ваш голос додано!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:396
 #: ../rigo/ui/gtk3/controllers/application.py:572
 msgid "Ok, great!"
-msgstr ""
+msgstr "Чудово!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:403
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Ви вже голосували за цю <b>Програму</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:408
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Помилка при голосуванні: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
-msgstr ""
+msgstr "Entropy Web Services не доступні для репозиторію"
 
 #: ../rigo/ui/gtk3/controllers/application.py:506
 #, python-format
 msgid "You are about to add a <b>comment</b> as <b>%s</b>."
-msgstr ""
+msgstr "Ви намагаєтесь додати <b>коментар</b> як <b>%s</b>."
 
 #: ../rigo/ui/gtk3/controllers/application.py:569
 msgid "Your comment has been submitted!"
-msgstr ""
+msgstr "Ваш коментар додано!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:578
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr ""
+msgstr "Помилка при додаванні коментаря: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:639
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
-msgstr ""
+msgstr "Увійшли як <b>%s</b>! Може додамо ваш <b>коментар</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:645
 msgid "_Send now"
@@ -439,31 +441,31 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
-msgstr ""
+msgstr "Не вдалось увійти. Ваш <b>коментар</b> не було додано"
 
 #: ../rigo/ui/gtk3/controllers/application.py:677
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "<i>Ще немає <b>коментарів</b> для цієї програми!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:726
 msgid "Older comments"
-msgstr ""
+msgstr "Старіші коментарі"
 
 #: ../rigo/ui/gtk3/controllers/application.py:733
 msgid "Loading older comments..."
-msgstr ""
+msgstr "Завантаження старіших коментарів..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:777
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr ""
+msgstr "Ще <i>немає жодних <b>зображень</b> для цієї програми!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:785
 msgid "Older images"
-msgstr ""
+msgstr "Старіші зображення"
 
 #: ../rigo/ui/gtk3/controllers/application.py:791
 msgid "Loading older images..."
-msgstr ""
+msgstr "Завантаження старіших зображень..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
 msgid "Update"
@@ -489,15 +491,15 @@ msgstr "Недоступно"
 
 #: ../rigo/ui/gtk3/controllers/application.py:911
 msgid "Never downloaded"
-msgstr ""
+msgstr "Ніколи не скачувати"
 
 #: ../rigo/ui/gtk3/controllers/application.py:915
 msgid "downloads"
-msgstr ""
+msgstr "закачки"
 
 #: ../rigo/ui/gtk3/controllers/application.py:963
 msgid "Want to add images, etc?"
-msgstr ""
+msgstr "Бажаєте додати зображення тощо?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:965
 msgid "click here!"
@@ -511,7 +513,7 @@ msgstr "Завантаження коментарів..."
 #: ../rigo/ui/gtk3/controllers/applications.py:269
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr ""
+msgstr "Програму <b>%s</b> не знайдено"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:421
 msgid "Nothing found for"
@@ -557,31 +559,31 @@ msgstr ""
 #. unrated caption
 #: ../rigo/ui/gtk3/widgets/stars.py:501
 msgid "Awful"
-msgstr ""
+msgstr "Жахливо"
 
 #. 1 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:502
 msgid "Poor"
-msgstr ""
+msgstr "Погано"
 
 #. 2 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:503
 msgid "Adequate"
-msgstr ""
+msgstr "Так собі"
 
 #. 3 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:504
 msgid "Good"
-msgstr ""
+msgstr "Добре"
 
 #. 4 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:505
 msgid "Excellent"
-msgstr ""
+msgstr "Відмінно"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:91
 msgid "Cannot remove comment"
-msgstr ""
+msgstr "Неможливо видалити коментар"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
@@ -595,17 +597,17 @@ msgstr ""
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Є <b>%d</b> оновлення"
+msgstr[1] "Є <b>%d</b> оновлень"
+msgstr[2] "Є <b>%d</b> оновлень"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:179
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "і <b>%d</b> оновлення безпеки"
+msgstr[1] "і <b>%d</b> оновлень безпеки"
+msgstr[2] "і <b>%d</b> оновлень безпеки"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
@@ -613,7 +615,7 @@ msgstr "Що робити?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Є оговлення, може встановимо їх?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:192
 msgid "_Update System"
@@ -629,15 +631,15 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:224
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
+msgstr "Перелік доступних програм застарів, <b>оновити зараз</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:227
 msgid "Repositories should be downloaded, <b>update now</b>?"
-msgstr ""
+msgstr "Треба скачати репозиторії, <b>оновити зараз</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:230
 msgid "I dunno dude, I'd say Yes"
-msgstr ""
+msgstr "Я не знаю друзяко, я би сказав Так"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:233
 msgid "_Yes, why not?"
@@ -649,7 +651,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:274
 msgid "You need to login to Entropy Web Services"
-msgstr ""
+msgstr "Вам треба увійти в Entropy Web Services"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:278
 msgid "_Login"
@@ -657,7 +659,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:279
 msgid "Register"
-msgstr ""
+msgstr "Реєстрація"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:284
 msgid "_Cancel"
@@ -673,7 +675,7 @@ msgstr "Пароль"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:337
 msgid "Login <b>error</b>!"
-msgstr ""
+msgstr "<b>Помилка</b> при вході!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:391
 msgid ""
@@ -683,7 +685,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:395
 msgid "Don't ask me..."
-msgstr ""
+msgstr "Не запитувати мене..."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:398
 msgid "_Of course not"
@@ -709,7 +711,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:488
 msgid "Make sure to review all the licenses"
-msgstr ""
+msgstr "Переконайтесь, що ви переглянули усі ліцензії"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:492
 #: ../rigo/ui/gtk3/widgets/notifications.py:783
@@ -743,7 +745,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:645
 msgid "Manual review"
-msgstr ""
+msgstr "Ручний перегляд"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:649
 msgid "Safe to drop"
@@ -772,7 +774,7 @@ msgstr "Підтвердити"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:874
 msgid "Undo"
-msgstr ""
+msgstr "Відміна"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:935
 #, python-format
@@ -816,19 +818,19 @@ msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1038
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "<b>Надзвичайно</b> важливо завжди читати їх."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1049
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Перестань мені докучати"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
-msgstr ""
+msgstr "Редагувати"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:93
 msgid "Difference"
-msgstr ""
+msgstr "Відмінності"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:105
 msgid "Discard"

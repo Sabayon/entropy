@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Alberto Neto <mrtabac@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-04-19 01:13+0000\n"
+"Last-Translator: Alberto Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.net/projects/p/sabayon-rigo/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -300,7 +301,7 @@ msgstr "<b>Atualização do Sistema</b> em progressão..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:83
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Mostra<b>o Gerenciamento do Aplicativo</b> em progresso</i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:273
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:77

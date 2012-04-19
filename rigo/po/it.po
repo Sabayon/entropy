@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
+"PO-Revision-Date: 2012-04-18 08:43+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.net/projects/p/sabayon-rigo/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -302,7 +302,7 @@ msgstr "<b>Aggiornamento del sistema</b> in corso..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:83
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Mostra progresso <b>Gestione Applicazioni</b></i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:273
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:77
