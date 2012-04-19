@@ -1,3 +1,75 @@
+commit b11f205315ef56ec9840e21cd4ac9ef4c5ad2ac5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:29:14 2012 +0200
+
+    Release Entropy 1.0_rc107
+
+commit 20c2f8b8d183c3316fa40d284f21ca6bbf618916
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:28:57 2012 +0200
+
+    [rigo] update translations
+
+commit a347e4e8ec9c5ac649fb5e75907a052746d38ab0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:28:31 2012 +0200
+
+    [client] update translations
+
+commit 0d5291d099d1d47f43708d9c5de3761918a15851
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:26:28 2012 +0200
+
+    [scripts] fix tag-version.sh script wrt .po validation
+
+commit 6c43493ee1d5a6e8cd1d98ab406e069379c61539
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:20:31 2012 +0200
+
+    [todo] update TODO
+
+commit 33222698ce6405156035055b436fe74235c84fef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:19:50 2012 +0200
+
+    [RigoDaemon] only log debug output when --debug is provided
+
+commit b76ede2ebbf9608bab2de486760be9baaebc9543
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:15:33 2012 +0200
+
+    [RigoDaemon] fix else branch (regression from previous commit)
+
+commit c767da88d3b3cad86475b1f161e2f496470ee237
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 20:31:58 2012 +0200
+
+    [RigoDaemon] app_log_path can be None, deal with it during app mgmt finalization code
+
+commit c405b19bdb5b2e888538bdf9f88ed6fb0187e84c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 20:31:29 2012 +0200
+
+    [RigoDaemon] never flood clients with transfer_output()
+
+commit e1de2167cb917f83cb3272611890767ecaa0af93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 20:08:03 2012 +0200
+
+    [entropy] move client po files from misc/ to client/
+
+commit 601d41d42b1ef033ef8b3d15db247cab9befaab7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 20:02:31 2012 +0200
+
+    [entropy] split server and client .po files
+
+commit 10e5f74567f8bb66cf8b28625f2a2bd2b006ac5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 18 13:17:50 2012 +0200
+
+    Tagging Entropy version 1.0_rc106
+
 commit 4fa3cae9862ddfa63f3d022dda39d7df2d000236
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 18 13:17:48 2012 +0200
