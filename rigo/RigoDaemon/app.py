@@ -1227,11 +1227,11 @@ class RigoDaemonService(dbus.service.Object):
                                 elif err.errno == errno.EPERM:
                                     # somebody changed the permissions
                                     app_log_path = ""
-                            else:
-                                write_output(
-                                    "_action_queue_finally: "
-                                    "unexpected error %s" % (repr(err),))
-                                app_log_path = ""
+                                else:
+                                    write_output(
+                                        "_action_queue_finally: "
+                                        "unexpected error %s" % (repr(err),))
+                                    app_log_path = ""
                         else:
                             write_output(
                                 "_action_queue_finally: "
