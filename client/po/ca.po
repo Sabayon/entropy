@@ -1,23 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 #   <rcalvoi@yahoo.com>, 2012.
 # Roger Calvó <rcalvoi@yahoo.com>, 2008, 2009, 2010, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sabayon Entropy\n"
+"Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"PO-Revision-Date: 2012-04-18 18:04+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Catalan (http://www.transifex.net/projects/p/sabayon-entropy/"
-"language/ca/)\n"
-"Language: ca\n"
+"Language-Team: Catalan (http://www.transifex.net/projects/p/sabayon-entropy/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -66,8 +65,7 @@ msgstr "No s'ha trobat un Identificador Únic Spm per a "
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr ""
-"s'està actualitzant la disposició de metadades del repositori, espereu!"
+msgstr "s'està actualitzant la disposició de metadades del repositori, espereu!"
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
@@ -400,8 +398,7 @@ msgstr "S'està revertint"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3500
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
-"S'està ometent l'actualització de fitxers de configuració, no sou root."
+msgstr "S'està ometent l'actualització de fitxers de configuració, no sou root."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3763
 msgid "Error calculating dependencies"
@@ -535,8 +532,7 @@ msgstr "No es pot calcular la suma de verificació"
 
 #: ../../lib/entropy/client/interfaces/methods.py:79
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
-"Si us plau, actualitzeu ara els repositoris per eliminar aquest missatge!"
+msgstr "Si us plau, actualitzeu ara els repositoris per eliminar aquest missatge!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:99
 #: ../../client/text_ui.py:1787
@@ -755,8 +751,7 @@ msgstr "ERROR"
 
 #: ../../lib/entropy/client/interfaces/db.py:1144
 msgid "An error occured while checking repository integrity"
-msgstr ""
-"S'ha produït un error mentre s'estava analitzant la integritat del repositori"
+msgstr "S'ha produït un error mentre s'estava analitzant la integritat del repositori"
 
 #: ../../lib/entropy/client/interfaces/db.py:1145
 msgid "Giving up"
@@ -764,10 +759,9 @@ msgstr "S'abandona"
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
-msgstr ""
-"Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de "
-"confiança apropiat"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
+msgstr "Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de confiança apropiat"
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
 msgid "This repository suports GPG-signed packages"
@@ -803,8 +797,7 @@ msgstr "Error en instal·lar la clau GPG"
 
 #: ../../lib/entropy/client/interfaces/db.py:1300
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
-"La clau GPG sembla instal·lada, però no desada correctament, es restableix"
+msgstr "La clau GPG sembla instal·lada, però no desada correctament, es restableix"
 
 #: ../../lib/entropy/client/interfaces/db.py:1334
 msgid "Successfully installed GPG key for repository"
@@ -909,9 +902,7 @@ msgstr "el repositori ja està actualitzat"
 
 #: ../../lib/entropy/client/interfaces/db.py:2001
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
-"Hi ha un error en l'actualització dels fitxers de configuració, no és "
-"critic, es continua"
+msgstr "Hi ha un error en l'actualització dels fitxers de configuració, no és critic, es continua"
 
 #: ../../lib/entropy/client/interfaces/package.py:76
 msgid "Already prepared"
@@ -1111,8 +1102,7 @@ msgstr "S'està actualitzant la base de dades"
 #: ../../lib/entropy/client/interfaces/package.py:2223
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
-msgstr ""
-"%s és un fitxer i hauria de ser un directori !! S'eliminarà en 20 segons..."
+msgstr "%s és un fitxer i hauria de ser un directori !! S'eliminarà en 20 segons..."
 
 #: ../../lib/entropy/client/interfaces/package.py:2248
 msgid "directory expected, symlink found"
@@ -1132,9 +1122,7 @@ msgstr "No es pot eliminar l'enllaç simbòlic"
 #. by the user
 #: ../../lib/entropy/client/interfaces/package.py:2419
 msgid "Automerging config file, never modified"
-msgstr ""
-"S'està combinant automàticament el fitxer de configuració; no s'ha modificat "
-"mai"
+msgstr "S'està combinant automàticament el fitxer de configuració; no s'ha modificat mai"
 
 #: ../../lib/entropy/client/interfaces/package.py:2448
 #: ../../lib/entropy/client/interfaces/package.py:2470
@@ -1263,8 +1251,7 @@ msgstr "S'està suprimint"
 
 #: ../../lib/entropy/client/interfaces/package.py:3333
 msgid "Cleaning previously installed application data."
-msgstr ""
-"S'estan netejant les dades de les aplicacions instal·lades anteriorment."
+msgstr "S'estan netejant les dades de les aplicacions instal·lades anteriorment."
 
 #: ../../lib/entropy/client/interfaces/package.py:3440
 msgid "Configuring package"
@@ -1557,9 +1544,7 @@ msgstr "el servei GPG no està disponible"
 
 #: ../../lib/entropy/security.py:1217
 msgid "digest verification failed, try again later"
-msgstr ""
-"la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més "
-"tard"
+msgstr "la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més tard"
 
 #: ../../lib/entropy/security.py:1229
 msgid "installing"
@@ -1583,9 +1568,7 @@ msgstr "Dependència de construcció"
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
-"El repositori del client està malmès. Si us plau, restaureu una còpia de "
-"seguretat."
+msgstr "El repositori del client està malmès. Si us plau, restaureu una còpia de seguretat."
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"
@@ -2011,9 +1994,7 @@ msgstr "S'estan recollint els executables trencats"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
-"no us preocupeu per les llibreries que es mostren aquí, però que no "
-"apareixen després."
+msgstr "no us preocupeu per les llibreries que es mostren aquí, però que no apareixen després."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -2594,9 +2575,7 @@ msgstr "Els repositoris s'actualitzaran en segon terme"
 msgid ""
 "sys-apps/entropy-client-services not installed?. Update not allowed, please "
 "run as root."
-msgstr ""
-"sys-apps/entropy-client-services no està instal·lat? No es permet "
-"d'actualització, executeu-ho com a root."
+msgstr "sys-apps/entropy-client-services no està instal·lat? No es permet d'actualització, executeu-ho com a root."
 
 #: ../../client/text_repositories.py:450
 msgid "Have a nice day"
@@ -2757,9 +2736,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:438
 msgid "Please choose a file to update by typing its identification number."
-msgstr ""
-"Si us plau, escolliu un fitxer per actualitzar-lo escrivint el seu número "
-"d'identificador."
+msgstr "Si us plau, escolliu un fitxer per actualitzar-lo escrivint el seu número d'identificador."
 
 #: ../../client/text_configuration.py:439
 msgid "Other options are:"
@@ -3085,23 +3062,19 @@ msgstr "S'està regenerant la taula de comptadors"
 
 #: ../../client/text_rescue.py:214
 msgid "Counters table regenerated. Look above for errors."
-msgstr ""
-"S'ha regenerat la taula de comptadors. Cerqueu possibles errors més amunt."
+msgstr "S'ha regenerat la taula de comptadors. Cerqueu possibles errors més amunt."
 
 #: ../../client/text_rescue.py:221
 msgid ""
 "The installed package database will be resurrected, this will take a LOT of "
 "time."
-msgstr ""
-"Es ressuscitarà la base de dades de paquets instal·lats, això tardarà MOLTA "
-"estona."
+msgstr "Es ressuscitarà la base de dades de paquets instal·lats, això tardarà MOLTA estona."
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
-msgstr ""
-"Si us plau, useu aquesta funció NOMÉS si esteu usant una distribució amb "
-"suport per Entropy."
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
+msgstr "Si us plau, useu aquesta funció NOMÉS si esteu usant una distribució amb suport per Entropy."
 
 #: ../../client/text_rescue.py:230
 msgid "Can I continue ?"
@@ -3119,9 +3092,7 @@ msgstr "Sabeu el que esteu fent?"
 #. if exist, copy old database
 #: ../../client/text_rescue.py:248 ../../client/text_rescue.py:635
 msgid "Creating backup of the previous database, if exists."
-msgstr ""
-"S'està creant una còpia de seguretat de la base de dades anterior, si "
-"existeix."
+msgstr "S'està creant una còpia de seguretat de la base de dades anterior, si existeix."
 
 #: ../../client/text_rescue.py:257 ../../client/text_rescue.py:645
 msgid "Initializing the new database at"
@@ -3193,15 +3164,11 @@ msgstr "La base de dades s'ha reinicialitzat correctament"
 msgid ""
 "Keep in mind that virtual packages couldn't be matched. They don't own any "
 "files."
-msgstr ""
-"Penseu que els paquets virtuals no s'han pogut concordar. Aquests no "
-"contenen cap fitxer."
+msgstr "Penseu que els paquets virtuals no s'han pogut concordar. Aquests no contenen cap fitxer."
 
 #: ../../client/text_rescue.py:386
 msgid "Scanning Source Package Manager and Entropy databases for differences"
-msgstr ""
-"S'estan cercant diferències entre les bases de dades del Gestor de Paquets "
-"Font i Entropy"
+msgstr "S'estan cercant diferències entre les bases de dades del Gestor de Paquets Font i Entropy"
 
 #: ../../client/text_rescue.py:394
 msgid "Collecting Source Package Manager metadata"
@@ -3267,16 +3234,13 @@ msgstr "L'actualització de la base de dades ha acabat"
 msgid ""
 "The installed package repository will be regenerated using Source Package "
 "Manager"
-msgstr ""
-"El repositori de paquets instal·lat es tornarà a generar usant el Gestor de "
-"Paquets Font"
+msgstr "El repositori de paquets instal·lat es tornarà a generar usant el Gestor de Paquets Font"
 
 #: ../../client/text_rescue.py:602
 msgid ""
 "If you dont know what you're doing just, don't do this. Really. I'm not "
 "joking."
-msgstr ""
-"Si no sabeu el que esteu fent, no ho feu. De veritat. Això no és cap joc."
+msgstr "Si no sabeu el que esteu fent, no ho feu. De veritat. Això no és cap joc."
 
 #: ../../client/text_rescue.py:603
 msgid "Understood ?"
@@ -3302,9 +3266,7 @@ msgstr "S'està transductingactioningintactering les bases de dades"
 msgid ""
 "All the Source Package Manager packages have been injected into Entropy "
 "database"
-msgstr ""
-"Tots els paquets del Gestor de Paquets Font s'han injectat a la base de "
-"dades d'Entropy"
+msgstr "Tots els paquets del Gestor de Paquets Font s'han injectat a la base de dades d'Entropy"
 
 #: ../../client/text_rescue.py:730 ../../client/text_rescue.py:780
 #: ../../client/text_rescue.py:787
@@ -3351,8 +3313,7 @@ msgstr "No s'han especificat paquets vàlids"
 #. print the list
 #: ../../client/text_smart.py:129
 msgid "This is the list of the packages that would be quickpkg'd"
-msgstr ""
-"Aquesta és la llista de paquets que es s'empaquetaran ràpidament (quickpkg)"
+msgstr "Aquesta és la llista de paquets que es s'empaquetaran ràpidament (quickpkg)"
 
 #: ../../client/text_smart.py:137
 #: ../../magneto/src/magneto/kde/interfaces.py:230
@@ -3423,7 +3384,8 @@ msgstr "S'han extret metadades d'Entropy de"
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr "Aquesta és la llista de paquets que es combinaran en un sol"
 
 #: ../../client/text_smart.py:328
@@ -3655,9 +3617,7 @@ msgstr "considera mtime en comptes de SHA256 (falsos positius per davant)"
 
 #: ../../client/equo.py:112
 msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"actualitza l'empremta electrònica i mtime (útil després d'editar fitxers de "
-"configuració)"
+msgstr "actualitza l'empremta electrònica i mtime (útil després d'editar fitxers de configuració)"
 
 #: ../../client/equo.py:113
 msgid "reinstall faulty packages"
@@ -3694,9 +3654,7 @@ msgstr "llista només els no afectats"
 
 #: ../../client/equo.py:121
 msgid "show information about provided advisories identifiers"
-msgstr ""
-"mostra informació sobre els identificadors d'avisos de seguretat "
-"proporcionats"
+msgstr "mostra informació sobre els identificadors d'avisos de seguretat proporcionats"
 
 #: ../../client/equo.py:122
 msgid "automatically install all the available security updates"
@@ -3736,8 +3694,7 @@ msgstr "elimina els paquets baixats després d'usar-los"
 
 #: ../../client/equo.py:137
 msgid "pull all the dependencies in, regardless their state"
-msgstr ""
-"posa a la cua totes les dependències, sense tenir en compte el seu estat"
+msgstr "posa a la cua totes les dependències, sense tenir en compte el seu estat"
 
 #: ../../client/equo.py:138 ../../client/equo.py:149 ../../client/equo.py:156
 msgid "calm down dependencies resolution algorithm (might be risky)"
@@ -3765,9 +3722,7 @@ msgstr "elimina un o més paquets"
 
 #: ../../client/equo.py:164
 msgid "also pull unused dependencies where reverse deps list is empty"
-msgstr ""
-"posa a la cua també les dependències que tinguin la llista de dependències "
-"inverses buida"
+msgstr "posa a la cua també les dependències que tinguin la llista de dependències inverses buida"
 
 #: ../../client/equo.py:165
 msgid "when used with --deep, helps the removal of virtual packages"
@@ -3915,20 +3870,15 @@ msgstr "mostra els paquets que contenen les etiquetes proporcionades"
 
 #: ../../client/equo.py:223
 msgid "show direct depdendencies tree for provided installable atoms"
-msgstr ""
-"mostra l'arbre de dependències directes dels àtoms d'instal·lació "
-"proporcionats"
+msgstr "mostra l'arbre de dependències directes dels àtoms d'instal·lació proporcionats"
 
 #: ../../client/equo.py:224 ../../client/equo.py:226
 msgid "include system packages, build deps and circularity information"
-msgstr ""
-"inclou paquets del sistema, dependències de construcció i informació circular"
+msgstr "inclou paquets del sistema, dependències de construcció i informació circular"
 
 #: ../../client/equo.py:225
 msgid "show reverse depdendencies tree for provided installed atoms"
-msgstr ""
-"mostra l'arbre de dependències inverses pels àtoms d'instal·lació "
-"proporcionats"
+msgstr "mostra l'arbre de dependències inverses pels àtoms d'instal·lació proporcionats"
 
 #: ../../client/equo.py:227 ../../client/equo.py:277
 msgid "show more details"
@@ -3952,10 +3902,9 @@ msgstr "gestiona funcionalitats addicionals"
 
 #: ../../client/equo.py:242
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
-"construeix un smart package pels àtoms proporcionats (múltiples paquets en "
-"un sol fitxer)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
+msgstr "construeix un smart package pels àtoms proporcionats (múltiples paquets en un sol fitxer)"
 
 #: ../../client/equo.py:243
 msgid "recreate an Entropy package from your System"
@@ -3968,20 +3917,15 @@ msgstr "desa els paquets nous en el directori especificat"
 #: ../../client/equo.py:245
 msgid ""
 "convert provided Source Package Manager package files into Entropy packages"
-msgstr ""
-"converteix els paquets de fitxers del Gestor de Paquets Font proporcionats "
-"en paquets Entropy"
+msgstr "converteix els paquets de fitxers del Gestor de Paquets Font proporcionats en paquets Entropy"
 
 #: ../../client/equo.py:247
 msgid "convert provided Entropy packages into Source Package Manager ones"
-msgstr ""
-"converteix els paquets proporcionats per Entropy en paquets del Gestor de "
-"Paquets Font"
+msgstr "converteix els paquets proporcionats per Entropy en paquets del Gestor de Paquets Font"
 
 #: ../../client/equo.py:249
 msgid "extract Entropy metadata from provided Entropy package files"
-msgstr ""
-"extreu les metadades d'Entropy dels fitxers de paquets Entropy proporcionats"
+msgstr "extreu les metadades d'Entropy dels fitxers de paquets Entropy proporcionats"
 
 #: ../../client/equo.py:250
 msgid "save new metadata into the specified directory"
@@ -3998,24 +3942,18 @@ msgstr "cerca errors al repositori de paquets instal·lats"
 #: ../../client/equo.py:254
 msgid ""
 "remove installed packages repository internal indexes to save disk space"
-msgstr ""
-"elimina els índex interns dels repositoris de paquets instal·lats per "
-"estalviar espai"
+msgstr "elimina els índex interns dels repositoris de paquets instal·lats per estalviar espai"
 
 #: ../../client/equo.py:255
 msgid ""
 "generate installed packages database using Source Package Manager "
 "repositories"
-msgstr ""
-"genera la base de dades dels paquets instal·lats usant els repositoris del "
-"Gestor de Paquets Font"
+msgstr "genera la base de dades dels paquets instal·lats usant els repositoris del Gestor de Paquets Font"
 
 #: ../../client/equo.py:256
 msgid ""
 "generate installed packages database using files on the system [last hope]"
-msgstr ""
-"genera la base de dades dels paquets instal·lats usant els fitxers del "
-"sistema [última esperança]"
+msgstr "genera la base de dades dels paquets instal·lats usant els fitxers del sistema [última esperança]"
 
 #: ../../client/equo.py:257
 msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
@@ -4023,20 +3961,15 @@ msgstr "regenera el mapa SPM UIDs (SPM <-> paquets Entropy)"
 
 #: ../../client/equo.py:258
 msgid "makes Entropy aware of your Source Package Manager updated packages"
-msgstr ""
-"fa que Entropy s'adoni dels paquets actualitzats pel Gestor de Paquets Font"
+msgstr "fa que Entropy s'adoni dels paquets actualitzats pel Gestor de Paquets Font"
 
 #: ../../client/equo.py:259
 msgid "backup the current Entropy installed packages database"
-msgstr ""
-"fa una còpia de seguretat de la base de dades de paquets instal·lats "
-"d'Entropy"
+msgstr "fa una còpia de seguretat de la base de dades de paquets instal·lats d'Entropy"
 
 #: ../../client/equo.py:260
 msgid "restore a previously backed up Entropy installed packages database"
-msgstr ""
-"restaura una còpia de seguretat de la base de dades de paquets instal·lats "
-"d'Entropy"
+msgstr "restaura una còpia de seguretat de la base de dades de paquets instal·lats d'Entropy"
 
 #: ../../client/equo.py:262
 msgid "handles User Generated Content features"
@@ -4058,27 +3991,20 @@ msgstr "força l'acció"
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
-msgstr ""
-"gestiona documents dels paquets del repositori seleccionat (comentaris, "
-"fitxers, vídeos)"
+msgstr "gestiona documents dels paquets del repositori seleccionat (comentaris, fitxers, vídeos)"
 
 #: ../../client/equo.py:267
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"obté els documents disponibles per la clau de paquet especificada (per "
-"exemple: x11-libs/qt)"
+msgstr "obté els documents disponibles per la clau de paquet especificada (per exemple: x11-libs/qt)"
 
 #: ../../client/equo.py:268
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr ""
-"afegeix un document nou per la clau de paquet especificada (per exemple: x11-"
-"libs/qt)"
+msgstr "afegeix un document nou per la clau de paquet especificada (per exemple: x11-libs/qt)"
 
 #: ../../client/equo.py:269
 msgid "remove documents from database using their identifiers"
-msgstr ""
-"elimina documents de la base de dades a partir dels seus identificadors"
+msgstr "elimina documents de la base de dades a partir dels seus identificadors"
 
 #: ../../client/equo.py:270
 msgid "manage package votes for the selected repository"
@@ -4086,13 +4012,11 @@ msgstr "gestiona els vots dels paquets del repositori seleccionat"
 
 #: ../../client/equo.py:271
 msgid "get vote for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"obté els vots per la clau de paquet especificada (per exemple: x11-libs/qt)"
+msgstr "obté els vots per la clau de paquet especificada (per exemple: x11-libs/qt)"
 
 #: ../../client/equo.py:272
 msgid "add vote for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"afegeix un vot per la clau de paquet especificada (per exemple: x11-libs/qt)"
+msgstr "afegeix un vot per la clau de paquet especificada (per exemple: x11-libs/qt)"
 
 #: ../../client/equo.py:275
 msgid "handles Entropy cache"
@@ -4130,19 +4054,16 @@ msgstr "No hi ha més memòria! La culpa és vostra!"
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
-msgstr ""
-"Hola. Sóc el Gestor de Petades. Sento informar-vos que Equo ha petat. Mala "
-"sort."
+msgstr "Hola. Sóc el Gestor de Petades. Sento informar-vos que Equo ha petat. Mala sort."
 
 #: ../../client/equo.py:681
 msgid ""
 "But there's something you could do to help Equo to be a better application."
-msgstr ""
-"Hi ha una cosa que podeu fer, però, per ajudar a fer de Equo una aplicació "
-"millor."
+msgstr "Hi ha una cosa que podeu fer, però, per ajudar a fer de Equo una aplicació millor."
 
 #: ../../client/equo.py:682
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr "-- ENCARA QUE NO VULGUEU ENVIAR EL MATEIX INFORME DIVERSES VEGADES --"
 
 #: ../../client/equo.py:683
@@ -4153,9 +4074,7 @@ msgstr "Ara us mostro el que ha passat. No us preocupeu, jo us ajudaré."
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayon.org."
-msgstr ""
-"Oh! No puc ni escriure a /tmp. Si us plau, copieu l'error i envieu-lo per "
-"correu electrònic a lxnay@sabayon.org."
+msgstr "Oh! No puc ni escriure a /tmp. Si us plau, copieu l'error i envieu-lo per correu electrònic a lxnay@sabayon.org."
 
 #: ../../client/equo.py:711
 msgid "Of course you are on the Internet..."
@@ -4164,12 +4083,8 @@ msgstr "Efectivament esteu connectat a Internet..."
 #: ../../client/equo.py:712
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Um...Puc enviar l'error junt amb alguna altra informació\n"
-"sobre el vostre maquinari als meus creadors perquè em puguin arreglar? (Es "
-"registrarà la vostra IP)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+msgstr "Um...Puc enviar l'error junt amb alguna altra informació\nsobre el vostre maquinari als meus creadors perquè em puguin arreglar? (Es registrarà la vostra IP)"
 
 #: ../../client/equo.py:714
 msgid "Ok, ok ok ok... Sorry!"
@@ -4179,9 +4094,7 @@ msgstr "D'acord, d'acord... Ho sento!"
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
-msgstr ""
-"Si voleu que us contactem (i us donem suport actiu), contesteu també les "
-"respostes de baix:"
+msgstr "Si voleu que us contactem (i us donem suport actiu), contesteu també les respostes de baix:"
 
 #: ../../client/equo.py:719
 msgid "Your Full name:"
@@ -4199,17 +4112,13 @@ msgstr "El que estàveu fent:"
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
-msgstr ""
-"Moltes gràcies. El registre d'error s'ha enviat correctament i esperem que "
-"el problema s'arregli el més aviat possible."
+msgstr "Moltes gràcies. El registre d'error s'ha enviat correctament i esperem que el problema s'arregli el més aviat possible."
 
 #: ../../client/equo.py:740
 msgid ""
 "Ugh. Cannot send the report. When you want, mail the file below to "
 "lxnay@sabayon.org."
-msgstr ""
-"L'informe d'error no es pot enviar. Quan vulgueu, envieu el fitxer de baix "
-"per correu electrònic a lxnay@sabayon.org."
+msgstr "L'informe d'error no es pot enviar. Quan vulgueu, envieu el fitxer de baix per correu electrònic a lxnay@sabayon.org."
 
 #: ../../client/equo.py:759
 msgid "Entropy/Equo version mismatch"
@@ -4296,16 +4205,13 @@ msgstr "No hi ha res per actualitzar"
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
-msgstr ""
-"Al sistema hi ha paquets que ja no estan disponibles als repositoris en línia"
+msgstr "Al sistema hi ha paquets que ja no estan disponibles als repositoris en línia"
 
 #: ../../client/text_ui.py:460
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
-"Encara que normalment són inofensius, us suggerim que (després de verificar-"
-"los) els elimineu."
+msgstr "Encara que normalment són inofensius, us suggerim que (després de verificar-los) els elimineu."
 
 #: ../../client/text_ui.py:475
 msgid "Selective"
@@ -4683,9 +4589,7 @@ msgstr "L'eliminació s'iniciarà en"
 
 #: ../../client/text_ui.py:2249
 msgid "Running unused packages test, pay attention, there are false positives"
-msgstr ""
-"S'està executant la verificació de paquets no usats. Compte, hi poden haver "
-"falsos positius"
+msgstr "S'està executant la verificació de paquets no usats. Compte, hi poden haver falsos positius"
 
 #: ../../client/text_ui.py:2275
 msgid "Running dependency test"
@@ -4746,9 +4650,7 @@ msgstr "l'última versió disponible és la"
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
-msgstr ""
-"És recomanable que actualitzeu a l'última versió abans d'actualitzar cap "
-"altre paquet"
+msgstr "És recomanable que actualitzeu a l'última versió abans d'actualitzar cap altre paquet"
 
 #: ../../magneto/src/magneto/kde/components.py:83
 msgid "Close"
@@ -4962,3138 +4864,3 @@ msgstr "Actualitzacions disponibles"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
-
-#~ msgid "verifying upload (if supported)"
-#~ msgstr "s'està verificant la càrrega (si és compatible)"
-
-#~ msgid "digest verification"
-#~ msgstr "verificació de l'empremta electrònica"
-
-#~ msgid "so far, so good!"
-#~ msgstr "tot és correcte!"
-
-#~ msgid "malformed md5 provided to function"
-#~ msgstr "s'ha proporcionat una md5sum mal formatada a la funció"
-
-#~ msgid "remote md5 is invalid"
-#~ msgstr "la md5 remota no és vàlida"
-
-#~ msgid "successful"
-#~ msgstr "correctament"
-
-#~ msgid "failed, retrying"
-#~ msgstr "ha fallat, s'està reintentant"
-
-#~ msgid "not critical"
-#~ msgstr "no crític"
-
-#~ msgid "continuing"
-#~ msgstr "es continua"
-
-#~ msgid "connecting to mirror"
-#~ msgstr "s'està connectant amb la rèplica"
-
-#~ msgid "setting directory to"
-#~ msgstr "s'estableix el directori en"
-
-#~ msgid "Entropy Server Mirrors Interface loaded"
-#~ msgstr "S'ha carregat la Interfície del Servidor de Rèpliques d'Entropy"
-
-#~ msgid "repository mirror"
-#~ msgstr "rèplica de repositori"
-
-#~ msgid "packages mirror"
-#~ msgstr "rèplica de paquets"
-
-#~ msgid "looking for file in mirror"
-#~ msgstr "s'està cercant un fitxer a la rèplica"
-
-#~ msgid "unlocking"
-#~ msgstr "s'està desbloquejant"
-
-#~ msgid "locking"
-#~ msgstr "s'està bloquejant"
-
-#~ msgid "mirror"
-#~ msgstr "rèplica"
-
-#~ msgid "mirror for download"
-#~ msgstr "rèplica per baixar"
-
-#~ msgid "mirror already locked for download"
-#~ msgstr "la rèplica ja està bloquejada per baixar"
-
-#~ msgid "mirror already unlocked for download"
-#~ msgstr "la rèplica ja està desbloquejada per baixar"
-
-#~ msgid "for download"
-#~ msgstr "per baixar"
-
-#~ msgid "mirror successfully locked"
-#~ msgstr "la rèplica s'ha bloquejat correctament"
-
-#~ msgid "mirror not locked"
-#~ msgstr "la rèplica no està bloquejada"
-
-#~ msgid "mirror successfully unlocked"
-#~ msgstr "la rèplica s'ha desbloquejat correctament"
-
-#~ msgid "unlock error"
-#~ msgstr "error de desbloqueig"
-
-#~ msgid "mirror not unlocked"
-#~ msgstr "la rèplica no està desbloquejada"
-
-#~ msgid "connecting to download package"
-#~ msgstr "s'està connectant amb el paquet a baixar"
-
-#~ msgid "downloading package"
-#~ msgstr "s'està baixant el paquet"
-
-#~ msgid "is not listed in the repository !"
-#~ msgstr "no està llistat al repositori!"
-
-#~ msgid "verifying checksum of package"
-#~ msgstr "s'està comprovant la suma de verificació del paquet"
-
-#~ msgid "downloaded successfully"
-#~ msgstr "s'ha baixat correctament"
-
-#~ msgid "checksum does not match. re-downloading..."
-#~ msgstr "la suma de verificació no coincideix. S'està tornant a baixar..."
-
-#~ msgid "seems broken. Consider to re-package it. Giving up!"
-#~ msgstr "sembla trencat. Considereu reempaquetar-lo. S'abandona!"
-
-#~ msgid "mirror hasn't valid repository revision file"
-#~ msgstr "no hi ha un fitxer de revisió del repositori vàlid a la rèplica"
-
-#~ msgid "unable to download repository revision"
-#~ msgstr "no es pot baixar el fitxer de revisió del repositori "
-
-#~ msgid "mirror doesn't have valid revision file"
-#~ msgstr "la rèplica no té un fitxer de revisió de base de dades vàlid"
-
-#~ msgid "mirror already locked"
-#~ msgstr "la rèplica ja està bloquejada"
-
-#~ msgid "waiting up to 2 minutes before giving up"
-#~ msgstr "2 minuts d'espera abans d'abandonar"
-
-#~ msgid "mirror unlocked"
-#~ msgstr "s'ha desbloquejat la rèplica"
-
-#~ msgid "Local statistics"
-#~ msgstr "Estadístiques locals"
-
-#~ msgid "upload directory"
-#~ msgstr "directori de càrrega"
-
-#~ msgid "files ready"
-#~ msgstr "fitxers preparats"
-
-#~ msgid "packages directory"
-#~ msgstr "directori de paquets"
-
-#~ msgid "upload"
-#~ msgstr "càrrega"
-
-#~ msgid "download"
-#~ msgstr "baixada"
-
-#~ msgid "copy"
-#~ msgstr "copia"
-
-#~ msgid "Packages to be removed"
-#~ msgstr "Paquets a eliminar"
-
-#~ msgid "Packages to be moved locally"
-#~ msgstr "Paquets a desplaçar localment"
-
-#~ msgid "Packages to be uploaded"
-#~ msgstr "Paquets a carregar"
-
-#~ msgid "Total removal size"
-#~ msgstr "Mida total d'eliminació"
-
-#~ msgid "Total upload size"
-#~ msgstr "Mida total de càrrega"
-
-#~ msgid "Total download size"
-#~ msgstr "Mida total de baixada"
-
-#~ msgid "Remote statistics for"
-#~ msgstr "Estadístiques remotes per"
-
-#~ msgid "remote packages"
-#~ msgstr "paquets remots"
-
-#~ msgid "files stored"
-#~ msgstr "fitxers desats"
-
-#~ msgid "Calculating queues"
-#~ msgstr "S'estan calculant les cues"
-
-#~ msgid "removing package+hash"
-#~ msgstr "s'està eliminat el paquet i l'empremta electrònica"
-
-#~ msgid "sync"
-#~ msgstr "sincronitza"
-
-#~ msgid "removal complete"
-#~ msgstr "l'eliminació ha acabat"
-
-#~ msgid "copying file+hash to repository"
-#~ msgstr "s'està copiant el fitxer i l'empremta electrònica al repositori"
-
-#~ msgid "upload errors"
-#~ msgstr "errors de càrrega"
-
-#~ msgid "reason"
-#~ msgstr "raó"
-
-#~ msgid "upload completed successfully"
-#~ msgstr "s'ha penjat correctament"
-
-#~ msgid "download errors"
-#~ msgstr "errors de baixada"
-
-#~ msgid "download completed successfully"
-#~ msgstr "la baixada s'ha acabat correctament"
-
-#~ msgid "QA checking package file"
-#~ msgstr "QA està comprovant del paquet"
-
-#~ msgid "faulty package file, please fix"
-#~ msgstr "fitxer de paquet erroni, arregleu-ho"
-
-#~ msgid "starting packages sync"
-#~ msgstr "s'està iniciant la sincronització de paquets"
-
-#~ msgid "packages sync"
-#~ msgstr "sincronització de paquets"
-
-#~ msgid "socket error"
-#~ msgstr "error en el sòcol"
-
-#~ msgid "on"
-#~ msgstr "a"
-
-#~ msgid "nothing to do on"
-#~ msgstr "no s'està processant res a"
-
-#~ msgid "Expanding queues"
-#~ msgstr "S'estan expandint les cues"
-
-#~ msgid "nothing to sync for"
-#~ msgstr "no hi ha res a sincronitzar per"
-
-#~ msgid "Would you like to run the steps above ?"
-#~ msgstr "Voleu executar els passos descrits més amunt?"
-
-#~ msgid "keyboard interrupt !"
-#~ msgstr "interrupció de teclat!"
-
-#~ msgid "you must package them again"
-#~ msgstr "els heu d'empaquetar de nou"
-
-#~ msgid "exception caught"
-#~ msgstr "s'ha capturat una excepció"
-
-#~ msgid "at least one mirror synced properly!"
-#~ msgstr "almenys una rèplica s'ha sincronitzat correctament!"
-
-#~ msgid "tidy"
-#~ msgstr "neteja"
-
-#~ msgid "collecting expired packages"
-#~ msgstr "s'estan recollint paquets que han vençut"
-
-#~ msgid "collecting expired packages in the selected branches"
-#~ msgstr ""
-#~ "s'estan recollint paquets que han vençut a les branques seleccionades"
-
-#~ msgid "nothing to remove on this branch"
-#~ msgstr "no hi ha res a eliminar en aquesta branca"
-
-#~ msgid "these are the expired packages"
-#~ msgstr "aquests són els paquets que han vençut"
-
-#~ msgid "removing packages remotely"
-#~ msgstr "s'estan eliminant paquets de forma remota"
-
-#~ msgid "remove errors"
-#~ msgstr "errors d'eliminació"
-
-#~ msgid "removing packages locally"
-#~ msgstr "s'estan eliminat els paquets localment"
-
-#~ msgid "removed"
-#~ msgstr "eliminat"
-
-#~ msgid "downloading notice board from mirrors to"
-#~ msgstr "s'està baixant el tauler de notícies de les rèpliques a"
-
-#~ msgid "notice board downloaded successfully from"
-#~ msgstr "el tauler de notícies s'ha baixat correctament des de"
-
-#~ msgid "removing notice board from"
-#~ msgstr "s'està eliminant el tauler de notícies de"
-
-#~ msgid "notice board removal failed on"
-#~ msgstr "l'eliminació del tauler de noticies ha fallat a"
-
-#~ msgid "notice board removal success"
-#~ msgstr "el tauler de notícies s'ha eliminat"
-
-#~ msgid "uploading notice board from"
-#~ msgstr "s'està carregant el tauler de notícies de"
-
-#~ msgid "notice board upload failed on"
-#~ msgstr "la càrrega del tauler de noticies ha fallat a"
-
-#~ msgid "notice board upload success"
-#~ msgstr "el tauler de notícies s'ha carregat"
-
-#~ msgid "Keys for repository are expired"
-#~ msgstr "Les claus del repositori han vençut"
-
-#~ msgid "preparing to download repository from mirror"
-#~ msgstr "s'està preparant per baixar el repositori des de la rèplica"
-
-#~ msgid "download path"
-#~ msgstr "camí de baixada"
-
-#~ msgid "errors"
-#~ msgstr "errors"
-
-#~ msgid "failed to download from mirror"
-#~ msgstr "ha fallat en baixar de la rèplica"
-
-#~ msgid "failed to unpack"
-#~ msgstr "ha fallat en desempaquetar"
-
-#~ msgid "Troubles with treeupdates"
-#~ msgstr "Hi ha problemes amb treeupdates"
-
-#~ msgid "Bumping old data back"
-#~ msgstr "S'estan suprimint dades antigues"
-
-#~ msgid "configured package sets"
-#~ msgstr "conjunts de paquets configurats"
-
-#~ msgid "None configured"
-#~ msgstr "No n'hi ha cap de configurat"
-
-#~ msgid "creating compressed repository dump + checksum"
-#~ msgstr ""
-#~ "s'està creant el bolcat del repositori comprimit i la suma de verificació"
-
-#~ msgid "repository path"
-#~ msgstr "camí del repositori"
-
-#~ msgid "dump light"
-#~ msgstr "bolcat lleuger"
-
-#~ msgid "dump light checksum"
-#~ msgstr "bolcat lleuger de la suma de verificació"
-
-#~ msgid "opener"
-#~ msgstr "obridor"
-
-#~ msgid "compressing repository + checksum"
-#~ msgstr "repositori comprimit i suma de verificació"
-
-#~ msgid "compressed repository path"
-#~ msgstr "camí del repositori comprimit"
-
-#~ msgid "repository checksum"
-#~ msgstr "suma de verificació del repositori"
-
-#~ msgid "compressed checksum"
-#~ msgstr "suma de verificació comprimida"
-
-#~ msgid "preparing uncompressed repository for the upload"
-#~ msgstr "s'està preparant el repositori no comprimit per la càrrega"
-
-#~ msgid "disabled EAPI"
-#~ msgstr "EAPI desactivat"
-
-#~ msgid "preparing to upload repository to mirror"
-#~ msgstr "s'està preparant per penjar el repositori a la rèplica"
-
-#~ msgid "upload failed, locking and continuing"
-#~ msgstr "la càrrega ha fallat, es bloqueja i es continua"
-
-#~ msgid "repository already in sync"
-#~ msgstr "el repositori ja està sincronitzat"
-
-#~ msgid "remote repository newer than local, please pull."
-#~ msgstr "el repositori remot és més nou que el local, baixeu-lo."
-
-#~ msgid "repository sync failed"
-#~ msgstr "ha fallat la sincronització del repositori"
-
-#~ msgid "download issues"
-#~ msgstr "problemes de baixada"
-
-#~ msgid "local repository newer than remote, please push."
-#~ msgstr "el repositori local és més nou que el remot, envieu-lo."
-
-#~ msgid "repository sync forbidden"
-#~ msgstr "no es permet la sincronització del repositori"
-
-#~ msgid "missing package sets"
-#~ msgstr "conjunts de paquets perduts"
-
-#~ msgid "dependencies test reported errors"
-#~ msgstr "el test de dependències informa d'errors"
-
-#~ msgid "these packages haven't been removed yet"
-#~ msgstr "aquests paquets encara no s'han eliminat"
-
-#~ msgid "upload issues"
-#~ msgstr "problemes de càrrega"
-
-#~ msgid "repository sync completed"
-#~ msgstr "el repositori s'ha sincronitzat"
-
-#~ msgid "mirrors have not been unlocked. Sync them."
-#~ msgstr "les rèpliques no s'han desbloquejat. Sincronitzeu-les."
-
-#~ msgid "cannot store updates RSS cache"
-#~ msgstr "no es poden desar actualitzacions RSS de memòria de cau"
-
-#~ msgid "INJECT"
-#~ msgstr "INJECTA"
-
-#~ msgid "has been injected"
-#~ msgstr "s'ha injectat"
-
-#~ msgid "quickpkg manually to update embedded db"
-#~ msgstr "quickpkg manualment per actualitzar la base de dades incrustada"
-
-#~ msgid "Repository updated anyway"
-#~ msgstr "El repositori s'ha actualitzat igualment"
-
-#~ msgid "package has no keyword set, it will be masked !"
-#~ msgstr "el paquet no té assignada keyword, s'emmascararà !"
-
-#~ msgid "repository not configured"
-#~ msgstr "el repositori no està configurat"
-
-#~ msgid "protected repository id, can't use this, sorry dude..."
-#~ msgstr "la id del repositori està protegida, no podeu usar-la..."
-
-#~ msgid "invalid repository revision"
-#~ msgstr "la revisió del repositori no és vàlida"
-
-#~ msgid "defaulting to 0"
-#~ msgstr "s'estableix per defecte a 0"
-
-#~ msgid "syncing package sets"
-#~ msgstr "s'estan sincronitzant els conjunts de paquets"
-
-#~ msgid "cannot match"
-#~ msgstr "no pot coincidir"
-
-#~ msgid "initializing repository"
-#~ msgstr "S'està inicialitzant el repositori"
-
-#~ msgid "do you really want to initialize this repository ?"
-#~ msgstr "segur que voleu inicialitzar aquest respositori?"
-
-#~ msgid "Cannot create store directory"
-#~ msgstr "No es pot crear la carpeta d'emmagatzematge"
-
-#~ msgid "Cannot create upload directory"
-#~ msgstr "No es pot crear la carpeta de pujada"
-
-#~ msgid "Invalid tag specified"
-#~ msgstr "L'etiqueta especificada no és vàlida"
-
-#~ msgid "flushing back selected packages from branches"
-#~ msgstr "s'estan eliminant els paquets seleccionats de les branques"
-
-#~ msgid "nothing to do"
-#~ msgstr "no hi ha res per fer"
-
-#~ msgid "these are the packages that will be flushed"
-#~ msgstr "aquests són els paquets que s'eliminaran"
-
-#~ msgid "checking package hash"
-#~ msgstr "s'està comprovant l'empremta electrònica del paquet"
-
-#~ msgid "hash does not match for"
-#~ msgstr "l'empremta no coincideix per"
-
-#~ msgid "wrong md5"
-#~ msgstr "md5 és incorrecte"
-
-#~ msgid "error downloading packages from mirrors"
-#~ msgstr "error en baixar els paquets de les rèpliques"
-
-#~ msgid "working on branch"
-#~ msgstr "s'està treballant en la branca"
-
-#~ msgid "updating package"
-#~ msgstr "s'està actualitzant un paquet"
-
-#~ msgid "package flushed"
-#~ msgstr "paquet eliminat"
-
-#~ msgid "Cannot touch system repository"
-#~ msgstr "No es pot accedir al repositori del sistema"
-
-#~ msgid "Preparing to move selected packages to"
-#~ msgstr "S'està preparant per desplaçar els paquets seleccionats a"
-
-#~ msgid "Preparing to copy selected packages to"
-#~ msgstr "S'està preparant per copiar els paquets seleccionats a"
-
-#~ msgid "Note"
-#~ msgstr "Nota"
-
-#~ msgid ""
-#~ "all old packages with conflicting scope will be removed from destination "
-#~ "repo unless injected"
-#~ msgstr ""
-#~ "tots els paquets antics amb scope en conflicte s'eliminaran del "
-#~ "repositori destí, a menys que s'injectin"
-
-#~ msgid "new tag"
-#~ msgstr "nova etiqueta"
-
-#~ msgid "reverse dependency"
-#~ msgstr "dependències inverses"
-
-#~ msgid "dependency"
-#~ msgstr "dependències"
-
-#~ msgid "switching"
-#~ msgstr "s'està commutant"
-
-#~ msgid "cannot switch, package not found, skipping"
-#~ msgstr "no es pot commutar, el paquet no s'ha trobat, s'omet"
-
-#~ msgid "moving file"
-#~ msgstr "S'està desplaçant el fitxer"
-
-#~ msgid "loading data from source repository"
-#~ msgstr "s'estan carregant dades del respositori d'origen"
-
-#~ msgid "GPG key was available in"
-#~ msgstr "la clau GPG estava disponible en"
-
-#~ msgid "injecting data to destination repository"
-#~ msgstr "s'estan injectant dades al respositori destinació"
-
-#~ msgid "removing entry from source repository"
-#~ msgstr "s'està eliminant l'entrada del respositori origen"
-
-#~ msgid "successfully handled atom"
-#~ msgstr "l'àtom s'ha tractat correctament"
-
-#~ msgid "Injecting entropy metadata into built packages"
-#~ msgstr "S'estan injectant metadades d'Entropy als paquets construïts"
-
-#~ msgid "JFYI, GPG infrastructure failed to load"
-#~ msgstr "No s'ha pogut carregar la infraestructura JFYI, GPG"
-
-#~ msgid "injecting entropy metadata"
-#~ msgstr "s'estan injectant metadades d'Entropy"
-
-#~ msgid "injection complete"
-#~ msgstr "la injecció ha acabat"
-
-#~ msgid "removing package"
-#~ msgstr "s'està eliminant el paquet"
-
-#~ msgid "Integrity verification of the selected packages"
-#~ msgstr "Verificació d'integritat dels paquets seleccionats"
-
-#~ msgid "All the packages in repository will be checked."
-#~ msgstr "Es comprovaran tots els paquets del repositori."
-
-#~ msgid "This is the list of the packages that would be checked"
-#~ msgstr "Aquesta és la llista de paquets que es comprovaran"
-
-#~ msgid "Working on mirror"
-#~ msgstr "S'està treballant en la rèplica"
-
-#~ msgid "checking hash"
-#~ msgstr "s'està comprovant l'empremta electrònica"
-
-#~ msgid "digest verification of"
-#~ msgstr "verificació de l'empremta electrònica de"
-
-#~ msgid "NOT healthy"
-#~ msgstr "NO és sa"
-
-#~ msgid "This is the list of broken packages"
-#~ msgstr "Aquesta és la llista de paquets trencats"
-
-#~ msgid "Statistics"
-#~ msgstr "Estadístiques"
-
-#~ msgid "Number of checked packages"
-#~ msgstr "Número de paquets comprovats"
-
-#~ msgid "Number of healthy packages"
-#~ msgstr "Número de paquets sans"
-
-#~ msgid "Number of broken packages"
-#~ msgstr "Número de paquets trencats"
-
-#~ msgid "checking status of"
-#~ msgstr "s'està comprovant l'estat de"
-
-#~ msgid "is corrupted, stored checksum"
-#~ msgstr "està malmès, s'ha desat la suma de verificació"
-
-#~ msgid "checked packages"
-#~ msgstr "paquets comprovats"
-
-#~ msgid "healthy packages"
-#~ msgstr "paquets sans"
-
-#~ msgid "broken packages"
-#~ msgstr "paquets trencats"
-
-#~ msgid "downloaded packages"
-#~ msgstr "paquets baixats"
-
-#~ msgid "failed downloads"
-#~ msgstr "baixades fallides"
-
-#~ msgid "GPG signing packages for repository"
-#~ msgstr "GPG està signant paquets del repositori"
-
-#~ msgid "All the missing packages in repository will be downloaded."
-#~ msgstr "Tots els paquets perduts del repositori es baixaran."
-
-#~ msgid "GnuPG not available"
-#~ msgstr "GnuPG no està disponible"
-
-#~ msgid "Keys not available for"
-#~ msgstr "No hi ha claus disponibles per a"
-
-#~ msgid "signing package"
-#~ msgstr "s'està signant el paquet"
-
-#~ msgid "Unknown error signing package"
-#~ msgstr "Error desconegut en signar el paquet"
-
-#~ msgid "signed packages"
-#~ msgstr "paquets signats"
-
-#~ msgid "available"
-#~ msgstr "disponible"
-
-#~ msgid "upload/ignored"
-#~ msgstr "pujat/ignorat"
-
-#~ msgid "Starting to download missing files"
-#~ msgstr "S'estan començant a baixar els fitxers necessaris"
-
-#~ msgid "Searching missing/broken files on another mirror"
-#~ msgstr "S'estan cercant fitxers necessaris o trencats en una altra rèplica"
-
-#~ msgid "Binary packages downloaded successfully."
-#~ msgstr "Els paquets binaris s'han baixat correctament."
-
-#~ msgid "These are the packages that cannot be found online"
-#~ msgstr "Aquests paquets no es troben en línia"
-
-#~ msgid "They won't be checked"
-#~ msgstr "No es comprovaran"
-
-#~ msgid "Please setup your branch to"
-#~ msgstr "Configureu la branca a"
-
-#~ msgid "and retry"
-#~ msgstr "i torneu a intentar-ho"
-
-#~ msgid "Copying repository (if not exists)"
-#~ msgstr "S'està copiant el repositori (si no existeix)"
-
-#~ msgid "Switching packages"
-#~ msgstr "S'estan commutant paquets"
-
-#~ msgid "Ignoring"
-#~ msgstr "S'està ignorant"
-
-#~ msgid "already in branch"
-#~ msgstr "ja a la branca"
-
-#~ msgid "migration loop completed"
-#~ msgstr "s'ha acabat el bucle de migració"
-
-#~ msgid "Running orphaned SPM packages test"
-#~ msgstr "S'està executant la verificació de paquets orfes SPM"
-
-#~ msgid "Scanning package"
-#~ msgstr "S'està escanejant el paquet"
-
-#~ msgid "not found anymore"
-#~ msgstr "no se n'ha trobat cap més"
-
-#~ msgid "Packages string"
-#~ msgstr "Cadena de paquets"
-
-#~ msgid "Checking"
-#~ msgstr "S'està comprovant"
-
-#~ msgid "Running dependencies test"
-#~ msgstr "S'està executant la verificació de dependències"
-
-#~ msgid "by repo"
-#~ msgstr "pel repositori"
-
-#~ msgid "Every dependency is satisfied. It's all fine."
-#~ msgstr "S'han satisfet totes les dependències. Tot és correcte."
-
-#~ msgid "Broken and matched packages list"
-#~ msgstr "Llista de paquets trencats i coincidents"
-
-#~ msgid "Matching libraries with Spm, please wait"
-#~ msgstr "S'estan cercant llibreries coincidents amb Spm, espereu"
-
-#~ msgid "These are the matched packages"
-#~ msgstr "Aquests són els paquets coincidents"
-
-#~ msgid "No matched packages"
-#~ msgstr "No hi ha paquets coincidents"
-
-#~ msgid "Your default repository is not initialized"
-#~ msgstr "El repositori predeterminat no està inicialitzat"
-
-#~ msgid "Do you want to initialize your default repository ?"
-#~ msgstr "Voleu inicialitzar el repositori predeterminat?"
-
-#~ msgid "Continuing with an uninitialized repository"
-#~ msgstr "Es continua amb un repositori no inicialitzat"
-
-#~ msgid "Entropy repository is already locked by you :-)"
-#~ msgstr "Ja teníeu bloquejat el repositori d'Entropy :-)"
-
-#~ msgid "Locking and Syncing Entropy repository"
-#~ msgstr "S'està bloquejant i sincronitzant el repositori d'Entropy"
-
-#~ msgid "Mirrors status table"
-#~ msgstr "Taula d'estat de les rèpliques"
-
-#~ msgid "Unlocked"
-#~ msgstr "Desbloquejat"
-
-#~ msgid "Locked"
-#~ msgstr "Bloquejat"
-
-#~ msgid "cannot lock mirror"
-#~ msgstr "no es pot bloquejar la rèplica"
-
-#~ msgid "Repository is corrupted!"
-#~ msgstr "El repositori està malmès!"
-
-#~ msgid "indexing repository"
-#~ msgstr "s'està indexant el respositori"
-
-#~ msgid "Initializing an empty repository"
-#~ msgstr "s'està inicialitzant un repositori buit"
-
-#~ msgid "Entropy repository file"
-#~ msgstr "Fitxer de repositori Entropy"
-
-#~ msgid "successfully initialized"
-#~ msgstr "s'ha inicialitzat correctament"
-
-#~ msgid "adding package"
-#~ msgstr "s'està afegint un paquet"
-
-#~ msgid "added package"
-#~ msgstr "s'ha afegit un paquet"
-
-#~ msgid "rev"
-#~ msgstr "revisió"
-
-#~ msgid "manual dependencies for"
-#~ msgstr "dependències manuals per a"
-
-#~ msgid "these are the missing dependencies"
-#~ msgstr "aquestes són les dependències que falten"
-
-#~ msgid "no missing dependencies !"
-#~ msgstr "no s'han trobat a faltar dependències !"
-
-#~ msgid "Do you agree?"
-#~ msgstr "Hi esteu d'acord?"
-
-#~ msgid "Repeat"
-#~ msgstr "Repeteix"
-
-#~ msgid "metadata QA hook"
-#~ msgstr "ganxo QA de metadades"
-
-#~ msgid "not owned by uid and gid = 0"
-#~ msgstr "no és propietat de uid i gid = 0"
-
-#~ msgid "using metadata QA hook"
-#~ msgstr "s'està usant el ganxo QA de metadades"
-
-#~ msgid "metadata QA check for"
-#~ msgstr "comprovació QA de metadades per"
-
-#~ msgid "cannot execute metadata QA hook for"
-#~ msgstr "no es pot executar el ganxo QA de metadades per"
-
-#~ msgid "attention, QA hook returned a warning"
-#~ msgstr "atenció, el ganxo QA ha retornat un avís"
-
-#~ msgid "attention, QA hook returned an error"
-#~ msgstr "atenció, el ganxo QA ha retornat un error"
-
-#~ msgid "metadata QA check complete"
-#~ msgstr "La comprovació QA de metadades ha acabat"
-
-#~ msgid "injected package, no separate debug package"
-#~ msgstr "el paquet s'ha injectat, no hi ha paquet de depuració separat"
-
-#~ msgid "Exception caught, closing tasks"
-#~ msgstr "S'ha produït una excepció, es tanquen les tasques"
-
-#~ msgid "server-side repository"
-#~ msgstr "repositori del servidor"
-
-#~ msgid "community repository"
-#~ msgstr "repositori de la comunitat"
-
-#~ msgid "Entropy Server Interface Instance on repository"
-#~ msgstr "Interfície d'Instàncies del Servidor d'Entropy del repositori"
-
-#~ msgid "current branch"
-#~ msgstr "branca actual"
-
-#~ msgid "type"
-#~ msgstr "tipus"
-
-#~ msgid "Currently configured repositories"
-#~ msgstr "Repositoris configurats"
-
-#~ msgid "GPG key expired"
-#~ msgstr "la clau GPG ha vençut"
-
-#~ msgid "please frigging fix"
-#~ msgstr "arregleu-ho sisplau"
-
-#~ msgid "GPG got unexpected error"
-#~ msgstr "S'ha produït un error GPG inesperat"
-
-#~ msgid "skipping"
-#~ msgstr "s'omet"
-
-#~ msgid "config files"
-#~ msgstr "fitxers de configuració"
-
-#~ msgid "checking system"
-#~ msgstr "s'està comprovant el sistema"
-
-#~ msgid "there are configuration files not updated yet"
-#~ msgstr "hi ha fitxers de configuració pendents d'actualitzar"
-
-#~ msgid "found available dep_rewrites for this package"
-#~ msgstr "hi ha dep_rewrites disponibles per aquest paquet"
-
-#~ msgid "added"
-#~ msgstr "afegit"
-
-#~ msgid "replaced"
-#~ msgstr "reemplaçat"
-
-#~ msgid "No dependency rewrite made for"
-#~ msgstr "No s'han reescrit dependències per"
-
-#~ msgid "sets"
-#~ msgstr "conjunts"
-
-#~ msgid "updating package sets"
-#~ msgstr "s'estan actualitzant conjunts de paquets"
-
-#~ msgid "adding package set"
-#~ msgstr "s'està afegint un conjunt de paquets"
-
-#~ msgid "removing package set"
-#~ msgstr "s'està eliminant el conjunt de paquets"
-
-#~ msgid "superuser access required"
-#~ msgstr "cal que accediu com a superusuari"
-
-#~ msgid "run given test"
-#~ msgstr "executa el test especificat"
-
-#~ msgid "available tests"
-#~ msgstr "comprovacions disponibles"
-
-#~ msgid "dependencies test"
-#~ msgstr "comprovació de dependències"
-
-#~ msgid "libraries test"
-#~ msgstr "comprovació de llibreries"
-
-#~ msgid "dump results to file"
-#~ msgstr "aboca els resultats en un fitxer"
-
-#~ msgid "library linking test (using repository metadata)"
-#~ msgstr ""
-#~ "comprovació d'enllaços de llibreries (usant les metadades del repositori)"
-
-#~ msgid "excluded soname"
-#~ msgstr "s'exclou el soname"
-
-#~ msgid "library linking test (using live system)"
-#~ msgstr "comprova els enllaços de llibraries (usant sistema autònom)"
-
-#~ msgid "package names"
-#~ msgstr "nom dels paquets"
-
-#~ msgid "verify local packages integrity"
-#~ msgstr "verifica la integritat dels paquets locals"
-
-#~ msgid "no stupid questions"
-#~ msgstr "no feu preguntes estúpides"
-
-#~ msgid "verify remote packages integrity"
-#~ msgstr "verifica la integritat dels paquets remots"
-
-#~ msgid "run QA tests"
-#~ msgstr "executa comprovacions QA"
-
-#~ msgid "execute query"
-#~ msgstr "executa consuta"
-
-#~ msgid "available queries"
-#~ msgstr "consultes disponibles"
-
-#~ msgid "search package tags"
-#~ msgstr "cerca etiquetes disponibles"
-
-#~ msgid "quiet output, for scripting purposes"
-#~ msgstr "silencia la sortida, útil per a scripts"
-
-#~ msgid "query into given repository only"
-#~ msgstr "consulta només en el repositori indicat"
-
-#~ msgid "tag name"
-#~ msgstr "nom de l'etiqueta"
-
-#~ msgid "show libraries (.so) required by matched packages"
-#~ msgstr "mostra les llibreries (.so) necessàries pels paquets coincidents"
-
-#~ msgid "show reverse dependencies of packages"
-#~ msgstr "mostra les dependències inverses dels paquets"
-
-#~ msgid "verbose output, show more info"
-#~ msgstr "sortida detallada, mostra més informació"
-
-#~ msgid "include build dependencies"
-#~ msgstr "inclou les dependències de construcció"
-
-#~ msgid "search through package sets"
-#~ msgstr "cerca a través dels conjunts de paquets"
-
-#~ msgid "verbose output, show package sets content"
-#~ msgstr "sortida detallada, mostra el contingut de conjunts de paquets"
-
-#~ msgid "package set name"
-#~ msgstr "nom del conjunt de paquet"
-
-#~ msgid "search packages through their description"
-#~ msgstr "cerca paquets per la seva descripció"
-
-#~ msgid "verbose output, show more information"
-#~ msgstr "informació detallada, mostra més informació"
-
-#~ msgid "package description"
-#~ msgstr "descripció del paquet"
-
-#~ msgid "Nothing found for"
-#~ msgstr "No s'ha trobat res per"
-
-#~ msgid "libraries found"
-#~ msgstr "llibreries trobades"
-
-#~ msgid "revdep(s) found"
-#~ msgstr "s'ha(n) trobat revdep(s)"
-
-#~ msgid "sets found"
-#~ msgstr "conjunts trobats"
-
-#~ msgid "packages found"
-#~ msgstr "paquets trobats"
-
-#~ msgid "miscellaneous package metadata queries"
-#~ msgstr "consultes diverses de metadades de paquets"
-
-#~ msgid "add to given repository"
-#~ msgstr "afegeix en el repositori indicat"
-
-#~ msgid "commit to repository the provided packages"
-#~ msgstr "publica els paquets facilitats al repositori"
-
-#~ msgid "output more package info"
-#~ msgstr "mostra més informació del paquet"
-
-#~ msgid "only list injected packages"
-#~ msgstr "llista només paquets injectats"
-
-#~ msgid "not available"
-#~ msgstr "no disponible"
-
-#~ msgid "No packages"
-#~ msgstr "Sense paquets"
-
-#~ msgid "show repository content (packages)"
-#~ msgstr "mostra el contingut del respositori (paquets)"
-
-#~ msgid "source repository"
-#~ msgstr "repositori origen"
-
-#~ msgid "destination repository"
-#~ msgstr "respositori destí"
-
-#~ msgid "include dependencies"
-#~ msgstr "inclou dependències"
-
-#~ msgid "package names (all if none)"
-#~ msgstr "nom de paquets (tots si no s'especifica)"
-
-#~ msgid "move packages from a repository to another"
-#~ msgstr "desplaça els paquets d'un repositori a un altre"
-
-#~ msgid "log is not available"
-#~ msgstr "el registre no està disponible"
-
-#~ msgid "show log for repository"
-#~ msgstr "mostra el registre del repositori"
-
-#~ msgid "package name"
-#~ msgstr "nom del paquet"
-
-#~ msgid "do not include reverse dependencies"
-#~ msgstr "no inclou dependències inverses"
-
-#~ msgid "remove packages from repository"
-#~ msgstr "elimina paquets del repositori"
-
-#~ msgid "search packages in given repository"
-#~ msgstr "cerca paquets en el repositori indicat"
-
-#~ msgid "Nothing found"
-#~ msgstr "No s'ha trobat res"
-
-#~ msgid "show system packages, build deps, circular deps"
-#~ msgstr ""
-#~ "mostra els paquets del sistema, dependències de construcció i circulars"
-
-#~ msgid "show dependency graph for packages"
-#~ msgstr "mostra el graf de dependències dels paquets"
-
-#~ msgid "do not pull the remote repository"
-#~ msgstr "no baixis el repositori remot"
-
-#~ msgid "reset error"
-#~ msgstr "error en reiniciar"
-
-#~ msgid "local repository revision reset complete"
-#~ msgstr "la revisió del reinici del repositori local ha acabat"
-
-#~ msgid "reset repository to remote status"
-#~ msgstr "reinicia el repositori a l'estat remot"
-
-#~ msgid "execute action"
-#~ msgstr "executa l'acció"
-
-#~ msgid "available actions"
-#~ msgstr "accions disponibles"
-
-#~ msgid "Configuration file"
-#~ msgstr "Fitxer de configuració"
-
-#~ msgid "Entropy Infrastructure Toolkit"
-#~ msgstr "Joc d'Eines de la Infraestructura Entropy"
-
-#, fuzzy
-#~ msgid "pull all the repositories"
-#~ msgstr "envia tots els repositoris"
-
-#~ msgid "Aborting !"
-#~ msgstr "S'està interrompent!"
-
-#~ msgid "Should I cleanup old packages on mirrors ?"
-#~ msgstr "Hauria d'eliminar els paquets antics de les rèpliques ?"
-
-#, fuzzy
-#~ msgid "pull repository packages and metadata"
-#~ msgstr "envia paquets del repositori i metadades"
-
-#~ msgid "sync with remote repository"
-#~ msgstr "sincronitza amb el repositori remot"
-
-#~ msgid "Bumping repository"
-#~ msgstr "Elevant el repositori"
-
-#~ msgid "bump repository revision, force push"
-#~ msgstr "eleva la revisió del repositori, força l'enviament"
-
-#~ msgid "Entropy repository has been initialized"
-#~ msgstr "S'ha inicialitzat el repositori d'Entropy"
-
-#~ msgid "initialize repository (erasing all its content)"
-#~ msgstr "inicialitza el repositori (eliminant tot el seu contingut)"
-
-#~ msgid "push all the repositories"
-#~ msgstr "envia tots els repositoris"
-
-#~ msgid "push as fake repository"
-#~ msgstr "envia com a repositori fals"
-
-#~ msgid "Commit message"
-#~ msgstr "Publica el missatge"
-
-#~ msgid "Enter the commit message"
-#~ msgstr "Escriviu el missatge de publicació"
-
-#~ msgid "Entropy Repository Status"
-#~ msgstr "Estat del Repositori d'Entropy"
-
-#~ msgid "Host"
-#~ msgstr "Ordinador central"
-
-#~ msgid "Remote"
-#~ msgstr "Remot"
-
-#~ msgid "Local"
-#~ msgstr "Local"
-
-#~ msgid "push repository packages and metadata"
-#~ msgstr "envia paquets del repositori i metadades"
-
-#, fuzzy
-#~ msgid "invalid line (time field)"
-#~ msgstr "Camps no vàlids"
-
-#, fuzzy
-#~ msgid "invalid line (empty)"
-#~ msgstr "L'element no és vàlid."
-
-#, fuzzy
-#~ msgid "invalid line (incomplete)"
-#~ msgstr "La instal·lació ha acabat"
-
-#, fuzzy
-#~ msgid "invalid line"
-#~ msgstr "El títol no és vàlid"
-
-#, fuzzy
-#~ msgid "Abort"
-#~ msgstr "Interr_omp"
-
-#, fuzzy
-#~ msgid "edit automatic package moves for repository"
-#~ msgstr "elimina paquets del repositori"
-
-#~ msgid "show current repository"
-#~ msgstr "mostra el repositori actual"
-
-#~ msgid "execute given action"
-#~ msgstr "executa l'acció indicada"
-
-#~ msgid "add notice-board entry"
-#~ msgstr "afegeix una entrada al tauler de notícies"
-
-#~ msgid "remove notice-board entry"
-#~ msgstr "elimina una entrada del tauler de notícies"
-
-#~ msgid "show notice-board"
-#~ msgstr "mostra el tauler de notícies"
-
-#~ msgid "no URL"
-#~ msgstr "sense URL"
-
-#~ msgid "URL"
-#~ msgstr "URL"
-
-#~ msgid "Choose the one you want to remove"
-#~ msgstr "Escolliu el que voleu eliminar"
-
-#~ msgid "Are you sure you want to remove this?"
-#~ msgstr "Esteu segur que el voleu eliminar?"
-
-#~ msgid "Exit/Commit"
-#~ msgstr "Surt/Envia"
-
-#~ msgid "manage repository notice-board"
-#~ msgstr "gestiona el tauler de notícies del repositori"
-
-#~ msgid "repository branch"
-#~ msgstr "branca del repositori"
-
-#~ msgid "work inside given repository"
-#~ msgstr "treballa dins en el repositori indicat"
-
-#~ msgid "merge packages on other branches into current"
-#~ msgstr "fusiona paquets d'altres branques en l'actual"
-
-#~ msgid "repack to given repository"
-#~ msgstr "empaqueta de nou dins el repositori indicat"
-
-#~ msgid "rebuild packages in repository"
-#~ msgstr "rebuild els paquets en el repositori"
-
-#~ msgid "selectively pick changes"
-#~ msgstr "escull els canvis selectivament"
-
-#~ msgid "Cannot match"
-#~ msgstr "No hi ha coincidents"
-
-#~ msgid "No valid packages to repackage."
-#~ msgstr "No hi ha paquets vàlids per empaquetar de nou."
-
-#~ msgid "Invalid package"
-#~ msgstr "El paquet no és vàlid"
-
-#~ msgid "Zarro thinggz to do"
-#~ msgstr "No hi ha tasques pendents"
-
-#~ msgid "These would be marked as injected"
-#~ msgstr "Es marcaran com a injectats"
-
-#~ msgid "Do it now ?"
-#~ msgstr "Ara ?"
-
-#~ msgid "Transforming"
-#~ msgstr "S'està transformant"
-
-#~ msgid "Action completed"
-#~ msgstr "L'acció ha acabat"
-
-#~ msgid "expired"
-#~ msgstr "vençut"
-
-#~ msgid "Select packages for removal"
-#~ msgstr "Seleccioneu els paquets a eliminar"
-
-#~ msgid "Remove this package?"
-#~ msgstr "Elimina aquest paquet?"
-
-#~ msgid "These would be removed from repository"
-#~ msgstr "S'eliminaran del repositori"
-
-#~ msgid "Select packages to add"
-#~ msgstr "Seleccioneu els paquets a afegir"
-
-#~ msgid "Add this package?"
-#~ msgstr "Afegeix aquest paquet?"
-
-#~ msgid "These would be added or updated"
-#~ msgstr "S'afegiran o s'actualitzaran"
-
-#~ msgid "warning"
-#~ msgstr "avís"
-
-#~ msgid "Would you like to package them now ?"
-#~ msgstr "Els voleu empaquetar ara?"
-
-#~ msgid "inside"
-#~ msgstr "a dins"
-
-#~ msgid "Compressing packages"
-#~ msgstr "S'estan comprimint paquets"
-
-#~ msgid "Ignoring broken Spm entry, please recompile it"
-#~ msgstr "S'ignora l'entrada trencada Spm, si us plau recompileu-la"
-
-#~ msgid "Nothing to do, check later."
-#~ msgstr "No hi ha res per fer, comproveu-ho després."
-
-#~ msgid "Entries handled"
-#~ msgstr "Entrades gestionades"
-
-#~ msgid "commit changes to repository"
-#~ msgstr "publica els canvis al repositori"
-
-#~ msgid "path"
-#~ msgstr "camí"
-
-#~ msgid "search packages owning paths"
-#~ msgstr "cerca paquets que continguin els camins"
-
-#~ msgid "match packages in repositories"
-#~ msgstr "coincideix paquets en els repositoris"
-
-#~ msgid "affect entropy clients only"
-#~ msgstr "afecta només els clients d'entropy"
-
-#~ msgid "show current status"
-#~ msgstr "mostra l'estat actual"
-
-#~ msgid "Mirrors status"
-#~ msgstr "Estat de les rèpliques"
-
-#~ msgid "server"
-#~ msgstr "servidor"
-
-#~ msgid "client"
-#~ msgstr "client"
-
-#~ msgid "lock repository"
-#~ msgstr "bloqueja el repositori"
-
-#~ msgid "unlock repository"
-#~ msgstr "desbloqueja el repositori"
-
-#~ msgid "expired since how many days"
-#~ msgstr "expirat des de fa quants dies"
-
-#~ msgid "Removing unavailable packages overriding defaults"
-#~ msgstr ""
-#~ "S'estan eliminant paquets no disponibles substituint els predeterminats"
-
-#~ msgid "Users with older repositories will have to update"
-#~ msgstr "Els usuaris amb repositoris antics han d'actualitzar-los"
-
-#~ msgid "clean expired packages from a repository"
-#~ msgstr "elimina els paquets caducats del repositori"
-
-#~ msgid "files found"
-#~ msgstr "s'han trobat fitxers"
-
-#~ msgid "show files owned by packages"
-#~ msgstr "mostra fitxers que pertanyen als paquets"
-
-#~ msgid "switch to given branch"
-#~ msgstr "commuta a la branca indicada"
-
-#~ msgid "from branch"
-#~ msgstr "des de la branca"
-
-#~ msgid "don't copy packages from branch"
-#~ msgstr "no copïis paquets de la branca"
-
-#~ msgid "Invalid branch"
-#~ msgstr "Branca no vàlida"
-
-#~ msgid "No packages to copy"
-#~ msgstr "No hi ha paquets per copiar"
-
-#~ msgid "would be copied to branch"
-#~ msgstr "es copiaria a la branca"
-
-#~ msgid "switched to branch"
-#~ msgstr "commuta a la branca"
-
-#~ msgid "manage repository branches"
-#~ msgstr "gestiona les branques del repositori"
-
-#~ msgid "switch from a repository to another"
-#~ msgstr "commuta d'un repositori a un altre"
-
-#~ msgid "local revision"
-#~ msgstr "revisió local"
-
-#~ msgid "stored packages"
-#~ msgstr "paquets desats"
-
-#~ msgid "upload packages"
-#~ msgstr "paquets pujats"
-
-#~ msgid "unstaged packages"
-#~ msgstr "paquets fora de l'índex"
-
-#~ msgid "add"
-#~ msgstr "afegeix"
-
-#~ msgid "switch injected"
-#~ msgstr "commuta als injectats"
-
-#~ msgid "show repository status"
-#~ msgstr "mostra l'estat del repositori"
-
-#~ msgid "inject into given repository"
-#~ msgstr "injecta al repositori indicat"
-
-#~ msgid "package dependencies"
-#~ msgstr "dependències de paquets"
-
-#~ msgid "No dependencies"
-#~ msgstr "No dependències"
-
-#~ msgid "Dependency type"
-#~ msgstr "Tipus de dependència"
-
-#~ msgid "Select a dependency type for"
-#~ msgstr "Seleccioneu un tipus de dependència per a"
-
-#~ msgid "Dependencies editor"
-#~ msgstr "Editor de dependències"
-
-#~ msgid "Confirm ?"
-#~ msgstr "Ho confirmeu?"
-
-#~ msgid "dependencies updated successfully"
-#~ msgstr "Les dependències s'han actualitzat"
-
-#~ msgid "edit dependencies for packages in repository"
-#~ msgstr "edita les dependències dels paquets en el repositori"
-
-#~ msgid "package dependency"
-#~ msgstr "dependències del paquet"
-
-#~ msgid "source equals destination"
-#~ msgstr "l'origen és igual que el destí"
-
-#~ msgid "Considering all the packages"
-#~ msgstr "S'estan considerant tots els paquets"
-
-#~ msgid "copy packages from a repository to another"
-#~ msgstr "copia els paquets d'un repositori a un altre"
-
-#~ msgid "show reverse dependency graph for packages"
-#~ msgstr "mostra el graf de dependències inverses dels paquets"
-
-#~ msgid "create keypair for repository and packages"
-#~ msgstr "crea un parell de claus pel repositori i els paquets"
-
-#~ msgid "delete keypair (and signatures) from repository"
-#~ msgstr ""
-#~ "esborra el parell de claus (i les signatures digitals) del repositori"
-
-#~ msgid "show keypair status for repository"
-#~ msgstr "mostra l'estat del parell de claus del repositori"
-
-#~ msgid "sign packages in repository using current keypair"
-#~ msgstr "signa paquets del repositori usant el parell de claus actual"
-
-#~ msgid "import keypair, bind to given repository"
-#~ msgstr "importa el parell de claus, aplica al repositori especificat"
-
-#~ msgid "private key path"
-#~ msgstr "camí a la clau privada"
-
-#~ msgid "public key path"
-#~ msgstr "camí de la clau pública"
-
-#~ msgid "export the repository public key to file"
-#~ msgstr "exporta la clau pública del repositori al fitxer"
-
-#~ msgid "export the repository private key to file"
-#~ msgstr "exporta la clau privada del repositori a un fitxer"
-
-#~ msgid "GPG interface loaded, home directory"
-#~ msgstr "S'ha carregat la interfície GPG, directori home"
-
-#~ msgid "Creating keys for repository"
-#~ msgstr "S'estan creant les claus del repositori"
-
-#~ msgid "Another key already exists for repository"
-#~ msgstr "Ja existeix una altra clau pel repositori"
-
-#~ msgid "Insert e-mail"
-#~ msgstr "Escriviu l'adreça de correu"
-
-#~ msgid "Insert expiration days (0=no expiration)"
-#~ msgstr "Inseriu els dies d'expiració (0= sense expiració)"
-
-#~ msgid "Insert passphrase (empty=no passphrase)"
-#~ msgstr "Inseriu la frase contrasenya (buit=sense contrasenya)"
-
-#~ msgid "Repository GPG keypair creation"
-#~ msgstr "Creació de parell de claus GPG del repositori"
-
-#~ msgid "Produced GPG key with fingerprint"
-#~ msgstr "S'ha generat la clau GPG amb empremta"
-
-#~ msgid "Now you should sign all the packages in it"
-#~ msgstr "Ara és recomanable que signeu tots els paquets que conté"
-
-#~ msgid "Generate a revoke key and store it in a safe place"
-#~ msgstr "Genereu una clau de revocació i la deseu-la en un lloc segur"
-
-#~ msgid "You may want to send your keys to a key server"
-#~ msgstr "Potser voleu enviar les vostres claus a un servidor de claus"
-
-#~ msgid "Deleting keys for repository"
-#~ msgstr "S'estan eliminat les claus del repositori"
-
-#~ msgid "No keys available for given repository"
-#~ msgstr "No hi ha claus disponibles pel repositori especificat"
-
-#~ msgid "Are you really sure?"
-#~ msgstr "N'esteu segur?"
-
-#~ msgid "Keys metadata not available for"
-#~ msgstr "No hi ha metadades de claus disponibles per"
-
-#~ msgid "Deleted GPG key with fingerprint"
-#~ msgstr "S'ha eliminat la clau GPG amb empremta"
-
-#~ msgid "GPG information for repository"
-#~ msgstr "Informació GPG del repositori"
-
-#~ msgid "Public key identifier"
-#~ msgstr "Clau d'identificador públic"
-
-#~ msgid "Public key fingerprint"
-#~ msgstr "Empremta de clau pública"
-
-#~ msgid "Key size"
-#~ msgstr "Mida de la clau"
-
-#~ msgid "Creation date"
-#~ msgstr "Data de creació"
-
-#~ msgid "Expires on"
-#~ msgstr "Expira el"
-
-#~ msgid "Importing keypair"
-#~ msgstr "S'està important el parell de claus"
-
-#~ msgid "Another keypair already exists"
-#~ msgstr "Ja existeix un  altre parell de claus"
-
-#~ msgid "Imported GPG key with fingerprint"
-#~ msgstr "S'ha importat la clau GPG amb empremta"
-
-#~ msgid "Now sign all the packages in it"
-#~ msgstr "Signa tots els paquets que conté"
-
-#~ msgid "Exporting private key for repository"
-#~ msgstr "S'està exportant la clau privada del repositori"
-
-#~ msgid "Exporting public key for repository"
-#~ msgstr "S'està exportant la clau pública del repositori"
-
-#~ msgid "No keypair available for repository"
-#~ msgstr "No hi ha parells de claus disponibles pel repositori"
-
-#~ msgid "Keypair is EXPIRED for repository"
-#~ msgstr "La clau del repositori ha VENÇUT"
-
-#~ msgid "Unable to export GPG key for repository"
-#~ msgstr "No s'ha pogut exportar la clau GPG del repositori"
-
-#~ msgid "Exported GPG key for repository"
-#~ msgstr "S'ha exportat la clau GPG pel repositori"
-
-#~ msgid "manage repository GPG keys"
-#~ msgstr "gestiona les claus GPG del repositori"
-
-#~ msgid "package paths"
-#~ msgstr "camí dels paquets"
-
-#~ msgid "no such file or directory"
-#~ msgstr "el fitxer o carpeta no existeixen"
-
-#~ msgid "unsupported extension"
-#~ msgstr "no s'admet l'extensió"
-
-#~ msgid "no valid package paths"
-#~ msgstr "els camins de paquets no són vàlids"
-
-#~ msgid "inject package files into repository"
-#~ msgstr "injecta fitxers de paquets al repositori"
-
-#~ msgid "No description"
-#~ msgstr "Cap descripció"
-
-#~ msgid "entered the repository"
-#~ msgstr "afegit el repositori"
-
-#~ msgid "license"
-#~ msgstr "llicència"
-
-#~ msgid "No category"
-#~ msgstr "Sense categoria"
-
-#~ msgid "Applications without a group"
-#~ msgstr "Aplicacions sense grup"
-
-#~ msgid "Sel"
-#~ msgstr "Sel"
-
-#~ msgid "Rating"
-#~ msgstr "Valoració"
-
-#~ msgid "These are the packages that would be disabled"
-#~ msgstr "Aquests són els paquets que es desactivaran"
-
-#~ msgid "Once confirmed, these packages will be considered masked."
-#~ msgstr "Quan es confirmin, aquests paquets es consideran emmascarats."
-
-#~ msgid "Package Set has broken dependencies, Sets not found"
-#~ msgstr ""
-#~ "El conjunt de paquets té dependències trencades, el conjunt no s'ha trobat"
-
-#~ msgid "There are incomplete package sets, continue at your own risk"
-#~ msgstr "Hi ha conjunts de paquets incomplets, continueu si assumiu el risc"
-
-#~ msgid "Web Service is currently unavailable."
-#~ msgstr "El servei web no està disponible."
-
-#~ msgid "Successfully logged in."
-#~ msgstr "Us heu connectat correctament."
-
-#~ msgid "Unsupported Service"
-#~ msgstr "El servei no està implementat"
-
-#~ msgid "Vote registered successfully"
-#~ msgstr "El vot s'ha registrat correctament"
-
-#~ msgid "Error registering vote"
-#~ msgstr "S'ha produït un error en registrar el vot"
-
-#~ msgid "Already voted"
-#~ msgstr "Ja heu votat"
-
-#~ msgid "Applications"
-#~ msgstr "Aplicacions"
-
-#~ msgid "Applications to remove"
-#~ msgstr "Aplicacions a eliminar"
-
-#~ msgid "Applications to downgrade"
-#~ msgstr "Aplicacions a degradar"
-
-#~ msgid "Applications to install"
-#~ msgstr "Aplicacions a instal·lar"
-
-#~ msgid "Applications to update"
-#~ msgstr "Aplicacions a actualitzar"
-
-#~ msgid "Applications to reinstall"
-#~ msgstr "Aplicacions a instal·lar de nou"
-
-#~ msgid "Proposed"
-#~ msgstr "Proposats"
-
-#~ msgid "Destination"
-#~ msgstr "Destí"
-
-#~ msgid "Rev."
-#~ msgstr "Rev."
-
-#~ msgid "Security id."
-#~ msgstr "Id. de seguretat"
-
-#~ msgid "Application name"
-#~ msgstr "Nom de l'aplicació"
-
-#~ msgid "Please wait, loading..."
-#~ msgstr "S'està carregant..."
-
-#~ msgid "Advisories are being loaded"
-#~ msgstr "S'han carregat els avisos"
-
-#~ msgid "No advisories"
-#~ msgstr "No hi ha avisos"
-
-#~ msgid "There are no items to show"
-#~ msgstr "No hi ha res a mostrar"
-
-#~ msgid "Filename"
-#~ msgstr "Nom de fitxer"
-
-#~ msgid "Cannot disable repository!"
-#~ msgstr "El repositori no es pot desactivar!"
-
-#~ msgid "Active"
-#~ msgstr "Actiu"
-
-#~ msgid "Update"
-#~ msgstr "Actualitza"
-
-#~ msgid "Revision"
-#~ msgstr "Revisió"
-
-#~ msgid "Repository Identifier"
-#~ msgstr "Identificador del repositori"
-
-#~ msgid ""
-#~ "There are packages that can't be installed at the same time, thus are "
-#~ "blocking your request:"
-#~ msgstr ""
-#~ "Hi ha paquets que no es poden instal·lar al mateix temps. Alguns estan "
-#~ "blocant la sol·licitud:"
-
-#~ msgid "These are the needed packages"
-#~ msgstr "Aquests són els paquets necessaris"
-
-#~ msgid ""
-#~ "These packages must be removed from the removal queue because they depend "
-#~ "on your last selection. Do you agree?"
-#~ msgstr ""
-#~ "Aquests paquets s'han d'eliminar de la cua de desinstal·lació perquè "
-#~ "depenen de l'última selecció. D'acord?"
-
-#~ msgid "These packages must be excluded"
-#~ msgstr "Cal excloure aquests paquets"
-
-#~ msgid ""
-#~ "These packages must be removed from the queue because they depend on your "
-#~ "last selection. Do you agree?"
-#~ msgstr ""
-#~ "Cal eliminar aquests paquets de la cua de processos perquè depenen de "
-#~ "l'última selecció. Hi esteu d'acord?"
-
-#~ msgid ""
-#~ "Some dependencies couldn't be found. It can either be because they are "
-#~ "masked or because they aren't in any active repository."
-#~ msgstr ""
-#~ "Hi ha algunes dependències que no s'han pogut trobar. Pot ser que "
-#~ "estiguin emmascarades o que no es trobin a cap dels repositoris actius."
-
-#~ msgid "Conflicting packages were pulled in, in the same key and slot"
-#~ msgstr "S'han afegit paquets amb conflictes, en la mateixa clau i slot"
-
-#~ msgid "Please mask packages that are causing the issue"
-#~ msgstr "Emmascareu els paquets que provoquen el problema"
-
-#~ msgid "Needed disk space"
-#~ msgstr "Espai necessari al disc"
-
-#~ msgid "These are the packages that would be installed/updated"
-#~ msgstr "Aquests són els paquets que s'instal·laran/s'actualitzaran "
-
-#~ msgid "Cannot remove packages"
-#~ msgstr "No se poden eliminar paquets"
-
-#~ msgid "Some dependencies couldn't be removed because they are vital."
-#~ msgstr ""
-#~ "Hi ha algunes dependències que no s'han pogut eliminar perquè eren vitals."
-
-#~ msgid "Freed space"
-#~ msgstr "Espai alliberat"
-
-#~ msgid "Needed space"
-#~ msgstr "Espai necessari"
-
-#~ msgid "Set from"
-#~ msgstr "Conjunt de paquets des de"
-
-#~ msgid "Unknown"
-#~ msgstr "Desconegut"
-
-#~ msgid "User configuration"
-#~ msgstr "Configuració d'usuari"
-
-#~ msgid "Try to update your repositories"
-#~ msgstr "Intenteu actualitzar els repositoris"
-
-#~ msgid "No updates available"
-#~ msgstr "No hi ha actualitzacions disponibles"
-
-#~ msgid "It seems that your system is already up-to-date. Good!"
-#~ msgstr "El sistema està actualitzat. Bé!"
-
-#~ msgid "The current view is loading."
-#~ msgstr "S'està carregant la vista."
-
-#~ msgid "Be patient, sit down and relax."
-#~ msgstr "Paciència, seieu i relaxeu-vos."
-
-#~ msgid "No packages found means nothing to show!"
-#~ msgstr "No s'han trobat paquets. No hi ha res a mostrar!"
-
-#~ msgid "No packages found using the provided search term"
-#~ msgstr "No s'han trobat paquets pels termes de búsqueda"
-
-#~ msgid "No packages to show"
-#~ msgstr "No hi ha paquets a mostrar"
-
-#~ msgid "There are no packages that can be shown, sorry."
-#~ msgstr "No hi ha paquets que es puguin mostrar."
-
-#~ msgid "Programming:"
-#~ msgstr "Programació:"
-
-#~ msgid "Translation:"
-#~ msgstr "Traducció:"
-
-#~ msgid "Dedicated to:"
-#~ msgstr "Dedicat a:"
-
-#~ msgid "Recursive Package Set"
-#~ msgstr "Conjunt de paquets recursius"
-
-#~ msgid "Access denied. You don't have enough privileges to run Sulfur."
-#~ msgstr "Accés denegat. No teniu prou privilegis per executar Sulfur."
-
-#~ msgid "Another Entropy application is running. Sorry."
-#~ msgstr "S'està executant una altra aplicació d'Entropy."
-
-#~ msgid "Entropy is running in safe mode"
-#~ msgstr "Entropy s'està executant en mode segur"
-
-#~ msgid "Please fix as soon as possible"
-#~ msgstr "Si us plau repareu-ho el més aviat possible"
-
-#~ msgid "Safe Mode"
-#~ msgstr "Mode segur"
-
-#~ msgid "Entropy Store is running off a Live System"
-#~ msgstr "Entropy Store s'està executant en un sistema autònom"
-
-#~ msgid "performance could get severely compromised"
-#~ msgstr "el rendiment es podria veure greument afectat"
-
-#~ msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
-#~ msgstr ""
-#~ "NT: Això és una broma pels qui fan els Sants Innocents l'1 d'abril :)"
-
-#~ msgid "Love love love... <3"
-#~ msgstr "Amor amor amor... <3"
-
-#~ msgid "Oh oh ooooh... Merry Xmas!"
-#~ msgstr "Oh oh ooooh... Bon Nadal!"
-
-#~ msgid "Sync"
-#~ msgstr "Sincronitza"
-
-#~ msgid "Search"
-#~ msgstr "Cerca"
-
-#~ msgid "Default packages sorting"
-#~ msgstr "Ordenació de paquets per defecte"
-
-#~ msgid "Sort by name [A-Z]"
-#~ msgstr "Ordena per nom [A-Z]"
-
-#~ msgid "Sort by name [Z-A]"
-#~ msgstr "Ordena per nom [Z-A]"
-
-#~ msgid "Sort by downloads"
-#~ msgstr "Ordena per descàrregues"
-
-#~ msgid "Sort by votes"
-#~ msgstr "Ordena per vots"
-
-#~ msgid "Sort by repository"
-#~ msgstr "Ordena per repositori"
-
-#~ msgid "Sort by date (simple)"
-#~ msgstr "Ordena per data (simple)"
-
-#~ msgid "Sort by date (grouped)"
-#~ msgstr "Ordena per data (en grups)"
-
-#~ msgid "Sort by license (grouped)"
-#~ msgstr "Ordena per llicència (en grups)"
-
-#~ msgid "Sort by Groups"
-#~ msgstr "Ordena per grups"
-
-#~ msgid ""
-#~ "The repositories listed below are configured but not available. They "
-#~ "should be downloaded."
-#~ msgstr ""
-#~ "Els repositoris llistats a baix estan configurats però no estan "
-#~ "disponibles. És recomanable que els baixeu."
-
-#~ msgid "If you don't do this now, you won't be able to use them."
-#~ msgstr "Si no ho feu no els podreu usar."
-
-#~ msgid "Download now"
-#~ msgstr "Baixa'ls ara"
-
-#~ msgid "Skip"
-#~ msgstr "Omet"
-
-#~ msgid "Item"
-#~ msgstr "Element"
-
-#~ msgid "Database"
-#~ msgstr "Base de dades"
-
-#~ msgid "Date"
-#~ msgstr "Data"
-
-#~ msgid "Not logged in"
-#~ msgstr "No us heu connectat"
-
-#~ msgid "Logged in as"
-#~ msgstr "Connectat com a"
-
-#~ msgid "UGC Status"
-#~ msgstr "Estat de UGC"
-
-#~ msgid "Error setting parameter"
-#~ msgstr "S'ha produït un error en establir un paràmetre"
-
-#~ msgid "An issue occured while loading a preference"
-#~ msgstr "S'ha produït un error mentre s'estava carregant una preferència"
-
-#~ msgid "Parameter"
-#~ msgstr "Paràmetre"
-
-#~ msgid "must be of type"
-#~ msgstr "ha de ser del tipus"
-
-#~ msgid "got"
-#~ msgstr "s'ha obtingut"
-
-#~ msgid "An issue occured while saving a preference"
-#~ msgstr "S'ha produït un error mentre s'estava desant una preferència"
-
-#~ msgid "Error saving preferences"
-#~ msgstr "S'ha produït un error en desar les preferències"
-
-#~ msgid ""
-#~ "These packages are masked either by default or due to your choice. Please "
-#~ "be careful, at least."
-#~ msgstr ""
-#~ "Aquests paquets estan emmascarats, ja sigui per defecte o perquè "
-#~ "vosaltres els n'heu. Si us plau, aneu amb compte."
-
-#~ msgid "Generating metadata. Please wait."
-#~ msgstr "S'estan generant metadades. Espereu si us plau."
-
-#~ msgid "Error during list population"
-#~ msgstr "S'ha produït un error en expandir la llista"
-
-#~ msgid "Retrying in 1 second."
-#~ msgstr "Es tornarà a intentar en 1 segon."
-
-#~ msgid "Error loading advisories"
-#~ msgstr "S'ha produït un error en la càrrega de les advertències"
-
-#~ msgid "Errors updating repositories."
-#~ msgstr "S'han produït errors durant l'actualització de repositoris."
-
-#~ msgid "Please check logs below for more info"
-#~ msgstr "Si us plau, reviseu els registres de baix per a més informació"
-
-#~ msgid "Repositories updated successfully"
-#~ msgstr "Els reporitoris s'han actualitzat correctament"
-
-#~ msgid "sys-apps/entropy needs to be updated as soon as possible."
-#~ msgstr "hauríeu d'actualitzar sys-apps/entropy el més aviat possible."
-
-#~ msgid ""
-#~ "Another Entropy instance is locking this task at the moment. Try in a few "
-#~ "minutes."
-#~ msgstr ""
-#~ "Una altra instància d'Entropy està bloquejant aquesta tasca. Intenteu-ho "
-#~ "en uns minuts."
-
-#~ msgid "Updating repositories..."
-#~ msgstr "S'estan actualitzant els repositoris..."
-
-#~ msgid "Running tasks"
-#~ msgstr "S'estan executant tasques"
-
-#~ msgid "Testing dependencies..."
-#~ msgstr "S'estan verificant les dependències..."
-
-#~ msgid "No missing dependencies found."
-#~ msgstr "No s'han trobat dependències perdudes."
-
-#~ msgid ""
-#~ "Missing dependencies found, but none of them are on the repositories."
-#~ msgstr ""
-#~ "Hi ha dependències no resoltes, però cap d'elles no és als repositoris."
-
-#~ msgid ""
-#~ "Some missing dependencies have not been matched, others are going to be "
-#~ "added to the queue."
-#~ msgstr ""
-#~ "Algunes dependències no s'han pogut resoldre, altres s'afegiran a la cua "
-#~ "de processos."
-
-#~ msgid "All the missing dependencies are going to be added to the queue"
-#~ msgstr "Totes les dependències no resoltes s'afegiran a la cua de processos"
-
-#~ msgid "Testing libraries..."
-#~ msgstr "S'estan verificant les llibreries..."
-
-#~ msgid "Libraries test aborted"
-#~ msgstr "La verificació de llibreries s'ha interromput"
-
-#~ msgid ""
-#~ "Some broken packages have not been matched, others are going to be added "
-#~ "to the queue."
-#~ msgstr ""
-#~ "Alguns paquets trencats no s'han trobat, la resta s'afegiran a la cua de "
-#~ "processos."
-
-#~ msgid "All the broken packages are going to be added to the queue"
-#~ msgstr "Tots els paquets trencats s'afegiran a la cua"
-
-#~ msgid "These packages are no longer available"
-#~ msgstr "Aquests paquets ja no estan disponibles"
-
-#~ msgid ""
-#~ "These packages should be removed (if you agree) because support has been "
-#~ "dropped. Do you want to remove them?"
-#~ msgstr ""
-#~ "És recomanable que elimineu aquests paquets (si hi esteu d'acord) perquè "
-#~ "ja no són compatibles. Els voleu eliminar?"
-
-#~ msgid "These are orphaned vital packages"
-#~ msgstr "Aquests són paquets vitals orfes"
-
-#~ msgid ""
-#~ "You should make sure that they are no longer needed and remove manually."
-#~ msgstr ""
-#~ "És recomanable que us assegureu que ja no són necessaris i els elimineu "
-#~ "manualment."
-
-#~ msgid "These are packages from unavailable repositories"
-#~ msgstr "Aquests són paquets de repositoris no disponibles"
-
-#~ msgid "You are not going to receive updates for the following packages."
-#~ msgstr "No rebreu actualitzacions pels paquets següents."
-
-#~ msgid "updates"
-#~ msgstr "actualitzacions"
-
-#~ msgid "Showing"
-#~ msgstr "Es mostren"
-
-#~ msgid "No packages need or can be queued at the moment."
-#~ msgstr "No hi ha paquets necessaris o aquests no es poden posar a la cua."
-
-#~ msgid "Name and description"
-#~ msgstr "Nom i descripció"
-
-#~ msgid "Search string"
-#~ msgstr "Cerca cadena"
-
-#~ msgid "Search type"
-#~ msgstr "Tipus de cerca"
-
-#~ msgid "Entropy Search"
-#~ msgstr "Cerca Entropy"
-
-#~ msgid "Abort action"
-#~ msgstr "Abandona l'acció"
-
-#~ msgid "Ignore"
-#~ msgstr "Ignora"
-
-#~ msgid "Tasks completed successfully."
-#~ msgstr "Les tasques s'han acabat correctament."
-
-#~ msgid "Please make sure to read all the messages in the terminal below."
-#~ msgstr ""
-#~ "Assegureu-vos que llegiu tots els missatges de la terminal inferior."
-
-#~ msgid "Oh, a fairytale gone bad!"
-#~ msgstr "Ieps, alguna cosa ha anat malament!"
-
-#~ msgid ""
-#~ "Something bad happened, have a look at the messages in the terminal below."
-#~ msgstr ""
-#~ "Alguna cosa no ha anat com era d'esperar, mireu la terminal de processos."
-
-#~ msgid "Don't feel guilty, it's all my fault!"
-#~ msgstr "No us sentiu culpables, és culpa meva!"
-
-#~ msgid ""
-#~ "Attention. An error occured while processing the queue.\n"
-#~ "Please have a look at the terminal."
-#~ msgstr ""
-#~ "Atenció. S'ha produït un error mentre es processava la cua.\n"
-#~ "Mireu la terminal de processos."
-
-#~ msgid ""
-#~ "Attention. Something really bad happened.\n"
-#~ "Please have a look at the terminal."
-#~ msgstr ""
-#~ "Alguna cosa no ha anat com era d'esperar.\n"
-#~ "Mireu la terminal de processos."
-
-#~ msgid ""
-#~ "Attention. Other updates that must be installed.\n"
-#~ "Sulfur will be reloaded."
-#~ msgstr ""
-#~ "Atenció. S'han d'instal·lar altres actualitzacions.\n"
-#~ "Sulfur es reiniciarà."
-
-#~ msgid ""
-#~ "Attention. You have updated Entropy.\n"
-#~ "Sulfur will be reloaded."
-#~ msgstr ""
-#~ "Atenció. Heu actualitzat Entropy.\n"
-#~ "Sulfur es reiniciarà."
-
-#~ msgid "Processing Packages in queue"
-#~ msgstr "S'estan processant els paquets de la cua"
-
-#~ msgid "No packages selected"
-#~ msgstr "No hi ha paquets seleccionats"
-
-#~ msgid "Skipping current mirror."
-#~ msgstr "S'està ometent la rèplica de descàrrega actual."
-
-#~ msgid ""
-#~ "Did you know that you can comment, vote and add documents to applications "
-#~ "like in a wiki?"
-#~ msgstr ""
-#~ "Sabeu que podeu comentar, votar i afegir documents a les aplicacions com "
-#~ "en una wikipèdia?"
-
-#~ msgid ""
-#~ "Did you know that you can add icons or files to applications by simply "
-#~ "dropping images from your Desktop onto them?"
-#~ msgstr ""
-#~ "Sabeu que podeu afegir icones o fitxers a les aplicacions simplement "
-#~ "arrossegant-hi imatges des de l'escriptori?"
-
-#~ msgid ""
-#~ "Did you know that Sulfur has an Advanced mode, just click Sulfur -> "
-#~ "Advanced mode?"
-#~ msgstr ""
-#~ "Sabeu que Sulfur té un mode avançat, simplement cliqueu Sulfur -> Mode "
-#~ "avançat?"
-
-#~ msgid ""
-#~ "Did you know that the guy who wrote this tip was really asleep at the "
-#~ "time?"
-#~ msgstr "Sabeu que qui va escriure aquest consell estava totalment adormit?"
-
-#~ msgid ""
-#~ "Did you know that you can backup your installed application repository by "
-#~ "enabling Advanced mode and going to Preferences tab?"
-#~ msgstr ""
-#~ "Sabeu que podeu fer una còpia de seguretat de les aplicacions "
-#~ "instal·lades del repositori activant el Mode avançat i anant a la "
-#~ "pestanya de Preferències?"
-
-#~ msgid ""
-#~ "Did you know that you can customize interface colors by enabling Advanced "
-#~ "mode and going to Preferences tab?"
-#~ msgstr ""
-#~ "Sabeu que podeu personalitzar els colors de la interfície activant el "
-#~ "Mode avançat i anant a la pestanya de Preferències?"
-
-#~ msgid "No Repository Identifier"
-#~ msgstr "No hi ha identificador de repositori"
-
-#~ msgid "Duplicated Repository Identifier"
-#~ msgstr "Identificador de repositori duplicat"
-
-#~ msgid "Invalid Repository Identifier"
-#~ msgstr "L'identificador del repositori no és vàlid"
-
-#~ msgid "No download mirrors"
-#~ msgstr "No hi ha rèpliques de baixada"
-
-#~ msgid "Repository URL must be a valid URL"
-#~ msgstr "L'adreça del repositori ha de ser una URL vàlida"
-
-#~ msgid "Insert URL"
-#~ msgstr "Escriviu l'adreça URL"
-
-#~ msgid "Enter a download mirror, HTTP or FTP"
-#~ msgstr "Introduïu una rèplica de baixada HTTP o FTP"
-
-#~ msgid "Enter a download mirror URL"
-#~ msgstr "Introduïu una rèplica de baixada URL"
-
-#~ msgid "You must enter either a valid URL."
-#~ msgstr "Heu d'introduir una adreça URL."
-
-#~ msgid "Insert Repository"
-#~ msgstr "Insereix repositori"
-
-#~ msgid "Insert Repository identification string"
-#~ msgstr "Inseriu la cadena d'identificació de repositori"
-
-#~ msgid "This Repository identification string is malformed"
-#~ msgstr "La cadena d'identificació del repositori està mal formada"
-
-#~ msgid "Unable to add repository"
-#~ msgstr "No es pot afegir el repositori"
-
-#~ msgid "Wrong entries, errors"
-#~ msgstr "Entrades incorrectes, errors"
-
-#~ msgid "Unable to remove/disable repository"
-#~ msgstr "No es pot eliminar/desactivar el repositori"
-
-#~ msgid "Repositories Notice Board"
-#~ msgstr "Tauler de Notícies dels Repositoris"
-
-#~ msgid ""
-#~ "Here below you will find a list of important news directly issued by your "
-#~ "applications maintainers.\n"
-#~ "Double click on each item to retrieve detailed info."
-#~ msgstr ""
-#~ "A baix trobareu una llista de notícies importants enviada directament "
-#~ "pels qui mantenen les aplicacions.\n"
-#~ "Feu doble clic en cada element per obtenir informació detallada."
-
-#~ msgid "Notice"
-#~ msgstr "Notícia"
-
-#~ msgid "Expand to browse"
-#~ msgstr "Expandeix per navegar"
-
-#~ msgid "Author"
-#~ msgstr "Autor"
-
-#~ msgid "Please wait..."
-#~ msgstr "Espereu..."
-
-#~ msgid "Package ChangeLog"
-#~ msgstr "Registre de canvis de paquets"
-
-#~ msgid "License name"
-#~ msgstr "Nom de la llicència"
-
-#~ msgid "Mirrors"
-#~ msgstr "Rèpliques"
-
-#~ msgid "Depends"
-#~ msgstr "Depèn de"
-
-#~ msgid "Needed libraries"
-#~ msgstr "Llibreries necessàries"
-
-#~ msgid "Protected item"
-#~ msgstr "Element protegit"
-
-#~ msgid "Type"
-#~ msgstr "Tipus"
-
-#~ msgid "File"
-#~ msgstr "Fitxer"
-
-#~ msgid "Remotely"
-#~ msgstr "Remotament"
-
-#~ msgid "Removed repository"
-#~ msgstr "S'ha eliminat el repositori"
-
-#~ msgid "Bug"
-#~ msgstr "Error"
-
-#~ msgid "Reference"
-#~ msgstr "Referència"
-
-#~ msgid "impact"
-#~ msgstr "impacte"
-
-#~ msgid "access"
-#~ msgstr "accés"
-
-#~ msgid "Vulnerables"
-#~ msgstr "Vulnerables"
-
-#~ msgid "Unaffected"
-#~ msgstr "No afectats"
-
-#~ msgid "Id"
-#~ msgstr "Id"
-
-#~ msgid "No keywords"
-#~ msgstr "Sense keywords"
-
-#~ msgid "Write your"
-#~ msgstr "Escriviu el vostre"
-
-#~ msgid "Select your"
-#~ msgstr "Seleccioneu el vostre"
-
-#~ msgid "Submit issue"
-#~ msgstr "Envia el problema"
-
-#~ msgid "Empty Document"
-#~ msgstr "Document buit"
-
-#~ msgid "Invalid Description"
-#~ msgstr "La descripció no és vàlida"
-
-#~ msgid "Invalid Document Type"
-#~ msgstr "El tipus de document no és vàlid"
-
-#~ msgid "Do you confirm your submission?"
-#~ msgstr "Voleu confirmar la tramesa?"
-
-#~ msgid "Service is unavailable"
-#~ msgstr "El servei no està disponible"
-
-#~ msgid "Document added successfully. Thank you"
-#~ msgstr "El document s'ha afegit correctament. Gràcies!"
-
-#~ msgid "Success!"
-#~ msgstr "Ha funcionat!"
-
-#~ msgid "UGC Error"
-#~ msgstr "Error UGC"
-
-#~ msgid "Write your document"
-#~ msgstr "Escriviu un document"
-
-#~ msgid "Select your file"
-#~ msgstr "Seleccioneu el fitxer"
-
-#~ msgid "On repository"
-#~ msgstr "Al repositori"
-
-#~ msgid "These are the packages that must be enabled to satisfy your request"
-#~ msgstr ""
-#~ "Aquests són els paquets que s'han d'habilitar per satisfer la demanda"
-
-#~ msgid "Some packages are masked"
-#~ msgstr "Hi ha alguns paquets emmascarats"
-
-#~ msgid "Masked package"
-#~ msgstr "Paquet emmascarat"
-
-#~ msgid "Enabled"
-#~ msgstr "Habilitat"
-
-#~ msgid "Please confirm the actions above"
-#~ msgstr "Si us plau confirmeu les accions de sobre"
-
-#~ msgid "To be downgraded"
-#~ msgstr "Es degradaran"
-
-#~ msgid "To be removed"
-#~ msgstr "S'eliminaran"
-
-#~ msgid "To be reinstalled"
-#~ msgstr "S'instal·laran de nou"
-
-#~ msgid "To be installed"
-#~ msgstr "S'instal·laran"
-
-#~ msgid "To be updated"
-#~ msgstr "S'actualitzaran"
-
-#~ msgid "About"
-#~ msgstr "Quant a"
-
-#~ msgid "Sulfur file chooser"
-#~ msgstr "Selector de fitxers de Sulfur"
-
-#~ msgid "Sulfur Question"
-#~ msgstr "Pregunta de Sulfur"
-
-#~ msgid "Hey!"
-#~ msgstr "Ep!"
-
-#~ msgid "Please fill the following form"
-#~ msgstr "Si us plau, ompliu el següent formulari"
-
-#~ msgid "Add atom"
-#~ msgstr "Afegeix un àtom"
-
-#~ msgid "Atom"
-#~ msgstr "Àtom"
-
-#~ msgid "Invalid entry"
-#~ msgstr "L'entrada no és vàlida"
-
-#~ msgid "Cancel"
-#~ msgstr "Cancel·la"
-
-#~ msgid "Accepted"
-#~ msgstr "Acceptada"
-
-#~ msgid "license text"
-#~ msgstr "text de la llicència"
-
-#~ msgid "Exception caught"
-#~ msgstr "S'ha produït una excepció"
-
-#~ msgid "Sulfur crashed! An unexpected error occured."
-#~ msgstr "El Sulfur ha petat! S'ha produït un error inesperat."
-
-#~ msgid "Your report has been submitted successfully! Thanks a lot."
-#~ msgstr "L'informe s'ha enviat correctament! Moltes gràcies."
-
-#~ msgid "Cannot submit your report. Not connected to Internet?"
-#~ msgstr "No es pot enviar l'informe. Potser no esteu connectat a Internet?"
-
-#~ msgid "Error during backup"
-#~ msgstr "Error en fer la còpia de seguretat"
-
-#~ msgid "Backup complete"
-#~ msgstr "La còpia de seguretat ha acabat"
-
-#~ msgid "Error during restore"
-#~ msgstr "Error en restaurar la còpia"
-
-#~ msgid "Restore complete"
-#~ msgstr "La restauració ha acabat"
-
-#~ msgid "Error during removal"
-#~ msgstr "Error en l'eliminació"
-
-#~ msgid "The chosen package is not vulnerable"
-#~ msgstr "El paquet seleccionat no és vulnerable"
-
-#~ msgid "Packages in Advisory have been queued."
-#~ msgstr "Els paquets d'avisos s'han posat a la cua d'actualització."
-
-#~ msgid "Packages in all Advisories have been queued."
-#~ msgstr ""
-#~ "Els paquets de tots els avisos s'han posat a la cua d'actualització."
-
-#~ msgid "Are you sure you want to remove the default repository?"
-#~ msgstr "Esteu segur que el voleu eliminar el repositori predeterminat?"
-
-#~ msgid "Unable to remove repository"
-#~ msgstr "No es pot eliminar el repositori"
-
-#~ msgid "Are you sure ?"
-#~ msgstr "N'esteu segur?"
-
-#~ msgid "Error saving parameter"
-#~ msgstr "S'ha produït un error en desar un paràmetre"
-
-#~ msgid "not saved"
-#~ msgstr "no s'ha desat"
-
-#~ msgid "New"
-#~ msgstr "Nou"
-
-#~ msgid "Please insert a new path"
-#~ msgstr "Si us plau, introduïu un nou camí"
-
-#~ msgid "Please edit the selected path"
-#~ msgstr "Si us plau, editeu el camí seleccionat"
-
-#~ msgid "You have chosen to install this package"
-#~ msgstr "Heu escollit instal·lar aquest paquet"
-
-#~ msgid "Are you sure?"
-#~ msgstr "N'esteu segur?"
-
-#~ msgid "Please select at least one repository"
-#~ msgstr "Si us plau, seleccioneu com a mínim un repositori"
-
-#~ msgid "No packages in queue"
-#~ msgstr "No hi ha paquets a la cua"
-
-#~ msgid "Queue is too old. Cannot load."
-#~ msgstr "La cua és massa antiga. No es pot carregar."
-
-#~ msgid "Update your system now ?"
-#~ msgstr "Voleu actualitzar el sistema ara?"
-
-#~ msgid ""
-#~ "You have chosen to interrupt the processing. Are you sure you want to do "
-#~ "it ?"
-#~ msgstr ""
-#~ "Heu decidit interrompre el processat de la cua. Esteu segur que voleu fer-"
-#~ "ho?"
-
-#~ msgid "UGC credentials cleared"
-#~ msgstr "S'han esborrat les credencials UGC"
-
-#~ msgid "Choose what Package Set you want to add"
-#~ msgstr "Escolliu quin conjunt de paquets voleu veure"
-
-#~ msgid "Choose what Package Set you want to edit"
-#~ msgstr "Escolliu quin conjunt de paquets voleu editar"
-
-#~ msgid "Package Set name"
-#~ msgstr "Nom del conjunt de paquets"
-
-#~ msgid "Package atoms"
-#~ msgstr "Àtoms de paquets"
-
-#~ msgid "No package sets available for removal."
-#~ msgstr "No hi ha conjunts de paquets disponibles per eliminar"
-
-#~ msgid "Removable Package Set"
-#~ msgstr "Conjunt de paquets eliminable"
-
-#~ msgid "Choose what Package Set you want to remove"
-#~ msgstr "Escolliu quin conjunt de paquets voleu eliminar"
-
-#~ msgid "Error enabling masked package"
-#~ msgstr "S'ha produït un error en habilitar el paquet emmascarat"
-
-#~ msgid "dependencies not found"
-#~ msgstr "dependències que no s'han trobat"
-
-#~ msgid "dependency collisions found"
-#~ msgstr "s'han trobat col·lisions de dependències"
-
-#~ msgid "Downloading sources"
-#~ msgstr "S'estan baixant les fonts"
-
-#~ msgid "Removing package"
-#~ msgstr "S'està eliminant un paquet"
-
-#~ msgid "Add/Edit Repository"
-#~ msgstr "Afegeix/Edita repositori"
-
-#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-#~ msgstr ""
-#~ "S'està afegint un <b>nou repositori</b> que us permetrà accedir a <b>més "
-#~ "programari</b>"
-
-#~ msgid "Compression"
-#~ msgstr "Compressió"
-
-#~ msgid "Identifier"
-#~ msgstr "Identificador"
-
-#~ msgid "URI"
-#~ msgstr "URI"
-
-#~ msgid "Repository information"
-#~ msgstr "Informació del repositori"
-
-#~ msgid "_Insert String"
-#~ msgstr "_Insereix cadena"
-
-#~ msgid "Advisory information"
-#~ msgstr "Informació d'avisos"
-
-#~ msgid "button"
-#~ msgstr "botó"
-
-#~ msgid "_Overview"
-#~ msgstr "Resu_m"
-
-#~ msgid "Affected packages"
-#~ msgstr "Paquets afectats"
-
-#~ msgid "Bugs"
-#~ msgstr "Errors"
-
-#~ msgid "_Details"
-#~ msgstr "_Detalls"
-
-#~ msgid "_More"
-#~ msgstr "Mé_s"
-
-#~ msgid "Please Confirm"
-#~ msgstr "Confirmeu"
-
-#~ msgid "S_end Error Report"
-#~ msgstr "_Envia l'informe d'error"
-
-#~ msgid ""
-#~ "Please submit this error to us providing as much information as possible."
-#~ msgstr ""
-#~ "Si us plau, envieu aquest error facilitant-nos la màxima informació "
-#~ "possible."
-
-#~ msgid "What you were doing"
-#~ msgstr "El que estàveu fent"
-
-#~ msgid "Your E-mail"
-#~ msgstr "L'adreça de correu electrònic"
-
-#~ msgid "Your Full Name"
-#~ msgstr "El nom sencer"
-
-#~ msgid ""
-#~ "You <b>need to accept</b> the licenses below.\n"
-#~ "Please read them carefully and <b>make your choice</b>."
-#~ msgstr ""
-#~ "Heu <b>d'acceptar</b> les llicències de baix.\n"
-#~ "Si us plau, llegiu-les amb atenció i <b>escolliu una opció</b>."
-
-#~ msgid "_Read License"
-#~ msgstr "_Llegir la llicència"
-
-#~ msgid "_Accept License"
-#~ msgstr "Accepta la _llicència"
-
-#~ msgid "Sulfur"
-#~ msgstr "Sulfur"
-
-#~ msgid "_Sulfur"
-#~ msgstr "_Sulfur"
-
-#~ msgid "Install from binary package..."
-#~ msgstr "Instal·la des d'un paquet binari..."
-
-#~ msgid "Install a stand-alone package file"
-#~ msgstr "Instal·la un fitxer de paquet aïllat"
-
-#~ msgid "Switch Sulfur to Advanced Mode"
-#~ msgstr "Commuta al mode avançat"
-
-#~ msgid "Advanced Mode"
-#~ msgstr "Mode avançat"
-
-#~ msgid "S_ervices"
-#~ msgstr "S_erveis"
-
-#~ msgid "R_epositories Notice Board"
-#~ msgstr "Tauler de Notícies dels R_epositoris"
-
-#~ msgid "_Help"
-#~ msgstr "A_juda"
-
-#~ msgid "Tips 'n tricks"
-#~ msgstr "Pistes i consells"
-
-#~ msgid "Show Sulfur tips and tricks"
-#~ msgstr "Mostra pistes i consells de Sulfur"
-
-#~ msgid "Download updated repositories containing new applications"
-#~ msgstr "Baixa repositoris actualitzats que continguin noves aplicacions"
-
-#~ msgid "Refresh"
-#~ msgstr "Refresca"
-
-#~ msgid "Show updates"
-#~ msgstr "Mostra les actualitzacions"
-
-#~ msgid "Updates"
-#~ msgstr "Actualitzacions"
-
-#~ msgid "Show available applications"
-#~ msgstr "Mostra les aplicacions disponibles"
-
-#~ msgid "Show installed applications"
-#~ msgstr "Mostra les aplicacions instal·lades"
-
-#~ msgid "Show masked applications"
-#~ msgstr "Mostra les aplicacions emmascarades"
-
-#~ msgid "Show any existing application"
-#~ msgstr "Mostra totes les aplicacions"
-
-#~ msgid "All"
-#~ msgstr "Tot"
-
-#~ msgid "Show package sets (groups)"
-#~ msgstr "Mostra els sets de paquets (grups)"
-
-#~ msgid "Sets"
-#~ msgstr "Sets"
-
-#~ msgid "Click to start searching"
-#~ msgstr "Feu clic per començar la cerca"
-
-#~ msgid "Show install queue"
-#~ msgstr "Mostra la cua d'instal·lació"
-
-#~ msgid ""
-#~ "Filter currently shown items, or paste entropy:// action strings (for eg. "
-#~ "entropy://amarok, to install Amarok!)"
-#~ msgstr ""
-#~ "Filtra els elements que es mostren, o enganxeu entropy:// cadenes d'acció "
-#~ "(per ex. entropy://amarok, per instal·lar Amarok!)"
-
-#~ msgid "_Update all"
-#~ msgstr "Act_ualitza-ho tot"
-
-#~ msgid "_Remove All"
-#~ msgstr "Sup_rimeix-los tots"
-
-#~ msgid "_Update Repositories"
-#~ msgstr "A_ctualitza els repositoris"
-
-#~ msgid "Cl_ean"
-#~ msgstr "Net_eja"
-
-#~ msgid "Download only"
-#~ msgstr "Només baixa"
-
-#~ msgid "If selected, packages will be downloaded only"
-#~ msgstr "Si ho selecioneu, els paquets només es baixaran"
-
-#~ msgid "Download source code"
-#~ msgstr "Baixa el codi font"
-
-#~ msgid "_Commit Actions"
-#~ msgstr "_Processa"
-
-#~ msgid "_Add Set"
-#~ msgstr "_Afegeix un conjunt de paquets"
-
-#~ msgid "_Remove Set"
-#~ msgstr "_Elimina un conjunt de paquets"
-
-#~ msgid "_Edit Set"
-#~ msgstr "_Edita el conjunt de paquets"
-
-#~ msgid "Browse applications"
-#~ msgstr "Navega per les aplicacions"
-
-#~ msgid "Show unapplied"
-#~ msgstr "Mostra els no aplicats"
-
-#~ msgid "Show applied"
-#~ msgstr "Mostra els aplicats"
-
-#~ msgid "Show all"
-#~ msgstr "Mostra'ls tots"
-
-#~ msgid "Q_ueue packages in selected Advisory"
-#~ msgstr "Posa a la c_ua els paquets dels avisos seleccionats"
-
-#~ msgid "_Queue all vulnerable packages"
-#~ msgstr "Posa a la _cua tots els paquets vulnerables"
-
-#~ msgid "Security advisories, make sure your 'puter is really secure"
-#~ msgstr "Avisos de seguretat, assegureu-vos que l'equip és segur"
-
-#~ msgid "_Force repositories update"
-#~ msgstr "F_orça l'actualització dels repositioris"
-
-#~ msgid "Repositories options"
-#~ msgstr "Opcions de repositoris"
-
-#~ msgid "R_egenerate Cache"
-#~ msgstr "R_egenera la memòria cau"
-
-#~ msgid "Update, enable, disable application repositories"
-#~ msgstr "Actualitza, activa, desactiva repositoris d'aplicacions"
-
-#~ msgid "Repositories"
-#~ msgstr "Repositoris"
-
-#~ msgid "C_hanges"
-#~ msgstr "C_anvis"
-
-#~ msgid "M_erge"
-#~ msgstr "C_ombina"
-
-#~ msgid "Dele_te all"
-#~ msgstr "Esborra-ho _tot"
-
-#~ msgid "Merge all"
-#~ msgstr "Combina-ho tot"
-
-#~ msgid ""
-#~ "Applications can alter your system configuration, merge requested changes "
-#~ "manually"
-#~ msgstr ""
-#~ "Les aplicacions poden alterar la configuració del vostre sistema, "
-#~ "combineu els canvis requerits manualment"
-
-#~ msgid "System files"
-#~ msgstr "Fitxers del sistema"
-
-#~ msgid "Prevents files belonging to a package being overwritten by another"
-#~ msgstr ""
-#~ "Evita que els fitxers que pertanyen a un paquet puguin ser sobreescrits "
-#~ "per un altre"
-
-#~ msgid ""
-#~ "Disabled\n"
-#~ "Removal only\n"
-#~ "Install+Removal"
-#~ msgstr ""
-#~ "Desactivat\n"
-#~ "Només elimina\n"
-#~ "Instal·la i elimina"
-
-#~ msgid "Collision protection"
-#~ msgstr "Protecció de col·lisions"
-
-#~ msgid "This is what they call \"nice level\""
-#~ msgstr "Això és el que anomenem \"nice level\""
-
-#~ msgid "Process priority (nice)"
-#~ msgstr "Prioritat del procés (nice)"
-
-#~ msgid "Backup configuration files"
-#~ msgstr "Còpia de seguretat del fitxer de configuració"
-
-#~ msgid "Entropy can keep a backup of your updated configuration files"
-#~ msgstr ""
-#~ "Entropy pot desar una còpia de seguretat dels fitxers de configuració "
-#~ "actualitzats"
-
-#~ msgid "Dependencies algorithm"
-#~ msgstr "Algorisme de dependències"
-
-#~ msgid ""
-#~ "Reliable\n"
-#~ "Relaxed"
-#~ msgstr ""
-#~ "Fiable\n"
-#~ "Relaxat"
-
-#~ msgid "Ignored protected files"
-#~ msgstr "Fitxers protegits ignorats"
-
-#~ msgid "Protected files and directories mask"
-#~ msgstr "Fitxers protegits i directoris emmascarats"
-
-#~ msgid "Protected files and directories"
-#~ msgstr "Fitxers protegits i directoris"
-
-#~ msgid "type your password here"
-#~ msgstr "escriviu la contrasenya"
-
-#~ msgid "type your username here"
-#~ msgstr "escriviu el nom d'usuari"
-
-#~ msgid "Proxy Password"
-#~ msgstr "Contrasenya del Proxy"
-
-#~ msgid "Proxy Username"
-#~ msgstr "Nom d'usuari del Proxy"
-
-#~ msgid "kB/sec"
-#~ msgstr "kB/s"
-
-#~ msgid "0 = no limit; 100 = 100kB/sec"
-#~ msgstr "0 = sense límit; 100 = 100kB/s"
-
-#~ msgid "Download speed limit"
-#~ msgstr "Límit de velocitat de baixada"
-
-#~ msgid "Example: http://proxy:1234"
-#~ msgstr "Exemple: http://proxy:1234"
-
-#~ msgid "HTTP Proxy"
-#~ msgstr "Proxy HTTP"
-
-#~ msgid "FTP Proxy"
-#~ msgstr "Proxy FTP"
-
-#~ msgid "Socket settings"
-#~ msgstr "Paràmetres de sòcols"
-
-#~ msgid "Generate login information"
-#~ msgstr "Genera informació d'entrada"
-
-#~ msgid "Discard login information"
-#~ msgstr "Descarta la informació d'entrada"
-
-#~ msgid "Clear all credentials"
-#~ msgstr "Esborra les credencials"
-
-#~ msgid "User Generated Content"
-#~ msgstr "Contingut Generat per l'Usuari"
-
-#~ msgid "Terminal font"
-#~ msgstr "Tipus de letra de la terminal"
-
-#~ msgid "Generic title 1"
-#~ msgstr "Títol genèric 1"
-
-#~ msgid "Generic title 2"
-#~ msgstr "Títol genèric 2"
-
-#~ msgid "Background error message"
-#~ msgstr "Missatge d'error de fons"
-
-#~ msgid "Error message"
-#~ msgstr "Missatge d'error"
-
-#~ msgid "Successful message"
-#~ msgstr "Missatge d'èxit"
-
-#~ msgid "Background succ. message"
-#~ msgstr "Missatge d'èxit de fons"
-
-#~ msgid "Text on succ. message"
-#~ msgstr "Text del missatge d'èxit"
-
-#~ msgid "Text on error message"
-#~ msgstr "Text del missatge d'error"
-
-#~ msgid "General"
-#~ msgstr "General"
-
-#~ msgid "Package (default)"
-#~ msgstr "Paquet (predeterminat)"
-
-#~ msgid "Package not installed"
-#~ msgstr "Paquet no instal·lat"
-
-#~ msgid "Package removed"
-#~ msgstr "Paquet eliminat"
-
-#~ msgid "Package updated"
-#~ msgstr "Paquet actualitzat"
-
-#~ msgid "Package reinstalled"
-#~ msgstr "Paquet instal·lat de nou"
-
-#~ msgid "Package description"
-#~ msgstr "Descripció del paquet"
-
-#~ msgid "Package subtitle"
-#~ msgstr "Subtítol del paquet"
-
-#~ msgid "Package sub-description"
-#~ msgstr "Subdescripció del paquet"
-
-#~ msgid "Package category"
-#~ msgstr "Categoria del paquet"
-
-#~ msgid "Package downgrade"
-#~ msgstr "Degrada el paquet"
-
-#~ msgid "Packages"
-#~ msgstr "Paquets"
-
-#~ msgid "Interface Colors"
-#~ msgstr "Colors de la interfície"
-
-#~ msgid "<b>Entropy database backup tool</b>"
-#~ msgstr "<b>Eina de còpia de seguretat de la base de dades d'Entropy</b>"
-
-#~ msgid ""
-#~ "<small>Using this tool, you will be able to backup and restore your "
-#~ "Operating System packages database.</small>"
-#~ msgstr ""
-#~ "<small>Amb aquesta eina podeu fer una còpia de seguretat i restaurar la "
-#~ "base de dades dels paquets del sistema operatiu.</small>"
-
-#~ msgid "New backup"
-#~ msgstr "Nova còpia de seguretat"
-
-#~ msgid "Restore selected"
-#~ msgstr "Restaura la seleccionada"
-
-#~ msgid "Delete selected"
-#~ msgstr "Elimina la seleccionada"
-
-#~ msgid "Dependencies test"
-#~ msgstr "Prova de dependències"
-
-#~ msgid "System Database"
-#~ msgstr "Base de dades del sistema"
-
-#~ msgid "Restore"
-#~ msgstr "Restaura"
-
-#~ msgid "Save"
-#~ msgstr "Desa"
-
-#~ msgid "Change Sulfur preferences"
-#~ msgstr "Canvia les preferències de Sulfur"
-
-#~ msgid "Preferences"
-#~ msgstr "Preferències"
-
-#~ msgid "_Skip mirror"
-#~ msgstr "_Salta rèplica"
-
-#~ msgid "Process details"
-#~ msgstr "Detalls del procés"
-
-#~ msgid "Monitor applications install/removal execution process"
-#~ msgstr ""
-#~ "Monitoritza el procés d'execució d'instal·lació/eliminació d'aplicacions"
-
-#~ msgid "Progress"
-#~ msgstr "Progrés"
-
-#~ msgid "Hide this until something new happens"
-#~ msgstr "Amaga-ho mentre no hi hagi res de nou"
-
-#~ msgid "Install the selected package"
-#~ msgstr "Instal·la el paquet selecionat"
-
-#~ msgid "Undo Install"
-#~ msgstr "No instal·lis"
-
-#~ msgid "Undo Install action"
-#~ msgstr "Desfés l'acció d'instal·lar"
-
-#~ msgid "Disable"
-#~ msgstr "Desactivat"
-
-#~ msgid "Mask this package"
-#~ msgstr "Emmascara el paquet"
-
-#~ msgid "Reinstall the selected package"
-#~ msgstr "Instal·la de nou el paquet seleccionat"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "No reinstal·lis"
-
-#~ msgid "Undo Reinstall action"
-#~ msgstr "Desfés l'acció de reinstal·lar"
-
-#~ msgid "Remove"
-#~ msgstr "Elimina"
-
-#~ msgid "Remove the selected package"
-#~ msgstr "Elimina el paquet seleccionat"
-
-#~ msgid "Undo Remove"
-#~ msgstr "No eliminis"
-
-#~ msgid "Undo Remove action"
-#~ msgstr "Desfés l'acció d'eliminar"
-
-#~ msgid "Purge"
-#~ msgstr "Purga"
-
-#~ msgid "Remove the selected package and its configuration"
-#~ msgstr "Elimina els paquets seleccionats i la seva configuració"
-
-#~ msgid "Undo Purge"
-#~ msgstr "No purguis"
-
-#~ msgid "Undo Purge action"
-#~ msgstr "Desfés l'acció de purgar"
-
-#~ msgid "Enable"
-#~ msgstr "Habilita"
-
-#~ msgid "Unmask this package"
-#~ msgstr "Desemmascara aquest paquet"
-
-#~ msgid "Mask the selected packages"
-#~ msgstr "emmascara els paquets seleccionats"
-
-#~ msgid "Undo Update"
-#~ msgstr "No actualitzis"
-
-#~ msgid "Package Masking"
-#~ msgstr "Emmascara Paquets"
-
-#~ msgid "_Enable"
-#~ msgstr "_Habilita"
-
-#~ msgid "Enable _all"
-#~ msgstr "Habilita'ls _tots"
-
-#~ msgid "_Properties"
-#~ msgstr "_Propietats"
-
-#~ msgid "Install Packages in Set"
-#~ msgstr "Instal·la els paquets del conjunt"
-
-#~ msgid "Install packages in Set"
-#~ msgstr "Instal·la els paquets del conjunt"
-
-#~ msgid "Undo Install Packages in Set"
-#~ msgstr "Desfés la instal·lació dels paquets del conjunt"
-
-#~ msgid "Undo Install Set action"
-#~ msgstr "Desfés l'acció d'instal·lar el conjunt de paquets"
-
-#~ msgid "Remove Packages in Set"
-#~ msgstr "Elimina els paquets del conjunt"
-
-#~ msgid "Remove packages in Set"
-#~ msgstr "Elimina els paquets del conjunt"
-
-#~ msgid "Undo Remove Packages in Set"
-#~ msgstr "Desfés l'eliminació dels paquets del conjunt"
-
-#~ msgid "Undo Remove Set action"
-#~ msgstr "Desfés l'acció d'eliminar el conjunt de paquets"
-
-#~ msgid "Update the selected package"
-#~ msgstr "Instal·la el paquet seleccionat"
-
-#~ msgid "Undo Update action"
-#~ msgstr "Desfés l'acció d'actualitzar"
-
-#~ msgid "Package Information"
-#~ msgstr "Informació del paquet"
-
-#~ msgid "Install Size"
-#~ msgstr "Mida d'instal·lació"
-
-#~ msgid "Package Size"
-#~ msgstr "Mida del paquet"
-
-#~ msgid "MD5 Signature"
-#~ msgstr "Signatura MD5"
-
-#~ msgid "Download Path"
-#~ msgstr "Camí de baixada"
-
-#~ msgid "Entropy API"
-#~ msgstr "API d'Entropy"
-
-#~ msgid "Branch"
-#~ msgstr "Branca"
-
-#~ msgid "Kernel Tag"
-#~ msgstr "Etiqueta del nucli"
-
-#~ msgid "Version"
-#~ msgstr "Versió"
-
-#~ msgid "Location"
-#~ msgstr "Ubicació"
-
-#~ msgid "Website"
-#~ msgstr "Lloc Web"
-
-#~ msgid "Show ChangeLog"
-#~ msgstr "Mostra el registre de canvis"
-
-#~ msgid "ChangeLog"
-#~ msgstr "Registre de canvis"
-
-#~ msgid "_References"
-#~ msgstr "_Referències"
-
-#~ msgid "D_ependencies"
-#~ msgstr "D_ependències"
-
-#~ msgid "External Trigger"
-#~ msgstr "Activador extern"
-
-#~ msgid "CONFIG_PROTECT"
-#~ msgstr "CONFIG_PROTECT"
-
-#~ msgid "O_ther"
-#~ msgstr "_Altres"
-
-#~ msgid "Add Document"
-#~ msgstr "Afegeix document"
-
-#~ msgid "Remove Selected"
-#~ msgstr "Elimina els seleccionats"
-
-#~ msgid "Show Selected"
-#~ msgstr "Mostra els seleccionats"
-
-#~ msgid "Load User Generated Content"
-#~ msgstr "Carrega el Contingut Generat per l'Usuari"
-
-#~ msgid "Notice Board Entry Information"
-#~ msgstr "Informació d'Entrada del Tauler de Notícies"
-
-#~ msgid "http://www.sabayon.org"
-#~ msgstr "http://www.sabayon.org"
-
-#~ msgid "Notice board Id"
-#~ msgstr "Id del tauler de notícies"
-
-#~ msgid "Mark as read"
-#~ msgstr "Marca com a llegit"
-
-#~ msgid "Close notice"
-#~ msgstr "Tanca la notícia"
-
-#~ msgid "Sulfur tips and tricks"
-#~ msgstr "Pistes i consells de Sulfur"
-
-#~ msgid "tooltip text"
-#~ msgstr "consell de text"
-
-#~ msgid "Show tips on startup"
-#~ msgstr "Mostra pistes en engegar"
-
-#~ msgid "UGC Entry Information"
-#~ msgstr "Informació d'entrada UGC"
-
-#~ msgid "Keywords (space separated)"
-#~ msgstr "Paraules clau (separades per espais)"
-
-#~ msgid "_Submit Document"
-#~ msgstr "E_nvia el document"
-
-#~ msgid "Submit a new document"
-#~ msgstr "Envia un nou document"
-
-#~ msgid "_Open Document"
-#~ msgstr "Document _obert"

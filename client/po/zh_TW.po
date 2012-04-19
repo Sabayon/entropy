@@ -1,22 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # coldnew  <coldnew.tw@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sabayon Entropy\n"
+"Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"PO-Revision-Date: 2012-04-18 18:04+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/sabayon-"
-"entropy/language/zh_TW/)\n"
-"Language: zh_TW\n"
+"Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/sabayon-entropy/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -759,7 +758,8 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1186
@@ -3065,7 +3065,8 @@ msgstr ""
 
 #: ../../client/text_rescue.py:226
 msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
+"Please use this function ONLY if you are using an Entropy-aware "
+"distribution."
 msgstr ""
 
 #: ../../client/text_rescue.py:230
@@ -3376,7 +3377,8 @@ msgstr ""
 
 #. print the list
 #: ../../client/text_smart.py:320
-msgid "This is the list of the packages that would be merged into a single one"
+msgid ""
+"This is the list of the packages that would be merged into a single one"
 msgstr ""
 
 #: ../../client/text_smart.py:328
@@ -3893,7 +3895,8 @@ msgstr ""
 
 #: ../../client/equo.py:242
 msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
+"make a smart package for the provided atoms (multiple packages into one "
+"file)"
 msgstr ""
 
 #: ../../client/equo.py:243
@@ -4052,7 +4055,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/equo.py:682
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
+msgid ""
+"-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 
 #: ../../client/equo.py:683
@@ -4072,8 +4076,7 @@ msgstr ""
 #: ../../client/equo.py:712
 msgid ""
 "Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/equo.py:714
@@ -4851,24 +4854,3 @@ msgstr ""
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr ""
-
-#~ msgid "successful"
-#~ msgstr "成功"
-
-#~ msgid "mirror"
-#~ msgstr "鏡像"
-
-#~ msgid "downloaded successfully"
-#~ msgstr "下載成功"
-
-#~ msgid "upload"
-#~ msgstr "上傳"
-
-#~ msgid "download"
-#~ msgstr "下載"
-
-#~ msgid "copy"
-#~ msgstr "複製"
-
-#~ msgid "sync"
-#~ msgstr "同步"
