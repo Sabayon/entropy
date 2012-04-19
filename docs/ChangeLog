@@ -1,3 +1,21 @@
+commit a66825d17912a27e6e5e263dd8edf60ead58c325
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 23:02:04 2012 +0200
+
+    Release Entropy 1.0_rc108
+
+commit 5afffbd96d4dcecd101f619a54c17234ebd67b88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:59:17 2012 +0200
+
+    [RigoDaemon] make app management finalization code more robust
+
+commit ee71afbfea0364f39c96b62a91a24a646d2273a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 22:29:14 2012 +0200
+
+    Tagging Entropy version 1.0_rc107
+
 commit b11f205315ef56ec9840e21cd4ac9ef4c5ad2ac5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Apr 19 22:29:14 2012 +0200
