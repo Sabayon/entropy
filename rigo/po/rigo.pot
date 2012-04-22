@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 22:27+0200\n"
+"POT-Creation-Date: 2012-04-22 11:19+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,15 +30,15 @@ msgstr ""
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1564
+#: ../RigoDaemon/app.py:1578
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1867
+#: ../RigoDaemon/app.py:1881
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1965
+#: ../RigoDaemon/app.py:1979
 msgid "Application Install"
 msgstr ""
 
@@ -835,4 +835,24 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:1
+msgid "Rigo Application Browser"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:2
+msgid "Application markup"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:3
+msgid "Downloaded times"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:4
+msgid "Information label"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:5
+msgid "_Write a <b>comment</b>"
 msgstr ""
