@@ -7,7 +7,7 @@ MSGMERGE = intltool-update -x --gettext-package=$(NLSPACKAGE) --dist
 NLSPACKAGE = rigo
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
-GLADEFILES = ../data/ui/gtk3/rigo.ui
+GTKBFILES = ../data/ui/gtk3/rigo.ui
 PYFILES =  $(wildcard ../RigoDaemon/*.py) $(wildcard ../rigo/*.py) \
 	$(wildcard ../rigo/models/*.py) \
 	$(wildcard ../rigo/controllers/*.py) \
@@ -15,14 +15,17 @@ PYFILES =  $(wildcard ../RigoDaemon/*.py) $(wildcard ../rigo/*.py) \
 	$(wildcard ../rigo/ui/gtk3/controllers/*.py) \
 	$(wildcard ../rigo/ui/gtk3/models/*.py) \
 	$(wildcard ../rigo/ui/gtk3/widgets/*.py)
-POTFILES = $(PYFILES) $(GLADEFILES)
+POTFILES = $(PYFILES) $(GTKBFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)
 
 POTFILES.in:
-	for file in $(POTFILES); do \
+	for file in $(PYFILES); do \
 		echo "$${file#../}" ; \
 	done > $@
+	for file in $(GTKBFILES); do \
+		echo "[type: gettext/glade]$${file#../}" ; \
+	done >> $@
 
 $(NLSPACKAGE).pot: $(POTFILES) POTFILES.in
 	intltool-update --gettext-package=$(NLSPACKAGE) --pot
