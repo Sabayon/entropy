@@ -68,9 +68,8 @@ class EitQuery(EitCommand):
         needed_parser.add_argument("--quiet", "-q", action="store_true",
             default=self._quiet,
             help=_('quiet output, for scripting purposes'))
-        needed_parser.add_argument("--in", metavar="<repository>",
-            help=_("query into given repository only"),
-            dest="inrepo", default=None)
+        needed_parser.add_argument("inrepo", action="store_const",
+                                   const=None)
         needed_parser.add_argument("packages", nargs='+',
                                  metavar="<package>",
                                  help=_("package names"))
@@ -87,9 +86,8 @@ class EitQuery(EitCommand):
         revdeps_parser.add_argument("--bdeps", "-b", action="store_true",
             default=False,
             help=_('include build dependencies'))
-        revdeps_parser.add_argument("--in", metavar="<repository>",
-            help=_("query into given repository only"),
-            dest="inrepo", default=None)
+        revdeps_parser.add_argument("inrepo", action="store_const",
+                                    const=None)
         revdeps_parser.add_argument("packages", nargs='+',
                                  metavar="<package>",
                                  help=_("package names"))
