@@ -1526,8 +1526,8 @@ def install_packages(entropy_client,
 
             mytxt = "%s: %s %s" % (
                 blue(_("You need at least")),
-                blue(str(entropy.tools.bytes_into_human(neededSize))),
-                _("of free space"),
+                bold(str(entropy.tools.bytes_into_human(neededSize))),
+                blue(_("of free space")),
             )
             print_info(red(" @@ ")+mytxt)
             # check for disk space and print a warning
