@@ -48,4 +48,5 @@ rigo/ui/gtk3/widgets/confupdatetreeview.py
 rigo/ui/gtk3/widgets/images.py
 rigo/ui/gtk3/widgets/apptreeview.py
 rigo/ui/gtk3/widgets/welcome.py
+rigo_app.py
 [type: gettext/glade]data/ui/gtk3/rigo.ui
