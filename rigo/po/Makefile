@@ -14,7 +14,7 @@ PYFILES =  $(wildcard ../RigoDaemon/*.py) $(wildcard ../rigo/*.py) \
 	$(wildcard ../rigo/ui/*.py) $(wildcard ../rigo/ui/gtk3/*.py) \
 	$(wildcard ../rigo/ui/gtk3/controllers/*.py) \
 	$(wildcard ../rigo/ui/gtk3/models/*.py) \
-	$(wildcard ../rigo/ui/gtk3/widgets/*.py)
+	$(wildcard ../rigo/ui/gtk3/widgets/*.py) ../rigo_app.py
 POTFILES = $(PYFILES) $(GTKBFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)
