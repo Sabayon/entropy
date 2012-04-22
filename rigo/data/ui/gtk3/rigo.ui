@@ -323,7 +323,7 @@
                                         <property name="can_focus">False</property>
                                         <property name="xalign">0</property>
                                         <property name="yalign">0</property>
-                                        <property name="label" translatable="yes">Application markup</property>
+                                        <property name="label">Application markup</property>
                                         <property name="wrap">True</property>
                                         <property name="selectable">True</property>
                                       </object>
@@ -368,7 +368,7 @@
                                             <property name="can_focus">False</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="xalign">1</property>
-                                            <property name="label" translatable="yes">Downloaded times</property>
+                                            <property name="label">Downloaded times</property>
                                             <property name="use_markup">True</property>
                                             <property name="justify">right</property>
                                             <property name="wrap">True</property>
@@ -440,7 +440,7 @@
                             <property name="xalign">0</property>
                             <property name="yalign">0</property>
                             <property name="ypad">5</property>
-                            <property name="label" translatable="yes">Information label</property>
+                            <property name="label">Information label</property>
                             <property name="wrap">True</property>
                             <property name="selectable">True</property>
                           </object>
