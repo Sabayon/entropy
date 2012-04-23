@@ -1,3 +1,109 @@
+commit 4c043b55e76c5555e7a0656e48d28aa21eda9d75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 23 23:24:11 2012 +0200
+
+    Release Entropy 1.0_rc109
+
+commit a64f88b2a4bafce5c4f29d766e4b6b7c343a9382
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 23 23:07:39 2012 +0200
+
+    [entropy.db] atomMatch: fix disabled USE flags matching
+
+commit 3d52ee3c7d239f94a82174dd609b427bb5e4895b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 23 14:09:26 2012 +0200
+
+    [entropy.spm] PortagePlugin.generate_package: prevent potential temp file leak
+
+commit e1e5ecae0843c86ef3456fa2df1805a1217a1a23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 14:47:11 2012 +0200
+
+    Revert "[eit] query: fix bug with --in argument for revdeps and needed"
+    
+    This reverts commit e29c3dcd56d8b214ccea38eddeb85645a8e10b1d.
+
+commit ba39bb922804ff6b8a17f55a6a7ca2b0c4c042ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 14:47:01 2012 +0200
+
+    Revert "[eit] query: drop --in for revdeps and tags completely (not needed)"
+    
+    This reverts commit ad2a261f78953418f608092e2f3c1a8accc472af.
+
+commit ad2a261f78953418f608092e2f3c1a8accc472af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 14:44:57 2012 +0200
+
+    [eit] query: drop --in for revdeps and tags completely (not needed)
+
+commit e29c3dcd56d8b214ccea38eddeb85645a8e10b1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 14:42:21 2012 +0200
+
+    [eit] query: fix bug with --in argument for revdeps and needed
+
+commit e491534138e9fe7be3a17f4487ebdb0d38ba1faa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 12:15:21 2012 +0200
+
+    [Rigo] po: update rigo.pot
+
+commit a7b27902f44b1affd8d76fca216cf791b71a87bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 12:15:14 2012 +0200
+
+    [Rigo] update POTFILES.in
+
+commit 1c47e9bf57002771088a119c7c893f99bcefe448
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 12:14:50 2012 +0200
+
+    [Rigo] po/Makefile: add rigo_app.py to POTFILES.in
+
+commit 389c404348309a9a1c612efc9e3304c7509f0850
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:55:46 2012 +0200
+
+    [Rigo] po: update rigo.pot
+
+commit eaaaecdd748d89ae2ca4da74e4159a7437c8fd62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:54:55 2012 +0200
+
+    [Rigo] po: keep translatable property only on translatable strings
+
+commit d7bbcba50e5c43f7533c53b22d7d23f27e304b9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:20:46 2012 +0200
+
+    [Rigo] po: update rigo.pot
+
+commit 2da17849c3bda6e1849d57904afd8d5a23269b26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:20:38 2012 +0200
+
+    [Rigo] po: update POTFILES.in
+
+commit 8d7b58c98afde71f70c6d562f4b329e118db952d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:20:15 2012 +0200
+
+    [rigo] po/Makefile: properly support GtkBuilder files
+
+commit 8b89ae605bb7e4103cdd93496a57b5c95d2714d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 22 11:04:37 2012 +0200
+
+    [equo] fix "You need at least ..." string color, thanks to scarabeus
+
+commit 8f5a76d7d23c18b087d5eb938cf98d25ae5219e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 19 23:02:05 2012 +0200
+
+    Tagging Entropy version 1.0_rc108
+
 commit a66825d17912a27e6e5e263dd8edf60ead58c325
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Apr 19 23:02:04 2012 +0200
