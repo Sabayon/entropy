@@ -4651,7 +4651,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             else:
                 # for compatibility reasons with older Entropy versions,
                 # use flags not in pkguse are considered disabled.
-                pkguse.add(use)
+                en_use = use[1:]
+                if en_use not in pkguse:
+                    pkguse.add(use)
             disabled_use.add(use)
 
         enabled_not_satisfied = enabled_use - pkguse
