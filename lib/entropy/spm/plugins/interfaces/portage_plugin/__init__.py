@@ -789,100 +789,123 @@ class PortagePlugin(SpmPlugin):
         generated_package_files = []
         # store package file in temporary directory, then move
         # atomicity ftw
-        tmp_fd, tmp_file = tempfile.mkstemp(dir = file_save_dir,
-            prefix = "entropy.spm.Portage.generate_package._tar")
-        os.close(tmp_fd)
-        # cannot use fdopen with tarfile
-        tar = tarfile.open(tmp_file, mode = "w:bz2")
-        debug_tar = None
-        debug_tmp_file = None
-        debug_file_save_path = None
-        if not builtin_debug:
-            # since we cannot add entropy revision yet, we at least use
-            # the timestamp (md5 hashed) as part of the filename
-            cur_t = time.time()
-            m = hashlib.md5()
-            m.update(repr(cur_t))
-            m.update(repr(package))
-            debug_file_save_path = file_save_name + "." + m.hexdigest() + \
-                etpConst['packagesdebugext']
-            debug_tmp_fd, debug_tmp_file = tempfile.mkstemp(
-                dir = file_save_dir,
-                prefix = "entropy.spm.Portage.generate_package._debug_tar")
-            os.close(debug_tmp_fd)
-            debug_tar = tarfile.open(debug_tmp_file, mode = "w:bz2")
 
-        contents = dblnk.getcontents()
-        paths = sorted(contents)
+        tmp_fd, tmp_file = None, None
+        debug_tmp_fd, debug_tmp_file = None, None
+        try:
+            tmp_fd, tmp_file = tempfile.mkstemp(dir = file_save_dir,
+                prefix = "entropy.spm.Portage.generate_package._tar")
+            os.close(tmp_fd)
+            tmp_fd = None
+            # cannot use fdopen with tarfile
+            tar = tarfile.open(tmp_file, mode = "w:bz2")
+            debug_tar = None
+            debug_tmp_file = None
+            debug_file_save_path = None
+            if not builtin_debug:
+                # since we cannot add entropy revision yet, we at least use
+                # the timestamp (md5 hashed) as part of the filename
+                cur_t = time.time()
+                m = hashlib.md5()
+                m.update(repr(cur_t))
+                m.update(repr(package))
+                debug_file_save_path = file_save_name + "." + m.hexdigest() + \
+                    etpConst['packagesdebugext']
+                debug_tmp_fd, debug_tmp_file = tempfile.mkstemp(
+                    dir = file_save_dir,
+                    prefix = "entropy.spm.Portage.generate_package._debug_tar")
+                os.close(debug_tmp_fd)
+                debug_tmp_fd = None
+                debug_tar = tarfile.open(debug_tmp_file, mode = "w:bz2")
 
-        def _is_debug_path(obj):
-            for debug_path in etpConst['splitdebug_dirs']:
-                if obj.startswith(debug_path):
-                    return True
-            return False
+            contents = dblnk.getcontents()
+            paths = sorted(contents)
 
-        debug_empty = True
-        for path in paths:
-            try:
-                exist = os.lstat(path)
-            except OSError:
-                continue # skip file
-            ftype = contents[path][0]
-            lpath = path
-            arcname = path[1:]
-            if 'dir' == ftype and \
-                not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(lpath):
-                lpath = os.path.realpath(lpath)
-            tarinfo = tar.gettarinfo(lpath, arcname)
+            def _is_debug_path(obj):
+                for debug_path in etpConst['splitdebug_dirs']:
+                    if obj.startswith(debug_path):
+                        return True
+                return False
 
-            tar_obj = None
+            debug_empty = True
+            for path in paths:
+                try:
+                    exist = os.lstat(path)
+                except OSError:
+                    continue # skip file
+                ftype = contents[path][0]
+                lpath = path
+                arcname = path[1:]
+                if 'dir' == ftype and \
+                    not stat.S_ISDIR(exist.st_mode) and \
+                    os.path.isdir(lpath):
+                    lpath = os.path.realpath(lpath)
+                tarinfo = tar.gettarinfo(lpath, arcname)
+
+                tar_obj = None
+                if debug_tar is not None:
+                    if _is_debug_path(path):
+                        tar_obj = debug_tar
+                        if not tarinfo.isdir():
+                            debug_empty = False
+                if tar_obj is None:
+                    tar_obj = tar
+
+                if stat.S_ISREG(exist.st_mode):
+                    with open(path, "rb") as f:
+                        tar_obj.addfile(tarinfo, f)
+                else:
+                    tar_obj.addfile(tarinfo)
+
+            tar.close()
             if debug_tar is not None:
-                if _is_debug_path(path):
-                    tar_obj = debug_tar
-                    if not tarinfo.isdir():
-                        debug_empty = False
-            if tar_obj is None:
-                tar_obj = tar
+                debug_tar.close()
+            # appending xpak informations
+            tbz2 = xpak.tbz2(tmp_file)
+            tbz2.recompose(dbdir)
+            if locked:
+                dblnk.unlockdb()
+            # now do atomic move
+            const_setup_file(tmp_file, etpConst['entropygid'], 0o664)
+            os.rename(tmp_file, file_save_path)
+            generated_package_files.append(file_save_path)
 
-            if stat.S_ISREG(exist.st_mode):
-                with open(path, "rb") as f:
-                    tar_obj.addfile(tarinfo, f)
-            else:
-                tar_obj.addfile(tarinfo)
+            if debug_tar is not None:
+                if debug_empty:
+                    os.remove(debug_tmp_file)
+                else:
+                    const_setup_file(
+                        debug_tmp_file, etpConst['entropygid'], 0o664)
+                    os.rename(debug_tmp_file, debug_file_save_path)
+                    generated_package_files.append(debug_file_save_path)
 
-        tar.close()
-        if debug_tar is not None:
-            debug_tar.close()
-        # appending xpak informations
-        tbz2 = xpak.tbz2(tmp_file)
-        tbz2.recompose(dbdir)
-        if locked:
-            dblnk.unlockdb()
-        # now do atomic move
-        const_setup_file(tmp_file, etpConst['entropygid'], 0o664)
-        os.rename(tmp_file, file_save_path)
-        generated_package_files.append(file_save_path)
-
-        if debug_tar is not None:
-            if debug_empty:
-                os.remove(debug_tmp_file)
-            else:
-                const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o664)
-                os.rename(debug_tmp_file, debug_file_save_path)
-                generated_package_files.append(debug_file_save_path)
-
-        for package_file in generated_package_files:
-            if not (os.path.isfile(package_file) and \
-                os.access(package_file, os.F_OK | os.R_OK)):
-                raise SPMError("SPMError: Spm:generate_package %s: %s %s" % (
-                        _("error"),
-                        package_file,
-                        _("not found"),
+            for package_file in generated_package_files:
+                if not (os.path.isfile(package_file) and \
+                    os.access(package_file, os.F_OK | os.R_OK)):
+                    raise SPMError(
+                        "SPMError: Spm:generate_package %s: %s %s" % (
+                            _("error"),
+                            package_file,
+                            _("not found"),
+                        )
                     )
-                )
 
-        return generated_package_files
+            return generated_package_files
+
+        finally:
+            for fd in (tmp_fd, debug_tmp_fd):
+                if fd is not None:
+                    try:
+                        os.close(fd)
+                    except OSError:
+                        pass
+            for path in (tmp_file, debug_tmp_file):
+                if path is not None:
+                    try:
+                        os.remove(path)
+                    except OSError as err:
+                        if err.errno != errno.ENOENT:
+                            raise
 
     def _add_kernel_dependency_to_pkg(self, pkg_data, pkg_dir_prefix):
 
