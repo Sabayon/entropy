@@ -31,7 +31,7 @@ GtkArrow:hover,
 
 .item-view-separator {
     border-color: white;
-    border-width: 2;
+    border-width: 2px;
 }
 
 .more-link {
