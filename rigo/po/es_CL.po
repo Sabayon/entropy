@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"POT-Creation-Date: 2012-04-22 12:14+0200\n"
+"PO-Revision-Date: 2012-04-24 00:41+0000\n"
+"Last-Translator: Danilo Riffo <danriffo@gmail.com>\n"
 "Language-Team: Spanish (Chile) (http://www.transifex.net/projects/p/sabayon-rigo/language/es_CL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Language: es_CL\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: ../RigoDaemon/app.py:1028
+#: ../RigoDaemon/app.py:1027 ../rigo_app.py:640
 msgid "Not authorized"
 msgstr "No autorizado"
 
-#: ../RigoDaemon/app.py:1064
+#: ../RigoDaemon/app.py:1063
 msgid "No repositories configured"
 msgstr "No hay repositorios configurados"
 
-#: ../RigoDaemon/app.py:1069
+#: ../RigoDaemon/app.py:1068
 msgid "Unhandled Exception"
 msgstr "Excepción no controlada"
 
-#: ../RigoDaemon/app.py:1559
+#: ../RigoDaemon/app.py:1578
 msgid "Application Removal"
 msgstr "Quitar aplicación"
 
-#: ../RigoDaemon/app.py:1862
+#: ../RigoDaemon/app.py:1881
 msgid "Application download"
 msgstr "Descargar aplicación"
 
-#: ../RigoDaemon/app.py:1960
+#: ../RigoDaemon/app.py:1979
 msgid "Application Install"
 msgstr "Instalar aplicación"
 
@@ -200,14 +200,15 @@ msgstr "Ocurrió un error"
 #: ../rigo/controllers/daemon.py:709
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:401
+#: ../rigo_app.py:430
 msgid "Ok, thanks"
 msgstr "Ok, gracias"
 
 #: ../rigo/controllers/daemon.py:710
 #: ../rigo/ui/gtk3/controllers/notifications.py:217
 #: ../rigo/ui/gtk3/controllers/notifications.py:233
-#: ../rigo/ui/gtk3/controllers/notifications.py:250
+#: ../rigo/ui/gtk3/controllers/notifications.py:250 ../rigo_app.py:431
 msgid "Show me"
 msgstr "Muéstrame"
 
@@ -301,7 +302,7 @@ msgstr "<b>Actualización del Sistema</b> en proceso..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:83
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Mostrar el progreso del <b>Manejo de Aplicaciones</b></i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:273
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:77
@@ -835,3 +836,114 @@ msgstr "Más información"
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>Navegar <b>Aplicaciones</b> con facilidad</i>"
+
+#: ../rigo_app.py:97
+msgid "Hey hey hey!"
+msgstr "Oye, oye, oye!"
+
+#: ../rigo_app.py:98
+msgid "Rigo is working, are you sure?"
+msgstr "Rigo está trabajando, ¿estás seguro?"
+
+#: ../rigo_app.py:364
+msgid "Activity Interruption"
+msgstr "Interrupción de la Actividad"
+
+#: ../rigo_app.py:366
+msgid ""
+"Are you sure you want to interrupt the ongoing Activity? The interruption "
+"will occur as soon as possible, potentially not immediately."
+msgstr "¿Estás seguro que deseas interrumpir la actividad actual? La interrupción ocurrirá tan pronto como sea posible, pero no necesariamente de inmediato."
+
+#: ../rigo_app.py:391
+msgid "Repositories update error"
+msgstr "Error al actualizar los repositorios"
+
+#: ../rigo_app.py:395
+msgid "Repositories updated <b>successfully</b>!"
+msgstr "¡Los repositorios se han <b>actualizado</b>!"
+
+#: ../rigo_app.py:413
+msgid "Application Management Error"
+msgstr "Error del Gestor de Aplicaciones"
+
+#: ../rigo_app.py:414
+msgid "please check the management log"
+msgstr "por favor revisa el registro del gestor"
+
+#: ../rigo_app.py:417
+msgid "System Upgrade Error"
+msgstr "Error de Actualización del Sistema"
+
+#: ../rigo_app.py:418
+msgid "please check the upgrade log"
+msgstr "por favor revisa el registro de actualización"
+
+#: ../rigo_app.py:422
+msgid "Applications managed <b>successfully</b>!"
+msgstr "¡Aplicaciones gestionadas <b>exitosamente</b>!"
+
+#: ../rigo_app.py:424
+msgid "System Upgraded <b>successfully</b>!"
+msgstr "¡Sistema Actualizado <b>correctamente</b>!"
+
+#: ../rigo_app.py:641
+msgid "You are not authorized to run Rigo"
+msgstr "No estás autorizado para ejecutar Rigo"
+
+#: ../rigo_app.py:649 ../rigo_app.py:660 ../rigo_app.py:678 ../rigo_app.py:733
+#: ../rigo_app.py:744 ../rigo_app.py:772
+msgid "Rigo"
+msgstr "Rigo"
+
+#: ../rigo_app.py:650
+msgid "RigoDaemon service is not available"
+msgstr "El servicio RigoDaemon no está disponible"
+
+#: ../rigo_app.py:662
+msgid "API mismatch, please update Rigo and RigoDaemon"
+msgstr "Inconsistencia del API, por favor actualiza Rigo y RigoDaemon"
+
+#: ../rigo_app.py:679
+msgid "Another Application Manager is active"
+msgstr "Otro Gestor de Aplicaciones está activo"
+
+#: ../rigo_app.py:696
+msgid "Background Service is currently not available"
+msgstr "El servicio en segundo plano no está disponible"
+
+#: ../rigo_app.py:726
+msgid "Background Service is currently busy"
+msgstr "El servicio en segundo plano está ocupado"
+
+#: ../rigo_app.py:728
+msgid "Background Service is incompatible with Rigo"
+msgstr "El servicio en segundo plano es incompatible con Rigo"
+
+#: ../rigo_app.py:740
+msgid "Background Service is currently unavailable"
+msgstr "El servicio en segundo plano no está disponible"
+
+#: ../rigo_app.py:751 ../data/ui/gtk3/rigo.ui.h:1
+msgid "Rigo Application Browser"
+msgstr "Navegador de Aplicaciones Rigo"
+
+#: ../rigo_app.py:799
+msgid "Happy St. Valentine <3 <3 !"
+msgstr "¡Feliz día de San Valentín <3 <3!"
+
+#: ../rigo_app.py:801
+msgid "Merry Xmas \\o/ !"
+msgstr "¡Feliz Navidad \\o/!"
+
+#: ../rigo_app.py:803
+msgid "<=|=< (this is optimistically a fish)"
+msgstr "<=|=< (esto debería ser un pez...)"
+
+#: ../rigo_app.py:808
+msgid "Woot, thanks"
+msgstr "Wow, gracias"
+
+#: ../data/ui/gtk3/rigo.ui.h:2
+msgid "_Write a <b>comment</b>"
+msgstr "_Escribir <b>comentario</b>"

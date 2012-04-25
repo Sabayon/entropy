@@ -3,44 +3,44 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Patrik Karlsson <patrik@trixon.se>, 2010.
+# Patrik Karlsson <patrik@trixon.se>, 2010, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-18 10:40+0200\n"
-"PO-Revision-Date: 2012-04-18 08:40+0000\n"
+"POT-Creation-Date: 2012-04-22 12:14+0200\n"
+"PO-Revision-Date: 2012-04-22 10:15+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Swedish (http://www.transifex.net/projects/p/sabayon-rigo/language/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: ../RigoDaemon/app.py:1028
+#: ../RigoDaemon/app.py:1027 ../rigo_app.py:640
 msgid "Not authorized"
-msgstr ""
+msgstr "Inte auktoriserad"
 
-#: ../RigoDaemon/app.py:1064
+#: ../RigoDaemon/app.py:1063
 msgid "No repositories configured"
-msgstr ""
+msgstr "Inga konfigurerade förråd"
 
-#: ../RigoDaemon/app.py:1069
+#: ../RigoDaemon/app.py:1068
 msgid "Unhandled Exception"
-msgstr ""
+msgstr "Ohanterat undantag"
 
-#: ../RigoDaemon/app.py:1559
+#: ../RigoDaemon/app.py:1578
 msgid "Application Removal"
-msgstr ""
+msgstr "Programborttagning"
 
-#: ../RigoDaemon/app.py:1862
+#: ../RigoDaemon/app.py:1881
 msgid "Application download"
-msgstr ""
+msgstr "Programhämtning"
 
-#: ../RigoDaemon/app.py:1960
+#: ../RigoDaemon/app.py:1979
 msgid "Application Install"
-msgstr ""
+msgstr "Programinstallation"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
@@ -58,11 +58,11 @@ msgstr ""
 #: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
 #: ../rigo/models/application.py:1340
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: ../rigo/models/application.py:1210 ../rigo/models/application.py:1265
 msgid "No description"
-msgstr ""
+msgstr "Beskrivning saknas"
 
 #: ../rigo/models/application.py:1279
 msgid "Installed"
@@ -71,7 +71,7 @@ msgstr "Installerade"
 #: ../rigo/models/application.py:1285
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr ""
+msgstr "<b>%s</b> är installerad"
 
 #: ../rigo/models/application.py:1287
 msgid "from"
@@ -83,15 +83,15 @@ msgstr "Licens"
 
 #: ../rigo/models/application.py:1328
 msgid "Required space"
-msgstr ""
+msgstr "Nödvändigt utrymme"
 
 #: ../rigo/models/application.py:1335
 msgid "Download size"
-msgstr ""
+msgstr "Hämtningsstorlek"
 
 #: ../rigo/models/application.py:1342
 msgid "Checksum"
-msgstr ""
+msgstr "Konrollsumma"
 
 #: ../rigo/models/application.py:1353
 msgid "USE flags"
@@ -99,35 +99,35 @@ msgstr "USE-flaggor"
 
 #: ../rigo/models/application.py:1357
 msgid "No use flags"
-msgstr ""
+msgstr "Inga use-flaggor"
 
 #: ../rigo/models/application.py:1375
 msgid "Runtime dependencies"
-msgstr ""
+msgstr "Körtidsberoenden"
 
 #: ../rigo/models/application.py:1376
 msgid "Build dependencies"
-msgstr ""
+msgstr "Byggberoenden"
 
 #: ../rigo/models/application.py:1377
 msgid "Post dependencies"
-msgstr ""
+msgstr "Postberoenden"
 
 #: ../rigo/models/application.py:1378
 msgid "Staff dependencies"
-msgstr ""
+msgstr "Personalberoenden"
 
 #: ../rigo/models/application.py:1400
 msgid "Click here for more details"
-msgstr ""
+msgstr "Klicka här för fler detaljer"
 
 #: ../rigo/models/application.py:1659
 msgid "Application not found"
-msgstr ""
+msgstr "Programmet ej funnet"
 
 #: ../rigo/controllers/daemon.py:79
 msgid "Good luck!"
-msgstr ""
+msgstr "Lycka till!"
 
 #: ../rigo/controllers/daemon.py:566
 #, python-format
@@ -147,37 +147,37 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:665
 msgid "An <b>unknown error</b> occurred"
-msgstr ""
+msgstr "Ett <b>okänt fel</b> uppstod"
 
 #: ../rigo/controllers/daemon.py:667
 #, python-format
 msgid "<b>%s</b> download failed"
-msgstr ""
+msgstr "<b>%s</b> hämtning misslyckades"
 
 #: ../rigo/controllers/daemon.py:670
 #, python-format
 msgid "<b>%s</b> install failed"
-msgstr ""
+msgstr "<b>%s</b> installation misslyckades"
 
 #: ../rigo/controllers/daemon.py:673
 #, python-format
 msgid "<b>%s</b> removal failed"
-msgstr ""
+msgstr "<b>%s</b> borttagning misslyckades"
 
 #: ../rigo/controllers/daemon.py:677
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr ""
+msgstr "<b>%s</b>, inte auktoriserad"
 
 #: ../rigo/controllers/daemon.py:680
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr ""
+msgstr "<b>%s</b>, internt fel"
 
 #: ../rigo/controllers/daemon.py:685
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr ""
+msgstr "<b>%s</b> beroenden ej funna"
 
 #: ../rigo/controllers/daemon.py:690
 #, python-format
@@ -195,36 +195,37 @@ msgstr ""
 
 #: ../rigo/controllers/daemon.py:704
 msgid "An error occurred"
-msgstr ""
+msgstr "Ett fel uppstod"
 
 #: ../rigo/controllers/daemon.py:709
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:401
+#: ../rigo_app.py:430
 msgid "Ok, thanks"
-msgstr ""
+msgstr "Ok, tack"
 
 #: ../rigo/controllers/daemon.py:710
 #: ../rigo/ui/gtk3/controllers/notifications.py:217
 #: ../rigo/ui/gtk3/controllers/notifications.py:233
-#: ../rigo/ui/gtk3/controllers/notifications.py:250
+#: ../rigo/ui/gtk3/controllers/notifications.py:250 ../rigo_app.py:431
 msgid "Show me"
-msgstr ""
+msgstr "Visa mig"
 
 #: ../rigo/controllers/daemon.py:812
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
+msgstr "<b>Systemuppgradering</b> Aktiviteten <i>startas om</i>"
 
 #: ../rigo/controllers/daemon.py:813
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Det finns <b>%i</b> till uppdatering"
+msgstr[1] "Det finns <b>%i</b> till uppdateringar"
 
 #: ../rigo/controllers/daemon.py:1683
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr ""
+msgstr "Väntar på <b>RigoDaemon</b>, vänta..."
 
 #: ../rigo/controllers/daemon.py:1754 ../rigo/controllers/daemon.py:2416
 #: ../rigo/controllers/daemon.py:2643
@@ -234,19 +235,19 @@ msgstr ""
 #: ../rigo/controllers/daemon.py:1757 ../rigo/controllers/daemon.py:2420
 #: ../rigo/controllers/daemon.py:2647
 msgid "K thanks"
-msgstr ""
+msgstr "K tack"
 
 #: ../rigo/controllers/daemon.py:1896
 msgid "Yes, thanks"
-msgstr ""
+msgstr "Ja, tack"
 
 #: ../rigo/controllers/daemon.py:1897
 msgid "No, sorry"
-msgstr ""
+msgstr "Nej, tyvärr"
 
 #: ../rigo/controllers/daemon.py:1914
 msgid "Ok then"
-msgstr ""
+msgstr "Okej då"
 
 #: ../rigo/controllers/daemon.py:1990
 #, python-format
@@ -352,14 +353,14 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
-msgstr ""
+msgstr "_Rösta nu"
 
 #: ../rigo/ui/gtk3/controllers/application.py:321
 #: ../rigo/ui/gtk3/controllers/application.py:357
 #: ../rigo/ui/gtk3/controllers/application.py:521
 #: ../rigo/ui/gtk3/controllers/application.py:646
 msgid "_Later"
-msgstr ""
+msgstr "_Senare"
 
 #: ../rigo/ui/gtk3/controllers/application.py:329
 msgid "Login failed. Your <b>vote</b> hasn't been added"
@@ -369,7 +370,7 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:657
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
-msgstr ""
+msgstr "_Ok, tack"
 
 #: ../rigo/ui/gtk3/controllers/application.py:339
 #, python-format
@@ -381,30 +382,30 @@ msgstr[1] ""
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
 msgid "_Ok, cool!"
-msgstr ""
+msgstr "_Ok, tufft!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:355
 #: ../rigo/ui/gtk3/controllers/application.py:519
 msgid "_No, logout!"
-msgstr ""
+msgstr "_Nej, logga ut!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:393
 msgid "Your vote has been added!"
-msgstr ""
+msgstr "Din röst har räknats!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:396
 #: ../rigo/ui/gtk3/controllers/application.py:572
 msgid "Ok, great!"
-msgstr ""
+msgstr "Ok, toppen!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:403
 msgid "You already voted this <b>Application</b>"
-msgstr ""
+msgstr "Du har redan röstat på detta <b>program</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:408
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr ""
+msgstr "Röstningsfel: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
@@ -431,7 +432,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:645
 msgid "_Send now"
-msgstr ""
+msgstr "_Skicka nu"
 
 #: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
@@ -443,11 +444,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:726
 msgid "Older comments"
-msgstr ""
+msgstr "Äldre kommentarer"
 
 #: ../rigo/ui/gtk3/controllers/application.py:733
 msgid "Loading older comments..."
-msgstr ""
+msgstr "Laddar äldre kommentarer"
 
 #: ../rigo/ui/gtk3/controllers/application.py:777
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
@@ -455,11 +456,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:785
 msgid "Older images"
-msgstr ""
+msgstr "Äldre bilder"
 
 #: ../rigo/ui/gtk3/controllers/application.py:791
 msgid "Loading older images..."
-msgstr ""
+msgstr "Laddar äldre bilder"
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
 msgid "Update"
@@ -481,15 +482,15 @@ msgstr "Installera"
 
 #: ../rigo/ui/gtk3/controllers/application.py:909
 msgid "Not available"
-msgstr ""
+msgstr "Inte tillgänglig"
 
 #: ../rigo/ui/gtk3/controllers/application.py:911
 msgid "Never downloaded"
-msgstr ""
+msgstr "Aldrig hämtad"
 
 #: ../rigo/ui/gtk3/controllers/application.py:915
 msgid "downloads"
-msgstr ""
+msgstr "hämtningar"
 
 #: ../rigo/ui/gtk3/controllers/application.py:963
 msgid "Want to add images, etc?"
@@ -497,11 +498,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:965
 msgid "click here!"
-msgstr ""
+msgstr "klicka här!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:976
 msgid "Loading comments..."
-msgstr ""
+msgstr "Laddar kommentarer..."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:208
 #: ../rigo/ui/gtk3/controllers/applications.py:269
@@ -584,7 +585,7 @@ msgstr "ta bort"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr ""
+msgstr "Kör"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format
@@ -602,19 +603,19 @@ msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
-msgstr ""
+msgstr "Vad göra?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Uppdateringar tillgängliga, hur vore det att installera dem?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:192
 msgid "_Update System"
-msgstr ""
+msgstr "_Uppdatera systemet"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "_Show"
-msgstr ""
+msgstr "_Visa"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 msgid "_Ignore"
@@ -834,4 +835,115 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
+msgstr ""
+
+#: ../rigo_app.py:97
+msgid "Hey hey hey!"
+msgstr ""
+
+#: ../rigo_app.py:98
+msgid "Rigo is working, are you sure?"
+msgstr ""
+
+#: ../rigo_app.py:364
+msgid "Activity Interruption"
+msgstr ""
+
+#: ../rigo_app.py:366
+msgid ""
+"Are you sure you want to interrupt the ongoing Activity? The interruption "
+"will occur as soon as possible, potentially not immediately."
+msgstr ""
+
+#: ../rigo_app.py:391
+msgid "Repositories update error"
+msgstr ""
+
+#: ../rigo_app.py:395
+msgid "Repositories updated <b>successfully</b>!"
+msgstr ""
+
+#: ../rigo_app.py:413
+msgid "Application Management Error"
+msgstr ""
+
+#: ../rigo_app.py:414
+msgid "please check the management log"
+msgstr ""
+
+#: ../rigo_app.py:417
+msgid "System Upgrade Error"
+msgstr ""
+
+#: ../rigo_app.py:418
+msgid "please check the upgrade log"
+msgstr ""
+
+#: ../rigo_app.py:422
+msgid "Applications managed <b>successfully</b>!"
+msgstr ""
+
+#: ../rigo_app.py:424
+msgid "System Upgraded <b>successfully</b>!"
+msgstr ""
+
+#: ../rigo_app.py:641
+msgid "You are not authorized to run Rigo"
+msgstr ""
+
+#: ../rigo_app.py:649 ../rigo_app.py:660 ../rigo_app.py:678 ../rigo_app.py:733
+#: ../rigo_app.py:744 ../rigo_app.py:772
+msgid "Rigo"
+msgstr ""
+
+#: ../rigo_app.py:650
+msgid "RigoDaemon service is not available"
+msgstr ""
+
+#: ../rigo_app.py:662
+msgid "API mismatch, please update Rigo and RigoDaemon"
+msgstr ""
+
+#: ../rigo_app.py:679
+msgid "Another Application Manager is active"
+msgstr ""
+
+#: ../rigo_app.py:696
+msgid "Background Service is currently not available"
+msgstr ""
+
+#: ../rigo_app.py:726
+msgid "Background Service is currently busy"
+msgstr ""
+
+#: ../rigo_app.py:728
+msgid "Background Service is incompatible with Rigo"
+msgstr ""
+
+#: ../rigo_app.py:740
+msgid "Background Service is currently unavailable"
+msgstr ""
+
+#: ../rigo_app.py:751 ../data/ui/gtk3/rigo.ui.h:1
+msgid "Rigo Application Browser"
+msgstr ""
+
+#: ../rigo_app.py:799
+msgid "Happy St. Valentine <3 <3 !"
+msgstr ""
+
+#: ../rigo_app.py:801
+msgid "Merry Xmas \\o/ !"
+msgstr ""
+
+#: ../rigo_app.py:803
+msgid "<=|=< (this is optimistically a fish)"
+msgstr ""
+
+#: ../rigo_app.py:808
+msgid "Woot, thanks"
+msgstr ""
+
+#: ../data/ui/gtk3/rigo.ui.h:2
+msgid "_Write a <b>comment</b>"
 msgstr ""
