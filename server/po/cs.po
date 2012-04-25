@@ -1,22 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sabayon Entropy\n"
+"Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 19:46+0200\n"
-"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-entropy/"
-"language/cs/)\n"
-"Language: cs\n"
+"Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-entropy-server/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -1508,7 +1507,8 @@ msgstr[1] "položky"
 msgstr[2] "položky"
 
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318
@@ -3121,294 +3121,3 @@ msgstr ""
 #: ../../server/eit/commands/inject.py:140
 msgid "inject package files into repository"
 msgstr ""
-
-#~ msgid "Office"
-#~ msgstr "Kancelář"
-
-#~ msgid "Development"
-#~ msgstr "Vývoj"
-
-#~ msgid "System"
-#~ msgstr "Systém"
-
-#~ msgid "Games"
-#~ msgstr "Hry"
-
-#~ msgid "Multimedia"
-#~ msgstr "Multimédia"
-
-#~ msgid "Networking"
-#~ msgstr "Síťové nástroje"
-
-#~ msgid "Science"
-#~ msgstr "Věda"
-
-#~ msgid "Videos"
-#~ msgstr "Videa"
-
-#~ msgid "Icons"
-#~ msgstr "Ikony"
-
-#~ msgid "Video"
-#~ msgstr "Video"
-
-#~ msgid "Icon"
-#~ msgstr "Ikona"
-
-#~ msgid "System Error"
-#~ msgstr "Systémová chyba"
-
-#~ msgid "Removing"
-#~ msgstr "Odstraňuje se"
-
-#~ msgid "OK"
-#~ msgstr "OK"
-
-#~ msgid "remote"
-#~ msgstr "vzdálené"
-
-#~ msgid "success"
-#~ msgstr "úspěch"
-
-#~ msgid "second"
-#~ msgstr "sekunda"
-
-#~ msgid "Unpacking"
-#~ msgstr "Rozbalování"
-
-#~ msgid "Fetching"
-#~ msgstr "Stahuji"
-
-#~ msgid "Setup"
-#~ msgstr "Nastavení"
-
-#~ msgid "Configuring"
-#~ msgstr "Nastavuji"
-
-#~ msgid "Advisory"
-#~ msgstr "Informace"
-
-#~ msgid "Background"
-#~ msgstr "Pozadí"
-
-#~ msgid "References"
-#~ msgstr "Odkazy"
-
-#~ msgid "Resolution"
-#~ msgstr "Rozlišení"
-
-#~ msgid "Searching"
-#~ msgstr "Hledání"
-
-#~ msgid "Keyword"
-#~ msgstr "Klíčové slovo"
-
-#~ msgid "Found"
-#~ msgstr "Nalezeno"
-
-#~ msgid "Matched"
-#~ msgstr "Spárováno"
-
-#~ msgid "Library"
-#~ msgstr "Knihovna"
-
-#~ msgid "Matching"
-#~ msgstr "Párování"
-
-#~ msgid "Description:"
-#~ msgstr "Popis:"
-
-#~ msgid "Status"
-#~ msgstr "Stav"
-
-#~ msgid "Content"
-#~ msgstr "Obsah"
-
-#~ msgid "Link"
-#~ msgstr "Odkaz"
-
-#~ msgid "Exit"
-#~ msgstr "Ukončit"
-
-#~ msgid "Password"
-#~ msgstr "Heslo"
-
-#~ msgid "User"
-#~ msgstr "Uživatel"
-
-#~ msgid "Add document"
-#~ msgstr "Přidat dokument"
-
-#~ msgid "icon"
-#~ msgstr "ikona"
-
-#~ msgid "video"
-#~ msgstr "video"
-
-#~ msgid "Exception"
-#~ msgstr "Výjimka"
-
-#~ msgid "Basic Options"
-#~ msgstr "Základní volby"
-
-#~ msgid "Application Options"
-#~ msgstr "Možnosti aplikace"
-
-#~ msgid "Not found"
-#~ msgstr "Nenalezeno"
-
-#~ msgid "Skipped"
-#~ msgstr "Přeskočeno"
-
-#~ msgid "Versions"
-#~ msgstr "Verze"
-
-#~ msgid "Reinstall"
-#~ msgstr "Přeinstalovat"
-
-#~ msgid "Downgrade"
-#~ msgstr "Snížit"
-
-#~ msgid "Action"
-#~ msgstr "Činnost"
-
-#~ msgid "Download size"
-#~ msgstr "Stahovaná velikost"
-
-#~ msgid "Download complete"
-#~ msgstr "Stahování dokončeno"
-
-#~ msgid "10 seconds"
-#~ msgstr "10 sekund"
-
-#~ msgid "System Updates"
-#~ msgstr "Aktualizace systému"
-
-#~ msgid "Application"
-#~ msgstr "Aplikace"
-
-#~ msgid "No description"
-#~ msgstr "Žádný popis"
-
-#~ msgid "Rating"
-#~ msgstr "Hodnocení"
-
-#~ msgid "Applications"
-#~ msgstr "Aplikace"
-
-#~ msgid "Destination"
-#~ msgstr "Cíl"
-
-#~ msgid "Active"
-#~ msgstr "Aktivní"
-
-#~ msgid "Programming:"
-#~ msgstr "Programování:"
-
-#~ msgid "Sync"
-#~ msgstr "Synchronizovat"
-
-#~ msgid "Skip"
-#~ msgstr "Přeskočit"
-
-#~ msgid "Database"
-#~ msgstr "Databáze"
-
-#~ msgid "Parameter"
-#~ msgstr "Parametr"
-
-#~ msgid "Search string"
-#~ msgstr "Řetězec pro hledání"
-
-#~ msgid "Ignore"
-#~ msgstr "Ignorovat"
-
-#~ msgid "Author"
-#~ msgstr "Autor"
-
-#~ msgid "Please wait..."
-#~ msgstr "Čekejte prosím..."
-
-#~ msgid "Mirrors"
-#~ msgstr "Zrcadla"
-
-#~ msgid "Depends"
-#~ msgstr "Závisí"
-
-#~ msgid "Bug"
-#~ msgstr "Brouk"
-
-#~ msgid "Id"
-#~ msgstr "Id"
-
-#~ msgid "Empty Document"
-#~ msgstr "Prázdný dokument"
-
-#~ msgid "Atom"
-#~ msgstr "Atom"
-
-#~ msgid "Cancel"
-#~ msgstr "Zrušit"
-
-#~ msgid "Accepted"
-#~ msgstr "Přijato"
-
-#~ msgid "Are you sure?"
-#~ msgstr "Jste si jisti?"
-
-#~ msgid "Compression"
-#~ msgstr "Komprese"
-
-#~ msgid "Identifier"
-#~ msgstr "Identifikátor"
-
-#~ msgid "URI"
-#~ msgstr "URI"
-
-#~ msgid "button"
-#~ msgstr "tlačítko"
-
-#~ msgid "Bugs"
-#~ msgstr "Chyby"
-
-#~ msgid "Sulfur"
-#~ msgstr "Síra"
-
-#~ msgid "Refresh"
-#~ msgstr "Obnovit"
-
-#~ msgid "Show updates"
-#~ msgstr "Zobrazit aktualizace"
-
-#~ msgid "Repositories"
-#~ msgstr "Úložiště"
-
-#~ msgid "Error message"
-#~ msgstr "Chybová zpráva"
-
-#~ msgid "Delete selected"
-#~ msgstr "Smazat vybrané"
-
-#~ msgid "Restore"
-#~ msgstr "Obnovit"
-
-#~ msgid "Save"
-#~ msgstr "Uložit"
-
-#~ msgid "Enable"
-#~ msgstr "Povolit"
-
-#~ msgid "Package Information"
-#~ msgstr "Informace o balíčku"
-
-#~ msgid "Branch"
-#~ msgstr "Větev"
-
-#~ msgid "Version"
-#~ msgstr "Verze"
-
-#~ msgid "Website"
-#~ msgstr "Webová stránka"
-
-#~ msgid "Remove Selected"
-#~ msgstr "Odstranit vybrané"

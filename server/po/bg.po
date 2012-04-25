@@ -1,22 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Tsetso Zdravkov <vyrgozunqk@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sabayon Entropy\n"
+"Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 19:46+0200\n"
-"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"PO-Revision-Date: 2012-04-18 17:53+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Bulgarian (http://www.transifex.net/projects/p/sabayon-"
-"entropy/language/bg/)\n"
-"Language: bg\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: bg\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -1506,7 +1505,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318
@@ -3119,81 +3119,3 @@ msgstr ""
 #: ../../server/eit/commands/inject.py:140
 msgid "inject package files into repository"
 msgstr ""
-
-#~ msgid "Office"
-#~ msgstr "Офис"
-
-#~ msgid "Applications used in office environments"
-#~ msgstr "Приложения използвани в офлайн среда"
-
-#~ msgid "Development"
-#~ msgstr "Разработка"
-
-#~ msgid "Applications or system libraries"
-#~ msgstr "Приложения или системни библиотеки"
-
-#~ msgid "System"
-#~ msgstr "Система"
-
-#~ msgid "System applications or libraries"
-#~ msgstr "Системни приложения или библиотеки"
-
-#~ msgid "Games"
-#~ msgstr "Игри"
-
-#~ msgid "Games, enjoy your spare time"
-#~ msgstr "Игри, наслаждавайте се на свободното си време"
-
-#~ msgid "GNOME Desktop"
-#~ msgstr "GNOME графична среда"
-
-#~ msgid "Applications and libraries for the GNOME Desktop"
-#~ msgstr "Приложения и библиотеки за GNOME "
-
-#~ msgid "KDE Desktop"
-#~ msgstr "KDE графична среда"
-
-#~ msgid "Applications and libraries for the KDE Desktop"
-#~ msgstr "Приложения и библиотеки за KDE графичната среда"
-
-#~ msgid "XFCE Desktop"
-#~ msgstr "XFCE графична среда"
-
-#~ msgid "Applications and libraries for the XFCE Desktop"
-#~ msgstr "Приложения и библиотеки за XFCE"
-
-#~ msgid "LXDE Desktop"
-#~ msgstr "LXDE графична среда"
-
-#~ msgid "Applications and libraries for the LXDE Desktop"
-#~ msgstr "Приложения и библиотеки за LXDE "
-
-#~ msgid "Multimedia"
-#~ msgstr "Мултимедия"
-
-#~ msgid "Applications and libraries for Multimedia"
-#~ msgstr "Мултимедийни приложения и библиотеки"
-
-#~ msgid "Networking"
-#~ msgstr "Мрежи"
-
-#~ msgid "Applications and libraries for Networking"
-#~ msgstr "Приложения и библиотеки за мрежово свързване"
-
-#~ msgid "Science"
-#~ msgstr "Наука"
-
-#~ msgid "Scientific applications and libraries"
-#~ msgstr "Научни приложения и библиотеки"
-
-#~ msgid "Security"
-#~ msgstr "Сигурност"
-
-#~ msgid "Security oriented applications"
-#~ msgstr "Приложения ориентирани към сигурността"
-
-#~ msgid "X11"
-#~ msgstr "X11"
-
-#~ msgid "Applications and libraries for X11"
-#~ msgstr "Приложения и библиотеки за X11"

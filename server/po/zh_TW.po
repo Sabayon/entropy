@@ -1,22 +1,21 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # coldnew  <coldnew.tw@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Sabayon Entropy\n"
+"Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 19:46+0200\n"
-"PO-Revision-Date: 2012-04-16 20:08+0000\n"
+"PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/sabayon-"
-"entropy/language/zh_TW/)\n"
-"Language: zh_TW\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: zh_TW\n"
 "Plural-Forms: nplurals=1; plural=0\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
@@ -1504,7 +1503,8 @@ msgid_plural "items"
 msgstr[0] ""
 
 #: ../../lib/entropy/security.py:279
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318
@@ -3117,42 +3117,3 @@ msgstr ""
 #: ../../server/eit/commands/inject.py:140
 msgid "inject package files into repository"
 msgstr ""
-
-#~ msgid "System"
-#~ msgstr "系統"
-
-#~ msgid "Games"
-#~ msgstr "遊戲"
-
-#~ msgid "GNOME Desktop"
-#~ msgstr "GNOME 桌面環境"
-
-#~ msgid "KDE Desktop"
-#~ msgstr "KDE 桌面環境"
-
-#~ msgid "XFCE Desktop"
-#~ msgstr "XFCE 桌面環境"
-
-#~ msgid "LXDE Desktop"
-#~ msgstr "LXDE 桌面環境"
-
-#~ msgid "Multimedia"
-#~ msgstr "多媒體"
-
-#~ msgid "X11"
-#~ msgstr "X11"
-
-#~ msgid "do it manually"
-#~ msgstr "手動執行"
-
-#~ msgid "Please update packages manually"
-#~ msgstr "請手動更新packages"
-
-#~ msgid "forcing package updates"
-#~ msgstr "強制升級packages"
-
-#~ msgid "Overwriting"
-#~ msgstr "覆蓋中"
-
-#~ msgid "Updating"
-#~ msgstr "更新中"
