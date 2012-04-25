@@ -100,26 +100,34 @@ class AppListStore(Gtk.ListStore):
         }
 
         def _get_visible(data):
-            valid_paths, start_path, end_path = self._view.get_visible_range()
-            if not valid_paths:
-                data['res'] = False
+            res = False
+            try:
+                vis_data = self._view.get_visible_range()
+                if len(vis_data) == 2:
+                    # Gtk 3.4
+                    valid_paths = True
+                    start_path, end_path = vis_data
+                else:
+                    # Gtk <3.2
+                    valid_paths, start_path, end_path = vis_data
+
+                if not valid_paths:
+                    res = False
+                    return
+
+                path = start_path
+                while path <= end_path:
+                    path_iter = self.get_iter(path)
+                    if self.iter_is_valid(path_iter):
+                        visible_pkg_match = self.get_value(path_iter, 0)
+                        if visible_pkg_match == pkg_match:
+                            res = True
+                            return
+                    path.next()
+                res = False
+            finally:
+                data['res'] = res
                 data['sem'].release()
-                return
-
-            path = start_path
-            while path <= end_path:
-                path_iter = self.get_iter(path)
-                if self.iter_is_valid(path_iter):
-                    visible_pkg_match = self.get_value(path_iter, 0)
-                    if visible_pkg_match == pkg_match:
-                        data['res'] = True
-                        data['sem'].release()
-                        return
-                path.next()
-
-            data['res'] = False
-            data['sem'].release()
-            return
 
         GLib.idle_add(_get_visible, s_data)
         s_data['sem'].acquire()
