@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-19 01:19+0000\n"
+"PO-Revision-Date: 2012-04-25 18:10+0000\n"
 "Last-Translator: Alberto Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (http://www.transifex.net/projects/p/sabayon-entropy/language/pt/)\n"
 "MIME-Version: 1.0\n"
@@ -2583,7 +2583,7 @@ msgstr "tenha um dia feliz"
 
 #: ../../client/text_repositories.py:454
 msgid "Repositories Updated not allowed"
-msgstr ""
+msgstr "Repositórios atualizados não foram carregados"
 
 #: ../../client/text_repositories.py:474 ../../client/text_ui.py:580
 msgid "No repositories specified in"
@@ -2643,7 +2643,7 @@ msgstr "arquivo"
 #: ../../client/text_configuration.py:108
 #: ../../client/text_configuration.py:186
 msgid "Type a number"
-msgstr ""
+msgstr "Digite um número"
 
 #: ../../client/text_configuration.py:144
 #: ../../client/text_configuration.py:423
@@ -2654,7 +2654,7 @@ msgstr "Descartando"
 #: ../../client/text_configuration.py:167
 #: ../../client/text_configuration.py:320
 msgid "Automerging"
-msgstr ""
+msgstr "Combinando automáticamente"
 
 #: ../../client/text_configuration.py:175
 msgid "Selected file"
@@ -2663,38 +2663,38 @@ msgstr "Arquivo selecionado"
 #: ../../client/text_configuration.py:196
 #, python-format
 msgid "Replacing %s with %s"
-msgstr ""
+msgstr "Substituindo %s por %s"
 
 #: ../../client/text_configuration.py:203
 #, python-format
 msgid "Cannot merge %s"
-msgstr ""
+msgstr "%s não combinado"
 
 #: ../../client/text_configuration.py:211
 #, python-format
 msgid "Deleting %s"
-msgstr ""
+msgstr "Deletando %s"
 
 #: ../../client/text_configuration.py:217
 #, python-format
 msgid "Cannot remove %s"
-msgstr ""
+msgstr "Não foi possível remover %s"
 
 #: ../../client/text_configuration.py:258
 msgid "Interactive merge"
-msgstr ""
+msgstr "Combinando interativamente"
 
 #: ../../client/text_configuration.py:274
 msgid "OSError during interactive merge"
-msgstr ""
+msgstr "Erro de Sistema durante a combinação"
 
 #: ../../client/text_configuration.py:280
 msgid "IOError during interactive merge"
-msgstr ""
+msgstr "Erro de entrada ou saída durante a combinação"
 
 #: ../../client/text_configuration.py:289
 msgid "Unable to merge file"
-msgstr ""
+msgstr "não possível combinar o arquivo"
 
 #: ../../client/text_configuration.py:304
 msgid "Editing file"
@@ -2706,17 +2706,17 @@ msgstr "Arquivo editado"
 
 #: ../../client/text_configuration.py:313
 msgid "showing difference"
-msgstr ""
+msgstr "mostrando diferenças"
 
 #: ../../client/text_configuration.py:356
 #: ../../client/text_configuration.py:407
 msgid "Source file"
-msgstr ""
+msgstr "Arquivo fonte"
 
 #: ../../client/text_configuration.py:361
 #: ../../client/text_configuration.py:412
 msgid "Destination file"
-msgstr ""
+msgstr "Arquivo destino"
 
 #: ../../client/text_configuration.py:366
 msgid "Overwrite ?"
@@ -2724,7 +2724,7 @@ msgstr "Sobrescrever ?"
 
 #: ../../client/text_configuration.py:375
 msgid "Cannot merge"
-msgstr ""
+msgstr "Não foi possível combinar"
 
 #: ../../client/text_configuration.py:417
 msgid "Discard ?"
@@ -2732,7 +2732,7 @@ msgstr "Descartar ?"
 
 #: ../../client/text_configuration.py:432
 msgid "Cannot remove"
-msgstr ""
+msgstr "não removido"
 
 #: ../../client/text_configuration.py:438
 msgid "Please choose a file to update by typing its identification number."
@@ -4658,7 +4658,7 @@ msgstr "Fechar"
 
 #: ../../magneto/src/magneto/kde/components.py:84
 msgid "Launch Application Browser"
-msgstr ""
+msgstr "Abrindo navegador do Aplicativo"
 
 #: ../../magneto/src/magneto/kde/components.py:94
 msgid "Application updates"
