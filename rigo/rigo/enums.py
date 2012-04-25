@@ -36,7 +36,7 @@ class Icons:
     MISSING_PKG = "dialog-question"   # XXX: Not used?
     GENERIC_MISSING = "gtk-missing-image"
     INSTALLED_OVERLAY = "rigo-installed"
-    CONFIGURATION_FILE = "text-plain"
+    CONFIGURATION_FILE = "text-x-generic"
 
 # application actions
 class AppActions:

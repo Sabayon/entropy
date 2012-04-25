@@ -27,7 +27,7 @@ from threading import Lock, Semaphore, Timer
 from gi.repository import Gtk, GLib, GObject
 
 from rigo.paths import CONF_DIR
-from rigo.enums import RigoViewStates, AppActions
+from rigo.enums import RigoViewStates, AppActions, Icons
 from rigo.models.application import Application, ApplicationMetadata
 from rigo.models.preference import Preference
 from rigo.utils import escape_markup, prepare_markup
@@ -597,7 +597,7 @@ class ApplicationsViewController(GObject.Object):
             100, _("Show Configuration File Updates"),
              _("Show (if any) the list of pending configuration file "
                "updates."),
-             "text-plain", _update)
+             Icons.CONFIGURATION_FILE, _update)
         self._prefc.append(pref)
 
         self._view.set_model(self._store)
