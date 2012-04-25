@@ -407,7 +407,7 @@ def _do_dbus_sync(repositories, force=False):
         print_error(darkred(" @@ ")+brown("%s" % (
             _("sys-apps/entropy-client-services not installed?. Update not allowed, please run as root."),) ))
         if err:
-            print_error(str(err))
+            print_error("%s" % (err,))
 
     try:
         import glib
@@ -424,18 +424,13 @@ def _do_dbus_sync(repositories, force=False):
 
     _entropy_dbus_object = None
     tries = 5
-    while tries:
+    try:
         _system_bus = dbus.SystemBus(mainloop = dbus_loop)
-        try:
-            _entropy_dbus_object = _system_bus.get_object(
-                "org.sabayon.Rigo", "/"
-            )
-            break
-        except dbus.exceptions.DBusException as e:
-            # service not avail
-            tries -= 1
-            time.sleep(2)
-            continue
+        _entropy_dbus_object = _system_bus.get_object(
+            "org.sabayon.Rigo", "/")
+    except dbus.exceptions.DBusException as err:
+        bail_out(err)
+        return 1
 
     if _entropy_dbus_object is not None:
         iface = dbus.Interface(_entropy_dbus_object,
@@ -451,7 +446,7 @@ def _do_dbus_sync(repositories, force=False):
             print_info(brown(info_txt) + ".")
             return 0
         else:
-            info_txt = _("Repositories Updated not allowed")
+            info_txt = _("Repositories update not allowed")
             print_error(brown(info_txt) + ".")
             return 1
 
