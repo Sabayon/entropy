@@ -6124,11 +6124,14 @@ class Server(Client):
         pkg_atom = tmp_repo.retrieveAtom(new_idpackage)
 
         rewrites_enabled = []
+        wildcard_rewrite = False
         for dep_string_rewrite, dep_pattern in dep_rewrite:
             # magic catch-all support
             if dep_string_rewrite == "*":
                 pkg_id, rc = None, 0
+                wildcard_rewrite = True
             else:
+                wildcard_rewrite = False
                 pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
             if rc == 0:
                 rewrites_enabled.append((dep_string_rewrite, dep_pattern))
@@ -6137,37 +6140,39 @@ class Server(Client):
         if not rewrites_enabled:
             return
 
-        self.output(
-            "[%s|%s] %s:" % (
-                    blue(repo),
-                    brown(pkg_atom),
-                    teal(_("found available dep_rewrites for this package")),
-                ),
-            importance = 1,
-            level = "info",
-            header = brown(" @@ ")
-        )
-        for dep_string_rewrite, dep_pattern in rewrites_enabled:
-            compiled_pattern, replaces = \
-                dep_rewrite[(dep_string_rewrite, dep_pattern)]
-            if compiled_pattern is None:
-                # this means that user is asking to add dep_pattern
-                # as a dependency to package
-                replaces_str = _("added")
-            elif not replaces:
-                # this means that user is asking to remove dep_pattern
-                replaces_str = _("removed")
-            else:
-                replaces_str = "=> " + ', '.join(replaces)
+        if not wildcard_rewrite:
             self.output(
-                "%s %s" % (
-                    purple(dep_pattern),
-                    replaces_str,
-                ),
+                "[%s|%s] %s:" % (
+                        blue(repo),
+                        brown(pkg_atom),
+                        teal(
+                            _("found available dep_rewrites for this package")),
+                    ),
                 importance = 1,
                 level = "info",
-                header = teal("   # ")
+                header = brown(" @@ ")
             )
+            for dep_string_rewrite, dep_pattern in rewrites_enabled:
+                compiled_pattern, replaces = \
+                    dep_rewrite[(dep_string_rewrite, dep_pattern)]
+                if compiled_pattern is None:
+                    # this means that user is asking to add dep_pattern
+                    # as a dependency to package
+                    replaces_str = _("added")
+                elif not replaces:
+                    # this means that user is asking to remove dep_pattern
+                    replaces_str = _("removed")
+                else:
+                    replaces_str = "=> " + ', '.join(replaces)
+                self.output(
+                    "%s %s" % (
+                        purple(dep_pattern),
+                        replaces_str,
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = teal("   # ")
+                )
 
         def _extract_dep_add_from_dep_pattern(_dep_pattern):
             """
