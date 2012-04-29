@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-22 12:14+0200\n"
-"PO-Revision-Date: 2012-04-22 10:15+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-04-25 18:44+0000\n"
+"Last-Translator: Stefan Cristian <stevencristian@hotmail.com>\n"
 "Language-Team: Romanian (http://www.transifex.net/projects/p/sabayon-rigo/language/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -852,111 +852,111 @@ msgstr "<i>Exploreaza <b>Aplicatia</b> cu usurinta<i>"
 
 #: ../rigo_app.py:97
 msgid "Hey hey hey!"
-msgstr ""
+msgstr "Salut salut salut!"
 
 #: ../rigo_app.py:98
 msgid "Rigo is working, are you sure?"
-msgstr ""
+msgstr "Rigo functioneaza, esti sigur ?"
 
 #: ../rigo_app.py:364
 msgid "Activity Interruption"
-msgstr ""
+msgstr "Interupere de Activitate"
 
 #: ../rigo_app.py:366
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
+msgstr "Sunteti sigur ca vreti sa intrerupeti Activitatea ? Interuperea ei se va petrece cat se poate de repede, dar posibil nu instant."
 
 #: ../rigo_app.py:391
 msgid "Repositories update error"
-msgstr ""
+msgstr "Eroare de actualizare a repositoriilor"
 
 #: ../rigo_app.py:395
 msgid "Repositories updated <b>successfully</b>!"
-msgstr ""
+msgstr "Repositoriile au fost <b>cu success</b> actualizate"
 
 #: ../rigo_app.py:413
 msgid "Application Management Error"
-msgstr ""
+msgstr "Eroare Gestionare Aplicatie"
 
 #: ../rigo_app.py:414
 msgid "please check the management log"
-msgstr ""
+msgstr "va rugam verificati log-ul gestionarii"
 
 #: ../rigo_app.py:417
 msgid "System Upgrade Error"
-msgstr ""
+msgstr "Eroare Actualizare Sistem"
 
 #: ../rigo_app.py:418
 msgid "please check the upgrade log"
-msgstr ""
+msgstr "va rugam verificati logul actualizarii"
 
 #: ../rigo_app.py:422
 msgid "Applications managed <b>successfully</b>!"
-msgstr ""
+msgstr "Aplicatiile au fost gestionare <b>cu succes</b>"
 
 #: ../rigo_app.py:424
 msgid "System Upgraded <b>successfully</b>!"
-msgstr ""
+msgstr "Actualizare Sistem <b>cu succes</b>"
 
 #: ../rigo_app.py:641
 msgid "You are not authorized to run Rigo"
-msgstr ""
+msgstr "Nu sunteti autorizati sa folositi Rigo"
 
 #: ../rigo_app.py:649 ../rigo_app.py:660 ../rigo_app.py:678 ../rigo_app.py:733
 #: ../rigo_app.py:744 ../rigo_app.py:772
 msgid "Rigo"
-msgstr ""
+msgstr "Rigo"
 
 #: ../rigo_app.py:650
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "Serviciul RigoDaemon nu este valabil"
 
 #: ../rigo_app.py:662
 msgid "API mismatch, please update Rigo and RigoDaemon"
-msgstr ""
+msgstr "Nepotrivire API, te rugam sa actualizezi Rigo si RigoDaemon"
 
 #: ../rigo_app.py:679
 msgid "Another Application Manager is active"
-msgstr ""
+msgstr "Un alt Manager de Aplicatii este activ"
 
 #: ../rigo_app.py:696
 msgid "Background Service is currently not available"
-msgstr ""
+msgstr "Serviciul din fundal nu este actualmente valabil"
 
 #: ../rigo_app.py:726
 msgid "Background Service is currently busy"
-msgstr ""
+msgstr "Serviciul din fundal este ocupat"
 
 #: ../rigo_app.py:728
 msgid "Background Service is incompatible with Rigo"
-msgstr ""
+msgstr "Serviciul de fundal este imcompatibil cu Rigo"
 
 #: ../rigo_app.py:740
 msgid "Background Service is currently unavailable"
-msgstr ""
+msgstr "Serviciul din fundal nu este actualmente valabil"
 
 #: ../rigo_app.py:751 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
-msgstr ""
+msgstr "Browserul Aplicatii Rigo"
 
 #: ../rigo_app.py:799
 msgid "Happy St. Valentine <3 <3 !"
-msgstr ""
+msgstr "Sa aveti un Sf. Valentin placut <3 <3 !"
 
 #: ../rigo_app.py:801
 msgid "Merry Xmas \\o/ !"
-msgstr ""
+msgstr "Craciun Fericit \\o/ !"
 
 #: ../rigo_app.py:803
 msgid "<=|=< (this is optimistically a fish)"
-msgstr ""
+msgstr "<=|=< (in mod optimist, acesta este un peste)"
 
 #: ../rigo_app.py:808
 msgid "Woot, thanks"
-msgstr ""
+msgstr "Cee, multumesc"
 
 #: ../data/ui/gtk3/rigo.ui.h:2
 msgid "_Write a <b>comment</b>"
-msgstr ""
+msgstr "_Scrie un <b>comentariu</b>"
