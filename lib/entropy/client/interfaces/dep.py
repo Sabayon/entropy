@@ -960,8 +960,8 @@ class CalculatorsMixin:
 
         return broken_children_matches, after_pkgs, before_pkgs, inverse_deps
 
-    def __generate_dependency_tree_analyze_conflict(self, conflict_str,
-        conflicts, stack, deep_deps):
+    def __generate_dependency_tree_analyze_conflict(self, pkg_match,
+        conflict_str, conflicts, stack, graph, deep_deps):
 
         conflict_atom = conflict_str[1:]
         c_idpackage, xst = self._installed_repository.atomMatch(conflict_atom)
@@ -977,6 +977,7 @@ class CalculatorsMixin:
                 "replacement => %s" % (confl_replacement,))
 
         if confl_replacement is not None:
+            graph.add(pkg_match, set([confl_replacement]))
             stack.push(confl_replacement)
             return
 
@@ -1015,7 +1016,7 @@ class CalculatorsMixin:
     DISABLE_AUTOCONFLICT = os.getenv("ETP_DISABLE_AUTOCONFLICT")
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
-        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
+        stack, graph, deps_not_found, conflicts, unsat_cache, relaxed_deps,
         build_deps, deep_deps, empty_deps, recursive, selected_matches,
         elements_cache):
 
@@ -1082,8 +1083,9 @@ class CalculatorsMixin:
         if my_conflicts:
             myundeps -= my_conflicts
             for my_conflict in my_conflicts:
-                self.__generate_dependency_tree_analyze_conflict(my_conflict,
-                    conflicts, stack, deep_deps)
+                self.__generate_dependency_tree_analyze_conflict(
+                    pkg_match, my_conflict,
+                    conflicts, stack, graph, deep_deps)
 
         if const_debug_enabled():
             const_debug_write(__name__,
@@ -1258,7 +1260,7 @@ class CalculatorsMixin:
 
             dep_matches, post_dep_matches = \
                 self.__generate_dependency_tree_analyze_deplist(
-                    pkg_match, repo_db, stack, deps_not_found,
+                    pkg_match, repo_db, stack, graph, deps_not_found,
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
                     build_deps, deep_deps, empty_deps, recursive,
                     selected_matches, elements_cache)
