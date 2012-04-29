@@ -1329,21 +1329,22 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                                 "preserved libraries detected, aborting")
                             break
 
-                    if rc == 0:
-                        built_packages = builder.get_built_packages()
+                    # ignore rc, we may have built pkgs even if rc != 0
+                    built_packages = builder.get_built_packages()
+                    if built_packages:
                         print_info("built packages, in queue: %s" % (
-                            " ".join(built_packages),))
-                        # make some room
-                        print_info("")
-                        local_completed.extend([x for x in built_packages \
-                            if x not in local_completed])
+                                " ".join(built_packages),))
+                        local_completed.extend(
+                            [x for x in built_packages \
+                                 if x not in local_completed])
                         tainted_repositories.add(spec['repository'])
-                    elif rc < 0:
+
+                    # make some room
+                    print_info("")
+                    if rc < 0:
                         # ignore warning and go ahead
-                        print_info("")
                         continue
                     else:
-                        print_info("")
                         exit_st = rc
                         if not keep_going:
                             break
