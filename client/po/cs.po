@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-24 19:02+0000\n"
+"PO-Revision-Date: 2012-04-27 12:03+0000\n"
 "Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -76,7 +76,7 @@ msgstr "ZBM"
 
 #: ../../lib/entropy/db/skel.py:1640
 msgid "Running packages metadata update"
-msgstr ""
+msgstr "Spouštím aktualizaci metadat balíčků"
 
 #: ../../lib/entropy/db/skel.py:1641
 msgid "it could take a while"
@@ -85,7 +85,7 @@ msgstr ""
 #: ../../lib/entropy/db/skel.py:1661 ../../lib/entropy/db/skel.py:1686
 #: ../../lib/entropy/db/skel.py:1709
 msgid "ENTROPY"
-msgstr ""
+msgstr "ENTROPY"
 
 #: ../../lib/entropy/db/skel.py:1662
 msgid "action"
@@ -397,7 +397,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3500
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
+msgstr "Přeskakuji aktualizaci konfiguračních souborů, nejste root."
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3763
 msgid "Error calculating dependencies"
@@ -409,15 +409,15 @@ msgstr "nepodporováno"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4247
 msgid "Probably Portage API has changed"
-msgstr ""
+msgstr "Pravděpodobně se změnilo API Portage"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4359
 msgid "IOError while reading"
-msgstr ""
+msgstr "Chyba IO při čtení"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4516
 msgid "illegal Entropy package tag in ebuild"
-msgstr ""
+msgstr "Neplatná značka balíčku Entropy v ebuildu"
 
 #: ../../lib/entropy/client/services/interfaces.py:57
 msgid "Unknown documents"
@@ -487,15 +487,15 @@ msgstr "Nelze automaticky sloučit soubor"
 
 #: ../../lib/entropy/client/interfaces/sets.py:238
 msgid "Name already taken"
-msgstr ""
+msgstr "Název je již používán"
 
 #: ../../lib/entropy/client/interfaces/sets.py:247
 msgid "Cannot remove the old element"
-msgstr ""
+msgstr "Nelze odebrat starý element"
 
 #: ../../lib/entropy/client/interfaces/sets.py:249
 msgid "Cannot create the element"
-msgstr ""
+msgstr "Nelze vytvořit element"
 
 #: ../../lib/entropy/client/interfaces/sets.py:276
 msgid "cannot start with"
@@ -503,7 +503,7 @@ msgstr "nelze začít s"
 
 #: ../../lib/entropy/client/interfaces/sets.py:281
 msgid "Already removed"
-msgstr ""
+msgstr "Již odebrán"
 
 #: ../../lib/entropy/client/interfaces/sets.py:285
 msgid "Not defined by user"
@@ -511,7 +511,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/sets.py:293
 msgid "Set not found or unable to remove"
-msgstr ""
+msgstr "Sada nenalezena, nebo nejde odebrat"
 
 #: ../../lib/entropy/client/interfaces/cache.py:106
 #: ../../lib/entropy/client/interfaces/methods.py:98
@@ -558,7 +558,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1033
 msgid "running in safe mode using temporary, empty repository"
-msgstr ""
+msgstr "spouštím v bezpečném režimu použitím dočasného prázdného repozitáře"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1207
 msgid "Backing up repository to"
@@ -594,15 +594,15 @@ msgstr "Odstraňuje se"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1853
 msgid "Resources unlocked, let's go!"
-msgstr ""
+msgstr "Zdroje odemčeny, jdeme na to!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1861
 msgid "Resources still locked, giving up!"
-msgstr ""
+msgstr "Zdroje stále uzamčeny, vzdávám se!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1869
 msgid "Resources locked, sleeping..."
-msgstr ""
+msgstr "Zdroje uzamčeny, vyčkávám..."
 
 #: ../../lib/entropy/client/interfaces/methods.py:2080
 msgid "Checking speed of"
@@ -655,7 +655,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:539
 msgid "Downloading checksum"
-msgstr ""
+msgstr "Stahuji kontrolní součet"
 
 #: ../../lib/entropy/client/interfaces/db.py:564
 msgid "Cannot fetch checksum"
@@ -688,11 +688,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:920
 msgid "Downloading repository metafile"
-msgstr ""
+msgstr "Stahuji metasoubor repozitáře"
 
 #: ../../lib/entropy/client/interfaces/db.py:930
 msgid "Downloading GPG signature of repository metafile"
-msgstr ""
+msgstr "Stahuji podpis GPG metasouboru repozitáře"
 
 #: ../../lib/entropy/client/interfaces/db.py:940
 msgid "Downloading Notice Board"
@@ -704,7 +704,7 @@ msgstr "rozbalen meta soubor"
 
 #: ../../lib/entropy/client/interfaces/db.py:972
 msgid "removed meta file"
-msgstr "odstraněn meta soubor"
+msgstr "odebrán meta soubor"
 
 #: ../../lib/entropy/client/interfaces/db.py:989
 msgid "not available, it's ok"
@@ -768,7 +768,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1193
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
+msgstr "možná chcete nainstalovat GnuPG pro využívání této funkce"
 
 #: ../../lib/entropy/client/interfaces/db.py:1227
 #: ../../lib/entropy/security.py:318
@@ -778,7 +778,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:1247
 #: ../../lib/entropy/security.py:337
 msgid "GPG key already installed for"
-msgstr ""
+msgstr "Již existuje GPG klíč pro"
 
 #: ../../lib/entropy/client/interfaces/db.py:1260
 msgid "GPG key EXPIRED for repository"
@@ -786,21 +786,21 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1272
 msgid "Installing GPG key for repository"
-msgstr ""
+msgstr "Instaluji GPG klíč pro repozitář"
 
 #: ../../lib/entropy/client/interfaces/db.py:1290
 #: ../../lib/entropy/client/interfaces/db.py:1322
 #: ../../lib/entropy/security.py:375
 msgid "Error during GPG key installation"
-msgstr ""
+msgstr "Chyba při instalaci GPG klíče"
 
 #: ../../lib/entropy/client/interfaces/db.py:1300
 msgid "GPG key seems already installed but not properly recorded, resetting"
-msgstr ""
+msgstr "GPG klíč vypadá nainstalovaný, ale špatně zaznamenaný, nastavuji znovu"
 
 #: ../../lib/entropy/client/interfaces/db.py:1334
 msgid "Successfully installed GPG key for repository"
-msgstr ""
+msgstr "Úspěšně nainstalován GPG klíč pro repozitář"
 
 #: ../../lib/entropy/client/interfaces/db.py:1343
 #: ../../lib/entropy/security.py:395
@@ -877,11 +877,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1690
 msgid "repository error while adding packages"
-msgstr ""
+msgstr "chyba repozitáře při přidávání balíčků"
 
 #: ../../lib/entropy/client/interfaces/db.py:1715
 msgid "repository error while removing packages"
-msgstr ""
+msgstr "chyba repozitáře při odebírání balíčků"
 
 #: ../../lib/entropy/client/interfaces/db.py:1731
 msgid "Repository checksum doesn't match remote."
@@ -979,7 +979,7 @@ msgstr "Úspěšně staženo z"
 #: ../../lib/entropy/client/interfaces/package.py:1017
 #: ../../lib/entropy/client/interfaces/package.py:2912
 msgid "at"
-msgstr ""
+msgstr "na"
 
 #: ../../lib/entropy/client/interfaces/package.py:1040
 #: ../../lib/entropy/client/interfaces/package.py:2933
@@ -1000,7 +1000,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:1166
 msgid "Package signature verification error for"
-msgstr ""
+msgstr "Chyba ověření podpisu balíčku pro"
 
 #: ../../lib/entropy/client/interfaces/package.py:1198
 msgid "disabled"
@@ -1062,7 +1062,7 @@ msgstr "Rozbaluji"
 
 #: ../../lib/entropy/client/interfaces/package.py:1408
 msgid "Unable to find Entropy metadata in package"
-msgstr ""
+msgstr "Nelze nalézt metadata Entropy v balíčku"
 
 #: ../../lib/entropy/client/interfaces/package.py:1472
 msgid "configuration phase"
@@ -1079,7 +1079,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:1620
 #: ../../client/text_ui.py:2219
 msgid "remove"
-msgstr ""
+msgstr "odebrat"
 
 #: ../../lib/entropy/client/interfaces/package.py:1621
 #: ../../lib/entropy/client/interfaces/package.py:2800
@@ -1114,7 +1114,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:2297
 msgid "Cannot remove symlink"
-msgstr ""
+msgstr "Nelze odebrat symbolický odkaz"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
@@ -1134,7 +1134,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:2563
 msgid "File move error"
-msgstr ""
+msgstr "Chyba přesunu souboru"
 
 #: ../../lib/entropy/client/interfaces/package.py:2566
 msgid "please report"
@@ -1150,7 +1150,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:2817
 msgid "Collision found during install for"
-msgstr ""
+msgstr "Nalezena kolize při instalaci"
 
 #: ../../lib/entropy/client/interfaces/package.py:2820
 msgid "cannot overwrite"
@@ -1161,7 +1161,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:3003
 #: ../../lib/entropy/cli.py:357
 msgid "Downloading"
-msgstr ""
+msgstr "Stahuji"
 
 #: ../../lib/entropy/client/interfaces/package.py:2920
 msgid "Local path"
@@ -1169,7 +1169,7 @@ msgstr "Místní cesta"
 
 #: ../../lib/entropy/client/interfaces/package.py:2986
 msgid "Package cannot be fetched. Try to update repositories"
-msgstr ""
+msgstr "Balíček nelze stáhnout. Zkuste aktualizovat repozitáře"
 
 #: ../../lib/entropy/client/interfaces/package.py:3005
 msgid "archive"
@@ -1184,7 +1184,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:3023
 msgid "Try to update your repositories and retry"
-msgstr ""
+msgstr "Zkuste aktualizovat repozitáře a opakujte"
 
 #: ../../lib/entropy/client/interfaces/package.py:3051
 msgid "Package cannot be downloaded, unknown error."
@@ -1217,7 +1217,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:3175
 msgid "Installing package"
-msgstr ""
+msgstr "Instaluji balíček"
 
 #: ../../lib/entropy/client/interfaces/package.py:3195
 msgid "unsupported splitdebug usage (package files)"
@@ -1229,7 +1229,7 @@ msgstr "<3 instalace ladících souborů zapnuta <3"
 
 #: ../../lib/entropy/client/interfaces/package.py:3211
 msgid "An error occured while trying to install the package"
-msgstr ""
+msgstr "Nastala chyba při instalaci balíčku"
 
 #: ../../lib/entropy/client/interfaces/package.py:3226
 msgid "Removing data"
@@ -1237,7 +1237,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:3239
 msgid "An error occured while trying to remove the package"
-msgstr ""
+msgstr "Nastala chyba při odebírání balíčku"
 
 #: ../../lib/entropy/client/interfaces/package.py:3240
 msgid "Check if you have enough disk space on your hard disk"
@@ -1377,11 +1377,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/trigger.py:514
 msgid "pre-remove phase"
-msgstr ""
+msgstr "fáze před odebráním"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:524
 msgid "post-remove phase"
-msgstr ""
+msgstr "fáze po odebrání"
 
 #: ../../lib/entropy/client/interfaces/repository.py:172
 msgid "Something bad happened. Please have a look."
@@ -1403,7 +1403,7 @@ msgstr[2] "balíčků, které lze odebrat"
 
 #: ../../lib/entropy/client/interfaces/repository.py:209
 msgid "Packages are stored in"
-msgstr ""
+msgstr "Balíčky jsou uloženy v"
 
 #: ../../lib/entropy/client/interfaces/repository.py:239
 msgid "a new release is available"
@@ -1411,11 +1411,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/repository.py:240
 msgid "Mind to install it before any other package"
-msgstr ""
+msgstr "Nainstalujte jej, prosím, před ostatními balíčky"
 
 #: ../../lib/entropy/client/interfaces/repository.py:305
 msgid "Advisories fetch error"
-msgstr ""
+msgstr "Chyba stahování doporučení"
 
 #. let's dance!
 #: ../../lib/entropy/client/interfaces/repository.py:337
@@ -1472,11 +1472,11 @@ msgstr "VYPRŠEL GPG klíč pro URL"
 
 #: ../../lib/entropy/security.py:361
 msgid "Installing GPG key for URL"
-msgstr ""
+msgstr "Instaluji GPG klíč pro URL"
 
 #: ../../lib/entropy/security.py:386
 msgid "Successfully installed GPG key for URL"
-msgstr ""
+msgstr "Úspěšně nainstalován GPG klíč pro URL"
 
 #: ../../lib/entropy/security.py:440 ../../lib/entropy/security.py:1015
 #: ../../lib/entropy/security.py:1030 ../../lib/entropy/security.py:1037
@@ -1486,7 +1486,7 @@ msgstr ""
 #: ../../lib/entropy/security.py:1167 ../../lib/entropy/security.py:1188
 #: ../../lib/entropy/security.py:1216 ../../lib/entropy/security.py:1228
 msgid "Security Advisories"
-msgstr ""
+msgstr "Bezpečnostní doporučení"
 
 #: ../../lib/entropy/security.py:441
 msgid "GPG key verification successful"
@@ -1504,11 +1504,11 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:1016
 msgid "getting latest advisories"
-msgstr ""
+msgstr "získávám nejnovější doporučení"
 
 #: ../../lib/entropy/security.py:1031
 msgid "updated successfully"
-msgstr ""
+msgstr "aktualizováno úspěšně"
 
 #: ../../lib/entropy/security.py:1038
 msgid "already up to date"
@@ -1520,7 +1520,7 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:1103
 msgid "unable to download advisories, sorry"
-msgstr ""
+msgstr "nelze stáhnout doporučení, promiňte"
 
 #: ../../lib/entropy/security.py:1115
 msgid "Verifying checksum"
@@ -1705,7 +1705,7 @@ msgstr "Velikost"
 #: ../../lib/entropy/cli.py:521 ../../client/text_ugc.py:769
 #: ../../client/text_ui.py:1194
 msgid "Download"
-msgstr ""
+msgstr "Stáhnout"
 
 #: ../../lib/entropy/cli.py:523
 msgid "Checksum"
@@ -1768,7 +1768,7 @@ msgstr "Klíčová slova"
 
 #: ../../lib/entropy/cli.py:624
 msgid "Created"
-msgstr ""
+msgstr "Vytvořeno"
 
 #: ../../lib/entropy/cli.py:630 ../../client/text_ui.py:1665
 msgid "License"
@@ -1784,7 +1784,7 @@ msgstr ""
 #: ../../client/text_ui.py:1799 ../../client/text_ui.py:1891
 #: ../../client/text_ui.py:1989
 msgid "No packages found"
-msgstr ""
+msgstr "Žádné balíčky nenalezeny"
 
 #: ../../lib/entropy/cli.py:778
 msgid "packages passed as arguments"
@@ -1914,7 +1914,7 @@ msgstr ""
 
 #: ../../lib/entropy/output.py:956
 msgid "Element number to remove (-1 to go back):"
-msgstr ""
+msgstr "Číslo prvku k odebrání (-1 krok zpět):"
 
 #: ../../lib/entropy/qa.py:161
 msgid "Searching for broken reverse dependencies"
@@ -1930,7 +1930,7 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:230
 msgid "needs"
-msgstr ""
+msgstr "vyžaduje"
 
 #: ../../lib/entropy/qa.py:274
 msgid "Searching for missing Runtime dependencies"
@@ -1958,11 +1958,11 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:551
 msgid "requires"
-msgstr ""
+msgstr "vyžaduje"
 
 #: ../../lib/entropy/qa.py:568 ../../lib/entropy/qa.py:579
 msgid "provided by"
-msgstr ""
+msgstr "poskytováno"
 
 #: ../../lib/entropy/qa.py:592
 msgid "no missing runtime libraries found"
@@ -2023,7 +2023,7 @@ msgstr ""
 #: ../../client/equo.py:363 ../../client/text_ui.py:159
 #: ../../services/kernel-switcher:120 ../../services/kernel-switcher:197
 msgid "Another Entropy is currently running."
-msgstr ""
+msgstr "Jiná Entropy již běží."
 
 #: ../../client/text_cache.py:37
 msgid "Cleaning Entropy cache, please wait ..."
@@ -2031,7 +2031,7 @@ msgstr "Čistím vyrovnávací paměť Entropy, čekejte prosím..."
 
 #: ../../client/text_cache.py:44
 msgid "Entropy cache cleaned."
-msgstr ""
+msgstr "Vyrovnávací paměť Entropy vyčištěna."
 
 #. check if I am root
 #: ../../client/text_security.py:58 ../../client/text_repositories.py:68
@@ -2044,7 +2044,7 @@ msgstr ""
 
 #: ../../client/text_security.py:109
 msgid "No advisories provided"
-msgstr ""
+msgstr "Neposkytnuta žádná doporučení"
 
 #: ../../client/text_security.py:115
 msgid "Advisory"
@@ -2120,7 +2120,7 @@ msgstr "Rozlišení"
 
 #: ../../client/text_security.py:260
 msgid "No advisories available or applicable"
-msgstr ""
+msgstr "Žádná dostupná, či použitelná doporučení"
 
 #: ../../client/text_security.py:298
 msgid "Installed packages repository is not available"
@@ -2156,7 +2156,7 @@ msgstr ""
 
 #: ../../client/text_security.py:411
 msgid "Packages have been reinstalled successfully"
-msgstr ""
+msgstr "Balíčky byly úspěšně znovu nainstalovány"
 
 #: ../../client/text_security.py:418
 msgid "Calculating security updates"
@@ -2164,7 +2164,7 @@ msgstr "Zkoumám bezpečnostní aktualizace"
 
 #: ../../client/text_security.py:435
 msgid "All the available updates have been already installed"
-msgstr ""
+msgstr "Všechny dostupné aktualizace jsou již nainstalovány"
 
 #: ../../client/text_query.py:49 ../../client/text_ui.py:83
 #: ../../client/text_ui.py:88
@@ -2175,7 +2175,7 @@ msgstr ""
 #. fail.
 #: ../../client/text_query.py:83 ../../client/text_ugc.py:53
 msgid "You are not in the entropy group."
-msgstr ""
+msgstr "Nejste ve skupině entropy."
 
 #: ../../client/text_query.py:219 ../../client/text_query.py:842
 msgid "Searching"
@@ -2223,7 +2223,7 @@ msgstr[2] "záznamů"
 
 #: ../../client/text_query.py:263
 msgid "entries"
-msgstr ""
+msgstr "záznamy"
 
 #: ../../client/text_query.py:272
 msgid "Belong Search"
@@ -2262,7 +2262,7 @@ msgstr "z repozitáře"
 
 #: ../../client/text_query.py:441
 msgid "from installed packages database"
-msgstr ""
+msgstr "z databáze nainstalovaných balíčků"
 
 #: ../../client/text_query.py:454
 msgid "Needed Search"
@@ -2314,7 +2314,7 @@ msgstr ""
 
 #: ../../client/text_query.py:670
 msgid "Intersection completed. Showing statistics"
-msgstr ""
+msgstr "Vkládání dokončeno. Zobrazuji statistiky"
 
 #: ../../client/text_query.py:672
 msgid "Number of total files"
@@ -2354,7 +2354,7 @@ msgstr ""
 #: ../../client/text_query.py:1143 ../../client/text_query.py:1173
 #: ../../client/text_query.py:1218 ../../client/text_query.py:1243
 msgid "No matches"
-msgstr ""
+msgstr "Žádná shoda"
 
 #: ../../client/text_query.py:770 ../../client/text_ui.py:819
 #: ../../client/text_ui.py:870 ../../client/text_ui.py:880
@@ -2372,11 +2372,11 @@ msgstr "z"
 
 #: ../../client/text_query.py:796
 msgid "Listing Packages"
-msgstr ""
+msgstr "Vypisuji balíčky"
 
 #: ../../client/text_query.py:913
 msgid "Searching mimetype"
-msgstr ""
+msgstr "Hledám MIME typ"
 
 #: ../../client/text_query.py:960
 msgid "Matching"
@@ -2445,7 +2445,7 @@ msgstr "Formát repozitáře:"
 
 #: ../../client/text_repositories.py:166
 msgid "Packages URL:"
-msgstr ""
+msgstr "URL balíčků:"
 
 #: ../../client/text_repositories.py:169
 msgid "None given"
@@ -2469,7 +2469,7 @@ msgstr ""
 
 #: ../../client/text_repositories.py:198
 msgid "repository removed succesfully"
-msgstr ""
+msgstr "repozitář odebrán úspěšně"
 
 #: ../../client/text_repositories.py:202
 msgid "cannot remove repository"
@@ -2538,11 +2538,11 @@ msgstr ""
 
 #: ../../client/text_repositories.py:359
 msgid "mirrors sorted successfully"
-msgstr ""
+msgstr "zrcadla seřazena úspěšně"
 
 #: ../../client/text_repositories.py:376
 msgid "active"
-msgstr ""
+msgstr "aktivní"
 
 #: ../../client/text_repositories.py:378
 msgid "never synced"
@@ -2588,7 +2588,7 @@ msgstr "Přeji hezký den"
 
 #: ../../client/text_repositories.py:454
 msgid "Repositories Updated not allowed"
-msgstr ""
+msgstr "Aktualizace repozitářů není povolena"
 
 #: ../../client/text_repositories.py:474 ../../client/text_ui.py:580
 msgid "No repositories specified in"
@@ -2695,7 +2695,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:280
 msgid "IOError during interactive merge"
-msgstr ""
+msgstr "Chyba IO při interaktivním sloučení"
 
 #: ../../client/text_configuration.py:289
 msgid "Unable to merge file"
@@ -2745,7 +2745,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:439
 msgid "Other options are:"
-msgstr ""
+msgstr "Další možnosti jsou:"
 
 #: ../../client/text_configuration.py:441
 msgid "Automerge all the files asking you one by one"
@@ -2785,7 +2785,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:456
 msgid "Interactively merge original with update"
-msgstr ""
+msgstr "Interaktivně sloučit původní s aktualizací"
 
 #: ../../client/text_configuration.py:457
 msgid "Show differences again"
@@ -2799,7 +2799,7 @@ msgstr "Neplatný repozitář"
 #: ../../client/text_ugc.py:97 ../../client/text_ugc.py:188
 #: ../../client/text_ugc.py:238 ../../client/text_ugc.py:373
 msgid "Repository does not support Entropy Services."
-msgstr ""
+msgstr "Repozitář nepodporuje služby Entropy"
 
 #: ../../client/text_ugc.py:107
 msgid "Already logged in as"
@@ -2807,7 +2807,7 @@ msgstr "Již přihlášen jako"
 
 #: ../../client/text_ugc.py:109
 msgid "Please logout first"
-msgstr ""
+msgstr "Nejprve se prosím odhlašte"
 
 #: ../../client/text_ugc.py:121
 msgid "Username"
@@ -3087,7 +3087,7 @@ msgstr "Mohu pokračovat?"
 
 #: ../../client/text_rescue.py:234
 msgid "Are you REALLY sure ?"
-msgstr ""
+msgstr "Jste si OPRAVDU jistí?"
 
 #: ../../client/text_rescue.py:238
 msgid "Do you even know what you're doing ?"
@@ -3143,7 +3143,7 @@ msgstr ""
 #: ../../client/text_rescue.py:348
 #, python-format
 msgid "Found %s packages"
-msgstr ""
+msgstr "Nalezeno %s balíčků"
 
 #: ../../client/text_rescue.py:349
 msgid "Filling database"
@@ -3151,7 +3151,7 @@ msgstr ""
 
 #: ../../client/text_rescue.py:358 ../../client/text_rescue.py:535
 msgid "Adding"
-msgstr ""
+msgstr "Přidávám"
 
 #: ../../client/text_rescue.py:366
 msgid "Database resurrected successfully"
@@ -3233,7 +3233,7 @@ msgstr "Výjimka"
 
 #: ../../client/text_rescue.py:586
 msgid "Database update completed"
-msgstr ""
+msgstr "Aktualizace databáze dokončena"
 
 #: ../../client/text_rescue.py:599
 msgid ""
@@ -3300,7 +3300,7 @@ msgstr ""
 
 #: ../../client/text_smart.py:32
 msgid "You are not"
-msgstr ""
+msgstr "Nejste"
 
 #: ../../client/text_smart.py:97 ../../client/text_smart.py:162
 #: ../../client/text_smart.py:300
@@ -3336,7 +3336,7 @@ msgstr ""
 
 #: ../../client/text_smart.py:151
 msgid "Error while creating package for"
-msgstr ""
+msgstr "Chyba při vytváření balíčku pro"
 
 #: ../../client/text_smart.py:152 ../../client/text_smart.py:335
 #: ../../client/equo.py:640
@@ -3349,7 +3349,7 @@ msgstr ""
 
 #: ../../client/text_smart.py:178
 msgid "directory does not exist"
-msgstr ""
+msgstr "adresář neexistuje"
 
 #: ../../client/text_smart.py:194
 msgid "is not a valid Entropy package"
@@ -3447,7 +3447,7 @@ msgstr ""
 
 #: ../../client/equo.py:54
 msgid "Ok i give up, you are hopeless"
-msgstr ""
+msgstr "Dobrá, vzdávám se, není Vám pomoci"
 
 #: ../../client/equo.py:55
 msgid "Go to hell."
@@ -3507,7 +3507,7 @@ msgstr "přidat repozitář (zadejte název repozitáře)"
 
 #: ../../client/equo.py:80
 msgid "remove repository"
-msgstr "Odebrat repozitář"
+msgstr "odebrat repozitář"
 
 #: ../../client/equo.py:81
 msgid "reorder mirrors basing on response time"
@@ -3515,11 +3515,11 @@ msgstr "seřadit zrcadla podle času odpovědi"
 
 #: ../../client/equo.py:82
 msgid "merge content of source repos to dest [for developers]"
-msgstr ""
+msgstr "sloučí obsah zdrojových repozitářů do cíle (pro vývojáře)"
 
 #: ../../client/equo.py:83
 msgid "also remove dependency conflicts during merge"
-msgstr ""
+msgstr "také odstranit konflikty závislostí při sloučení"
 
 #: ../../client/equo.py:84
 msgid "repository notice board reader"
@@ -3527,7 +3527,7 @@ msgstr "čtečka nástěnky oznámení repozitáře"
 
 #: ../../client/equo.py:85
 msgid "show respositories status"
-msgstr ""
+msgstr "zobrazit stav repozitářů"
 
 #: ../../client/equo.py:87
 msgid "search packages in repositories"
@@ -3559,18 +3559,18 @@ msgstr ""
 
 #: ../../client/equo.py:95
 msgid "upgrade your distribution to a new release (branch)"
-msgstr ""
+msgstr "aktualizovat Vaši distribuci na nové vydání (větev)"
 
 #: ../../client/equo.py:97
 msgid "update system with the latest available packages"
-msgstr ""
+msgstr "aktualizovat systém s nejnovějšími dostupnými balíčky"
 
 #: ../../client/equo.py:98 ../../client/equo.py:123 ../../client/equo.py:129
 #: ../../client/equo.py:146 ../../client/equo.py:153 ../../client/equo.py:161
 #: ../../client/equo.py:171 ../../client/equo.py:174 ../../client/equo.py:178
 #: ../../client/equo.py:183 ../../client/equo.py:194
 msgid "ask before making any changes"
-msgstr ""
+msgstr "dotázat se před provedením libovolných změn"
 
 #: ../../client/equo.py:99 ../../client/equo.py:124
 msgid "just download packages"
@@ -3578,11 +3578,11 @@ msgstr ""
 
 #: ../../client/equo.py:100
 msgid "only show what would be done"
-msgstr ""
+msgstr "pouze zobrazit co by se udělalo"
 
 #: ../../client/equo.py:101 ../../client/equo.py:140
 msgid "show more details about what is going on"
-msgstr ""
+msgstr "zobrazit více podrobností o prováděné činnosti"
 
 #: ../../client/equo.py:102
 msgid "reinstall all the packages and their dependencies"
@@ -3631,7 +3631,7 @@ msgstr ""
 #: ../../client/equo.py:114 ../../client/equo.py:126 ../../client/equo.py:182
 #: ../../client/equo.py:187 ../../client/equo.py:193
 msgid "show less details (useful for scripting)"
-msgstr ""
+msgstr "zobrazit méně podrobností (užitečné pro skriptování)"
 
 #: ../../client/equo.py:115
 msgid "also list removed files"
@@ -3639,7 +3639,7 @@ msgstr ""
 
 #: ../../client/equo.py:116
 msgid "download the latest Security Advisories"
-msgstr ""
+msgstr "stáhnout nejnovější bezpečnostní doporučení"
 
 #: ../../client/equo.py:117
 msgid "force download even if already up-to-date"
@@ -3647,7 +3647,7 @@ msgstr ""
 
 #: ../../client/equo.py:118
 msgid "list all the available Security Advisories"
-msgstr ""
+msgstr "vypsat všechna dostupná bezpečnostní doporučení"
 
 #: ../../client/equo.py:119
 msgid "list only affected"
@@ -3663,7 +3663,7 @@ msgstr ""
 
 #: ../../client/equo.py:122
 msgid "automatically install all the available security updates"
-msgstr ""
+msgstr "automaticky instalovat všechny dostupné bezpečnostní aktualizace"
 
 #: ../../client/equo.py:125 ../../client/equo.py:130 ../../client/equo.py:147
 #: ../../client/equo.py:154 ../../client/equo.py:162 ../../client/equo.py:172
@@ -3678,7 +3678,7 @@ msgstr ""
 
 #: ../../client/equo.py:131 ../../client/equo.py:152
 msgid "just download packages without doing the install"
-msgstr ""
+msgstr "pouze stáhnout balíčky bez provedení instalace"
 
 #: ../../client/equo.py:132 ../../client/equo.py:148 ../../client/equo.py:155
 #: ../../client/equo.py:163
@@ -3723,7 +3723,7 @@ msgstr ""
 
 #: ../../client/equo.py:160
 msgid "remove one or more packages"
-msgstr ""
+msgstr "odebrat jeden, či více balíčků"
 
 #: ../../client/equo.py:164
 msgid "also pull unused dependencies where reverse deps list is empty"
@@ -3751,7 +3751,7 @@ msgstr ""
 
 #: ../../client/equo.py:177
 msgid "configure one or more installed packages"
-msgstr ""
+msgstr "nastavit jeden, či více nainstalovaných balíčků"
 
 #: ../../client/equo.py:181
 msgid "look for unsatisfied dependencies"
@@ -3763,7 +3763,7 @@ msgstr ""
 
 #: ../../client/equo.py:188
 msgid "sort packages by disk size"
-msgstr ""
+msgstr "seřadit balíčky podle velikosti na disku"
 
 #: ../../client/equo.py:190
 msgid "look for missing libraries"
@@ -3899,7 +3899,7 @@ msgstr ""
 
 #: ../../client/equo.py:239
 msgid "Extended Options"
-msgstr ""
+msgstr "Rozšířené možnosti"
 
 #: ../../client/equo.py:241
 msgid "handles extended functionalities"
@@ -3962,7 +3962,7 @@ msgstr ""
 
 #: ../../client/equo.py:257
 msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
-msgstr ""
+msgstr "obnovit mapu UID ZBM (ZBM <-> balíčky Entropy)"
 
 #: ../../client/equo.py:258
 msgid "makes Entropy aware of your Source Package Manager updated packages"
@@ -3970,11 +3970,11 @@ msgstr ""
 
 #: ../../client/equo.py:259
 msgid "backup the current Entropy installed packages database"
-msgstr ""
+msgstr "zálohovat databázi instalovaných balíčků Entropy"
 
 #: ../../client/equo.py:260
 msgid "restore a previously backed up Entropy installed packages database"
-msgstr ""
+msgstr "obnovit zálohovanou databázi instalovaných balíčků Entropy"
 
 #: ../../client/equo.py:262
 msgid "handles User Generated Content features"
@@ -3982,11 +3982,11 @@ msgstr "ovládá vlastnosti uživatelem generovaného obsahu"
 
 #: ../../client/equo.py:263
 msgid "login against a specified repository"
-msgstr ""
+msgstr "přihlásit se k zadanému repozitáři"
 
 #: ../../client/equo.py:264
 msgid "logout from a specified repository"
-msgstr ""
+msgstr "odhlásit se ze zadaného repozitáře"
 
 #: ../../client/equo.py:265
 msgid "force action"
@@ -4009,7 +4009,7 @@ msgstr ""
 
 #: ../../client/equo.py:269
 msgid "remove documents from database using their identifiers"
-msgstr ""
+msgstr "odebrat dokumenty z databáze pomocí jejich identifikátorů"
 
 #: ../../client/equo.py:270
 msgid "manage package votes for the selected repository"
@@ -4049,11 +4049,11 @@ msgstr ""
 
 #: ../../client/equo.py:669
 msgid "Your hard drive is full! Your fault!"
-msgstr ""
+msgstr "Pevný disk je plný."
 
 #: ../../client/equo.py:675
 msgid "No more memory dude! Your fault!"
-msgstr ""
+msgstr "Došla paměť ram."
 
 #: ../../client/equo.py:680
 msgid ""
@@ -4103,11 +4103,11 @@ msgstr ""
 
 #: ../../client/equo.py:719
 msgid "Your Full name:"
-msgstr ""
+msgstr "Vaše celé jméno:"
 
 #: ../../client/equo.py:720
 msgid "Your E-Mail address:"
-msgstr ""
+msgstr "Vaše e-mailová adresa:"
 
 #: ../../client/equo.py:721
 msgid "What you were doing:"
@@ -4127,7 +4127,7 @@ msgstr ""
 
 #: ../../client/equo.py:759
 msgid "Entropy/Equo version mismatch"
-msgstr ""
+msgstr "Nekonzistence verzí Entropy a Equo"
 
 #: ../../client/equo.py:760
 msgid "it could make your system explode!"
@@ -4135,7 +4135,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:154
 msgid "Acquiring Entropy Resources Lock, please wait..."
-msgstr ""
+msgstr "Získávám zámek zdrojů Entropy, čekejte prosím..."
 
 #: ../../client/text_ui.py:184 ../../client/text_ui.py:200
 #: ../../client/text_ui.py:218 ../../client/text_ui.py:242
@@ -4190,7 +4190,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:396 ../../client/text_ui.py:1251
 msgid "Repositories are old, please run:"
-msgstr ""
+msgstr "Repozitáře jsou zastaralé, prosím spusťte:"
 
 #: ../../client/text_ui.py:404 ../../client/text_ui.py:1031
 #: ../../client/text_ui.py:1181 ../../client/text_ui.py:1259
@@ -4217,7 +4217,7 @@ msgstr "V systému jsou balíčky, které již nejsou dostupné na online repozi
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
-msgstr ""
+msgstr "I když jsou většinou neškodné je doporučeno (po ověření) je odebrat."
 
 #: ../../client/text_ui.py:475
 msgid "Selective"
@@ -4237,7 +4237,7 @@ msgstr "Nic k odebrání"
 
 #: ../../client/text_ui.py:540
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
+msgstr "Existuje více aktualizací k instalaci, znovu načítám Entropy"
 
 #: ../../client/text_ui.py:553
 msgid "Cannot switch branch as user"
@@ -4282,11 +4282,11 @@ msgstr ""
 
 #: ../../client/text_ui.py:688
 msgid "in"
-msgstr ""
+msgstr "v"
 
 #: ../../client/text_ui.py:698
 msgid "in repositories"
-msgstr ""
+msgstr "v repozitářích"
 
 #: ../../client/text_ui.py:707
 msgid "Not found"
@@ -4311,7 +4311,7 @@ msgstr "Balíčky k odebrání"
 #. now print the selected packages
 #: ../../client/text_ui.py:844 ../../client/text_ui.py:1997
 msgid "These are the chosen packages"
-msgstr ""
+msgstr "Vybrané balíčky"
 
 #: ../../client/text_ui.py:895
 msgid "Versions"
@@ -4397,11 +4397,11 @@ msgstr ""
 
 #: ../../client/text_ui.py:1131 ../../client/text_ui.py:1158
 msgid "fetch"
-msgstr ""
+msgstr "stáhnout"
 
 #: ../../client/text_ui.py:1277
 msgid "Please update the following critical packages"
-msgstr ""
+msgstr "Prosím aktualizujte následující kritické balíčky"
 
 #: ../../client/text_ui.py:1283
 msgid "You should install them as soon as possible"
@@ -4409,7 +4409,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:1330
 msgid "These are the packages that would be installed"
-msgstr ""
+msgstr "Balíčky, které by se nainstalovali"
 
 #: ../../client/text_ui.py:1455
 msgid "conflicting/substituted"
@@ -4454,7 +4454,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:1528
 msgid "You need at least"
-msgstr ""
+msgstr "Potřebujete alespoň"
 
 #: ../../client/text_ui.py:1530
 msgid "of free space"
@@ -4595,11 +4595,11 @@ msgstr ""
 
 #: ../../client/text_ui.py:2249
 msgid "Running unused packages test, pay attention, there are false positives"
-msgstr ""
+msgstr "Spouštím test nepoužívaných balíčků. Dávejte pozor, může obsahovat falešně pozitivní balíčky"
 
 #: ../../client/text_ui.py:2275
 msgid "Running dependency test"
-msgstr ""
+msgstr "Spouštím test závislostí"
 
 #: ../../client/text_ui.py:2318
 msgid "These are the dependencies not found"
@@ -4611,11 +4611,11 @@ msgstr ""
 
 #: ../../client/text_ui.py:2327
 msgid "Would you like to install the available packages ?"
-msgstr ""
+msgstr "Přejete si nainstalovat dostupné balíčky?"
 
 #: ../../client/text_ui.py:2332 ../../client/text_ui.py:2443
 msgid "Installing available packages in"
-msgstr ""
+msgstr "Instaluji dostupné balíčky v"
 
 #: ../../client/text_ui.py:2333 ../../client/text_ui.py:2444
 msgid "10 seconds"
@@ -4639,12 +4639,12 @@ msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
-msgstr ""
+msgstr "Appet aktualizací balíčků Magneto"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:229
 #: ../../magneto/src/magneto/gtk/interfaces.py:196
 msgid "Your system currently has an outdated version of"
-msgstr ""
+msgstr "Váš systém obsahuje zastaralé verze"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:231
 #: ../../magneto/src/magneto/gtk/interfaces.py:198
@@ -4664,11 +4664,11 @@ msgstr "Zavřít"
 
 #: ../../magneto/src/magneto/kde/components.py:84
 msgid "Launch Application Browser"
-msgstr ""
+msgstr "Spustit prohlížeč aplikací"
 
 #: ../../magneto/src/magneto/kde/components.py:94
 msgid "Application updates"
-msgstr ""
+msgstr "Aktualizace aplikací"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:133
 msgid "System Updates"
@@ -4688,19 +4688,19 @@ msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:162
 msgid "_Disable Notification Applet"
-msgstr ""
+msgstr "_Zakázat oznamovací applet"
 
 #: ../../magneto/src/magneto/core/interfaces.py:163
 msgid "Disable Notification Applet"
-msgstr ""
+msgstr "Zakázat oznamovací applet"
 
 #: ../../magneto/src/magneto/core/interfaces.py:164
 msgid "_Enable Notification Applet"
-msgstr ""
+msgstr "_Povolit oznamovací applet"
 
 #: ../../magneto/src/magneto/core/interfaces.py:165
 msgid "Enable Notification Applet"
-msgstr ""
+msgstr "Povolit oznamovací applet"
 
 #: ../../magneto/src/magneto/core/interfaces.py:166
 msgid "_Check for updates"
@@ -4712,19 +4712,19 @@ msgstr "Zkontrolovat aktualizace"
 
 #: ../../magneto/src/magneto/core/interfaces.py:168
 msgid "_Launch Package Manager"
-msgstr ""
+msgstr "_Spustit správce balíčků"
 
 #: ../../magneto/src/magneto/core/interfaces.py:169
 msgid "Launch Package Manager"
-msgstr ""
+msgstr "Spustit správce balíčků"
 
 #: ../../magneto/src/magneto/core/interfaces.py:170
 msgid "_Packages Website"
-msgstr ""
+msgstr "_Webová stránka prohlížení balíčků"
 
 #: ../../magneto/src/magneto/core/interfaces.py:171
 msgid "Use Packages web interface"
-msgstr ""
+msgstr "Použít webové rozhraní prohlížení balíčků"
 
 #: ../../magneto/src/magneto/core/interfaces.py:172
 msgid "_Sabayon Linux Website"
@@ -4732,7 +4732,7 @@ msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:173
 msgid "Launch Sabayon Linux Website"
-msgstr ""
+msgstr "Otevřít webovou stránku Sabayon Linux"
 
 #: ../../magneto/src/magneto/core/interfaces.py:175
 msgid "_Exit"
@@ -4744,7 +4744,7 @@ msgstr "Nelze monitorovat aktualizace Sabayonu"
 
 #: ../../magneto/src/magneto/core/interfaces.py:309
 msgid "Entropy DBus service not available"
-msgstr ""
+msgstr "Služba DBus Entropy není dostupná"
 
 #: ../../magneto/src/magneto/core/interfaces.py:310
 msgid "unable to communicate with the updates service"
@@ -4752,23 +4752,23 @@ msgstr ""
 
 #: ../../magneto/src/magneto/core/interfaces.py:318
 msgid "Sabayon updates service loaded"
-msgstr ""
+msgstr "Načtena služba aktualizací Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:320
 msgid "Entropy DBus service loaded"
-msgstr ""
+msgstr "Načtena služba DBus Entropy"
 
 #: ../../magneto/src/magneto/core/interfaces.py:321
 msgid "your Sabayon will notify you once updates are available"
-msgstr ""
+msgstr "Váš Sabayon vám oznámí, až budou dostupné aktualizace"
 
 #: ../../magneto/src/magneto/core/interfaces.py:334
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Je dostupná %s aktualizace"
+msgstr[1] "Jsou dostupné %s aktualizace"
+msgstr[2] "Je dostupných %s aktualizací"
 
 #: ../../magneto/src/magneto/core/interfaces.py:340
 msgid "Sabayon updates available"
@@ -4778,40 +4778,40 @@ msgstr ""
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Je dostupná <b>%s</b> aktualizace"
+msgstr[1] "Jsou dostupné <b>%s</b> aktualizace"
+msgstr[2] "Je dostupných <b>%s</b> aktualizací"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:349
 #: ../../magneto/src/magneto/core/interfaces.py:351
 msgid "Your Sabayon is up-to-date"
-msgstr ""
+msgstr "Váš Sabayon je aktuální"
 
 #: ../../magneto/src/magneto/core/interfaces.py:352
 msgid "No updates available at this time, cool!"
-msgstr ""
+msgstr "Žádné dostupné aktualizace, super!"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:363
 msgid "Repositories are being updated"
-msgstr ""
+msgstr "Repozitáře se aktualizují"
 
 #: ../../magneto/src/magneto/core/interfaces.py:364
 msgid "Sabayon repositories status"
-msgstr ""
+msgstr "Stav repozitářů Sabayon"
 
 #: ../../magneto/src/magneto/core/interfaces.py:365
 msgid "Repositories are being updated automatically"
-msgstr ""
+msgstr "Repozitáře se automaticky aktualizují"
 
 #: ../../magneto/src/magneto/core/interfaces.py:459
 msgid "Updates Notification Applet Disabled"
-msgstr ""
+msgstr "Applet oznamování aktualizací zakázán"
 
 #: ../../magneto/src/magneto/core/interfaces.py:469
 msgid "Updates Notification Applet Enabled"
-msgstr ""
+msgstr "Applet oznamování aktualizací povolen"
 
 #: ../../services/kernel-switcher:100
 msgid "has been installed."
@@ -4823,11 +4823,11 @@ msgstr ""
 
 #: ../../services/kernel-switcher:103
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Prosím nyní restartujte počítač!"
 
 #: ../../services/kernel-switcher:107
 msgid "No kernel packages given"
-msgstr ""
+msgstr "Nezadán žádný balíček s jádrem"
 
 #: ../../services/kernel-switcher:110
 msgid "More than one kernel package given"
@@ -4835,15 +4835,15 @@ msgstr ""
 
 #: ../../services/kernel-switcher:125
 msgid "Package does not exist"
-msgstr ""
+msgstr "Balíček neexistuje"
 
 #: ../../services/kernel-switcher:132
 msgid "Not a kernel"
-msgstr ""
+msgstr "Není jádro"
 
 #: ../../services/kernel-switcher:201
 msgid "No kernel packages found"
-msgstr ""
+msgstr "Nenalezen žádný balíček s jádrem"
 
 #: ../../services/kernel-switcher:221
 msgid "Sabayon Linux Kernel Switcher BETA"
@@ -4863,7 +4863,7 @@ msgstr ""
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
-msgstr ""
+msgstr "Oznamovač aktualizací balíčků Magneto"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:2
 msgid "Available Updates"
