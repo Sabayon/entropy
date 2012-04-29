@@ -1,3 +1,102 @@
+commit 04b7c60eeaf554cb10dde2de66759379f23d86c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 18:50:12 2012 +0200
+
+    Release Entropy 1.0_rc112
+
+commit b00e29c89ac07c3e62cecca90da9c6c7daeeca26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 18:33:14 2012 +0200
+
+    [entropy.client] improve reliability of the dep conflict replacement routine
+    
+    When an available conflict replacement is found, it is better to
+    enforce its installation before the actual conflicting pkg, in order
+    to avoid to have the conflict removed for some time during the
+    transaction phase. Moreover, if the transaction is interrupted
+    after the conflict removal but before the new pkg install, this
+    pkg won't be upgraded anymore, because it would become not installed.
+    
+    Scenario:
+    net-tools conflicts with old sys-apps/openrc. sys-apps/openrc gets
+    removed during net-tools install phase. sys-apps/openrc is scheduled
+    for install a lot later. This also introduced a glitch with base-gcc,
+    triggering gcc-config, which complained about missing /etc/init.d/functions.sh
+
+commit 9c916221d3369cede7972a6eb16f6e34b49fa1ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 17:55:25 2012 +0200
+
+    [entropy.client] update translations
+
+commit b92f2e87e44038a17bc05810e112ba94bf6b2669
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 17:55:04 2012 +0200
+
+    [Rigo] update translations
+
+commit 2ac29a5429f3f3b117242c462c86eb72b083cc99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 17:37:16 2012 +0200
+
+    [entropy.client] fix broken soname dependencies runtime routine wrt virtual pkgs
+    
+    Virtual are not directly owning sonames reverse dependencies need.
+    For this reason, when a virtual package is encountered, its direct
+    dependencies must be taken into consideration in the soname bump
+    routine.
+    Moreover, pkgs requiring newer (or older?) sonames, must be bound
+    to soname providers on the graph, as direct dependency. Not doing
+    so would lead pkg_* phases to fail.
+    
+    Scenario:
+    dev-libs/glib wants newer libffi.so.x, but the pkg depends against
+    virtual/libffi. If virtual/libffi dependencies are not taken into
+    consideration, _lookup_library_breakages() would fail to detect
+    the need of a bump.
+
+commit 10f3a6577b4f0e6a3d66f202835164883e7e8d1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 17:36:46 2012 +0200
+
+    [entropy.server] do not print about wildcard-based dep_rewrites
+
+commit 02176c143b5e960951b40ab40f70a60d3f4ae1f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 17:35:00 2012 +0200
+
+    [matter] always call get_built_packages() despite of the exit status
+
+commit b1c91890bcedf1c4613fbc7053a54ff5367ee244
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 29 13:04:21 2012 +0200
+
+    [matter] beautify final summary output
+
+commit b572401a243343ffc9aa5af277454bf5190254a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 25 20:34:11 2012 +0200
+
+    [server] update translations
+
+commit c3d0d59ba61af526b4495c91c6bdeb2490669cf8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 25 20:33:44 2012 +0200
+
+    [client] update translations
+
+commit 4aedc45bfe07b5f2731feea9c68216c5600a1427
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 25 20:33:28 2012 +0200
+
+    [Rigo] po: update translations
+
+commit 40e3d3076902100d098de6017364500cb2606fdc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 25 20:32:21 2012 +0200
+
+    Tagging Entropy version 1.0_rc110
+
 commit 263f640ab0a62dd3ee502a7a589f51675be558cb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Apr 25 20:32:20 2012 +0200
