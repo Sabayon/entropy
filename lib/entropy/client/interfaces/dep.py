@@ -941,13 +941,14 @@ class CalculatorsMixin:
             "_lookup_library_drops, broken_children_matches => %s" % (
                 broken_children_matches,))
 
-        broken_matches = self._lookup_library_breakages(pkg_match,
-            installed_match)
+        after_pkgs, before_pkgs = self._lookup_library_breakages(
+            pkg_match, installed_match)
         if const_debug_enabled():
             const_debug_write(__name__,
                 "__generate_dependency_tree_inst_hooks "
-                "_lookup_library_breakages, broken_matches => %s" % (
-                    broken_matches,))
+                "_lookup_library_breakages, "
+                "after => %s, before => %s" % (
+                    after_pkgs, before_pkgs,))
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
             installed_match, elements_cache)
@@ -957,7 +958,7 @@ class CalculatorsMixin:
             "_lookup_inverse_dependencies, inverse_deps => %s" % (
                 inverse_deps,))
 
-        return broken_children_matches, broken_matches, inverse_deps
+        return broken_children_matches, after_pkgs, before_pkgs, inverse_deps
 
     def __generate_dependency_tree_analyze_conflict(self, conflict_str,
         conflicts, stack, deep_deps):
@@ -1225,7 +1226,7 @@ class CalculatorsMixin:
                 # this method does:
                 # - broken libraries detection
                 # - inverse dependencies check
-                children_matches, broken_matches, inverse_deps = \
+                children_matches, after_pkgs, before_pkgs, inverse_deps = \
                     self.__generate_dependency_tree_inst_hooks(
                         (cm_idpackage, cm_result), pkg_match, elements_cache)
                 # this is fine this way, these are strong inverse deps
@@ -1241,11 +1242,19 @@ class CalculatorsMixin:
                     stack.push(child_match)
 
                 # these are misc and cannot be differentiated
-                for br_match in broken_matches:
+                for br_match in after_pkgs: # don't care about the position
                     if br_match in children_matches:
                         # already pushed and inverse dep
                         continue
                     stack.push(br_match)
+                for br_match in before_pkgs:
+                    # enforce dependency explicitly?
+                    if br_match in children_matches:
+                        # already pushed and inverse dep
+                        continue
+                    stack.push(br_match)
+                if before_pkgs:
+                    graph.add(pkg_match, before_pkgs)
 
             dep_matches, post_dep_matches = \
                 self.__generate_dependency_tree_analyze_deplist(
@@ -1528,14 +1537,15 @@ class CalculatorsMixin:
         # there is no need to update this cache when "match"
         # will be installed, because at that point
         # clientmatch[0] will differ.
-        hash_str = "%s|%s" % (
+        hash_str = "%s|%s|r2" % (
             match,
             clientmatch,
         )
         sha = hashlib.sha1()
         sha.update(const_convert_to_rawstring(repr(hash_str)))
         c_hash = sha.hexdigest()
-        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['library_breakage'], c_hash,)
+        c_hash = "%s%s" % (
+            EntropyCacher.CACHE_IDS['library_breakage'], c_hash,)
         if self.xcache:
             cached = self._cacher.pop(c_hash)
             if cached is not None:
@@ -1571,18 +1581,42 @@ class CalculatorsMixin:
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         repo_dependencies = matchdb.retrieveDependencies(match[0],
             exclude_deptypes = excluded_dep_types)
+
         matched_deps = set()
         matched_repos = set()
         for dependency in repo_dependencies:
             depmatch = self.atom_match(dependency)
             if depmatch[0] == -1:
                 continue
-            matched_repos.add(depmatch[1])
+
+            # Properly handle virtual packages
+            dep_pkg_id, dep_repo = depmatch
+            dep_db = self.open_repository(dep_repo)
+            depcat = dep_db.retrieveCategory(dep_pkg_id)
+            if depcat == EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY:
+                # in this case, we must go down one level in order to catch
+                # the real, underlying dependencies. Otherwise, the
+                # condition "if x in matched_deps" below will fail.
+                # Scenario: dev-libs/glib depends against virtual/libffi.
+                # virtual/libffi points to dev-libs/libffi which got a
+                # soname bump. Buggy outcome: dev-libs/libffi is not
+                # pulled in as dependency when it should be.
+                virtual_dependencies = dep_db.retrieveDependencies(
+                    dep_pkg_id, exclude_deptypes = excluded_dep_types)
+                for virtual_dependency in virtual_dependencies:
+                    virtualmatch = self.atom_match(virtual_dependency)
+                    if virtualmatch[0] == -1:
+                        continue
+                    matched_repos.add(virtualmatch[1])
+                    matched_deps.add(virtualmatch)
+
+            matched_repos.add(dep_repo)
             matched_deps.add(depmatch)
 
         matched_repos = [x for x in \
             self._settings['repositories']['order'] if x in matched_repos]
         found_matches = set()
+
         for needed in repodata:
             for myrepo in matched_repos:
                 mydbc = self.open_repository(myrepo)
@@ -1615,6 +1649,7 @@ class CalculatorsMixin:
                 const_debug_write(__name__,
                     "_lookup_library_breakages, "
                     "adding repo atom => %s" % (atom,))
+
             repo_matches.add((idpackage, repo))
 
         for key, slot in client_keyslots:
@@ -1634,12 +1669,13 @@ class CalculatorsMixin:
                     "adding client atom => %s" % (atom,))
             client_matches.add((idpackage, repo))
 
-        client_matches |= repo_matches
+        # drop items in repo_patches from client_matches
+        client_matches -= repo_matches
 
         if self.xcache:
-            self._cacher.push(c_hash, client_matches)
+            self._cacher.push(c_hash, (client_matches, repo_matches))
 
-        return client_matches
+        return client_matches, repo_matches
 
     DISABLE_ASAP_SCHEDULING = os.getenv("ETP_DISABLE_ASAP_SCHEDULING")
 
