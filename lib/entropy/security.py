@@ -1769,6 +1769,9 @@ class Repository:
         except Repository.GPGError:
             # wtf! something like => GPGError: cannot list keys, exit status 2
             return False
+        except KeyError:
+            # raised by is_pubkey_expired
+            return False
 
         return True
 
@@ -1787,9 +1790,13 @@ class Repository:
         except KeyError:
             return False
 
-        if self.is_privkey_expired(repository_identifier):
-            raise Repository.KeyExpired("Key for %s is expired !" % (
-                repository_identifier,))
+        try:
+            if self.is_privkey_expired(repository_identifier):
+                raise Repository.KeyExpired("Key for %s is expired !" % (
+                        repository_identifier,))
+        except KeyError:
+            # raised by is_privkey_expired
+            return False
 
         return True
 
@@ -2053,6 +2060,7 @@ class Repository:
         @type file_path: string
         @return: path to signature file
         @rtype: string
+        @raise KeyError: if repository key is not available
         """
         metadata = self.get_key_metadata(repository_identifier)
         return self.__sign_file(file_path, metadata['fingerprint'])
@@ -2090,6 +2098,7 @@ class Repository:
         @type signature_path: string
         @return: a tuple composed by (validity_bool, error message,)
         @rtype: tuple
+        @raise KeyError: if repository key is not available
         """
         metadata = self.get_key_metadata(repository_identifier)
         try:
