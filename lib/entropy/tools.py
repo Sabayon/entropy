@@ -2095,11 +2095,14 @@ def apply_tarball_ownership(filepath, prefix_path):
         for tarinfo in tar:
             epath = os.path.join(encoded_path, tarinfo.name)
 
-            tar.chown(tarinfo, epath)
-            _fix_uid_gid(tarinfo, epath)
-            if not os.path.islink(epath):
-                # make sure we keep the same permissions
-                tar.chmod(tarinfo, epath)
+            try:
+                tar.chown(tarinfo, epath)
+                _fix_uid_gid(tarinfo, epath)
+                if not os.path.islink(epath):
+                    # make sure we keep the same permissions
+                    tar.chmod(tarinfo, epath)
+            except tarfile.ExtractError as err:
+                raise IOError(err)
 
             deleter_counter -= 1
             if deleter_counter == 0:

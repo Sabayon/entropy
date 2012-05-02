@@ -3306,7 +3306,19 @@ class Package:
         # the setup phase could have created additional users and groups
         package_path = self.pkgmeta['pkgpath']
         prefix_dir = self.pkgmeta['imagedir']
-        entropy.tools.apply_tarball_ownership(package_path, prefix_dir)
+        try:
+            entropy.tools.apply_tarball_ownership(package_path, prefix_dir)
+        except IOError as err:
+            msg = "%s: %s" % (
+                brown(_("Error during package files permissions setup")),
+                err,)
+            self._entropy.output(
+                msg,
+                importance = 1,
+                level = "error",
+                header = darkred(" !!! ")
+            )
+            return 1
 
         return 0
 
