@@ -750,7 +750,7 @@ class Rigo(Gtk.Application):
         parser = argparse.ArgumentParser(
             description=_("Rigo Application Browser"))
         parser.add_argument(
-            "--package", type=file,
+            "package", nargs='?', type=file,
             metavar="<path>", help="package path")
         parser.add_argument(
             "--install",
