@@ -32,7 +32,11 @@ if _LOCALE_FULL:
 _GETTEXT_DOMAIN = os.getenv("ETP_GETTEXT_DOMAIN", "entropy")
 
 try:
-    import __builtin__
+    try:
+        import __builtin__
+    except ImportError:
+        # python3
+        import builtins as __builtin__
     import gettext
     localedir = "/usr/share/locale"
     # support for ENV TEXTDOMAINDIR
@@ -88,19 +92,28 @@ def change_language(lang):
         supported ones)
     @type lang: string
     """
-    global _
+    try:
+        import __builtin__
+    except ImportError:
+        # python3
+        import builtins as __builtin__
     # change in environ
     for var in ("LANGUAGE", "LC_ALL", "LANG"):
         os.environ[var] = lang
     # reinstall gettext
     # remove _ from global scope so that gettext will readd it
-    old_ = _
-    del _
+    old_ = __builtin__.__dict__.get('_')
+    __builtin__.__dict__.pop("_", None)
+    localedir = "/usr/share/locale"
+    # support for ENV TEXTDOMAINDIR
+    envdir = os.getenv('TEXTDOMAINDIR')
+    if envdir is not None:
+        localedir = envdir
     kw_args = {"localedir": localedir}
     if sys.hexversion < 0x3000000:
         kw_args['unicode'] = True
     gettext.install(_GETTEXT_DOMAIN, **kw_args)
-    _ = _
+    _ = __builtin__.__dict__['_']
     # redeclare "_" in all loaded modules
     for module in list(sys.modules.values()):
         if not hasattr(module, "__dict__"):
@@ -108,4 +121,4 @@ def change_language(lang):
         t_func = module.__dict__.get("_")
         if t_func is not old_:
             continue
-        module._ = _
+        module.__dict__['_'] = _
