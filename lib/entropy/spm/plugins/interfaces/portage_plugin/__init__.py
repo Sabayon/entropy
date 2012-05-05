@@ -1193,12 +1193,15 @@ class PortagePlugin(SpmPlugin):
         exec_path = os.path.join(dirname, "env_sourcer.sh")
         args = [exec_path, env_file, env_var]
         proc = subprocess.Popen(args, stdout = subprocess.PIPE)
-        sts = proc.wait()
-        if sts != 0:
-            raise IOError("cannot source %s and get %s" % (
-                    env_file, env_var,))
-        output = proc.stdout.read().strip()
-        return output
+        try:
+            sts = proc.wait()
+            if sts != 0:
+                raise IOError("cannot source %s and get %s" % (
+                        env_file, env_var,))
+            output = proc.stdout.read().strip()
+        finally:
+            proc.stdout.close()
+        return const_convert_to_unicode(output)
 
     def __pkg_sources_filtering(self, sources):
         sources.discard("->")
