@@ -1384,13 +1384,13 @@ def matter_main(entropy_server, nsargs, cwd, specs):
             # print summary
             print_info("")
             print_info("Summary")
-            print_info("Packages built: %s" % (
+            print_info("Packages built:\n  %s" % (
                 "\n  ".join(sorted(completed)),))
-            print_info("Packages not built: %s" % (
+            print_info("Packages not built:\n  %s" % (
                 "\n  ".join(sorted(not_merged)),))
-            print_info("Packages not found: %s" % (
+            print_info("Packages not found:\n  %s" % (
                 "\n  ".join(sorted(not_found)),))
-            print_info("Packages not installed: %s" % (
+            print_info("Packages not installed:\n  %s" % (
                 "\n  ".join(sorted(not_installed)),))
             print_info("Preserved libs: %s" % (
                 preserved_libs_error,))
