@@ -2329,7 +2329,31 @@ class Package:
                 # what to do otherwise?
                 user = os.stat(imagepath_dir)[stat.ST_UID]
                 group = os.stat(imagepath_dir)[stat.ST_GID]
-                os.chown(rootdir, user, group)
+                try:
+                    os.chown(rootdir, user, group)
+                except (OSError, IOError) as err:
+                    self._entropy.logger.log(
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
+                        "Error during workdir setup " \
+                        "%s, %s, errno: %s" % (
+                                rootdir,
+                                err,
+                                getattr(err, "errno", -1),
+                            )
+                    )
+                    mytxt = "%s: %s, %s, %s" % (
+                        brown("Error during workdir setup"),
+                        purple(rootdir), err,
+                        getattr(err, "errno", -1)
+                    )
+                    self._entropy.output(
+                        mytxt,
+                        importance = 1,
+                        level = "error",
+                        header = darkred(" !!! ")
+                    )
+                    return 4
                 shutil.copystat(imagepath_dir, rootdir)
 
             item_dir, item_base = os.path.split(rootdir)
