@@ -122,6 +122,12 @@ class ApplicationsViewController(GObject.Object):
         else:
             self.emit("view-cleared")
 
+    def _search_activate(self, search_entry):
+        text = search_entry.get_text()
+        if not text:
+            return self.clear()
+        return self._search(text, _force=True)
+
     def _search_changed(self, search_entry):
         GLib.timeout_add(700, self._search, search_entry.get_text())
 
@@ -605,6 +611,8 @@ class ApplicationsViewController(GObject.Object):
             "changed", self._search_changed)
         self._search_entry.connect("icon-release",
             self._search_icon_release)
+        self._search_entry.connect("activate",
+            self._search_activate)
         self._view.show()
 
     def clear(self):
