@@ -99,6 +99,10 @@ add repository (pass repository string)
 
 remove repository
 
+=item [2] B<list>
+
+list active repositories
+
 =item [2] B<mirrorsort E<lt>idE<gt>>
 
 reorder mirrors basing on response time

@@ -78,6 +78,7 @@ help_opts = [
         (2, 'disable', 3, _('disable given repository')),
         (2, 'add <string>', 2, _('add repository (pass repository string)')),
         (2, 'remove <id>', 2, _('remove repository')),
+        (2, 'list', 3, _('list active repositories')),
         (2, 'mirrorsort <id>', 2, _('reorder mirrors basing on response time')),
         (2, 'merge [sources] <dest>', 1, _('merge content of source repos to dest [for developers]')),
         (3, '--conflicts', 1, _('also remove dependency conflicts during merge')),

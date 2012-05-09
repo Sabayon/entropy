@@ -21,7 +21,7 @@ import copy
 
 from entropy.const import etpConst, etpUi, const_debug_write
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
-    print_info, print_warning, print_error, purple, teal
+    print_info, print_warning, print_error, purple, teal, print_generic
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.misc import ParallelTask
 from entropy.i18n import _
@@ -88,28 +88,29 @@ def repositories(options):
                 return 1
 
             myopts = options[1:]
-            if not myopts:
-                rc = -10
+            opts_len = len(myopts)
+            try:
+                repo_opt = myopts[0]
+            except IndexError:
+                repo_opt = None
+            if repo_opt == "enable" and opts_len:
+                rc = _enable_repositories(entropy_client, myopts)
+            elif repo_opt == "disable" and opts_len:
+                rc = _disable_repositories(entropy_client, myopts)
+            elif repo_opt == "add" and opts_len:
+                rc = _add_repository(entropy_client, myopts)
+            elif repo_opt == "remove" and opts_len:
+                rc = _remove_repository(entropy_client, myopts)
+            elif repo_opt == "list":
+                rc = _list_repository(entropy_client)
+            elif repo_opt == "mirrorsort" and opts_len:
+                rc = _mirror_sort(entropy_client, myopts)
+            elif repo_opt == "merge" and opts_len:
+                myopts = [x for x in myopts if x not in ("--conflicts",)]
+                rc = _merge_repository(entropy_client, myopts,
+                    remove_conflicts = e_req_conflicts)
             else:
-                repo_opt = myopts.pop(0)
-                if not myopts:
-                    rc = -10
-                elif repo_opt == "enable":
-                    rc = _enable_repositories(entropy_client, myopts)
-                elif repo_opt == "disable":
-                    rc = _disable_repositories(entropy_client, myopts)
-                elif repo_opt == "add":
-                    rc = _add_repository(entropy_client, myopts)
-                elif repo_opt == "remove":
-                    rc = _remove_repository(entropy_client, myopts)
-                elif repo_opt == "mirrorsort":
-                    rc = _mirror_sort(entropy_client, myopts)
-                elif repo_opt == "merge":
-                    myopts = [x for x in myopts if x not in ("--conflicts",)]
-                    rc = _merge_repository(entropy_client, myopts,
-                        remove_conflicts = e_req_conflicts)
-                else:
-                    rc = -10
+                rc = -10
 
         elif cmd == "notice":
             myopts = options[1:]
@@ -177,6 +178,29 @@ def _add_repository(entropy_client, repo_strings):
         else:
             print_warning("[%s] %s" % (
                     purple(repoid), blue(_("cannot add repository")),))
+
+    return 0
+
+def _list_repository(entropy_client):
+
+    available_repos = SystemSettings['repositories']['available']
+    excluded_repos = SystemSettings['repositories']['excluded']
+
+    default_repo = SystemSettings['repositories']['default_repository']
+    repositories = entropy_client.repositories()
+    for repository in repositories:
+        repo_data = available_repos.get(repository)
+        desc = _("N/A")
+        if repo_data is None:
+            repo_data = excluded_repos.get(repository)
+        if repo_data is not None:
+            desc = repo_data.get('description', desc)
+
+        repo_str = "  "
+        if repository == default_repo:
+            repo_str = purple("* ")
+        print_generic("%s%s\n    %s" % (
+                repo_str, darkgreen(repository), brown(desc),))
 
     return 0
 
