@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-22 12:14+0200\n"
-"PO-Revision-Date: 2012-04-25 13:55+0000\n"
+"PO-Revision-Date: 2012-04-30 20:00+0000\n"
 "Last-Translator: fleischie <dicker_karl@web.de>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/sabayon-rigo/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -848,25 +848,25 @@ msgstr "Rigo arbeitet gerade, bist du sicher?"
 
 #: ../rigo_app.py:364
 msgid "Activity Interruption"
-msgstr ""
+msgstr "Aktivitätsunterbrechung"
 
 #: ../rigo_app.py:366
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
+msgstr "Sicher, dass die momentane Aktivität unterbrochen werden soll? Die Unterbrechung tritt so früh wie möglich ein, wahrscheinlich nicht sofort."
 
 #: ../rigo_app.py:391
 msgid "Repositories update error"
-msgstr ""
+msgstr "Repositorien Update Fehler"
 
 #: ../rigo_app.py:395
 msgid "Repositories updated <b>successfully</b>!"
-msgstr ""
+msgstr "Repositorien <b>erfolgreich</b> aktualisiert!"
 
 #: ../rigo_app.py:413
 msgid "Application Management Error"
-msgstr ""
+msgstr "Anwendungs Verwaltungs Fehler"
 
 #: ../rigo_app.py:414
 msgid "please check the management log"
@@ -874,7 +874,7 @@ msgstr ""
 
 #: ../rigo_app.py:417
 msgid "System Upgrade Error"
-msgstr ""
+msgstr "Systemupgrade Fehler"
 
 #: ../rigo_app.py:418
 msgid "please check the upgrade log"
@@ -882,11 +882,11 @@ msgstr ""
 
 #: ../rigo_app.py:422
 msgid "Applications managed <b>successfully</b>!"
-msgstr ""
+msgstr "Anwendung <b>erfolgreich</b> verwaltet!"
 
 #: ../rigo_app.py:424
 msgid "System Upgraded <b>successfully</b>!"
-msgstr ""
+msgstr "System <b>erfolgreich</b> aktualisiert!"
 
 #: ../rigo_app.py:641
 msgid "You are not authorized to run Rigo"
@@ -899,7 +899,7 @@ msgstr "Rigo"
 
 #: ../rigo_app.py:650
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "RigoDaemon Dienst nicht verfügbar"
 
 #: ../rigo_app.py:662
 msgid "API mismatch, please update Rigo and RigoDaemon"
@@ -907,23 +907,23 @@ msgstr ""
 
 #: ../rigo_app.py:679
 msgid "Another Application Manager is active"
-msgstr ""
+msgstr "Ein weiterer Anwendungs Manager ist aktiv"
 
 #: ../rigo_app.py:696
 msgid "Background Service is currently not available"
-msgstr ""
+msgstr "Hintergrund-Dienst ist momentan nicht verfügbar"
 
 #: ../rigo_app.py:726
 msgid "Background Service is currently busy"
-msgstr ""
+msgstr "Hintergrund-Dienst ist momentan beschäftigt"
 
 #: ../rigo_app.py:728
 msgid "Background Service is incompatible with Rigo"
-msgstr ""
+msgstr "Hintergrund-Dienst ist mit Rigo inkompatibel"
 
 #: ../rigo_app.py:740
 msgid "Background Service is currently unavailable"
-msgstr ""
+msgstr "Hintergrund-Dienst ist momentan nicht verfügbar"
 
 #: ../rigo_app.py:751 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
