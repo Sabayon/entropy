@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Alberto Federman Neto <mrtabac@gmail.com>, 2012.
 # Alberto Neto <mrtabac@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-27 17:54+0000\n"
+"PO-Revision-Date: 2012-05-03 20:05+0000\n"
 "Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.net/projects/p/sabayon-entropy/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
@@ -199,7 +200,7 @@ msgstr "Aplicativos ou Bibliotecas para Multimídia"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:110
 msgid "Networking"
-msgstr "Conectividade"
+msgstr "Conetividade"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:112
 msgid "Applications and libraries for Networking"
@@ -4616,7 +4617,7 @@ msgstr "10 segundos"
 
 #: ../../client/text_ui.py:2374 ../../client/text_ui.py:2398
 msgid "System is healthy"
-msgstr "Sistema está saldável"
+msgstr "Sistema está saudável"
 
 #: ../../client/text_ui.py:2403
 msgid "Libraries/Executables statistics"

@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-04-19 09:24+0000\n"
+"PO-Revision-Date: 2012-05-02 10:50+0000\n"
 "Last-Translator: fleischie <dicker_karl@web.de>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/sabayon-entropy/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -79,7 +79,7 @@ msgstr "SPM"
 
 #: ../../lib/entropy/db/skel.py:1640
 msgid "Running packages metadata update"
-msgstr ""
+msgstr "Aktualisiere Paket-Metadaten"
 
 #: ../../lib/entropy/db/skel.py:1641
 msgid "it could take a while"
@@ -613,7 +613,7 @@ msgstr "Überprüfe Antwortzeit von"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2107
 msgid "Mirror speed"
-msgstr ""
+msgstr "Geschwindigkeit des Mirrors"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2568
 msgid "not a valid method"
@@ -1065,7 +1065,7 @@ msgstr "Entpacke"
 
 #: ../../lib/entropy/client/interfaces/package.py:1408
 msgid "Unable to find Entropy metadata in package"
-msgstr ""
+msgstr "Nicht möglich Entropy Metadaten in Paket zu finden"
 
 #: ../../lib/entropy/client/interfaces/package.py:1472
 msgid "configuration phase"
@@ -1145,7 +1145,7 @@ msgstr "Bitte Melden"
 
 #: ../../lib/entropy/client/interfaces/package.py:2717
 msgid "Cannot protect broken symlink"
-msgstr ""
+msgstr "Nicht möglich fehlerhafte symlinks zu erhalten"
 
 #: ../../lib/entropy/client/interfaces/package.py:2756
 msgid "Skipping file installation/removal"
@@ -1322,7 +1322,7 @@ msgstr "Abschluss der Installation"
 
 #: ../../lib/entropy/client/interfaces/package.py:3606
 msgid "Setup"
-msgstr ""
+msgstr "Setup"
 
 #: ../../lib/entropy/client/interfaces/package.py:3614
 msgid "Preinstall"
@@ -1374,7 +1374,7 @@ msgstr "Vorinstallations-Phase"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:504
 msgid "setup phase"
-msgstr ""
+msgstr "Setup phase"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:514
 msgid "pre-remove phase"
@@ -1397,8 +1397,8 @@ msgstr[1] "Es gibt"
 #: ../../lib/entropy/client/interfaces/repository.py:196
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Paketdatei, die nicht entfernt werden konnte"
+msgstr[1] "Paketdateien, die nicht entfernt werden konnten"
 
 #: ../../lib/entropy/client/interfaces/repository.py:209
 msgid "Packages are stored in"
@@ -1932,7 +1932,7 @@ msgstr "benötigt"
 
 #: ../../lib/entropy/qa.py:274
 msgid "Searching for missing Runtime dependencies"
-msgstr ""
+msgstr "Suche nach fehlenden Laufzeitabhängigkeiten"
 
 #: ../../lib/entropy/qa.py:281
 msgid "scanning"
@@ -1948,7 +1948,7 @@ msgstr "Abhängigkeiten auf der schwarzen Liste!!!"
 
 #: ../../lib/entropy/qa.py:389
 msgid "is potentially missing these dependencies"
-msgstr ""
+msgstr "vermißt möglicherweise die folgenden anderen Abhängigkeiten"
 
 #: ../../lib/entropy/qa.py:519
 msgid "determining missing libraries"
@@ -1964,7 +1964,7 @@ msgstr "bereitgestellt von"
 
 #: ../../lib/entropy/qa.py:592
 msgid "no missing runtime libraries found"
-msgstr ""
+msgstr "keine fehlenden Laufzeit-Bibliotheken gefunden"
 
 #: ../../lib/entropy/qa.py:625
 msgid "Libraries test"
@@ -2183,7 +2183,7 @@ msgstr "Suche"
 #: ../../client/text_query.py:459 ../../client/text_query.py:521
 #: ../../client/text_query.py:722 ../../client/text_query.py:801
 msgid "Repository is not available"
-msgstr ""
+msgstr "Repositorium ist nicht verfügbar"
 
 #: ../../client/text_query.py:255 ../../client/text_query.py:321
 #: ../../client/text_query.py:434 ../../client/text_query.py:945
@@ -2215,8 +2215,8 @@ msgstr "Gefunden"
 #: ../../client/text_query.py:1270
 msgid "entry"
 msgid_plural "entries"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Eintrag"
+msgstr[1] "Einträge"
 
 #: ../../client/text_query.py:263
 msgid "entries"
@@ -2369,7 +2369,7 @@ msgstr "von"
 
 #: ../../client/text_query.py:796
 msgid "Listing Packages"
-msgstr ""
+msgstr "Liste Pakete auf"
 
 #: ../../client/text_query.py:913
 msgid "Searching mimetype"
@@ -2458,7 +2458,7 @@ msgstr "Repositorium erfolgreich hinzugefügt"
 
 #: ../../client/text_repositories.py:179
 msgid "cannot add repository"
-msgstr ""
+msgstr "nicht möglich Repositorium hinzuzufügen"
 
 #: ../../client/text_repositories.py:191
 msgid "repository id not available"
@@ -2470,7 +2470,7 @@ msgstr "Repositorium erfolgreich entfernt"
 
 #: ../../client/text_repositories.py:202
 msgid "cannot remove repository"
-msgstr ""
+msgstr "nicht möglich Repositorium zu entfernen"
 
 #: ../../client/text_repositories.py:212
 msgid "repository already enabled"
@@ -2487,7 +2487,7 @@ msgstr "Repositorium aktiviert"
 
 #: ../../client/text_repositories.py:224
 msgid "cannot enable repository"
-msgstr ""
+msgstr "nicht möglich Repositorium zu aktivieren"
 
 #: ../../client/text_repositories.py:233
 msgid "repository already disabled"
@@ -2495,7 +2495,7 @@ msgstr "Repositorium bereits deaktiviert"
 
 #: ../../client/text_repositories.py:244 ../../client/text_repositories.py:251
 msgid "cannot disable repository"
-msgstr ""
+msgstr "nicht möglich Repositorium zu deaktivieren"
 
 #: ../../client/text_repositories.py:248
 msgid "repository disabled"
@@ -2531,7 +2531,7 @@ msgstr "fertig mit Paketzusammenführung"
 
 #: ../../client/text_repositories.py:353
 msgid "mirror order:"
-msgstr ""
+msgstr "Mirror Reihenfolge"
 
 #: ../../client/text_repositories.py:359
 msgid "mirrors sorted successfully"
@@ -2577,7 +2577,7 @@ msgstr "Repositorien werden im Hintergrund aktualisiert"
 msgid ""
 "sys-apps/entropy-client-services not installed?. Update not allowed, please "
 "run as root."
-msgstr ""
+msgstr "sys-apps/entropy-client-services nicht installiert? Update nicht gestattet, bitte als root ausführen."
 
 #: ../../client/text_repositories.py:450
 msgid "Have a nice day"
@@ -2796,7 +2796,7 @@ msgstr "Ungültiges Repository"
 #: ../../client/text_ugc.py:97 ../../client/text_ugc.py:188
 #: ../../client/text_ugc.py:238 ../../client/text_ugc.py:373
 msgid "Repository does not support Entropy Services."
-msgstr ""
+msgstr "Repositorium ünterstützt nicht Entropy Dienste."
 
 #: ../../client/text_ugc.py:107
 msgid "Already logged in as"
@@ -2828,11 +2828,11 @@ msgstr "Anmeldung fehlgeschlagen. Nicht angemeldet"
 
 #: ../../client/text_ugc.py:147
 msgid "Authentication error. Not logged in."
-msgstr ""
+msgstr "Anmeldung fehlgeschlagen. Nicht angemeldet"
 
 #: ../../client/text_ugc.py:155
 msgid "Communication error. Not logged in."
-msgstr ""
+msgstr "Kommunikation fehlgeschlagen. Nicht angemeldet."
 
 #: ../../client/text_ugc.py:164
 msgid "Successfully logged in as"
@@ -2852,7 +2852,7 @@ msgstr "Benutzer"
 
 #: ../../client/text_ugc.py:209
 msgid "has been logged out."
-msgstr ""
+msgstr "wurde ausgeloggt"
 
 #: ../../client/text_ugc.py:248 ../../client/text_ugc.py:448
 msgid "Not logged in, please login first."
@@ -2899,7 +2899,7 @@ msgstr "Möchtest du übertragen?"
 
 #: ../../client/text_ugc.py:344
 msgid "already voted"
-msgstr ""
+msgstr "bereits abgestimmt"
 
 #: ../../client/text_ugc.py:351
 msgid "vote added, thank you!"
@@ -2911,7 +2911,7 @@ msgstr "Anzahl der Downloads"
 
 #: ../../client/text_ugc.py:435
 msgid "No User Generated Content available."
-msgstr ""
+msgstr "Kein nutzergenerierter Inhalt verfügbar."
 
 #: ../../client/text_ugc.py:457
 msgid "Add document"
@@ -2935,7 +2935,7 @@ msgstr "einfaches Bild"
 
 #: ../../client/text_ugc.py:465
 msgid "video"
-msgstr ""
+msgstr "Video"
 
 #: ../../client/text_ugc.py:482
 msgid "Insert document title"
@@ -2971,7 +2971,7 @@ msgstr "Dokumenttyp"
 
 #: ../../client/text_ugc.py:588
 msgid "Invalid document"
-msgstr ""
+msgstr "ungültiges Dokument"
 
 #: ../../client/text_ugc.py:615
 msgid "Document added, thank you!"
@@ -2999,7 +2999,7 @@ msgstr "Möchtest du mit der Entfernung fortfahren?"
 
 #: ../../client/text_ugc.py:701
 msgid "cannot get the requested Document"
-msgstr ""
+msgstr "nicht möglich angefordertes Dokument zu erhalten"
 
 #: ../../client/text_ugc.py:721
 msgid "UGC status"
@@ -3007,7 +3007,7 @@ msgstr "UGC Status"
 
 #: ../../client/text_ugc.py:722
 msgid "removed successfully"
-msgstr ""
+msgstr "erfolgreich entfernt"
 
 #: ../../client/text_ugc.py:734
 msgid "No title"
@@ -3015,11 +3015,11 @@ msgstr "Kein Titel"
 
 #: ../../client/text_ugc.py:776
 msgid "no votes"
-msgstr ""
+msgstr "keine Stimmen"
 
 #: ../../client/text_ugc.py:782
 msgid "current package vote"
-msgstr ""
+msgstr "Gegenwärtige Stimmen für Paket"
 
 #: ../../client/text_rescue.py:55 ../../client/text_smart.py:171
 msgid "Source Package Manager backend not available"
@@ -3122,7 +3122,7 @@ msgstr "Du musst 'find' installiert haben"
 
 #: ../../client/text_rescue.py:295
 msgid "find failed to run"
-msgstr ""
+msgstr "finden auszuführen schlug fehl"
 
 #: ../../client/text_rescue.py:312
 #, python-format
@@ -3824,7 +3824,7 @@ msgstr "zeige installierte Pakete"
 
 #: ../../client/equo.py:210
 msgid "only packages installed by user"
-msgstr ""
+msgstr "nur von Benutzer installierte Pakete"
 
 #: ../../client/equo.py:211
 msgid "list available packages"
@@ -4132,7 +4132,7 @@ msgstr "es könnte dein System explodieren lassen!"
 
 #: ../../client/text_ui.py:154
 msgid "Acquiring Entropy Resources Lock, please wait..."
-msgstr ""
+msgstr "Erfasse Entropy Ressources Lock, bitte warten..."
 
 #: ../../client/text_ui.py:184 ../../client/text_ui.py:200
 #: ../../client/text_ui.py:218 ../../client/text_ui.py:242
@@ -4154,8 +4154,8 @@ msgstr "Durchsuchen der Konfigurationsdateien vollständig."
 #, python-format
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Es gibt %s Konfigurationsdatei, die Updates benötigt"
+msgstr[1] "Es gibt %s Konfigurationsdateien, die Updates benötigen"
 
 #: ../../client/text_ui.py:317
 msgid "Please run"
@@ -4186,7 +4186,7 @@ msgstr "Cache zum Fortfahren fehlerhaft"
 
 #: ../../client/text_ui.py:396 ../../client/text_ui.py:1251
 msgid "Repositories are old, please run:"
-msgstr ""
+msgstr "Repositorien sind alt, bitte folgendes ausführen:"
 
 #: ../../client/text_ui.py:404 ../../client/text_ui.py:1031
 #: ../../client/text_ui.py:1181 ../../client/text_ui.py:1259
@@ -4233,7 +4233,7 @@ msgstr "Nichts zu Entfernen"
 
 #: ../../client/text_ui.py:540
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
+msgstr "Es sind mehr Updates zu installieren, lade Entropy neu"
 
 #: ../../client/text_ui.py:553
 msgid "Cannot switch branch as user"
@@ -4668,7 +4668,7 @@ msgstr "Anwendungen aktualisiert"
 
 #: ../../magneto/src/magneto/gtk/interfaces.py:133
 msgid "System Updates"
-msgstr ""
+msgstr "Systemupdates"
 
 #: ../../magneto/src/magneto/gtk/components.py:88
 msgid "Application"
@@ -4762,8 +4762,8 @@ msgstr "dein Sabayon wird dich informieren, sobald Aktualisierungen verfügbar s
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Es ist %s Update verfügbar"
+msgstr[1] "Es sind %s Updates verfügbar"
 
 #: ../../magneto/src/magneto/core/interfaces.py:340
 msgid "Sabayon updates available"
@@ -4773,8 +4773,8 @@ msgstr "Sabayon Aktualisierungen sind verfügbar"
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Es ist <b>%s</b> Update verfügbar"
+msgstr[1] "Es sind <b>%s</b> Updates verfügbar"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:349
@@ -4809,19 +4809,19 @@ msgstr "Programm zur Anzeige von Aktualisierungen aktiviert"
 
 #: ../../services/kernel-switcher:100
 msgid "has been installed."
-msgstr ""
+msgstr "wurde installiert."
 
 #: ../../services/kernel-switcher:102
 msgid "some external drivers cannot work across multiple kernels."
-msgstr ""
+msgstr "einige externe Treiber können nicht über verschiedene Kernel hinweg funktionieren."
 
 #: ../../services/kernel-switcher:103
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Bitte den Computer jetzt neu starten!"
 
 #: ../../services/kernel-switcher:107
 msgid "No kernel packages given"
-msgstr ""
+msgstr "Keine Kernelpakete angegeben"
 
 #: ../../services/kernel-switcher:110
 msgid "More than one kernel package given"
@@ -4829,11 +4829,11 @@ msgstr "Mehr als ein Kernelpaket angegeben"
 
 #: ../../services/kernel-switcher:125
 msgid "Package does not exist"
-msgstr ""
+msgstr "Paket existiert nicht"
 
 #: ../../services/kernel-switcher:132
 msgid "Not a kernel"
-msgstr ""
+msgstr "Kein Kernel"
 
 #: ../../services/kernel-switcher:201
 msgid "No kernel packages found"
@@ -4853,7 +4853,7 @@ msgstr "Liste die verfügbaren Kernel auf"
 
 #: ../../services/kernel-switcher:226
 msgid "this help"
-msgstr ""
+msgstr "diese Hilfe"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
