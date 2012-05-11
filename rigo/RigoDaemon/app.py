@@ -59,7 +59,7 @@ from entropy.cache import EntropyCacher
 EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    initconfig_entropy_constants, const_debug_write
+    initconfig_entropy_constants, const_debug_write, dump_signal
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
     EntropyPackageException
@@ -505,6 +505,7 @@ class RigoDaemonService(dbus.service.Object):
 
 
     def __init__(self):
+        self._thread_dumper()
         object_path = RigoDaemonService.OBJECT_PATH
         dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
         system_bus = dbus.SystemBus(mainloop = dbus_loop)
@@ -604,6 +605,30 @@ class RigoDaemonService(dbus.service.Object):
 
         self._start_package_cache_timer()
         self._start_repositories_update_timer()
+
+    def _thread_dumper(self):
+        """
+        If --dumper is in argv, a recurring thread dump
+        function will be spawned every 30 seconds.
+        """
+        dumper_enable = DAEMON_DEBUG
+        if dumper_enable:
+            task = None
+
+            def _dumper():
+                def _dump():
+                    task.kill()
+                    dump_signal(None, None)
+                timer = Timer(10.0, _dump)
+                timer.name = "MainThreadHearthbeatCheck"
+                timer.daemon = True
+                timer.start()
+                GLib.idle_add(timer.cancel)
+
+            task = TimeScheduled(5.0, _dumper)
+            task.name = "ThreadDumper"
+            task.daemon = True
+            task.start()
 
     def _start_package_cache_timer(self):
         """
@@ -781,6 +806,8 @@ class RigoDaemonService(dbus.service.Object):
         Enable standard output and standard error redirect to
         Entropy.output()
         """
+        if DAEMON_DEBUG:
+            return
         self._old_stdout = sys.stdout
         self._old_stderr = sys.stderr
         sys.stderr = self._fakeout
@@ -790,6 +817,8 @@ class RigoDaemonService(dbus.service.Object):
         """
         Disable standard output and standard error redirect to file.
         """
+        if DAEMON_DEBUG:
+            return
         sys.stderr = self._old_stderr
         sys.stdout = self._old_stdout
 
