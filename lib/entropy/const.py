@@ -80,11 +80,11 @@ if os.getuid() == 0:
     signal.signal(signal.SIGUSR1, debug_signal)
 
 # Setup thread dump hook on SIGQUIT
-def dump_signal(signum, frame, extended=True):
+def dump_signal(signum, frame, extended=True, stderr=sys.stderr):
 
     def _std_print_err(msg):
-        sys.stderr.write(msg + '\n')
-        sys.stderr.flush()
+        stderr.write(msg + '\n')
+        stderr.flush()
 
     _std_print_err("")
     _std_print_err("")
