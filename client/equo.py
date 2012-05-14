@@ -207,7 +207,7 @@ help_opts = [
         (2, 'installed', 1, _('search a package into the local database')),
         (2, 'license', 2, _('show packages owning the provided licenses')),
         (2, 'list', 2, _('list packages based on the chosen parameter below')),
-            (3, 'installed', 2, _('list installed packages')),
+            (3, 'installed [repo]', 2, _('list installed packages')),
                 (4, '--by-user', 2, _('only packages installed by user')),
             (3, 'available [repos]', 1, _('list available packages')),
         (2, 'mimetype', 1, _('search packages able to handle given mimetypes')),

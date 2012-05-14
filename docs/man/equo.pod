@@ -678,7 +678,7 @@ list packages based on the chosen parameter below
 
 =over
 
-=item [3] B<installed>
+=item [3] B<installed> [repo]
 
 list installed packages
 

@@ -173,7 +173,12 @@ def query(options):
         elif cmd == "list":
             mylistopts = options[1:]
             if len(mylistopts) > 0:
-                if mylistopts[0] == "installed":
+                lopt, instopts = mylistopts[0], mylistopts[1:]
+
+                if lopt == "installed":
+                    repoid = None
+                    if instopts:
+                        repoid = instopts[0]
 
                     def by_user_filter(pkg_match):
                         pkg_id, pkg_repo = pkg_match
@@ -182,16 +187,25 @@ def query(options):
                             pkg_id)
                         return source_id == etpConst['install_sources']['user']
 
+                    def by_repoid_filter(pkg_match):
+                        pkg_id, pkg_repo = pkg_match
+                        repo_db = etp_client.open_repository(pkg_repo)
+                        inst_pkg_repo = repo_db.getInstalledPackageRepository(
+                            pkg_id)
+                        return inst_pkg_repo == repoid
+
                     filter_func = None
-                    if "--by-user" in mylistopts:
+                    if "--by-user" == repoid:
                         filter_func = by_user_filter
+                    elif repoid:
+                        filter_func = by_repoid_filter
 
                     rc_status = list_packages(etp_client,
                         etp_client.installed_repository(),
                         filter_func = filter_func)
 
-                elif mylistopts[0] == "available" and len(mylistopts) > 1:
-                    repoid = mylistopts[1]
+                elif lopt == "available" and len(instopts) > 0:
+                    repoid = instopts[0]
                     if repoid in etp_client.repositories():
                         repo_dbconn = etp_client.open_repository(repoid)
                         rc_status = list_packages(etp_client, repo_dbconn)
