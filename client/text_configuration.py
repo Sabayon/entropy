@@ -91,12 +91,21 @@ def update(entropy_client, cmd = None):
 
         for idx in sorted(paths_map.keys()):
             x = paths_map[idx]
-            obj = scandata[x]
+            try:
+                obj = scandata[x]
+            except KeyError:
+                # duplicated entry?
+                del paths_map[idx]
+                continue
             file_path = root + obj['destination']
             print_info(
                 "(" + blue(str(idx)) + ") " + \
                     red(" %s: " % (_("file"),) ) + \
                 x)
+
+        if not paths_map:
+            print_info(darkred(_("All fine baby. Nothing to do!")))
+            break
 
         if not docmd:
             cmd = selfile()
