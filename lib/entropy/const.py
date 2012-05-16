@@ -265,9 +265,10 @@ def initconfig_entropy_constants(rootdir):
     # but better being paranoid and do stuff ourselves :-)
     if not os.path.isdir(etpConst['pidfiledir']):
         try:
-            os.makedirs(etpConst['pidfiledir'], 0o775)
-        except OSError:
-            pass
+            const_setup_directory(etpConst['pidfiledir'])
+        except (OSError, IOError) as err:
+            sys.stderr.write("WARNING: cannot create %s, %s\n" % (
+                    etpConst['pidfiledir'], repr(err),))
 
     # also setup /var/tmp/entropy if it doesn't exist.
     # /var/tmp can be mounted on tmpfs
