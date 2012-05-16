@@ -275,9 +275,9 @@ def initconfig_entropy_constants(rootdir):
     if not os.path.isdir(etpConst['entropyunpackdir']):
         try:
             const_setup_directory(etpConst['entropyunpackdir'])
-        except (OSError, IOError):
-            sys.stderr.write("WARNING: cannot create %s\n" % (
-                    etpConst['entropyunpackdir'],))
+        except (OSError, IOError) as err:
+            sys.stderr.write("WARNING: cannot create %s: %s\n" % (
+                    etpConst['entropyunpackdir'], repr(err),))
 
     const_setup_perms(etpConst['pidfiledir'], etpConst['entropygid'],
         recursion = False)
