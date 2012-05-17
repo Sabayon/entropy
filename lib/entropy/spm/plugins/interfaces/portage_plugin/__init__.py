@@ -3789,9 +3789,6 @@ class PortagePlugin(SpmPlugin):
 
         return mysettings
 
-    def _get_package_use_file(self):
-        return os.path.join(self._portage.const.USER_CONFIG_PATH, 'package.use')
-
     def _get_useflags(self):
         return self._portage.settings['USE']
 
