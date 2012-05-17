@@ -2752,7 +2752,20 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        return PortagePlugin._config_files_map.copy()
+        config_map = PortagePlugin._config_files_map.copy()
+        # extend with config files inside directories
+        for key, path in list(config_map.items()):
+            if os.path.exists(path) and os.path.isdir(path):
+                try:
+                    path_list = os.listdir(path)
+                except (OSError, IOError):
+                    continue
+                for path_file in path_list:
+                    full_path_file = os.path.join(path, path_file)
+                    if os.path.isfile(full_path_file):
+                        file_key = key + ":" + path_file
+                        config_map[file_key] = full_path_file
+        return config_map
 
     def execute_package_phase(self, action_metadata, package_metadata,
         action_name, phase_name):
