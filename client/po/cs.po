@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-05-02 16:02+0000\n"
+"PO-Revision-Date: 2012-05-15 13:27+0000\n"
 "Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -861,7 +861,7 @@ msgstr "Stav služby webu"
 
 #: ../../lib/entropy/client/interfaces/db.py:1611
 msgid "cannot fetch repository metadata"
-msgstr ""
+msgstr "Nelze stáhnout metadata repozitáře"
 
 #: ../../lib/entropy/client/interfaces/db.py:1630
 msgid "cannot update treeupdates data"
@@ -1345,7 +1345,7 @@ msgstr "Nastala chyba. Činnost přerušena."
 
 #: ../../lib/entropy/client/interfaces/client.py:947
 msgid "forcing packages metadata update"
-msgstr ""
+msgstr "Vynucuji aktualizaci metadat balíčků"
 
 #: ../../lib/entropy/client/interfaces/client.py:956
 msgid "Updating system database using repository"
