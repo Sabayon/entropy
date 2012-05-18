@@ -1,3 +1,97 @@
+commit dbc324d15e5297db0cfc2924eb1fb94f6535a7c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 18 12:34:43 2012 +0200
+
+    Release Entropy 1.0_rc114
+
+commit bb8b9e69e88c7f6d1795d4a84a1cbbb4890c1ac1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 18 12:33:35 2012 +0200
+
+    [client] update translations
+
+commit 4c6d5b0b1cdfd9dfd4868c9f9dad187efe2f0ab4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 18 12:33:25 2012 +0200
+
+    [Rigo] update translations
+
+commit 5dc080d475315fb5d3de7324f300df03d23837f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 17 22:53:10 2012 +0200
+
+    [entropy.spm] PortagePlugin: generate a dynamic config_file_map
+    
+    Generate config_file_map dinamically by considering config file paths
+    as potential directories and if available, by adding the collected
+    subpaths to it
+
+commit dbd34912a266ac1254d8bee256a94de87b6dab03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 17 22:49:49 2012 +0200
+
+    [entropy.spm] PortagePlugin: remove _get_package_use_file, no longer used
+
+commit 739ac5e3489674de6e8d64cf83824a722b91009b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 16 17:15:42 2012 +0200
+
+    [equo] text_configuration: properly handle KeyError exceptions in update()
+
+commit 38c5560b9a9d2e82a27ca8e01f1191fc8ceb6263
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 16 14:29:40 2012 +0200
+
+    [entropy.const] initconfig_entropy_constants: always print dir creation warnings to stderr
+
+commit 91d85740a8fa879abad0a547a446561df546dea4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 16 14:29:02 2012 +0200
+
+    [entropy.const] use const_setup_directory() when creating pidfiledir
+
+commit fafc598928a4f8efa24e401f34cc66de7263c46e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 16 14:27:59 2012 +0200
+
+    [entropy.const] always create /var/tmp/entropy if it doesn't exist
+
+commit 361302c48e891352c2c8ecddebeb44d584026059
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 14 14:49:35 2012 +0200
+
+    [equo] add "equo query list installed <repository>" as per bug 3324
+
+commit 755b2612fe1256c55c921d3794d8d8ff2e106818
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 11 06:41:20 2012 +0200
+
+    [entropy.const] dump_signal: add "stderr" keyword argument
+
+commit 8dfe7b435f555b7c7e30439e47e25079b04f5c89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 11 06:40:58 2012 +0200
+
+    [RigoDaemon] add thread dumper (as implemented in Rigo)
+
+commit a9d712e9ff27ec3b13bc5b45df3a58a1766b4694
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 9 17:49:07 2012 +0200
+
+    [client] update translations
+
+commit 212dd068cbfb990e0c557b192204a78ff038c505
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 9 17:46:45 2012 +0200
+
+    [Rigo] update translations
+
+commit ca56a45bd568e8b1ce32b28f4cf849bbc1813281
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 9 16:44:26 2012 +0200
+
+    Tagging Entropy version 1.0_rc113
+
 commit 111060eef4f36b391742a2a514e1bf34fdcf138a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 9 16:44:25 2012 +0200
