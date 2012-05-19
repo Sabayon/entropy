@@ -401,7 +401,9 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
 
     # check if I am root
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1028,7 +1030,8 @@ def _download_sources(entropy_client, packages = None, deps = True,
     # check if I am root
     if not entropy.tools.is_root():
         mytxt = "%s %s %s" % (
-            _("Running with"), bold("--pretend"), red("..."),)
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1178,7 +1181,9 @@ def _download_packages(entropy_client, packages = None, deps = True,
 
     # check if I am root
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1256,7 +1261,9 @@ def install_packages(entropy_client,
 
     # check if I am root
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1771,7 +1778,9 @@ def _mask_unmask_packages(entropy_client, packages, action):
 
     # check if I am root
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1860,7 +1869,9 @@ def _configure_packages(entropy_client, packages):
 
     # check if I am root
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
@@ -1948,7 +1959,9 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         atomsdata = []
 
     if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        mytxt = "%s %s %s" % (
+            purple(_("Running with")), bold("--pretend"),
+            purple(_("because you are not root")),)
         print_warning(mytxt)
         etpUi['pretend'] = True
         etpUi['ask'] = False
