@@ -27,11 +27,11 @@ import sys
 import os
 import time
 
-from entropy.const import etpConst, const_setup_file
+from entropy.const import etpConst, const_setup_file, const_is_python3
 # Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
 COMPAT_PICKLE_PROTOCOL = 0
 
-if sys.hexversion >= 0x3000000:
+if const_is_python3():
     import pickle
 else:
     try:
@@ -106,7 +106,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
 
             tmp_dmpfile = dmpfile + ".tmp"
             with open(tmp_dmpfile, "wb") as dmp_f:
-                if sys.hexversion >= 0x3000000:
+                if const_is_python3():
                     pickle.dump(my_object, dmp_f,
                         protocol = COMPAT_PICKLE_PROTOCOL, fix_imports = True)
                 else:
@@ -146,7 +146,7 @@ def serialize(myobj, ser_f, do_seek = True):
         race conditions on multi-processing or multi-threading
     @raise pickle.PicklingError: when object cannot be recreated
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         pickle.dump(myobj, ser_f, protocol = COMPAT_PICKLE_PROTOCOL,
             fix_imports = True)
     else:
@@ -166,7 +166,7 @@ def unserialize(serial_f):
     @rtype: any Python pickable object
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return pickle.load(serial_f, fix_imports = True,
             encoding = etpConst['conf_raw_encoding'])
     else:
@@ -182,7 +182,7 @@ def unserialize_string(mystring):
     @rtype: any Python pickable object
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return pickle.loads(mystring, fix_imports = True,
             encoding = etpConst['conf_raw_encoding'])
     else:
@@ -198,7 +198,7 @@ def serialize_string(myobj):
     @rtype: string
     @raise pickle.PicklingError: when object cannot be recreated
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return pickle.dumps(myobj, protocol = COMPAT_PICKLE_PROTOCOL,
             fix_imports = True, encoding = etpConst['conf_raw_encoding'])
     else:
@@ -251,7 +251,7 @@ def loadobj(name, complete_path = False, dump_dir = None, aging_days = None):
                 with open(dmpfile, "rb") as dmp_f:
                     obj = None
                     try:
-                        if sys.hexversion >= 0x3000000:
+                        if const_is_python3():
                             obj = pickle.load(dmp_f, fix_imports = True,
                                 encoding = etpConst['conf_raw_encoding'])
                         else:

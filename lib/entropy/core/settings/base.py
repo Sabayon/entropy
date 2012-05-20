@@ -26,7 +26,7 @@ import codecs
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring, \
-    const_debug_write
+    const_debug_write, const_is_python3
 from entropy.core import Singleton, EntropyPluginStore
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -632,7 +632,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                         sys.getfilesystemencoding())
 
                 path = os.path.join(sets_dir, set_file)
-                if sys.hexversion < 0x3000000:
+                if not const_is_python3():
                     path = const_convert_to_rawstring(
                         path, etpConst['conf_encoding'])
                 pkg_set_data[set_file] = path

@@ -14,6 +14,7 @@ import tempfile
 import os
 import errno
 import shutil
+from entropy.const import const_is_python3
 from entropy.output import TextInterface
 from entropy.spm.plugins.factory import get_default_instance
 from entropy.spm.plugins.interfaces.portage_plugin import xpak
@@ -114,7 +115,7 @@ def suck_xpak(tbz2file, xpakpath):
         # read backward until we find
         n_bytes = old.tell()
         counter = n_bytes - 1
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             xpak_end = b"XPAKSTOP"
             xpak_start = b"XPAKPACK"
             xpak_entry_point = b"X"

@@ -36,7 +36,7 @@ import codecs
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
-    const_israwstring, const_secure_config_file
+    const_israwstring, const_secure_config_file, const_is_python3
 from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
 def is_root():
@@ -165,13 +165,13 @@ def get_traceback(tb_obj = None):
     @keyword tb_obj: Python traceback object
     @type tb_obj: Python traceback instance
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         from io import StringIO
     else:
         from cStringIO import StringIO
     buf = StringIO()
     if tb_obj is not None:
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             traceback.print_tb(tb_obj, file = buf)
         else:
             traceback.print_last(tb_obj, file = buf)
@@ -258,7 +258,7 @@ def get_remote_data(url, timeout = 5):
     @rtype: string or bool
     """
     import socket
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         import urllib.request as urlmod
     else:
         import urllib2 as urlmod
@@ -1056,7 +1056,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
         except EOFError:
             return False
 
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             dest_path = dest_path.encode('utf-8')
         directories = []
         for tarinfo in tar:
@@ -1884,7 +1884,7 @@ def istext(mystring):
     @return: True, if string is text
     @rtype: bool
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         char_map = list(map(chr, list(range(32, 127))))
         text_characters = "".join(char_map + list("\n\r\t\b"))
         _null_trans = str.maketrans(text_characters, text_characters)
@@ -1902,7 +1902,7 @@ def istext(mystring):
 
     # Get the non-text characters (maps a character to itself then
     # use the 'remove' option to get rid of the text characters.)
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         t = mystring.translate(_null_trans)
         # If more than 30% non-text characters, then
         # this is considered a binary file
@@ -1927,7 +1927,7 @@ def spliturl(url):
     @return: urllib.parse instance
     @rtype: urllib.parse
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         import urllib.parse as urlmod
     else:
         import urlparse as urlmod
@@ -2087,7 +2087,7 @@ def apply_tarball_ownership(filepath, prefix_path):
             return
 
         encoded_path = prefix_path
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             encoded_path = encoded_path.encode('utf-8')
         entries = []
 
@@ -2137,7 +2137,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
 
-    is_python_3 = sys.hexversion >= 0x3000000
+    is_python_3 = const_is_python3()
     tar = None
     extracted_something = False
     try:

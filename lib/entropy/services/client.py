@@ -20,7 +20,10 @@ import threading
 import hashlib
 import urllib
 import socket
-if sys.hexversion >= 0x3000000:
+
+from entropy.const import const_is_python3
+
+if const_is_python3():
     import http.client as httplib
     from io import StringIO
 else:
@@ -717,7 +720,7 @@ class WebService(object):
         """
         sorted_data = [(x, params[x]) for x in sorted(params.keys())]
         hash_str = repr(sorted_data) + ", " + self._request_url
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             hash_str = hash_str.encode("utf-8")
         sha = hashlib.sha1()
         sha.update(hash_str)

@@ -20,9 +20,10 @@
 import sys
 import os, shutil, errno
 from stat import ST_SIZE, ST_MTIME, ST_CTIME
-from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
+from entropy.const import const_convert_to_rawstring, \
+    const_convert_to_unicode, const_is_python3
 
-if sys.hexversion >= 0x3000000:
+if const_is_python3():
     XPAKPACK = b"XPAKPACK"
     XPAKSTOP = b"XPAKSTOP"
     STOP = b"STOP"
@@ -55,7 +56,7 @@ def encodeint(myint):
     part2 = chr((myint >> 16 ) & 0x000000ff)
     part3 = chr((myint >> 8 ) & 0x000000ff)
     part4 = chr(myint & 0x000000ff)
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return bytes(part1 + part2 + part3 + part4, 'raw_unicode_escape')
     else:
         return part1 + part2 + part3 + part4
@@ -64,7 +65,7 @@ def decodeint(mystring):
     """Takes a 4 byte string and converts it into a 4 byte integer.
     Returns an integer."""
     myint = 0
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         myint = myint+mystring[3]
         myint = myint+(mystring[2] << 8)
         myint = myint+(mystring[1] << 16)
@@ -100,7 +101,7 @@ def xpak(rootdir, outfile=None):
 
 def xpak_mem(mydata):
     """Create an xpack segement from a map object."""
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         indexglob = b""
         dataglob = b""
     else:

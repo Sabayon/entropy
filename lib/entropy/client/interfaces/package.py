@@ -20,7 +20,7 @@ import codecs
 
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_isunicode, const_convert_to_unicode, const_debug_write, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_is_python3
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _, ngettext
 from entropy.output import brown, blue, bold, darkgreen, \
@@ -2178,7 +2178,7 @@ class Package:
 
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             # image_dir comes from unpackdir, which comes from download
             # metadatum, which is utf-8
             image_dir = const_convert_to_rawstring(image_dir,
@@ -3141,7 +3141,7 @@ class Package:
     def _unpack_step(self):
 
         unpack_dir = self.pkgmeta['unpackdir']
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             # unpackdir comes from download metadatum, which is utf-8
             unpack_dir = const_convert_to_rawstring(unpack_dir,
                 from_enctype = "utf-8")

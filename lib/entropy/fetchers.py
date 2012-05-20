@@ -23,7 +23,9 @@ import socket
 import pty
 import subprocess
 
-if sys.hexversion >= 0x3000000:
+from entropy.const import const_is_python3
+
+if const_is_python3():
     import urllib.request as urlmod
     import urllib.error as urlmod_error
 else:
@@ -193,7 +195,7 @@ class UrlFetcher(TextInterface):
             self.__resumed = False
 
     def __encode_url(self, url):
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             import urllib.parse as encurl
         else:
             import urllib as encurl

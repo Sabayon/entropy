@@ -17,8 +17,9 @@ import errno
 import curses
 import subprocess
 
-from entropy.const import etpUi, const_convert_to_rawstring, const_isstring, \
-    const_convert_to_unicode, const_isunicode
+from entropy.const import etpUi, const_convert_to_rawstring, \
+    const_isstring, const_convert_to_unicode, const_isunicode, \
+    const_is_python3
 from entropy.i18n import _
 
 stuff = {}
@@ -469,7 +470,7 @@ def _std_write(msg, stderr = False):
         obj.write(msg)
     except UnicodeEncodeError:
         msg = msg.encode('utf-8')
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             obj.buffer.write(msg)
         else:
             obj.write(msg)
@@ -626,7 +627,7 @@ def _my_raw_input(txt = ''):
 
     if not txt:
         txt = ""
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         try:
             response = input(darkgreen(txt))
         except UnicodeEncodeError:
@@ -828,7 +829,7 @@ class TextInterface(object):
                 counter += 1
             while True:
                 try:
-                    if sys.hexversion >= 0x3000000:
+                    if const_is_python3():
                         myresult = const_convert_to_unicode(
                             readtext("%s: " % (_('Selected number'),)),
                             enctype = "utf-8")

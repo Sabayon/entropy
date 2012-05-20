@@ -25,7 +25,7 @@ import codecs
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write, const_setup_file, const_convert_to_unicode, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_is_python3
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -1559,7 +1559,7 @@ class Repository:
         proc = subprocess.Popen(args,
             **self.__default_popen_args(stderr = True))
         try:
-            if sys.hexversion >= 0x3000000:
+            if const_is_python3():
                 key_input = const_convert_to_rawstring(key_input)
             # feed gpg with data
             proc_stdout, proc_stderr = proc.communicate(input = key_input)
@@ -1572,7 +1572,7 @@ class Repository:
             raise Repository.GPGError(
                 "cannot generate key, exit status %s" % (proc_rc,))
 
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             proc_stdout = const_convert_to_unicode(proc_stdout)
             proc_stderr = const_convert_to_unicode(proc_stderr)
         # now get fucking fingerprint
@@ -1825,7 +1825,7 @@ class Repository:
                         fingerprint, proc_rc,))
 
             key_string = proc.stdout.read()
-            if sys.hexversion >= 0x3000000:
+            if const_is_python3():
                 key_string = const_convert_to_unicode(key_string)
             return key_string
         finally:

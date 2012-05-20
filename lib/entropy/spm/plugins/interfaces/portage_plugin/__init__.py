@@ -26,7 +26,7 @@ import codecs
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
-    const_setup_file
+    const_setup_file, const_is_python3
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, purple, \
@@ -55,7 +55,7 @@ class StdoutSplitter(object):
         self._task.daemon = True
         self._task.start()
 
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
 
             class Writer(object):
 
@@ -163,7 +163,7 @@ class StdoutSplitter(object):
     def isatty(self):
         return self._std.isatty()
 
-    if sys.hexversion < 0x3000000:
+    if not const_is_python3():
         def next(self):
             return self._std.next()
     else:
@@ -210,7 +210,7 @@ class StdoutSplitter(object):
         for line in lst:
             self.write(line)
 
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
 
         # line_buffering readable seekable writable
         def readable(self):
@@ -2561,7 +2561,7 @@ class PortagePlugin(SpmPlugin):
         portdb = self._get_portage_portagetree(root).dbapi
         mdigest = hashlib.md5()
         # this way, if no matches are found, the same value is returned
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             mdigest.update(const_convert_to_rawstring("begin"))
         else:
             mdigest.update("begin")

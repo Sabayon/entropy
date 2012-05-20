@@ -38,7 +38,8 @@ from sqlite3 import dbapi2
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
-    const_convert_to_rawstring, const_cmp, const_pid_exists
+    const_convert_to_rawstring, const_cmp, const_pid_exists, \
+    const_is_python3
 from entropy.exceptions import SystemDatabaseError, \
     OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
@@ -2132,7 +2133,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # setup random table name
         random_str = "%svs%s_%s" % (package_id, id(dbconn),
             dbconn_package_id)
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             random_str = const_convert_to_rawstring(random_str)
         randomtable = "cdiff%s" % (hashlib.md5(random_str).hexdigest(),)
 
@@ -5370,7 +5371,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # interpreter independent results. Cannot use hash() then.
             # Even repr() might be risky! But on the other hand, the
             # conversion to string cannot take forever.
-            if sys.hexversion >= 0x3000000:
+            if const_is_python3():
                 for record in cursor:
                     m.update(repr(record).encode("utf-8"))
             else:
@@ -6455,7 +6456,7 @@ class EntropyRepository(EntropyRepositoryBase):
             repr(checksum),
             mtime,
         )
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             hash_str = hash_str.encode("utf-8")
         sha = hashlib.sha1()
         sha.update(hash_str)

@@ -19,7 +19,10 @@ import base64
 import hashlib
 import time
 import codecs
-if sys.hexversion >= 0x3000000:
+
+from entropy.const import const_is_python3
+
+if const_is_python3():
     from io import StringIO
 else:
     from cStringIO import StringIO

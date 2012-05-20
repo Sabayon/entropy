@@ -28,7 +28,7 @@ import codecs
 from entropy.output import TextInterface
 from entropy.misc import Lifo
 from entropy.const import etpConst, etpSys, const_debug_write, \
-    const_debug_write, const_convert_to_rawstring
+    const_debug_write, const_convert_to_rawstring, const_is_python3
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
     teal
 from entropy.exceptions import PermissionDenied, SystemDatabaseError
@@ -1544,7 +1544,7 @@ class ErrorReportInterface:
         @type post_url: string
         """
         from entropy.misc import MultipartPostHandler
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             import urllib.request as urlmod
         else:
             import urllib2 as urlmod

@@ -19,7 +19,10 @@ import fcntl
 import signal
 import errno
 import codecs
-if sys.hexversion >= 0x3000000:
+
+from entropy.const import const_is_python3
+
+if const_is_python3():
     import urllib.request, urllib.error, urllib.parse
     UrllibBaseHandler = urllib.request.BaseHandler
 else:
@@ -802,7 +805,7 @@ class EmailSender:
         @rtype: None
         """
         # Create a text/plain message
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             if const_isunicode(content):
                 content = content.encode('utf-8')
             if const_isunicode(subject):
@@ -847,7 +850,7 @@ class EmailSender:
         outer.preamble = subject
 
         # Create a text/plain message
-        if sys.hexversion < 0x3000000:
+        if not const_is_python3():
             if const_isunicode(content):
                 content = content.encode('utf-8')
             if const_isunicode(subject):
@@ -1821,7 +1824,7 @@ class MultipartPostHandler(UrllibBaseHandler):
     """
 
     # needs to run first
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         handler_order = urllib.request.HTTPHandler.handler_order - 10
     else:
         handler_order = urllib2.HTTPHandler.handler_order - 10
@@ -1857,7 +1860,7 @@ class MultipartPostHandler(UrllibBaseHandler):
                         " or mapping object")
 
             if len(v_files) == 0:
-                if sys.hexversion >= 0x3000000:
+                if const_is_python3():
                     data = urllib.parse.urlencode(v_vars, doseq)
                 else:
                     data = urllib.urlencode(v_vars, doseq)

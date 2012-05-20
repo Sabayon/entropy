@@ -18,7 +18,8 @@ import codecs
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
-from entropy.const import etpConst, const_cmp, const_debug_write
+from entropy.const import etpConst, const_cmp, const_debug_write, \
+    const_is_python3
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
     darkred
 from entropy.cache import EntropyCacher
@@ -4524,7 +4525,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def __atomMatch_gen_hash_str(self, args):
         data_str = repr(args)
         sha1 = hashlib.sha1()
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             sha1.update(data_str.encode("utf-8"))
         else:
             sha1.update(data_str)
