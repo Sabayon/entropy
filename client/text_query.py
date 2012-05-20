@@ -11,7 +11,8 @@
 """
 import os
 from entropy.const import etpUi, const_convert_to_unicode, \
-    const_convert_to_rawstring, const_convert_to_unicode, etpConst
+    const_convert_to_rawstring, const_convert_to_unicode, etpConst, \
+    const_is_python3
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic, \
     print_warning, teal
@@ -583,6 +584,10 @@ def search_orphaned_files(entropy_client):
 
     count = 0
     for xdir in dirs:
+        # make sure it's raw string, or os.walk() fails
+        if not const_is_python3():
+            xdir = const_convert_to_rawstring(
+                xdir, from_enctype = etpConst['conf_encoding'])
         try:
             wd = os.walk(xdir)
         except RuntimeError: # maximum recursion?
