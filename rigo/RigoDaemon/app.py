@@ -1209,7 +1209,21 @@ class RigoDaemonService(dbus.service.Object):
 
             # now execute the action
             with self._activity_mutex:
-                self._action_queue_worker_unlocked(item)
+                try:
+                    self._action_queue_worker_unlocked(item)
+                except Exception as exc:
+                    # be fault tolerant wrt exceptions
+                    try:
+                        write_output("_action_queue_worker_thread"
+                                     ", dirty exception: "
+                                     "%s, type: %s" % (exc, type(exc),))
+                        t_back = entropy.tools.get_traceback()
+                        if t_back:
+                            write_output(t_back)
+                    except Exception as exc:
+                        write_output("_action_queue_worker_thread"
+                                     ", failed to print exception: "
+                                     "%s" % (repr(exc),))
 
     def _read_app_management_notes(self):
         """
