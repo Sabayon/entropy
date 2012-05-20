@@ -11,7 +11,10 @@
 """
 import os
 import sys
-if sys.hexversion >= 0x3000000:
+
+from entropy.const import const_is_python3
+
+if const_is_python3():
     from subprocess import getoutput
 else:
     from commands import getoutput
