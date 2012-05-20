@@ -743,6 +743,12 @@ def const_default_settings(rootdir):
 
     etpConst.update(my_const)
 
+def const_is_python3():
+    """
+    Return whether Python3 is interpreting this code.
+    """
+    return sys.hexversion >= 0x3000000
+
 def const_set_nice_level(nice_level = 0):
     """
     Change current process scheduler "nice" level.
@@ -1341,7 +1347,7 @@ def const_get_stringtype():
     On Python 2.x, it returns basestring while on Python 3.x it returns
     (str, bytes,)
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return (str, bytes,)
     else:
         return (basestring,)
@@ -1355,7 +1361,7 @@ def const_isstring(obj):
     @return: True, if object is string
     @rtype: bool
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return isinstance(obj, (str, bytes))
     else:
         return isinstance(obj, basestring)
@@ -1369,13 +1375,13 @@ def const_isunicode(obj):
     @return: True, if object is unicode
     @rtype: bool
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return isinstance(obj, str)
     else:
         return isinstance(obj, unicode)
 
 def const_israwstring(obj):
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return isinstance(obj, bytes)
     else:
         return isinstance(obj, str)
@@ -1393,21 +1399,21 @@ def const_convert_to_unicode(obj, enctype = _RAW_ENCODING):
 
     # None support
     if obj is None:
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return "None"
         else:
             return unicode("None")
 
     # int support
     if isinstance(obj, const_get_int()):
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return str(obj)
         else:
             return unicode(obj)
 
     # buffer support
     if isinstance(obj, const_get_buffer()):
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return str(obj.tobytes(), enctype)
         else:
             return unicode(obj, enctype)
@@ -1418,7 +1424,7 @@ def const_convert_to_unicode(obj, enctype = _RAW_ENCODING):
     if hasattr(obj, 'decode'):
         return obj.decode(enctype)
     else:
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return str(obj, enctype)
         else:
             return unicode(obj, enctype)
@@ -1438,12 +1444,12 @@ def const_convert_to_rawstring(obj, from_enctype = _RAW_ENCODING):
     if obj is None:
         return const_convert_to_rawstring("None")
     if const_isnumber(obj):
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return bytes(str(obj), from_enctype)
         else:
             return str(obj)
     if isinstance(obj, const_get_buffer()):
-        if sys.hexversion >= 0x3000000:
+        if const_is_python3():
             return obj.tobytes()
         else:
             return str(obj)
@@ -1455,7 +1461,7 @@ def const_get_buffer():
     """
     Return generic buffer object (supporting both Python 2.x and Python 3.x)
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return memoryview
     else:
         return buffer
@@ -1466,7 +1472,7 @@ def const_get_int():
     For Python 2.x a (long, int) tuple is returned.
     For Python 3.x a (int,) tuple is returned.
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return (int,)
     else:
         return (long, int,)
@@ -1475,7 +1481,7 @@ def const_isfileobj(obj):
     """
     Return whether obj is a file object
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         import io
         return isinstance(obj, io.IOBase)
     else:
@@ -1485,7 +1491,7 @@ def const_isnumber(obj):
     """
     Return whether obj is an int, long object.
     """
-    if sys.hexversion >= 0x3000000:
+    if const_is_python3():
         return isinstance(obj, int)
     else:
         return isinstance(obj, (int, long,))
@@ -1611,7 +1617,7 @@ def const_debug_write(identifier, msg, force = False, stdout=None):
             teal(repr(current_thread.daemon)), darkgreen(repr(time.time())),
             darkred(identifier),)
         with _DEBUG_W_LOCK:
-            if sys.hexversion >= 0x3000000:
+            if const_is_python3():
                 stdout.buffer.write(
                     const_convert_to_rawstring(th_identifier) + \
                         b" " + const_convert_to_rawstring(msg) + b"\n")
