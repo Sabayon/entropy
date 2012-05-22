@@ -1,3 +1,53 @@
+commit 2bf8286a0febe2d946b5dd0dbc9663d3295455da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 12:38:03 2012 +0200
+
+    Release Entropy 1.0_rc115
+
+commit 0bd6542a339ebb453ba8cc34db7704d80d679550
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 20 21:41:09 2012 +0200
+
+    [RigoDaemon] be fault-tolerant wrt exceptions happening inside app mgmt worker threads
+
+commit 18978fd612d688adf480a0fb9cf8b491f9b31768
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 20 14:16:33 2012 +0200
+
+    [equo] migrate to const_is_python3()
+
+commit ef4a174f58e2051fdd8d9df67277b3bd1770d8c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 20 14:16:13 2012 +0200
+
+    [entropy*] migrate to const_is_python3()
+
+commit 12f550037d560dea5511aff906c0f3b1df65d49c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 20 13:35:48 2012 +0200
+
+    [equo] "equo query orphans": avoid UnicodeDecodeError in os.walk()
+
+commit 87f2cb6f75999f63a8fb93f5fa88292eb7e2e0d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 20 13:28:14 2012 +0200
+
+    [entropy.const] add const_is_python3()
+
+commit 5f64abe231eaa295540a14d0274040ddf49a1fa1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 19 18:00:57 2012 +0200
+
+    [equo] be more explicit when running with forced "--pretend" when not root
+    
+    Fixes bug 2882
+
+commit 434bc36a8dab1bf19362042ebad189a7370f9841
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 18 12:34:44 2012 +0200
+
+    Tagging Entropy version 1.0_rc114
+
 commit dbc324d15e5297db0cfc2924eb1fb94f6535a7c3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri May 18 12:34:43 2012 +0200
