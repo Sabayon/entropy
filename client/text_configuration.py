@@ -455,7 +455,10 @@ def selfile():
     print_info("  ("+blue("-7")+") "+brown(_("Discard all the files asking you one by one")))
     print_info("  ("+blue("-9")+") "+darkred(_("Discard all the files without questioning")))
     # wait user interaction
-    action = readtext(_("Your choice (type a number and press enter):")+" ")
+    try:
+        action = readtext(_("Your choice (type a number and press enter):")+" ")
+    except EOFError:
+        action = None
     return action
 
 
@@ -468,7 +471,10 @@ def selaction():
     print_info("  ("+blue("4")+") "+brown(_("Interactively merge original with update")))
     print_info("  ("+blue("5")+") "+darkred(_("Show differences again")))
     # wait user interaction
-    action = readtext(_("Your choice (type a number and press enter):")+" ")
+    try:
+        action = readtext(_("Your choice (type a number and press enter):")+" ")
+    except EOFError:
+        action = None
     return action
 
 def showdiff(fromfile, tofile):

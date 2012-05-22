@@ -1640,7 +1640,10 @@ def install_packages(entropy_client,
         print_info("      ("+blue("3")+")"+darkred(" %s" % (_("Accept the license and don't ask anymore (I've read it)"),) ))
         print_info("      ("+blue("0")+")"+bold(" %s" % (_("Quit"),) ))
         # wait user interaction
-        action = readtext("       %s: " % (_("Your choice (type a number and press enter)"),) )
+        try:
+            action = readtext("       %s: " % (_("Your choice (type a number and press enter)"),) )
+        except EOFError:
+            action = None
         return action
 
     licenses = {}
@@ -1678,7 +1681,7 @@ def install_packages(entropy_client,
                 choice = read_lic_selection()
                 try:
                     choice = int(choice)
-                except (ValueError, EOFError, TypeError):
+                except (ValueError, TypeError):
                     continue
                 if choice not in (0, 1, 2, 3):
                     continue

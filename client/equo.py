@@ -717,9 +717,12 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(2)
 
     print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
-    name = readtext(_("Your Full name:"))
-    email = readtext(_("Your E-Mail address:"))
-    description = readtext(_("What you were doing:"))
+    try:
+        name = readtext(_("Your Full name:"))
+        email = readtext(_("Your E-Mail address:"))
+        description = readtext(_("What you were doing:"))
+    except EOFError:
+        raise SystemExit(2)
 
     try:
         from entropy.client.interfaces.qa import UGCErrorReportInterface
