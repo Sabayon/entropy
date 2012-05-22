@@ -1,3 +1,33 @@
+commit 82984b88da03e7454759f2c81607f8759ce1353b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 13:28:42 2012 +0200
+
+    Release Entropy 1.0_rc116
+
+commit 2e4eb90f24eca8f5f72cf98e6b514c9e903050c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 13:27:13 2012 +0200
+
+    [Rigo] avoid UnicodeDecodeError exceptions when writing license Notification message
+
+commit cb61c3bc16e7c5f08bfa6919a6f661e4b1783599
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 12:51:03 2012 +0200
+
+    [client] always catch EOFError when using readtext()
+
+commit f8ea2dffbe08d6694d44bef38fd857447c4da070
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 12:50:38 2012 +0200
+
+    [entropy.output] declare EOFError exception in readtext() docstring
+
+commit fe29c5eba1d2c9d948cc4f2da340f48800517c18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 22 12:38:04 2012 +0200
+
+    Tagging Entropy version 1.0_rc115
+
 commit 2bf8286a0febe2d946b5dd0dbc9663d3295455da
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue May 22 12:38:03 2012 +0200
