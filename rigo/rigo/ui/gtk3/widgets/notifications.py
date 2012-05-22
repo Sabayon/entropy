@@ -462,16 +462,16 @@ class LicensesNotificationBox(NotificationBox):
             lic_txts.append(lic_txt)
 
         if app is None:
-            msg =  prepare_markup(
-                _("You are required to <b>review</b> and <b>accept</b>"
-                    " the following licenses before continuing: %s"))
+            msg = _("You are required to <b>review</b> and <b>accept</b>"
+                    " the following licenses before continuing: %s")
             msg = msg % (", ".join(lic_txts),)
+            msg = prepare_markup(msg)
         else:
-            msg = prepare_markup(
-                _("<b>%s</b> Application or one of its "
+            msg = _("<b>%s</b> Application or one of its "
                     "dependencies is distributed with the following"
-                    " licenses: %s"))
+                    " licenses: %s")
             msg = msg % (self._app.name, ", ".join(lic_txts),)
+            msg = prepare_markup(msg)
 
         label = Gtk.Label()
         label.set_markup(prepare_markup(msg))
