@@ -601,6 +601,7 @@ def readtext(request, password = False):
     @type password: bool
     @return: text read back from stdin
     @rtype: string
+    @raise EOFError: if CTRL+D is pressed
     """
     xterm_title(_("Entropy needs your attention"))
     if password:
