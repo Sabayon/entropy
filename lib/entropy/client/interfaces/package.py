@@ -1383,6 +1383,26 @@ class Package:
             if rc != 0:
                 return rc
 
+        # make sure image_dir always exists
+        # pkgs not providing any file would cause image_dir
+        # to not be created by uncompress_tarball
+        try:
+            os.makedirs(image_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                self._entropy.logger.log(
+                    "[Package]", etpConst['logging']['normal_loglevel_id'],
+                    "Unable to mkdir: %s, error: %s" % (
+                        image_dir, repr(err),)
+                )
+                self._entropy.output(
+                    "%s: %s" % (brown(_("Unpack error")), err.errno,),
+                    importance = 1,
+                    level = "error",
+                    header = red("   ## ")
+                )
+                return 1
+
         # pkg_dbpath is only non-None for the base package file
         # extra package files don't carry any other edb information
         if pkg_dbpath is not None:
