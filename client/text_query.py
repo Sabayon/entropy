@@ -577,6 +577,10 @@ def search_orphaned_files(entropy_client):
     reverse_symlink_map = sys_set['system_rev_symlinks']
     system_dirs_mask = [x for x in sys_set['system_dirs_mask'] \
         if entropy.tools.is_valid_path(x)]
+    # make sure we're all rawstring.
+    system_dirs_mask = [const_convert_to_rawstring(x) for x in \
+            system_dirs_mask]
+
     system_dirs_mask_regexp = []
     for mask in sys_set['system_dirs_mask']:
         reg_mask = re.compile(mask)
@@ -584,9 +588,10 @@ def search_orphaned_files(entropy_client):
 
     count = 0
     for xdir in dirs:
-        # make sure it's unicode
-        xdir = const_convert_to_unicode(
-            xdir, enctype = etpConst['conf_encoding'])
+        # make sure it's bytes (raw encoding
+        # as per EntropyRepository.retrieveContent())
+        xdir = const_convert_to_rawstring(
+                xdir, from_enctype = etpConst['conf_raw_encoding'])
         try:
             wd = os.walk(xdir)
         except RuntimeError: # maximum recursion?
@@ -617,9 +622,10 @@ def search_orphaned_files(entropy_client):
                     continue
 
                 count += 1
+                filename_utf = const_convert_to_unicode(filename)
                 if not etpUi['quiet'] and ((count == 0) or (count % 500 == 0)):
                     count = 0
-                    fname = const_convert_to_unicode(filename[:50])
+                    fname = filename_utf[:50]
                     print_info(" %s %s: %s" % (
                             red("@@"),
                             blue(_("Analyzing")),
@@ -627,12 +633,7 @@ def search_orphaned_files(entropy_client):
                         ),
                         back = True
                     )
-                try:
-                    found_files.add(const_convert_to_unicode(filename))
-                except (UnicodeDecodeError, UnicodeEncodeError,) as e:
-                    if etpUi['quiet']:
-                        continue
-                    print_generic("!!! error on", filename, "skipping:", repr(e))
+                found_files.add(filename_utf)
 
             if found_files:
                 file_data |= found_files
@@ -703,8 +704,7 @@ def search_orphaned_files(entropy_client):
     with open(fname, "wb") as f_out:
 
         for myfile in file_data:
-            myfile = const_convert_to_rawstring(
-                myfile, from_enctype=etpConst['conf_encoding'])
+            myfile = const_convert_to_rawstring(myfile)
             mysize = 0
             try:
                 mysize += os.stat(myfile)[6]
