@@ -69,6 +69,11 @@ repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy
 # Instituto Federal de Educação, Ciência e Tecnologia do Cearà, Brazil
 repository = sabayonlinux.org||http://www2.itti.ifce.edu.br/sabayon/entropy|
 
+# Yandex Linux Mirror, Russian Federation
+# repository = sabayonlinux.org||ftp://mirror.yandex.ru/sabayon/entropy|
+# repository = sabayonlinux.org||rsync://mirror.yandex.ru/sabayon/entropy|
+repository = sabayonlinux.org||http://mirror.yandex.ru/sabayon/entropy|
+
 # Universidade Federal do Parana', Brazil
 repository = sabayonlinux.org||http://sabayon.c3sl.ufpr.br/entropy|
 repository = sabayonlinux.org||ftp://sabayon.c3sl.ufpr.br/sabayon/entropy|
