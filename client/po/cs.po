@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 20:01+0200\n"
-"PO-Revision-Date: 2012-05-15 13:27+0000\n"
+"PO-Revision-Date: 2012-05-23 12:36+0000\n"
 "Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.net/projects/p/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -64,11 +64,11 @@ msgstr "Unikátní identifikátor ZBM nenalezen pro"
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr ""
+msgstr "aktualizuji rozvržení metadat repozitáře, čekejte prosím..."
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
-msgstr ""
+msgstr "generuji metadata provided_libs, čekejte prosím..."
 
 #: ../../lib/entropy/db/skel.py:1639 ../../lib/entropy/db/skel.py:1986
 msgid "SPM"
@@ -265,7 +265,7 @@ msgstr "Nelze spustit spouštěč zdrojového balíčkovacího manažeru pro"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2289
 #: ../../lib/entropy/client/interfaces/trigger.py:270
 msgid "Please report it"
-msgstr ""
+msgstr "Prosíme nahlaste chybu"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2124
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2198
@@ -330,7 +330,7 @@ msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2738
 msgid "Cannot stat path"
-msgstr ""
+msgstr "Nelze získat informace o cestě"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2948
 msgid "Cannot update Portage database to destination"
@@ -531,7 +531,7 @@ msgstr "Nelze vypočítat kontrolní součet"
 
 #: ../../lib/entropy/client/interfaces/methods.py:79
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
+msgstr "Prosím aktualizujte nyní Vaše repozitáře pro odstranění této zprávy."
 
 #: ../../lib/entropy/client/interfaces/methods.py:99
 #: ../../client/text_ui.py:1787
@@ -651,7 +651,7 @@ msgstr "Stahuji repozitář"
 
 #: ../../lib/entropy/client/interfaces/db.py:519
 msgid "repository does not exist online"
-msgstr ""
+msgstr "repozitář neexistuje online"
 
 #: ../../lib/entropy/client/interfaces/db.py:539
 msgid "Downloading checksum"
@@ -754,7 +754,7 @@ msgstr "Nastala chyba při kontrole integrity repozitáře"
 
 #: ../../lib/entropy/client/interfaces/db.py:1145
 msgid "Giving up"
-msgstr ""
+msgstr "Vzdávám se"
 
 #: ../../lib/entropy/client/interfaces/db.py:1167
 #: ../../lib/entropy/security.py:279
@@ -823,7 +823,7 @@ msgstr "Chyba při ověřování GPG"
 #: ../../lib/entropy/client/interfaces/db.py:1416
 #: ../../lib/entropy/security.py:429
 msgid "It could mean a potential security risk"
-msgstr ""
+msgstr "Může znamenat potenciální bezpečnostní riziko"
 
 #: ../../lib/entropy/client/interfaces/db.py:1470
 msgid "Web Service"
@@ -847,7 +847,7 @@ msgstr "Chyba dat služby webu"
 
 #: ../../lib/entropy/client/interfaces/db.py:1542
 msgid "Local status"
-msgstr ""
+msgstr "Místní stav"
 
 #: ../../lib/entropy/client/interfaces/db.py:1574
 msgid "Fetching segments"
@@ -919,7 +919,7 @@ msgstr "Zrcadlo"
 #: ../../lib/entropy/client/interfaces/package.py:300
 #: ../../lib/entropy/client/interfaces/package.py:962
 msgid "maximum failure threshold reached"
-msgstr ""
+msgstr "dosažen maximální počet chyb"
 
 #: ../../lib/entropy/client/interfaces/package.py:345
 msgid "success"
@@ -959,7 +959,7 @@ msgstr "vypršení časového limitu"
 #: ../../lib/entropy/client/interfaces/package.py:1064
 #: ../../lib/entropy/client/interfaces/package.py:2938
 msgid "discarded download"
-msgstr ""
+msgstr "vyřazené stahování"
 
 #: ../../lib/entropy/client/interfaces/package.py:388
 #: ../../lib/entropy/client/interfaces/package.py:1067
@@ -1024,7 +1024,7 @@ msgstr "Podpis balíčku"
 
 #: ../../lib/entropy/client/interfaces/package.py:1236
 msgid "does not match the recorded one"
-msgstr ""
+msgstr "neshoduje se se zaznamenaným"
 
 #: ../../lib/entropy/client/interfaces/package.py:1246
 msgid "matches"
@@ -1101,7 +1101,7 @@ msgstr "Aktualizuje se databáze"
 #: ../../lib/entropy/client/interfaces/package.py:2223
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
-msgstr ""
+msgstr "%s je soubor, ale měl by být adresářem. Odstraňuji za 20 vteřin..."
 
 #: ../../lib/entropy/client/interfaces/package.py:2248
 msgid "directory expected, symlink found"
@@ -1110,7 +1110,7 @@ msgstr "očekáván adresář, nalezen symbolický odkaz"
 #: ../../lib/entropy/client/interfaces/package.py:2251
 #: ../../lib/entropy/client/interfaces/package.py:2513
 msgid "Removing in 20 seconds !!"
-msgstr ""
+msgstr "Odstraním za 20 vteřin."
 
 #: ../../lib/entropy/client/interfaces/package.py:2297
 msgid "Cannot remove symlink"
@@ -1126,7 +1126,7 @@ msgstr "Automaticky slučuji konfigurační soubor, nikdy nebyl měněn"
 #: ../../lib/entropy/client/interfaces/package.py:2448
 #: ../../lib/entropy/client/interfaces/package.py:2470
 msgid "Circular symlink issue"
-msgstr ""
+msgstr "Chyba kruhového odkazu"
 
 #: ../../lib/entropy/client/interfaces/package.py:2510
 msgid "file expected, directory found"
@@ -1138,7 +1138,7 @@ msgstr "Chyba přesunu souboru"
 
 #: ../../lib/entropy/client/interfaces/package.py:2566
 msgid "please report"
-msgstr ""
+msgstr "prosím nahlaste"
 
 #: ../../lib/entropy/client/interfaces/package.py:2717
 msgid "Cannot protect broken symlink"
@@ -1276,7 +1276,7 @@ msgstr "Instalovaný balíček zmizel"
 
 #: ../../lib/entropy/client/interfaces/package.py:3504
 msgid "Fetch not available"
-msgstr ""
+msgstr "Stažení není dostupné"
 
 #: ../../lib/entropy/client/interfaces/package.py:3511
 msgid "Fetching"
@@ -1317,7 +1317,7 @@ msgstr "Instaluji"
 
 #: ../../lib/entropy/client/interfaces/package.py:3598
 msgid "Postinstall"
-msgstr ""
+msgstr "Po-instalace"
 
 #: ../../lib/entropy/client/interfaces/package.py:3606
 msgid "Setup"
@@ -1325,15 +1325,15 @@ msgstr "Nastavení"
 
 #: ../../lib/entropy/client/interfaces/package.py:3614
 msgid "Preinstall"
-msgstr ""
+msgstr "Před-instalace"
 
 #: ../../lib/entropy/client/interfaces/package.py:3622
 msgid "Preremove"
-msgstr ""
+msgstr "Před-odebrání"
 
 #: ../../lib/entropy/client/interfaces/package.py:3630
 msgid "Postremove"
-msgstr ""
+msgstr "Po-odebrání"
 
 #: ../../lib/entropy/client/interfaces/package.py:3644
 msgid "Configuring"
@@ -1353,11 +1353,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/trigger.py:72
 msgid "Source Package Manager interface can't be loaded"
-msgstr ""
+msgstr "Nelze načíst rozhraní zdrojového balíčkovacího manažeru"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:75
 msgid "please fix"
-msgstr ""
+msgstr "prosím opravte"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:268
 msgid "Cannot run External trigger for"
@@ -1373,7 +1373,7 @@ msgstr "před-instalační fáze"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:504
 msgid "setup phase"
-msgstr ""
+msgstr "fáze nastavení"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:514
 msgid "pre-remove phase"
@@ -1500,7 +1500,7 @@ msgstr "Varování"
 
 #: ../../lib/entropy/security.py:659
 msgid "advisory broken"
-msgstr ""
+msgstr "doporučení je rozbité"
 
 #: ../../lib/entropy/security.py:1016
 msgid "getting latest advisories"
@@ -1560,11 +1560,11 @@ msgstr "Závislost běhu"
 
 #: ../../lib/entropy/const.py:637
 msgid "Post dependency"
-msgstr ""
+msgstr "Po instalační závislost"
 
 #: ../../lib/entropy/const.py:638
 msgid "Manually added (by staff) dependency"
-msgstr ""
+msgstr "Ručně přidaná (vývojářská) závislost"
 
 #: ../../lib/entropy/const.py:639
 msgid "Build dependency"
@@ -1890,7 +1890,7 @@ msgstr "Neplatná činnost."
 
 #: ../../lib/entropy/output.py:910
 msgid "String to add (-1 to go back):"
-msgstr ""
+msgstr "Řetězec k přidání (-1 krok zpět):"
 
 #: ../../lib/entropy/output.py:920
 msgid "Invalid string."
@@ -1898,7 +1898,7 @@ msgstr "Neplatný řetězec."
 
 #: ../../lib/entropy/output.py:928
 msgid "Element number to edit (-1 to go back):"
-msgstr ""
+msgstr "Číslo prvku k úpravě (-1 krok zpět):"
 
 #: ../../lib/entropy/output.py:939
 msgid "old"
@@ -1910,7 +1910,7 @@ msgstr "nová hodnota:"
 
 #: ../../lib/entropy/output.py:947 ../../lib/entropy/output.py:965
 msgid "Invalid element."
-msgstr ""
+msgstr "Neplatný prvek"
 
 #: ../../lib/entropy/output.py:956
 msgid "Element number to remove (-1 to go back):"
@@ -1918,7 +1918,7 @@ msgstr "Číslo prvku k odebrání (-1 krok zpět):"
 
 #: ../../lib/entropy/qa.py:161
 msgid "Searching for broken reverse dependencies"
-msgstr ""
+msgstr "Hledám rozbité reverzní závislosti"
 
 #: ../../lib/entropy/qa.py:178
 msgid "scanning for broken reverse dependencies"
@@ -1926,7 +1926,7 @@ msgstr "prohledávání rozbitých reverzních závislostí"
 
 #: ../../lib/entropy/qa.py:219
 msgid "broken libraries detected"
-msgstr ""
+msgstr "nalezeny rozbité knihovny"
 
 #: ../../lib/entropy/qa.py:230
 msgid "needs"
@@ -1934,7 +1934,7 @@ msgstr "vyžaduje"
 
 #: ../../lib/entropy/qa.py:274
 msgid "Searching for missing Runtime dependencies"
-msgstr ""
+msgstr "Hledám chybějící závislosti běhu"
 
 #: ../../lib/entropy/qa.py:281
 msgid "scanning"
@@ -1954,7 +1954,7 @@ msgstr "pravděpodobně chybí v závislostech"
 
 #: ../../lib/entropy/qa.py:519
 msgid "determining missing libraries"
-msgstr ""
+msgstr "zjišťuji chybějící knihovny"
 
 #: ../../lib/entropy/qa.py:551
 msgid "requires"
@@ -1966,7 +1966,7 @@ msgstr "poskytováno"
 
 #: ../../lib/entropy/qa.py:592
 msgid "no missing runtime libraries found"
-msgstr ""
+msgstr "nenalezeny žádné chybějící knihovny"
 
 #: ../../lib/entropy/qa.py:625
 msgid "Libraries test"
@@ -2088,7 +2088,7 @@ msgstr "Oznámeno"
 
 #: ../../client/text_security.py:194
 msgid "Synopsis"
-msgstr ""
+msgstr "Přehled"
 
 #: ../../client/text_security.py:201
 msgid "References"
@@ -2096,7 +2096,7 @@ msgstr "Odkazy"
 
 #: ../../client/text_security.py:207
 msgid "Upstream bugs"
-msgstr ""
+msgstr "Chyby upstreamu"
 
 #: ../../client/text_security.py:213
 msgid "Affected"
@@ -4111,7 +4111,7 @@ msgstr "Vaše e-mailová adresa:"
 
 #: ../../client/equo.py:721
 msgid "What you were doing:"
-msgstr ""
+msgstr "Co jste dělali:"
 
 #: ../../client/equo.py:738
 msgid ""
@@ -4249,7 +4249,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:605
 msgid "Succesfully switched to branch"
-msgstr ""
+msgstr "Úspěšně přepnuto na větev"
 
 #: ../../client/text_ui.py:609
 msgid "Now run 'equo upgrade' to upgrade your distribution to"
@@ -4266,7 +4266,7 @@ msgstr "Každý odpovídající balíček"
 
 #: ../../client/text_ui.py:658
 msgid "is masked"
-msgstr ""
+msgstr "je skrytý"
 
 #: ../../client/text_ui.py:680
 msgid "matching"
@@ -4376,7 +4376,7 @@ msgstr "Nelze nalézt požadované závislosti"
 
 #: ../../client/text_ui.py:1003
 msgid "Conflicting packages were pulled in"
-msgstr ""
+msgstr "Byly vtaženy konfliktní balíčky"
 
 #: ../../client/text_ui.py:1014
 msgid "Please mask conflicts using"
@@ -4393,7 +4393,7 @@ msgstr "Vše hotovo"
 
 #: ../../client/text_ui.py:1076
 msgid "sources fetch"
-msgstr ""
+msgstr "stažení zdrojů"
 
 #: ../../client/text_ui.py:1131 ../../client/text_ui.py:1158
 msgid "fetch"
