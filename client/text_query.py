@@ -703,7 +703,8 @@ def search_orphaned_files(entropy_client):
     with open(fname, "wb") as f_out:
 
         for myfile in file_data:
-            myfile = const_convert_to_rawstring(myfile)
+            myfile = const_convert_to_rawstring(
+                myfile, from_enctype=etpConst['conf_encoding'])
             mysize = 0
             try:
                 mysize += os.stat(myfile)[6]
