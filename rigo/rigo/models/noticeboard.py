@@ -21,7 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 import hashlib
 import email.utils
 
-from rigo.utils import prepare_markup
+from rigo.utils import prepare_markup, escape_markup
 
 
 class Notice(object):
@@ -110,6 +110,9 @@ class Notice(object):
         msg = "<b>%s</b>\n<small><b>%s</b>, " + \
             "<i>%s</i>\n<u>%s</u>\n\n%s</small>"
         msg = msg % (
-            self.title(), self.repository(),
-            self.date(), self.link(), self.description())
+            escape_markup(self.title()),
+            escape_markup(self.repository()),
+            escape_markup(self.date()),
+            escape_markup(self.link()),
+            escape_markup(self.description()))
         return prepare_markup(msg)
