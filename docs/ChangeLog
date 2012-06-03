@@ -1,3 +1,21 @@
+commit 8da07e1f039b9ba7ceab88fc8d1d6ea60787b05b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 3 23:15:30 2012 +0200
+
+    Release Entropy 1.0_rc118
+
+commit 4d3de3b7317c708fe8debe2b32729f25a4548653
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 3 23:14:48 2012 +0200
+
+    [Rigo] fix markup escape issue in Notice Board view
+
+commit bba78d129cc12dbe501c74633bb6b4fa03e5b570
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 28 15:46:33 2012 +0200
+
+    Tagging Entropy version 1.0_rc117
+
 commit 1e4718de7a17b3f366f605b882fc366fb0d946ea
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 28 15:46:27 2012 +0200
