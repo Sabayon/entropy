@@ -2785,10 +2785,23 @@ class PortagePlugin(SpmPlugin):
             package_metadata)
 
     def _bump_vartree_mtime(self, portage_cpv):
+        """
+        Properly bump pkg vdb entry mtime. As oppsed to
+        vartree.dbapi._bump_mtime() this method also bumps
+        mtime of the pkg directory, which is vital as well.
+        """
         root = etpConst['systemroot'] + os.path.sep
-        vartree = self._get_portage_vartree(root = root)
-        if hasattr(vartree.dbapi, '_bump_mtime'):
-            vartree.dbapi._bump_mtime(portage_cpv)
+        base = self._get_vdb_path(root = root)
+        pkg_path = os.path.join(base, portage_cpv)
+        catdir = os.path.dirname(pkg_path)
+        t = time.time()
+        t = (t, t)
+        for x in (pkg_path, catdir, base):
+            try:
+                os.utime(x, t)
+            except OSError as err:
+                sys.stderr.write("Cannot update %s mtime, %s\n" % (
+                        x, repr(err),))
 
     def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
 
