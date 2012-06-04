@@ -1,3 +1,33 @@
+commit 959abae8b278b78fdc0a021304b7c16c90db740a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 4 12:12:46 2012 +0200
+
+    Release Entropy 1.0_rc119
+
+commit 859cb562ed505409e01eb9efd3593a3db171e732
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 4 12:09:13 2012 +0200
+
+    [entropy.spm] PortagePlugin: rewrite _bump_vartree_mtime(), fix Portage cache corruption
+    
+    It has been found that pkg vdb entry mtime was not properly updated,
+    which resulted in the following Portage cache corruption:
+    
+    >>> Auto-cleaning packages...
+    portage: COUNTER for net-libs/gnutls-2.12.18 was corrupted; resetting to value of 0
+
+commit 773797c76f9dc73c0289eea3f68ec5e4cb65f1c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 4 10:26:14 2012 +0200
+
+    [Rigo] do not override DATA_DIR and ICON_PATH with relative paths, fix bug 3370
+
+commit 66a4783d209670b287fcbe257af771900609e183
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 3 23:15:53 2012 +0200
+
+    Tagging Entropy version 1.0_rc118
+
 commit 8da07e1f039b9ba7ceab88fc8d1d6ea60787b05b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jun 3 23:15:30 2012 +0200
