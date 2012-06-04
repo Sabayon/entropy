@@ -22,15 +22,7 @@ import os
 import tempfile
 
 ICON_PATH = os.getenv("RIGO_ICON_PATH", "/usr/share/rigo/icons")
-_local_icon_path = "./data/icons"
-if os.path.isdir(_local_icon_path):
-    ICON_PATH = _local_icon_path
-
 DATA_DIR = os.getenv("RIGO_DATA_DIR", "/usr/share/rigo")
-_local_data_dir = "./data"
-if os.path.isdir(_local_data_dir):
-    DATA_DIR = _local_data_dir
-
 
 _home_dir = os.getenv("HOME")
 if _home_dir is None:
