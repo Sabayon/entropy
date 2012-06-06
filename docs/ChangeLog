@@ -1,3 +1,21 @@
+commit 595d5ed7c4c91641f3f16dd31da683b712db86a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 6 14:54:21 2012 +0200
+
+    Release Entropy 1.0_rc120
+
+commit 4efd1a4c896c70797e304af6f9bad11d6bba8fc6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 6 14:38:05 2012 +0200
+
+    [Rigo] add fallback icons (KDE icon set might not provide them)
+
+commit 79bd3fa839a5fa66d1eb1227d2e3a577e1e48da1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 4 12:13:07 2012 +0200
+
+    Tagging Entropy version 1.0_rc119
+
 commit 959abae8b278b78fdc0a021304b7c16c90db740a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jun 4 12:12:46 2012 +0200
