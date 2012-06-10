@@ -1297,6 +1297,23 @@ class PortagePlugin(SpmPlugin):
         #    # built with
         #    data['chost'] = self._portage.settings['CHOST']
 
+        # Entropy PMS support inside Portage.
+        # This way it is possible to append Entropy-related
+        # dependencies to packages, supported variables:
+        # ENTROPY_RDEPEND, ENTROPY_PDEPEND, ENTROPY_DEPEND
+        e_dep_lst = [
+            ("ENTROPY_RDEPEND", "rdepend"),
+            ("ENTROPY_PDEPEND", "pdepend"),
+            ("ENTROPY_DEPEND", "depend"),
+        ]
+        if uncompressed_env_file is not None:
+            for e_dep, dkey in e_dep_lst:
+                e_xdepend = self.__source_env_get_var(
+                    uncompressed_env_file, e_dep)
+                if e_xdepend:
+                    data[dkey] += " "
+                    data[dkey] += e_xdepend
+
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
 
