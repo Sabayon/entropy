@@ -22,6 +22,3 @@ Backlog (raw)
     - pkgcore spm plugin
         NEEDED is missing
     - python 3.x support -> more tests
-
-  break backward compat:
-      - enable baseinfo-extrainfo-2010 tables

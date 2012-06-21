@@ -132,9 +132,11 @@ class EntropyRepository(EntropyRepositoryBase):
 
     # bump this every time schema changes and databaseStructureUpdate
     # should be triggered
-    _SCHEMA_REVISION = 2
+    _SCHEMA_REVISION = 3
     # Enable new database schema? keep it disabled for now
-    _SCHEMA_2010_SUPPORT = os.getenv("ETP_REPO_SCHEMA_2010", "")
+    _SCHEMA_2010_SUPPORT = True
+    if os.getenv("ETP_REPO_DISABLE_SCHEMA_2010"):
+        _SCHEMA_2010_SUPPORT = False
 
     _SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
