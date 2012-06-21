@@ -2778,6 +2778,10 @@ class PortagePlugin(SpmPlugin):
                 except (OSError, IOError):
                     continue
                 for path_file in path_list:
+                    if path_file.startswith("."):
+                        # ignore hidden files
+                        # like: ._cfg0000-blah
+                        continue
                     full_path_file = os.path.join(path, path_file)
                     if os.path.isfile(full_path_file):
                         file_key = key + ":" + path_file
