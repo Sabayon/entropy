@@ -1812,7 +1812,7 @@ def _mask_unmask_packages(entropy_client, packages, action):
         return 125, -1
 
     if etpUi['ask'] or etpUi['pretend']:
-        mytxt = "%s:" % (blue(_("These are the packages that would be masked")),)
+        mytxt = "%s:" % (blue(_("These are the packages that would be handled")),)
         print_info(red(" @@ ")+mytxt)
 
     match_data = {}
