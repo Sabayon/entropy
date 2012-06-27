@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-09 14:34+0200\n"
+"POT-Creation-Date: 2012-06-27 09:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,55 +18,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ../../lib/entropy/db/__init__.py:5098
+#: ../../lib/entropy/db/__init__.py:5100
 msgid "Syncing current database"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5099
+#: ../../lib/entropy/db/__init__.py:5101
 #: ../../lib/entropy/client/interfaces/db.py:284
 msgid "please wait"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5114
+#: ../../lib/entropy/db/__init__.py:5116
 msgid "Removing entry"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5133
+#: ../../lib/entropy/db/__init__.py:5135
 msgid "Adding entry"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5210
+#: ../../lib/entropy/db/__init__.py:5212
 msgid "Exporting database table"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5250
+#: ../../lib/entropy/db/__init__.py:5252
 msgid "Database Export complete."
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5898 ../../lib/entropy/db/__init__.py:5911
-#: ../../lib/entropy/db/__init__.py:5987 ../../lib/entropy/db/__init__.py:6086
-#: ../../lib/entropy/db/__init__.py:6193 ../../lib/entropy/db/__init__.py:6206
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2546
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2684
+#: ../../lib/entropy/db/__init__.py:5900 ../../lib/entropy/db/__init__.py:5913
+#: ../../lib/entropy/db/__init__.py:5989 ../../lib/entropy/db/__init__.py:6088
+#: ../../lib/entropy/db/__init__.py:6195 ../../lib/entropy/db/__init__.py:6208
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2563
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2701
 #: ../../lib/entropy/client/interfaces/client.py:946
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:598 ../../client/text_rescue.py:804
 msgid "ATTENTION"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5899
+#: ../../lib/entropy/db/__init__.py:5901
 msgid "Spm error occured"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5912
+#: ../../lib/entropy/db/__init__.py:5914
 msgid "Spm Unique Identifier not found for"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:5989 ../../lib/entropy/db/__init__.py:6088
+#: ../../lib/entropy/db/__init__.py:5991 ../../lib/entropy/db/__init__.py:6090
 msgid "updating repository metadata layout, please wait!"
 msgstr ""
 
-#: ../../lib/entropy/db/__init__.py:6194
+#: ../../lib/entropy/db/__init__.py:6196
 msgid "generating provided_libs metadata, please wait!"
 msgstr ""
 
@@ -96,8 +96,8 @@ msgid "package move actions complete"
 msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1702
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2526
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2721
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2543
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2738
 msgid "WARNING"
 msgstr ""
 
@@ -243,41 +243,41 @@ msgstr ""
 msgid "not found"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2211
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2285
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2377
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2449
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2861
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3071
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4636
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2228
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2302
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2394
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2466
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2882
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3092
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4657
 #: ../../lib/entropy/client/interfaces/trigger.py:267
 msgid "QA"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2212
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2286
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2378
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2229
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2303
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2395
 msgid "Cannot run Source Package Manager trigger for"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2221
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2295
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2387
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2238
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2312
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2404
 #: ../../lib/entropy/client/interfaces/trigger.py:270
 msgid "Please report it"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2222
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2296
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2388
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2239
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2313
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2405
 msgid "Attach this"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2450
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2467
 msgid "Cannot run SPM configure phase for"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2454
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2471
 #: ../../lib/entropy/client/interfaces/package.py:3031
 #: ../../lib/entropy/client/interfaces/package.py:3068
 #: ../../lib/entropy/client/interfaces/package.py:3194
@@ -291,64 +291,64 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2505
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2522
 msgid "package not available on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2514
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2531
 msgid "repackaging"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2527
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2544
 msgid "Cannot complete quickpkg for atom"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2529
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2724
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2546
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2741
 msgid "do it manually"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2547
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2564
 msgid "package files rebuild did not run properly"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2548
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2565
 msgid "Please update packages manually"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2685
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2702
 msgid "forcing package updates"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2686
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2703
 msgid "Syncing with"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2722
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2739
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2862
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2883
 msgid "Cannot stat path"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3072
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3093
 msgid "Cannot update Portage database to destination"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3098
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3119
 msgid "SPM uid update error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3176
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3197
 msgid "Cannot update SPM installed pkgs file"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3269
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3290
 msgid "Portage world file is corrupted"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3323
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3344
 #: ../../lib/entropy/client/interfaces/db.py:400
 #: ../../lib/entropy/client/interfaces/db.py:464
 #: ../../lib/entropy/client/interfaces/db.py:518
@@ -360,62 +360,62 @@ msgstr ""
 msgid "Attention"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3324
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3345
 msgid "preserved libraries have been found on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3459
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3609
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3480
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3630
 #: ../../client/text_security.py:116 ../../client/text_smart.py:111
 msgid "does not exist"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3459
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3480
 msgid "Overwriting"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3505
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3526
 msgid "variable differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3505
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3594
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3526
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3615
 msgid "Updating"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3520
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3541
 msgid "updating critical variables"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3594
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3615
 msgid "differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3609
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3630
 msgid "Reverting"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3624
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3645
 msgid "Skipping configuration files update, you are not root."
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3884
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3905
 msgid "Error calculating dependencies"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4367
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4388
 msgid "not supported"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4368
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4389
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4480
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4501
 msgid "IOError while reading"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4637
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4658
 msgid "illegal Entropy package tag in ebuild"
 msgstr ""
 
@@ -4537,7 +4537,7 @@ msgid "Installation complete"
 msgstr ""
 
 #: ../../client/text_ui.py:1815
-msgid "These are the packages that would be masked"
+msgid "These are the packages that would be handled"
 msgstr ""
 
 #: ../../client/text_ui.py:1846
