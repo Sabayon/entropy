@@ -799,6 +799,9 @@ class RepositoryMixin:
         self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
         enabled = self.__conf_enable_disable_repository(repository_id, True)
+        if enabled:
+            # update excluded
+            self._settings['repositories']['excluded'].pop(repository_id, None)
         self._settings.clear()
         self.close_repositories()
         self._validate_repositories()
