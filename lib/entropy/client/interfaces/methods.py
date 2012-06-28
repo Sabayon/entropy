@@ -569,6 +569,7 @@ class RepositoryMixin:
             dest = disabled_conf_file
         try:
             os.rename(src, dest)
+            os.utime(dest, None)
             accomplished = True
             found_in_confd = True
         except OSError as err:
