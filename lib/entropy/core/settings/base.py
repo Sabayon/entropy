@@ -1440,20 +1440,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         repo_conf = self.__setting_files['repositories']
-        root = etpConst['systemroot']
-        try:
-            mtime = os.path.getmtime(repo_conf)
-        except (OSError, IOError):
-            mtime = 0.0
-
-        cache_key = (root, repo_conf)
-        cache_obj = self.__mtime_cache.get(cache_key)
-        if cache_obj is not None:
-            if cache_obj['mtime'] == mtime:
-                return cache_obj['data']
-
-        cache_obj = {'mtime': mtime,}
-
         data = {
             'available': {},
             'excluded': {},
@@ -1470,8 +1456,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         }
 
         if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
-            cache_obj['data'] = data
-            self.__mtime_cache[cache_key] = cache_obj
             return data
 
         enc = etpConst['conf_encoding']
@@ -1781,8 +1765,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 except KeyError:
                     continue
 
-        cache_obj['data'] = data
-        self.__mtime_cache[cache_key] = cache_obj
         return data
 
     def _clear_repository_cache(self, repoid = None):
