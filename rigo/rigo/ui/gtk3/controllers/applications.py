@@ -348,6 +348,11 @@ class ApplicationsViewController(GObject.Object):
         elif text == "rigo:notice":
             self._service.noticeboards()
             return
+        elif text == "rigo:repo":
+            GLib.idle_add(self.emit, "view-want-change",
+                          RigoViewStates.REPOSITORY_VIEW_STATE,
+                          None)
+            return
 
         # debug, simulation
         elif text == "rigo:vte":
@@ -615,9 +620,18 @@ class ApplicationsViewController(GObject.Object):
             self._search_activate)
         self._view.show()
 
-    def clear(self):
+    def clear_silent(self):
         self._view.clear_model()
         ApplicationMetadata.discard()
+
+    def deselect(self):
+        """
+        Deselect currently selected Applications.
+        """
+        self._view.clear_selection()
+
+    def clear(self):
+        self.clear_silent()
         if const_debug_enabled():
             const_debug_write(__name__, "AVC: emitting view-cleared")
         self.emit("view-cleared")
@@ -644,6 +658,9 @@ class ApplicationsViewController(GObject.Object):
 
     def clear_safe(self):
         GLib.idle_add(self.clear)
+
+    def clear_silent_safe(self):
+        GLib.idle_add(self.clear_silent)
 
     def append_safe(self, opaque):
         GLib.idle_add(self.append, opaque)

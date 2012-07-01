@@ -45,6 +45,7 @@ from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
 from rigo.ui.gtk3.widgets.noticeboardtreeview import NoticeBoardTreeView
 from rigo.ui.gtk3.widgets.preferencestreeview import PreferencesTreeView
+from rigo.ui.gtk3.widgets.repositorytreeview import RepositoryTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 from rigo.ui.gtk3.controllers.applications import \
     ApplicationsViewController
@@ -56,6 +57,8 @@ from rigo.ui.gtk3.controllers.noticeboard import \
     NoticeBoardViewController
 from rigo.ui.gtk3.controllers.preference import \
     PreferenceViewController
+from rigo.ui.gtk3.controllers.repository import \
+    RepositoryViewController
 
 from rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
@@ -66,6 +69,7 @@ from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
 from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
 from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
+from rigo.ui.gtk3.models.repositoryliststore import RepositoryListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
 from rigo.utils import escape_markup
@@ -131,7 +135,10 @@ class Rigo(Gtk.Application):
                 self._exit_noticeboard_state),
             RigoViewStates.PREFERENCES_VIEW_STATE: (
                 self._enter_preferences_state,
-                self._exit_preferences_state)
+                self._exit_preferences_state),
+            RigoViewStates.REPOSITORY_VIEW_STATE: (
+                self._enter_repository_state,
+                self._exit_repository_state)
         }
         self._state_mutex = Lock()
 
@@ -163,6 +170,11 @@ class Rigo(Gtk.Application):
             "configViewScrolledWindow")
         self._config_view = self._builder.get_object("configViewVbox")
         self._config_view.set_name("rigo-view")
+
+        self._repo_scrolled_view = self._builder.get_object(
+            "repoViewScrolledWindow")
+        self._repo_view = self._builder.get_object("repoViewVbox")
+        self._repo_view.set_name("rigo-view")
 
         self._notice_scrolled_view = self._builder.get_object(
             "noticeViewScrolledWindow")
@@ -240,6 +252,18 @@ class Rigo(Gtk.Application):
 
         self._service.set_configuration_controller(self._config_view_c)
 
+        # Repository model, view and controller
+        self._repo_store = RepositoryListStore()
+        self._view_repo = RepositoryTreeView(
+            icons, RepositoryListStore.ICON_SIZE)
+        self._repo_scrolled_view.add(self._view_repo)
+        def _repo_queue_draw(*args):
+            self._view_repo.queue_draw()
+        self._repo_store.connect("redraw-request", _repo_queue_draw)
+        self._repo_view_c = RepositoryViewController(
+            self._pref_view_c, self._service, self._repo_store,
+            self._view_repo)
+
         # NoticeBoard model, view and controller
         self._notice_store = NoticeBoardListStore()
         self._view_notice = NoticeBoardTreeView(
@@ -293,6 +317,9 @@ class Rigo(Gtk.Application):
 
         self._config_view_c.set_notification_controller(self._nc)
         self._config_view_c.set_applications_controller(self._avc)
+
+        self._repo_view_c.set_notification_controller(self._nc)
+        self._repo_view_c.set_applications_controller(self._avc)
 
         self._notice_view_c.set_notification_controller(self._nc)
         self._notice_view_c.set_applications_controller(self._avc)
@@ -449,6 +476,7 @@ class Rigo(Gtk.Application):
         Action triggered when UI exits the Application Browser
         state (or mode).
         """
+        self._avc.deselect()
         self._apps_view.hide()
 
     def _enter_browser_state(self):
@@ -485,6 +513,22 @@ class Rigo(Gtk.Application):
         state (or mode).
         """
         self._notice_view.show()
+
+    def _exit_repository_state(self):
+        """
+        Action triggered when UI exits the Repository
+        Management state (or mode).
+        """
+        self._repo_view.hide()
+        self._repo_view_c.clear()
+
+    def _enter_repository_state(self):
+        """
+        Action triggered when UI enters the Repository
+        Management state (or mode).
+        """
+        self._repo_view_c.load()
+        self._repo_view.show()
 
     def _exit_preferences_state(self):
         """
@@ -778,6 +822,7 @@ class Rigo(Gtk.Application):
         self._thread_dumper()
         self._pref_view_c.setup()
         self._config_view_c.setup()
+        self._repo_view_c.setup()
         self._notice_view_c.setup()
         self._app_view_c.setup()
         self._avc.setup()

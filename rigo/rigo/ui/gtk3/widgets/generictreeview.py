@@ -57,11 +57,15 @@ class GenericTreeView(Gtk.TreeView):
             return model.get_model()
         return model
 
+    def clear_selection(self):
+        self.expanded_path = None
+        self.focal_btn = None
+
     def clear_model(self):
         vadjustment = self.get_scrolled_window_vadjustment()
         if vadjustment:
             vadjustment.set_value(0)
-        self.expanded_path = None
+        self.clear_selection()
         model = self.model
         if model:
             model.clear()
@@ -114,11 +118,9 @@ class GenericTreeView(Gtk.TreeView):
         normal_height = max(32 + 4*ypad, em(2.5) + 4*ypad)
         markup_height = tr.markup_height
         if markup_height > 0:
-            markup_height -= normal_height
+            normal_height -= max(0, markup_height)
         tr.normal_height = normal_height + markup_height
-
-        tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM \
-            + ypad
+        tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM
 
     def _on_style_updated(self, widget, tr):
         self._calc_row_heights(tr)

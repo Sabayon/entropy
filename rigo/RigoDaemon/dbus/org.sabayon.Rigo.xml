@@ -92,5 +92,21 @@
     <method name="reload"/>
 
     <method name="pong"/>
+
+    <!-- Repositories Settings Management -->
+    <method name="enable_repository">
+      <arg name="repository_id" type="s" direction="in"/>
+      <arg name="accepted" type="b" direction="out"/>
+    </method>
+    <method name="disable_repository">
+      <arg name="repository_id" type="s" direction="in"/>
+      <arg name="accepted" type="b" direction="out"/>
+    </method>
+    <method name="rename_repository">
+      <arg name="from_repository_id" type="s" direction="in"/>
+      <arg name="to_repository_id" type="s" direction="in"/>
+      <arg name="accepted" type="b" direction="out"/>
+    </method>
+
   </interface>
 </node>

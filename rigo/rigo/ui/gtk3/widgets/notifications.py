@@ -334,7 +334,8 @@ class LoginNotificationBox(NotificationBox):
         def _login_error():
             self._login_message.show()
             self._login_message.set_markup(
-                _("Login <b>error</b>!"))
+                prepare_markup(
+                    _("Login <b>error</b>!")))
 
         webserv.add_credentials(username, password)
         try:
@@ -1067,3 +1068,96 @@ class NoticeBoardNotificationBox(NotificationBox):
         This NotificationBox cannot be destroyed easily.
         """
         return True
+
+
+class RenameRepositoryNotificationBox(NotificationBox):
+
+    """
+    NotificationBox used to rename repositories.
+    """
+
+    __gsignals__ = {
+        "renamed" : (GObject.SignalFlags.RUN_LAST,
+                     None,
+                     tuple(),
+                     ),
+        "cancelled" : (GObject.SignalFlags.RUN_LAST,
+                       None,
+                       tuple(),
+                       ),
+    }
+
+    def __init__(self, repo_object, rigo_service):
+        self._repo = repo_object
+        self._service = rigo_service
+        context_id = "RenameRepositoryNotificationBox"
+
+        NotificationBox.__init__(self, None,
+            message_widget=self._make_rename_box(),
+            tooltip=prepare_markup(
+                _("You are about to rename a Repository")),
+            message_type=Gtk.MessageType.INFO,
+            context_id=context_id)
+
+        self.add_button(_("_Rename"), self._rename)
+
+        def _destroy(*args):
+            self.emit("cancelled")
+            self.destroy()
+        self.add_button(_("_Cancel"), _destroy)
+
+    def _make_rename_box(self):
+
+        vbox = Gtk.VBox()
+        hbox = Gtk.HBox()
+
+        repo_box = Gtk.VBox()
+        repo_label = Gtk.Label()
+        repo_label.set_markup(
+            escape_markup(_("Repository name")))
+        repo_label.set_alignment(0.0, 0.50)
+        repo_label.set_padding(-1, 5)
+        repo_box.pack_start(repo_label, False, False, 0)
+        self._repo_entry = Gtk.Entry()
+        self._repo_entry.set_text(self._repo.repository())
+        repo_box.pack_start(self._repo_entry, False, False, 0)
+        hbox.pack_start(repo_box, False, False, 0)
+
+        hbox.set_property("expand", True)
+
+        self._repo_message = Gtk.Label()
+        self._repo_message.set_no_show_all(True)
+        self._repo_message.set_alignment(0.0, 1.0)
+        self._repo_message.set_padding(10, 5)
+        self._repo_message.set_name("message-area-error")
+        hbox.pack_start(self._repo_message, False, False, 0)
+
+        vbox.pack_start(hbox, False, False, 0)
+
+        return vbox
+
+    def _rename(self, button):
+        """
+        Try to login to Entropy Web Services.
+        """
+        repository_id = self._repo_entry.get_text()
+        valid = entropy.tools.validate_repository_id(repository_id)
+        if not valid:
+            self._repo_message.show()
+            self._repo_message.set_markup(
+                prepare_markup(
+                    _("<b>Invalid</b> Repository name!")))
+            return
+
+        from_repository_id = self._repo.repository()
+        renamed = self._service.rename_repository(
+            from_repository_id, repository_id)
+        if not renamed:
+            self._repo_message.show()
+            self._repo_message.set_markup(
+                prepare_markup(
+                    _("Repository rename <b>not allowed</b>!")))
+            return
+
+        self.destroy()
+        self.emit("renamed")

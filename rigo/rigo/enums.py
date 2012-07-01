@@ -37,6 +37,7 @@ class Icons:
     GENERIC_MISSING = "gtk-missing-image"
     INSTALLED_OVERLAY = "rigo-installed"
     CONFIGURATION_FILE = "text-x-generic"
+    REPOSITORY = "repo"
 
 # application actions
 class AppActions:
@@ -60,7 +61,8 @@ class RigoViewStates:
         CONFUPDATES_VIEW_STATE,
         NOTICEBOARD_VIEW_STATE,
         PREFERENCES_VIEW_STATE,
-    ) = range(7)
+        REPOSITORY_VIEW_STATE,
+    ) = range(8)
 
 class LocalActivityStates:
     (

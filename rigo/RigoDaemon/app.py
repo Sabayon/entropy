@@ -24,6 +24,7 @@ import signal
 import tempfile
 import shutil
 import subprocess
+import copy
 from threading import Lock, Timer, Semaphore
 from collections import deque
 
@@ -388,7 +389,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 4
+    API_VERSION = 5
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -546,6 +547,9 @@ class RigoDaemonService(dbus.service.Object):
         self._config_updates_mutex = Lock()
 
         self._greetings_serializer = Lock()
+        # Thread serializer for Entropy SystemSettings
+        # active management.
+        self._settings_mgmt_serializer = Lock()
 
         self._action_queue = deque()
         self._action_queue_length_mutex = Lock()
@@ -2833,6 +2837,31 @@ class RigoDaemonService(dbus.service.Object):
             path = ""
         return path
 
+    def _execute_settings_management(self, pid, method, *args, **kwargs):
+        """
+        Execute the given configuration management task, acquiring all
+        the needed locks, blocking if needed, etc.
+        """
+        authorized = self._authorize(
+            pid, PolicyActions.MANAGE_CONFIGURATION)
+        if not authorized:
+            return
+
+        with self._activity_mutex: # BLOCK
+            self._acquire_shared()
+            try:
+
+                done = False
+                self._rwsem.writer_acquire()
+                try:
+                    done = method(*args, **kwargs)
+                finally:
+                    self._rwsem.writer_release()
+                return done
+
+            finally:
+                self._release_shared()
+
     @dbus.service.method(BUS_NAME, in_signature='s',
         out_signature='s', sender_keyword='sender')
     def view_configuration_source(self, source, sender=None):
@@ -3024,6 +3053,164 @@ class RigoDaemonService(dbus.service.Object):
         task.daemon = True
         task.start()
 
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='b', sender_keyword='sender')
+    def enable_repository(self, repository_id, sender=None):
+        """
+        Enable the given Repository.
+        """
+        pid = self._get_caller_pid(sender)
+        write_output("enable_repository() received, pid: %s" % (pid,),
+                     debug=True)
+
+        repository_id = self._dbus_to_unicode(repository_id)
+        settings = SystemSettings()
+        repo_data = settings['repositories']
+        available = repo_data['available']
+        excluded = repo_data['excluded']
+        if repository_id in available:
+            write_output("enable_repository(): repository already enabled",
+                         debug=True)
+            return False # repository already enabled
+        if repository_id not in excluded:
+            write_output("enable_repository(): repository not found",
+                         debug=True)
+            return False # repository not available
+        if not entropy.tools.validate_repository_id(repository_id):
+            write_output("enable_repository(): repository string invalid",
+                         debug=True)
+            return False # repository_id string is invalid
+
+        def _configure(pid):
+            with self._settings_mgmt_serializer:
+                def _enable_repo():
+                    outcome = self._entropy.enable_repository(repository_id)
+                    self._entropy.Settings().clear()
+                    self._entropy._validate_repositories()
+                    return outcome
+                executed = self._execute_settings_management(
+                    pid, _enable_repo)
+                GLib.idle_add(self.repositories_settings_changed,
+                              [repository_id], executed)
+
+        task = ParallelTask(
+            _configure,
+            self._get_caller_pid(sender))
+        task.name = "EnableRepository"
+        task.daemon = True
+        task.start()
+        return True
+
+    @dbus.service.method(BUS_NAME, in_signature='s',
+        out_signature='b', sender_keyword='sender')
+    def disable_repository(self, repository_id, sender=None):
+        """
+        Disable the given Repository.
+        """
+        pid = self._get_caller_pid(sender)
+        write_output("disable_repository() received, pid: %s" % (pid,),
+                     debug=True)
+
+        repository_id = self._dbus_to_unicode(repository_id)
+        settings = SystemSettings()
+        repo_data = settings['repositories']
+        available = repo_data['available']
+        excluded = repo_data['excluded']
+        if repository_id not in available:
+            write_output("disable_repository(): repository already disabled",
+                         debug=True)
+            return False # repository already enabled
+        if repository_id in excluded:
+            write_output("disable_repository(): repository not available",
+                         debug=True)
+            return False # repository not available
+        if not entropy.tools.validate_repository_id(repository_id):
+            write_output("disable_repository(): repository string invalid",
+                         debug=True)
+            return False # repository_id string is invalid
+
+        def _configure(pid):
+            with self._settings_mgmt_serializer:
+                def _disable_repo():
+                    outcome = self._entropy.disable_repository(repository_id)
+                    self._entropy.Settings().clear()
+                    self._entropy._validate_repositories()
+                    return outcome
+                executed = self._execute_settings_management(
+                    pid, _disable_repo)
+                GLib.idle_add(self.repositories_settings_changed,
+                              [repository_id], executed)
+
+        task = ParallelTask(
+            _configure,
+            self._get_caller_pid(sender))
+        task.name = "DisableRepository"
+        task.daemon = True
+        task.start()
+        return True
+
+    @dbus.service.method(BUS_NAME, in_signature='ss',
+        out_signature='b', sender_keyword='sender')
+    def rename_repository(self, from_repository_id, to_repository_id,
+                          sender=None):
+        """
+        Rename a Repository.
+
+        TODO: concurrent access
+        """
+        pid = self._get_caller_pid(sender)
+        write_output("disable_repository() received, pid: %s" % (pid,),
+                     debug=True)
+
+        settings = SystemSettings()
+        repo_data = settings['repositories']
+        available = repo_data['available']
+        excluded = repo_data['excluded']
+        repositories = set(available.keys())
+        repositories |= set(excluded.keys())
+        if from_repository_id not in repositories:
+            return False
+        if to_repository_id in repositories:
+            return False
+        if not entropy.tools.validate_repository_id(from_repository_id):
+            return False # repository_id string is invalid
+        if not entropy.tools.validate_repository_id(to_repository_id):
+            return False # repository_id string is invalid
+
+        def _rename_repository():
+            from_data = None
+            if from_repository_id in available:
+                from_data = copy.copy(available[from_repository_id])
+            elif from_repository_id in excluded:
+                from_data = copy.copy(excluded[from_repository_id])
+            else:
+                return False # wtf?
+
+            # create new repo
+            from_data['repoid'] = to_repository_id
+            added = self._entropy.add_repository(from_data)
+            if not added:
+                return False
+            # remove old
+            self._entropy.remove_repository(from_repository_id)
+            return True
+
+        def _configure(pid):
+            with self._settings_mgmt_serializer:
+                executed = self._execute_settings_management(
+                    pid, _rename_repository)
+                GLib.idle_add(self.repositories_settings_changed,
+                              [from_repository_id, to_repository_id],
+                              executed)
+
+        task = ParallelTask(
+            _configure,
+            self._get_caller_pid(sender))
+        task.name = "RenameRepository"
+        task.daemon = True
+        task.start()
+        return True
+
     ### DBUS SIGNALS
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
@@ -3086,6 +3273,20 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("configuration_updates_available() issued, args:"
                      " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='asb')
+    def repositories_settings_changed(self, repository_ids, success):
+        """
+        Notify that Repositories configuration has changed.
+        This may include:
+        - a repository has been enabled
+        - a repository has been disabled
+        - a repository has been renamed
+        - a repository has been added
+        - a repository has been removed
+        """
+        write_output("repositories_settings_changed() issued", debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')

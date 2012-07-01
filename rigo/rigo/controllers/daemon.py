@@ -68,6 +68,7 @@ class RigoServiceController(GObject.Object):
     ANOTHER_ACTIVITY_CONTEXT_ID = "AnotherActivityNotificationContextId"
     SYSTEM_UPGRADE_CONTEXT_ID = "SystemUpgradeContextId"
     PKG_INSTALL_CONTEXT_ID = "PackageInstallContextId"
+    REPOSITORY_SETTINGS_CONTEXT_ID = "RepositoriesSettingsContextId"
 
     class ServiceNotificationBox(NotificationBox):
 
@@ -128,6 +129,11 @@ class RigoServiceController(GObject.Object):
                                   (GObject.TYPE_PYOBJECT,
                                    GObject.TYPE_PYOBJECT,),
                                   ),
+        # Repository settings have changed
+        "repositories-settings-changed" : (GObject.SignalFlags.RUN_LAST,
+                                           None,
+                                           tuple(),
+                                           ),
         # Application actions have been completed
         "applications-managed" : (GObject.SignalFlags.RUN_LAST,
                                   None,
@@ -179,7 +185,8 @@ class RigoServiceController(GObject.Object):
     _UNAVAILABLE_REPOSITORIES_SIGNAL = "unavailable_repositories"
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
-    _SUPPORTED_APIS = [4]
+    _REPOS_SETTINGS_CHANGED_SIGNAL = "repositories_settings_changed"
+    _SUPPORTED_APIS = [5]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -527,6 +534,13 @@ class RigoServiceController(GObject.Object):
                     self._noticeboards_available_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
+                # RigoDaemon tells us that repositories settings
+                # have changed
+                self.__entropy_bus.connect_to_signal(
+                    self._REPOS_SETTINGS_CHANGED_SIGNAL,
+                    self._repositories_settings_changed_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
             return self.__entropy_bus
 
     ### GOBJECT EVENTS
@@ -545,6 +559,43 @@ class RigoServiceController(GObject.Object):
         self.application_request(app, app_action)
 
     ### DBUS SIGNALS
+
+    def _repositories_settings_changed_signal(self, repository_ids, success):
+
+        repository_ids = [self._dbus_to_unicode(x) for x in repository_ids]
+        const_debug_write(
+            __name__,
+            "_repositories_settings_changed_signal, %s, success: "
+            "%s" % (repository_ids, success,))
+
+        if not success:
+            # just inform user and exit
+            msg = prepare_markup(
+                _("Repositories Settings <b>could not</b> be changed. Sorry."))
+            box = self.ServiceNotificationBox(
+                msg, Gtk.MessageType.WARNING,
+                context_id=self.REPOSITORY_SETTINGS_CONTEXT_ID)
+            if self._nc is not None:
+                self._nc.append(box, timeout=10)
+            return
+
+        def _cb():
+            self._entropy._validate_repositories()
+
+        def _notify():
+            # Clear all the NotificationBoxes, in particular
+            # the one listing the available updates
+            if self._nc is not None:
+                self._nc.clear_safe(managed=False)
+            self._release_local_resources(
+                clear_avc_silent=True, clear_callback=_cb) # CANBLOCK
+            GLib.idle_add(self.emit, "repositories-settings-changed")
+            GLib.idle_add(self.hello)
+
+        task = ParallelTask(_notify)
+        task.name = "RepositoriesChangedSignalNotifier"
+        task.daemon = True
+        task.start()
 
     def _application_enqueued_signal(self, package_id, repository_id,
                                      daemon_action):
@@ -1425,6 +1476,71 @@ class RigoServiceController(GObject.Object):
                 ).noticeboards()
         return self._execute_mainloop(_notice)
 
+    def list_repositories(self):
+        """
+        Return a list of Available Repositories, ordered by
+        repository_id. Each list item is a tuple composed by
+        (repository_id, description, enabled/disabled)
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            settings = self._entropy.Settings()
+            repo_data = settings['repositories']
+            available = repo_data['available']
+            excluded = repo_data['excluded']
+
+            repositories = []
+            for repository_id, data in available.items():
+                repositories.append(
+                    (repository_id, data['description'], True))
+            for repository_id, data in excluded.items():
+                repositories.append(
+                    (repository_id, data['description'], False))
+
+            repositories.sort(key=lambda x: x[0])
+            return repositories
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    def enable_repository(self, repository_id):
+        """
+        Enable the given Repository (if disabled).
+        Return True if action has been accepted by RigoDaemon,
+        False otherwise.
+        """
+        def _execute():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).enable_repository(
+                    repository_id)
+        return self._execute_mainloop(_execute)
+
+    def disable_repository(self, repository_id):
+        """
+        Disable the given Repository (if disabled).
+        Return True if action has been accepted by RigoDaemon,
+        False otherwise.
+        """
+        def _execute():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).disable_repository(
+                    repository_id)
+        return self._execute_mainloop(_execute)
+
+    def rename_repository(self, from_repository_id, to_repository_id):
+        """
+        Rename a Repository.
+        Return True if action has been accepted by RigoDaemon,
+        False otherwise.
+        """
+        def _execute():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).rename_repository(
+                    from_repository_id, to_repository_id)
+        return self._execute_mainloop(_execute)
+
     def merge_configuration(self, source, reply_handler=None,
                             error_handler=None):
         """
@@ -1659,7 +1775,9 @@ class RigoServiceController(GObject.Object):
         finally:
             self._entropy.rwsem().writer_release()
 
-    def _release_local_resources(self, clear_avc=True):
+    def _release_local_resources(self, clear_avc=True,
+                                 clear_avc_silent=False,
+                                 clear_callback=None):
         """
         Release all the local resources (like repositories)
         that shall be used by RigoDaemon.
@@ -1669,8 +1787,13 @@ class RigoServiceController(GObject.Object):
         self._entropy.rwsem().writer_acquire()
         try:
             if clear_avc and self._avc is not None:
-                self._avc.clear_safe()
+                if clear_avc_silent:
+                    self._avc.clear_silent_safe()
+                else:
+                    self._avc.clear_safe()
             self._entropy.close_repositories()
+            if clear_callback is not None:
+                clear_callback()
         finally:
             self._entropy.rwsem().writer_release()
 
