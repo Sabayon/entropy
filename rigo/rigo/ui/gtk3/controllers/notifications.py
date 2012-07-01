@@ -187,11 +187,12 @@ class BottomNotificationViewController(NotificationViewController):
                             ),
     }
 
-    def __init__(self, window, notification_box):
+    def __init__(self, window, notification_box, preference_button):
 
         self._window = window
         NotificationViewController.__init__(
             self, notification_box)
+        self._pref_button = preference_button
 
     def _on_work_view_show(self, widget):
         """
@@ -259,16 +260,20 @@ class BottomNotificationViewController(NotificationViewController):
         """
         if local_activity == LocalActivityStates.READY:
             self.clear()
+            self._pref_button.set_sensitive(True)
             return
 
         if local_activity == LocalActivityStates.UPDATING_REPOSITORIES:
             self._append_repositories_update()
+            self._pref_button.set_sensitive(False)
             return
         elif local_activity == LocalActivityStates.MANAGING_APPLICATIONS:
             self._append_installing_apps()
+            self._pref_button.set_sensitive(False)
             return
         elif local_activity == LocalActivityStates.UPGRADING_SYSTEM:
             self._append_upgrading_system()
+            self._pref_button.set_sensitive(False)
             return
 
         raise NotImplementedError()

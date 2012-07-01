@@ -308,7 +308,8 @@ class Rigo(Gtk.Application):
         # providing Activity control to User during
         # the Activity itself.
         self._bottom_nc = BottomNotificationViewController(
-            self._window, self._bottom_notification)
+            self._window, self._bottom_notification,
+            self._pref_button)
         self._service.set_bottom_notification_controller(
             self._bottom_nc)
 
