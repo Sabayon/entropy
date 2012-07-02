@@ -5657,6 +5657,9 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createLicensesIndex()
             self._createCategoriesIndex()
             self._createCompileFlagsIndex()
+        # make sure to commit here, or ANALYZE below
+        # might deadlock
+        self.commit(force=True)
         self._cursor().execute("ANALYZE").fetchall()
 
     def _createMirrorlinksIndex(self):
