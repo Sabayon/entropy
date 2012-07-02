@@ -1,3 +1,107 @@
+commit 703f2ff9299382f943e3907f63cf4ff97c099d64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 11:47:09 2012 +0200
+
+    Release Entropy 1.0_rc121
+
+commit 3a07ed4483e48c2f88a3cfd27ec37975df3e8108
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 11:46:47 2012 +0200
+
+    [client] update translations
+
+commit 1897e961ff81a34187a429a32522a173222d61f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 11:46:27 2012 +0200
+
+    [Rigo] update translations
+
+commit fdb655348ed945e9003b310300d6ab134ebe470c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 00:01:50 2012 +0200
+
+    [Rigo] disable the "Preferences" button when an activity is in progress
+
+commit e1a0ca94c5a924d0aa4f03721803f8af25abfe1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 1 23:43:59 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit b29764443beed8372b270b20c96b009b024fc3a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 1 23:41:07 2012 +0200
+
+    [Rigo] implement Repository management
+
+commit 853359c208cf4b4124ed535b7af890d2759cb80c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 28 15:47:24 2012 +0200
+
+    [entropy.client] make sure to drop any reference to disabled repo when enabling
+
+commit 18f422a680c22edc314a61038883179acab6a6d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 28 15:46:07 2012 +0200
+
+    [entropy.client] bump configuration file mtime when enabling/disabling repositories
+    
+    This is useful for any mtime-based cache around. os.rename() doesn't
+    affect mtime.
+
+commit 83c69da974343e6129a0444f270105b5e18bb190
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 28 15:45:09 2012 +0200
+
+    [entropy.core] SystemSettings: remove mtime cache for repositories.conf.*
+    
+    The code only checked for repositories.conf mtime, completely ignoring
+    any mtime change inside repositories.conf.d/. Drop for now.
+
+commit cc9f70d9c4f5acf330e94c74a5bafdd4030dbe17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 27 09:46:21 2012 +0200
+
+    [equo] update .pot
+
+commit 6cc0b57e8bd234a247b43ddd1a1391170b369089
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 27 09:45:44 2012 +0200
+
+    [equo] fix typo in string, close bug 3436
+
+commit a1ba8b983a2bed16278411b1760f7c750f109056
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 21 11:34:34 2012 +0200
+
+    enable baseinfo-extrainfo-2010 database schema by default
+    
+    After 2 years, we are ready to enable it by default
+
+commit 1f83831ed8b48358af292e4d2d198dd9e0d33c46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 21 11:33:53 2012 +0200
+
+    ignore hidden files when generating the SPM config files list
+
+commit 979369d5d5a2215b26fda1e123f2b3e4d149351f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 10 12:28:02 2012 +0200
+
+    [entropy.spm] add support for ENTROPY_*DEPEND variables inside ebuilds
+
+commit ed688f2ef5477bcf43c8f29f204c04f560b5f241
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 9 14:35:59 2012 +0200
+
+    [client] update entropy.pot
+
+commit e29c4e888c3acec7b9548038614a7865001bd3d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 6 14:54:44 2012 +0200
+
+    Tagging Entropy version 1.0_rc120
+
 commit 595d5ed7c4c91641f3f16dd31da683b712db86a7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jun 6 14:54:21 2012 +0200
