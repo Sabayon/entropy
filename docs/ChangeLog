@@ -1,3 +1,31 @@
+commit 01a8f3e5863f66fdb1db640b4642b2722c05a8f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 23:41:31 2012 +0200
+
+    Release Entropy 1.0_rc122
+
+commit fb5cb00b9db9f5c4a47c0b09f3ddd31af08ecfaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 23:40:03 2012 +0200
+
+    [entropy.db] make sure to commit() at the end of createAllIndexes()
+    
+    It has been found that with the new baseinfo, extrainfo SCHEMA,
+    createAllIndexes() deadlocks at the ANALYZE statement. Committing
+    any previous transaction before calling ANALYZE fixes the issue.
+
+commit 0596e92e53859c5c89a046e6ec11dd4d98213e74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 12:05:39 2012 +0200
+
+    [Rigo] handle the case where get_visible_range() returns None
+
+commit 6c89b1ec0f9e7ec81664a07e2d71966c23a9e2b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 11:47:10 2012 +0200
+
+    Tagging Entropy version 1.0_rc121
+
 commit 703f2ff9299382f943e3907f63cf4ff97c099d64
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jul 2 11:47:09 2012 +0200
