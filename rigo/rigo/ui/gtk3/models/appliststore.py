@@ -103,6 +103,8 @@ class AppListStore(Gtk.ListStore):
             res = False
             try:
                 vis_data = self._view.get_visible_range()
+                if vis_data is None:
+                    return
                 if len(vis_data) == 2:
                     # Gtk 3.4
                     valid_paths = True
@@ -112,7 +114,6 @@ class AppListStore(Gtk.ListStore):
                     valid_paths, start_path, end_path = vis_data
 
                 if not valid_paths:
-                    res = False
                     return
 
                 path = start_path
