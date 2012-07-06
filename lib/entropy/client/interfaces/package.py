@@ -2067,6 +2067,7 @@ class Package:
         if automerge_data:
             inst_repo.insertAutomergefiles(idpackage, automerge_data)
 
+        inst_repo.commit()
         return idpackage
 
     def __filter_out_items_not_installed_from_content(self, pkg_data):

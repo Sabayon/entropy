@@ -692,7 +692,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # check_same_thread still required for
             # conn.close() called from
             # arbitrary thread
-            conn = dbapi2.connect(self._db_path, timeout=300.0,
+            conn = dbapi2.connect(self._db_path, timeout=30.0,
                                   check_same_thread = False)
             with self.__connlock:
                 self.__connection_cache[c_key] = conn
@@ -1405,7 +1405,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)
         """, (str(date), package_id,))
-        self.commit()
 
     def setDigest(self, package_id, digest):
         """
@@ -1415,7 +1414,6 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)
         """, (digest, package_id,))
         self._clearLiveCache("retrieveDigest")
-        self.commit()
 
     def setSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
         """
@@ -1438,7 +1436,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE extrainfo SET download = (?) WHERE idpackage = (?)
         """, (url, package_id,))
-        self.commit()
 
     def setCategory(self, package_id, category):
         """
@@ -1466,7 +1463,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
-        self.commit()
 
     def setCategoryDescription(self, category, description_data):
         """
@@ -1480,8 +1476,6 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             INSERT INTO categoriesdescription VALUES (?,?,?)
             """, (category, locale, mydesc,))
-
-        self.commit()
 
     def setName(self, package_id, name):
         """
@@ -1497,7 +1491,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
-        self.commit()
 
     def setDependency(self, iddependency, dependency):
         """
@@ -1507,7 +1500,6 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE dependenciesreference SET dependency = (?)
         WHERE iddependency = (?)
         """, (dependency, iddependency,))
-        self.commit()
 
     def setAtom(self, package_id, atom):
         """
@@ -1519,7 +1511,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("searchNameCategory")
         self._clearLiveCache("getStrictScopeData")
         self._clearLiveCache("getStrictData")
-        self.commit()
 
     def setSlot(self, package_id, slot):
         """
@@ -1535,7 +1526,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictScopeData")
         self._clearLiveCache("getStrictData")
-        self.commit()
 
     def setRevision(self, package_id, revision):
         """
@@ -1548,7 +1538,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._clearLiveCache("getVersioningData")
         self._clearLiveCache("getStrictScopeData")
         self._clearLiveCache("getStrictData")
-        self.commit()
 
     def removeDependencies(self, package_id):
         """
@@ -1557,7 +1546,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM dependencies WHERE idpackage = (?)
         """, (package_id,))
-        self.commit()
 
     def insertDependencies(self, package_id, depdata):
         """
@@ -2088,8 +2076,6 @@ class EntropyRepository(EntropyRepositoryBase):
         INSERT INTO counters VALUES (?,?,?);
         """, (spm_package_uid, package_id, branch,))
 
-        self.commit()
-
     def setTrashedUid(self, spm_package_uid):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -2111,8 +2097,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE or REPLACE counters SET counter = (?) %s
         WHERE idpackage = (?)""" % (branchstring,), insertdata)
-
-        self.commit()
 
     def setContentSafety(self, package_id, content_safety):
         """
@@ -2535,7 +2519,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)
         """, updates)
-        self.commit()
 
     def removeTreeUpdatesActions(self, repository):
         """
@@ -2544,7 +2527,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM treeupdatesactions WHERE repository = (?)
         """, (repository,))
-        self.commit()
 
     def insertTreeUpdatesActions(self, updates, repository):
         """
@@ -2554,7 +2536,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
         """, myupdates)
-        self.commit()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
         """
@@ -4055,7 +4036,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         INSERT OR IGNORE INTO licenses_accepted VALUES (?)
         """, (license_name,))
-        self.commit()
 
     def isSystemPackage(self, package_id):
         """
@@ -4876,7 +4856,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET branch = (?)
         WHERE idpackage = (?)""", (tobranch, package_id,))
-        self.commit()
         self.clearCache()
 
     def getSetting(self, setting_name):
@@ -4916,7 +4895,6 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT OR REPLACE INTO settings VALUES (?, ?)
         """, (setting_name, setting_value,))
-        self.commit()
         self.__settings_cache.clear()
 
     def _setupInitialSettings(self):
@@ -5545,7 +5523,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute('INSERT into xpakdata VALUES (?,?)',
             (package_id, const_get_buffer()(blob),)
         )
-        self.commit()
 
     def retrieveSpmMetadata(self, package_id):
         """
@@ -5657,10 +5634,6 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createLicensesIndex()
             self._createCategoriesIndex()
             self._createCompileFlagsIndex()
-        # make sure to commit here, or ANALYZE below
-        # might deadlock
-        self.commit(force=True)
-        self._cursor().execute("ANALYZE").fetchall()
 
     def _createMirrorlinksIndex(self):
         try:
@@ -5937,8 +5910,6 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT counter, idpackage, branch FROM counters_regen;
         """)
 
-        self.commit()
-
     def clearTreeupdatesEntries(self, repository):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -5946,14 +5917,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM treeupdates WHERE repository = (?)
         """, (repository,))
-        self.commit()
 
     def resetTreeupdatesDigests(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute('UPDATE treeupdates SET digest = "-1"')
-        self.commit()
 
     def _isBaseinfoExtrainfo2010(self):
         """
@@ -6512,5 +6481,4 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE counters SET branch = (?)
         """, (to_branch,))
-        self.commit()
         self.clearCache()

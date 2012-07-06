@@ -2746,7 +2746,7 @@ class PortagePlugin(SpmPlugin):
                             level = "warning",
                             header = darkred(" * ")
                         )
-                    entropy_repository.commit()
+                    entropy_repository.commit(force = True, no_plugins = True)
 
                 # store new actions
                 entropy_repository.addRepositoryUpdatesActions(
@@ -2755,7 +2755,7 @@ class PortagePlugin(SpmPlugin):
             # store new digest into database
             entropy_repository.setRepositoryUpdatesDigest(
                 entropy_repository_id, portage_dirs_digest)
-            entropy_repository.commit()
+            entropy_repository.commit(force = True, no_plugins = True)
 
     @staticmethod
     def package_phases_map():

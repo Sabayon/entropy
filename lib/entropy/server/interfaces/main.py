@@ -4735,7 +4735,6 @@ class Server(Client):
                 header = brown(" @@ ")
             )
             conn.createAllIndexes()
-            conn.commit(no_plugins = True)
 
         if do_cache:
             # !!! also cache just_reading otherwise there will be
@@ -4744,6 +4743,9 @@ class Server(Client):
                 (repository_id, etpConst['systemroot'], local_dbfile, read_only,
                 no_upload, just_reading, use_branch, lock_remote,)] = conn
 
+        # this ensures that side effect outcomes are committed
+        # to db (treeupdates for example)
+        conn.commit(force = True, no_plugins = True)
         return conn
 
     def _repository_packages_spm_sync(self, repository_id, repo_db,
