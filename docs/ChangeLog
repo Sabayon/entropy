@@ -1,3 +1,35 @@
+commit 9d2b3298369ed4736b38cdd01172ab6b31de0b38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 6 21:43:31 2012 +0200
+
+    Release Entropy 1.0_rc123
+
+commit 4c8d6c74e3bf62b7e9d02c7e4c4ed5ef32428751
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 6 21:30:22 2012 +0200
+
+    [entropy.server] keep repo closed during early init stages
+
+commit 15349565a981bf242ad85b1aff5d4fa2bd9e7d19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 6 21:10:56 2012 +0200
+
+    [entropy.*] rework EntropyRepository.commit() usage
+    
+    Using the new baseinfo/extrainfo SCHEMA, several deadlocks were
+    found when using Eit (thus Entropy Server), due to aggressive
+    sqlite3 object caching.
+    This commit removes almost every implicit commit() call from the
+    EntropyRepository code, forcing the caller to properly handle
+    transactions. This will hopefully fix any deadlock problem observed
+    inside our chroots.
+
+commit 38373a3428ff0eb274adf48f5a61be68687f1212
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 2 23:41:32 2012 +0200
+
+    Tagging Entropy version 1.0_rc122
+
 commit 01a8f3e5863f66fdb1db640b4642b2722c05a8f0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jul 2 23:41:31 2012 +0200
