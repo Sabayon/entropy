@@ -4396,10 +4396,16 @@ class Server(Client):
         except RepositoryError:
             return False
         valid = do_validate(dbc)
+        # if we don't do this here
+        # Entropy Server (eit commit <main repo>)
+        # deadlocks, with sqlite3 bailing out with
+        # "Database is locked", under certain conditions
+        self.close_repository(dbc)
         if not valid:
             dbc = self.open_server_repository(repo, read_only = False,
                 no_upload = True, is_new = True)
             valid = do_validate(dbc)
+            self.close_repository(dbc)
 
         return valid
 
