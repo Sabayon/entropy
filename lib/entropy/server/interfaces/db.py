@@ -24,6 +24,7 @@ import tempfile
 import time
 import bz2
 import codecs
+import threading
 
 from entropy.const import etpConst, const_setup_file, const_convert_to_unicode
 from entropy.core import Singleton
@@ -294,6 +295,35 @@ class ServerPackagesRepository(CachedRepository):
         @type readonly: bool
         """
         self._readonly = bool(readonly)
+
+    _CONNECTION_POOL = {}
+    _CONNECTION_POOL_MUTEX = threading.RLock()
+    _CURSOR_POOL = {}
+    _CURSOR_POOL_MUTEX = threading.RLock()
+
+    def _connection_pool(self):
+        """
+        Overridden from EntropyRepository.
+        """
+        return ServerPackagesRepository._CONNECTION_POOL
+
+    def _connection_pool_mutex(self):
+        """
+        Overridden from EntropyRepository.
+        """
+        return ServerPackagesRepository._CONNECTION_POOL_MUTEX
+
+    def _cursor_pool(self):
+        """
+        Overridden from EntropyRepository.
+        """
+        return ServerPackagesRepository._CURSOR_POOL
+
+    def _cursor_pool_mutex(self):
+        """
+        Overridden from EntropyRepository.
+        """
+        return ServerPackagesRepository._CURSOR_POOL_MUTEX
 
 
 class ServerPackagesRepositoryUpdater(object):
