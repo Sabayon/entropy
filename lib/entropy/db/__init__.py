@@ -663,24 +663,25 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cleanup_stale_cur_conn_t = t1
 
         c_key = self._get_cur_th_key()
+        _init_db = False
         with self.__connlock:
             cursor = self.__cursor_cache.get(c_key)
-        if cursor is None:
-            conn = self._connection()
-            cursor = conn.cursor()
-            # !!! enable foreign keys pragma !!! do not remove this
-            # otherwise removePackage won't work properly
-            cursor.execute("pragma foreign_keys = 1").fetchall()
-            # setup temporary tables and indices storage
-            # to in-memory value
-            # http://www.sqlite.org/pragma.html#pragma_temp_store
-            cursor.execute("pragma temp_store = 2").fetchall()
-            with self.__connlock:
+            if cursor is None:
+                conn = self._connection()
+                cursor = conn.cursor()
+                # !!! enable foreign keys pragma !!! do not remove this
+                # otherwise removePackage won't work properly
+                cursor.execute("pragma foreign_keys = 1").fetchall()
+                # setup temporary tables and indices storage
+                # to in-memory value
+                # http://www.sqlite.org/pragma.html#pragma_temp_store
+                cursor.execute("pragma temp_store = 2").fetchall()
                 self.__cursor_cache[c_key] = cursor
-            # memory databases are critical because every new cursor brings
-            # up a totally empty repository. So, enforce initialization.
-            if self._db_path == ":memory:":
-                self.initializeRepository()
+                _init_db = True
+        # memory databases are critical because every new cursor brings
+        # up a totally empty repository. So, enforce initialization.
+        if _init_db and self._db_path == ":memory:":
+            self.initializeRepository()
         return cursor
 
     def _connection(self):
@@ -688,13 +689,12 @@ class EntropyRepository(EntropyRepositoryBase):
         c_key = self._get_cur_th_key()
         with self.__connlock:
             conn = self.__connection_cache.get(c_key)
-        if conn is None:
-            # check_same_thread still required for
-            # conn.close() called from
-            # arbitrary thread
-            conn = dbapi2.connect(self._db_path, timeout=30.0,
+            if conn is None:
+                # check_same_thread still required for
+                # conn.close() called from
+                # arbitrary thread
+                conn = dbapi2.connect(self._db_path, timeout=30.0,
                                   check_same_thread = False)
-            with self.__connlock:
                 self.__connection_cache[c_key] = conn
         return conn
 
