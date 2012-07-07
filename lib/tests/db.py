@@ -584,10 +584,10 @@ class EntropyRepositoryTest(unittest.TestCase):
         t3.join()
         t4.join()
 
-        cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
+        cur_cache = self.test_db._cursor_pool().keys()
         self.assertTrue(len(cur_cache) > 0)
         self.test_db._cleanup_stale_cur_conn(kill_all = True)
-        cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
+        cur_cache = self.test_db._cursor_pool().keys()
         self.assertEqual(len(cur_cache), 0)
 
     def test_db_reverse_deps(self):
