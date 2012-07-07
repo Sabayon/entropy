@@ -166,6 +166,9 @@ def is_stdout_a_tty():
     @return: tty? => True
     @rtype: bool
     """
+    # Paster LazyWriter (Pyramid/Pylons)
+    if not hasattr(sys.stdout, "fileno"):
+        return False
     fn = sys.stdout.fileno()
     return os.isatty(fn)
 
