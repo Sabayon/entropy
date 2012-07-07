@@ -1,3 +1,54 @@
+commit 89713f25286fa5aa5dae7366c2fa424f1279b480
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 14:11:58 2012 +0200
+
+    Release Entropy 1.0_rc124
+
+commit 0e54ec96ec6e0387309c7bfa4d1480b78865602c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 14:05:57 2012 +0200
+
+    Revert "[entropy.server] keep repo closed during early init stages"
+    
+    This reverts commit 4c8d6c74e3bf62b7e9d02c7e4c4ed5ef32428751.
+    It is no longer needed.
+
+commit a312a6146ef30061bae3cba1d0d6590f7ad4ef63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 13:58:25 2012 +0200
+
+    [entropy.server] reimplement connection pooling
+    
+    This commit should hopefully fix any deadlock reported in
+    Entropy Server due to weird sqlite3 behaviours when multiple
+    idle connections are open on the same file
+
+commit b8976f4c0c06e632fd20b5a9eaa84ae643d7511d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 13:29:29 2012 +0200
+
+    [entropy.db] EntropyRepository: expose connection and cursor pools
+    
+    This commit makes possible for subclasses to reimplement the
+    connection and cursor pool logic.
+
+commit 017f2b162c6709ffff8972d994e8d3a9819225b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 09:34:21 2012 +0200
+
+    [entropy.db] EntropyRepository: hold __connlock during pool setup
+    
+    This commit ensures that __connlock is held during the whole
+    __cursor_cache and __connection_cache initialization. This avoids
+    any possible race condition, especially on dbapi2.connect() which
+    could cause weird random anomalies
+
+commit b9c7a2dd927c3b2ef395a8df522a14c03127eb66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 6 21:43:32 2012 +0200
+
+    Tagging Entropy version 1.0_rc123
+
 commit 9d2b3298369ed4736b38cdd01172ab6b31de0b38
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 6 21:43:31 2012 +0200
