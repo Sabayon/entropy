@@ -135,11 +135,10 @@ class EntropyPortageConverter(TextInterface):
         Add repository metadata to atoms in cpvs list.
         """
         expanded_cpvs = []
-        for repo_id in self._portdb.dbapi.getRepositories():
-            def _filter_cpv(cpv):
-                return self._portdb.dbapi.cpv_exists(cpv, myrepo=repo_id)
-            repo_cpvs = [(x, repo_id) for x in filter(_filter_cpv, cpvs)]
-            expanded_cpvs.extend(repo_cpvs)
+        for cpv in cpvs:
+            for repo_id in self._portdb.dbapi.getRepositories():
+                if self._portdb.dbapi.cpv_exists(cpv, myrepo=repo_id):
+                    expanded_cpvs.append((cpv, repo_id))
         return expanded_cpvs
 
     def _remove_packages(self, package_ids):
