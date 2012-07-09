@@ -75,11 +75,17 @@ class EntropyPortageConverter(TextInterface):
         # - if an eclass is removed, the package is bumped
         # - if an eclass is added, relative packages are bumped too, at least
         # with mtime
+        def _eclass_changed(old_eclass, new_eclass):
+            if hasattr(old_eclass, "md5"):
+                # new portage-md5 support
+                return old_eclass.md5 != new_eclass.md5
+            return old_eclass != new_eclass
+
         if eclass_cached_map is not None:
             for k in eclass_map.keys():
                 if k not in eclass_cached_map:
                     added_eclasses.add(k)
-                elif eclass_cached_map[k] != eclass_map[k]:
+                elif _eclass_changed(eclass_cached_map[k], eclass_map[k]):
                     changed_eclasses.add(k)
 
         kept_cpvs = expanded_cpvs_set & current_cpvs_set
