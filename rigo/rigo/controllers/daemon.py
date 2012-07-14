@@ -932,11 +932,11 @@ class RigoServiceController(GObject.Object):
             notice_boards = []
             for repository, notice_id, guid, link, title, desc, date in notices:
                 data = {
-                    'guid': guid,
-                    'link': link,
-                    'title': title,
-                    'description': desc,
-                    'pubDate': date
+                    'guid': self._dbus_to_unicode(guid),
+                    'link': self._dbus_to_unicode(link),
+                    'title': self._dbus_to_unicode(title),
+                    'description': self._dbus_to_unicode(desc),
+                    'pubDate': self._dbus_to_unicode(date)
                 }
                 nb = Notice(repository, notice_id, data)
                 notice_boards.append(nb)
