@@ -21,6 +21,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 import os
 import hashlib
 import errno
+import tempfile
 
 from gi.repository import GObject, GLib
 
@@ -28,8 +29,12 @@ from rigo.paths import CONF_DIR
 from rigo.ui.gtk3.widgets.notifications import \
     NoticeBoardNotificationBox
 from rigo.enums import RigoViewStates
+from rigo.utils import open_url
 
 from entropy.cache import EntropyCacher
+from entropy.const import etpConst
+
+import entropy.tools
 
 
 class NoticeBoardViewController(GObject.Object):
@@ -100,6 +105,7 @@ class NoticeBoardViewController(GObject.Object):
         Setup the ConfigUpdatesViewController resources.
         """
         self._view.set_model(self._store)
+        self._view.connect("show-notice", self._on_show_notice)
         self._view.show()
 
     def set_notification_controller(self, nc):
@@ -194,3 +200,39 @@ class NoticeBoardViewController(GObject.Object):
             box.connect("let-me-see", _nb_let_me_see)
             box.connect("stop-annoying", _nb_stop_annoying)
             self._nc.append(box)
+
+    def _on_show_notice(self, view, notice):
+        print notice
+        tmp_fd, tmp_path = None, None
+        try:
+            fname = notice.title().replace("/", "-")
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix=fname, suffix=".html")
+            with entropy.tools.codecs_fdopen(
+                tmp_fd, "w", etpConst['conf_encoding']) as tmp_f:
+                tmp_f.write("<b>")
+                tmp_f.write(notice.title())
+                tmp_f.write("</b>")
+                tmp_f.write("\n<br/><i>")
+                tmp_f.write(notice.date())
+                tmp_f.write("</i>, ")
+                tmp_f.write(notice.repository())
+                tmp_f.write("\n\n<br/><br/><div style='max-width: 400px'>")
+                tmp_f.write(notice.description())
+                tmp_f.write("</div>\n\n<br/>")
+                tmp_f.write("<b>URL</b>: <a href=\"")
+                tmp_f.write(notice.link())
+                tmp_f.write("\">")
+                tmp_f.write(notice.link())
+                tmp_f.write("</a>")
+                tmp_f.write("\n<br/><br/>")
+                tmp_f.flush()
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+            # leaks, but xdg-open is async
+
+        if tmp_path is not None:
+            open_url(tmp_path)

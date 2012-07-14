@@ -116,10 +116,7 @@ class GenericTreeView(Gtk.TreeView):
             btn_h = btn.height
 
         normal_height = max(32 + 4*ypad, em(2.5) + 4*ypad)
-        markup_height = tr.markup_height
-        if markup_height > 0:
-            normal_height -= max(0, markup_height)
-        tr.normal_height = normal_height + markup_height
+        tr.normal_height = normal_height
         tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM
 
     def _on_style_updated(self, widget, tr):

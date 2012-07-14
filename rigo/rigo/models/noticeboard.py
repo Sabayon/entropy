@@ -108,11 +108,10 @@ class Notice(object):
         Return ConfigurationUpdate markup text.
         """
         msg = "<b>%s</b>\n<small><b>%s</b>, " + \
-            "<i>%s</i>\n<u>%s</u>\n\n%s</small>"
+            "<i>%s</i>\n<u>%s</u></small>"
         msg = msg % (
             escape_markup(self.title()),
             escape_markup(self.repository()),
             escape_markup(self.date()),
-            escape_markup(self.link()),
-            escape_markup(self.description()))
+            escape_markup(self.link()))
         return prepare_markup(msg)

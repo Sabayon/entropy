@@ -69,7 +69,6 @@ class CellRendererAppView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.apptitle_width = 0
         self.apptitle_height = 0
-        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
         self.show_ratings = show_ratings
@@ -431,7 +430,6 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.title_width = 0
         self.title_height = 0
-        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
 
@@ -614,6 +612,9 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
 
         context.restore()
 
+class NoticeCellButtonIDs:
+
+    SHOW = 0
 
 class CellRendererNoticeView(Gtk.CellRendererText):
 
@@ -640,7 +641,6 @@ class CellRendererNoticeView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.title_width = 0
         self.title_height = 0
-        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
 
@@ -687,18 +687,11 @@ class CellRendererNoticeView(Gtk.CellRendererText):
         Gdk.cairo_set_source_pixbuf(cr, icon, x, y)
         cr.paint()
 
-    def _calculate_height(self, markup):
-        l = Gtk.Label()
-        l.set_markup(markup)
-        w, h = l.get_layout().get_size()
-        return h / Pango.SCALE
-
     def _render_summary(self, context, cr, cu,
                         cell_area, layout, xpad, ypad,
                         is_rtl):
 
         markup = cu.get_markup()
-        self.markup_height = self._calculate_height(markup)
 
         layout.set_markup(markup, -1)
 
@@ -866,7 +859,6 @@ class CellRendererRepositoryView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.title_width = 0
         self.title_height = 0
-        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
 
@@ -913,18 +905,11 @@ class CellRendererRepositoryView(Gtk.CellRendererText):
         Gdk.cairo_set_source_pixbuf(cr, icon, x, y)
         cr.paint()
 
-    def _calculate_height(self, markup):
-        l = Gtk.Label()
-        l.set_markup(markup)
-        w, h = l.get_layout().get_size()
-        return h / Pango.SCALE
-
     def _render_summary(self, context, cr, repo,
                         cell_area, layout, xpad, ypad,
                         is_rtl):
 
         markup = repo.get_markup()
-        self.markup_height = self._calculate_height(markup)
 
         layout.set_markup(markup, -1)
 
@@ -1088,7 +1073,6 @@ class CellRendererPreferenceView(Gtk.CellRendererText):
         self.pixbuf_width = 0
         self.title_width = 0
         self.title_height = 0
-        self.markup_height = 0
         self.normal_height = 0
         self.selected_height = 0
 
@@ -1132,12 +1116,6 @@ class CellRendererPreferenceView(Gtk.CellRendererText):
 
         Gdk.cairo_set_source_pixbuf(cr, icon, x, y)
         cr.paint()
-
-    def _calculate_height(self, markup):
-        l = Gtk.Label()
-        l.set_markup(markup)
-        w, h = l.get_layout().get_size()
-        return h / Pango.SCALE
 
     def _render_summary(self, context, cr, cu,
                         cell_area, layout, xpad, ypad,
