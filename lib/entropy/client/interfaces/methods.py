@@ -1086,13 +1086,19 @@ class RepositoryMixin:
 
     def reopen_installed_repository(self):
         """
-        If for whatever reason (usually there is NO reason!) the installed
-        packages repository needs to be reloaded, call this method.
+        Close and reopen the Installed Packages repository.
         """
-        self._installed_repository.close(_token = etpConst['clientdbid'])
+        self.close_installed_repository()
         self._open_installed_repository()
         # make sure settings are in sync
         self._settings.clear()
+
+    def close_installed_repository(self):
+        """
+        Close the Installed Packages repository. It will be reopened
+        on demand.
+        """
+        self._installed_repository.close(_token = etpConst['clientdbid'])
 
     def open_generic_repository(self, repository_path, dbname = None,
         name = None, xcache = None, read_only = False, indexing_override = None,
