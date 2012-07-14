@@ -561,7 +561,6 @@ class LicensesNotificationBox(NotificationBox):
                     tmp_f.write("-" * 79 + "\n")
                     tmp_f.write(license_text)
                     tmp_f.flush()
-                open_url(tmp_path)
             else:
                 const_debug_write(
                     __name__,
@@ -575,6 +574,9 @@ class LicensesNotificationBox(NotificationBox):
                 except OSError:
                     pass
             # leaks, but xdg-open is async
+
+        if tmp_path is not None:
+            open_url(tmp_path)
 
     def _on_license_activate(self, widget, uri):
         """
