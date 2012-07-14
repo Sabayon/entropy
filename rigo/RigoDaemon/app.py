@@ -573,6 +573,9 @@ class RigoDaemonService(dbus.service.Object):
 
         Entropy.set_daemon(self)
         self._entropy = Entropy()
+        # keep all the resources closed
+        self._close_local_resources()
+
         self._fakeout = FakeOutFile(
             self._entropy,
             self._app_mgmt_mutex,
@@ -2162,7 +2165,12 @@ class RigoDaemonService(dbus.service.Object):
         """
         Same as _close_local_resources but without rwsem locking.
         """
-        self._entropy.reopen_installed_repository()
+        # close() is fine, it will be automatically reopened
+        # upon request. This way we make sure to not leave
+        # any transaction uncommitted. Previously, we called
+        # reopen_installed_repository() which did close() + open().
+        # The open() part can be avoided.
+        self._entropy.close_installed_repository()
         self._entropy.close_repositories()
 
     def _acquire_shared(self, blocking=True):
