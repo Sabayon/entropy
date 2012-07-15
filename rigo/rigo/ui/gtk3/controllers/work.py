@@ -20,7 +20,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 import os
 
-from gi.repository import GObject, Gtk, GdkPixbuf, Pango
+from gi.repository import GObject, GLib, Gtk, GdkPixbuf, Pango
 
 from rigo.ui.gtk3.widgets.stars import Star
 from rigo.ui.gtk3.widgets.terminal import TerminalWidget
@@ -69,6 +69,16 @@ class WorkViewController(GObject.Object):
             "gtk-clear", None)
         reset_menu_item.connect("activate", self._on_terminal_reset)
         self._terminal_menu.append(reset_menu_item)
+
+        black_menu_item = Gtk.ImageMenuItem.new_with_label(
+            escape_markup(_("Black on White")))
+        black_menu_item.connect("activate", self._on_terminal_color, True)
+        self._terminal_menu.append(black_menu_item)
+
+        white_menu_item = Gtk.ImageMenuItem.new_with_label(
+            escape_markup(_("White on Black")))
+        white_menu_item.connect("activate", self._on_terminal_color, False)
+        self._terminal_menu.append(white_menu_item)
 
         self._terminal_menu.show_all()
 
@@ -378,3 +388,12 @@ class WorkViewController(GObject.Object):
         Select All Terminal GtkMenuItem clicked.
         """
         self._terminal.select_all()
+
+    def _on_terminal_color(self, widget, white):
+        """
+        Set the Terminal colors.
+        """
+        if white:
+            self._terminal.white()
+        else:
+            self._terminal.black()
