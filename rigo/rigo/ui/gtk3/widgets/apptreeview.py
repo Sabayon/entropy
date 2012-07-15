@@ -41,6 +41,7 @@ class AppTreeView(GenericTreeView):
     VARIANT_INSTALL = 2
     VARIANT_INSTALLING = 3
     VARIANT_REMOVING = 4
+    VARIANT_UPDATE = 5
     COL_ROW_DATA = 0
 
     def __init__(self, entropy_client, rigo_service, apc, icons, show_ratings,
@@ -74,6 +75,7 @@ class AppTreeView(GenericTreeView):
         action.set_markup_variants(
                 {self.VARIANT_INSTALL: _('Install'),
                  self.VARIANT_REMOVE: _('Remove'),
+                 self.VARIANT_UPDATE: _('Update'),
                  self.VARIANT_INSTALLING: _('Installing'),
                  self.VARIANT_REMOVING: _('Removing'),})
 
@@ -137,7 +139,15 @@ class AppTreeView(GenericTreeView):
         app_action = self._get_app_transaction(app)
         if app_action is None:
             if app.is_installed():
-                action_btn.set_variant(self.VARIANT_REMOVE)
+                # if we're not showing an Installed
+                # Application and there is an update available
+                # then show "Update" instead of "Remove"
+                # bug #3417
+                _variant = self.VARIANT_REMOVE
+                if not app.is_installed_app():
+                    if app.is_updatable():
+                        _variant = self.VARIANT_UPDATE
+                action_btn.set_variant(_variant)
                 action_btn.set_sensitive(True)
                 action_btn.show()
             elif app.is_available():
@@ -286,7 +296,15 @@ class AppTreeView(GenericTreeView):
             sensitive = True
             if daemon_action == DaemonAppActions.INSTALL:
                 if app.is_installed():
-                    action_btn.set_variant(self.VARIANT_REMOVE)
+                    # if we're not showing an Installed
+                    # Application and there is an update available
+                    # then show "Update" instead of "Remove"
+                    # bug #3417
+                    _variant = self.VARIANT_REMOVE
+                    if not app.is_installed_app():
+                        if app.is_updatable():
+                            _variant = self.VARIANT_UPDATE
+                    action_btn.set_variant(_variant)
                 elif app.is_available():
                     action_btn.set_variant(self.VARIANT_INSTALL)
                 else:
@@ -322,7 +340,14 @@ class AppTreeView(GenericTreeView):
         action_btn = tr.get_button_by_name(CellButtonIDs.ACTION)
         if action_btn:
             if daemon_action == DaemonAppActions.INSTALL:
-                action_btn.set_variant(self.VARIANT_INSTALL)
+                # if we're not showing an Installed
+                # Application and there is an update available
+                # then show "Update" instead of "Remove"
+                # bug #3417
+                _variant = self.VARIANT_INSTALL
+                if app.is_updatable():
+                    _variant = self.VARIANT_UPDATE
+                action_btn.set_variant(_variant)
             elif daemon_action == DaemonAppActions.REMOVE:
                 action_btn.set_variant(self.VARIANT_REMOVE)
             action_btn.set_sensitive(True)
