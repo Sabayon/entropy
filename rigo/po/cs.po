@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-01 23:43+0200\n"
-"PO-Revision-Date: 2012-07-01 21:43+0000\n"
+"POT-Creation-Date: 2012-07-16 10:38+0200\n"
+"PO-Revision-Date: 2012-07-16 08:38+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-rigo/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
-#: ../RigoDaemon/app.py:1060 ../rigo_app.py:684
+#: ../RigoDaemon/app.py:1063 ../rigo_app.py:685
 msgid "Not authorized"
 msgstr "Přístup nepovolen"
 
-#: ../RigoDaemon/app.py:1096
+#: ../RigoDaemon/app.py:1099
 msgid "No repositories configured"
 msgstr "Repozitář není nastaven"
 
-#: ../RigoDaemon/app.py:1101
+#: ../RigoDaemon/app.py:1104
 msgid "Unhandled Exception"
 msgstr "Nezpracovaná výjimka"
 
-#: ../RigoDaemon/app.py:1625
+#: ../RigoDaemon/app.py:1628
 msgid "Application Removal"
 msgstr "Odstranění aplikace"
 
-#: ../RigoDaemon/app.py:1928
+#: ../RigoDaemon/app.py:1931
 msgid "Application download"
 msgstr "Stažení aplikace"
 
-#: ../RigoDaemon/app.py:2026
+#: ../RigoDaemon/app.py:2029
 msgid "Application Install"
 msgstr "Instalace aplikace"
 
@@ -205,15 +205,15 @@ msgstr "Vyskytla se chyba"
 #: ../rigo/controllers/daemon.py:760
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:428
-#: ../rigo_app.py:457
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:429
+#: ../rigo_app.py:458
 msgid "Ok, thanks"
 msgstr "Ok, Díky"
 
 #: ../rigo/controllers/daemon.py:761
-#: ../rigo/ui/gtk3/controllers/notifications.py:217
-#: ../rigo/ui/gtk3/controllers/notifications.py:233
-#: ../rigo/ui/gtk3/controllers/notifications.py:250 ../rigo_app.py:458
+#: ../rigo/ui/gtk3/controllers/notifications.py:218
+#: ../rigo/ui/gtk3/controllers/notifications.py:234
+#: ../rigo/ui/gtk3/controllers/notifications.py:251 ../rigo_app.py:459
 msgid "Show me"
 msgstr "Zobrazit"
 
@@ -289,38 +289,46 @@ msgstr "Ok"
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr "<b>Aktualizace systému</b> byla zahájena, a teď si běžte udělat nějakou kávu"
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:213
+#: ../rigo/ui/gtk3/controllers/notifications.py:214
 msgid "Repositories Update in <b>progress</b>..."
 msgstr "<b>Probíhá</b> aktualizace repozitáře..."
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:225
+#: ../rigo/ui/gtk3/controllers/notifications.py:226
 msgid "<b>Application Management</b> in progress..."
 msgstr "<b>Správa aplikací</b> probíhá..."
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:234
-#: ../rigo/ui/gtk3/controllers/notifications.py:251
+#: ../rigo/ui/gtk3/controllers/notifications.py:235
+#: ../rigo/ui/gtk3/controllers/notifications.py:252
 msgid "Interrupt"
 msgstr "Přerušit"
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:242
+#: ../rigo/ui/gtk3/controllers/notifications.py:243
 msgid "<b>System Upgrade</b> in progress..."
 msgstr "Probíhá <b>aktualizace systému</b>..."
 
-#: ../rigo/ui/gtk3/controllers/work.py:83
+#: ../rigo/ui/gtk3/controllers/work.py:74
+msgid "Black on White"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/work.py:79
+msgid "White on Black"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
 msgstr "<i>Zobrazit průběh <b>správy aplikací</b></i>"
 
-#: ../rigo/ui/gtk3/controllers/work.py:273
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:77
+#: ../rigo/ui/gtk3/controllers/work.py:283
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:79
 msgid "Installing"
 msgstr "Instaluje se"
 
-#: ../rigo/ui/gtk3/controllers/work.py:275
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:78
+#: ../rigo/ui/gtk3/controllers/work.py:285
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:80
 msgid "Removing"
 msgstr "Odstraňuje se"
 
-#: ../rigo/ui/gtk3/controllers/work.py:283
+#: ../rigo/ui/gtk3/controllers/work.py:293
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
@@ -471,6 +479,7 @@ msgid "Loading older images..."
 msgstr "Načítám starší obrázky..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:78
 msgid "Update"
 msgstr "Aktualizovat"
 
@@ -479,12 +488,12 @@ msgid "Reinstall"
 msgstr "Přeinstalovat"
 
 #: ../rigo/ui/gtk3/controllers/application.py:884
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:76
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:77
 msgid "Remove"
 msgstr "Odstranit"
 
 #: ../rigo/ui/gtk3/controllers/application.py:894
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:75
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:76
 msgid "Install"
 msgstr "Instalovat"
 
@@ -665,7 +674,7 @@ msgid "Register"
 msgstr "Registrovat"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:284
-#: ../rigo/ui/gtk3/widgets/notifications.py:1107
+#: ../rigo/ui/gtk3/widgets/notifications.py:1109
 msgid "_Cancel"
 msgstr "_Zrušit"
 
@@ -718,7 +727,7 @@ msgid "Make sure to review all the licenses"
 msgstr "Ujistěte se, že zkontrolujete všechny licence"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:493
-#: ../rigo/ui/gtk3/widgets/notifications.py:784
+#: ../rigo/ui/gtk3/widgets/notifications.py:786
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:99
 msgid "Accept"
 msgstr "Přijmout"
@@ -728,59 +737,59 @@ msgid "Accept forever"
 msgstr "Přijmout navždy"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:496
-#: ../rigo/ui/gtk3/widgets/notifications.py:785
+#: ../rigo/ui/gtk3/widgets/notifications.py:787
 msgid "Decline"
 msgstr "Odmítnout"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
 #. self.add_button(_("Remove All"), self._on_remove_all)
-#: ../rigo/ui/gtk3/widgets/notifications.py:621
-#: ../rigo/ui/gtk3/widgets/notifications.py:1051
+#: ../rigo/ui/gtk3/widgets/notifications.py:623
+#: ../rigo/ui/gtk3/widgets/notifications.py:1053
 msgid "Close"
 msgstr "Zavřít"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:638
+#: ../rigo/ui/gtk3/widgets/notifications.py:640
 msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
 msgstr "Několik <b>aplikací</b>, které již nejsou udržovány touto distribucí, bylo nalezeno na Vašem <b>systému</b>. Některé mohou potřebovat <b>manuální kontrolu</b> před odebráním. Klikněte na aplikace pro rozbalení."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:646
+#: ../rigo/ui/gtk3/widgets/notifications.py:648
 msgid "Manual review"
 msgstr "Ruční kontrola"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:650
+#: ../rigo/ui/gtk3/widgets/notifications.py:652
 msgid "Safe to drop"
 msgstr "Bezpečné k odebrání"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:753
+#: ../rigo/ui/gtk3/widgets/notifications.py:755
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
 msgstr "<b>%s</b> aplikace vyžaduje instalaci následujících aplikací: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:767
+#: ../rigo/ui/gtk3/widgets/notifications.py:769
 msgid "Show full list"
 msgstr "Zobrazit celý seznam"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:827
+#: ../rigo/ui/gtk3/widgets/notifications.py:829
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
 msgstr "<b>%s</b> aplikace vyžaduje odebrání následujících aplikací: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:874
+#: ../rigo/ui/gtk3/widgets/notifications.py:876
 msgid "Confirm"
 msgstr "Potvrdit"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:875
+#: ../rigo/ui/gtk3/widgets/notifications.py:877
 msgid "Undo"
 msgstr "Zpět"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:936
+#: ../rigo/ui/gtk3/widgets/notifications.py:938
 #, python-format
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
@@ -789,7 +798,7 @@ msgstr[0] "<b>%s</b> akce aplikace začne za <big><b>%d</b></big> vteřinu"
 msgstr[1] "<b>%s</b> akce aplikace začne za <big><b>%d</b></big> vteřiny"
 msgstr[2] "<b>%s</b> akce aplikace začne za <big><b>%d</b></big> vteřin"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:982
+#: ../rigo/ui/gtk3/widgets/notifications.py:984
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
@@ -797,22 +806,22 @@ msgstr[0] "Je dostupná aktualizace pro <b>%d</b> konfigurační soubor"
 msgstr[1] "Je dostupná aktualizace pro <b>%d</b> konfigurační soubory"
 msgstr[2] "Je dostupná aktualizace pro <b>%d</b> konfigurační soubor"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:988
+#: ../rigo/ui/gtk3/widgets/notifications.py:990
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
 msgstr "Je <b>velmi</b> důležité aktualizovat tyto konfigurační soubory před <b>restartem</b> systému."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:999
-#: ../rigo/ui/gtk3/widgets/notifications.py:1049
+#: ../rigo/ui/gtk3/widgets/notifications.py:1001
+#: ../rigo/ui/gtk3/widgets/notifications.py:1051
 msgid "Let me see"
 msgstr "Tak se na to podíváme"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1000
+#: ../rigo/ui/gtk3/widgets/notifications.py:1002
 msgid "Happily ignore"
 msgstr "Vesele ignorovat"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1033
+#: ../rigo/ui/gtk3/widgets/notifications.py:1035
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
@@ -820,32 +829,36 @@ msgstr[0] "Obdrženo <b>%d</b> oznámení z repozitáře"
 msgstr[1] "Obdržena <b>%d</b> oznámení od repozitářů"
 msgstr[2] "Obdrženo <b>%d</b> oznámení od repozitářů"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1039
+#: ../rigo/ui/gtk3/widgets/notifications.py:1041
 msgid "It is <b>extremely</b> important to always read them."
 msgstr "Je <b>velmi</b> důležité je vždy číst."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1050
+#: ../rigo/ui/gtk3/widgets/notifications.py:1052
 msgid "Stop annoying me"
 msgstr "Přestaň mě otravovat"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1098
+#: ../rigo/ui/gtk3/widgets/notifications.py:1100
 msgid "You are about to rename a Repository"
 msgstr ""
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1102
+#: ../rigo/ui/gtk3/widgets/notifications.py:1104
 msgid "_Rename"
 msgstr ""
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1117
+#: ../rigo/ui/gtk3/widgets/notifications.py:1119
 msgid "Repository name"
 msgstr ""
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1149
+#: ../rigo/ui/gtk3/widgets/notifications.py:1151
 msgid "<b>Invalid</b> Repository name!"
 msgstr ""
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1159
+#: ../rigo/ui/gtk3/widgets/notifications.py:1161
 msgid "Repository rename <b>not allowed</b>!"
+msgstr ""
+
+#: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
+msgid "Show"
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
@@ -864,7 +877,7 @@ msgstr "Zrušit"
 msgid "Keywords"
 msgstr "Klíčová slova"
 
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:70
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:71
 msgid "More Info"
 msgstr "Více informací"
 
@@ -880,102 +893,102 @@ msgstr "Hej!"
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo pracuje, jste si jisti?"
 
-#: ../rigo_app.py:391
+#: ../rigo_app.py:392
 msgid "Activity Interruption"
 msgstr "Přerušení činnosti"
 
-#: ../rigo_app.py:393
+#: ../rigo_app.py:394
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
 msgstr "Jste si jisti, že chcete přerušit probíhající činnost? Přerušení nastane co nejdříve, možná ne okamžitě."
 
-#: ../rigo_app.py:418
+#: ../rigo_app.py:419
 msgid "Repositories update error"
 msgstr "Chyba aktualizace repozitářů"
 
-#: ../rigo_app.py:422
+#: ../rigo_app.py:423
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Repozitář <b>úspěšně</b> aktualizován!"
 
-#: ../rigo_app.py:440
+#: ../rigo_app.py:441
 msgid "Application Management Error"
 msgstr "Chyba správy aplikací"
 
-#: ../rigo_app.py:441
+#: ../rigo_app.py:442
 msgid "please check the management log"
 msgstr "prosím zkontrolujte záznam správy"
 
-#: ../rigo_app.py:444
+#: ../rigo_app.py:445
 msgid "System Upgrade Error"
 msgstr "Chyba aktualizace systému"
 
-#: ../rigo_app.py:445
+#: ../rigo_app.py:446
 msgid "please check the upgrade log"
 msgstr "prosím zkontrolujte záznam aktualizace"
 
-#: ../rigo_app.py:449
+#: ../rigo_app.py:450
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Správa aplikací <b>úspěšná</b>!"
 
-#: ../rigo_app.py:451
+#: ../rigo_app.py:452
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Systém <b>úspěšně</b> aktualizován!"
 
-#: ../rigo_app.py:685
+#: ../rigo_app.py:686
 msgid "You are not authorized to run Rigo"
 msgstr "Nemáte práva ke spuštění Rigo"
 
-#: ../rigo_app.py:693 ../rigo_app.py:704 ../rigo_app.py:722 ../rigo_app.py:777
-#: ../rigo_app.py:788 ../rigo_app.py:816
+#: ../rigo_app.py:694 ../rigo_app.py:705 ../rigo_app.py:723 ../rigo_app.py:778
+#: ../rigo_app.py:789 ../rigo_app.py:817
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:694
+#: ../rigo_app.py:695
 msgid "RigoDaemon service is not available"
 msgstr "Služba RigoDaemon není dostupná"
 
-#: ../rigo_app.py:706
+#: ../rigo_app.py:707
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "Neshoda API, prosím aktualizujte Rigo a RigoDaemon"
 
-#: ../rigo_app.py:723
+#: ../rigo_app.py:724
 msgid "Another Application Manager is active"
 msgstr "Je spuštěn jiný správce aplikací"
 
-#: ../rigo_app.py:740
+#: ../rigo_app.py:741
 msgid "Background Service is currently not available"
 msgstr "Služba \"na pozadí\" je nedostupná"
 
-#: ../rigo_app.py:770
+#: ../rigo_app.py:771
 msgid "Background Service is currently busy"
 msgstr "Služba \"na pozadí\" je zaneprázdněná"
 
-#: ../rigo_app.py:772
+#: ../rigo_app.py:773
 msgid "Background Service is incompatible with Rigo"
 msgstr "Služba \"na pozadí\" je nekompatibilní s Rigo"
 
-#: ../rigo_app.py:784
+#: ../rigo_app.py:785
 msgid "Background Service is currently unavailable"
 msgstr "Služba \"na pozadí\" je nedostupná"
 
-#: ../rigo_app.py:795 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:796 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Správce aplikací Rigo"
 
-#: ../rigo_app.py:844
+#: ../rigo_app.py:845
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Šťastný valentýn <3."
 
-#: ../rigo_app.py:846
+#: ../rigo_app.py:847
 msgid "Merry Xmas \\o/ !"
 msgstr "Veselé vánoce \\o/."
 
-#: ../rigo_app.py:848
+#: ../rigo_app.py:849
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=< (tohle je poněkud optimisticky vzato ryba)"
 
-#: ../rigo_app.py:853
+#: ../rigo_app.py:854
 msgid "Woot, thanks"
 msgstr "Super, díky"
 
