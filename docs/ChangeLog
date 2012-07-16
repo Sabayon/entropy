@@ -1,3 +1,105 @@
+commit 60fce6a94b97bd05360b775b2e4e12a690062034
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 16 10:40:35 2012 +0200
+
+    Release Entropy 1.0_rc125
+
+commit 5189bf51bcc62d8a1db763e9d185f9824cb331df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 16 10:40:15 2012 +0200
+
+    [Rigo] update translations
+
+commit b504f4ce5f2bf4d78dd41ffdeecbd51915bffd72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 16 10:38:31 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 0c4d3a2b0a9e94bce1c7ad244691caf19ab19b7d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 15 11:37:08 2012 +0200
+
+    [Rigo] when App is updatable, show "Update" instead of "Remove"
+    
+    This commit fixes bug #3417
+
+commit 09b8110790084f258e0f2fa3b71b4ef655520b2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 15 11:17:35 2012 +0200
+
+    [Rigo] Add "Black on White" and "White on Black" terminal colors support
+    
+    This commit fixes bug #3433
+
+commit f57395717260f8d0e3a8dcfb169612104ecb5f01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 14 18:22:48 2012 +0200
+
+    [Rigo] avoid race with finally block and GC wrt file descriptors
+    
+    It has been observed that subprocess.call() called by open_url()
+    might fail due to Error 9 (Bad File Descriptor) due to a race
+    between the garbage collector thread (run in the MainThread) and
+    our own subprocess.call() thread. For this reason, make sure to
+    call open_url() outside the try/finally block. This seems to be
+    enough.
+
+commit afd2608153a653c8cefeabd9c02439c3526a6cd2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 14 18:19:59 2012 +0200
+
+    [Rigo] rewrite NoticeBoard TreeView behaviour
+    
+    Previously, the Notice object was shown directly inside the
+    cell renderer, which made things a bit clumsy and buggy.
+    Now, notices are loaded through xdg-open in html format.
+
+commit 3912ca0471ad14fe0c6ca7fc07211bf913190368
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 14 18:19:20 2012 +0200
+
+    [RigoDaemon] _noticeboards_available_signal: convert dbus.String() to Python unicode
+
+commit 7135ba3a0148a60a018d21464a51ecb352a13045
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 14 16:10:18 2012 +0200
+
+    [RigoDaemon] make sure to keep the Installed Packages Repository closed
+    
+    This helps in case of uncommitted transactions that could cause
+    any sqlite3 db consumer to lock until timeout with "Database is locked".
+
+commit 0ce66337334d2969d2e593475988c5841e0bb6d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 14 16:05:50 2012 +0200
+
+    [entropy.client] add public method: close_installed_repository()
+
+commit 941bfaf1e8f65ee7b30a8f2c37d2b739fb206f83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 9 19:32:34 2012 +0200
+
+    [services] optimize execution time of _expand_cpvs()
+
+commit 9227b17744250a524ede3017d757781cae096dfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 9 19:32:10 2012 +0200
+
+    [services] portage-repository-converter: add support to Portage md5 eclass cache
+
+commit 9b673fad9b46559d9b5e96b4b699dad7c04cb0b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 18:15:34 2012 +0200
+
+    [entropy.output] fix is_stdout_a_tty when sys.stdout has no fileno()
+
+commit bdcc0821fc67563612e4c0ffb7365cb69f8ca2d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 7 14:11:59 2012 +0200
+
+    Tagging Entropy version 1.0_rc124
+
 commit 89713f25286fa5aa5dae7366c2fa424f1279b480
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 7 14:11:58 2012 +0200
