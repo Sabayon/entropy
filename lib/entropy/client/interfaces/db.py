@@ -504,7 +504,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
-                red(_("repository does not exist online")),)
+                red(_("unable to download the repository")),)
             self._entropy.output(
                 mytxt,
                 importance = 1,
