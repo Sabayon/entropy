@@ -459,18 +459,6 @@ class AvailablePackagesRepositoryUpdater(object):
 
     def __handle_database_download(self, cmethod):
 
-        def show_repo_locked_message():
-            mytxt = "%s: %s." % (
-                bold(_("Attention")),
-                red(_("remote repository got suddenly locked")),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "warning",
-                header = "\t"
-            )
-
         # starting to download
         mytxt = "%s ..." % (red(_("Downloading repository")),)
         self._entropy.output(
