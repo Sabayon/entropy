@@ -17,6 +17,7 @@ import threading
 import shutil
 import time
 import codecs
+import errno
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     etpUi, const_set_nice_level, const_setup_file
@@ -849,12 +850,18 @@ class AvailablePackagesRepositoryUpdater(object):
         url, filepath = self._construct_paths(item, cmethod,
             get_signature = get_signature)
 
+        # See bug #3495, download the file to
+        # a temporary location and then move it
+        # if we are successful
+        temp_filepath = filepath + ".edownload"
+
         # to avoid having permissions issues
         # it's better to remove the file before,
         # otherwise new permissions won't be written
-        if os.path.isfile(filepath):
-            os.remove(filepath)
-        filepath_dir = os.path.dirname(filepath)
+        if os.path.isfile(temp_filepath):
+            os.remove(temp_filepath)
+        filepath_dir = os.path.dirname(temp_filepath)
+
         if not os.path.isdir(filepath_dir) and not \
             os.path.lexists(filepath_dir):
 
@@ -862,19 +869,36 @@ class AvailablePackagesRepositoryUpdater(object):
             const_setup_perms(filepath_dir, etpConst['entropygid'],
                 f_perms = 0o644)
 
-        fetcher = self._entropy._url_fetcher(
-            url,
-            filepath,
-            resume = False,
-            disallow_redirect = disallow_redirect
-        )
+        try:
 
-        rc = fetcher.download()
-        if rc in ("-1", "-2", "-3", "-4"):
-            return False
-        const_setup_file(filepath, etpConst['entropygid'], 0o644,
-            uid = etpConst['uid'])
-        return True
+            fetcher = self._entropy._url_fetcher(
+                url,
+                temp_filepath,
+                resume = False,
+                disallow_redirect = disallow_redirect
+            )
+
+            rc = fetcher.download()
+            if rc in ("-1", "-2", "-3", "-4"):
+                return False
+            try:
+                os.rename(temp_filepath, filepath)
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                return False # not downloaded?
+
+            const_setup_file(filepath, etpConst['entropygid'], 0o644,
+                uid = etpConst['uid'])
+            return True
+
+        finally:
+            # cleanup temp file
+            try:
+                os.remove(temp_filepath)
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
     def _is_repository_unlocked(self):
         """
