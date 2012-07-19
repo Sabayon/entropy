@@ -5654,6 +5654,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if not self.__indexing:
             return
 
+        self._createTrashedCountersIndex()
         self._createMirrorlinksIndex()
         self._createContentIndex()
         self._createBaseinfoIndex()
@@ -5678,6 +5679,14 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createLicensesIndex()
             self._createCategoriesIndex()
             self._createCompileFlagsIndex()
+
+    def _createTrashedCountersIndex(self):
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS trashedcounters_counter
+            ON trashedcounters ( counter )""")
+        except OperationalError:
+            pass
 
     def _createMirrorlinksIndex(self):
         try:
