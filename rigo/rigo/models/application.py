@@ -751,7 +751,7 @@ class ApplicationMetadata(object):
     _RATING_QUEUE = deque()
     def _rating_thread_body_wrapper():
         return ApplicationMetadata._rating_thread_body()
-    _RATING_THREAD_SLEEP_SECS = 0.5
+    _RATING_THREAD_SLEEP_SECS = 2.0
     _RATING_SEM = Semaphore(0)
     _RATING_LOCK = Lock()
     _RATING_IN_FLIGHT = set()
@@ -772,7 +772,7 @@ class ApplicationMetadata(object):
     _ICON_QUEUE = deque()
     def _icon_thread_body_wrapper():
         return ApplicationMetadata._icon_thread_body()
-    _ICON_THREAD_SLEEP_SECS = 0.15
+    _ICON_THREAD_SLEEP_SECS = 2.0
     _ICON_SEM = Semaphore(0)
     _ICON_LOCK = Lock()
     _ICON_IN_FLIGHT = set()
