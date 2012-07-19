@@ -6003,7 +6003,7 @@ class Server(Client):
                 dorm = True
 
             # checking if we are allowed to remove stuff on this repo
-            # it xrepo is not the default one, we MUST skip this to
+            # if xrepo is not the default one, we MUST skip this to
             # avoid touching what developer doesn't expect
             if dorm and (xrepo == self._repository):
                 trashed = self._is_spm_uid_trashed(counter)
