@@ -5919,10 +5919,6 @@ class Server(Client):
             except KeyError:
                 # not found
                 continue
-            try:
-                pkg_counter = int(pkg_counter)
-            except ValueError:
-                continue
             installed_packages.append((spm_package, pkg_counter,))
 
         installed_counters = set()
