@@ -596,6 +596,18 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def resolve_spm_package_uid(self, package):
+        """
+        Given a Source Package Manager atom, return its UID.
+
+        @param package: Source Package Manager atom
+        @type package: string
+        @return: Source Package Manager UID for package
+        @rtype: int
+        @raise KeyError: in case the package cannot be resolved into UID.
+        """
+        raise NotImplementedError()
+
     def convert_from_entropy_package_name(self, entropy_package_name):
         """
         This function should be able to convert an Entropy package name (atom)

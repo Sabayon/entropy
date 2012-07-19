@@ -1817,6 +1817,12 @@ class PortagePlugin(SpmPlugin):
 
         return counter
 
+    def resolve_spm_package_uid(self, package):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return self.get_installed_package_metadata(package, "COUNTER")
+
     def search_paths_owners(self, paths, exact_match = True):
         """
         Reimplemented from SpmPlugin class.
