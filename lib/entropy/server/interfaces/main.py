@@ -5915,8 +5915,7 @@ class Server(Client):
         installed_packages = []
         for spm_package in spm_packages:
             try:
-                pkg_counter = spm.get_installed_package_metadata(spm_package,
-                    "COUNTER")
+                pkg_counter = spm.resolve_spm_package_uid(spm_package)
             except KeyError:
                 # not found
                 continue
