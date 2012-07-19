@@ -1096,6 +1096,36 @@ Name:    %s
             pkg_f.flush()
         os.rename(tmp_extra_pkglist_file, extra_pkglist_file)
 
+    def _cleanup_trashed_spm_uids(self, entropy_repository):
+        """
+        Cleanup the list of SPM package UIDs marked as trashed.
+        """
+        # generate in-memory map
+        uids_map = {}
+        spm = self._entropy.Spm()
+        spm_packages = spm.get_installed_packages()
+        for pkg in spm_packages:
+            try:
+                uid = spm.resolve_spm_package_uid(pkg)
+            except KeyError:
+                uid = None
+            uids_map[uid] = pkg
+
+        uids_map_keys = set(uids_map.keys())
+        dead_uids = entropy_repository.listAllTrashedSpmUids()
+        really_dead = dead_uids - uids_map_keys
+
+        # then cycle all the repositories looking for
+        # uids still alive
+        spm_uids = set()
+        for repository_id in self._entropy.repositories():
+            repo = self._entropy.open_repository(repository_id)
+            spm_uids |= set([x for x, y in repo.listAllSpmUids()])
+        really_dead -= spm_uids
+
+        if really_dead:
+            entropy_repository.removeTrashedUids(really_dead)
+
     def _rewrite_treeupdates(self, entropy_repository):
         """
         Rewrite (and sync) packages category and name update metadata
@@ -1456,6 +1486,7 @@ Name:    %s
         dbconn = self._entropy.open_server_repository(self._repository_id,
             read_only = False, no_upload = True, do_treeupdates = False)
         self._rewrite_treeupdates(dbconn)
+        self._cleanup_trashed_spm_uids(dbconn)
         self._entropy._update_package_sets(self._repository_id, dbconn)
         # Package Sets info
         self._show_package_sets_messages()
