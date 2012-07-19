@@ -1821,7 +1821,10 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        return self.get_installed_package_metadata(package, "COUNTER")
+        try:
+            return int(self.get_installed_package_metadata(package, "COUNTER"))
+        except ValueError:
+            raise KeyError("invalid counter")
 
     def search_paths_owners(self, paths, exact_match = True):
         """
