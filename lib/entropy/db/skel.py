@@ -1091,6 +1091,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def removeTrashedUids(self, spm_package_uids):
+        """
+        Remove given Source Package Manager unique package identifiers from
+        the "trashed" list. This is only used by Entropy Server.
+        """
+        raise NotImplementedError()
+
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """
         Update Source Package Manager unique package identifier for given
@@ -3540,6 +3547,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         List all Source Package Manager unique package identifiers bindings
         with packages in repository.
         @return: tuple of tuples of length 2 composed by (spm_uid, package_id,)
+        @rtype: tuple
+        """
+        raise NotImplementedError()
+
+    def listAllTrashedSpmUids(self):
+        """
+        List all Source Package Manager unique package identifiers that have
+        been marked as "trashed" by Entropy Server.
+        @return: list of identifiers
         @rtype: tuple
         """
         raise NotImplementedError()

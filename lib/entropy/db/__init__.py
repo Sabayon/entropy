@@ -2112,6 +2112,15 @@ class EntropyRepository(EntropyRepositoryBase):
         INSERT OR REPLACE INTO trashedcounters VALUES (?)
         """, (spm_package_uid,))
 
+    def removeTrashedUids(self, spm_package_uids):
+        """
+        Remove given Source Package Manager unique package identifiers from
+        the "trashed" list. This is only used by Entropy Server.
+        """
+        self._cursor().executemany("""
+        DELETE FROM trashedcounters WHERE counter = (?)
+        """, [(x,) for x in spm_package_uids])
+
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4731,6 +4740,13 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute('SELECT counter, idpackage FROM counters')
         return tuple(cur)
+
+    def listAllTrashedSpmUids(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute('SELECT counter FROM trashedcounters')
+        return self._cur2frozenset(cur)
 
     def listAllPackageIds(self, order_by = None):
         """
