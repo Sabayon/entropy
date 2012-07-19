@@ -1132,13 +1132,8 @@ Name:    %s
         reading across all the available repositories and writing to the
         one being worked out.
         """
-        # grab treeupdates from other databases and inject
-        plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
-        srv_set = self._settings[plg_id]['server']
-        server_repos = list(srv_set['repositories'].keys())
-
         all_actions = set()
-        for myrepo in server_repos:
+        for myrepo in self._entropy.repositories():
 
             # avoid __default__
             if myrepo == etpConst['clientserverrepoid']:
