@@ -58,6 +58,11 @@ class EntropyCacher(Singleton):
     # Number of seconds between cache writeback to disk
     WRITEBACK_TIMEOUT = 5
 
+    # If True, in-ram cache will be used to mitigate
+    # concurrent push/pop executions with push() not
+    # yet able to write data to disk.
+    STASHING_CACHE = True
+
     """
     Entropy asynchronous and synchronous cache writer
     and reader. This class is a Singleton and contains
@@ -272,11 +277,12 @@ class EntropyCacher(Singleton):
                         except OSError as err:
                             if err.errno != errno.ECHILD:
                                 raise
-                    for (key, cache_dir), data in massive_data:
-                        try:
-                            del self.__stashing_cache[(key, cache_dir)]
-                        except (AttributeError, KeyError,):
-                            continue
+                    if EntropyCacher.STASHING_CACHE:
+                        for (key, cache_dir), data in massive_data:
+                            try:
+                                del self.__stashing_cache[(key, cache_dir)]
+                            except (AttributeError, KeyError,):
+                                continue
                     del massive_data[:]
                     del massive_data
 
@@ -415,7 +421,8 @@ class EntropyCacher(Singleton):
                 obj_copy = self.__copy_obj(data)
                 self.__cache_buffer.push(((key, cache_dir,), obj_copy,))
                 self.__worker_sem.release()
-                self.__stashing_cache[(key, cache_dir)] = obj_copy
+                if EntropyCacher.STASHING_CACHE:
+                    self.__stashing_cache[(key, cache_dir)] = obj_copy
             except TypeError:
                 # sometimes, very rarely, copy.deepcopy() is unable
                 # to properly copy an object (blame Python bug)
@@ -450,10 +457,11 @@ class EntropyCacher(Singleton):
         if cache_dir is None:
             cache_dir = EntropyCacher.current_directory()
 
-        # object is being saved on disk, it's in RAM atm
-        ram_obj = self.__stashing_cache.get((key, cache_dir))
-        if ram_obj is not None:
-            return ram_obj
+        if EntropyCacher.STASHING_CACHE:
+            # object is being saved on disk, it's in RAM atm
+            ram_obj = self.__stashing_cache.get((key, cache_dir))
+            if ram_obj is not None:
+                return ram_obj
 
         l_o = entropy.dump.loadobj
         if not l_o:
