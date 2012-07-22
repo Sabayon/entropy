@@ -2751,6 +2751,24 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def retrieveContentIter(self, package_id, order_by = None):
+        """
+        Return an iterator that makes possible to retrieve the files
+        contained in given package. Please note that the iterator returned
+        will fail if the EntropyRepository object is closed (call to close()).
+        The iterator may thus become invalid.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @keyword order_by: order by string, valid values are:
+            "type" (if extended is True), "file" or "package_id"
+        @type order_by: string
+        @return: content metadata
+        @rtype: iterator
+        @raise AttributeError: if order_by value is invalid
+        """
+        raise NotImplementedError()
+
     def retrieveContentSafety(self, package_id):
         """
         Return supported content safety metadata for given package.

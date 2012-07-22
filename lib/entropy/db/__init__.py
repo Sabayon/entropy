@@ -3413,6 +3413,35 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return fl
 
+    def retrieveContentIter(self, package_id, order_by = None):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        class MyIter:
+
+            def __init__(self, _cur):
+                self._cur = cur
+
+            def __iter__(self):
+                return self
+
+            def next(self):
+                return self._cur.next()
+
+        searchkeywords = (package_id,)
+        order_by_string = ''
+        if order_by is not None:
+            if order_by not in ("package_id", "idpackage", "file", "type",):
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
+            order_by_string = ' order by %s' % (order_by,)
+
+        cur = self._cursor().execute("""
+        SELECT file, type FROM content WHERE idpackage = (?) %s""" % (
+            order_by_string,), searchkeywords)
+        return MyIter(cur)
+
     def retrieveContentSafety(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
