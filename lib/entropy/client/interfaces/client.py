@@ -827,6 +827,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         # always dropped
         if self.xcache:
             self._cacher.start()
+        else:
+            # disable STASHING_CACHE or we leak
+            EntropyCacher.STASHING_CACHE = False
 
         if do_validate_repo_cache:
             self._validate_repositories_cache()
