@@ -1274,6 +1274,7 @@ def install_packages(entropy_client,
         etpConst['system_settings_plugins_ids']['client_plugin']
     equo_client_settings = entropy_client.Settings()[sys_set_client_plg_id]['misc']
     splitdebug = equo_client_settings['splitdebug']
+    installed_repo = entropy_client.installed_repository()
 
     if check_critical_updates and equo_client_settings.get('forcedupdates'):
         crit_atoms, crit_matches = entropy_client.calculate_critical_updates()
@@ -1329,7 +1330,6 @@ def install_packages(entropy_client,
         pkgsToReinstall = 0
         pkgsToDowngrade = 0
         pkgsToRemove = len(removal_queue)
-        installed_repo = entropy_client.installed_repository()
 
         if run_queue:
 
