@@ -1992,6 +1992,7 @@ class Package:
                 pkg_idpackage, extended = True,
                 formatted = True, insert_formatted = True
             )
+            
             real_idpk = self.pkgmeta['idpackage']
             content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
             data['content'] = content
@@ -2088,12 +2089,11 @@ class Package:
         # this is triggered by merge_from pkgmeta metadata
         # even if repositories are allowed to not have content
         # metadata, in this particular case, it is mandatory
-        package_content = dbconn.retrieveContent(
-            self.pkgmeta['idpackage'], extended = True, formatted = True)
-        contents = sorted(package_content)
+        contents = dbconn.retrieveContentIter(
+            self.pkgmeta['idpackage'], order_by = "file")
 
         # collect files
-        for path in contents:
+        for path, ftype in contents:
             # convert back to filesystem str
             encoded_path = path
             path = os.path.join(merge_from, encoded_path[1:])
@@ -2105,7 +2105,6 @@ class Package:
                 exist = os.lstat(path)
             except OSError:
                 continue # skip file
-            ftype = package_content[encoded_path]
 
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
@@ -2136,7 +2135,7 @@ class Package:
                 os.chown(topath, user, group)
                 shutil.copystat(path, topath)
 
-        del package_content, contents
+        del contents
 
     def __get_package_match_config_protect(self, mask = False):
 
@@ -3879,6 +3878,7 @@ class Package:
 
         self.pkgmeta['removecontent'] = \
             self._entropy.installed_repository().retrieveContent(idpackage)
+        
         self.pkgmeta['triggers']['remove'] = \
             self._entropy.installed_repository().getTriggerData(idpackage)
         if self.pkgmeta['triggers']['remove'] is None:
