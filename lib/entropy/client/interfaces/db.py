@@ -255,6 +255,8 @@ class AvailablePackagesRepositoryUpdater(object):
 
         added = [x for x in remote_package_ids if x not in package_ids]
         removed = [x for x in package_ids if x not in remote_package_ids]
+        # sort, to increase determinism
+        added.sort()
         return added, removed
 
     def __eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
