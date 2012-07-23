@@ -26,6 +26,7 @@
 import sys
 import os
 import time
+import tempfile
 
 from entropy.const import etpConst, const_setup_file, const_is_python3
 # Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
@@ -84,6 +85,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
         custom_permissions = 0o664
 
     while True: # trap ctrl+C
+        tmp_fd, tmp_dmpfile = None, None
         try:
             if complete_path:
                 dmpfile = name
@@ -104,8 +106,10 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
                     os.mkdir(d_path)
                     const_setup_file(d_path, E_GID, 0o775)
 
-            tmp_dmpfile = dmpfile + ".tmp"
-            with open(tmp_dmpfile, "wb") as dmp_f:
+            dmp_name = os.path.basename(dmpfile)
+            tmp_fd, tmp_dmpfile = tempfile.mkstemp(
+                dir=c_dump_dir, prefix=dmp_name)
+            with os.fdopen(tmp_fd, "wb") as dmp_f:
                 if const_is_python3():
                     pickle.dump(my_object, dmp_f,
                         protocol = COMPAT_PICKLE_PROTOCOL, fix_imports = True)
@@ -123,6 +127,17 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
         except (EOFError, IOError, OSError):
             if not ignore_exceptions:
                 raise
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except (IOError, OSError):
+                    pass
+            if tmp_dmpfile is not None:
+                try:
+                    os.remove(tmp_dmpfile)
+                except (IOError, OSError):
+                    pass
         break
 
 def serialize(myobj, ser_f, do_seek = True):
