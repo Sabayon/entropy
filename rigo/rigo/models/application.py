@@ -335,15 +335,45 @@ class ApplicationMetadata(object):
         WebService interface.
         Return path to just downloaded Document if success, None otherwise.
         """
-        local_path = None
-        try:
-            local_path = entropy_ws.get_document_url(document,
-                cache=cache)
-        except ClientWebService.DocumentError as err:
-            const_debug_write(__name__,
-                "_download_document: document error: %s" % (
-                    err,))
-        return local_path
+        # avoid bursts of downloads caused by race on get&set
+        # (check if file has been downloaded && download if not)
+        mutex = ApplicationMetadata._DOWNLOAD_DOCUMENT_LOCK
+        url_mutexes = ApplicationMetadata._DOWNLOAD_DOCUMENT_URL_LOCKS
+        url = document.document_url()
+        if url is None:
+            return None
+
+        with mutex:
+            lock = url_mutexes.get(url)
+            if lock is None:
+                lock = Lock()
+                url_mutexes[url] = lock
+
+        with lock:
+            def _complete():
+                with mutex:
+                    # clear out url_mutexes for url
+                    # if we get here, we have exclusive access
+                    url_mutexes.pop(url, None)
+
+            # once here, check if file has been already downloaded
+            _local_path = document.local_document()
+            if os.path.isfile(_local_path):
+                _complete()
+                return _local_path
+
+            local_path = None
+            try:
+                local_path = entropy_ws.get_document_url(document,
+                    cache=cache)
+            except ClientWebService.DocumentError as err:
+                const_debug_write(__name__,
+                    "_download_document: document error: %s" % (
+                        err,))
+
+            # the last one close the door please
+            _complete()
+            return local_path
 
     @staticmethod
     def _enqueue_rating(webservice, package_key, repository_id, callback,
@@ -511,8 +541,11 @@ class ApplicationMetadata(object):
             if not icons:
                 # sadly, no icons
                 return
-            local_path = ApplicationMetadata._download_document(
-                webserv, _pick_icon(icons))
+            icon = _pick_icon(icons)
+            local_path = icon.local_document()
+            if not os.path.isfile(local_path):
+                local_path = ApplicationMetadata._download_document(
+                    webserv, icon)
             if local_path:
                 # only if successful, otherwise we fall into
                 # infinite loop
@@ -746,6 +779,9 @@ class ApplicationMetadata(object):
 
     _ICON_DISCARD_SIGNALS = []
     _RATING_DISCARD_SIGNALS = []
+
+    _DOWNLOAD_DOCUMENT_LOCK = Lock()
+    _DOWNLOAD_DOCUMENT_URL_LOCKS = {}
 
     # Application Rating logic
     _RATING_QUEUE = deque()
