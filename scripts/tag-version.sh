@@ -40,4 +40,4 @@ git tag $new_tag HEAD
 git push
 git push --tags
 
-ssh pkg.sabayon.org /sabayon/bin/tarball-new-entropy
+ssh pkg.sabayon.org /sabayon/bin/tarball-new-entropy ${new_tag}
