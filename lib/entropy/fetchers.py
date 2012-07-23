@@ -586,33 +586,46 @@ class UrlFetcher(TextInterface):
         try:
             self.__remotesize = int(self.__remotefile.headers.get(
                 "content-length", -1))
-            self.__remotefile.close()
         except KeyboardInterrupt:
             self.__urllib_close(False)
             raise
-        except Exception:
+        except ValueError:
             pass
 
-        # handle user stupidity
         try:
+            # i don't remember why this is needed
+            # the whole code here is crap and written at
+            # scriptkiddie age, but still, it works (kinda).
             request = url
             if ((self.__startingposition > 0) and (self.__remotesize > 0)) \
                 and (self.__startingposition < self.__remotesize):
 
+                headers = {
+                    "Range" : "bytes=" + \
+                        str(self.__startingposition) + "-" + \
+                        str(self.__remotesize)
+                }
+                if url_protocol in ("http", "https"):
+                    headers['User-Agent'] = user_agent
+
                 try:
                     request = urlmod.Request(
                         url,
-                        headers = {
-                            "Range" : "bytes=" + \
-                                str(self.__startingposition) + "-" + \
-                                str(self.__remotesize)
-                        }
-                    )
+                        headers = headers)
                 except KeyboardInterrupt:
                     self.__urllib_close(False)
                     raise
                 except:
                     pass
+
+                # this will be replaced, close...
+                try:
+                    self.__remotefile.close()
+                except:
+                    pass
+                self.__remotefile = urlmod.urlopen(
+                    request, None, self.__timeout)
+
             elif self.__startingposition == self.__remotesize:
                 # all fine then!
                 self.__urllib_close(False)
@@ -625,7 +638,6 @@ class UrlFetcher(TextInterface):
                 # locally and file cannot be trusted (resumed)
                 self.__urllib_open_local_file("wb")
 
-            self.__remotefile = urlmod.urlopen(request, None, self.__timeout)
         except KeyboardInterrupt:
             self.__urllib_close(False)
             raise
