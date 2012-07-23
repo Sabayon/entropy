@@ -1730,9 +1730,6 @@ class LogFile:
         if hasattr(self.__handler, 'flush'):
             self.__handler.flush()
 
-    def __del__(self):
-        self.close()
-
     def close(self):
         """ Close log file """
         if self.__handler is not None:
