@@ -35,12 +35,6 @@ class GraphNode(object):
         self.__item = item
         self.__arches = set()
 
-    def __del__(self):
-        try:
-            self._clear()
-        except (NameError, AttributeError):
-            pass
-
     def _clear(self):
         """
         Clear the object
@@ -154,12 +148,6 @@ class GraphArchSet(object):
         self.__origin = starting_point
         self.__endpoints = set()
 
-    def __del__(self):
-        try:
-            self._clear()
-        except (NameError, AttributeError):
-            pass
-
     def _clear(self):
         """
         Cleanup the object
@@ -244,16 +232,6 @@ class TopologicalSorter(object):
         object.__init__(self)
         self.__adjacency_map = adjacency_map
         self.__stack = Lifo()
-
-    def __del__(self):
-        try:
-            self.__adjacency_map.clear()
-        except (NameError, AttributeError):
-            pass
-        try:
-            self.__stack.clear()
-        except (NameError, AttributeError):
-            pass
 
     def __topological_sort_visit_node(self, node, low, result):
         """
@@ -384,12 +362,6 @@ class Graph(object):
         self.__graph = {}
         self.__archs_map = {}
         self.__graph_map_cache = None
-
-    def __del__(self):
-        try:
-            self.destroy()
-        except (AttributeError, NameError):
-            pass
 
     def destroy(self):
         """

@@ -849,7 +849,6 @@ def _revgraph_package(entropy_client, installed_pkg_id, package, dbconn,
 
     del stack
     graph.destroy()
-    del graph
     return 0
 
 def graph_packages(packages, entropy_client, complete = False,
@@ -947,7 +946,6 @@ def _graph_package(match, package, entropy_intf, show_complete = False,
 
     del stack
     graph.destroy()
-    del graph
     return 0
 
 def _graph_to_stdout(entropy_client, graph, start_item,

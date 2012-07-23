@@ -1840,7 +1840,6 @@ class CalculatorsMixin:
 
         if deps_not_found:
             graph.destroy()
-            del graph
             raise DependenciesNotFound(deps_not_found)
 
         # get adjacency map before it gets destroyed by solve()
@@ -1850,7 +1849,6 @@ class CalculatorsMixin:
         deptree = graph.solve()
         if 0 in deptree:
             graph.destroy()
-            del graph
             raise KeyError("Graph contains a dep_level == 0")
 
         # now check and report dependencies with colliding scope and in case,
@@ -1865,7 +1863,6 @@ class CalculatorsMixin:
             len(x) > 1]
         if _colliding_deps:
             graph.destroy()
-            del graph
             raise DependenciesCollision(_colliding_deps)
 
         # now use the ASAP herustic to anticipate post-dependencies
@@ -1887,7 +1884,6 @@ class CalculatorsMixin:
             reverse_tree[level_count] = deptree[key]
 
         graph.destroy()
-        del graph
         reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
@@ -2345,7 +2341,6 @@ class CalculatorsMixin:
             del flat_dep_tree
 
         graph.destroy()
-        del graph
 
         if self.xcache:
             self._cacher.push(c_hash, deptree)
