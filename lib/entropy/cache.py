@@ -286,9 +286,6 @@ class EntropyCacher(Singleton):
                     del massive_data[:]
                     del massive_data
 
-    def __del__(self):
-        self.stop()
-
     @staticmethod
     def current_directory():
         """
