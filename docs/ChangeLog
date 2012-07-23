@@ -1,3 +1,103 @@
+commit 4b5c06177f38a236ff08a0ca4d5f246d6bad675e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 19:23:12 2012 +0200
+
+    Release Entropy 1.0_rc127
+
+commit 254c866702a0153ca3a488c43f9fdfc6facaea7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 19:22:53 2012 +0200
+
+    [Rigo] update translations
+
+commit fa35eadf47c9c765e9ff23d77b58a2d92bd71dfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 19:20:29 2012 +0200
+
+    [entropy.fetchers] do not generate two separate requests per download
+    
+    It has been discovered that each download() call (urllib handler)
+    caused the code to generate two separete HTTP requests for the same
+    URL. This commit hopefully fixes it without causing any regression
+
+commit 13b5bcd018526c2142fbbfd7d497c0aca23a4051
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 19:19:49 2012 +0200
+
+    [Rigo] serialize MTed download to the same URLs (avoid flooding the WS)
+
+commit ef64634defda896a9785a4d764e52cc670104470
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 15:47:19 2012 +0200
+
+    [entropy.dump] dumpobj: use temporary files, fixes possible races when MT
+
+commit f301ae60c78ef0be1b00cdb1b7ee7c6c8f3e9afb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 13:10:49 2012 +0200
+
+    [entropy.graph] Graph: drop __del__ (just use destroy() instead) to help automatic GC
+
+commit 61950f3af0bc24092f0a48010550799befda9b67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 13:08:25 2012 +0200
+
+    [entropy.client.interfaces.db] sort added list to improve determinism (good for caches)
+
+commit e8c6af83315f5ad30af4dba9c7dce919cfae9fcf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 13:08:00 2012 +0200
+
+    [entropy.misc] LogFile: remove __del__
+
+commit defb58574d8708942482ca68ce344236cfb4ac06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 13:07:51 2012 +0200
+
+    [entropy.cache] EntropyCacher: remove __del__
+
+commit 0dbc40777eb5385a94a36dabc868979b442d9c99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 00:30:07 2012 +0200
+
+    [todo] update TODO
+
+commit db5265e3d511e828bdf99abd4756360482d58a01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 00:29:27 2012 +0200
+
+    [entropy.client.package] use retrieveContentIter()
+
+commit a1c5e2bc12bf0e86a55b55980b4b88a72e2a9eed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 23 00:29:11 2012 +0200
+
+    [entropy.db] introduce retrieveContentIter()
+
+commit ce4d28ef47576e62b2c9f9ff0b160ca6d1e598fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 22 19:59:37 2012 +0200
+
+    [entropy.client] if xcache=False, force EntropyCacher "stashing cache" to OFF
+
+commit 9472978e607f95b44984ee07c526f125e09ac31c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 22 19:44:18 2012 +0200
+
+    [entropy.cache] EntropyCacher: make possible to disable the "stashing cache" at runtime
+
+commit de52fdb45383d65fddb92c3f224d03a2e0680571
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 22 12:50:46 2012 +0200
+
+    [equo] fix undefined reference to installed_repo when --resume is used
+
+commit 574801e2f95a321ef0cd557215be8bde548b7318
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 20 12:59:21 2012 +0200
+
+    Tagging Entropy version 1.0_rc126
+
 commit ae94f49e79cec51aa7e7598c69c11467f7039b05
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 20 12:59:20 2012 +0200
