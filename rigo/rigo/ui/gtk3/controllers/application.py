@@ -1037,8 +1037,9 @@ class ApplicationViewController(GObject.Object):
                     const_debug_write(
                         __name__,
                         "MetadataDownloader._download_callback: "
-                            "total: %s, offset: %s" % (
-                            document_list.total(), document_list.offset()))
+                            "has_more: %s, offset: %s" % (
+                            document_list.has_more(),
+                            document_list.offset()))
 
             self._callback(self, self._app, document_list, has_more)
 

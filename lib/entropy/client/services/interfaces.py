@@ -296,20 +296,20 @@ class DocumentList(list):
     elements list offset, and if there are more elements on the remote service.
     """
 
-    def __init__(self, package_name, total, offset):
+    def __init__(self, package_name, has_more, offset):
         """
         DocumentList constructor.
 
         @param package_name: package name string
         @type package_name: string
-        @param total: number of total documents available
-        @type total: int
+        @param has_more: True, if there are more documents available
+        @type has_more: bool
         @param offset: list offset used by remote service
         @type offset: int
         """
         list.__init__(self)
         self._package_name = package_name
-        self._total = total
+        self._has_more = has_more
         self._offset = offset
 
     def package_name(self):
@@ -320,15 +320,6 @@ class DocumentList(list):
         @rtype: string
         """
         return self._package_name
-
-    def total(self):
-        """
-        Return the total amount of remotely available documents.
-
-        @return: the total amount of remotely available documents.
-        @rtype: int
-        """
-        return self._total
 
     def offset(self):
         """
@@ -347,7 +338,7 @@ class DocumentList(list):
             given the current offset
         @rtype: int
         """
-        return (self._total - self._offset - len(self))
+        return self._has_more
 
 
 class DocumentFactory(object):
@@ -1186,6 +1177,7 @@ class ClientWebService(WebService):
             "filter": " ".join([str(x) for x in document_type_filter]),
             "offset": offset,
             "latest": latest_str,
+            "revision": "1",
         }
         if service_cache:
             params["cache"] = "1"
@@ -1195,13 +1187,15 @@ class ClientWebService(WebService):
         for package_name in package_names:
             objs_map = objs.get(package_name)
             if not objs_map:
-                data[package_name] = DocumentList(package_name, 0, offset)
+                data[package_name] = DocumentList(
+                    package_name, False, offset)
                 continue
 
-            total, docs = objs_map['total'], objs_map['docs']
+            has_more, docs = objs_map.get('has_more', False), \
+                objs_map['docs']
 
             m_objs = data.setdefault(package_name,
-                DocumentList(package_name, total, offset))
+                DocumentList(package_name, has_more, offset))
             for obj in docs:
                 d_obj = Document(self._repository_id,
                     obj[Document.DOCUMENT_DOCUMENT_ID],

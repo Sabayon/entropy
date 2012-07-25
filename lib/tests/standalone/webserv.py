@@ -744,7 +744,6 @@ class EntropyWebServicesTest(unittest.TestCase):
         for vals in docs.values():
             self.assertTrue(isinstance(vals, DocumentList))
             self.assertEqual(vals.package_name(), pk)
-            self.assertTrue(isinstance(vals.total(), int))
             self.assertTrue(isinstance(vals.has_more(), int))
             self.assertEqual(vals.offset(), 0)
             for val in vals:

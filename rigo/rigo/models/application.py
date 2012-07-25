@@ -737,10 +737,9 @@ class ApplicationMetadata(object):
                         fetched_images.append(image)
 
                 # final DocumentList may contain less elements
-                # than those advertised by total().
                 _outcome = DocumentList(
                     images.package_name(),
-                    images.total(),
+                    images.has_more(),
                     images.offset())
                 _outcome.extend(fetched_images)
                 outcome = _outcome
