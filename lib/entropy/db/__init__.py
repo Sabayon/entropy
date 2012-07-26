@@ -201,7 +201,8 @@ class EntropyRepository(EntropyRepositoryBase):
                         idflags INTEGER,
                         digest VARCHAR,
                         datecreation VARCHAR,
-                        FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                        FOREIGN KEY(idpackage)
+                           REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                     );
 
                     CREATE TABLE categories (
@@ -226,7 +227,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     idpackage INTEGER,
                     file VARCHAR,
                     type VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE contentsafety (
@@ -234,21 +236,24 @@ class EntropyRepository(EntropyRepositoryBase):
                     file VARCHAR,
                     mtime FLOAT,
                     sha256 VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provide (
                     idpackage INTEGER,
                     atom VARCHAR,
                     is_default INTEGER DEFAULT 0,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependencies (
                     idpackage INTEGER,
                     iddependency INTEGER,
                     type INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependenciesreference (
@@ -259,7 +264,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE conflicts (
                     idpackage INTEGER,
                     conflict VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE mirrorlinks (
@@ -270,7 +276,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE sources (
                     idpackage INTEGER,
                     idsource INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sourcesreference (
@@ -281,7 +288,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE useflags (
                     idpackage INTEGER,
                     idflag INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE useflagsreference (
@@ -292,7 +300,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE keywords (
                     idpackage INTEGER,
                     idkeyword INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE keywordsreference (
@@ -303,13 +312,15 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE configprotect (
                     idpackage INTEGER PRIMARY KEY,
                     idprotect INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectmask (
                     idpackage INTEGER PRIMARY KEY,
                     idprotect INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectreference (
@@ -319,25 +330,29 @@ class EntropyRepository(EntropyRepositoryBase):
 
                 CREATE TABLE systempackages (
                     idpackage INTEGER PRIMARY KEY,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE injected (
                     idpackage INTEGER PRIMARY KEY,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE installedtable (
                     idpackage INTEGER PRIMARY KEY,
                     repositoryname VARCHAR,
                     source INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sizes (
                     idpackage INTEGER PRIMARY KEY,
                     size INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE counters (
@@ -345,7 +360,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     idpackage INTEGER,
                     branch VARCHAR,
                     PRIMARY KEY(idpackage,branch),
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE trashedcounters (
@@ -356,7 +372,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     idpackage INTEGER,
                     idneeded INTEGER,
                     elfclass INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE neededreference (
@@ -369,7 +386,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     library VARCHAR,
                     path VARCHAR,
                     elfclass INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE treeupdates (
@@ -398,7 +416,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE triggers (
                     idpackage INTEGER PRIMARY KEY,
                     data BLOB,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_misc_counters (
@@ -428,7 +447,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     idpackage INTEGER,
                     configfile VARCHAR,
                     md5 VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagedesktopmime (
@@ -437,7 +457,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     mimetype VARCHAR,
                     executable VARCHAR,
                     icon VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagedownloads (
@@ -451,13 +472,15 @@ class EntropyRepository(EntropyRepositoryBase):
                     sha256 VARCHAR,
                     sha512 VARCHAR,
                     gpg BLOB,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provided_mime (
                     mimetype VARCHAR,
                     idpackage INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagesignatures (
@@ -466,19 +489,22 @@ class EntropyRepository(EntropyRepositoryBase):
                     sha256 VARCHAR,
                     sha512 VARCHAR,
                     gpg BLOB,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmphases (
                     idpackage INTEGER PRIMARY KEY,
                     phases VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmrepository (
                     idpackage INTEGER PRIMARY KEY,
                     repository VARCHAR,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_branch_migration (
@@ -6397,7 +6423,8 @@ class EntropyRepository(EntropyRepositoryBase):
         sha256 VARCHAR,
         sha512 VARCHAR,
         gpg BLOB,
-        FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
+        FOREIGN KEY(idpackage)
+            REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
         """)
         self._clearLiveCache("_doesTableExist")
         self._clearLiveCache("_doesColumnInTableExist")
@@ -6413,7 +6440,8 @@ class EntropyRepository(EntropyRepositoryBase):
             CREATE TABLE packagespmphases (
                 idpackage INTEGER PRIMARY KEY,
                 phases VARCHAR,
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                FOREIGN KEY(idpackage)
+                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
         self._clearLiveCache("_doesTableExist")
@@ -6424,7 +6452,8 @@ class EntropyRepository(EntropyRepositoryBase):
             CREATE TABLE packagespmrepository (
                 idpackage INTEGER PRIMARY KEY,
                 repository VARCHAR,
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                FOREIGN KEY(idpackage)
+                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
         self._clearLiveCache("_doesTableExist")
@@ -6459,7 +6488,8 @@ class EntropyRepository(EntropyRepositoryBase):
             mimetype VARCHAR,
             executable VARCHAR,
             icon VARCHAR,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+            FOREIGN KEY(idpackage)
+                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
         self._clearLiveCache("_doesTableExist")
@@ -6470,7 +6500,8 @@ class EntropyRepository(EntropyRepositoryBase):
         CREATE TABLE provided_mime (
             mimetype VARCHAR,
             idpackage INTEGER,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+            FOREIGN KEY(idpackage)
+                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
         self._clearLiveCache("_doesTableExist")
@@ -6490,7 +6521,8 @@ class EntropyRepository(EntropyRepositoryBase):
             file VARCHAR,
             mtime FLOAT,
             sha256 VARCHAR,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+            FOREIGN KEY(idpackage)
+                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
         self._clearLiveCache("_doesTableExist")
