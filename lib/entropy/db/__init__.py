@@ -172,7 +172,8 @@ class EntropyRepository(EntropyRepositoryBase):
                         cxxflags VARCHAR,
                         digest VARCHAR,
                         datecreation VARCHAR,
-                        FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                        FOREIGN KEY(idpackage)
+                            REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                     );
                 """
             else:
@@ -2354,7 +2355,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return package_id[0]
         return -1
 
-    def getVersioningData(self, package_id): 
+    def getVersioningData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -3316,7 +3317,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT protect FROM configprotectmask,configprotectreference 
+        SELECT protect FROM configprotectmask,configprotectreference
         WHERE idpackage = (?) AND
         configprotectmask.idprotect = configprotectreference.idprotect
         """, (package_id,))
@@ -6106,11 +6107,13 @@ class EntropyRepository(EntropyRepositoryBase):
                 cxxflags VARCHAR,
                 digest VARCHAR,
                 datecreation VARCHAR,
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                FOREIGN KEY(idpackage)
+                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
             INSERT INTO extrainfo_new_temp
                 SELECT idpackage, description, homepage, download, size,
-                    flags.chost, flags.cflags, flags.cxxflags, digest, datecreation
+                    flags.chost, flags.cflags, flags.cxxflags,
+                    digest, datecreation
                 FROM extrainfo, flags WHERE flags.idflags = extrainfo.idflags;
             DROP TABLE extrainfo;
             ALTER TABLE extrainfo_new_temp RENAME TO extrainfo;
@@ -6181,7 +6184,8 @@ class EntropyRepository(EntropyRepositoryBase):
             cur_sql = cur_sql[:-1].strip()
             # add foreign key stmt
             cur_sql += """,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );"""
+            FOREIGN KEY(idpackage) REFERENCES
+                baseinfo(idpackage) ON DELETE CASCADE );"""
             self._cursor().executescript(cur_sql)
             self._moveContent(table, tmp_table)
             self._atomicRename(tmp_table, table)
@@ -6217,7 +6221,8 @@ class EntropyRepository(EntropyRepositoryBase):
             CREATE TABLE counterstemp (
                 counter INTEGER, idpackage INTEGER, branch VARCHAR,
                 PRIMARY KEY(idpackage,branch),
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                FOREIGN KEY(idpackage)
+                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
             INSERT INTO counterstemp (counter, idpackage, branch)
                 SELECT counter, idpackage, branch FROM counters;
@@ -6297,7 +6302,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 sha256 VARCHAR,
                 sha512 VARCHAR,
                 gpg BLOB,
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                FOREIGN KEY(idpackage)
+                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
         self._clearLiveCache("_doesTableExist")
