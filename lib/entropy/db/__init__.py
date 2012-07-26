@@ -5752,10 +5752,13 @@ class EntropyRepository(EntropyRepositoryBase):
             pass
 
     def _createCompileFlagsIndex(self):
-        self._cursor().execute("""
-        CREATE INDEX IF NOT EXISTS flagsindex ON flags
-            ( chost, cflags, cxxflags )
-        """)
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS flagsindex ON flags
+                ( chost, cflags, cxxflags )
+            """)
+        except OperationalError:
+            pass
 
     def _createDesktopMimeIndex(self):
         try:
