@@ -5789,9 +5789,9 @@ class EntropyRepository(EntropyRepositoryBase):
     def _createAutomergefilesIndex(self):
         try:
             self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
+                CREATE INDEX IF NOT EXISTS automergefiles_idpackage
                 ON automergefiles ( idpackage );
-                CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
+                CREATE INDEX IF NOT EXISTS automergefiles_file_md5
                 ON automergefiles ( configfile, md5 );
             """)
         except OperationalError:
@@ -5853,7 +5853,7 @@ class EntropyRepository(EntropyRepositoryBase):
         CREATE INDEX IF NOT EXISTS baseindex_atom
             ON baseinfo ( atom );
         CREATE INDEX IF NOT EXISTS baseindex_branch_name
-            ON baseinfo ( name,branch );
+            ON baseinfo ( name, branch );
         """)
         if self._isBaseinfoExtrainfo2010():
             self._cursor().executescript("""
