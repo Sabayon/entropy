@@ -542,21 +542,24 @@ def search_files(packages, entropy_client, entropy_repository):
         if pkg_id == -1:
             continue
 
-        files = entropy_repository.retrieveContent(pkg_id)
         atom = entropy_repository.retrieveAtom(pkg_id)
-        files = sorted(files)
+        files = entropy_repository.retrieveContentIter(
+            pkg_id, order_by="file")
+        files_len = 0
         if etpUi['quiet']:
-            for xfile in files:
+            for xfile, ftype in files:
+                files_len += 1
                 print_generic(xfile)
         else:
-            for xfile in files:
+            for xfile, ftype in files:
+                files_len += 1
                 print_info(blue(" ### ") + red(xfile))
 
         if not etpUi['quiet']:
             toc = []
             toc.append(("%s:" % (blue(_("Package")),), purple(atom)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(files), brown(_("files")),)))
+                files_len, brown(_("files")),)))
             print_table(toc)
 
     return 0
@@ -657,7 +660,7 @@ def search_orphaned_files(entropy_client):
     count = 0
 
     def gen_cont(pkg_id):
-        for path in repo.retrieveContent(pkg_id):
+        for path, ftype in repo.retrieveContentIter(pkg_id):
             # reverse sym
             for sym_dir in reverse_symlink_map:
                 if path.startswith(sym_dir):

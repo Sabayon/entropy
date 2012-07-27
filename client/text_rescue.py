@@ -335,8 +335,8 @@ def _database_resurrect(entropy_client):
             )
             print_info(mytxt, back = True)
             # content
-            content = dbconn.retrieveContent(idpackage)
-            for item in content:
+            content = dbconn.retrieveContentIter(idpackage)
+            for item, ftype in content:
                 if etpConst['systemroot']+item in filelist:
                     pkgsfound.add((idpackage, repo))
                     atoms[(idpackage, repo)] = idpackageatom
