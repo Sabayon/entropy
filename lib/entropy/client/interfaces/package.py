@@ -1515,17 +1515,16 @@ class Package:
             level = "info",
             header = red("   ## ")
         )
-        automerge_metadata = \
-            self._entropy.installed_repository().retrieveAutomergefiles(
-                self.pkgmeta['removeidpackage'], get_dict = True
-            )
-        self._entropy.installed_repository().removePackage(
+        inst_repo = self._entropy.installed_repository()
+        automerge_metadata = inst_repo.retrieveAutomergefiles(
+            self.pkgmeta['removeidpackage'], get_dict = True)
+        inst_repo.removePackage(
             self.pkgmeta['removeidpackage'], do_commit = False,
             do_cleanup = False)
 
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
-        self._entropy.installed_repository().commit()
+        inst_repo.commit()
 
         self._remove_content_from_system(self.pkgmeta['removeidpackage'],
             automerge_metadata)
@@ -1563,7 +1562,9 @@ class Package:
         not_removed_due_to_collisions = set()
         colliding_path_messages = set()
 
-        remove_content = sorted(self.pkgmeta['removecontent'], reverse = True)
+        remove_content = sorted(
+            self.pkgmeta['removecontent'], reverse = True)
+        inst_repo = self._entropy.installed_repository()
         for item in remove_content:
 
             if not item:
@@ -1574,7 +1575,7 @@ class Package:
             # collision check
             if col_protect > 0:
 
-                if self._entropy.installed_repository().isFileAvailable(item) \
+                if inst_repo.isFileAvailable(item) \
                     and os.path.isfile(sys_root_item):
 
                     # in this way we filter out directories
@@ -1803,9 +1804,11 @@ class Package:
             "Installing package: %s" % (self.pkgmeta['atom'],)
         )
 
+        inst_repo = self._entropy.installed_repository()
+
         if self.pkgmeta['removeidpackage'] != -1:
             self.pkgmeta['already_protected_config_files'] = \
-                self._entropy.installed_repository().retrieveAutomergefiles(
+                inst_repo.retrieveAutomergefiles(
                     self.pkgmeta['removeidpackage'], get_dict = True
                 )
 
@@ -3853,9 +3856,9 @@ class Package:
     def __generate_remove_metadata(self):
 
         idpackage = self._package_match[0]
+        inst_repo = self._entropy.installed_repository()
 
-        if not self._entropy.installed_repository().isPackageIdAvailable(
-            idpackage):
+        if not inst_repo.isPackageIdAvailable(idpackage):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
@@ -3864,11 +3867,11 @@ class Package:
         self.pkgmeta['configprotect_data'] = []
         self.pkgmeta['triggers'] = {}
         self.pkgmeta['removeatom'] = \
-            self._entropy.installed_repository().retrieveAtom(idpackage)
+            inst_repo.retrieveAtom(idpackage)
         self.pkgmeta['slot'] = \
-            self._entropy.installed_repository().retrieveSlot(idpackage)
+            inst_repo.retrieveSlot(idpackage)
         self.pkgmeta['versiontag'] = \
-            self._entropy.installed_repository().retrieveTag(idpackage)
+            inst_repo.retrieveTag(idpackage)
         self.pkgmeta['diffremoval'] = False
 
         remove_config = False
@@ -3877,22 +3880,22 @@ class Package:
         self.pkgmeta['removeconfig'] = remove_config
 
         self.pkgmeta['removecontent'] = \
-            self._entropy.installed_repository().retrieveContent(idpackage)
+            inst_repo.retrieveContent(idpackage)
         
         self.pkgmeta['triggers']['remove'] = \
-            self._entropy.installed_repository().getTriggerData(idpackage)
+            inst_repo.getTriggerData(idpackage)
         if self.pkgmeta['triggers']['remove'] is None:
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
         self.pkgmeta['triggers']['remove']['spm_repository'] = \
-            self._entropy.installed_repository().retrieveSpmRepository(
+            inst_repo.retrieveSpmRepository(
                 idpackage)
         self.pkgmeta['triggers']['remove'].update(
             self.__get_base_metadata(self._action))
 
-        pkg_license = self._entropy.installed_repository().retrieveLicense(
+        pkg_license = inst_repo.retrieveLicense(
             idpackage)
         if pkg_license is None:
             pkg_license = set()
@@ -3908,24 +3911,18 @@ class Package:
 
     def __generate_config_metadata(self):
         idpackage = self._package_match[0]
+        inst_repo = self._entropy.installed_repository()
 
-        self.pkgmeta['atom'] = \
-            self._entropy.installed_repository().retrieveAtom(idpackage)
-        key, slot = self._entropy.installed_repository().retrieveKeySlot(
-            idpackage)
+        self.pkgmeta['atom'] = inst_repo.retrieveAtom(idpackage)
+        key, slot = inst_repo.retrieveKeySlot(idpackage)
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
-        self.pkgmeta['version'] = \
-            self._entropy.installed_repository().retrieveVersion(idpackage)
-        self.pkgmeta['category'] = \
-            self._entropy.installed_repository().retrieveCategory(idpackage)
-        self.pkgmeta['name'] = \
-            self._entropy.installed_repository().retrieveName(idpackage)
-        self.pkgmeta['spm_repository'] = \
-            self._entropy.installed_repository().retrieveSpmRepository(
-                idpackage)
-
-        pkg_license = self._entropy.installed_repository().retrieveLicense(
+        self.pkgmeta['version'] = inst_repo.retrieveVersion(idpackage)
+        self.pkgmeta['category'] = inst_repo.retrieveCategory(idpackage)
+        self.pkgmeta['name'] = inst_repo.retrieveName(idpackage)
+        self.pkgmeta['spm_repository'] = inst_repo.retrieveSpmRepository(
             idpackage)
+
+        pkg_license = inst_repo.retrieveLicense(idpackage)
         if pkg_license is None:
             pkg_license = set()
         else:
