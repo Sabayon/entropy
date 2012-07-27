@@ -1622,44 +1622,47 @@ class RigoDaemonService(dbus.service.Object):
                 GLib.idle_add(
                     self.activity_progress, activity, progress)
 
-                pkg = self._entropy.Package()
-                pkg.prepare((package_id,), "remove", {})
+                pkg = None
+                try:
+                    pkg = self._entropy.Package()
+                    pkg.prepare((package_id,), "remove", {})
 
-                msg = "-- %s" % (purple(_("Application Removal")),)
-                self._entropy.output(msg, count=(count, total),
-                                     importance=1, level="info")
+                    msg = "-- %s" % (purple(_("Application Removal")),)
+                    self._entropy.output(msg, count=(count, total),
+                                         importance=1, level="info")
 
-                GLib.idle_add(
-                    self.processing_application,
-                    package_id, repository_id, action,
-                    AppTransactionStates.MANAGE)
-                _signal_merge_process(package_id, repository_id, 50)
-
-                if simulate:
-                    # simulate time taken
-                    time.sleep(5.0)
-                    rc = 0
-                else:
-                    rc = pkg.run()
-                if rc != 0:
-                    self._txs.unset(package_id, repository_id)
-                    _signal_merge_process(package_id, repository_id, -1)
-
-                    outcome = AppTransactionOutcome.REMOVE_ERROR
                     GLib.idle_add(
-                        self.application_processed,
+                        self.processing_application,
                         package_id, repository_id, action,
-                        outcome)
+                        AppTransactionStates.MANAGE)
+                    _signal_merge_process(package_id, repository_id, 50)
 
-                    write_output(
-                        "_process_remove_merge_action: "
-                        "%s, count: %s, total: %s, error: %s" % (
-                            pkg_match, count,
-                            total, rc))
-                    return outcome
+                    if simulate:
+                        # simulate time taken
+                        time.sleep(5.0)
+                        rc = 0
+                    else:
+                        rc = pkg.run()
+                    if rc != 0:
+                        self._txs.unset(package_id, repository_id)
+                        _signal_merge_process(
+                            package_id, repository_id, -1)
 
-                pkg.kill()
-                del pkg
+                        outcome = AppTransactionOutcome.REMOVE_ERROR
+                        GLib.idle_add(
+                            self.application_processed,
+                            package_id, repository_id, action,
+                            outcome)
+
+                        write_output(
+                            "_process_remove_merge_action: "
+                            "%s, count: %s, total: %s, error: %s" % (
+                                pkg_match, count,
+                                total, rc))
+                        return outcome
+                finally:
+                    if pkg is not None:
+                        pkg.kill()
 
                 write_output(
                     "_process_remove_merge_action: "
@@ -1925,31 +1928,33 @@ class RigoDaemonService(dbus.service.Object):
                 GLib.idle_add(
                     self.activity_progress, activity, progress)
 
-                pkg = self._entropy.Package()
-                pkg.prepare(opaque, pkg_action, {})
+                pkg = None
+                try:
+                    pkg = self._entropy.Package()
+                    pkg.prepare(opaque, pkg_action, {})
 
-                msg = ":: %s" % (purple(_("Application download")),)
-                self._entropy.output(msg, count=(_count, total),
-                                     importance=1, level="info")
+                    msg = ":: %s" % (purple(_("Application download")),)
+                    self._entropy.output(msg, count=(_count, total),
+                                         importance=1, level="info")
 
-                _signal_download_process(is_multifetch, opaque, 50)
+                    _signal_download_process(is_multifetch, opaque, 50)
 
-                rc = pkg.run()
-                if rc != 0:
-                    _signal_download_process(is_multifetch, opaque, -1)
-                    _outcome = AppTransactionOutcome.DOWNLOAD_ERROR
-                    write_output(
-                        "_process_install_fetch_action: "
-                        "%s, mode: %s, count: %s, total: %s, error: %s" % (
-                            opaque, pkg_action, _count,
-                            total, rc))
-                    return _count, total, _outcome
+                    rc = pkg.run()
+                    if rc != 0:
+                        _signal_download_process(is_multifetch, opaque, -1)
+                        _outcome = AppTransactionOutcome.DOWNLOAD_ERROR
+                        write_output(
+                            "_process_install_fetch_action: "
+                            "%s, mode: %s, count: %s, total: %s, error: %s" % (
+                                opaque, pkg_action, _count,
+                                total, rc))
+                        return _count, total, _outcome
 
-                _account_downloads(is_multifetch, download_map, pkg)
-                _signal_download_process(is_multifetch, opaque, 100)
-
-                pkg.kill()
-                del pkg
+                    _account_downloads(is_multifetch, download_map, pkg)
+                    _signal_download_process(is_multifetch, opaque, 100)
+                finally:
+                    if pkg is not None:
+                        pkg.kill()
 
                 if self._interrupt_activity:
                     _outcome = AppTransactionOutcome.PERMISSION_DENIED
@@ -2023,44 +2028,47 @@ class RigoDaemonService(dbus.service.Object):
                 GLib.idle_add(
                     self.activity_progress, activity, progress)
 
-                pkg = self._entropy.Package()
-                pkg.prepare(pkg_match, "install", {})
+                pkg = None
+                try:
+                    pkg = self._entropy.Package()
+                    pkg.prepare(pkg_match, "install", {})
 
-                msg = "++ %s" % (purple(_("Application Install")),)
-                self._entropy.output(msg, count=(count, total),
-                                     importance=1, level="info")
+                    msg = "++ %s" % (purple(_("Application Install")),)
+                    self._entropy.output(msg, count=(count, total),
+                                         importance=1, level="info")
 
-                GLib.idle_add(
-                    self.processing_application,
-                    package_id, repository_id, action,
-                    AppTransactionStates.MANAGE)
-                _signal_merge_process(package_id, repository_id, 50)
-
-                if simulate:
-                    # simulate time taken
-                    time.sleep(5.0)
-                    rc = 0
-                else:
-                    rc = pkg.run()
-                if rc != 0:
-                    self._txs.unset(package_id, repository_id)
-                    _signal_merge_process(package_id, repository_id, -1)
-
-                    outcome = AppTransactionOutcome.INSTALL_ERROR
                     GLib.idle_add(
-                        self.application_processed,
+                        self.processing_application,
                         package_id, repository_id, action,
-                        outcome)
+                        AppTransactionStates.MANAGE)
+                    _signal_merge_process(package_id, repository_id, 50)
 
-                    write_output(
-                        "_process_install_merge_action: "
-                        "%s, count: %s, total: %s, error: %s" % (
-                            pkg_match, count,
-                            total, rc))
-                    return outcome
+                    if simulate:
+                        # simulate time taken
+                        time.sleep(5.0)
+                        rc = 0
+                    else:
+                        rc = pkg.run()
+                    if rc != 0:
+                        self._txs.unset(package_id, repository_id)
+                        _signal_merge_process(
+                            package_id, repository_id, -1)
 
-                pkg.kill()
-                del pkg
+                        outcome = AppTransactionOutcome.INSTALL_ERROR
+                        GLib.idle_add(
+                            self.application_processed,
+                            package_id, repository_id, action,
+                            outcome)
+
+                        write_output(
+                            "_process_install_merge_action: "
+                            "%s, count: %s, total: %s, error: %s" % (
+                                pkg_match, count,
+                                total, rc))
+                        return outcome
+                finally:
+                    if pkg is None:
+                        pkg.kill()
 
                 write_output(
                     "_process_install_merge_action: "
