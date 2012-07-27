@@ -35,6 +35,80 @@ import entropy.tools
 
 class Package:
 
+    class ExtendedFileContentIter:
+
+        def __init__(self, _cpath):
+            self._cpath = _cpath
+            self._f = None
+
+        def _open_f(self):
+            self._f = codecs.open(
+                self._cpath, "r",
+                etpConst['conf_encoding'])
+
+        def __iter__(self):
+            return self
+
+        def __enter__(self):
+            if self._f is None:
+                self._open_f()
+            return self
+
+        def __exit__(self, exc_type, exc_val, tb):
+            if self._f is not None:
+                self._f.close()
+
+        def next(self):
+            if self._f is None:
+                self._open_f()
+            line = self._f.readline()
+            if not line:
+                raise StopIteration()
+            _package_id, _ftype, _path = line[:-1].split("|", 2)
+            # must be legal or die!
+            _package_id = int(_package_id)
+            return _package_id, _path, _ftype
+
+        def close(self):
+            if self._f is not None:
+                self._f.close()
+
+    class SimpleFileContentIter:
+
+        def __init__(self, _cpath):
+            self._cpath = _cpath
+            self._f = None
+
+        def _open_f(self):
+            self._f = codecs.open(
+                self._cpath, "r",
+                etpConst['conf_encoding'])
+
+        def __iter__(self):
+            return self
+
+        def __enter__(self):
+            if self._f is None:
+                self._open_f()
+            return self
+
+        def __exit__(self, exc_type, exc_val, tb):
+            if self._f is not None:
+                self._f.close()
+
+        def next(self):
+            if self._f is None:
+                self._open_f()
+            line = self._f.readline()
+            if not line:
+                raise StopIteration()
+            _nothing, _ftype, _path = line[:-1].split("|", 2)
+            return _path
+
+        def close(self):
+            if self._f is not None:
+                self._f.close()
+
     def __init__(self, entropy_client):
 
         if not isinstance(entropy_client, Client):
@@ -64,6 +138,17 @@ class Package:
         return unicode(repr(self))
 
     def kill(self):
+
+        # remove temporary content files
+        # created by __generate_content_file()
+        content_files = self.pkgmeta.get(
+            '__content_files__', [])
+        for content_file in content_files:
+            try:
+                os.remove(content_file)
+            except (OSError, IOError):
+                pass
+
         self.pkgmeta.clear()
 
         self._package_match = ()
@@ -1960,7 +2045,13 @@ class Package:
         if smart_pkg or self.pkgmeta['merge_from']:
 
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
-                content_insert_formatted = True, get_changelog = False)
+                content_insert_formatted = True,
+                get_changelog = False, get_content = False)
+
+            content = dbconn.retrieveContentIter(
+                self.pkgmeta['idpackage'])
+            data['content_file'] = self.__generate_content_file(
+                content, package_id = self.pkgmeta['idpackage'])
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
@@ -1991,14 +2082,10 @@ class Package:
             # contain only one entry
             pkg_idpackage = sorted(pkg_dbconn.listAllPackageIds(),
                 reverse = True)[0]
-            content = pkg_dbconn.retrieveContent(
-                pkg_idpackage, extended = True,
-                formatted = True, insert_formatted = True
-            )
-            
-            real_idpk = self.pkgmeta['idpackage']
-            content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
-            data['content'] = content
+            content = pkg_dbconn.retrieveContentIter(
+                pkg_idpackage)
+            data['content_file'] = self.__generate_content_file(
+                content, package_id = self.pkgmeta['idpackage'])
 
             # setup content safety metadata, get from package
             data['content_safety'] = pkg_dbconn.retrieveContentSafety(
@@ -2022,13 +2109,16 @@ class Package:
         self.pkgmeta['removecontent'] -= my_remove_content
 
         # filter out files not installed from content metadata
-        self.__filter_out_items_not_installed_from_content(data)
+        self.__filter_out_items_not_installed_from_content(
+            data['content_file'])
 
-        # this is needed to make postinstall trigger to work properly
-        trigger_content = set((x[1] for x in data['content']))
-        self.pkgmeta['triggers']['install']['content'] = trigger_content
+        # this is needed to make postinstall trigger work properly
+        content_iter_class = Package.ExtendedFileContentIter
+        self.pkgmeta['triggers']['install']['content_iter_class'] = \
+            content_iter_class
+        self.pkgmeta['triggers']['install']['content_file'] = \
+            data['content_file']
 
-        # open client db
         # always set data['injected'] to False
         # installed packages database SHOULD never have more
         # than one package for scope (key+slot)
@@ -2055,8 +2145,21 @@ class Package:
 
         inst_repo = self._entropy.installed_repository()
 
-        idpackage = inst_repo.handlePackage(data,
-            forcedRevision = data['revision'], formattedContent = True)
+        data['content'] = None
+        try:
+            # now we are ready to craft a 'content' iter object
+            data['content'] = content_iter_class(
+                data['content_file'])
+            idpackage = inst_repo.handlePackage(
+                data, forcedRevision = data['revision'],
+                formattedContent = True)
+        finally:
+            if data['content'] is not None:
+                try:
+                    data['content'].close()
+                    data['content'] = None
+                except (OSError, IOError):
+                    data['content'] = None
 
         # update datecreation
         ctime = time.time()
@@ -2074,17 +2177,34 @@ class Package:
         inst_repo.commit()
         return idpackage
 
-    def __filter_out_items_not_installed_from_content(self, pkg_data):
+    def __filter_out_items_not_installed_from_content(self, content_file):
 
-        items_not_installed = self.pkgmeta.get('items_not_installed', set())
+        items_not_installed = self.pkgmeta.get(
+            'items_not_installed', set())
+        if not items_not_installed:
+            # nothing to dos
+            return
 
-        # CONTENT metadata getting here is always already formatted
-        # for EntropyRepository insertion
-        def filter_content(content_item):
-            pkg_id, pkg_path, path_type = content_item
-            return pkg_path not in items_not_installed
-
-        pkg_data['content'] = filter(filter_content, pkg_data['content'])
+        # rewrite content_file
+        tmp_content_file = content_file + "__filter_tmp"
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(tmp_content_file, "w", enc) as tmp_w:
+                with codecs.open(content_file, "r", enc) as tmp_r:
+                    line = tmp_r.readline()
+                    while line:
+                        # strip \n safely
+                        _pkg_id, ftype, _path = line[:-1].split("|", 2)
+                        if _path not in items_not_installed:
+                            tmp_w.write(line)
+                        line = tmp_r.readline()
+            os.rename(tmp_content_file, content_file)
+        except Exception as exc:
+            try:
+                os.remove(tmp_content_file)
+            except OSError:
+                pass
+            raise exc
 
     def __fill_image_dir(self, merge_from, image_dir):
 
@@ -3828,6 +3948,7 @@ class Package:
         metadata = {
             'splitdebug': splitdebug,
             'splitdebug_dirs': splitdebug_dirs,
+            '__content_files__': [],
         }
         return metadata
 
@@ -3852,6 +3973,66 @@ class Package:
             self.__generate_config_metadata()
 
         self.__prepared = True
+
+    @staticmethod
+    def _generate_content_file(content, package_id = None):
+        """
+        Generate a file containing the "content" metadata,
+        reading by content list or iterator. Each item
+        of "content" must contain (path, ftype).
+        Each item shall be written to file, one per line,
+        in the following form: "[<package_id>|]<ftype>|<path>".
+        The order of the element in "content" will be kept.
+        """
+        tmp_dir = os.path.join(
+            etpConst['entropyunpackdir'],
+            "__generate_content_file_f")
+        try:
+            os.makedirs(tmp_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                raise
+
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="PackageContent",
+                dir=tmp_dir)
+            with entropy.tools.codecs_fdopen(
+                tmp_fd, "w", etpConst['conf_encoding']) as tmp_f:
+                for path, ftype in content:
+                    if package_id is not None:
+                        tmp_f.write(str(package_id))
+                    tmp_f.write("|")
+                    tmp_f.write(ftype)
+                    tmp_f.write("|")
+                    tmp_f.write(path)
+                    tmp_f.write("\n")
+            return tmp_path
+        except Exception as exc:
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except (OSError, IOError):
+                    pass
+            raise exc
+        finally:
+            if tmp_fd is None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+
+    def __generate_content_file(self, content, package_id = None):
+        content_path = None
+        try:
+            content_path = Package._generate_content_file(
+                content, package_id = package_id)
+            return content_path
+        finally:
+            if content_path is not None:
+                self.pkgmeta['__content_files__'].append(
+                    content_path)
 
     def __generate_remove_metadata(self):
 

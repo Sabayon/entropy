@@ -220,16 +220,30 @@ class EntropyClientTest(unittest.TestCase):
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
-        pkgdata['trigger'] = """\
+        content_file = None
+        trigger = None
+        try:
+            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
+            content_file = Package._generate_content_file(
+                dbconn.retrieveContentIter(idpackage),
+                package_id = idpackage)
+            pkgdata['content_file'] = content_file
+            pkgdata['trigger'] = """\
 #!%s
 echo $@
 exit 42
 """ % (etpConst['trigger_sh_interpreter'],)
-        trigger = self.Client.Triggers("install", 'postinstall', pkgdata,
-            pkgdata)
-        trigger.prepare()
-        exit_st = trigger._do_trigger_call_ext_generic()
-        trigger.kill()
+            trigger = self.Client.Triggers(
+                "install", 'postinstall', pkgdata, pkgdata)
+            trigger.prepare()
+            exit_st = trigger._do_trigger_call_ext_generic()
+            trigger.kill()
+        finally:
+            if trigger is not None:
+                trigger.kill()
+            if content_file is not None:
+                os.remove(content_file)
+
         self.assertEqual(exit_st, 42)
 
     def test_python_trigger(self):
@@ -239,16 +253,29 @@ exit 42
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
-        pkgdata['trigger'] = """\
+        content_file = None
+        trigger = None
+        try:
+            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
+            content_file = Package._generate_content_file(
+                dbconn.retrieveContentIter(idpackage),
+                package_id = idpackage)
+            pkgdata['content_file'] = content_file
+
+            pkgdata['trigger'] = """\
 import os
 os.system("echo hello")
 my_ext_status = 42
 """
-        trigger = self.Client.Triggers("install", 'postinstall', pkgdata,
-            pkgdata)
-        trigger.prepare()
-        exit_st = trigger._do_trigger_call_ext_generic()
-        trigger.kill()
+            trigger = self.Client.Triggers(
+                "install", 'postinstall', pkgdata, pkgdata)
+            trigger.prepare()
+            exit_st = trigger._do_trigger_call_ext_generic()
+        finally:
+            if trigger is not None:
+                trigger.kill()
+            if content_file is not None:
+                os.remove(content_file)
         self.assertEqual(exit_st, 42)
 
     def test_python_trigger2(self):
@@ -258,7 +285,15 @@ my_ext_status = 42
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
-        pkgdata['trigger'] = """\
+        trigger = None
+        content_file = None
+        try:
+            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
+            content_file = Package._generate_content_file(
+                dbconn.retrieveContentIter(idpackage),
+                package_id = idpackage)
+            pkgdata['content_file'] = content_file
+            pkgdata['trigger'] = """\
 import os
 import subprocess
 from entropy.const import etpConst
@@ -284,11 +319,16 @@ if stage == "postinstall":
 else:
     my_ext_status = 0
 """
-        trigger = self.Client.Triggers("install", 'postinstall', pkgdata,
-            pkgdata)
-        trigger.prepare()
-        exit_st = trigger._do_trigger_call_ext_generic()
-        trigger.kill()
+            trigger = self.Client.Triggers(
+                "install", 'postinstall', pkgdata, pkgdata)
+            trigger.prepare()
+            exit_st = trigger._do_trigger_call_ext_generic()
+        finally:
+            if trigger is not None:
+                trigger.kill()
+            if content_file is not None:
+                os.remove(content_file)
+
         self.assertEqual(exit_st, 42)
 
     def _do_pkg_test(self, pkg_path, pkg_atom):
