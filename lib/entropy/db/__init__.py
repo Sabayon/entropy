@@ -2124,11 +2124,13 @@ class EntropyRepository(EntropyRepositoryBase):
         branch = self._settings['repositories']['branch']
 
         self._cursor().execute("""
-        DELETE FROM counters WHERE (counter = (?) OR
-        idpackage = (?)) AND branch = (?);
-        """, (spm_package_uid, package_id, branch,))
+        DELETE FROM counters WHERE counter = (?)
+        AND branch = (?)
+        """, (spm_package_uid, branch,))
+        # the "OR REPLACE" clause handles the UPDATE
+        # of the counter value in case of clashing
         self._cursor().execute("""
-        INSERT INTO counters VALUES (?,?,?);
+        INSERT OR REPLACE INTO counters VALUES (?,?,?);
         """, (spm_package_uid, package_id, branch,))
 
     def setTrashedUid(self, spm_package_uid):
@@ -5776,8 +5778,6 @@ class EntropyRepository(EntropyRepositoryBase):
     def _createProvidedLibsIndex(self):
         try:
             self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS provided_libs_library
-                ON provided_libs ( library );
                 CREATE INDEX IF NOT EXISTS provided_libs_idpackage
                 ON provided_libs ( idpackage );
                 CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
@@ -5800,8 +5800,6 @@ class EntropyRepository(EntropyRepositoryBase):
     def _createPackageDownloadsIndex(self):
         try:
             self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS packagedownloads_idpackage
-                ON packagedownloads ( idpackage );
                 CREATE INDEX IF NOT EXISTS packagedownloads_idpackage_type
                 ON packagedownloads ( idpackage, type );
             """)
@@ -5813,12 +5811,10 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().executescript("""
                 CREATE INDEX IF NOT EXISTS neededindex ON neededreference
                     ( library );
-                CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
-                    ( idneeded );
-                CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
-                    ( idpackage );
-                CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
-                    ( elfclass );
+                CREATE INDEX IF NOT EXISTS neededindex_idpk_idneeded ON needed
+                    ( idpackage, idneeded );
+                CREATE INDEX IF NOT EXISTS neededindex_idn_elfclass ON needed
+                    ( idneeded, elfclass );
             """)
         except OperationalError:
             pass
@@ -5829,6 +5825,8 @@ class EntropyRepository(EntropyRepositoryBase):
             ON useflags ( idpackage );
         CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag
             ON useflags ( idflag );
+        CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag_idpk
+            ON useflags ( idflag, idpackage );
         CREATE INDEX IF NOT EXISTS useflagsindex
             ON useflagsreference ( flagname );
         """)
@@ -5865,7 +5863,9 @@ class EntropyRepository(EntropyRepositoryBase):
         else:
             self._cursor().executescript("""
             CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
-                ON baseinfo ( name,idcategory,branch );
+                ON baseinfo ( name, idcategory, branch );
+            CREATE INDEX IF NOT EXISTS baseindex_idlicense
+                ON baseinfo ( idlicense, idcategory );
             """)
 
     def _createLicensedataIndex(self):
@@ -5889,34 +5889,28 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executescript("""
         CREATE INDEX IF NOT EXISTS keywordsreferenceindex
             ON keywordsreference ( keywordname );
-        CREATE INDEX IF NOT EXISTS keywordsindex_idpackage
-            ON keywords ( idpackage );
-        CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword
-            ON keywords ( idkeyword );
+        CREATE INDEX IF NOT EXISTS keywordsindex_idpackage_idkw
+            ON keywords ( idpackage, idkeyword );
         """)
 
     def _createDependenciesIndex(self):
         self._cursor().executescript("""
-        CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage
-            ON dependencies ( idpackage );
-        CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency
-            ON dependencies ( iddependency );
+        CREATE INDEX IF NOT EXISTS dependenciesindex_idpk_iddp_type
+            ON dependencies ( idpackage, iddependency, type );
         CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency
             ON dependenciesreference ( dependency );
         """)
 
     def _createCountersIndex(self):
         self._cursor().executescript("""
-        CREATE INDEX IF NOT EXISTS countersindex_idpackage
-            ON counters ( idpackage );
-        CREATE INDEX IF NOT EXISTS countersindex_counter
-            ON counters ( counter );
+        CREATE INDEX IF NOT EXISTS countersindex_counter_branch_idpk
+            ON counters ( counter, branch, idpackage );
         """)
 
     def _createSourcesIndex(self):
         self._cursor().executescript("""
-        CREATE INDEX IF NOT EXISTS sourcesindex_idpackage
-            ON sources ( idpackage );
+        CREATE INDEX IF NOT EXISTS sourcesindex_idpk_idsource
+            ON sources ( idpackage, idsource );
         CREATE INDEX IF NOT EXISTS sourcesindex_idsource
             ON sources ( idsource );
         CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source
@@ -5925,27 +5919,24 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _createProvideIndex(self):
         self._cursor().executescript("""
-        CREATE INDEX IF NOT EXISTS provideindex_idpackage
-            ON provide ( idpackage );
-        CREATE INDEX IF NOT EXISTS provideindex_atom
-            ON provide ( atom );
+        CREATE INDEX IF NOT EXISTS provideindex_idpk_atom
+            ON provide ( idpackage, atom );
         """)
 
     def _createConflictsIndex(self):
         self._cursor().executescript("""
         CREATE INDEX IF NOT EXISTS conflictsindex_idpackage
             ON conflicts ( idpackage );
-        CREATE INDEX IF NOT EXISTS conflictsindex_atom
-            ON conflicts ( conflict );
         """)
 
     def _createExtrainfoIndex(self):
-        self._cursor().executescript("""
-        CREATE INDEX IF NOT EXISTS extrainfoindex
-            ON extrainfo ( description );
-        CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex
-            ON extrainfo ( idpackage );
-        """)
+        # no indexes set. However, we may need two of them on
+        # datecreation and download (two separate I mean)
+        # to speed up ORDER BY datecreation and ORDER BY download.
+        # Even though, listAllPackageIds(order_by="date") and
+        # listAllDownloads(do_sort=True) are not critical
+        # functions.
+        pass
 
     def regenerateSpmUidMapping(self):
         """
