@@ -11,6 +11,8 @@ import signal
 import time
 import tempfile
 from entropy.client.interfaces import Client
+from entropy.cache import EntropyCacher
+from entropy.client.interfaces.package import Package
 from entropy.const import etpConst, etpUi, const_setup_entropy_pid
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
@@ -18,7 +20,7 @@ from entropy.exceptions import RepositoryError, EntropyPackageException
 import entropy.tools
 import tests._misc as _misc
 
-class EntropyRepositoryTest(unittest.TestCase):
+class EntropyClientTest(unittest.TestCase):
 
     def setUp(self):
         sys.stdout.write("%s called\n" % (self,))
@@ -114,9 +116,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         cacher = self.Client._cacher
         tmp_dir = tempfile.mkdtemp()
         cacher.start()
+        st_val = EntropyCacher.STASHING_CACHE
         try:
+            EntropyCacher.STASHING_CACHE = True
             with cacher:
-                self.assertTrue(cacher._EntropyCacher__enter_context_lock._is_owned())
+                self.assertTrue(
+                    cacher._EntropyCacher__enter_context_lock._is_owned())
                 cacher.discard()
                 cacher.push("bar", "foo", cache_dir = tmp_dir)
                 self.assertTrue(cacher._EntropyCacher__cache_buffer)
@@ -124,6 +129,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             cacher.sync()
             self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), "foo")
         finally:
+            EntropyCacher.STASHING_CACHE = st_val
             cacher.stop()
             shutil.rmtree(tmp_dir, True)
 
