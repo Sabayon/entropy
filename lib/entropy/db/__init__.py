@@ -2177,11 +2177,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self is dbconn:
-            raise AttributeError("cannot diff inside the same db")
-
-        content = set((x,) for x in dbconn.retrieveContent(dbconn_package_id))
-
         # setup random table name
         random_str = "%svs%s_%s" % (package_id, id(dbconn),
             dbconn_package_id)
@@ -2192,30 +2187,33 @@ class EntropyRepository(EntropyRepositoryBase):
         # create random table
         self._cursor().executescript("""
             DROP TABLE IF EXISTS `%s`;
-            CREATE TEMPORARY TABLE `%s` ( file VARCHAR );
+            CREATE TEMPORARY TABLE `%s` ( file VARCHAR, ftype VARCHAR );
             """ % (randomtable, randomtable,)
         )
 
         try:
 
+            content_iter = dbconn.retrieveContentIter(dbconn_package_id)
             self._cursor().executemany("""
-            INSERT INTO `%s` VALUES (?)""" % (randomtable,), content)
+            INSERT INTO `%s` VALUES (?, ?)""" % (randomtable,),
+                content_iter)
 
             # remove this when the one in retrieveContent will be removed
             self._connection().text_factory = const_convert_to_unicode
 
             # now compare
             cur = self._cursor().execute("""
-            SELECT file FROM content 
-            WHERE content.idpackage = (?) AND 
-            content.file NOT IN (SELECT file from `%s`)""" % (randomtable,),
-                (package_id,))
+            SELECT file FROM content
+            WHERE content.idpackage = (?) AND
+            content.file NOT IN (SELECT file from `%s`)""" % (
+                    randomtable,), (package_id,))
 
             # suck back
             return self._cur2frozenset(cur)
 
         finally:
-            self._cursor().execute('DROP TABLE IF EXISTS `%s`' % (randomtable,))
+            self._cursor().execute('DROP TABLE IF EXISTS `%s`' % (
+                    randomtable,))
 
     def clean(self):
         """
