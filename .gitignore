@@ -4,3 +4,4 @@ misc/po/*.mo
 *.directory
 server/doc/man/*.1
 #*#
+lib/*test*.py
