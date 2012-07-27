@@ -1635,14 +1635,34 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        # respect iterators, so that if they're true iterators
+        # we save a lot of memory.
+        class MyIter:
+            def __init__(self, _package_id, _content, _already_fmt):
+                self._package_id = _package_id
+                self._content = _content
+                self._iter = iter(_content)
+                self._already_fmt = _already_fmt
+
+            def __iter__(self):
+                return self
+
+            def next(self):
+                if self._already_fmt:
+                    a, x, y = self._iter.next()
+                    return self._package_id, x, y
+                else:
+                    x = self._iter.next()
+                    return self._package_id, x, self._content[x]
+
         if already_formatted:
             self._cursor().executemany("""
             INSERT INTO content VALUES (?,?,?)
-            """, [(package_id, x, y,) for a, x, y in content])
+            """, MyIter(package_id, content, already_formatted))
         else:
             self._cursor().executemany("""
             INSERT INTO content VALUES (?,?,?)
-            """, [(package_id, x, content[x],) for x in content])
+            """, MyIter(package_id, content, already_formatted))
 
     def _insertContentSafety(self, package_id, content_safety):
         """
