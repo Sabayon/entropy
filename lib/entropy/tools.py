@@ -2137,6 +2137,30 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
 
+    def _setup_file_metadata(tarinfo, epath):
+        try:
+            tar.chown(tarinfo, epath)
+            _fix_uid_gid(tarinfo, epath)
+
+            # no longer touch utime using Tarinfo, behaviour seems
+            # buggy and introduces an unwanted delay on some conditions.
+            # match /bin/tar behaviour to not fuck touch mtime/atime at all
+            # I wonder who are the idiots who didn't even test how
+            # tar.utime behaves. Or perhaps it's just me that I've found
+            # a new bug. Issue is, packages are prepared on PC A, and
+            # mtime is checked on PC B.
+            # tar.utime(tarinfo, epath)
+
+            # mode = tarinfo.mode
+            # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
+            # which is setuid. Symlinks don't need chmod. PERIOD!
+            if not os.path.islink(epath):
+                tar.chmod(tarinfo, epath)
+
+        except tarfile.ExtractError:
+            if tar.errorlevel > 1:
+                raise
+
     is_python_3 = const_is_python3()
     tar = None
     extracted_something = False
@@ -2159,7 +2183,6 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         deleter_counter = 3
         for tarinfo in tar:
             epath = os.path.join(encoded_path, tarinfo.name)
-            entries.append((tarinfo, epath,))
 
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
@@ -2174,6 +2197,18 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                     set_attrs=not tarinfo.isdir())
             else:
                 tar.extract(tarinfo, encoded_path)
+
+            if tarinfo.isreg():
+                # apply metadata to files instantly
+                # not wasting RAM growing entries.
+                _setup_file_metadata(tarinfo, epath)
+            else:
+                # delay file metadata setup for dirs
+                # or syms that might be dirs or other
+                # things. This because entries can grow
+                # big and use a lot of RAM.
+                entries.append((tarinfo, epath))
+
             extracted_something = True
 
             if not is_python_3:
@@ -2194,28 +2229,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         # we need to check both files and directories because
         #  we have to fix uid and gid from broken archives
         for tarinfo, epath in entries:
-            try:
-                tar.chown(tarinfo, epath)
-                _fix_uid_gid(tarinfo, epath)
-
-                # no longer touch utime using Tarinfo, behaviour seems
-                # buggy and introduces an unwanted delay on some conditions.
-                # match /bin/tar behaviour to not fuck touch mtime/atime at all
-                # I wonder who are the idiots who didn't even test how
-                # tar.utime behaves. Or perhaps it's just me that I've found
-                # a new bug. Issue is, packages are prepared on PC A, and
-                # mtime is checked on PC B.
-                # tar.utime(tarinfo, epath)
-
-                # mode = tarinfo.mode
-                # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
-                # which is setuid. Symlinks don't need chmod. PERIOD!
-                if not os.path.islink(epath):
-                    tar.chmod(tarinfo, epath)
-
-            except tarfile.ExtractError:
-                if tar.errorlevel > 1:
-                    raise
+            _setup_file_metadata(tarinfo, epath)
 
     except EOFError:
         return -1
