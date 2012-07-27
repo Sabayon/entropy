@@ -6132,6 +6132,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """)
         self._cursor().execute("pragma foreign_keys = ON").fetchall()
 
+        self._clearLiveCache("_doesColumnInTableExist")
         self._setSetting("_baseinfo_extrainfo_2010", "1")
 
     def _foreignKeySupport(self):
