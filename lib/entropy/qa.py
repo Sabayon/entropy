@@ -460,12 +460,19 @@ class QAInterface(TextInterface, EntropyPluginStore):
             # it's in the content metadata before giving up.
             # Since this is expensive, try to first match it in
             # pre-hashed metadata (via resolveNeeded())
-            file_names = set((os.path.basename(x) for x in \
-                repo.retrieveContent(pkg_id)))
-            # NOTE: we assume that ELF class is the same as the one requested,
-            # because we're not allowed to poll the live system.
-            # perhaps in future we could collect more metadata.
-            return library in file_names
+            content_iter = repo.retrieveContentIter(pkg_id)
+
+            # NOTE: we assume that ELF class is the same as the one
+            # requested, because we're not allowed to poll the
+            # live system. perhaps in future we could collect
+            # more metadata.
+            for path, ftype in content_iter:
+                if ftype == "dir":
+                    continue
+                b_path = os.path.basename(path)
+                if library == b_path:
+                    return True
+            return False
 
         def _resolve_needed(repo, pkg_id, library, elfclass, multi_repo):
 
@@ -1078,12 +1085,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
         all_content = set()
         for pkg_id, pkg_repo in pkg_matches:
             pkg_dbconn = entropy_client.open_repository(pkg_repo)
-            all_content.update(pkg_dbconn.retrieveContent(pkg_id))
+            all_content |= pkg_dbconn.retrieveContent(pkg_id)
 
         package_id, repo_id = package_match
         entropy_repository = entropy_client.open_repository(repo_id)
         package_content = entropy_repository.retrieveContent(package_id)
-        all_content.update(package_content)
+        all_content |= package_content
 
         resolve_cache = {}
         unresolved_sonames = {}
@@ -1470,8 +1477,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
             if valid:
                 try:
                     for idpackage in dbc.listAllPackageIds():
-                        dbc.retrieveContent(idpackage, extended = True,
-                            formatted = True, insert_formatted = True)
+                        _tpath = None
+                        for _path, ftype in dbc.retrieveContentIter(
+                            idpackage):
+                            _tpath = _path
                 except Error:
                     valid = False
 
