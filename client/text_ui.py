@@ -1072,22 +1072,25 @@ def _download_sources(entropy_client, packages = None, deps = True,
     for match in run_queue:
         fetchqueue += 1
 
-        Package = entropy_client.Package()
+        pkg = None
+        try:
+            pkg = entropy_client.Package()
 
-        Package.prepare(match, "source", metaopts)
+            pkg.prepare(match, "source", metaopts)
 
-        xterm_header = "equo ("+_("sources fetch")+") :: " + \
-            str(fetchqueue)+" of "+totalqueue+" ::"
-        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/" + \
-            red(totalqueue)+bold(") ")+">>> " + \
-                darkgreen(Package.pkgmeta['atom']))
+            xterm_header = "equo ("+_("sources fetch")+") :: " + \
+                str(fetchqueue)+" of "+totalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/" + \
+                red(totalqueue)+bold(") ")+">>> " + \
+                    darkgreen(pkg.pkgmeta['atom']))
 
-        rc = Package.run(xterm_header = xterm_header)
-        if rc != 0:
-            return -1, rc
-        Package.kill()
+            rc = pkg.run(xterm_header = xterm_header)
+            if rc != 0:
+                return -1, rc
 
-        del Package
+        finally:
+            if pkg is not None:
+                pkg.kill()
 
     return 0, 0
 
@@ -1122,26 +1125,34 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
 
             metaopts = {}
             metaopts['dochecksum'] = dochecksum
-            Package = entropy_client.Package()
-            Package.prepare(matches, "multi_fetch", metaopts)
-            myrepo_data = Package.pkgmeta['repository_atoms']
-            for myrepo in myrepo_data:
-                if myrepo not in downdata:
-                    downdata[myrepo] = set()
-                for myatom in myrepo_data[myrepo]:
-                    downdata[myrepo].add(entropy.dep.dep_getkey(myatom))
+            pkg = None
+            try:
+                pkg = entropy_client.Package()
+                pkg.prepare(matches, "multi_fetch", metaopts)
+                myrepo_data = pkg.pkgmeta['repository_atoms']
+                for myrepo in myrepo_data:
+                    if myrepo not in downdata:
+                        downdata[myrepo] = set()
+                    for myatom in myrepo_data[myrepo]:
+                        downdata[myrepo].add(
+                            entropy.dep.dep_getkey(myatom))
 
-            xterm_header = "equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
-            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+ \
-                           ngettext("package", "packages", len(matches)))
+                xterm_header = "equo (" + \
+                    _("fetch") + ") :: " + \
+                    str(fetchqueue) + " of " + mytotalqueue + " ::"
+                print_info(
+                    red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                        red(mytotalqueue)+bold(") ") + \
+                        ">>> " + darkgreen(str(len(matches)))+" "+ \
+                        ngettext("package", "packages", len(matches)))
 
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                return -1, rc
-            Package.kill()
-            del metaopts
-            del Package
+                rc = pkg.run(xterm_header = xterm_header)
+                if rc != 0:
+                    return -1, rc
+
+            finally:
+                if pkg is not None:
+                    pkg.kill()
 
         return 0, 0
 
@@ -1151,23 +1162,30 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
 
         metaopts = {}
         metaopts['dochecksum'] = dochecksum
-        Package = entropy_client.Package()
-        Package.prepare(match, "fetch", metaopts)
-        myrepo = Package.pkgmeta['repository']
-        if myrepo not in downdata:
-            downdata[myrepo] = set()
-        downdata[myrepo].add(entropy.dep.dep_getkey(Package.pkgmeta['atom']))
+        pkg = None
+        try:
+            pkg = entropy_client.Package()
+            pkg.prepare(match, "fetch", metaopts)
+            myrepo = pkg.pkgmeta['repository']
+            if myrepo not in downdata:
+                downdata[myrepo] = set()
+            downdata[myrepo].add(
+                entropy.dep.dep_getkey(pkg.pkgmeta['atom']))
 
-        xterm_header = "equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                        red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+            xterm_header = "equo ("+_("fetch")+") :: " + \
+                str(fetchqueue)+" of "+totalqueue+" ::"
+            print_info(
+                red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                    red(totalqueue)+bold(") ") + \
+                    ">>> "+darkgreen(pkg.pkgmeta['atom']))
 
-        rc = Package.run(xterm_header = xterm_header)
-        if rc != 0:
-            return -1, rc
-        Package.kill()
-        del metaopts
-        del Package
+            rc = pkg.run(xterm_header = xterm_header)
+            if rc != 0:
+                return -1, rc
+
+        finally:
+            if pkg is not None:
+                pkg.kill()
 
     return 0, 0
 
@@ -1732,38 +1750,43 @@ def install_packages(entropy_client,
         else:
             metaopts['install_source'] = etpConst['install_sources']['automatic_dependency']
 
-        pkg = entropy_client.Package()
-        pkg.prepare(match, "install", metaopts)
+        pkg = None
+        try:
+            pkg = entropy_client.Package()
+            pkg.prepare(match, "install", metaopts)
 
-        xterm_header = "equo ("+_("install")+") :: "+str(currentqueue)+" of "+totalqueue+" ::"
-        print_info(red(" ++ ") + bold("(") + blue(str(currentqueue)) + \
-            "/" + red(totalqueue) + bold(") ") + ">>> " + \
-            darkgreen(pkg.pkgmeta['atom']))
+            xterm_header = "equo ("+_("install")+") :: " + \
+                str(currentqueue)+" of "+totalqueue+" ::"
+            print_info(
+                red(" ++ ") + bold("(") + blue(str(currentqueue)) + \
+                    "/" + red(totalqueue) + bold(") ") + ">>> " + \
+                    darkgreen(pkg.pkgmeta['atom']))
 
-        rc = pkg.run(xterm_header = xterm_header)
-        if rc != 0:
-            if ugc_th is not None:
-                ugc_th.join()
-            return 1, rc
+            rc = pkg.run(xterm_header = xterm_header)
+            if rc != 0:
+                if ugc_th is not None:
+                    ugc_th.join()
+                return 1, rc
 
-        # there's a buffer inside, better remove otherwise cPickle will complain
-        del pkg.pkgmeta['triggers']
+            # there's a buffer inside, better remove
+            # otherwise cPickle will complain
+            del pkg.pkgmeta['triggers']
 
-        if etpUi['clean']: # remove downloaded package
-            if os.path.isfile(pkg.pkgmeta['pkgpath']):
-                os.remove(pkg.pkgmeta['pkgpath'])
+            if etpUi['clean']: # remove downloaded package
+                if os.path.isfile(pkg.pkgmeta['pkgpath']):
+                    os.remove(pkg.pkgmeta['pkgpath'])
 
-        # update resume cache
-        if not pkgs: # pkgs caching not supported
-            resume_cache['run_queue'].remove(match)
-            try:
-                entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
-            except (IOError, OSError):
-                pass
-
-        pkg.kill()
-        del metaopts
-        del pkg
+            # update resume cache
+            if not pkgs: # pkgs caching not supported
+                resume_cache['run_queue'].remove(match)
+                try:
+                    entropy.dump.dumpobj(
+                        EQUO_CACHE_IDS['install'], resume_cache)
+                except (IOError, OSError):
+                    pass
+        finally:
+            if pkg is not None:
+                pkg.kill()
 
     if ugc_th is not None:
         ugc_th.join()
@@ -1942,12 +1965,16 @@ def _configure_packages(entropy_client, packages):
         currentqueue += 1
         xterm_header = "equo (%s) :: " % (_("configure"),) + \
             str(currentqueue) + " of " + totalqueue + " ::"
-        Package = entropy_client.Package()
-        Package.prepare((idpackage,), "config")
-        rc = Package.run(xterm_header = xterm_header)
-        if rc not in (0, 3,):
-            return -1, rc
-        Package.kill()
+        pkg = None
+        try:
+            pkg = entropy_client.Package()
+            pkg.prepare((idpackage,), "config")
+            rc = pkg.run(xterm_header = xterm_header)
+            if rc not in (0, 3,):
+                return -1, rc
+        finally:
+            if pkg is not None:
+                pkg.kill()
 
     return 0, 0
 
@@ -2228,33 +2255,41 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
         metaopts = {}
         metaopts['removeconfig'] = remove_config_files
-        Package = entropy_client.Package()
-        Package.prepare((idpackage,), "remove", metaopts)
-        if 'remove_installed_vanished' not in Package.pkgmeta:
-
-            xterm_header = "equo (%s) :: " % (_("remove"),) + \
-                str(currentqueue)+" of " + totalqueue+" ::"
-            print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/" + \
-                red(totalqueue)+bold(") ") + ">>> " + \
-                darkgreen(Package.pkgmeta['removeatom']))
-
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                # generate reverse dependencies metadata now that's done
-                # so we have fresh meat when queried with user privs
-                return -1, rc
-
-        # update resume cache
-        if idpackage in resume_cache['removal_queue']:
-            resume_cache['removal_queue'].remove(idpackage)
+        pkg = None
         try:
-            entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], resume_cache)
-        except (OSError, IOError, EOFError):
-            pass
+            pkg = entropy_client.Package()
+            pkg.prepare((idpackage,), "remove", metaopts)
+            if 'remove_installed_vanished' not in pkg.pkgmeta:
 
-        Package.kill()
-        del metaopts
-        del Package
+                xterm_header = "equo (%s) :: " % (_("remove"),) + \
+                    str(currentqueue)+" of " + totalqueue+" ::"
+                print_info(
+                    red(" -- ")+bold("(") + \
+                        blue(str(currentqueue))+"/" + \
+                        red(totalqueue)+bold(") ") + ">>> " + \
+                        darkgreen(pkg.pkgmeta['removeatom']))
+
+                rc = pkg.run(xterm_header = xterm_header)
+                if rc != 0:
+                    # generate reverse dependencies metadata
+                    # now that's done
+                    # so we have fresh meat when queried with user privs
+                    return -1, rc
+
+            # update resume cache
+            if idpackage in resume_cache['removal_queue']:
+                resume_cache['removal_queue'].remove(idpackage)
+
+            try:
+                entropy.dump.dumpobj(
+                    EQUO_CACHE_IDS['remove'],
+                    resume_cache)
+            except (OSError, IOError, EOFError):
+                pass
+
+        finally:
+            if pkg is not None:
+                pkg.kill()
 
     print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0, 0
