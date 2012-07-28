@@ -12,7 +12,6 @@ import time
 import tempfile
 from entropy.client.interfaces import Client
 from entropy.cache import EntropyCacher
-from entropy.client.interfaces.package import Package
 from entropy.const import etpConst, etpUi, const_setup_entropy_pid
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
@@ -220,14 +219,9 @@ class EntropyClientTest(unittest.TestCase):
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
-        content_file = None
         trigger = None
         try:
-            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
-            content_file = Package._generate_content_file(
-                dbconn.retrieveContentIter(idpackage),
-                package_id = idpackage)
-            pkgdata['content_file'] = content_file
+            pkgdata['affected_directories'] = set()
             pkgdata['trigger'] = """\
 #!%s
 echo $@
@@ -241,8 +235,6 @@ exit 42
         finally:
             if trigger is not None:
                 trigger.kill()
-            if content_file is not None:
-                os.remove(content_file)
 
         self.assertEqual(exit_st, 42)
 
@@ -253,15 +245,9 @@ exit 42
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
-        content_file = None
         trigger = None
         try:
-            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
-            content_file = Package._generate_content_file(
-                dbconn.retrieveContentIter(idpackage),
-                package_id = idpackage)
-            pkgdata['content_file'] = content_file
-
+            pkgdata['affected_directories'] = set()
             pkgdata['trigger'] = """\
 import os
 os.system("echo hello")
@@ -274,8 +260,6 @@ my_ext_status = 42
         finally:
             if trigger is not None:
                 trigger.kill()
-            if content_file is not None:
-                os.remove(content_file)
         self.assertEqual(exit_st, 42)
 
     def test_python_trigger2(self):
@@ -286,13 +270,8 @@ my_ext_status = 42
         idpackage = dbconn.addPackage(data)
         pkgdata = dbconn.getTriggerData(idpackage)
         trigger = None
-        content_file = None
         try:
-            pkgdata['content_iter_class'] = Package.ExtendedFileContentIter
-            content_file = Package._generate_content_file(
-                dbconn.retrieveContentIter(idpackage),
-                package_id = idpackage)
-            pkgdata['content_file'] = content_file
+            pkgdata['affected_directories'] = set()
             pkgdata['trigger'] = """\
 import os
 import subprocess
@@ -326,8 +305,6 @@ else:
         finally:
             if trigger is not None:
                 trigger.kill()
-            if content_file is not None:
-                os.remove(content_file)
 
         self.assertEqual(exit_st, 42)
 

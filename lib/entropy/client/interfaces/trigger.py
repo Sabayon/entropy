@@ -132,14 +132,7 @@ class Trigger:
                 functions.append(self._trigger_spm_postinstall)
                 break
 
-        _cont_path = self._pkgdata['content_file']
-        content_iter_class = self._pkgdata['content_iter_class']
-        cont_dirs = set()
-        with content_iter_class(_cont_path) as cont_it:
-            for _pkg_id, _path, _ftype in cont_it:
-                if _ftype == "dir":
-                    cont_dirs.add(_path)
-
+        cont_dirs = self._pkgdata['affected_directories']
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)

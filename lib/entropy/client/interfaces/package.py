@@ -2050,7 +2050,7 @@ class Package:
 
             content = dbconn.retrieveContentIter(
                 self.pkgmeta['idpackage'])
-            data['content_file'] = self.__generate_content_file(
+            content_file = self.__generate_content_file(
                 content, package_id = self.pkgmeta['idpackage'])
 
             if self.pkgmeta['removeidpackage'] != -1:
@@ -2084,7 +2084,7 @@ class Package:
                 reverse = True)[0]
             content = pkg_dbconn.retrieveContentIter(
                 pkg_idpackage)
-            data['content_file'] = self.__generate_content_file(
+            content_file = self.__generate_content_file(
                 content, package_id = self.pkgmeta['idpackage'])
 
             # setup content safety metadata, get from package
@@ -2110,14 +2110,11 @@ class Package:
 
         # filter out files not installed from content metadata
         self.__filter_out_items_not_installed_from_content(
-            data['content_file'])
+            content_file)
 
         # this is needed to make postinstall trigger work properly
-        content_iter_class = Package.ExtendedFileContentIter
-        self.pkgmeta['triggers']['install']['content_iter_class'] = \
-            content_iter_class
-        self.pkgmeta['triggers']['install']['content_file'] = \
-            data['content_file']
+        self.pkgmeta['triggers']['install']['affected_directories'] = \
+            self.pkgmeta['affected_directories']
 
         # always set data['injected'] to False
         # installed packages database SHOULD never have more
@@ -2148,8 +2145,8 @@ class Package:
         data['content'] = None
         try:
             # now we are ready to craft a 'content' iter object
-            data['content'] = content_iter_class(
-                data['content_file'])
+            data['content'] = Package.ExtendedFileContentIter(
+                content_file)
             idpackage = inst_repo.handlePackage(
                 data, forcedRevision = data['revision'],
                 formattedContent = True)
@@ -2331,7 +2328,13 @@ class Package:
         def workout_subdir(currentdir, subdir):
 
             imagepath_dir = os.path.join(currentdir, subdir)
-            rootdir = sys_root + imagepath_dir[len(image_dir):]
+            rel_imagepath_dir = imagepath_dir[len(image_dir):]
+            rootdir = sys_root + rel_imagepath_dir
+
+            rel_imagepath_dir_utf = const_convert_to_unicode(
+                rel_imagepath_dir, enctype="utf-8")
+            self.pkgmeta['affected_directories'].add(
+                rel_imagepath_dir_utf)
 
             # splitdebug (.debug files) support
             # If splitdebug is not enabled, do not create splitdebug directories
@@ -4252,6 +4255,9 @@ class Package:
             entropy.dep.dep_getkey(self.pkgmeta['atom']), self.pkgmeta['slot'])
         # filled later...
         self.pkgmeta['removecontent'] = set()
+        # collects directories whose content has been modified
+        # this information is then handed to the Trigger
+        self.pkgmeta['affected_directories'] = set()
 
         # smartpackage ?
         self.pkgmeta['smartpackage'] = False
