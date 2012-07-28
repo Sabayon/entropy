@@ -3858,6 +3858,7 @@ class Server(Client):
         length = str((len(installed_packages)))
         count = 0
         mytxt = _("Checking")
+        _deps_cache = set()
 
         for idpackage, repo in installed_packages:
             count += 1
@@ -3878,6 +3879,8 @@ class Server(Client):
             # NOTE: this must also test build dependencies to make sure
             # that every packages comes out with all of them.
             xdeps = dbconn.retrieveDependencies(idpackage)
+            xdeps = [x for x in xdeps if x not in _deps_cache]
+            _deps_cache.update(xdeps)
             for xdep in xdeps:
                 xid, xuseless = self.atom_match(xdep,
                     match_repo = match_repo)
