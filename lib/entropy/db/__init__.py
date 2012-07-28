@@ -5008,9 +5008,12 @@ class EntropyRepository(EntropyRepositoryBase):
         Internal method, set new setting for setting_name with value
         setting_value.
         """
+        # Always force const_convert_to_unicode() to setting_value
+        # and setting_name or "OR REPLACE" won't work (sqlite3 bug?)
         cur = self._cursor().execute("""
         INSERT OR REPLACE INTO settings VALUES (?, ?)
-        """, (setting_name, setting_value,))
+        """, (const_convert_to_unicode(setting_name),
+              const_convert_to_unicode(setting_value),))
         self.__settings_cache.clear()
 
     def _setupInitialSettings(self):
