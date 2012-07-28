@@ -38,6 +38,7 @@ class CalculatorsMixin:
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
         deps_not_matched = set()
+        deps_cache = set()
         # now look
         length = len(installed_packages)
         count = 0
@@ -57,9 +58,14 @@ class CalculatorsMixin:
 
             xdeps = self._installed_repository.retrieveDependencies(idpackage,
                 exclude_deptypes = (pdepend_id, bdepend_id,))
+            # filter out already matched pkgs
+            xdeps = [x for x in xdeps if x not in deps_cache]
+            deps_cache.update(xdeps)
+
             needed_deps = [(x, self._installed_repository.atomMatch(x),) for \
                 x in xdeps]
-            deps_not_matched |= set([x for x, (y, z,) in needed_deps if y == -1])
+            deps_not_matched |= set(
+                [x for x, (y, z,) in needed_deps if y == -1])
 
         return deps_not_matched
 
