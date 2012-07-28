@@ -35,34 +35,39 @@ import entropy.tools
 
 class Package:
 
-    class ExtendedFileContentIter:
+    class FileContentReader:
 
-        def __init__(self, _cpath):
-            self._cpath = _cpath
+        def __init__(self, path, enc=None):
+            if enc is None:
+                self._enc = etpConst['conf_encoding']
+            else:
+                self._enc = enc
+            self._cpath = path
             self._f = None
 
         def _open_f(self):
-            self._f = codecs.open(
-                self._cpath, "r",
-                etpConst['conf_encoding'])
+            if isinstance(self._cpath, int):
+                self._f = entropy.tools.codecs_fdopen(
+                    self._cpath, "r", self._enc)
+            else:
+                self._f = codecs.open(
+                    self._cpath, "r", self._enc)
 
         def __iter__(self):
             return self
 
         def __enter__(self):
-            if self._f is None:
-                self._open_f()
             return self
 
         def __exit__(self, exc_type, exc_val, tb):
-            if self._f is not None:
-                self._f.close()
+            self.close()
 
         def next(self):
             if self._f is None:
                 self._open_f()
             line = self._f.readline()
             if not line:
+                self.close()
                 raise StopIteration()
             _package_id, _ftype, _path = line[:-1].split("|", 2)
             # must be legal or die!
@@ -72,42 +77,60 @@ class Package:
         def close(self):
             if self._f is not None:
                 self._f.close()
+                self._f = None
 
-    class SimpleFileContentIter:
+    class FileContentWriter:
 
-        def __init__(self, _cpath):
-            self._cpath = _cpath
-            self._f = None
+        TMP_SUFFIX = "__filter_tmp"
+
+        def __init__(self, path, enc=None):
+            if enc is None:
+                self._enc = etpConst['conf_encoding']
+            else:
+                self._enc = enc
+            self._cpath = path
+            # callers expect that file is created
+            # on open object instantiation, don't
+            # remove this or things like os.rename()
+            # will fail
+            self._open_f()
 
         def _open_f(self):
-            self._f = codecs.open(
-                self._cpath, "r",
-                etpConst['conf_encoding'])
-
-        def __iter__(self):
-            return self
+            if isinstance(self._cpath, int):
+                self._f = entropy.tools.codecs_fdopen(
+                    self._cpath, "w", self._enc)
+            else:
+                self._f = codecs.open(
+                    self._cpath, "w", self._enc)
 
         def __enter__(self):
-            if self._f is None:
-                self._open_f()
             return self
 
         def __exit__(self, exc_type, exc_val, tb):
-            if self._f is not None:
-                self._f.close()
+            self.close()
 
-        def next(self):
+        def write(self, package_id, path, ftype):
+            if not path:
+                # this is a security measure, do not
+                # enforce stripping
+                raise ValueError("path cannot be empty")
             if self._f is None:
                 self._open_f()
-            line = self._f.readline()
-            if not line:
-                raise StopIteration()
-            _nothing, _ftype, _path = line[:-1].split("|", 2)
-            return _path
+
+            if package_id is not None:
+                self._f.write(str(package_id))
+            else:
+                self._f.write("0")
+            self._f.write("|")
+            self._f.write(ftype)
+            self._f.write("|")
+            self._f.write(path)
+            self._f.write("\n")
 
         def close(self):
             if self._f is not None:
                 self._f.close()
+                self._f = None
 
     def __init__(self, entropy_client):
 
@@ -1616,41 +1639,16 @@ class Package:
 
         return 0
 
-    def _remove_content_from_system(self, installed_package_id,
-        automerge_metadata = None):
+    def _remove_content_from_system_loop(
+        self, remove_content, directories, directories_cache,
+        not_removed_due_to_collisions, colliding_path_messages,
+        automerge_metadata, col_protect, protect, mask, sys_root):
         """
-        Remove installed package content (files/directories) from live system.
-
-        @param installed_package_id: Entropy Repository package identifier
-        @type installed_package_id: int
-        @keyword automerge_metadata: Entropy "automerge metadata"
-        @type automerge_metadata: dict
+        Body of the _remove_content_from_system() method.
         """
-        if automerge_metadata is None:
-            automerge_metadata = {}
-
-        sys_root = etpConst['systemroot']
-        # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
-        sys_settings = self._settings
-        protect = self.__get_installed_package_config_protect(
-            installed_package_id)
-        mask = self.__get_installed_package_config_protect(installed_package_id,
-            mask = True)
-
-        sys_set_plg_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
-        col_protect = sys_settings[sys_set_plg_id]['misc']['collisionprotect']
-
-        # remove files from system
-        directories = set()
-        directories_cache = set()
-        not_removed_due_to_collisions = set()
-        colliding_path_messages = set()
-
-        remove_content = sorted(
-            self.pkgmeta['removecontent'], reverse = True)
         inst_repo = self._entropy.installed_repository()
-        for item in remove_content:
+
+        for _pkg_id, item, ftype in remove_content:
 
             if not item:
                 continue # empty element??
@@ -1677,7 +1675,8 @@ class Package:
                 # utf-8 instead of raw_unicode_escape because this comes
                 # from db
                 protected_item_test = const_convert_to_rawstring(
-                    protected_item_test, from_enctype = "utf-8")
+                    protected_item_test,
+                    from_enctype = etpConst['conf_encoding'])
 
                 in_mask, protected, x, do_continue = \
                     self._handle_config_protect(
@@ -1735,10 +1734,8 @@ class Package:
                 )
                 continue
 
-
             try:
                 os.lstat(sys_root_item)
-
             except OSError:
                 continue # skip file, does not exist
 
@@ -1758,6 +1755,8 @@ class Package:
                 # S_ISDIR returns False for directory symlinks,
                 # so using os.path.isdir valid directory symlink
                 if sys_root_item not in directories_cache:
+                    # collect for Trigger
+                    self.pkgmeta['affected_directories'].add(item)
                     directories.add((sys_root_item, "link"))
                     directories_cache.add(sys_root_item)
                 continue
@@ -1765,6 +1764,8 @@ class Package:
             if os.path.isdir(sys_root_item):
                 # plain directory
                 if sys_root_item not in directories_cache:
+                    # collect for Trigger
+                    self.pkgmeta['affected_directories'].add(item)
                     directories.add((sys_root_item, "dir"))
                     directories_cache.add(sys_root_item)
                 continue
@@ -1784,6 +1785,10 @@ class Package:
                 )
                 continue
 
+            # collect for Trigger
+            self.pkgmeta['affected_directories'].add(
+                os.path.dirname(item))
+
             # add its parent directory
             dirobj = os.path.dirname(sys_root_item)
             if dirobj not in directories_cache:
@@ -1794,6 +1799,53 @@ class Package:
 
                 directories_cache.add(dirobj)
 
+    def _remove_content_from_system(self, installed_package_id,
+        automerge_metadata = None):
+        """
+        Remove installed package content (files/directories) from live system.
+
+        @param installed_package_id: Entropy Repository package identifier
+        @type installed_package_id: int
+        @keyword automerge_metadata: Entropy "automerge metadata"
+        @type automerge_metadata: dict
+        """
+        if automerge_metadata is None:
+            automerge_metadata = {}
+
+        sys_root = etpConst['systemroot']
+        # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
+        sys_settings = self._settings
+        protect = self.__get_installed_package_config_protect(
+            installed_package_id)
+        mask = self.__get_installed_package_config_protect(installed_package_id,
+            mask = True)
+
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        col_protect = sys_settings[sys_set_plg_id]['misc']['collisionprotect']
+
+        # remove files from system
+        directories = set()
+        directories_cache = set()
+        not_removed_due_to_collisions = set()
+        colliding_path_messages = set()
+
+        remove_content = None
+        try:
+            # simulate a removecontent list/set object
+            remove_content = []
+            if self.pkgmeta['removecontent_file'] is not None:
+                remove_content = Package.FileContentReader(
+                    self.pkgmeta['removecontent_file'])
+
+            self._remove_content_from_system_loop(
+                remove_content, directories, directories_cache,
+                not_removed_due_to_collisions, colliding_path_messages,
+                automerge_metadata, col_protect, protect, mask, sys_root)
+
+        finally:
+            if hasattr(remove_content, "close"):
+                remove_content.close()
 
         if colliding_path_messages:
             self._entropy.output(
@@ -1821,7 +1873,12 @@ class Package:
         # by postremove step.
         # since this is a set, it is a mapped type, so every
         # other instance around will feature this update
-        self.pkgmeta['removecontent'] -= not_removed_due_to_collisions
+        if not_removed_due_to_collisions:
+            def _filter(_path):
+                return _path not in not_removed_due_to_collisions
+            Package._filter_content_file(
+                self.pkgmeta['removecontent_file'],
+                _filter)
 
         # now handle directories
         directories = sorted(directories, reverse = True)
@@ -1897,10 +1954,12 @@ class Package:
                     self.pkgmeta['removeidpackage'], get_dict = True
                 )
 
-        # copy files over - install
-        # use fork? (in this case all the changed structures
-        # need to be pushed back)
-        rc = self._move_image_to_system()
+        # items_*installed will be filled by _move_image_to_system
+        # then passed to _add_installed_package()
+        items_installed = set()
+        items_not_installed = set()
+        rc = self._move_image_to_system(
+            items_installed, items_not_installed)
         if rc != 0:
             return rc
 
@@ -1915,7 +1974,8 @@ class Package:
             level = "info",
             header = red("   ## ")
         )
-        self.pkgmeta['installed_package_id'] = self._add_installed_package()
+        self.pkgmeta['installed_package_id'] = self._add_installed_package(
+            items_installed, items_not_installed)
         return 0
 
     def _spm_install_package(self, installed_package_id):
@@ -2032,11 +2092,40 @@ class Package:
         return Spm.remove_installed_package(self.pkgmeta)
 
 
-    def _add_installed_package(self):
+    def _add_installed_package(self, items_installed, items_not_installed):
         """
         For internal use only.
         Copy package from repository to installed packages one.
         """
+
+        def _merge_removecontent(repo, _package_id):
+            inst_repo = self._entropy.installed_repository()
+            # NOTE: this could be a source of memory consumption
+            # but generally, the difference between two contents
+            # is really small
+            content_diff = list(inst_repo.contentDiff(
+                self.pkgmeta['removeidpackage'],
+                repo,
+                _package_id,
+                extended=True))
+
+            if content_diff:
+
+                # reverse-order compare
+                def _cmp_func(_path, _spath):
+                    if _path > _spath:
+                        return -1
+                    elif _path == _spath:
+                        return 0
+                    return 1
+
+                # must be sorted, and in reverse order
+                # or the merge step won't work
+                content_diff.sort(reverse=True)
+
+                Package._merge_content_file(
+                    self.pkgmeta['removecontent_file'],
+                    content_diff, _cmp_func)
 
         # fetch info
         smart_pkg = self.pkgmeta['smartpackage']
@@ -2053,14 +2142,9 @@ class Package:
             content_file = self.__generate_content_file(
                 content, package_id = self.pkgmeta['idpackage'])
 
-            if self.pkgmeta['removeidpackage'] != -1:
-                self.pkgmeta['removecontent'].update(
-                    self._entropy.installed_repository().contentDiff(
-                        self.pkgmeta['removeidpackage'],
-                        dbconn,
-                        self.pkgmeta['idpackage']
-                    )
-                )
+            if self.pkgmeta['removeidpackage'] != -1 and \
+                    self.pkgmeta['removecontent_file'] is not None:
+                _merge_removecontent(dbconn, self.pkgmeta['idpackage'])
 
         else:
 
@@ -2091,26 +2175,33 @@ class Package:
             data['content_safety'] = pkg_dbconn.retrieveContentSafety(
                 pkg_idpackage)
 
-            if self.pkgmeta['removeidpackage'] != -1:
-                self.pkgmeta['removecontent'].update(
-                    self._entropy.installed_repository().contentDiff(
-                        self.pkgmeta['removeidpackage'],
-                        pkg_dbconn,
-                        pkg_idpackage
-                    )
-                )
+            if self.pkgmeta['removeidpackage'] != -1 and \
+                    self.pkgmeta['removecontent_file'] is not None:
+                _merge_removecontent(pkg_dbconn, pkg_idpackage)
 
             pkg_dbconn.close()
 
+        # items_installed is useful to avoid the removal of installed
+        # files by __remove_package just because
+        # there's a difference in the directory path, perhaps,
+        # which is not handled correctly by
+        # EntropyRepository.contentDiff for obvious reasons
+        # (think about stuff in /usr/lib and /usr/lib64,
+        # where the latter is just a symlink to the former)
+        # --
         # fix removecontent, need to check if we just installed files
         # that resolves at the same directory path (different symlink)
-        my_remove_content = self.__filter_out_files_installed_on_diff_path(
-            self.pkgmeta['removecontent'], self.pkgmeta['__items_installed'])
-        self.pkgmeta['removecontent'] -= my_remove_content
+        if self.pkgmeta['removecontent_file'] is not None:
+            self.__filter_out_files_installed_on_diff_path(
+                self.pkgmeta['removecontent_file'],
+                items_installed)
 
         # filter out files not installed from content metadata
-        self.__filter_out_items_not_installed_from_content(
-            content_file)
+        if items_not_installed:
+            def _filter(_path):
+                return _path not in items_not_installed
+            Package._filter_content_file(
+                content_file, _filter)
 
         # this is needed to make postinstall trigger work properly
         self.pkgmeta['triggers']['install']['affected_directories'] = \
@@ -2145,7 +2236,7 @@ class Package:
         data['content'] = None
         try:
             # now we are ready to craft a 'content' iter object
-            data['content'] = Package.ExtendedFileContentIter(
+            data['content'] = Package.FileContentReader(
                 content_file)
             idpackage = inst_repo.handlePackage(
                 data, forcedRevision = data['revision'],
@@ -2173,35 +2264,6 @@ class Package:
 
         inst_repo.commit()
         return idpackage
-
-    def __filter_out_items_not_installed_from_content(self, content_file):
-
-        items_not_installed = self.pkgmeta.get(
-            'items_not_installed', set())
-        if not items_not_installed:
-            # nothing to dos
-            return
-
-        # rewrite content_file
-        tmp_content_file = content_file + "__filter_tmp"
-        enc = etpConst['conf_encoding']
-        try:
-            with codecs.open(tmp_content_file, "w", enc) as tmp_w:
-                with codecs.open(content_file, "r", enc) as tmp_r:
-                    line = tmp_r.readline()
-                    while line:
-                        # strip \n safely
-                        _pkg_id, ftype, _path = line[:-1].split("|", 2)
-                        if _path not in items_not_installed:
-                            tmp_w.write(line)
-                        line = tmp_r.readline()
-            os.rename(tmp_content_file, content_file)
-        except Exception as exc:
-            try:
-                os.remove(tmp_content_file)
-            except OSError:
-                pass
-            raise exc
 
     def __fill_image_dir(self, merge_from, image_dir):
 
@@ -2298,7 +2360,7 @@ class Package:
         return self.pkgmeta.get('unittest_root', '') + \
             etpConst['systemroot']
 
-    def _move_image_to_system(self):
+    def _move_image_to_system(self, items_installed, items_not_installed):
 
         # load CONFIG_PROTECT and its mask
         protect = self.__get_package_match_config_protect()
@@ -2312,17 +2374,15 @@ class Package:
         col_protect = misc_data['collisionprotect']
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
             self.pkgmeta['splitdebug_dirs']
-        items_installed = set()
         file_items_installed = set()
-        self.pkgmeta['items_not_installed'] = set()
 
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
         if not const_is_python3():
             # image_dir comes from unpackdir, which comes from download
-            # metadatum, which is utf-8
+            # metadatum, which is utf-8 (conf_encoding)
             image_dir = const_convert_to_rawstring(image_dir,
-                from_enctype = "utf-8")
+                from_enctype = etpConst['conf_encoding'])
         movefile = entropy.tools.movefile
 
         def workout_subdir(currentdir, subdir):
@@ -2330,11 +2390,6 @@ class Package:
             imagepath_dir = os.path.join(currentdir, subdir)
             rel_imagepath_dir = imagepath_dir[len(image_dir):]
             rootdir = sys_root + rel_imagepath_dir
-
-            rel_imagepath_dir_utf = const_convert_to_unicode(
-                rel_imagepath_dir, enctype="utf-8")
-            self.pkgmeta['affected_directories'].add(
-                rel_imagepath_dir_utf)
 
             # splitdebug (.debug files) support
             # If splitdebug is not enabled, do not create splitdebug directories
@@ -2349,7 +2404,7 @@ class Package:
                         # we should really use unicode
                         # strings for items_not_installed
                         unicode_rootdir = const_convert_to_unicode(rootdir)
-                        self.pkgmeta['items_not_installed'].add(unicode_rootdir)
+                        items_not_installed.add(unicode_rootdir)
                         return
 
             # handle broken symlinks
@@ -2511,7 +2566,14 @@ class Package:
         def workout_file(currentdir, item):
 
             fromfile = os.path.join(currentdir, item)
-            tofile = sys_root + fromfile[len(image_dir):]
+            rel_fromfile = fromfile[len(image_dir):]
+            rel_fromfile_dir = os.path.dirname(rel_fromfile)
+            tofile = sys_root + rel_fromfile
+
+            rel_fromfile_dir_utf = const_convert_to_unicode(
+                rel_fromfile_dir, enctype=etpConst['conf_encoding'])
+            self.pkgmeta['affected_directories'].add(
+                rel_fromfile_dir_utf)
 
             # splitdebug (.debug files) support
             # If splitdebug is not enabled, do not create
@@ -2526,7 +2588,7 @@ class Package:
                         # we should really use unicode
                         # strings for items_not_installed
                         unicode_tofile = const_convert_to_unicode(tofile)
-                        self.pkgmeta['items_not_installed'].add(unicode_tofile)
+                        items_not_installed.add(unicode_tofile)
                         return 0
 
             if col_protect > 1:
@@ -2768,46 +2830,47 @@ class Package:
                 if move_st != 0:
                     return move_st
 
-        # this is useful to avoid the removal of installed
-        # files by __remove_package just because
-        # there's a difference in the directory path, perhaps,
-        # which is not handled correctly by
-        # EntropyRepository.contentDiff for obvious reasons
-        # (think about stuff in /usr/lib and /usr/lib64,
-        # where the latter is just a symlink to the former)
-        self.pkgmeta['__items_installed'] = items_installed
-        if self.pkgmeta.get('removecontent'):
-            my_remove_content = self.__filter_out_files_installed_on_diff_path(
-                self.pkgmeta['removecontent'],
-                self.pkgmeta['__items_installed'])
-            self.pkgmeta['removecontent'] -= my_remove_content
-
         return 0
 
-    def __filter_out_files_installed_on_diff_path(self, remove_content,
+    def __filter_out_files_installed_on_diff_path(self, content_file,
         installed_content):
         """
         Use case: if a package provided files in /lib then, a new version
         of that package moved the same files under /lib64, we need to check
-        if both directory paths solve to the same inode and if so, add to our
-        set that we're going to return.
+        if both directory paths solve to the same inode and if so,
+        add to our set that we're going to return.
         """
         sys_root = self.__get_sys_root()
-        my_remove_content = set()
-        for mypath in remove_content:
+        second_pass_removal = set()
 
-            if not mypath:
-                continue # empty?
-
-            item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
-            item = os.path.join(os.path.realpath(item_dir),
-                os.path.basename(mypath))
-
+        if not installed_content:
+            # nothing to filter, no-op
+            return
+        def _main_filter(_path):
+            item_dir = os.path.dirname("%s%s" % (
+                    sys_root, _path,))
+            item = os.path.join(
+                os.path.realpath(item_dir),
+                os.path.basename(_path))
             if item in installed_content:
-                my_remove_content.add(item)
-                my_remove_content.add(mypath)
+                second_pass_removal.add(item)
+                return False
+            return True
 
-        return my_remove_content
+        # first pass, remove direct matches, schedule a second pass
+        # list of files
+        Package._filter_content_file(content_file, _main_filter)
+
+        if not second_pass_removal:
+            # done then
+            return
+
+        # second pass, drop remaining files
+        # unfortunately, this is the only way to work it out
+        # with iterators
+        def _filter(_path):
+            return _path not in second_pass_removal
+        Package._filter_content_file(content_file, _filter)
 
     def _handle_config_protect(self, protect, mask, fromfile, tofile,
         do_allocation_check = True, do_quiet = False):
@@ -3289,8 +3352,9 @@ class Package:
         unpack_dir = self.pkgmeta['unpackdir']
         if not const_is_python3():
             # unpackdir comes from download metadatum, which is utf-8
+            # (conf_encoding)
             unpack_dir = const_convert_to_rawstring(unpack_dir,
-                from_enctype = "utf-8")
+                from_enctype = etpConst['conf_encoding'])
 
         if os.path.isdir(unpack_dir):
             # this, if Python 2.x, must be fed with rawstrings
@@ -4001,16 +4065,10 @@ class Package:
             tmp_fd, tmp_path = tempfile.mkstemp(
                 prefix="PackageContent",
                 dir=tmp_dir)
-            with entropy.tools.codecs_fdopen(
-                tmp_fd, "w", etpConst['conf_encoding']) as tmp_f:
+            with Package.FileContentWriter(tmp_fd) as tmp_f:
                 for path, ftype in content:
-                    if package_id is not None:
-                        tmp_f.write(str(package_id))
-                    tmp_f.write("|")
-                    tmp_f.write(ftype)
-                    tmp_f.write("|")
-                    tmp_f.write(path)
-                    tmp_f.write("\n")
+                    tmp_f.write(package_id, path, ftype)
+
             return tmp_path
         except Exception as exc:
             if tmp_path is not None:
@@ -4020,11 +4078,99 @@ class Package:
                     pass
             raise exc
         finally:
-            if tmp_fd is None:
+            if tmp_fd is not None:
                 try:
                     os.close(tmp_fd)
                 except OSError:
                     pass
+
+    @staticmethod
+    def _merge_content_file(content_file, sorted_content,
+                            cmp_func):
+        """
+        Given a sorted content_file content and a sorted list of
+        content (sorted_content), apply the "merge" step of a merge
+        sort algorithm. In other words, add the sorted_content to
+        content_file keeping content_file content ordered.
+        It is of couse O(n+m) where n = lines in content_file and
+        m = sorted_content length.
+        """
+        tmp_content_file = content_file + \
+            Package.FileContentWriter.TMP_SUFFIX
+
+        sorted_ptr = 0
+        _sorted_path = None
+        _sorted_ftype = None
+        _package_id = 0 # will be filled
+        try:
+            with Package.FileContentWriter(tmp_content_file) as tmp_w:
+                with Package.FileContentReader(content_file) as tmp_r:
+                    for _package_id, _path, _ftype in tmp_r:
+
+                        while True:
+
+                            try:
+                                _sorted_path, _sorted_ftype = \
+                                    sorted_content[sorted_ptr]
+                            except IndexError:
+                                _sorted_path = None
+                                _sorted_ftype = None
+
+                            if _sorted_path is None:
+                                tmp_w.write(_package_id, _path, _ftype)
+                                break
+
+                            cmp_outcome = cmp_func(_path, _sorted_path)
+                            if cmp_outcome < 0:
+                                tmp_w.write(_package_id, _path, _ftype)
+                                break
+
+                            # always privilege _ftype over _sorted_ftype
+                            # _sorted_ftype might be invalid
+                            tmp_w.write(
+                                _package_id, _sorted_path, _ftype)
+                            sorted_ptr += 1
+                            if cmp_outcome == 0:
+                                # write only one
+                                break
+
+                    # add the remainder
+                    if sorted_ptr < len(sorted_content):
+                        _sorted_rem = sorted_content[sorted_ptr:]
+                        for _sorted_path, _sorted_ftype in _sorted_rem:
+                            tmp_w.write(
+                                _package_id, _sorted_path, _sorted_ftype)
+
+            os.rename(tmp_content_file, content_file)
+        except Exception as exc:
+            try:
+                os.remove(tmp_content_file)
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+            raise exc
+
+    @staticmethod
+    def _filter_content_file(content_file, filter_func):
+        """
+        This method rewrites the content of content_file by applying
+        a filter to the path elements.
+        """
+        tmp_content_file = content_file + \
+            Package.FileContentWriter.TMP_SUFFIX
+        try:
+            with Package.FileContentWriter(tmp_content_file) as tmp_w:
+                with Package.FileContentReader(content_file) as tmp_r:
+                    for _package_id, _path, _ftype in tmp_r:
+                        if filter_func(_path):
+                            tmp_w.write(_package_id, _path, _ftype)
+            os.rename(tmp_content_file, content_file)
+        except Exception as exc:
+            try:
+                os.remove(tmp_content_file)
+            except OSError:
+                pass
+            raise exc
 
     def __generate_content_file(self, content, package_id = None):
         content_path = None
@@ -4056,23 +4202,28 @@ class Package:
             inst_repo.retrieveSlot(idpackage)
         self.pkgmeta['versiontag'] = \
             inst_repo.retrieveTag(idpackage)
-        self.pkgmeta['diffremoval'] = False
 
         remove_config = False
         if 'removeconfig' in self.metaopts:
             remove_config = self.metaopts.get('removeconfig')
         self.pkgmeta['removeconfig'] = remove_config
 
-        self.pkgmeta['removecontent'] = \
-            inst_repo.retrieveContent(idpackage)
-        
+        content = inst_repo.retrieveContentIter(
+            idpackage, order_by="file", reverse=True)
+        self.pkgmeta['removecontent_file'] = \
+            self.__generate_content_file(content)
+        # collects directories whose content has been modified
+        # this information is then handed to the Trigger
+        self.pkgmeta['affected_directories'] = set()
+
         self.pkgmeta['triggers']['remove'] = \
             inst_repo.getTriggerData(idpackage)
         if self.pkgmeta['triggers']['remove'] is None:
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
-        self.pkgmeta['triggers']['remove']['removecontent'] = \
-            self.pkgmeta['removecontent']
+        self.pkgmeta['triggers']['remove']['affected_directories'] = \
+            self.pkgmeta['affected_directories']
+
         self.pkgmeta['triggers']['remove']['spm_repository'] = \
             inst_repo.retrieveSpmRepository(
                 idpackage)
@@ -4252,9 +4403,9 @@ class Package:
         self.pkgmeta['removeconfig'] = remove_config
 
         self.pkgmeta['removeidpackage'] = self.__setup_package_to_remove(
-            entropy.dep.dep_getkey(self.pkgmeta['atom']), self.pkgmeta['slot'])
-        # filled later...
-        self.pkgmeta['removecontent'] = set()
+            entropy.dep.dep_getkey(self.pkgmeta['atom']),
+            self.pkgmeta['slot'])
+
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         self.pkgmeta['affected_directories'] = set()
@@ -4292,25 +4443,34 @@ class Package:
         self.pkgmeta['pkgdbpath'] = os.path.join(self.pkgmeta['unpackdir'],
             "edb/pkg.db")
 
-        # compare both versions and if they match, disable removeidpackage
-        if self.pkgmeta['removeidpackage'] != -1:
+        if self.pkgmeta['removeidpackage'] == -1:
+            # nothing to remove, fresh install
+            self.pkgmeta['removecontent_file'] = None
+        else:
+            # generate content file
+            content = inst_repo.retrieveContentIter(
+                self.pkgmeta['removeidpackage'],
+                order_by="file", reverse=True)
+            self.pkgmeta['removecontent_file'] = \
+                self.__generate_content_file(content)
 
+            # There is a pkg to remove, but...
+            # compare both versions and if they match, disable removeidpackage
             trigger_data = inst_repo.getTriggerData(
                 self.pkgmeta['removeidpackage'])
+
             if trigger_data is None:
                 # installed repository entry is corrupted
                 self.pkgmeta['removeidpackage'] = -1
             else:
-
-                # differential remove list
-                self.pkgmeta['diffremoval'] = True
                 self.pkgmeta['removeatom'] = inst_repo.retrieveAtom(
                     self.pkgmeta['removeidpackage'])
 
                 self.pkgmeta['triggers']['remove'] = trigger_data
                 # pass reference, not copy! nevva!
-                self.pkgmeta['triggers']['remove']['removecontent'] = \
-                    self.pkgmeta['removecontent']
+                self.pkgmeta['triggers']['remove']['affected_directories'] = \
+                    self.pkgmeta['affected_directories']
+
                 self.pkgmeta['triggers']['remove']['spm_repository'] = \
                     inst_repo.retrieveSpmRepository(idpackage)
                 self.pkgmeta['triggers']['remove'].update(

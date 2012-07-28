@@ -40,7 +40,7 @@ class Trigger:
         action_metadata):
         """
         Trigger manager interface constructor.
-
+ 
         @param entropy_client: Entropy Client interface object
         @type entropy_client: entropy.client.interfaces.client.Client
         @param action: package handling action, can be "install", "remove",
@@ -90,7 +90,6 @@ class Trigger:
         """
         This method must be called right after the constructor in order
         to prepare data strctures used in the run() phase.
-
         @return: number of triggers that will be executed once run() is called
         @rtype: int
         """
@@ -201,9 +200,7 @@ class Trigger:
                 functions.append(self._trigger_spm_postremove)
                 break
 
-        cont_dirs = set((os.path.dirname(x) for x in \
-            self._pkgdata['removecontent']))
-
+        cont_dirs = self._pkgdata['affected_directories']
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)
