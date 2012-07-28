@@ -1333,7 +1333,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         return data
 
     def getPackageData(self, package_id, get_content = True,
-            content_insert_formatted = False, get_changelog = True):
+            content_insert_formatted = False, get_changelog = True,
+            get_content_safety = True):
         """
         Reconstruct all the package metadata belonging to provided package
         identifier into a dict object.
@@ -1346,6 +1347,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type content_insert_formatted: bool
         @keyword get_changelog:  return ChangeLog text metadatum or None
         @type get_changelog: bool
+        @keyword get_content_safety: return content_safety metadata or {}
+        @type get_content_safety: bool
         @return: package metadata in dict() form
 
         >>> data = {
@@ -1446,6 +1449,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         changelog = None
         if get_changelog:
             changelog = self.retrieveChangelog(package_id)
+        content_safety = {}
+        if get_content_safety:
+            content_safety = self.retrieveContentSafety(package_id)
 
         data = {
             'atom': atom,
@@ -1489,7 +1495,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'conflicts': self.retrieveConflicts(package_id),
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
-            'content_safety': self.retrieveContentSafety(package_id),
+            'content_safety': content_safety,
             'dependencies': dict((x, y,) for x, y in \
                 self.retrieveDependencies(package_id, extended = True,
                     resolve_conditional_deps = False)),
