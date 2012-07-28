@@ -1114,7 +1114,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
-    def contentDiff(self, package_id, dbconn, dbconn_package_id):
+    def contentDiff(self, package_id, dbconn, dbconn_package_id,
+                    extended = False):
         """
         Return content metadata difference between two packages.
 
@@ -1125,6 +1126,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @param dbconn_package_id: package identifier available in other
             repository
         @type dbconn_package_id: int
+        @keyword extended: also return filetype (it is not considered in
+           the comparison)
+        @type extended: bool
         @return: content difference
         @rtype: frozenset
         @raise AttributeError: when self instance and dbconn are the same

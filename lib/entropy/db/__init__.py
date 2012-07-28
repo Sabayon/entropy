@@ -2193,7 +2193,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (package_id,))
         self._insertContentSafety(package_id, content_safety)
 
-    def contentDiff(self, package_id, dbconn, dbconn_package_id):
+    def contentDiff(self, package_id, dbconn, dbconn_package_id,
+                    extended = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -2222,13 +2223,18 @@ class EntropyRepository(EntropyRepositoryBase):
             self._connection().text_factory = const_convert_to_unicode
 
             # now compare
+            ftype_str = ""
+            if extended:
+                ftype_str = ", type"
             cur = self._cursor().execute("""
-            SELECT file FROM content
+            SELECT file%s FROM content
             WHERE content.idpackage = (?) AND
             content.file NOT IN (SELECT file from `%s`)""" % (
-                    randomtable,), (package_id,))
+                    ftype_str, randomtable,), (package_id,))
 
             # suck back
+            if extended:
+                return tuple(cur)
             return self._cur2frozenset(cur)
 
         finally:
