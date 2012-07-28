@@ -2794,6 +2794,26 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def retrieveContentSafetyIter(self, package_id):
+        """
+        Return supported content safety metadata for given package in
+        iterator form.
+        Each iterator item is composed by a (path, sha256, mtime) tuple.
+        Please note that the iterator returned will fail if the
+        EntropyRepository object is closed (call to close()).
+        The iterator thus becomes invalid.
+        Moreover, do not execute any other call that could invalidate
+        the cursor object state before being done with it.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @keyword order_by: order by string, valid values are:
+            "type" (if extended is True), "file" or "package_id"
+        @return: contentsafety metadata
+        @rtype: iterator
+        """
+        raise NotImplementedError()
+
     def retrieveChangelog(self, package_id):
         """
         Return Source Package Manager ChangeLog for given package identifier.

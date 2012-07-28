@@ -1670,10 +1670,28 @@ class EntropyRepository(EntropyRepositoryBase):
         Insert into contentsafety table package files sha256sum and mtime.
         """
         if self._doesTableExist("contentsafety"):
-            self._cursor().executemany("""
-            INSERT into contentsafety VALUES (?,?,?,?)
-            """, [(package_id, k, v['mtime'], v['sha256']) for k, v in \
-                content_safety.items()])
+            if isinstance(content_safety, dict):
+                self._cursor().executemany("""
+                INSERT into contentsafety VALUES (?,?,?,?)
+                """, [(package_id, k, v['mtime'], v['sha256']) \
+                          for k, v in content_safety.items()])
+            else:
+                # support for iterators containing tuples like this:
+                # (path, sha256, mtime)
+                class MyIterWrapper:
+                    def __init__(self, _iter):
+                        self._iter = _iter
+                    def __iter__(self):
+                        return self
+                    def next(self):
+                        path, sha256, mtime = self._iter.next()
+                        # this is the insert order, with mtime
+                        # and sha256 swapped.
+                        return package_id, path, mtime, sha256
+
+                self._cursor().executemany("""
+                INSERT into contentsafety VALUES (?,?,?,?)
+                """, MyIterWrapper(content_safety))
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
         """
@@ -3511,6 +3529,32 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT file, sha256, mtime from contentsafety WHERE idpackage = (?)
         """, (package_id,))
+        return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
+            sha256, mtime in cur.fetchall())
+
+    def retrieveContentSafetyIter(self, package_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        # TODO: remove this before 31-12-2012
+        if not self._doesTableExist('contentsafety'):
+            return {}
+
+        class MyIter:
+
+            def __init__(self, _cur):
+                self._cur = cur
+
+            def __iter__(self):
+                return self
+
+            def next(self):
+                return self._cur.next()
+
+        cur = self._cursor().execute("""
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = (?)
+        """, (package_id,))
+        return MyIter(cur)
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
             sha256, mtime in cur.fetchall())
 
