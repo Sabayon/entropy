@@ -132,6 +132,98 @@ class Package:
                 self._f.close()
                 self._f = None
 
+    class FileContentSafetyWriter:
+
+        def __init__(self, path, enc=None):
+            if enc is None:
+                self._enc = etpConst['conf_encoding']
+            else:
+                self._enc = enc
+            self._cpath = path
+            # callers expect that file is created
+            # on open object instantiation, don't
+            # remove this or things like os.rename()
+            # will fail
+            self._open_f()
+
+        def _open_f(self):
+            if isinstance(self._cpath, int):
+                self._f = entropy.tools.codecs_fdopen(
+                    self._cpath, "w", self._enc)
+            else:
+                self._f = codecs.open(
+                    self._cpath, "w", self._enc)
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_val, tb):
+            self.close()
+
+        def write(self, path, sha256, mtime):
+            if not path:
+                # this is a security measure, do not
+                # enforce stripping
+                raise ValueError("path cannot be empty")
+            if self._f is None:
+                self._open_f()
+
+            self._f.write("%f" % (mtime,))
+            self._f.write("|")
+            self._f.write(sha256)
+            self._f.write("|")
+            self._f.write(path)
+            self._f.write("\n")
+
+        def close(self):
+            if self._f is not None:
+                self._f.close()
+                self._f = None
+
+    class FileContentSafetyReader:
+
+        def __init__(self, path, enc=None):
+            if enc is None:
+                self._enc = etpConst['conf_encoding']
+            else:
+                self._enc = enc
+            self._cpath = path
+            self._f = None
+
+        def _open_f(self):
+            if isinstance(self._cpath, int):
+                self._f = entropy.tools.codecs_fdopen(
+                    self._cpath, "r", self._enc)
+            else:
+                self._f = codecs.open(
+                    self._cpath, "r", self._enc)
+
+        def __iter__(self):
+            return self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc_val, tb):
+            self.close()
+
+        def next(self):
+            if self._f is None:
+                self._open_f()
+            line = self._f.readline()
+            if not line:
+                self.close()
+                raise StopIteration()
+            _mtime, _sha256, _path = line[:-1].split("|", 2)
+            # must be legal or die!
+            _mtime = float(_mtime)
+            return _path, _sha256, _mtime
+
+        def close(self):
+            if self._f is not None:
+                self._f.close()
+                self._f = None
+
     def __init__(self, entropy_client):
 
         if not isinstance(entropy_client, Client):
@@ -2135,12 +2227,18 @@ class Package:
 
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
                 content_insert_formatted = True,
-                get_changelog = False, get_content = False)
+                get_changelog = False, get_content = False,
+                get_content_safety = False)
 
             content = dbconn.retrieveContentIter(
                 self.pkgmeta['idpackage'])
             content_file = self.__generate_content_file(
                 content, package_id = self.pkgmeta['idpackage'])
+
+            content_safety = dbconn.retrieveContentSafetyIter(
+                self.pkgmeta['idpackage'])
+            content_safety_file = self.__generate_content_safety_file(
+                content_safety)
 
             if self.pkgmeta['removeidpackage'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
@@ -2172,8 +2270,10 @@ class Package:
                 content, package_id = self.pkgmeta['idpackage'])
 
             # setup content safety metadata, get from package
-            data['content_safety'] = pkg_dbconn.retrieveContentSafety(
+            content_safety = pkg_dbconn.retrieveContentSafetyIter(
                 pkg_idpackage)
+            content_safety_file = self.__generate_content_safety_file(
+                content_safety)
 
             if self.pkgmeta['removeidpackage'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
@@ -2234,10 +2334,13 @@ class Package:
         inst_repo = self._entropy.installed_repository()
 
         data['content'] = None
+        data['content_safety'] = None
         try:
             # now we are ready to craft a 'content' iter object
             data['content'] = Package.FileContentReader(
                 content_file)
+            data['content_safety'] = Package.FileContentSafetyReader(
+                content_safety_file)
             idpackage = inst_repo.handlePackage(
                 data, forcedRevision = data['revision'],
                 formattedContent = True)
@@ -2248,6 +2351,12 @@ class Package:
                     data['content'] = None
                 except (OSError, IOError):
                     data['content'] = None
+            if data['content_safety'] is not None:
+                try:
+                    data['content_safety'].close()
+                    data['content_safety'] = None
+                except (OSError, IOError):
+                    data['content_safety'] = None
 
         # update datecreation
         ctime = time.time()
@@ -4042,6 +4151,49 @@ class Package:
         self.__prepared = True
 
     @staticmethod
+    def _generate_content_safety_file(content_safety):
+        """
+        Generate a file containing the "content_safety" metadata,
+        reading by content_safety list or iterator. Each item
+        of "content_safety" must contain (path, sha256, mtime).
+        Each item shall be written to file, one per line,
+        in the following form: "<mtime>|<sha256>|<path>".
+        The order of the element in "content_safety" will be kept.
+        """
+        tmp_dir = os.path.join(
+            etpConst['entropyunpackdir'],
+            "__generate_content_safety_file_f")
+        try:
+            os.makedirs(tmp_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                raise
+
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="PackageContentSafety",
+                dir=tmp_dir)
+            with Package.FileContentSafetyWriter(tmp_fd) as tmp_f:
+                for path, sha256, mtime in content_safety:
+                    tmp_f.write(path, sha256, mtime)
+
+            return tmp_path
+        except Exception as exc:
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except (OSError, IOError):
+                    pass
+            raise exc
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+
+    @staticmethod
     def _generate_content_file(content, package_id = None):
         """
         Generate a file containing the "content" metadata,
@@ -4177,6 +4329,17 @@ class Package:
         try:
             content_path = Package._generate_content_file(
                 content, package_id = package_id)
+            return content_path
+        finally:
+            if content_path is not None:
+                self.pkgmeta['__content_files__'].append(
+                    content_path)
+
+    def __generate_content_safety_file(self, content_safety):
+        content_path = None
+        try:
+            content_path = Package._generate_content_safety_file(
+                content_safety)
             return content_path
         finally:
             if content_path is not None:
