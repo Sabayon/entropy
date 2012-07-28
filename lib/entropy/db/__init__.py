@@ -5110,7 +5110,8 @@ class EntropyRepository(EntropyRepositoryBase):
             # it seems that it's causing locking issues
             # so, just execute it when in read/write mode
             self._setSetting("schema_revision",
-                str(EntropyRepository._SCHEMA_REVISION))
+                EntropyRepository._SCHEMA_REVISION)
+            self._connection().commit()
 
     def integrity_check(self):
         """
@@ -6148,6 +6149,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self._clearLiveCache("_doesColumnInTableExist")
         self._setSetting("_baseinfo_extrainfo_2010", "1")
+        self._connection().commit()
 
     def _foreignKeySupport(self):
 
@@ -6216,6 +6218,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if done_something:
             self._setSetting("on_delete_cascade", "1")
+            self._connection().commit()
             # recreate indexes
             self.createAllIndexes()
         elif foreign_keys_supported:
@@ -6224,6 +6227,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 self.getSetting("on_delete_cascade")
             except KeyError:
                 self._setSetting("on_delete_cascade", "1")
+                self._connection().commit()
 
     def _moveContent(self, from_table, to_table):
         self._cursor().execute("""
