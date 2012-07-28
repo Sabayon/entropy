@@ -3460,7 +3460,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return fl
 
-    def retrieveContentIter(self, package_id, order_by = None):
+    def retrieveContentIter(self, package_id, order_by = None,
+                            reverse = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -3482,7 +3483,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 raise AttributeError("invalid order_by argument")
             if order_by == "package_id":
                 order_by = "idpackage"
-            order_by_string = ' order by %s' % (order_by,)
+            ordering_term = "ASC"
+            if reverse:
+                ordering_term = "DESC"
+            order_by_string = " order by %s %s" % (
+                order_by, ordering_term)
 
         cur = self._cursor().execute("""
         SELECT file, type FROM content WHERE idpackage = (?) %s""" % (

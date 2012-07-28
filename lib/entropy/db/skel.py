@@ -2751,7 +2751,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
-    def retrieveContentIter(self, package_id, order_by = None):
+    def retrieveContentIter(self, package_id, order_by = None,
+                            reverse = False):
         """
         Return an iterator that makes possible to retrieve the files
         contained in given package. Please note that the iterator returned
@@ -2765,6 +2766,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @keyword order_by: order by string, valid values are:
             "type" (if extended is True), "file" or "package_id"
         @type order_by: string
+        @keyword reverse: return elements in reverse order
+        @type reverse: bool
         @return: content metadata
         @rtype: iterator
         @raise AttributeError: if order_by value is invalid
