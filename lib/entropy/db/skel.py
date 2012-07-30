@@ -3517,6 +3517,23 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def isPackageScopeAvailable(self, atom, slot, revision):
+        """
+        Return whether given package scope is available.
+        Also check if package found is masked and return masking reason
+        identifier.
+
+        @param atom: package atom string
+        @type atom: string
+        @param slot: package slot string
+        @type slot: string
+        @param revision: entropy package revision
+        @type revision: int
+        @return: tuple composed by (package_id or -1, idreason or 0,)
+        @rtype: tuple
+        """
+        raise NotImplementedError()
+
     def isBranchMigrationAvailable(self, repository, from_branch, to_branch):
         """
         Returns whether branch migration metadata given by the provided key

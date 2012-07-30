@@ -4787,6 +4787,21 @@ class EntropyRepository(EntropyRepositoryBase):
             return frozenset((y for x, y in data))
         return data
 
+    def isPackageScopeAvailable(self, atom, slot, revision):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        searchdata = (atom, slot, revision,)
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo
+        where atom = (?)  AND slot = (?) AND revision = (?) LIMIT 1
+        """, searchdata)
+        rslt = cur.fetchone()
+
+        if rslt: # check if it's masked
+            return self.maskFilter(rslt[0])
+        return -1, 0
+
     def isBranchMigrationAvailable(self, repository, from_branch, to_branch):
         """
         Reimplemented from EntropyRepositoryBase.
