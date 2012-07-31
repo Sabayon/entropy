@@ -153,8 +153,13 @@ class ApplicationsViewController(GObject.Object):
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
+            if text == "rigo:installed":
+                inst_repo = self._entropy.installed_repository()
+                for pkg_id in inst_repo.listAllPackageIds(
+                    order_by="atom"):
+                    matches.append((pkg_id, inst_repo.repository_id()))
             # package set search
-            if text.startswith(etpConst['packagesetprefix']):
+            elif text.startswith(etpConst['packagesetprefix']):
                 sets = self._entropy.Sets()
                 package_deps = sets.expand(text)
                 for package_dep in package_deps:
