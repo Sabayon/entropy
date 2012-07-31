@@ -163,9 +163,11 @@ class ApplicationsViewController(GObject.Object):
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
+            use_fallback = True
 
             # in:installed [<search arg 1> ...]
             if search_cmd == ApplicationsViewController.SHOW_INSTALLED_KEY:
+                use_fallback = False
                 inst_repo = self._entropy.installed_repository()
                 if not search_args:
                     for pkg_id in inst_repo.listAllPackageIds(
@@ -176,8 +178,10 @@ class ApplicationsViewController(GObject.Object):
                         for pkg_id in inst_repo.searchPackages(
                             search_arg.lower(), just_id=True):
                             matches.append((pkg_id, inst_repo.repository_id()))
+
             # package set search
-            elif text.startswith(etpConst['packagesetprefix']):
+            elif search_cmd.startswith(etpConst['packagesetprefix']):
+                use_fallback = False
                 sets = self._entropy.Sets()
                 package_deps = sets.expand(text)
                 for package_dep in package_deps:
@@ -186,7 +190,8 @@ class ApplicationsViewController(GObject.Object):
                     if pkg_id != -1:
                         matches.append((pkg_id, pkg_repo))
 
-            if not matches:
+            # fallback search
+            if not matches and use_fallback:
                 # exact match
                 pkg_matches, rc = self._entropy.atom_match(
                     text, multi_match=True,
