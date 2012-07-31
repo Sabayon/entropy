@@ -856,7 +856,8 @@ class Application(object):
             return self._licenses
 
     def __init__(self, entropy_client, entropy_ws, rigo_service,
-                 package_match, redraw_callback=None, package_path=None):
+                 package_match, redraw_callback=None, package_path=None,
+                 children=None, vanished_callback=None):
         self._entropy = entropy_client
         self._entropy_ws = entropy_ws
         self._service = rigo_service
@@ -864,6 +865,8 @@ class Application(object):
         self._pkg_id, self._repo_id = package_match
         self._path = package_path
         self._redraw_callback = redraw_callback
+        self._children = children
+        self._vanished_callback = vanished_callback
 
     @property
     def name(self):
@@ -873,6 +876,8 @@ class Application(object):
             repo = self._entropy.open_repository(self._repo_id)
             name = repo.retrieveName(self._pkg_id)
             if name is None:
+                if self._vanished_callback is not None:
+                    self._vanished_callback(self)
                 return _("N/A")
             name = " ".join([x.capitalize() for x in \
                                  name.replace("-"," ").split()])
@@ -887,6 +892,15 @@ class Application(object):
         return the package path.
         """
         return self._path
+
+    @property
+    def children(self):
+        """
+        If the Application is the parent of other Applications,
+        this object shall contain a list of children Application
+        objects. Otherwise, it returns None.
+        """
+        return self._children
 
     def is_installed(self):
         """
@@ -931,9 +945,7 @@ class Application(object):
         # in the installed packages repository, matches
         # must be of length < 2.
         if len(matches) > 1:
-            raise AttributeError(
-                "searchKeySlot for %s returned: %s" % (
-                    (key, slot), matches,))
+            return None
         if not matches:
             # not installed
             return None
@@ -1232,6 +1244,10 @@ class Application(object):
         self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
+            if self._vanished_callback is not None:
+                if not repo.isPackageIdAvailable(self._pkg_id):
+                    self._vanished_callback(self)
+
             version = repo.retrieveVersion(self._pkg_id)
             if version is None:
                 version = _("N/A")
@@ -1271,6 +1287,10 @@ class Application(object):
         self._entropy.rwsem().reader_acquire()
         try:
             repo = self._entropy.open_repository(self._repo_id)
+            if self._vanished_callback is not None:
+                if not repo.isPackageIdAvailable(self._pkg_id):
+                    self._vanished_callback(self)
+
             inst_repo = self._entropy.installed_repository()
             strict = repo.getStrictData(self._pkg_id)
             if strict is None:
@@ -1346,6 +1366,10 @@ class Application(object):
         try:
             lic_url = "%s/license/" % (etpConst['packages_website_url'],)
             repo = self._entropy.open_repository(self._repo_id)
+
+            if self._vanished_callback is not None:
+                if not repo.isPackageIdAvailable(self._pkg_id):
+                    self._vanished_callback(self)
 
             licenses = repo.retrieveLicense(self._pkg_id)
             if licenses:

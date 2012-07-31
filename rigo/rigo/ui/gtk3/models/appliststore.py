@@ -50,6 +50,12 @@ class AppListStore(Gtk.ListStore):
                              None,
                              (GObject.TYPE_PYOBJECT,),
                              ),
+        # signal that all the elements in the List
+        # have vanished.
+        "all-vanished"    : (GObject.SignalFlags.RUN_LAST,
+                             None,
+                             tuple(),
+                             ),
     }
 
     def __init__(self, entropy_client, entropy_ws, rigo_service,
@@ -194,6 +200,41 @@ class AppListStore(Gtk.ListStore):
         AppListStore._ICON_CACHE[pkg_match] = pixbuf
         return pixbuf
 
+    def _vanished_callback(self, app):
+        """
+        Remove elements that are marked as "vanished" due
+        to unavailable metadata.
+        """
+        def _remove(_app):
+            pkg_match = _app.get_details().pkg
+
+            vis_data = self._view.get_visible_range()
+            if vis_data is None:
+                return
+            if len(vis_data) == 2:
+                # Gtk 3.4
+                valid_paths = True
+                start_path, end_path = vis_data
+            else:
+                # Gtk <3.2
+                valid_paths, start_path, end_path = vis_data
+
+            if not valid_paths:
+                return
+
+            path = start_path
+            while path <= end_path:
+                path_iter = self.get_iter(path)
+                if self.iter_is_valid(path_iter):
+                    visible_pkg_match = self.get_value(path_iter, 0)
+                    if visible_pkg_match == pkg_match:
+                        self.remove(path_iter)
+                        if len(self) == 0:
+                            self.emit("all-vanished")
+                        return
+
+        GLib.idle_add(_remove, app)
+
     def get_application(self, pkg_match):
         def _ui_redraw_callback(*args):
             if const_debug_enabled():
@@ -203,5 +244,6 @@ class AppListStore(Gtk.ListStore):
 
         app = Application(self._entropy, self._entropy_ws,
                           self._service, pkg_match,
-                          redraw_callback=_ui_redraw_callback)
+                          redraw_callback=_ui_redraw_callback,
+                          vanished_callback=self._vanished_callback)
         return app

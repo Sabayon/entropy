@@ -181,6 +181,10 @@ class BottomNotificationViewController(NotificationViewController):
                             None,
                             tuple(),
                             ),
+        "show-queue-view" : (GObject.SignalFlags.RUN_LAST,
+                             None,
+                             tuple(),
+                             ),
         "work-interrupt" : (GObject.SignalFlags.RUN_LAST,
                             None,
                             tuple(),
@@ -205,6 +209,12 @@ class BottomNotificationViewController(NotificationViewController):
         User is asking to interrupt the Work.
         """
         self.emit("work-interrupt")
+
+    def _on_show_activity(self, widget):
+        """
+        User is asking to show the Application Queue.
+        """
+        self.emit("show-queue-view")
 
     def _append_repositories_update(self):
         """
@@ -232,6 +242,7 @@ class BottomNotificationViewController(NotificationViewController):
             w, h = self._window.get_size()
             self._window.resize(w, 1)
         box.add_button(_("Show me"), _show_me)
+        box.add_button(_("Activity"), self._on_show_activity)
         box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 
@@ -249,6 +260,7 @@ class BottomNotificationViewController(NotificationViewController):
             w, h = self._window.get_size()
             self._window.resize(w, 1)
         box.add_button(_("Show me"), _show_me)
+        box.add_button(_("Activity"), self._on_show_activity)
         box.add_button(_("Interrupt"), self._on_work_interrupt)
         self.append(box)
 

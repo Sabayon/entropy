@@ -78,9 +78,10 @@ class ApplicationsViewController(GObject.Object):
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
     SHOW_INSTALLED_KEY = "in:installed"
+    SHOW_QUEUE_KEY = "in:queue"
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
-                 nc, rigo_service, prefc, icons, nf_box,
+                 nc, bottom_nc, rigo_service, prefc, icons, nf_box,
                  search_entry, search_entry_completion,
                  search_entry_store, store, view):
         GObject.Object.__init__(self)
@@ -97,6 +98,7 @@ class ApplicationsViewController(GObject.Object):
         self._not_found_search_box = None
         self._not_found_label = None
         self._nc = nc
+        self._bottom_nc = bottom_nc
         self._prefc = prefc
 
         self._cacher = EntropyCacher()
@@ -333,6 +335,39 @@ class ApplicationsViewController(GObject.Object):
             __name__, "upgrade:"
             " upgrade_system() sent")
 
+    def _show_action_queue_items(self, _invalid_matches=False):
+        """
+        Request the UI to show the current Action Queue, if any.
+        """
+        const_debug_write(
+            __name__, "_show_action_queue_items called")
+        apps = self._service.action_queue_items()
+        const_debug_write(
+            __name__, "_show_action_queue_items, items: %d" % (len(apps),))
+
+        matches = []
+        if not _invalid_matches:
+            for app in apps:
+                const_debug_write(
+                    __name__, "_show_action_queue_items:"
+                    " %s" % (app,))
+                matches.append(app.get_details().pkg)
+        else:
+            self._entropy.rwsem().reader_acquire()
+            try:
+                inst_repo = self._entropy.installed_repository()
+                repo_name = inst_repo.repository_id()
+                matches.extend(
+                    [(-2, repo_name),
+                     (-5, repo_name),
+                     (-10, repo_name)])
+            finally:
+                self._entropy.rwsem().reader_release()
+
+        if matches:
+            self.set_many_safe(matches,
+                _from_search=ApplicationsViewController.SHOW_QUEUE_KEY)
+
     def __simulate_orphaned_apps(self, text):
 
         const_debug_write(
@@ -367,6 +402,9 @@ class ApplicationsViewController(GObject.Object):
             return
         elif text == "in:confupdate":
             self._service.configuration_updates()
+            return
+        elif text == ApplicationsViewController.SHOW_QUEUE_KEY:
+            self._show_action_queue_items()
             return
         elif text == "in:config":
             GLib.idle_add(self.emit, "view-want-change",
@@ -403,8 +441,11 @@ class ApplicationsViewController(GObject.Object):
             if sim_str:
                 self.__simulate_orphaned_apps(sim_str)
                 return
-        if text == "in:simulate:u":
+        elif text == "in:simulate:u":
             self.upgrade(simulate=True)
+            return
+        elif text == "in:simulate:v":
+            self._show_action_queue_items(_invalid_matches=True)
             return
 
         return self.__search_thread_body(text)
@@ -654,6 +695,14 @@ class ApplicationsViewController(GObject.Object):
              _("Browse through the currently Installed Applications."),
              "drive-harddisk", _show_installed)
         self._prefc.append(pref)
+
+        def _show_queue_view(widget):
+            self._search(ApplicationsViewController.SHOW_QUEUE_KEY,
+                         _force=True)
+        self._bottom_nc.connect("show-queue-view", _show_queue_view)
+        def _clear(widget):
+            self.clear()
+        self._store.connect("all-vanished", _clear)
 
         self._view.set_model(self._store)
         self._search_entry.connect(

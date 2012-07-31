@@ -291,10 +291,18 @@ class Rigo(Gtk.Application):
 
         self._nc = UpperNotificationViewController(
             self._entropy, self._entropy_ws, self._notification)
+        # Bottom NotificationBox controller.
+        # Bottom notifications are only used for
+        # providing Activity control to User during
+        # the Activity itself.
+        self._bottom_nc = BottomNotificationViewController(
+            self._window, self._bottom_notification,
+            self._pref_button)
 
         self._avc = ApplicationsViewController(
             self._activity_rwsem,
-            self._entropy, self._entropy_ws, self._nc, self._service,
+            self._entropy, self._entropy_ws,
+            self._nc, self._bottom_nc, self._service,
             self._pref_view_c, icons, self._not_found_box,
             self._search_entry, self._search_entry_completion,
             self._search_entry_store, self._app_store, self._view)
@@ -303,13 +311,6 @@ class Rigo(Gtk.Application):
         self._avc.connect("view-filled", self._on_view_filled)
         self._avc.connect("view-want-change", self._on_view_change)
 
-        # Bottom NotificationBox controller.
-        # Bottom notifications are only used for
-        # providing Activity control to User during
-        # the Activity itself.
-        self._bottom_nc = BottomNotificationViewController(
-            self._window, self._bottom_notification,
-            self._pref_button)
         self._service.set_bottom_notification_controller(
             self._bottom_nc)
 
