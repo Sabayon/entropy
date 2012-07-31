@@ -174,7 +174,7 @@ class ApplicationsViewController(GObject.Object):
                 else:
                     for search_arg in search_args:
                         for pkg_id in inst_repo.searchPackages(
-                            search_arg, just_id=True):
+                            search_arg.lower(), just_id=True):
                             matches.append((pkg_id, inst_repo.repository_id()))
             # package set search
             elif text.startswith(etpConst['packagesetprefix']):
