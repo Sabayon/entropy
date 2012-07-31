@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-16 10:38+0200\n"
+"POT-Creation-Date: 2012-07-31 09:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -30,15 +30,15 @@ msgstr ""
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1628
+#: ../RigoDaemon/app.py:1630
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1931
+#: ../RigoDaemon/app.py:1936
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:2029
+#: ../RigoDaemon/app.py:2036
 msgid "Application Install"
 msgstr ""
 
@@ -54,74 +54,74 @@ msgstr ""
 msgid "Applications"
 msgstr ""
 
-#: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
-#: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
-#: ../rigo/models/application.py:1340
+#: ../rigo/models/application.py:876 ../rigo/models/application.py:1237
+#: ../rigo/models/application.py:1277 ../rigo/models/application.py:1309
+#: ../rigo/models/application.py:1375
 msgid "N/A"
 msgstr ""
 
-#: ../rigo/models/application.py:1210 ../rigo/models/application.py:1265
+#: ../rigo/models/application.py:1245 ../rigo/models/application.py:1300
 msgid "No description"
 msgstr ""
 
-#: ../rigo/models/application.py:1279
+#: ../rigo/models/application.py:1314
 msgid "Installed"
 msgstr ""
 
-#: ../rigo/models/application.py:1285
+#: ../rigo/models/application.py:1320
 #, python-format
 msgid "<b>%s</b> is installed"
 msgstr ""
 
-#: ../rigo/models/application.py:1287
+#: ../rigo/models/application.py:1322
 msgid "from"
 msgstr ""
 
-#: ../rigo/models/application.py:1317
+#: ../rigo/models/application.py:1352
 msgid "License"
 msgstr ""
 
-#: ../rigo/models/application.py:1328
+#: ../rigo/models/application.py:1363
 msgid "Required space"
 msgstr ""
 
-#: ../rigo/models/application.py:1335
+#: ../rigo/models/application.py:1370
 msgid "Download size"
 msgstr ""
 
-#: ../rigo/models/application.py:1342
+#: ../rigo/models/application.py:1377
 msgid "Checksum"
 msgstr ""
 
-#: ../rigo/models/application.py:1353
+#: ../rigo/models/application.py:1388
 msgid "USE flags"
 msgstr ""
 
-#: ../rigo/models/application.py:1357
+#: ../rigo/models/application.py:1392
 msgid "No use flags"
 msgstr ""
 
-#: ../rigo/models/application.py:1375
+#: ../rigo/models/application.py:1410
 msgid "Runtime dependencies"
 msgstr ""
 
-#: ../rigo/models/application.py:1376
+#: ../rigo/models/application.py:1411
 msgid "Build dependencies"
 msgstr ""
 
-#: ../rigo/models/application.py:1377
+#: ../rigo/models/application.py:1412
 msgid "Post dependencies"
 msgstr ""
 
-#: ../rigo/models/application.py:1378
+#: ../rigo/models/application.py:1413
 msgid "Staff dependencies"
 msgstr ""
 
-#: ../rigo/models/application.py:1400
+#: ../rigo/models/application.py:1435
 msgid "Click here for more details"
 msgstr ""
 
-#: ../rigo/models/application.py:1659
+#: ../rigo/models/application.py:1694
 msgid "Application not found"
 msgstr ""
 
@@ -518,39 +518,47 @@ msgstr ""
 msgid "Loading comments..."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:214
-#: ../rigo/ui/gtk3/controllers/applications.py:275
+#: ../rigo/ui/gtk3/controllers/applications.py:219
+#: ../rigo/ui/gtk3/controllers/applications.py:280
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:432
+#: ../rigo/ui/gtk3/controllers/applications.py:444
 msgid "Nothing found for"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:442
+#: ../rigo/ui/gtk3/controllers/applications.py:454
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:474
+#: ../rigo/ui/gtk3/controllers/applications.py:486
 msgid "Not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:597
+#: ../rigo/ui/gtk3/controllers/applications.py:609
 msgid "Update repositories"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:598
+#: ../rigo/ui/gtk3/controllers/applications.py:610
 msgid "Force the update of the available repositories."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:608
+#: ../rigo/ui/gtk3/controllers/applications.py:620
 msgid "Show Configuration File Updates"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:609
+#: ../rigo/ui/gtk3/controllers/applications.py:621
 msgid "Show (if any) the list of pending configuration file updates."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:629
+msgid "Show Installed Applications"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:630
+msgid "Browse through the currently Installed Applications."
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
