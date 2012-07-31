@@ -384,6 +384,13 @@ class ApplicationsViewController(GObject.Object):
             self.upgrade(simulate=True)
             return
 
+        return self.__search_thread_body(text)
+
+    def __search_thread_body(self, text):
+        """
+        Core logic that implements the effective search task.
+        """
+
         # serialize searches to avoid segfaults with sqlite3
         # (apparently?)
         with self._search_thread_mutex:
@@ -614,6 +621,14 @@ class ApplicationsViewController(GObject.Object):
              _("Show (if any) the list of pending configuration file "
                "updates."),
              Icons.CONFIGURATION_FILE, _update)
+        self._prefc.append(pref)
+
+        def _show_installed():
+            self.__search_thread_body("rigo:installed")
+        pref = Preference(
+            -1, _("Show Installed Applications"),
+             _("Browse through the currently Installed Applications."),
+             "drive-harddisk", _show_installed)
         self._prefc.append(pref)
 
         self._view.set_model(self._store)
