@@ -93,20 +93,20 @@ def repositories(options):
                 repo_opt = myopts[0]
             except IndexError:
                 repo_opt = None
-            if repo_opt == "enable" and opts_len:
-                rc = _enable_repositories(entropy_client, myopts)
-            elif repo_opt == "disable" and opts_len:
-                rc = _disable_repositories(entropy_client, myopts)
-            elif repo_opt == "add" and opts_len:
-                rc = _add_repository(entropy_client, myopts)
-            elif repo_opt == "remove" and opts_len:
-                rc = _remove_repository(entropy_client, myopts)
+            if repo_opt == "enable" and opts_len > 1:
+                rc = _enable_repositories(entropy_client, myopts[1:])
+            elif repo_opt == "disable" and opts_len > 1:
+                rc = _disable_repositories(entropy_client, myopts[1:])
+            elif repo_opt == "add" and opts_len > 1:
+                rc = _add_repository(entropy_client, myopts[1:])
+            elif repo_opt == "remove" and opts_len > 1:
+                rc = _remove_repository(entropy_client, myopts[1:])
             elif repo_opt == "list":
                 rc = _list_repository(entropy_client)
-            elif repo_opt == "mirrorsort" and opts_len:
-                rc = _mirror_sort(entropy_client, myopts)
-            elif repo_opt == "merge" and opts_len:
-                myopts = [x for x in myopts if x not in ("--conflicts",)]
+            elif repo_opt == "mirrorsort" and opts_len > 1:
+                rc = _mirror_sort(entropy_client, myopts[1:])
+            elif repo_opt == "merge" and opts_len > 1:
+                myopts = [x for x in myopts[1:] if x not in ("--conflicts",)]
                 rc = _merge_repository(entropy_client, myopts,
                     remove_conflicts = e_req_conflicts)
             else:
