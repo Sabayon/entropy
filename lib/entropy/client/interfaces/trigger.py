@@ -478,7 +478,7 @@ class Trigger:
     def _trigger_spm_postinstall(self):
         if self._spm is not None:
             self._entropy.output(
-                "SPM: %s" % (brown(_("post-install phase")),),
+                "%s: %s" % (_("SPM"), brown(_("post-install phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
@@ -488,7 +488,7 @@ class Trigger:
     def _trigger_spm_preinstall(self):
         if self._spm is not None:
             self._entropy.output(
-                "SPM: %s" % (brown(_("pre-install phase")),),
+                "%s: %s" % (_("SPM"), brown(_("pre-install phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
@@ -498,7 +498,7 @@ class Trigger:
     def _trigger_spm_setup(self):
         if self._spm is not None:
             self._entropy.output(
-                "SPM: %s" % (brown(_("setup phase")),),
+                "%s: %s" % (_("SPM"), brown(_("setup phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
@@ -508,7 +508,7 @@ class Trigger:
     def _trigger_spm_preremove(self):
         if self._spm is not None:
             self._entropy.output(
-                "SPM: %s" % (brown(_("pre-remove phase")),),
+                "%s: %s" % (_("SPM"), brown(_("pre-remove phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
@@ -518,7 +518,7 @@ class Trigger:
     def _trigger_spm_postremove(self):
         if self._spm is not None:
             self._entropy.output(
-                "SPM: %s" % (brown(_("post-remove phase")),),
+                "%s: %s" % (_("SPM"), brown(_("post-remove phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
