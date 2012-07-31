@@ -334,7 +334,7 @@ class ApplicationsViewController(GObject.Object):
         if text == "rigo:update":
             self._update_repositories_safe()
             return
-        if text == "rigo:upgrade":
+        elif text == "rigo:upgrade":
             self.upgrade()
             return
         elif text == "rigo:confupdate":
@@ -390,13 +390,13 @@ class ApplicationsViewController(GObject.Object):
                 return
             try:
 
-               matches = self.__search_produce_matches(text)
-               # we have to decide if to show the treeview in
-               # the UI thread, to avoid races (and also because we
-               # have to...)
-               self.set_many_safe(matches, _from_search=text)
-               if matches:
-                   self._add_recent_search_safe(text)
+                matches = self.__search_produce_matches(text)
+                # we have to decide if to show the treeview in
+                # the UI thread, to avoid races (and also because we
+                # have to...)
+                self.set_many_safe(matches, _from_search=text)
+                if matches:
+                    self._add_recent_search_safe(text)
 
             finally:
                 self._service.repositories_lock.release()
