@@ -49,6 +49,7 @@ class AppActions:
     INSTALL = "install"
     REMOVE = "remove"
     IDLE = "idle"
+    UPGRADE = "upgrade"
 
 class AppTransactionStates:
 

@@ -32,6 +32,10 @@
        <arg name="length" type="i" direction="out"/>
     </method>
 
+    <method name="action_queue_items">
+       <arg name="items" type="a(isssba(iss))" direction="out"/>
+    </method>
+
     <method name="merge_configuration">
        <arg name="source" type="s" direction="in"/>
        <arg name="accepted" type="b" direction="out"/>

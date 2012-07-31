@@ -186,7 +186,7 @@ class RigoServiceController(GObject.Object):
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
     _REPOS_SETTINGS_CHANGED_SIGNAL = "repositories_settings_changed"
-    _SUPPORTED_APIS = [5]
+    _SUPPORTED_APIS = [6]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -1687,6 +1687,56 @@ class RigoServiceController(GObject.Object):
                 self._entropy_bus,
                 dbus_interface=self.DBUS_INTERFACE).action_queue_length()
         return self._execute_mainloop(_action_queue_length)
+
+    def action_queue_items(self):
+        """
+        Return the list of Application objects that are currently processed by
+        RigoDaemon. This is a kind of instant snapshot of what's going on there.
+        """
+        def _action_queue_items():
+            return dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE).action_queue_items()
+        items = self._execute_mainloop(_action_queue_items)
+
+        apps = []
+        for item in items:
+            pkg_id, r_id, path, daemon_action, simulate, children = item
+            is_upgrade = False
+            if daemon_action == DaemonAppActions.UPGRADE:
+                # special case, system is upgrading, append
+                # the children list
+                is_upgrade = True
+
+            app_children = None
+            if children:
+                app_children = []
+            for _pkg_id, _r_id, _action in children:
+                _pkg_id = int(_pkg_id)
+                _r_id = self._dbus_to_unicode(_r_id)
+                app = Application(
+                    self._entropy, self._entropy_ws,
+                    self, (_pkg_id, _r_id))
+                if is_upgrade:
+                    apps.append(app)
+                else:
+                    app_children.append(app)
+
+            if is_upgrade:
+                continue
+
+            pkg_id = int(pkg_id)
+            r_id = self._dbus_to_unicode(r_id)
+            if path:
+                path = self._dbus_to_unicode(path)
+            else:
+                path = None
+            app = Application(self._entropy, self._entropy_ws,
+                              self, (pkg_id, r_id),
+                              package_path=path,
+                              children=app_children)
+            apps.append(app)
+        return apps
 
     def action(self, app):
         """
