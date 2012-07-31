@@ -77,6 +77,8 @@ class ApplicationsViewController(GObject.Object):
     RECENT_SEARCHES_MAX_LEN = 20
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
+    SHOW_INSTALLED_KEY = "in:installed"
+
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
                  nc, rigo_service, prefc, icons, nf_box,
                  search_entry, search_entry_completion,
@@ -150,14 +152,30 @@ class ApplicationsViewController(GObject.Object):
         def _prepare_for_search(txt):
             return txt.replace(" ", "-").lower()
 
+        split_text = text.split()
+        if not split_text:
+            # text is empty, exit now
+            return
+        # support for search cmd + arguments
+        # some search_cmds can have arguments provided
+        search_cmd, search_args = split_text[0], split_text[1:]
+
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
-            if text == "in:installed":
+
+            # in:installed [<search arg 1> ...]
+            if search_cmd == ApplicationsViewController.SHOW_INSTALLED_KEY:
                 inst_repo = self._entropy.installed_repository()
-                for pkg_id in inst_repo.listAllPackageIds(
-                    order_by="atom"):
-                    matches.append((pkg_id, inst_repo.repository_id()))
+                if not search_args:
+                    for pkg_id in inst_repo.listAllPackageIds(
+                        order_by="atom"):
+                        matches.append((pkg_id, inst_repo.repository_id()))
+                else:
+                    for search_arg in search_args:
+                        for pkg_id in inst_repo.searchPackages(
+                            search_arg, just_id=True):
+                            matches.append((pkg_id, inst_repo.repository_id()))
             # package set search
             elif text.startswith(etpConst['packagesetprefix']):
                 sets = self._entropy.Sets()
@@ -624,7 +642,8 @@ class ApplicationsViewController(GObject.Object):
         self._prefc.append(pref)
 
         def _show_installed():
-            self._search("in:installed", _force=True)
+            self._search(ApplicationsViewController.SHOW_INSTALLED_KEY,
+                         _force=True)
         pref = Preference(
             -1, _("Show Installed Applications"),
              _("Browse through the currently Installed Applications."),
