@@ -1,3 +1,121 @@
+commit d08a02cf71bd0599a86f293b2b45e4bf3541735a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 19:37:35 2012 +0200
+
+    Release Entropy 1.0_rc129
+
+commit 2136dab0bb53ac3a6cd0530d8a9b1ba460c51f49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 19:37:01 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 2ddd3b4d0f480f45cd9d100e9e80902b9783c6b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 19:35:35 2012 +0200
+
+    [Rigo] implement a Bottom NotificationBox "Activity" button
+    
+    This Button allows users to see the current Application management
+    queue by leveraging the new RigoDaemon API.
+
+commit 9859dc2e677e411dcafa897070dad9623757bb7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 18:19:41 2012 +0200
+
+    [equo] fix "equo repo <cmd> <args>" parsing
+
+commit b5b8d252970770a8d17a4457ec0058d149b328bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 16:35:38 2012 +0200
+
+    [RigoDaemon] add support for Action Queue "introspection" (in a MVCC way)
+    
+    The new action_queue_items() is able to return the internal
+    Action Queue status without blocking while returning a consistent
+    state. This method will be used by Rigo to list the Action Queue
+    activity on the bottom notification box.
+
+commit b35c01dda89cf3d731e6c56335d1f69d95338242
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 11:00:59 2012 +0200
+
+    [client] update entropy.pot
+
+commit 3c57ec70c3bb0d0747f43b5333e345c3fbd4b0d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 11:00:19 2012 +0200
+
+    [entropy.client.interfaces.trigger] make "SPM" string translatable
+
+commit 88844b3cb51f7ec315c0dc4e01fe5cc85bfa0873
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 10:27:41 2012 +0200
+
+    [Rigo] enable fallback search only when in:installed and Set search are not triggered
+
+commit 7d5eb11c0cfcec21ae97a4cb0d0c81127a5a43f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 10:25:03 2012 +0200
+
+    [Rigo] make "in:installed" queries case insensitive
+
+commit 62eef2d5d8a1266763bdf57098ccae088cf3fda0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 10:20:59 2012 +0200
+
+    [Rigo] add "in:installed [<search arg 1> ...]" search key support
+
+commit d6d1e047ae62b59d91a00dbaa54fe7b003243313
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:27:01 2012 +0200
+
+    [Rigo] add custom drive-harddisk icon
+
+commit 4fd54651c53d051cb0d82b2129e1591a54ae7f68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:26:38 2012 +0200
+
+    [Rigo] rename all the magic search keywords from "rigo:" to "in:"
+
+commit ad8574024b38e10df38de3a1a1f58fa9f6ba1617
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:23:42 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit f460cd292298be1623fd1308d213128283298781
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:22:57 2012 +0200
+
+    [Rigo] implement "Show Installed Applications" Preference object
+
+commit b1e3a27696ebae8d62119ec24a8d3f9c906113a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:11:39 2012 +0200
+
+    [Rigo] add "rigo:installed" magic search keyword that shows all the installed Apps
+
+commit 7aee5d56a1a96e982cef748327e809afb436d2a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 31 09:08:04 2012 +0200
+
+    [Rigo] correct indentation
+
+commit 8b8938116bf805cfbd9d362ff65cab16ea0358ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 30 22:19:05 2012 +0200
+
+    Revert "[entropy.db] drop isPackageScopeAvailable(), unused"
+    
+    This reverts commit 492ace12e81aa77af293d9b658c14a025613d5f4.
+
+commit 54a0093221b7e1ced4424fb1e03835578205b6ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 28 20:24:36 2012 +0200
+
+    Tagging Entropy version 1.0_rc128
+
 commit a43c399901ccc604558a66a7f9e1c178909a90b9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 28 20:24:35 2012 +0200
