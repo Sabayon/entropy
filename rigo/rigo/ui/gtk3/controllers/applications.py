@@ -153,7 +153,7 @@ class ApplicationsViewController(GObject.Object):
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
-            if text == "rigo:installed":
+            if text == "in:installed":
                 inst_repo = self._entropy.installed_repository()
                 for pkg_id in inst_repo.listAllPackageIds(
                     order_by="atom"):
@@ -336,51 +336,51 @@ class ApplicationsViewController(GObject.Object):
     def __search_thread(self, text):
 
         ## special keywords hook
-        if text == "rigo:update":
+        if text == "in:update":
             self._update_repositories_safe()
             return
-        elif text == "rigo:upgrade":
+        elif text == "in:upgrade":
             self.upgrade()
             return
-        elif text == "rigo:confupdate":
+        elif text == "in:confupdate":
             self._service.configuration_updates()
             return
-        elif text == "rigo:config":
+        elif text == "in:config":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.PREFERENCES_VIEW_STATE,
                           None)
             return
-        elif text == "rigo:notice":
+        elif text == "in:notice":
             self._service.noticeboards()
             return
-        elif text == "rigo:repo":
+        elif text == "in:repo":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.REPOSITORY_VIEW_STATE,
                           None)
             return
 
         # debug, simulation
-        elif text == "rigo:vte":
+        elif text == "in:vte":
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE,
                           None)
             return
-        elif text.startswith("rigo:simulate:i:"):
-            sim_str = text[len("rigo:simulate:i:"):].strip()
+        elif text.startswith("in:simulate:i:"):
+            sim_str = text[len("in:simulate:i:"):].strip()
             if sim_str:
                 self.install(sim_str, simulate=True)
                 return
-        elif text.startswith("rigo:simulate:r:"):
-            sim_str = text[len("rigo:simulate:r:"):].strip()
+        elif text.startswith("in:simulate:r:"):
+            sim_str = text[len("in:simulate:r:"):].strip()
             if sim_str:
                 self.remove(sim_str, simulate=True)
                 return
-        elif text.startswith("rigo:simulate:o:"):
-            sim_str = text[len("rigo:simulate:o:"):].strip()
+        elif text.startswith("in:simulate:o:"):
+            sim_str = text[len("in:simulate:o:"):].strip()
             if sim_str:
                 self.__simulate_orphaned_apps(sim_str)
                 return
-        if text == "rigo:simulate:u":
+        if text == "in:simulate:u":
             self.upgrade(simulate=True)
             return
 
@@ -624,7 +624,7 @@ class ApplicationsViewController(GObject.Object):
         self._prefc.append(pref)
 
         def _show_installed():
-            self.__search_thread_body("rigo:installed")
+            self._search("in:installed", _force=True)
         pref = Preference(
             -1, _("Show Installed Applications"),
              _("Browse through the currently Installed Applications."),
