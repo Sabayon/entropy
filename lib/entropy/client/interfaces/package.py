@@ -4297,13 +4297,12 @@ class Package:
                                 _package_id, _sorted_path, _sorted_ftype)
 
             os.rename(tmp_content_file, content_file)
-        except Exception as exc:
+        finally:
             try:
                 os.remove(tmp_content_file)
             except OSError as err:
                 if err.errno != errno.ENOENT:
                     raise
-            raise exc
 
     @staticmethod
     def _filter_content_file(content_file, filter_func):
@@ -4320,12 +4319,12 @@ class Package:
                         if filter_func(_path):
                             tmp_w.write(_package_id, _path, _ftype)
             os.rename(tmp_content_file, content_file)
-        except Exception as exc:
+        finally:
             try:
                 os.remove(tmp_content_file)
-            except OSError:
-                pass
-            raise exc
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
     def __generate_content_file(self, content, package_id = None):
         content_path = None
