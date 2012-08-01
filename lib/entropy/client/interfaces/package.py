@@ -2668,6 +2668,7 @@ class Package:
             item_dir, item_base = os.path.split(rootdir)
             item_dir = os.path.realpath(item_dir)
             item_inst = os.path.join(item_dir, item_base)
+            item_inst = const_convert_to_unicode(item_inst)
             items_installed.add(item_inst)
 
 
@@ -2679,7 +2680,7 @@ class Package:
             tofile = sys_root + rel_fromfile
 
             rel_fromfile_dir_utf = const_convert_to_unicode(
-                rel_fromfile_dir, enctype=etpConst['conf_encoding'])
+                rel_fromfile_dir)
             self.pkgmeta['affected_directories'].add(
                 rel_fromfile_dir_utf)
 
@@ -2915,6 +2916,7 @@ class Package:
 
             item_dir = os.path.realpath(os.path.dirname(tofile))
             item_inst = os.path.join(item_dir, os.path.basename(tofile))
+            item_inst = const_convert_to_unicode(item_inst)
             items_installed.add(item_inst)
 
             if protected and \
