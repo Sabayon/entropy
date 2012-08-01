@@ -22,7 +22,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 8
+    BASE_PLUGIN_API_VERSION = 9
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -40,6 +40,11 @@ class SpmPlugin(Singleton):
     # There can't be more than _one_ default SPM plugin, in that case
     # the first (alphabetically) one will be automatically selected
     IS_DEFAULT = False
+
+    # Environment dirs, whenever files are installed into this
+    # directory during package install or removal, environment_update
+    # is triggered
+    ENV_DIRS = set()
 
     def init_singleton(self, output_interface):
         """

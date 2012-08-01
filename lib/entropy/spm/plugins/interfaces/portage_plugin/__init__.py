@@ -546,7 +546,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 8
+    PLUGIN_API_VERSION = 9
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -566,6 +566,8 @@ class PortagePlugin(SpmPlugin):
     EBUILD_EXT = ".ebuild"
     KERNEL_CATEGORY = "sys-kernel"
     _PORTAGE_ENTROPY_PACKAGE_NAME = "sys-apps/portage"
+
+    ENV_DIRS = set(["/etc/env.d"])
 
     if "/usr/lib/gentoolkit/pym" not in sys.path:
         sys.path.append("/usr/lib/gentoolkit/pym")
