@@ -1746,12 +1746,18 @@ class Package:
                 continue # empty element??
 
             sys_root_item = sys_root + item
+            sys_root_item_encoded = sys_root_item
+            if not const_is_python3():
+                # this is coming from the db, and it's pure utf-8
+                sys_root_item_encoded = const_convert_to_rawstring(
+                    sys_root_item,
+                    from_enctype = etpConst['conf_raw_encoding'])
 
             # collision check
             if col_protect > 0:
 
                 if inst_repo.isFileAvailable(item) \
-                    and os.path.isfile(sys_root_item):
+                    and os.path.isfile(sys_root_item_encoded):
 
                     # in this way we filter out directories
                     colliding_path_messages.add(sys_root_item)
@@ -1764,12 +1770,6 @@ class Package:
             if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
-                # utf-8 instead of raw_unicode_escape because this comes
-                # from db
-                protected_item_test = const_convert_to_rawstring(
-                    protected_item_test,
-                    from_enctype = etpConst['conf_encoding'])
-
                 in_mask, protected, x, do_continue = \
                     self._handle_config_protect(
                         protect, mask, None, protected_item_test,
@@ -1827,8 +1827,10 @@ class Package:
                 continue
 
             try:
-                os.lstat(sys_root_item)
-            except OSError:
+                os.lstat(sys_root_item_encoded)
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
                 continue # skip file, does not exist
 
             except UnicodeEncodeError:
@@ -1842,8 +1844,8 @@ class Package:
                 )
                 continue # file has a really bad encoding
 
-            if os.path.isdir(sys_root_item) and \
-                os.path.islink(sys_root_item):
+            if os.path.isdir(sys_root_item_encoded) and \
+                os.path.islink(sys_root_item_encoded):
                 # S_ISDIR returns False for directory symlinks,
                 # so using os.path.isdir valid directory symlink
                 if sys_root_item not in directories_cache:
@@ -1853,7 +1855,7 @@ class Package:
                     directories_cache.add(sys_root_item)
                 continue
 
-            if os.path.isdir(sys_root_item):
+            if os.path.isdir(sys_root_item_encoded):
                 # plain directory
                 if sys_root_item not in directories_cache:
                     # collect for Trigger
@@ -1867,7 +1869,7 @@ class Package:
             # directory symlink (remove now)
 
             try:
-                os.remove(sys_root_item)
+                os.remove(sys_root_item_encoded)
             except OSError as err:
                 self._entropy.logger.log(
                     "[Package]",
@@ -1882,7 +1884,8 @@ class Package:
                 os.path.dirname(item))
 
             # add its parent directory
-            dirobj = os.path.dirname(sys_root_item)
+            dirobj = const_convert_to_unicode(
+                os.path.dirname(sys_root_item_encoded))
             if dirobj not in directories_cache:
                 if os.path.isdir(dirobj) and os.path.islink(dirobj):
                     directories.add((dirobj, "link"))
