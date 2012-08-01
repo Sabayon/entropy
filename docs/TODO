@@ -4,7 +4,6 @@ Backlog (raw)
 
     - rework client/ code, as done with eit
       - ditch etpUi
-    - use retrieveContentIter() where possible
 
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
