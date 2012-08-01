@@ -40,7 +40,7 @@ class Trigger:
         action_metadata):
         """
         Trigger manager interface constructor.
- 
+
         @param entropy_client: Entropy Client interface object
         @type entropy_client: entropy.client.interfaces.client.Client
         @param action: package handling action, can be "install", "remove",
@@ -135,6 +135,12 @@ class Trigger:
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)
+        elif self._spm is not None:
+            # check if environment dirs have been touched
+            spm_class = self._entropy.Spm_class()
+            env_dirs = spm_class.ENV_DIRS
+            if len(env_dirs) != len(env_dirs - cont_dirs):
+                functions.insert(0, self._trigger_env_update)
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_postinstall)
@@ -204,6 +210,12 @@ class Trigger:
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.insert(0, self._trigger_env_update)
+        elif self._spm is not None:
+            # check if environment dirs have been touched
+            spm_class = self._entropy.Spm_class()
+            env_dirs = spm_class.ENV_DIRS
+            if len(env_dirs) != len(env_dirs - cont_dirs):
+                functions.insert(0, self._trigger_env_update)
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_postremove)
