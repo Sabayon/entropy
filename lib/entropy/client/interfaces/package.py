@@ -2483,7 +2483,6 @@ class Package:
         col_protect = misc_data['collisionprotect']
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
             self.pkgmeta['splitdebug_dirs']
-        file_items_installed = set()
 
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
@@ -2917,7 +2916,6 @@ class Package:
             item_dir = os.path.realpath(os.path.dirname(tofile))
             item_inst = os.path.join(item_dir, os.path.basename(tofile))
             items_installed.add(item_inst)
-            file_items_installed.add(item_inst)
 
             if protected and \
                     os.getenv("ENTROPY_CLIENT_ENABLE_OLD_FILEUPDATES"):
