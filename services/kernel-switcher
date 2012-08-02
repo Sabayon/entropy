@@ -9,8 +9,11 @@ sys.path.insert(0, '../client')
 
 import os
 import subprocess
+import errno
+import codecs
 
-from entropy.const import etpUi, etpConst
+from entropy.const import etpUi, etpConst, const_convert_to_unicode, \
+    const_convert_to_rawstring
 from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
     red, nocolor, print_warning, print_error
 from entropy.exceptions import DependenciesNotRemovable
@@ -24,7 +27,9 @@ import entropy.tools
 from text_ui import install_packages
 
 APP_NAME = os.path.basename(sys.argv[0])
-KERNEL_BINARY_VIRTUAL = "virtual/linux-binary"
+KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
+KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
+RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
 
 def _get_kernels(etp_client):
     matches, x_rc = etp_client.atom_match(KERNEL_BINARY_VIRTUAL,
@@ -66,7 +71,7 @@ def _guess_kernel_name(kernel_atom):
     This function tries to read uname -r from the RELEASE_LEVEL file.
     """
     namever = entropy.dep.remove_cat(kernel_atom)
-    kernel_meta_file = os.path.join("/etc/kernels", namever, "RELEASE_LEVEL")
+    kernel_meta_file = os.path.join(KERNELS_DIR, namever, RELEASE_LEVEL)
     if os.path.isfile(kernel_meta_file):
         try:
             with open(kernel_meta_file, "r") as km_f:
@@ -75,6 +80,39 @@ def _guess_kernel_name(kernel_atom):
                     return kernel_name
         except (OSError, IOError):
             return None
+
+def _guess_kernel_package_file(release_level):
+    """
+    This method takes advantage of Entropy kernel package info files available
+    at /etc/kernels/<pkg-name>-<pkg-ver>/ directory looking for
+    a RELEASE_LEVEL file whose content matches release_level (uname -r).
+    """
+    if not os.path.isdir(KERNELS_DIR):
+        return None
+
+    subs = []
+    for curdir, _subs, files in os.walk(KERNELS_DIR):
+        subs.extend(_subs)
+
+    for sub in subs:
+        sub_path = os.path.join(KERNELS_DIR, sub)
+        try:
+            dir_list = os.listdir(sub_path)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+            continue
+        if RELEASE_LEVEL not in dir_list:
+            continue
+
+        level_path = os.path.join(
+            sub_path, RELEASE_LEVEL)
+        with codecs.open(
+            level_path, "r", etpConst['conf_raw_encoding']) as rel_f:
+            rel_line = rel_f.readline().strip()
+
+        if release_level == rel_line:
+            return const_convert_to_unicode(level_path)
 
 # removing and installing proprietary drivers might reset the selected
 # OpenGL implementation
@@ -106,6 +144,10 @@ def _switch_kernel(args):
     if not args:
         print_error(brown(_("No kernel packages given")))
         return 1
+    from_running = "--from-running" in args
+    if from_running:
+        args.remove("--from-running")
+
     if len(args) > 1:
         print_error(brown(_("More than one kernel package given")))
         return 1
@@ -138,11 +180,41 @@ def _switch_kernel(args):
         target_tag = _get_target_tag(etp_client, kernel_match)
 
         inst_repo = etp_client.installed_repository()
-        latest_kernel, k_rc = inst_repo.atomMatch(KERNEL_BINARY_VIRTUAL)
+        # try to look for the currently running kernel first if
+        # --from-running is specified (use uname -r)
+        latest_kernel = -1
+        k_rc = 1
+        if from_running:
+            try:
+                uname_r = os.uname()[2]
+            except OSError:
+                uname_r = None
+            except IndexError:
+                uname_r = None
+
+            pkg_file = None
+            if uname_r is not None:
+                pkg_file = _guess_kernel_package_file(uname_r)
+            if pkg_file is not None:
+                _pkg_ids = list(inst_repo.searchBelongs(pkg_file))
+                # if more than one, get the latest
+                _pkg_ids.sort(reverse=True)
+                if _pkg_ids:
+                    latest_kernel = _pkg_ids[0]
+            if latest_kernel == -1:
+                print_error(
+                    brown(_("Cannot find your currently running kernel.")))
+                print_error(
+                    brown(_("Try without --from-running.")))
+                return 1
+
+        if latest_kernel == -1:
+            latest_kernel, k_rc = inst_repo.atomMatch(
+                KERNEL_BINARY_VIRTUAL)
         installed_revdeps = []
         if (latest_kernel != -1) and target_tag:
-            installed_revdeps = etp_client.get_removal_queue([latest_kernel],
-                recursive = False)
+            installed_revdeps = etp_client.get_removal_queue(
+                [latest_kernel], recursive = False)
 
         # only pull in packages that are installed at this time.
         def _installed_pkgs_translator(inst_pkg_id):
@@ -218,9 +290,9 @@ def _list_kernels(args):
 
 def _print_help(args):
     print_info("%s - %s" % (blue(APP_NAME),
-        teal(_("Sabayon Linux Kernel Switcher BETA")),))
+        teal(_("Sabayon Linux Kernel Switcher")),))
     print_info("  %s:\t%s %s" % (purple(_("switch kernel")),
-        brown(APP_NAME), darkgreen("switch <kernel package>")))
+        brown(APP_NAME), darkgreen("switch <kernel package> [--from-running]")))
     print_info("  %s:\t%s %s" % (purple(_("list kernels")), brown(APP_NAME),
         darkgreen("list"),))
     print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(APP_NAME),
