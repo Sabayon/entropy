@@ -11,6 +11,7 @@ import os
 import subprocess
 import errno
 import codecs
+import argparse
 
 from entropy.const import etpUi, etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
@@ -140,18 +141,10 @@ def _show_kernel_warnings(kernel_atom):
         brown(_("some external drivers cannot work across multiple kernels."))))
     print_warning(darkgreen(_("Please reboot your computer now !")))
 
-def _switch_kernel(args):
-    if not args:
-        print_error(brown(_("No kernel packages given")))
-        return 1
-    from_running = "--from-running" in args
-    if from_running:
-        args.remove("--from-running")
+def _switch_kernel(nsargs):
 
-    if len(args) > 1:
-        print_error(brown(_("More than one kernel package given")))
-        return 1
-    kernel_package = args.pop(0)
+    from_running = nsargs.from_running
+    kernel_package = nsargs.kernel
 
     etp_client = None
     acquired = False
@@ -259,7 +252,7 @@ def _switch_kernel(args):
         if etp_client is not None:
             etp_client.shutdown()
 
-def _list_kernels(args):
+def _list_kernels(nsargs):
     etp_client = None
     acquired = False
     try:
@@ -288,49 +281,64 @@ def _list_kernels(args):
         if etp_client is not None:
             etp_client.shutdown()
 
-def _print_help(args):
-    print_info("%s - %s" % (blue(APP_NAME),
-        teal(_("Sabayon Linux Kernel Switcher")),))
-    print_info("  %s:\t%s %s" % (purple(_("switch kernel")),
-        brown(APP_NAME), darkgreen("switch <kernel package> [--from-running]")))
-    print_info("  %s:\t%s %s" % (purple(_("list kernels")), brown(APP_NAME),
-        darkgreen("list"),))
-    print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(APP_NAME),
-        darkgreen("help")))
-    if not args:
-        return 1
-    return 0
+if __name__ == "__main__":
 
-args_map = {
-    'switch': _switch_kernel,
-    'list': _list_kernels,
-    'help': _print_help,
-    '__fallback__': _print_help,
-}
+    parser = argparse.ArgumentParser(
+        description=_("Sabayon Kernel Switcher"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        prog=APP_NAME)
 
-argv = sys.argv[1:]
-argv = []
-for arg in sys.argv[1:]:
-    if arg == "--nocolor":
-        nocolor()
-    elif arg in ("--quiet", "-q"):
-        etpUi['quiet'] = True
-    elif arg in ("--verbose", "-v"):
-        etpUi['verbose'] = True
-    elif arg in ("--pretend", "-p"):
-        etpUi['pretend'] = True
-    elif arg in ("--ask", "-a"):
-        etpUi['ask'] = True
-    else:
-        argv.append(arg)
+    def _add_standard_args(_parser, restricted):
+        _parser.add_argument("--quiet", "-q", action="store_true",
+                            default=False,
+                            help=_("quiet mode"))
+        if not restricted:
+            _parser.add_argument("--ask", "-a", action="store_true",
+                                 default=False,
+                                 help=_("ask confirmation"))
+            _parser.add_argument("--pretend", "-p", action="store_true",
+                                 default=False,
+                                 help=_("just show what would be done"))
 
-if not argv:
-    argv.append("help")
+    subparsers = parser.add_subparsers(
+        title="kernel-switcher",
+        description=_("available commands"))
 
-cmd, args = argv[0], argv[1:]
-func = args_map.get(cmd, args_map.get("__fallback__"))
-try:
-    rc = func(args)
-except KeyboardInterrupt:
-    raise SystemExit(1)
-raise SystemExit(rc)
+    switch_parser = subparsers.add_parser(
+        "switch", help=_("install a new or just another kernel"))
+    switch_parser.set_defaults(func=_switch_kernel)
+    switch_parser.add_argument(
+        "--from-running", action="store_true",
+        default=False,
+        help=_("use 'uname -r' to determine the running kernel"))
+    switch_parser.add_argument(
+        "kernel", metavar="<kernel>",
+        help=_("the new kernel package dependency name"))
+    _add_standard_args(switch_parser, False)
+
+    list_parser = subparsers.add_parser(
+        "list", help=_("list kernels"))
+    list_parser.set_defaults(func=_list_kernels)
+    _add_standard_args(list_parser, True)
+
+    help_parser = subparsers.add_parser(
+        "help", help=_("this help"))
+    def _print_help(*args):
+        parser.print_help()
+    help_parser.set_defaults(func=_print_help)
+
+    try:
+        nsargs = parser.parse_args(sys.argv[1:])
+    except IOError as err:
+        parser.print_help()
+        raise SystemExit(1)
+
+    etpUi['ask'] = getattr(nsargs, "ask", etpUi['ask'])
+    etpUi['quiet'] = getattr(nsargs, "quiet", etpUi['quiet'])
+    etpUi['pretend'] = getattr(nsargs, "pretend", etpUi['pretend'])
+
+    try:
+        rc = nsargs.func(nsargs)
+    except KeyboardInterrupt:
+        rc = 1
+    raise SystemExit(rc)
