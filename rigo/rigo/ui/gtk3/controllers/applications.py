@@ -687,7 +687,8 @@ class ApplicationsViewController(GObject.Object):
             self._search_completion_model.append([search])
 
         # not enabling because it causes SIGFPE (Gtk3 bug?)
-        # self._search_entry.set_completion(self._search_completion)
+        # 2012-08-02: it works now.
+        self._search_entry.set_completion(self._search_completion)
 
         pref = Preference(
             -1, _("Update repositories"),
