@@ -434,20 +434,33 @@ class ApplicationsViewController(GObject.Object):
         def _in_simulate_v():
             self._show_action_queue_items(_invalid_matches=True)
 
+        def _do_install():
+            sim_str = " ".join(split_text[1:])
+            if sim_str:
+                self.install(sim_str)
+
+        def _do_remove():
+            sim_str = " ".join(split_text[1:])
+            if sim_str:
+                self.remove(sim_str)
+
         special_keys_map = {
-            "in:update": self._update_repositories_safe,
-            "in:upgrade": self.upgrade,
             "in:confupdate": self._service.configuration_updates,
             self.SHOW_QUEUE_KEY: self._show_action_queue_items,
             "in:config": _in_config,
             "in:notice": self._service.noticeboards,
             "in:repo": _in_repo,
             "in:vte": _in_vte,
-            "in:simulate:i": _in_simulate_i,
-            "in:simulate:r": _in_simulate_r,
-            "in:simulate:o": _in_simulate_o,
-            "in:simulate:u": _in_simulate_u,
-            "in:simulate:v": _in_simulate_v,
+            "do:simulate:i": _in_simulate_i,
+            "do:simulate:r": _in_simulate_r,
+            "do:simulate:o": _in_simulate_o,
+            "do:simulate:u": _in_simulate_u,
+            "do:simulate:v": _in_simulate_v,
+            "do:update": self._update_repositories_safe,
+            "do:install": _do_install,
+            "do:remove": _do_remove,
+            "do:upgrade": self.upgrade,
+            "do:hello": self._service.hello,
         }
 
         special_f = special_keys_map.get(split_text[0])
