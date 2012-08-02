@@ -393,59 +393,66 @@ class ApplicationsViewController(GObject.Object):
 
     def __search_thread(self, text):
 
-        ## special keywords hook
-        if text == "in:update":
-            self._update_repositories_safe()
+        # this will be accessible to all the embedded functions here
+        split_text = text.strip().split()
+        if not split_text:
             return
-        elif text == "in:upgrade":
-            self.upgrade()
-            return
-        elif text == "in:confupdate":
-            self._service.configuration_updates()
-            return
-        elif text == ApplicationsViewController.SHOW_QUEUE_KEY:
-            self._show_action_queue_items()
-            return
-        elif text == "in:config":
+
+        def _in_config():
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.PREFERENCES_VIEW_STATE,
                           None)
-            return
-        elif text == "in:notice":
-            self._service.noticeboards()
-            return
-        elif text == "in:repo":
+
+        def _in_repo():
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.REPOSITORY_VIEW_STATE,
                           None)
-            return
 
-        # debug, simulation
-        elif text == "in:vte":
+        def _in_vte():
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE,
                           None)
-            return
-        elif text.startswith("in:simulate:i:"):
-            sim_str = text[len("in:simulate:i:"):].strip()
+
+        def _in_simulate_i():
+            sim_str = " ".join(split_text[1:])
             if sim_str:
                 self.install(sim_str, simulate=True)
-                return
-        elif text.startswith("in:simulate:r:"):
-            sim_str = text[len("in:simulate:r:"):].strip()
+
+        def _in_simulate_r():
+            sim_str = " ".join(split_text[1:])
             if sim_str:
                 self.remove(sim_str, simulate=True)
-                return
-        elif text.startswith("in:simulate:o:"):
-            sim_str = text[len("in:simulate:o:"):].strip()
+
+        def _in_simulate_o():
+            sim_str = " ".join(split_text[1:])
             if sim_str:
-                self.__simulate_orphaned_apps(sim_str)
-                return
-        elif text == "in:simulate:u":
+                self.__simulate_orphaned_apps(sim_str, simulate=True)
+
+        def _in_simulate_u():
             self.upgrade(simulate=True)
-            return
-        elif text == "in:simulate:v":
+
+        def _in_simulate_v():
             self._show_action_queue_items(_invalid_matches=True)
+
+        special_keys_map = {
+            "in:update": self._update_repositories_safe,
+            "in:upgrade": self.upgrade,
+            "in:confupdate": self._service.configuration_updates,
+            self.SHOW_QUEUE_KEY: self._show_action_queue_items,
+            "in:config": _in_config,
+            "in:notice": self._service.noticeboards,
+            "in:repo": _in_repo,
+            "in:vte": _in_vte,
+            "in:simulate:i": _in_simulate_i,
+            "in:simulate:r": _in_simulate_r,
+            "in:simulate:o": _in_simulate_o,
+            "in:simulate:u": _in_simulate_u,
+            "in:simulate:v": _in_simulate_v,
+        }
+
+        special_f = special_keys_map.get(split_text[0])
+        if special_f is not None:
+            special_f()
             return
 
         return self.__search_thread_body(text)
