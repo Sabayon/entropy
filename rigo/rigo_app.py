@@ -140,6 +140,32 @@ class Rigo(Gtk.Application):
                 self._enter_repository_state,
                 self._exit_repository_state)
         }
+        self._state_metadata = {
+            RigoViewStates.BROWSER_VIEW_STATE: {
+                "title": _("Search"),
+                },
+            RigoViewStates.STATIC_VIEW_STATE: {
+                "title": _("Rigo Application Browser"),
+                },
+            RigoViewStates.APPLICATION_VIEW_STATE: {
+                "title": _("Application"),
+                },
+            RigoViewStates.WORK_VIEW_STATE: {
+                "title": _("Working Hard"),
+                },
+            RigoViewStates.CONFUPDATES_VIEW_STATE: {
+                "title": _("Wake Up"),
+                },
+            RigoViewStates.NOTICEBOARD_VIEW_STATE: {
+                "title": _("Important Stuff"),
+                },
+            RigoViewStates.PREFERENCES_VIEW_STATE: {
+                "title": _("Breaking Stuff"),
+                },
+            RigoViewStates.REPOSITORY_VIEW_STATE: {
+                "title": _("Repository Stuff"),
+                },
+        }
         self._state_mutex = Lock()
 
         icons = get_sc_icon_theme(DATA_DIR)
@@ -632,6 +658,10 @@ class Rigo(Gtk.Application):
             self._current_state = state
             if lock:
                 self._current_state_lock = True
+
+            state_meta = self._state_metadata[state]
+            self._window.set_title(escape_markup(
+                    state_meta["title"]))
 
             return True
 
