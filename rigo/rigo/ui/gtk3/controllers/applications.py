@@ -106,6 +106,8 @@ class ApplicationsViewController(GObject.Object):
 
         self._search_completion = search_entry_completion
         self._search_completion_model = search_entry_store
+        # speedup the damn ListStore
+        self._search_completion_model_set = set()
         self._search_writeback_mutex = Lock()
         self._search_writeback_thread = None
 
@@ -663,9 +665,11 @@ class ApplicationsViewController(GObject.Object):
         if len(search) < self.MIN_RECENT_SEARCH_KEY_LEN:
             return
 
-        def _prepend():
-            self._search_completion_model.prepend((search,))
-        GLib.idle_add(_prepend)
+        if search not in self._search_completion_model_set:
+            def _prepend():
+                self._search_completion_model.prepend((search,))
+                self._search_completion_model_set.add(search)
+            GLib.idle_add(_prepend)
 
         with self._search_writeback_mutex:
             if self._search_writeback_thread is None:
@@ -685,6 +689,7 @@ class ApplicationsViewController(GObject.Object):
         # load recent searches
         for search in self._load_recent_searches():
             self._search_completion_model.append([search])
+            self._search_completion_model_set.add(search)
 
         # not enabling because it causes SIGFPE (Gtk3 bug?)
         # 2012-08-02: it works now.
