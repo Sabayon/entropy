@@ -114,7 +114,7 @@ class Rigo(Gtk.Application):
     def __init__(self):
         self._current_state_lock = False
         self._current_state = RigoViewStates.STATIC_VIEW_STATE
-        self._state_transactions = {
+        self._state_transitions = {
             RigoViewStates.BROWSER_VIEW_STATE: (
                 self._enter_browser_state,
                 self._exit_browser_state),
@@ -617,13 +617,13 @@ class Rigo(Gtk.Application):
                     __name__,
                     "cannot change view state, UI locked")
                 return False
-            txc = self._state_transactions.get(state)
+            txc = self._state_transitions.get(state)
             if txc is None:
                 raise AttributeError("wrong view state")
             enter_st, exit_st = txc
 
             current_enter_st, current_exit_st = \
-                self._state_transactions.get(
+                self._state_transitions.get(
                     self._current_state)
             # exit from current state
             current_exit_st()
