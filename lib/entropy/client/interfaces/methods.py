@@ -2119,6 +2119,9 @@ class MiscMixin:
         if repo_data is None:
             raise KeyError("repository_id not found")
 
+        # we believe that if a mirror does not respond in 6
+        # seconds, then we should give up.
+        reasonable_timeout = 6
         pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
         mirror_cache = set()
@@ -2155,7 +2158,8 @@ class MiscMixin:
                 download_speeds = []
                 for idx in range(retries):
                     fetcher = self._url_fetcher(mirror_url, tmp_path,
-                        resume = False, show_speed = False)
+                        resume = False, show_speed = False,
+                        timeout = reasonable_timeout)
                     rc = fetcher.download()
                     if rc not in ("-3", "-4"):
                         download_speeds.append(fetcher.get_transfer_rate())
