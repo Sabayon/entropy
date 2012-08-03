@@ -21,6 +21,7 @@ import subprocess
 import tempfile
 import threading
 import codecs
+import copy
 from datetime import datetime
 
 from entropy.i18n import _
@@ -403,7 +404,7 @@ class RepositoryMixin:
             if not entropy.tools.validate_repository_id(repoid):
                 raise SecurityError("invalid repository identifier")
 
-            added = self.__conf_add_repository(
+            added = self._conf_add_repository(
                 repoid, repository_metadata)
             self._settings._clear_repository_cache(repoid = repoid)
             self.close_repositories()
@@ -475,10 +476,10 @@ class RepositoryMixin:
                 # save new self._settings['repositories']['available'] to file
                 # -- nothing to do anyway if repository is a package repository
                 if disable:
-                    done = self.__conf_enable_disable_repository(
+                    done = self._conf_enable_disable_repository(
                         repository_id, False)
                 else:
-                    done = self.__conf_remove_repository(
+                    done = self._conf_remove_repository(
                         repository_id)
             self._settings.clear()
 
@@ -494,7 +495,7 @@ class RepositoryMixin:
 
         return done
 
-    def __conf_enable_disable_repository(self, repository_id, enable):
+    def _conf_enable_disable_repository(self, repository_id, enable):
         """
         Enable or disable given repository from Entropy configuration
         files.
@@ -589,7 +590,7 @@ class RepositoryMixin:
 
         return accomplished
 
-    def __conf_add_repository(self, repository_id, repository_metadata):
+    def _conf_add_repository(self, repository_id, repository_metadata):
         """
         Add the given repository to Entropy configuration files.
 
@@ -685,7 +686,7 @@ class RepositoryMixin:
 
         return accomplished
 
-    def __conf_remove_repository(self, repository_id):
+    def _conf_remove_repository(self, repository_id):
         """
         Remove given repository from Entropy configuration files.
 
@@ -850,7 +851,7 @@ class RepositoryMixin:
         """
         self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
-        enabled = self.__conf_enable_disable_repository(repository_id, True)
+        enabled = self._conf_enable_disable_repository(repository_id, True)
         if enabled:
             # update excluded
             self._settings['repositories']['excluded'].pop(repository_id, None)
@@ -892,7 +893,7 @@ class RepositoryMixin:
 
         self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
-        disabled = self.__conf_enable_disable_repository(repository_id, False)
+        disabled = self._conf_enable_disable_repository(repository_id, False)
         self._settings.clear()
 
         self.close_repositories()
@@ -2092,42 +2093,20 @@ class MiscMixin:
 
         return licenses
 
-    def reorder_mirrors(self, repository_id, dry_run = False, commit = True):
+    def benchmark_mirrors(self, mirrors):
         """
-        Reorder mirror list for given repository using a throughput-based
-        benchmark. This method shall write the new repository configuration
-        if commit is True (default).
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @keyword dry_run: do not actually change repository mirrors order
-        @type dry_run: bool
-        @raise KeyError: if repository_id is not available
-        @return: new repository metadata
-        @rtype: dict
+        Execute a throughput-oriented benchmark against the
+        list of given Entropy Packages mirrors. Return a new sorted list.
         """
-        repo_data = None
-        avail_data = self._settings['repositories']['available']
-        excluded_data = self._settings['repositories']['excluded']
-        mirror_test_file = "MIRROR_TEST"
-
-        if repository_id in avail_data:
-            repo_data = avail_data[repository_id]
-        elif repository_id in excluded_data:
-            repo_data = excluded_data[repository_id]
-
-        if repo_data is None:
-            raise KeyError("repository_id not found")
-
         # we believe that if a mirror does not respond in 6
         # seconds, then we should give up.
         reasonable_timeout = 6
-        pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
         mirror_cache = set()
         retries = 1
+        mirror_test_file = "MIRROR_TEST"
 
-        for mirror in pkg_mirrors:
+        for mirror in mirrors:
 
             tmp_fd, tmp_path = tempfile.mkstemp(
                 prefix="entropy.client.methods.reorder_mirrors")
@@ -2187,18 +2166,69 @@ class MiscMixin:
                 os.remove(tmp_path)
 
         # calculate new order
-        new_pkg_mirrors = sorted(mirror_stats.keys(),
+        new_mirrors = sorted(mirror_stats.keys(),
             key = lambda x: mirror_stats[x])
-        repo_data['plain_packages'] = new_pkg_mirrors
+        return new_mirrors
 
-        if commit:
-            try:
-                added = self.add_repository(repo_data)
-            except SecurityError:
-                added = False
+    def reorder_mirrors(self, repository_id, dry_run = False):
+        """
+        Reorder mirror list for given repository using a throughput-based
+        benchmark. This method is atomic and does not require locking,
+        however, it uses a lock-free strategy to read and update
+        SystemSettings configuration metadata and configuration files
+        and can thus raise KeyError exceptions under a race condition.
+        In this case, just retry the execution if you beliefe that your
+        input data (the repository_id string) is valid.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword dry_run: do not actually change repository mirrors order
+        @type dry_run: bool
+        @raise KeyError: if repository_id is not available
+        @return: new repository metadata
+        @rtype: dict
+        """
+        repo_settings = self._settings.get('repositories', {})
+        avail_data = repo_settings.get('available', {})
+        excluded_data = repo_settings.get('excluded', {})
+        product = repo_settings.get('product')
+        if product is None:
+            raise KeyError("product config not available")
+
+        repository_metadata = avail_data.get(repository_id)
+        if repository_metadata is None:
+            repository_metadata = excluded_data.get(repository_id)
+
+        if repository_metadata is None:
+            raise KeyError("repository_id not found")
+
+        plain_packages = repository_metadata.get('plain_packages')
+        if plain_packages is None:
+            raise KeyError("repository_id not found (2)")
+        new_pkg_mirrors = self.benchmark_mirrors(plain_packages)
+
+        if not dry_run:
+            exp_pkg_mirrors = []
+            for pkg_mirror in new_pkg_mirrors:
+                pkg_mirror = entropy.tools.expand_plain_package_mirror(
+                    pkg_mirror, product, repository_id)
+                if pkg_mirror is None:
+                    continue
+                exp_pkg_mirrors.append(pkg_mirror)
+
+            proposed_metadata = copy.copy(repository_metadata)
+            proposed_metadata['plain_packages'] = new_pkg_mirrors
+            proposed_metadata['packages'] = exp_pkg_mirrors
+            added = self._conf_add_repository(
+                repository_id, proposed_metadata)
             if not added:
                 raise KeyError("unable to update repository configuration")
-        return repo_data
+
+            # then "commit" to original config dict
+            repository_metadata['plain_packages'] = new_pkg_mirrors
+            repository_metadata['packages'] = exp_pkg_mirrors
+
+        return repository_metadata
 
     def set_branch(self, branch):
         """
