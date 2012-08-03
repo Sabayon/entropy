@@ -43,9 +43,7 @@
 
   <action id="org.sabayon.RigoDaemon.configuration">
     <description>Manage Configuration</description>
-    <message>
-      Authentication is required to Manage System Configuration
-    </message>
+    <message>Authentication is required to Manage System Configuration</message>
     <icon_name>package-x-generic</icon_name>
     <defaults>
       <allow_any>no</allow_any>
