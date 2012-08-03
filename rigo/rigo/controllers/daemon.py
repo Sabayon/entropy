@@ -599,6 +599,9 @@ class RigoServiceController(GObject.Object):
 
     def _application_enqueued_signal(self, package_id, repository_id,
                                      daemon_action):
+        package_id = int(package_id)
+        repository_id = self._dbus_to_unicode(repository_id)
+
         const_debug_write(
             __name__,
             "_application_enqueued_signal: received for "
@@ -628,6 +631,9 @@ class RigoServiceController(GObject.Object):
 
     def _processing_application_signal(self, package_id, repository_id,
                                        daemon_action, daemon_tx_state):
+        package_id = int(package_id)
+        repository_id = self._dbus_to_unicode(repository_id)
+
         const_debug_write(
             __name__,
             "_processing_application_signal: received for "
@@ -669,6 +675,9 @@ class RigoServiceController(GObject.Object):
     def _application_processing_update_signal(
         self, package_id, repository_id, app_transaction_state,
         progress):
+        package_id = int(package_id)
+        repository_id = self._dbus_to_unicode(repository_id)
+
         const_debug_write(
             __name__,
             "_application_processing_update_signal: received for "
@@ -685,6 +694,9 @@ class RigoServiceController(GObject.Object):
 
     def _application_processed_signal(self, package_id, repository_id,
                                       daemon_action, app_outcome):
+        package_id = int(package_id)
+        repository_id = self._dbus_to_unicode(repository_id)
+
         const_debug_write(
             __name__,
             "_application_processed_signal: received for "
