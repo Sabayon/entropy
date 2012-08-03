@@ -2192,12 +2192,12 @@ class MiscMixin:
         repo_data['plain_packages'] = new_pkg_mirrors
 
         if commit:
-            removed = self.remove_repository(repository_id)
-            if not removed:
-                raise KeyError("cannot touch given repository (1)")
-            added = self.add_repository(repo_data)
+            try:
+                added = self.add_repository(repo_data)
+            except SecurityError:
+                added = False
             if not added:
-                raise KeyError("cannot touch given repository (2)")
+                raise KeyError("unable to update repository configuration")
         return repo_data
 
     def set_branch(self, branch):
