@@ -11,8 +11,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-16 10:38+0200\n"
-"PO-Revision-Date: 2012-07-16 08:38+0000\n"
+"POT-Creation-Date: 2012-08-03 16:30+0200\n"
+"PO-Revision-Date: 2012-08-03 14:30+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Romanian (http://www.transifex.com/projects/p/sabayon-rigo/language/ro/)\n"
 "MIME-Version: 1.0\n"
@@ -21,27 +21,27 @@ msgstr ""
 "Language: ro\n"
 "Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1))\n"
 
-#: ../RigoDaemon/app.py:1063 ../rigo_app.py:685
+#: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
 msgid "Not authorized"
 msgstr "Neautorizat"
 
-#: ../RigoDaemon/app.py:1099
+#: ../RigoDaemon/app.py:1191
 msgid "No repositories configured"
 msgstr "Nici un repositoriu configurat"
 
-#: ../RigoDaemon/app.py:1104
+#: ../RigoDaemon/app.py:1196
 msgid "Unhandled Exception"
 msgstr "Exceptie Negestionata"
 
-#: ../RigoDaemon/app.py:1628
+#: ../RigoDaemon/app.py:1726
 msgid "Application Removal"
 msgstr "Eliminare Aplicatie"
 
-#: ../RigoDaemon/app.py:1931
+#: ../RigoDaemon/app.py:2032
 msgid "Application download"
 msgstr "Descarcare Aplicatie"
 
-#: ../RigoDaemon/app.py:2029
+#: ../RigoDaemon/app.py:2132
 msgid "Application Install"
 msgstr "Instalare Aplicatie"
 
@@ -57,91 +57,91 @@ msgstr "Destinatie"
 msgid "Applications"
 msgstr "Aplicatii"
 
-#: ../rigo/models/application.py:841 ../rigo/models/application.py:1202
-#: ../rigo/models/application.py:1242 ../rigo/models/application.py:1274
-#: ../rigo/models/application.py:1340
+#: ../rigo/models/application.py:881 ../rigo/models/application.py:1253
+#: ../rigo/models/application.py:1297 ../rigo/models/application.py:1329
+#: ../rigo/models/application.py:1399
 msgid "N/A"
 msgstr "Indisponibil"
 
-#: ../rigo/models/application.py:1210 ../rigo/models/application.py:1265
+#: ../rigo/models/application.py:1261 ../rigo/models/application.py:1320
 msgid "No description"
 msgstr "Fara descriptie"
 
-#: ../rigo/models/application.py:1279
+#: ../rigo/models/application.py:1334
 msgid "Installed"
 msgstr "Instalat"
 
-#: ../rigo/models/application.py:1285
+#: ../rigo/models/application.py:1340
 #, python-format
 msgid "<b>%s</b> is installed"
 msgstr "<b>%s</b> este instalat"
 
-#: ../rigo/models/application.py:1287
+#: ../rigo/models/application.py:1342
 msgid "from"
 msgstr "De la"
 
-#: ../rigo/models/application.py:1317
+#: ../rigo/models/application.py:1376
 msgid "License"
 msgstr "Licenta"
 
-#: ../rigo/models/application.py:1328
+#: ../rigo/models/application.py:1387
 msgid "Required space"
 msgstr "Spatiu necesar"
 
-#: ../rigo/models/application.py:1335
+#: ../rigo/models/application.py:1394
 msgid "Download size"
 msgstr "Marime descarcare"
 
-#: ../rigo/models/application.py:1342
+#: ../rigo/models/application.py:1401
 msgid "Checksum"
 msgstr "Suma de Control"
 
-#: ../rigo/models/application.py:1353
+#: ../rigo/models/application.py:1412
 msgid "USE flags"
 msgstr "Indicator USE"
 
-#: ../rigo/models/application.py:1357
+#: ../rigo/models/application.py:1416
 msgid "No use flags"
 msgstr "Nici un Indicator USE"
 
-#: ../rigo/models/application.py:1375
+#: ../rigo/models/application.py:1434
 msgid "Runtime dependencies"
 msgstr "Dependente secventiale"
 
-#: ../rigo/models/application.py:1376
+#: ../rigo/models/application.py:1435
 msgid "Build dependencies"
 msgstr "Constructie dependente"
 
-#: ../rigo/models/application.py:1377
+#: ../rigo/models/application.py:1436
 msgid "Post dependencies"
 msgstr "Dependente ulterioare"
 
-#: ../rigo/models/application.py:1378
+#: ../rigo/models/application.py:1437
 msgid "Staff dependencies"
 msgstr "Dependente de Baza"
 
-#: ../rigo/models/application.py:1400
+#: ../rigo/models/application.py:1459
 msgid "Click here for more details"
 msgstr "Clic aici pentru mai multe detalii"
 
-#: ../rigo/models/application.py:1659
+#: ../rigo/models/application.py:1718
 msgid "Application not found"
 msgstr "Aplicatia nu a fost gasita"
 
-#: ../rigo/controllers/daemon.py:80
+#: ../rigo/controllers/daemon.py:81
 msgid "Good luck!"
 msgstr "Succes !"
 
-#: ../rigo/controllers/daemon.py:574
+#: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
 msgstr "Setarile Repositoriilor <b> nu pot fi </b> schimbate. Scuze."
 
-#: ../rigo/controllers/daemon.py:617
+#: ../rigo/controllers/daemon.py:629
 #, python-format
 msgid "<b>%s</b> action enqueued"
 msgstr "Actiunea <b>%s</b> este in curs de rulare"
 
-#: ../rigo/controllers/daemon.py:621
+#: ../rigo/controllers/daemon.py:633
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
@@ -149,82 +149,82 @@ msgstr[0] "Pana acum e aplicatia <b>%i</b> in curs de rulare"
 msgstr[1] "Pana acum sunt cateva aplicatii <b>%i</b> in curs de rulare"
 msgstr[2] "Pana acum sunt aplicatiile <b>%i</b> in curs de rulare"
 
-#: ../rigo/controllers/daemon.py:713
+#: ../rigo/controllers/daemon.py:734 ../rigo_app.py:151
 msgid "Application"
 msgstr "Aplicatie"
 
-#: ../rigo/controllers/daemon.py:716
+#: ../rigo/controllers/daemon.py:737
 msgid "An <b>unknown error</b> occurred"
 msgstr "O <b>eroare necunoscuta</b> a aparut"
 
-#: ../rigo/controllers/daemon.py:718
+#: ../rigo/controllers/daemon.py:739
 #, python-format
 msgid "<b>%s</b> download failed"
 msgstr "Descararea <b>%s</b> a esuat"
 
-#: ../rigo/controllers/daemon.py:721
+#: ../rigo/controllers/daemon.py:742
 #, python-format
 msgid "<b>%s</b> install failed"
 msgstr "Instalarea <b>%s</b> a esuat"
 
-#: ../rigo/controllers/daemon.py:724
+#: ../rigo/controllers/daemon.py:745
 #, python-format
 msgid "<b>%s</b> removal failed"
 msgstr "Stergerea <b>%s</b> a esuat"
 
-#: ../rigo/controllers/daemon.py:728
+#: ../rigo/controllers/daemon.py:749
 #, python-format
 msgid "<b>%s</b>, not authorized"
 msgstr "Nu esti autorizat pentru <b>%s</b>"
 
-#: ../rigo/controllers/daemon.py:731
+#: ../rigo/controllers/daemon.py:752
 #, python-format
 msgid "<b>%s</b>, internal error"
 msgstr "Eroare interna la <b>%s</b>"
 
-#: ../rigo/controllers/daemon.py:736
+#: ../rigo/controllers/daemon.py:757
 #, python-format
 msgid "<b>%s</b> dependencies not found"
 msgstr "Dependentele lui <b>%s</b> nu au fost gasite"
 
-#: ../rigo/controllers/daemon.py:741
+#: ../rigo/controllers/daemon.py:762
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
 msgstr "Eroare coliziune de dependente pentru <b>%s</b>"
 
-#: ../rigo/controllers/daemon.py:746
+#: ../rigo/controllers/daemon.py:767
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
 msgstr "Eroare dependentele nu pot fi sterse pentru <b>%s</b>"
 
-#: ../rigo/controllers/daemon.py:751
+#: ../rigo/controllers/daemon.py:772
 msgid "Disk full, cannot download nor unpack Applications"
 msgstr "Spatiu ocupat, nu pot descarca sau despacheta Aplicatiile"
 
-#: ../rigo/controllers/daemon.py:755
+#: ../rigo/controllers/daemon.py:776
 msgid "An error occurred"
 msgstr "O eroare a aparut"
 
-#: ../rigo/controllers/daemon.py:760
+#: ../rigo/controllers/daemon.py:781
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:429
-#: ../rigo_app.py:458
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:456
+#: ../rigo_app.py:485
 msgid "Ok, thanks"
 msgstr "Bine, multumesc"
 
-#: ../rigo/controllers/daemon.py:761
-#: ../rigo/ui/gtk3/controllers/notifications.py:218
-#: ../rigo/ui/gtk3/controllers/notifications.py:234
-#: ../rigo/ui/gtk3/controllers/notifications.py:251 ../rigo_app.py:459
+#: ../rigo/controllers/daemon.py:782
+#: ../rigo/ui/gtk3/controllers/notifications.py:228
+#: ../rigo/ui/gtk3/controllers/notifications.py:244
+#: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:486
 msgid "Show me"
 msgstr "Arata-mi"
 
-#: ../rigo/controllers/daemon.py:863
+#: ../rigo/controllers/daemon.py:884
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
 msgstr "<b>Actualizare Sistem</b> Activitatea este in curs de <i>repornire</i>"
 
-#: ../rigo/controllers/daemon.py:864
+#: ../rigo/controllers/daemon.py:885
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
@@ -232,90 +232,111 @@ msgstr[0] "Este inca o actualizare pentru <b>%i</b> "
 msgstr[1] "Sunt cateva actualizari pentru <b>%i</b>"
 msgstr[2] "Sunt mai multe actualizari pentru <b>%i</b>"
 
-#: ../rigo/controllers/daemon.py:1806
+#: ../rigo/controllers/daemon.py:1109
+msgid "Congratulations, mirrors have been <b>optimized</b>!"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:1113
+msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:1519
+msgid "Mirrors will be optimized in <b>background</b>..."
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:1523
+msgid "Mirrors optimization <b>not available</b> at this time"
+msgstr ""
+
+#: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr "Va rog sa asteptati pentru <b>RigoDaemon</b>..."
 
-#: ../rigo/controllers/daemon.py:1877 ../rigo/controllers/daemon.py:2539
-#: ../rigo/controllers/daemon.py:2766
+#: ../rigo/controllers/daemon.py:2003 ../rigo/controllers/daemon.py:2665
+#: ../rigo/controllers/daemon.py:2892
 msgid "Another activity is currently in progress"
 msgstr "Este deja o activitate in curs"
 
-#: ../rigo/controllers/daemon.py:1880 ../rigo/controllers/daemon.py:2543
-#: ../rigo/controllers/daemon.py:2770
+#: ../rigo/controllers/daemon.py:2006 ../rigo/controllers/daemon.py:2669
+#: ../rigo/controllers/daemon.py:2896
 msgid "K thanks"
 msgstr "Bine multumesc"
 
-#: ../rigo/controllers/daemon.py:2019
+#: ../rigo/controllers/daemon.py:2145
 msgid "Yes, thanks"
 msgstr "Da, multumesc"
 
-#: ../rigo/controllers/daemon.py:2020
+#: ../rigo/controllers/daemon.py:2146
 msgid "No, sorry"
 msgstr "Nu, scuze"
 
-#: ../rigo/controllers/daemon.py:2037
+#: ../rigo/controllers/daemon.py:2163
 msgid "Ok then"
 msgstr "Bine atunci"
 
-#: ../rigo/controllers/daemon.py:2113
+#: ../rigo/controllers/daemon.py:2239
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
 msgstr "<b>%s</b>⏎\nface parte din Sistemul de Baza si <b>nu poate fi</b> inlaturat"
 
-#: ../rigo/controllers/daemon.py:2166
+#: ../rigo/controllers/daemon.py:2292
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr "<b>%s</b>⏎\nnu poate fi instalat deoarece in acest timp datorita unui fisier <b>sters/mascat</b>, dependenta sau dependentele sunt in <b>conflict</b>"
 
-#: ../rigo/controllers/daemon.py:2228
+#: ../rigo/controllers/daemon.py:2354
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
 msgstr "Instalarea aplicatiei <b>%s</b> ar putea cauza inlaturarea urmatoarelor elemente:\nAplicatii: %s"
 
-#: ../rigo/controllers/daemon.py:2415
+#: ../rigo/controllers/daemon.py:2541
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
 msgstr "Instalarea paginii <i>%s</i> a dat eroare"
 
-#: ../rigo/controllers/daemon.py:2420
+#: ../rigo/controllers/daemon.py:2546
 msgid "Okay"
 msgstr "Bine"
 
-#: ../rigo/controllers/daemon.py:2686
+#: ../rigo/controllers/daemon.py:2812
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr "<b>Actualizarea de Sistem</b> a inceput, puteţi merge la o cafea"
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:214
+#: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
 msgstr "Actualizarea Arhivelor in <b>progres<b>..."
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:226
+#: ../rigo/ui/gtk3/controllers/notifications.py:236
 msgid "<b>Application Management</b> in progress..."
 msgstr "<b>Administrarea Aplicatiilor</b> in curs de desfasurare..."
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:235
-#: ../rigo/ui/gtk3/controllers/notifications.py:252
+#: ../rigo/ui/gtk3/controllers/notifications.py:245
+#: ../rigo/ui/gtk3/controllers/notifications.py:263
+msgid "Activity"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/notifications.py:246
+#: ../rigo/ui/gtk3/controllers/notifications.py:264
 msgid "Interrupt"
 msgstr "Intrerupt"
 
-#: ../rigo/ui/gtk3/controllers/notifications.py:243
+#: ../rigo/ui/gtk3/controllers/notifications.py:254
 msgid "<b>System Upgrade</b> in progress..."
 msgstr "<b>Actualizare Sistem</b> in curs de desfasurare..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr ""
+msgstr "Negru pe Alb"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr ""
+msgstr "Alb pe Negru"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
@@ -524,40 +545,56 @@ msgstr "clic aici!"
 msgid "Loading comments..."
 msgstr "Incarcare comentarii..."
 
-#: ../rigo/ui/gtk3/controllers/applications.py:214
-#: ../rigo/ui/gtk3/controllers/applications.py:275
+#: ../rigo/ui/gtk3/controllers/applications.py:246
+#: ../rigo/ui/gtk3/controllers/applications.py:307
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr "Aplicatia <b>%s</b> nu a fost gasita"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:432
+#: ../rigo/ui/gtk3/controllers/applications.py:539
 msgid "Nothing found for"
 msgstr "Nimic gasit pentru"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:442
+#: ../rigo/ui/gtk3/controllers/applications.py:549
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr "te refereai la <a href=\"%s\">%s</a>?"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:474
+#: ../rigo/ui/gtk3/controllers/applications.py:581
 msgid "Not found"
 msgstr "Negasit"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:597
+#: ../rigo/ui/gtk3/controllers/applications.py:708
 msgid "Update repositories"
 msgstr "Actualizeaza repositoriile"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:598
+#: ../rigo/ui/gtk3/controllers/applications.py:709
 msgid "Force the update of the available repositories."
 msgstr "Forteaza actualizarea repositoriilor disponibile"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:608
+#: ../rigo/ui/gtk3/controllers/applications.py:719
 msgid "Show Configuration File Updates"
 msgstr "Arata actualizarea configuratiilor fisierelor"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:609
+#: ../rigo/ui/gtk3/controllers/applications.py:720
 msgid "Show (if any) the list of pending configuration file updates."
 msgstr "Arata (daca este vreouna) lista unor actualizari de configuratii ale fisierelor in asteptare"
+
+#: ../rigo/ui/gtk3/controllers/applications.py:729
+msgid "Show Installed Applications"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:730
+msgid "Browse through the currently Installed Applications."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:742
+msgid "Optimize Download Speed"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:743
+msgid "Benchmark the download mirrors to speed up Application installation."
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -862,7 +899,7 @@ msgstr "Redenumrea Repositoriului <b>nu este permisa!</b>"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
 msgid "Show"
-msgstr ""
+msgstr "Arata"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
@@ -896,102 +933,126 @@ msgstr "Salut salut salut!"
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo functioneaza, esti sigur ?"
 
-#: ../rigo_app.py:392
+#: ../rigo_app.py:145
+msgid "Search"
+msgstr ""
+
+#: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
+msgid "Rigo Application Browser"
+msgstr "Browserul Aplicatii Rigo"
+
+#: ../rigo_app.py:154
+msgid "Working Hard"
+msgstr ""
+
+#: ../rigo_app.py:157
+msgid "Wake Up"
+msgstr ""
+
+#: ../rigo_app.py:160
+msgid "Important Stuff"
+msgstr ""
+
+#: ../rigo_app.py:163
+msgid "Breaking Stuff"
+msgstr ""
+
+#: ../rigo_app.py:166
+msgid "Repository Stuff"
+msgstr ""
+
+#: ../rigo_app.py:419
 msgid "Activity Interruption"
 msgstr "Interupere de Activitate"
 
-#: ../rigo_app.py:394
+#: ../rigo_app.py:421
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
 msgstr "Sunteti sigur ca vreti sa intrerupeti Activitatea ? Interuperea ei se va petrece cat se poate de repede, dar posibil nu instant."
 
-#: ../rigo_app.py:419
+#: ../rigo_app.py:446
 msgid "Repositories update error"
 msgstr "Eroare de actualizare a repositoriilor"
 
-#: ../rigo_app.py:423
+#: ../rigo_app.py:450
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Repositoriile au fost <b>cu success</b> actualizate"
 
-#: ../rigo_app.py:441
+#: ../rigo_app.py:468
 msgid "Application Management Error"
 msgstr "Eroare Gestionare Aplicatie"
 
-#: ../rigo_app.py:442
+#: ../rigo_app.py:469
 msgid "please check the management log"
 msgstr "va rugam verificati log-ul gestionarii"
 
-#: ../rigo_app.py:445
+#: ../rigo_app.py:472
 msgid "System Upgrade Error"
 msgstr "Eroare Actualizare Sistem"
 
-#: ../rigo_app.py:446
+#: ../rigo_app.py:473
 msgid "please check the upgrade log"
 msgstr "va rugam verificati logul actualizarii"
 
-#: ../rigo_app.py:450
+#: ../rigo_app.py:477
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Aplicatiile au fost gestionare <b>cu succes</b>"
 
-#: ../rigo_app.py:452
+#: ../rigo_app.py:479
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Actualizare Sistem <b>cu succes</b>"
 
-#: ../rigo_app.py:686
+#: ../rigo_app.py:717
 msgid "You are not authorized to run Rigo"
 msgstr "Nu sunteti autorizati sa folositi Rigo"
 
-#: ../rigo_app.py:694 ../rigo_app.py:705 ../rigo_app.py:723 ../rigo_app.py:778
-#: ../rigo_app.py:789 ../rigo_app.py:817
+#: ../rigo_app.py:725 ../rigo_app.py:736 ../rigo_app.py:754 ../rigo_app.py:809
+#: ../rigo_app.py:820 ../rigo_app.py:848
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:695
+#: ../rigo_app.py:726
 msgid "RigoDaemon service is not available"
 msgstr "Serviciul RigoDaemon nu este valabil"
 
-#: ../rigo_app.py:707
+#: ../rigo_app.py:738
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "Nepotrivire API, te rugam sa actualizezi Rigo si RigoDaemon"
 
-#: ../rigo_app.py:724
+#: ../rigo_app.py:755
 msgid "Another Application Manager is active"
 msgstr "Un alt Manager de Aplicatii este activ"
 
-#: ../rigo_app.py:741
+#: ../rigo_app.py:772
 msgid "Background Service is currently not available"
 msgstr "Serviciul din fundal nu este actualmente valabil"
 
-#: ../rigo_app.py:771
+#: ../rigo_app.py:802
 msgid "Background Service is currently busy"
 msgstr "Serviciul din fundal este ocupat"
 
-#: ../rigo_app.py:773
+#: ../rigo_app.py:804
 msgid "Background Service is incompatible with Rigo"
 msgstr "Serviciul de fundal este imcompatibil cu Rigo"
 
-#: ../rigo_app.py:785
+#: ../rigo_app.py:816
 msgid "Background Service is currently unavailable"
 msgstr "Serviciul din fundal nu este actualmente valabil"
 
-#: ../rigo_app.py:796 ../data/ui/gtk3/rigo.ui.h:1
-msgid "Rigo Application Browser"
-msgstr "Browserul Aplicatii Rigo"
-
-#: ../rigo_app.py:845
+#: ../rigo_app.py:876
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Sa aveti un Sf. Valentin placut <3 <3 !"
 
-#: ../rigo_app.py:847
+#: ../rigo_app.py:878
 msgid "Merry Xmas \\o/ !"
 msgstr "Craciun Fericit \\o/ !"
 
-#: ../rigo_app.py:849
+#: ../rigo_app.py:880
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=< (in mod optimist, acesta este un peste)"
 
-#: ../rigo_app.py:854
+#: ../rigo_app.py:885
 msgid "Woot, thanks"
 msgstr "Cee, multumesc"
 
