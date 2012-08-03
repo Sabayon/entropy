@@ -591,13 +591,13 @@ class RepositoryMixin:
 
     def __conf_add_repository(self, repository_id, repository_metadata):
         """
-        Add or given repository to Entropy configuration files.
+        Add the given repository to Entropy configuration files.
 
         @param repository_id: repository identifier
         @type repository_id: string
         @param repository_metadata: the repository metadata
         is being used to build lines to add to config files.
-        @type add_metadata: dict
+        @type repository_metadata: dict
         @return: True, if action has been completed successfully
         @rtype: bool
         @raise IOError: if there are problems parsing config files
