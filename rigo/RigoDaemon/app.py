@@ -436,7 +436,7 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
-    API_VERSION = 6
+    API_VERSION = 7
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -2549,6 +2549,37 @@ class RigoDaemonService(dbus.service.Object):
                 outcome.append(obj)
         return outcome
 
+    def _optimize_mirrors(self, repository_ids):
+        """
+        Execute a background Repository Mirrors optimization.
+        This low-priority method shall reorder Repository mirrors
+        basing on throughput performance.
+        It can be run in parallel with any other Entropy Client
+        activity since the operation is atomic.
+        """
+        optimized = False
+        for repository_id in repository_ids:
+
+            write_output("_optimize_mirrors: %s" % (
+                    repository_id,), debug=True)
+
+            try:
+                repository_metadata = self._entropy.reorder_mirrors(
+                    repository_id)
+            except KeyError as err:
+                write_output("_optimize_mirrors: "
+                             "repository update error: %s" % (
+                        repr(err),), debug=True)
+                continue
+
+            optimized = True
+            mirrors = repository_metadata.get('plain_packages')
+            write_output("_optimize_mirrors: repository "
+                         "'%s' updated, mirrors: %s" % (
+                    repository_id, mirrors), debug=True)
+
+        GLib.idle_add(self.mirrors_optimized, repository_ids, optimized)
+
     ### DBUS METHODS
 
     @dbus.service.method(BUS_NAME, in_signature='asb',
@@ -3372,6 +3403,40 @@ class RigoDaemonService(dbus.service.Object):
         task.start()
         return True
 
+    @dbus.service.method(BUS_NAME, in_signature='as',
+        out_signature='b', sender_keyword='sender')
+    def optimize_mirrors(self, repository_ids, sender=None):
+        """
+        Request RigoDaeon to optimize Repository Mirrors
+        in background.
+        """
+        pid = self._get_caller_pid(sender)
+        write_output("optimize_mirrors called: "
+                     "client pid: %s" % (
+                (pid,)), debug=True)
+
+        def _optimize(_repository_ids):
+            _repository_ids = [self._dbus_to_unicode(x) for \
+                                  x in _repository_ids]
+            authorized = self._authorize(
+                pid, PolicyActions.MANAGE_CONFIGURATION)
+            if authorized:
+                th = ParallelTask(
+                    self._optimize_mirrors,
+                    _repository_ids)
+                th.name = "OptimizeMirrorsThread"
+                th.daemon = True
+                th.start()
+            else:
+                GLib.idle_add(self.mirrors_optimized,
+                              _repository_ids, False)
+
+        task = ParallelTask(_optimize, repository_ids)
+        task.name = "OptimizeMirrorsRequestThread"
+        task.daemon = True
+        task.start()
+        return True
+
     ### DBUS SIGNALS
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
@@ -3610,6 +3675,15 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("old_repositories(): %s" % (locals(),),
                      debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='asb')
+    def mirrors_optimized(self, repository_ids, optimized):
+        """
+        Mirrors have been eventually optimized for given Repositories.
+        """
+        write_output("mirrors_optimized() issued, args:"
+                     " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='')

@@ -69,6 +69,7 @@ class RigoServiceController(GObject.Object):
     SYSTEM_UPGRADE_CONTEXT_ID = "SystemUpgradeContextId"
     PKG_INSTALL_CONTEXT_ID = "PackageInstallContextId"
     REPOSITORY_SETTINGS_CONTEXT_ID = "RepositoriesSettingsContextId"
+    OPTIMIZE_MIRRORS_CONTEXT_ID = "MirrorsOptimizedContextId"
 
     class ServiceNotificationBox(NotificationBox):
 
@@ -186,7 +187,8 @@ class RigoServiceController(GObject.Object):
     _OLD_REPOSITORIES_SIGNAL = "old_repositories"
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
     _REPOS_SETTINGS_CHANGED_SIGNAL = "repositories_settings_changed"
-    _SUPPORTED_APIS = [6]
+    _MIRRORS_OPTIMIZED_SIGNAL = "mirrors_optimized"
+    _SUPPORTED_APIS = [6, 7]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -539,6 +541,13 @@ class RigoServiceController(GObject.Object):
                 self.__entropy_bus.connect_to_signal(
                     self._REPOS_SETTINGS_CHANGED_SIGNAL,
                     self._repositories_settings_changed_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon tells us that mirros have been
+                # optimized
+                self.__entropy_bus.connect_to_signal(
+                    self._MIRRORS_OPTIMIZED_SIGNAL,
+                    self._mirrors_optimized_signal,
                     dbus_interface=self.DBUS_INTERFACE)
 
             return self.__entropy_bus
@@ -1085,6 +1094,30 @@ class RigoServiceController(GObject.Object):
             __name__,
             "_repositories_updated_signal: repositories-updated")
 
+    def _mirrors_optimized_signal(self, repository_ids, optimized):
+
+        repository_ids = [self._dbus_to_unicode(x) for x in \
+                              repository_ids]
+
+        const_debug_write(
+            __name__,
+            "_mirrors_optimized_signal: received for "
+            "%s, optimized: %s" % (repository_ids, optimized,))
+
+        if optimized:
+            msg = prepare_markup(
+                _("Congratulations, mirrors have been <b>optimized</b>!"))
+            msg_type = Gtk.MessageType.INFO
+        else:
+            msg = prepare_markup(
+                _("Ouch, mirrors <b>not optimized</b>, sorry!"))
+            msg_type = Gtk.MessageType.WARNING
+
+        box = self.ServiceNotificationBox(
+            msg, msg_type,
+            context_id=self.OPTIMIZE_MIRRORS_CONTEXT_ID)
+        self._nc.append(box, timeout=30)
+
     def _output_signal(self, text, header, footer, back, importance, level,
                count_c, count_t, percent, raw):
         """
@@ -1465,6 +1498,37 @@ class RigoServiceController(GObject.Object):
         task.name = "UpdateRepositoriesThread"
         task.daemon = True
         task.start()
+
+    def optimize_mirrors(self, repository_ids):
+        """
+        Request mirror list optimization (basically
+        sorting per throughput) for the given
+        Repositories.
+        """
+        if self.api() < 7:
+            # ignore request, RigoDaemon is too old
+            return
+
+        def _optimize():
+            accepted = dbus.Interface(
+                self._entropy_bus,
+                dbus_interface=self.DBUS_INTERFACE
+                ).optimize_mirrors(repository_ids)
+            if accepted:
+                msg = prepare_markup(
+                    _("Mirrors will be optimized in <b>background</b>..."))
+                msg_type = Gtk.MessageType.INFO
+            else:
+                msg = prepare_markup(
+                    _("Mirrors optimization <b>not available</b> at this time"))
+                msg_type = Gtk.MessageType.WARNING
+            box = self.ServiceNotificationBox(
+                msg, msg_type,
+                context_id=self.OPTIMIZE_MIRRORS_CONTEXT_ID)
+            self._nc.append(box, timeout=30)
+            return accepted
+
+        return self._execute_mainloop(_optimize)
 
     def configuration_updates(self):
         """

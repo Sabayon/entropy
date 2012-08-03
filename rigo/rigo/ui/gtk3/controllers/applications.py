@@ -446,6 +446,14 @@ class ApplicationsViewController(GObject.Object):
             if sim_str:
                 self.remove(sim_str)
 
+        def _do_optimize_mirrors():
+            self._entropy.rwsem().reader_acquire()
+            try:
+                repository_ids = self._entropy.repositories()
+            finally:
+                self._entropy.rwsem().reader_release()
+            self._service.optimize_mirrors(repository_ids)
+
         special_keys_map = {
             "in:confupdate": self._service.configuration_updates,
             self.SHOW_QUEUE_KEY: self._show_action_queue_items,
@@ -463,6 +471,7 @@ class ApplicationsViewController(GObject.Object):
             "do:remove": _do_remove,
             "do:upgrade": self.upgrade,
             "do:hello": self._service.hello,
+            "do:optimize": _do_optimize_mirrors,
         }
 
         special_f = special_keys_map.get(split_text[0])
@@ -717,9 +726,23 @@ class ApplicationsViewController(GObject.Object):
             self._search(ApplicationsViewController.SHOW_INSTALLED_KEY,
                          _force=True)
         pref = Preference(
-            -1, _("Show Installed Applications"),
+            -2, _("Show Installed Applications"),
              _("Browse through the currently Installed Applications."),
              "drive-harddisk", _show_installed)
+        self._prefc.append(pref)
+
+        def _optimize_mirrors():
+            self._entropy.rwsem().reader_acquire()
+            try:
+                repository_ids = self._entropy.repositories()
+            finally:
+                self._entropy.rwsem().reader_release()
+            self._service.optimize_mirrors(repository_ids)
+        pref = Preference(
+            50, _("Optimize Download Speed"),
+             _("Benchmark the download mirrors to speed up Application"
+               " installation."),
+             "browser-download", _optimize_mirrors)
         self._prefc.append(pref)
 
         def _show_queue_view(widget):

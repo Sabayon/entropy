@@ -112,5 +112,10 @@
       <arg name="accepted" type="b" direction="out"/>
     </method>
 
+    <method name="optimize_mirrors">
+      <arg name="repository_ids" type="as" direction="in"/>
+      <arg name="accepted" type="b" direction="out"/>
+    </method>
+
   </interface>
 </node>
