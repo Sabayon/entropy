@@ -69,7 +69,8 @@ class UrlFetcher(TextInterface):
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            thread_stop_func = None, speed_limit = None):
+            thread_stop_func = None, speed_limit = None,
+            timeout = None):
 
         """
         Entropy URL downloader constructor.
@@ -96,6 +97,9 @@ class UrlFetcher(TextInterface):
         @type thread_stop_func: callable
         @keyword speed_limit: speed limit in kb/sec
         @type speed_limit: int
+        @keyword timeout: custom request timeout value (in seconds), if None
+            the value is read from Entropy configuration files.
+        @type timeout: int
         """
         self.__supported_uris = {
             'file': self._urllib_download,
@@ -112,8 +116,11 @@ class UrlFetcher(TextInterface):
             speed_limit = \
                 self.__system_settings['repositories']['transfer_limit']
 
-        self.__timeout = \
-            self.__system_settings['repositories']['timeout']
+        if timeout is None:
+            self.__timeout = \
+                self.__system_settings['repositories']['timeout']
+        else:
+            self.__timeout = timeout
         self.__th_id = 0
 
         self.__resume = resume
@@ -902,7 +909,7 @@ class MultipleUrlFetcher(TextInterface):
     def __init__(self, url_path_list, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            url_fetcher_class = None):
+            url_fetcher_class = None, timeout = None):
         """
         @param url_path_list: list of tuples composed by url and
             path to save, for eg. [(url,path_to_save,),...]
@@ -925,6 +932,9 @@ class MultipleUrlFetcher(TextInterface):
         @type thread_stop_func: callable
         @param url_fetcher_class: UrlFetcher based class to use
         @type url_fetcher_class: subclass of UrlFetcher
+        @keyword timeout: custom request timeout value (in seconds), if None
+            the value is read from Entropy configuration files.
+        @type timeout: int
         """
         self.__system_settings = SystemSettings()
         self.__url_path_list = url_path_list
@@ -933,6 +943,7 @@ class MultipleUrlFetcher(TextInterface):
         self.__show_speed = show_speed
         self.__abort_check_func = abort_check_func
         self.__disallow_redirect = disallow_redirect
+        self.__timeout = timeout
 
         # important to have a declaration here
         self.__data_transfer = 0
@@ -1021,7 +1032,8 @@ class MultipleUrlFetcher(TextInterface):
                 abort_check_func = self.__abort_check_func,
                 disallow_redirect = self.__disallow_redirect,
                 thread_stop_func = self.__handle_threads_stop,
-                speed_limit = speed_limit
+                speed_limit = speed_limit,
+                timeout = self.__timeout
             )
             downloader.set_id(th_id)
 
