@@ -2040,9 +2040,11 @@ class MiscMixin:
 
         return licenses
 
-    def reorder_mirrors(self, repository_id, dry_run = False):
+    def reorder_mirrors(self, repository_id, dry_run = False, commit = True):
         """
-        Reorder mirror list for given repository using ping statistics.
+        Reorder mirror list for given repository using a throughput-based
+        benchmark. This method shall write the new repository configuration
+        if commit is True (default).
 
         @param repository_id: repository identifier
         @type repository_id: string
@@ -2132,12 +2134,14 @@ class MiscMixin:
         new_pkg_mirrors = sorted(mirror_stats.keys(),
             key = lambda x: mirror_stats[x])
         repo_data['plain_packages'] = new_pkg_mirrors
-        removed = self.remove_repository(repository_id)
-        if not removed:
-            raise KeyError("cannot touch given repository (1)")
-        added = self.add_repository(repo_data)
-        if not added:
-            raise KeyError("cannot touch given repository (2)")
+
+        if commit:
+            removed = self.remove_repository(repository_id)
+            if not removed:
+                raise KeyError("cannot touch given repository (1)")
+            added = self.add_repository(repo_data)
+            if not added:
+                raise KeyError("cannot touch given repository (2)")
         return repo_data
 
     def set_branch(self, branch):
