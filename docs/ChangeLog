@@ -1,3 +1,159 @@
+commit 55472f77e23d1449d20cf5c44cad789176392693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 5 22:33:41 2012 +0200
+
+    Release Entropy 1.0_rc131
+
+commit aa6edfccdc07227faf578fd93d0f0ef6bf03783b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 5 22:32:50 2012 +0200
+
+    [Rigo] update translations
+
+commit 122396705d5396150254b8a6545683fa3efe1f40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 16:31:46 2012 +0200
+
+    [Rigo] update translations
+
+commit 2b40390983c1eda8229b49f72ae3846cd69a2b59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 16:31:01 2012 +0200
+
+    [Rigo] update rigo.pot
+
+commit 89b114f005ed2241656bcd9dc3c3d12eba73cee4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 16:26:52 2012 +0200
+
+    [Rigo*] implement mirrors optimization feature, see bug #3438
+
+commit 107e55a029f8c88681f43732fbd4d9d68918ac9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 16:17:21 2012 +0200
+
+    [RigoDaemon] fix polkit "Manage Configuration" message field (gnome-polkit guys are idiot!)
+
+commit cc93458fd13dff169dd014c151422045629906d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 15:27:23 2012 +0200
+
+    [entropy.client.methods] optimize reorder_mirrors() configuration commit code
+    
+    Move reorder_mirrors() logic to benchmark_mirrors() for easier code
+    reuse. Avoid touching Repository objects and clearing SystemSettings
+    metadata but rather atomically update them in place.
+
+commit 87f882357f60f18b305625ebc201090a3d79c6d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 14:19:02 2012 +0200
+
+    [entropy.client.methods] reorder_mirrors: make it atomic
+
+commit af5a573d23d71a990960b47a6adee87e083d712a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 14:18:23 2012 +0200
+
+    [entropy.client.methods] reorder_mirrors: enforce a reasonable upper bound timeout value
+
+commit 4a77fd59ddac900a419791905ab2f85f2a32b8e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 14:17:58 2012 +0200
+
+    [entropy.client.methods] fix typos in docstring
+
+commit 5a24d2c17475ee82248f5dacbcb6065f021d0110
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 14:15:04 2012 +0200
+
+    [entropy.fetchers] make possible to override the default timeout
+
+commit a7358e63ebad7d6681685489f4984e91abaa9e90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 13:50:11 2012 +0200
+
+    [entropy.client.methods] split internal add/remove repository functions
+
+commit 76e045d7b648e54884737b27c3c654002fe28943
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 13:28:27 2012 +0200
+
+    [entropy.client.methods] add "commit" keyword arg to reorder_mirrors()
+
+commit da334ec92e6daf00ad83235956329a6f10896ae2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 3 06:30:05 2012 +0200
+
+    [Rigo] always convert dbus.Int and dbus.String into native Python object types
+
+commit b98e219bcbfa4384dcb98ae76671a1aa26125c31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 20:56:11 2012 +0200
+
+    [kernel-switcher] migrate to argparse
+
+commit 1c7ec96ed95dd7d598fdcffc973ac3a14b5f4c1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 20:15:00 2012 +0200
+
+    [kernel-switcher] add --from-running switch support
+    
+    If this switch is provided, kernel-switcher tries to look for
+    reverse dependencies of the currently running kernel (uname -r)
+    during the selection of external package modules that require to
+    be installed for the new kernel.
+
+commit f6ccf316e3e734418cbaee0b63561bc67330020c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 12:30:53 2012 +0200
+
+    [Rigo] speedup recent searches ListStore (using a set()) and avoid duplicates
+
+commit 429c1f6be515da980e4b06d3e41b3baa761291c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 12:18:53 2012 +0200
+
+    [Rigo] set a custom window title for each Rigo View SM State
+
+commit 57021922ed1e0a3be6e06577d61acad1b40f417e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 12:09:43 2012 +0200
+
+    [Rigo] s:transactions:transitions
+
+commit c6829f479a995aa82246daa26ba0bdf9492b7f7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 12:01:46 2012 +0200
+
+    [Rigo] enable (eventually) the search entry text completion
+
+commit 0683d9d38cd70ba69bc7c1a891f112784e5370a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 11:58:43 2012 +0200
+
+    [Rigo] rework special search keywords, make them more intuitive
+
+commit d0c367ba882eb00e7bd54d4645b5bb5c8cb448ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 11:47:14 2012 +0200
+
+    [Rigo] rewrite special search functions lookup using a hash table
+
+commit eb71741246eba8e8dc1d43952925b8b355c87080
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 2 00:36:19 2012 +0200
+
+    [entropy.client.package] remove tmp_file_content in the finally statement
+    
+    Doing so in the Exception "handler" code messes up the traceback
+    information useful for debugging other possible issues.
+
+commit 5042023481c07c1d00ab84c9680c2d8e65b702a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 1 22:41:09 2012 +0200
+
+    Tagging Entropy version 1.0_rc130
+
 commit 8dc597c19d947b29f6246dfd21d48f97e71992cc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 1 22:41:09 2012 +0200
