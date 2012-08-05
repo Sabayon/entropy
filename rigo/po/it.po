@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-08-03 14:30+0000\n"
+"PO-Revision-Date: 2012-08-05 20:30+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sabayon-rigo/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -132,7 +132,7 @@ msgstr "Buona fortuna!"
 
 #: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr ""
+msgstr "Le impostazioni delle Repository <b>non possono</b> essere modificate."
 
 #: ../rigo/controllers/daemon.py:629
 #, python-format
@@ -230,19 +230,19 @@ msgstr[1] "Ci sono <b>%i</b> ulteriori aggiornamenti"
 
 #: ../rigo/controllers/daemon.py:1109
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Congratulazioni, i mirror sono stati <b>ottimizzati</b>!"
 
 #: ../rigo/controllers/daemon.py:1113
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Ouch, mirror <b>non ottimizzati</b>, scusa!"
 
 #: ../rigo/controllers/daemon.py:1519
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "I mirror saranno ottimizzati in <b>background</b>..."
 
 #: ../rigo/controllers/daemon.py:1523
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Ottimizzazione mirror <b>non attualmente disponibile</b>"
 
 #: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -315,7 +315,7 @@ msgstr "<b>Gestione Applicazioni</b> in corso..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr ""
+msgstr "Attività"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
@@ -328,11 +328,11 @@ msgstr "<b>Aggiornamento del sistema</b> in corso..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr ""
+msgstr "Nero su bianco"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr ""
+msgstr "Bianco su nero"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
@@ -576,19 +576,19 @@ msgstr "Visualizza (se esiste) la lista degli aggiornamenti dei file di configur
 
 #: ../rigo/ui/gtk3/controllers/applications.py:729
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Visualizza Applicazioni installate"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:730
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Sfoglia le Applicazioni correntemente installate"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Ottimizza velocità di download"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Testa i mirror di download per velocizzare l'installazione delle Applicazioni"
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -867,27 +867,27 @@ msgstr "Non infastidirmi"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1100
 msgid "You are about to rename a Repository"
-msgstr ""
+msgstr "Stai per rinominare una Repository"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1104
 msgid "_Rename"
-msgstr ""
+msgstr "_Rinomina"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1119
 msgid "Repository name"
-msgstr ""
+msgstr "Nome Repository."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1151
 msgid "<b>Invalid</b> Repository name!"
-msgstr ""
+msgstr "Nome Repository <b>non valido</b>!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1161
 msgid "Repository rename <b>not allowed</b>!"
-msgstr ""
+msgstr "Rinominazione Repository <b>non permesso</b>!"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
 msgid "Show"
-msgstr ""
+msgstr "Visualizza"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
@@ -923,7 +923,7 @@ msgstr "Rigo sta lavorando, sei sicuro?"
 
 #: ../rigo_app.py:145
 msgid "Search"
-msgstr ""
+msgstr "Ricerca"
 
 #: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
@@ -931,23 +931,23 @@ msgstr "Browser Applicazioni Rigo"
 
 #: ../rigo_app.py:154
 msgid "Working Hard"
-msgstr ""
+msgstr "Lavorando Sodo"
 
 #: ../rigo_app.py:157
 msgid "Wake Up"
-msgstr ""
+msgstr "Sveglia!"
 
 #: ../rigo_app.py:160
 msgid "Important Stuff"
-msgstr ""
+msgstr "Cose Importanti"
 
 #: ../rigo_app.py:163
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Cose Pericolose"
 
 #: ../rigo_app.py:166
 msgid "Repository Stuff"
-msgstr ""
+msgstr "Cose delle Repository"
 
 #: ../rigo_app.py:419
 msgid "Activity Interruption"
