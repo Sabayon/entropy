@@ -23,6 +23,7 @@ import subprocess
 import tarfile
 import time
 import codecs
+import warnings
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
@@ -1135,7 +1136,6 @@ class PortagePlugin(SpmPlugin):
                 os.remove(tmp_file)
 
             if rc != 0:
-                import warnings
                 warnings.warn(
                     "Cannot properly guess kernel module vermagic, error" + \
                     modinfo_output)
@@ -4365,7 +4365,8 @@ class PortagePlugin(SpmPlugin):
         return dict((repo_path, gen_meta(real_path, repo_path)) \
             for real_path, repo_path in pkg_files)
 
-    def _extract_pkg_metadata_content(self, content_file, package_path, pkg_dir):
+    def _extract_pkg_metadata_content(self, content_file, package_path,
+                                      pkg_dir):
 
         pkg_content = {}
         obj_t = const_convert_to_unicode("obj")
@@ -4400,6 +4401,10 @@ class PortagePlugin(SpmPlugin):
                             _("Probably Portage API has changed"),
                         )
                         raise AttributeError(myexc)
+                    if not datafile.strip():
+                        warnings.warn(
+                            "Empty file path detected, skipping!")
+                        continue
                     outcontent.add((datafile, datatype))
                 except:
                     pass
@@ -4420,10 +4425,15 @@ class PortagePlugin(SpmPlugin):
                     pkg_content[cur_dir] = dir_t
                 for item in files:
                     item = currentdir + os.path.sep + item
+                    item_rel = item[tmpdir_len:]
+                    if not item_rel.strip():
+                        warnings.warn(
+                            "Empty file path detected, skipping!")
+                        continue
                     if os.path.islink(item):
-                        pkg_content[item[tmpdir_len:]] = sym_t
+                        pkg_content[item_rel] = sym_t
                     else:
-                        pkg_content[item[tmpdir_len:]] = obj_t
+                        pkg_content[item_rel] = obj_t
 
         return pkg_content
 
