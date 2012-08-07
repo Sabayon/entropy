@@ -4173,6 +4173,7 @@ class Package:
                 raise
 
         tmp_fd, tmp_path = None, None
+        generated = False
         try:
             tmp_fd, tmp_path = tempfile.mkstemp(
                 prefix="PackageContentSafety",
@@ -4181,19 +4182,18 @@ class Package:
                 for path, sha256, mtime in content_safety:
                     tmp_f.write(path, sha256, mtime)
 
+            generated = True
             return tmp_path
-        except Exception as exc:
-            if tmp_path is not None:
-                try:
-                    os.remove(tmp_path)
-                except (OSError, IOError):
-                    pass
-            raise exc
         finally:
             if tmp_fd is not None:
                 try:
                     os.close(tmp_fd)
                 except OSError:
+                    pass
+            if tmp_path is not None and not generated:
+                try:
+                    os.remove(tmp_path)
+                except (OSError, IOError):
                     pass
 
     @staticmethod
