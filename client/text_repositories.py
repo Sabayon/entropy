@@ -429,7 +429,7 @@ def _do_dbus_sync(repositories, force=False):
 
     def bail_out(err):
         print_error(darkred(" @@ ")+brown("%s" % (
-            _("sys-apps/entropy-client-services not installed?. Update not allowed, please run as root."),) ))
+            _("app-admin/rigo-daemon not installed. Update not allowed."),) ))
         if err:
             print_error("%s" % (err,))
 
