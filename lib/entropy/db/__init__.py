@@ -25,5 +25,6 @@
 """
 from entropy.db.sqlite import EntropyRepository
 from entropy.db.mysql import EntropyMySQLRepository
+from entropy.db.cache import EntropyRepositoryCacher
 
-__all__ = ["EntropyRepository", "EntropyMySQLRepository"]
+__all__ = ["EntropyRepository", "EntropyMySQLRepository", "EntropyRepositoryCacher"]
