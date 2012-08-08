@@ -27,6 +27,7 @@ from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
 
 from rigo.ui.gtk3.widgets.generictreeview import GenericTreeView
 
+from entropy.i18n import _
 
 class PreferencesTreeView(GenericTreeView):
 
