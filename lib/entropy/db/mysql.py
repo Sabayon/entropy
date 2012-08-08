@@ -117,8 +117,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                     download VARCHAR(512) NOT NULL,
                     size VARCHAR(128) NOT NULL,
                     chost VARCHAR(256) NOT NULL,
-                    cflags VARCHAR(256) NOT NULL,
-                    cxxflags VARCHAR(256) NOT NULL,
+                    cflags VARCHAR(512) NOT NULL,
+                    cxxflags VARCHAR(512) NOT NULL,
                     digest VARCHAR(32) NOT NULL,
                     datecreation VARCHAR(32) NOT NULL,
                     FOREIGN KEY(idpackage)
@@ -355,9 +355,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE packagedesktopmime (
                     idpackage INTEGER(10) NOT NULL,
-                    name VARCHAR(75) NOT NULL,
-                    mimetype VARCHAR(512) NOT NULL,
-                    executable VARCHAR(128) NOT NULL,
+                    name VARCHAR(75),
+                    mimetype VARCHAR(512),
+                    executable VARCHAR(128),
                     icon VARCHAR(75),
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
