@@ -30,20 +30,16 @@ from entropy.const import etpConst, const_setup_file, \
 from entropy.exceptions import SystemDatabaseError, \
     OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
-from entropy.cache import EntropyCacher
+
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
     DatabaseError
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.db.cache import EntropyRepositoryCacher
 from entropy.i18n import _
-from entropy.core import Singleton
 
 import entropy.dep
 import entropy.tools
-import entropy.dump
-
-import weakref
 
 class EntropyRepository(EntropyRepositoryBase):
 
@@ -54,9 +50,6 @@ class EntropyRepository(EntropyRepositoryBase):
     supported in future (which will inherit this class directly).
     Beside the underlying SQLite3 calls are thread safe, you are responsible
     of the semantic of your calls.
-
-    Every Entropy repository storage interface MUST inherit from this base
-    class.
     """
 
     # bump this every time schema changes and databaseStructureUpdate
@@ -504,7 +497,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # well.
         try:
             self._cur_mtime = self.mtime()
-        except OSError:
+        except (OSError, IOError):
             self._cur_mtime = None
 
         # setup service interface
@@ -741,7 +734,7 @@ class EntropyRepository(EntropyRepositoryBase):
     def _getLiveCache(self, key):
         try:
             mtime = self.mtime()
-        except OSError:
+        except (OSError, IOError):
             mtime = None
         if self._cur_mtime != mtime:
             self._cur_mtime = mtime
@@ -1196,7 +1189,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mirrorlist: list
         """
         self._cursor().executemany("""
-        INSERT into mirrorlinks VALUES (?,?)
+        INSERT INTO mirrorlinks VALUES (?,?)
         """, [(mirrorname, x,) for x in mirrorlist])
 
     def _addCategory(self, category):
@@ -1212,7 +1205,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into categories VALUES (NULL,?)
+        INSERT INTO categories VALUES (NULL,?)
         """, (category,))
         self._clearLiveCache("retrieveCategory")
         self._clearLiveCache("searchNameCategory")
@@ -1235,7 +1228,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into configprotectreference VALUES (NULL,?)
+        INSERT INTO configprotectreference VALUES (NULL,?)
         """, (protect,))
         return cur.lastrowid
 
@@ -1250,7 +1243,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into sourcesreference VALUES (NULL,?)
+        INSERT INTO sourcesreference VALUES (NULL,?)
         """, (source,))
         return cur.lastrowid
 
@@ -1265,7 +1258,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into dependenciesreference VALUES (NULL,?)
+        INSERT INTO dependenciesreference VALUES (NULL,?)
         """, (dependency,))
         return cur.lastrowid
 
@@ -1280,7 +1273,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into keywordsreference VALUES (NULL,?)
+        INSERT INTO keywordsreference VALUES (NULL,?)
         """, (keyword,))
         return cur.lastrowid
 
@@ -1296,7 +1289,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._clearLiveCache("retrieveUseflags")
         cur = self._cursor().execute("""
-        INSERT into useflagsreference VALUES (NULL,?)
+        INSERT INTO useflagsreference VALUES (NULL,?)
         """, (useflag,))
         return cur.lastrowid
 
@@ -1311,7 +1304,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into neededreference VALUES (NULL,?)
+        INSERT INTO neededreference VALUES (NULL,?)
         """, (needed,))
         return cur.lastrowid
 
@@ -1330,7 +1323,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if not entropy.tools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         cur = self._cursor().execute("""
-        INSERT into licenses VALUES (NULL,?)
+        INSERT INTO licenses VALUES (NULL,?)
         """, (pkglicense,))
         return cur.lastrowid
 
@@ -1351,7 +1344,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into flags VALUES (NULL,?,?,?)
+        INSERT INTO flags VALUES (NULL,?,?,?)
         """, (chost, cflags, cxxflags,))
         return cur.lastrowid
 
@@ -1366,7 +1359,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type do_commit: bool
         """
         self._cursor().execute("""
-        INSERT into systempackages VALUES (?)
+        INSERT INTO systempackages VALUES (?)
         """, (package_id,))
         if do_commit:
             self.commit()
@@ -1377,7 +1370,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         if not self.isInjected(package_id):
             self._cursor().execute("""
-            INSERT into injected VALUES (?)
+            INSERT INTO injected VALUES (?)
             """, (package_id,))
         if do_commit:
             self.commit()
@@ -1557,7 +1550,7 @@ class EntropyRepository(EntropyRepositoryBase):
         del dcache
 
         self._cursor().executemany("""
-        INSERT into dependencies VALUES (?,?,?)
+        INSERT INTO dependencies VALUES (?,?,?)
         """, deps)
 
     def insertContent(self, package_id, content, already_formatted = False):
@@ -1601,7 +1594,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if self._doesTableExist("contentsafety"):
             if isinstance(content_safety, dict):
                 self._cursor().executemany("""
-                INSERT into contentsafety VALUES (?,?,?,?)
+                INSERT INTO contentsafety VALUES (?,?,?,?)
                 """, [(package_id, k, v['mtime'], v['sha256']) \
                           for k, v in content_safety.items()])
             else:
@@ -1619,7 +1612,7 @@ class EntropyRepository(EntropyRepositoryBase):
                         return package_id, path, mtime, sha256
 
                 self._cursor().executemany("""
-                INSERT into contentsafety VALUES (?,?,?,?)
+                INSERT INTO contentsafety VALUES (?,?,?,?)
                 """, MyIterWrapper(content_safety))
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
@@ -1693,7 +1686,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # set() used after filter to remove duplicates
         self._cursor().executemany("""
-        INSERT into licensedata VALUES (?,?,?)
+        INSERT INTO licensedata VALUES (?,?,?)
         """, list(map(my_mm, set(filter(my_mf, mylicenses)))))
 
     def _insertConfigProtect(self, package_id, idprotect, mask = False):
@@ -1718,7 +1711,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if mask:
             mytable += 'mask'
         self._cursor().execute("""
-        INSERT into %s VALUES (?,?)
+        INSERT INTO %s VALUES (?,?)
         """ % (mytable,), (package_id, idprotect,))
 
     def _insertMirrors(self, mirrors):
@@ -1763,7 +1756,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idkeyword,)
 
         self._cursor().executemany("""
-        INSERT into keywords VALUES (?,?)
+        INSERT INTO keywords VALUES (?,?)
         """, list(map(mymf, keywords)))
 
     def _insertUseflags(self, package_id, useflags):
@@ -1784,7 +1777,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, iduseflag,)
 
         self._cursor().executemany("""
-        INSERT into useflags VALUES (?,?)
+        INSERT INTO useflags VALUES (?,?)
         """, list(map(mymf, useflags)))
         self._clearLiveCache("retrieveUseflags")
 
@@ -1928,7 +1921,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idsource,)
 
         self._cursor().executemany("""
-        INSERT into sources VALUES (?,?)
+        INSERT INTO sources VALUES (?,?)
         """, [x for x in map(mymf, sources) if x != 0])
 
     def _insertConflicts(self, package_id, conflicts):
@@ -1941,7 +1934,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type conflicts: list
         """
         self._cursor().executemany("""
-        INSERT into conflicts VALUES (?,?)
+        INSERT INTO conflicts VALUES (?,?)
         """, [(package_id, x,) for x in conflicts])
 
     def _insertProvide(self, package_id, provides):
@@ -1963,7 +1956,7 @@ class EntropyRepository(EntropyRepositoryBase):
         default_provides = [x for x in provides if x[1]]
 
         self._cursor().executemany("""
-        INSERT into provide VALUES (?,?,?)
+        INSERT INTO provide VALUES (?,?,?)
         """, [(package_id, x, y,) for x, y in provides])
 
         if default_provides:
@@ -1991,7 +1984,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idneeded, elfclass,)
 
         self._cursor().executemany("""
-        INSERT into needed VALUES (?,?,?)
+        INSERT INTO needed VALUES (?,?,?)
         """, list(map(mymf, neededs)))
 
     def _insertOnDiskSize(self, package_id, mysize):
@@ -2004,7 +1997,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mysize: int
         """
         self._cursor().execute("""
-        INSERT into sizes VALUES (?,?)
+        INSERT INTO sizes VALUES (?,?)
         """, (package_id, mysize,))
 
     def _insertTrigger(self, package_id, trigger):
@@ -2020,7 +2013,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type trigger: string
         """
         self._cursor().execute("""
-        INSERT into triggers VALUES (?,?)
+        INSERT INTO triggers VALUES (?,?)
         """, (package_id, const_get_buffer()(trigger),))
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
@@ -2074,12 +2067,12 @@ class EntropyRepository(EntropyRepositoryBase):
             my_uid = self.getFakeSpmUid()
 
         try:
-            self._cursor().execute('INSERT into counters VALUES (?,?,?)',
+            self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
                 (my_uid, package_id, branch,))
         except IntegrityError:
             # we have a PRIMARY KEY we need to remove
             self._migrateCountersTable()
-            self._cursor().execute('INSERT into counters VALUES (?,?,?)',
+            self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
                 (my_uid, package_id, branch,))
 
         return my_uid
@@ -2615,7 +2608,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: bool
         """
         cur = self._cursor().execute("""
-        SELECT * FROM treeupdatesactions 
+        SELECT idupdate FROM treeupdatesactions
         WHERE repository = (?) and command = (?)
         and branch = (?)""", (repository, command, branch,))
 
@@ -5628,7 +5621,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute('INSERT into xpakdata VALUES (?,?)',
+        self._cursor().execute('INSERT INTO xpakdata VALUES (?,?)',
             (package_id, const_get_buffer()(blob),)
         )
 
@@ -6545,7 +6538,7 @@ class EntropyRepository(EntropyRepositoryBase):
         checksum = self.checksum()
         try:
             mtime = repr(self.mtime())
-        except OSError:
+        except (OSError, IOError):
             mtime = "0.0"
         hash_str = "%s|%s|%s|%s|%s" % (
             repr(self._db_path),
