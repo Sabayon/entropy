@@ -1,3 +1,93 @@
+commit 56be066b5a4150b31d4a2f91dff6c616b6aa7410
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 01:07:48 2012 +0200
+
+    Release Entropy 132
+
+commit ac77ed6d9ea69af6b521974e6f1fbbd826dfbda5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 00:57:26 2012 +0200
+
+    [entropy.db.mysql] tweak some schema values
+
+commit deb5947452e86ef342b5eb48e9570328a15e9c11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 00:52:40 2012 +0200
+
+    [entropy.db] expose EntropyRepositoryCacher via entropy.db
+
+commit d71bf47e7d636781201691d8c8a25016118a1726
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 21:49:53 2012 +0200
+
+    [entropy.client.package] relax "path" contraints and be tolerant against broken pkgs
+
+commit 34d464e7c6a197b668c50ebc7aa70f7002a0978f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 21:42:10 2012 +0200
+
+    [Rigo] PreferencesTreeView: add explicit "_" import
+
+commit c9a5f2481d89abac912f444717dd5d231d4d60c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 21:41:41 2012 +0200
+
+    [Rigo] implement Application Groups support (in:groups keyword)
+
+commit ad74ade00c19d8a6dc5153ea88f80c2c9fe69a7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 18:45:41 2012 +0200
+
+    [entropy.db] add MySQL connector (barely tested !!!)
+
+commit a1e7d92bfb4209ea9026d5c0fd4014ad7154fad5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 17:10:20 2012 +0200
+
+    [entropy.db.sqlite] trivial fixes (remove imports, catch IOError, etc)
+
+commit a7f958afd17e86c71327f6e6ae26b37d27919fbc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 11:11:42 2012 +0200
+
+    [entropy.db] split entropy.db package module into cache and sqlite
+
+commit d7e33693b40791e8a9e461b3106e6ab921cb67bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 00:41:23 2012 +0200
+
+    [equo] entropy-client-services has been replaced by rigo-daemon, update error message string
+
+commit 0c15d697a363b79b13a3eeb8eda46e0e71c5e9eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 8 00:37:40 2012 +0200
+
+    [entropy.spm] PortagePlugin._extract_pkg_metadata_content: filter out empty path strings
+
+commit 3ffbbcb49da735f8a8c55d39cc641183890d0d34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 7 22:02:37 2012 +0200
+
+    [entropy.client.package] _generate_content_file: do not catch Exception
+    
+    Move the os.remove() call to the finally block and detect failures via
+    a status boolean. This way, warnings won't be raised as exceptions.
+
+commit 58cb8adf9630d24b0bb83eba47debc45c1fdd3ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 7 21:59:51 2012 +0200
+
+    [entropy.client.package] _generate_content_safety_file: do not catch Exception
+    
+    Move the os.remove() call to the finally block and detect failures via
+    a status boolean. This way, warnings won't be raised as exceptions.
+
+commit 3294f9963be46b90698c0d27387fc82b3748e9bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 5 22:33:42 2012 +0200
+
+    Tagging Entropy version 1.0_rc131
+
 commit 55472f77e23d1449d20cf5c44cad789176392693
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Aug 5 22:33:41 2012 +0200
