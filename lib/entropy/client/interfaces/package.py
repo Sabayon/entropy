@@ -110,10 +110,6 @@ class Package:
             self.close()
 
         def write(self, package_id, path, ftype):
-            if not path:
-                # this is a security measure, do not
-                # enforce stripping
-                raise ValueError("path cannot be empty")
             if self._f is None:
                 self._open_f()
 
@@ -161,10 +157,6 @@ class Package:
             self.close()
 
         def write(self, path, sha256, mtime):
-            if not path:
-                # this is a security measure, do not
-                # enforce stripping
-                raise ValueError("path cannot be empty")
             if self._f is None:
                 self._open_f()
 
