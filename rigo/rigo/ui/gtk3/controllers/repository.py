@@ -195,4 +195,3 @@ class RepositoryViewController(GObject.Object):
         Thread-safe version of set_many()
         """
         GLib.idle_add(self.set_many, opaque_list)
-

@@ -38,6 +38,7 @@ class Icons:
     INSTALLED_OVERLAY = "rigo-installed"
     CONFIGURATION_FILE = "text-x-generic"
     REPOSITORY = "repo"
+    GROUPS = "applications-other"
 
 # application actions
 class AppActions:
@@ -62,7 +63,8 @@ class RigoViewStates:
         NOTICEBOARD_VIEW_STATE,
         PREFERENCES_VIEW_STATE,
         REPOSITORY_VIEW_STATE,
-    ) = range(8)
+        GROUPS_VIEW_STATE,
+    ) = range(9)
 
 class LocalActivityStates:
     (

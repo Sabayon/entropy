@@ -1552,6 +1552,17 @@ class RigoServiceController(GObject.Object):
                 ).noticeboards()
         return self._execute_mainloop(_notice)
 
+    def groups(self):
+        """
+        Return the Entropy Package Groups object.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            groups = self._entropy.get_package_groups()
+            return groups
+        finally:
+            self._entropy.rwsem().reader_release()
+
     def list_repositories(self):
         """
         Return a list of Available Repositories, ordered by

@@ -78,6 +78,7 @@ class ApplicationsViewController(GObject.Object):
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
     SHOW_INSTALLED_KEY = "in:installed"
+    SHOW_CATEGORY_KEY = "in:category"
     SHOW_QUEUE_KEY = "in:queue"
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
@@ -182,6 +183,12 @@ class ApplicationsViewController(GObject.Object):
                         for pkg_id in inst_repo.searchPackages(
                             search_arg.lower(), just_id=True):
                             matches.append((pkg_id, inst_repo.repository_id()))
+            elif search_cmd == \
+                    ApplicationsViewController.SHOW_CATEGORY_KEY and \
+                    search_args:
+                use_fallback = False
+                for search_arg in search_args:
+                    matches += self._entropy.atom_search(search_arg + "/")
 
             # package set search
             elif search_cmd.startswith(etpConst['packagesetprefix']):
@@ -410,6 +417,11 @@ class ApplicationsViewController(GObject.Object):
                           RigoViewStates.REPOSITORY_VIEW_STATE,
                           None)
 
+        def _in_groups():
+            GLib.idle_add(self.emit, "view-want-change",
+                          RigoViewStates.GROUPS_VIEW_STATE,
+                          None)
+
         def _in_vte():
             GLib.idle_add(self.emit, "view-want-change",
                           RigoViewStates.WORK_VIEW_STATE,
@@ -459,6 +471,7 @@ class ApplicationsViewController(GObject.Object):
             self.SHOW_QUEUE_KEY: self._show_action_queue_items,
             "in:config": _in_config,
             "in:notice": self._service.noticeboards,
+            "in:groups": _in_groups,
             "in:repo": _in_repo,
             "in:vte": _in_vte,
             "do:simulate:i": _in_simulate_i,

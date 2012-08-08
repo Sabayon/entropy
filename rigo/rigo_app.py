@@ -45,6 +45,7 @@ from rigo.ui.gtk3.widgets.apptreeview import AppTreeView
 from rigo.ui.gtk3.widgets.confupdatetreeview import ConfigUpdatesTreeView
 from rigo.ui.gtk3.widgets.noticeboardtreeview import NoticeBoardTreeView
 from rigo.ui.gtk3.widgets.preferencestreeview import PreferencesTreeView
+from rigo.ui.gtk3.widgets.grouptreeview import GroupTreeView
 from rigo.ui.gtk3.widgets.repositorytreeview import RepositoryTreeView
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 from rigo.ui.gtk3.controllers.applications import \
@@ -59,6 +60,8 @@ from rigo.ui.gtk3.controllers.preference import \
     PreferenceViewController
 from rigo.ui.gtk3.controllers.repository import \
     RepositoryViewController
+from rigo.ui.gtk3.controllers.group import \
+    GroupViewController
 
 from rigo.ui.gtk3.controllers.notifications import \
     UpperNotificationViewController, BottomNotificationViewController
@@ -69,6 +72,7 @@ from rigo.ui.gtk3.models.appliststore import AppListStore
 from rigo.ui.gtk3.models.confupdateliststore import ConfigUpdatesListStore
 from rigo.ui.gtk3.models.noticeboardliststore import NoticeBoardListStore
 from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore
+from rigo.ui.gtk3.models.groupliststore import GroupListStore
 from rigo.ui.gtk3.models.repositoryliststore import RepositoryListStore
 from rigo.ui.gtk3.utils import init_sc_css_provider, get_sc_icon_theme
 
@@ -138,7 +142,10 @@ class Rigo(Gtk.Application):
                 self._exit_preferences_state),
             RigoViewStates.REPOSITORY_VIEW_STATE: (
                 self._enter_repository_state,
-                self._exit_repository_state)
+                self._exit_repository_state),
+            RigoViewStates.GROUPS_VIEW_STATE: (
+                self._enter_groups_state,
+                self._exit_groups_state)
         }
         self._state_metadata = {
             RigoViewStates.BROWSER_VIEW_STATE: {
@@ -164,6 +171,9 @@ class Rigo(Gtk.Application):
                 },
             RigoViewStates.REPOSITORY_VIEW_STATE: {
                 "title": _("Repository Stuff"),
+                },
+            RigoViewStates.GROUPS_VIEW_STATE: {
+                "title": _("Application Groups"),
                 },
         }
         self._state_mutex = Lock()
@@ -211,6 +221,11 @@ class Rigo(Gtk.Application):
             "preferencesViewScrolledWindow")
         self._pref_view = self._builder.get_object("preferencesViewVbox")
         self._pref_view.set_name("rigo-view")
+
+        self._group_scrolled_view = self._builder.get_object(
+            "groupViewScrolledWindow")
+        self._group_view = self._builder.get_object("groupViewVbox")
+        self._group_view.set_name("rigo-view")
 
         self._search_entry = self._builder.get_object("searchEntry")
         self._search_entry_completion = self._builder.get_object(
@@ -303,6 +318,18 @@ class Rigo(Gtk.Application):
 
         self._service.set_noticeboard_controller(self._notice_view_c)
 
+        # Group model, view and controller
+        self._group_store = GroupListStore()
+        self._view_group = GroupTreeView(
+            icons, GroupListStore.ICON_SIZE)
+        self._group_scrolled_view.add(self._view_group)
+        def _group_queue_draw(*args):
+            self._view_group.queue_draw()
+        self._group_store.connect("redraw-request", _group_queue_draw)
+        self._group_view_c = GroupViewController(
+            self._service, self._group_store,
+            self._view_group, self._pref_view_c)
+
         self._welcome_box = WelcomeBox()
 
         settings = Gtk.Settings.get_default()
@@ -351,6 +378,8 @@ class Rigo(Gtk.Application):
 
         self._notice_view_c.set_notification_controller(self._nc)
         self._notice_view_c.set_applications_controller(self._avc)
+
+        self._group_view_c.set_applications_controller(self._avc)
 
         self._service.set_applications_controller(self._avc)
         self._service.set_application_controller(self._app_view_c)
@@ -571,6 +600,21 @@ class Rigo(Gtk.Application):
         state (or mode).
         """
         self._pref_view.show()
+
+    def _exit_groups_state(self):
+        """
+        Action triggered when UI exits the Groups
+        state (or mode).
+        """
+        self._group_view.hide()
+
+    def _enter_groups_state(self):
+        """
+        Action triggered when UI enters the Groups
+        state (or mode).
+        """
+        self._group_view_c.load()
+        self._group_view.show()
 
     def _exit_static_state(self):
         """
@@ -853,6 +897,7 @@ class Rigo(Gtk.Application):
 
         self._thread_dumper()
         self._pref_view_c.setup()
+        self._group_view_c.setup()
         self._config_view_c.setup()
         self._repo_view_c.setup()
         self._notice_view_c.setup()
