@@ -1,15 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-
-    @author: Fabio Erculiani <lxnay@sabayon.org>
-    @contact: lxnay@sabayon.org
-    @copyright: Fabio Erculiani
-    @license: GPL-2
-
-    I{EntropyRepository} is the sqlite3 implementation of the repository
-    interface.
-
-"""
 import sys
 import os
 import hashlib
@@ -21,7 +9,6 @@ except ImportError:
     import _thread as thread
 import threading
 import subprocess
-from sqlite3 import dbapi2
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
@@ -30,438 +17,430 @@ from entropy.const import etpConst, const_setup_file, \
 from entropy.exceptions import SystemDatabaseError, \
     OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
-
 from entropy.spm.plugins.factory import get_default_instance as get_spm
-from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
-    DatabaseError
-from entropy.db.skel import EntropyRepositoryBase
-from entropy.db.cache import EntropyRepositoryCacher
 from entropy.i18n import _
 
 import entropy.dep
 import entropy.tools
 
-class EntropyRepository(EntropyRepositoryBase):
+from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
+    DatabaseError
+from entropy.db.skel import EntropyRepositoryBase
+from entropy.db.cache import EntropyRepositoryCacher
+
+class MySQLProxy:
+
+    _mod = None
+    _excs = None
+    _conv = None
+    _convlock = threading.Lock()
+    _lock = threading.Lock()
+    PORT = 3306
+
+    @staticmethod
+    def get():
+        """
+        Lazily load the MySQLdb module.
+        """
+        if MySQLProxy._mod is None:
+            with MySQLProxy._lock:
+                if MySQLProxy._mod is None:
+                    import MySQLdb
+                    import _mysql_exceptions
+                    import MySQLdb.converters
+                    MySQLProxy._excs = _mysql_exceptions
+                    MySQLProxy._mod = MySQLdb
+        return MySQLProxy._mod
+
+    @staticmethod
+    def exceptions():
+        """
+        Lazily load the MySQLdb exceptions module.
+        """
+        _mod = MySQLProxy.get()
+        return MySQLProxy._excs
+
+    @staticmethod
+    def conversions():
+        """
+        Lazily load MySQL conversions dict.
+        """
+        if MySQLProxy._conv is None:
+            mysql = MySQLProxy.get()
+            with MySQLProxy._convlock:
+                convs = mysql.converters.conversions.copy()
+                convs[mysql.constants.FIELD_TYPE.DECIMAL] = int
+                convs[mysql.constants.FIELD_TYPE.LONG] = int
+                convs[mysql.constants.FIELD_TYPE.LONGLONG] = int
+                convs[mysql.constants.FIELD_TYPE.FLOAT] = float
+                convs[mysql.constants.FIELD_TYPE.NEWDECIMAL] = float
+                MySQLProxy._conv = convs
+        return MySQLProxy._conv
+
+
+class EntropyMySQLRepository(EntropyRepositoryBase):
 
     """
-    EntropyRepository implements SQLite3 based storage. In a Model-View based
-    pattern, it can be considered the "model".
-    Actually it's the only one available but more model backends will be
-    supported in future (which will inherit this class directly).
-    Beside the underlying SQLite3 calls are thread safe, you are responsible
-    of the semantic of your calls.
+    EntropyMySQLRepository implements MySQL based storage. In a Model-View based
+    design pattern, this can be considered the "model".
     """
 
     # bump this every time schema changes and databaseStructureUpdate
     # should be triggered
-    _SCHEMA_REVISION = 3
-    # Enable new database schema? keep it disabled for now
-    _SCHEMA_2010_SUPPORT = True
-    if os.getenv("ETP_REPO_DISABLE_SCHEMA_2010"):
-        _SCHEMA_2010_SUPPORT = False
+    _SCHEMA_REVISION = 1
 
-    _SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
-        "_baseinfo_extrainfo_2010")
+    _SETTING_KEYS = ("arch", "schema_revision")
 
     class Schema:
 
         def get_init(self):
-            if EntropyRepository._SCHEMA_2010_SUPPORT:
-                data = """
-                    CREATE TABLE baseinfo (
-                        idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                        atom VARCHAR,
-                        category VARCHAR,
-                        name VARCHAR,
-                        version VARCHAR,
-                        versiontag VARCHAR,
-                        revision INTEGER,
-                        branch VARCHAR,
-                        slot VARCHAR,
-                        license VARCHAR,
-                        etpapi INTEGER,
-                        trigger INTEGER
-                    );
+            data = """
+                CREATE TABLE baseinfo (
+                    idpackage INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    atom VARCHAR(75) NOT NULL,
+                    category VARCHAR(128) NOT NULL,
+                    name VARCHAR(75) NOT NULL,
+                    version VARCHAR(75) NOT NULL,
+                    versiontag VARCHAR(75) NOT NULL,
+                    revision INTEGER(10) NOT NULL,
+                    branch VARCHAR(75) NOT NULL,
+                    slot VARCHAR(75) NOT NULL,
+                    license VARCHAR(256) NOT NULL,
+                    etpapi INTEGER(10) NOT NULL,
+                    `trigger` INTEGER(10) NOT NULL
+                );
 
-                    CREATE TABLE extrainfo (
-                        idpackage INTEGER PRIMARY KEY,
-                        description VARCHAR,
-                        homepage VARCHAR,
-                        download VARCHAR,
-                        size VARCHAR,
-                        chost VARCHAR,
-                        cflags VARCHAR,
-                        cxxflags VARCHAR,
-                        digest VARCHAR,
-                        datecreation VARCHAR,
-                        FOREIGN KEY(idpackage)
-                            REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                    );
-                """
-            else:
-                data = """
-                    CREATE TABLE baseinfo (
-                        idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                        atom VARCHAR,
-                        idcategory INTEGER,
-                        name VARCHAR,
-                        version VARCHAR,
-                        versiontag VARCHAR,
-                        revision INTEGER,
-                        branch VARCHAR,
-                        slot VARCHAR,
-                        idlicense INTEGER,
-                        etpapi INTEGER,
-                        trigger INTEGER
-                    );
-
-                    CREATE TABLE extrainfo (
-                        idpackage INTEGER PRIMARY KEY,
-                        description VARCHAR,
-                        homepage VARCHAR,
-                        download VARCHAR,
-                        size VARCHAR,
-                        idflags INTEGER,
-                        digest VARCHAR,
-                        datecreation VARCHAR,
-                        FOREIGN KEY(idpackage)
-                           REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                    );
-
-                    CREATE TABLE categories (
-                        idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
-                        category VARCHAR
-                    );
-
-                    CREATE TABLE licenses (
-                        idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
-                        license VARCHAR
-                    );
-
-                    CREATE TABLE flags (
-                        idflags INTEGER PRIMARY KEY AUTOINCREMENT,
-                        chost VARCHAR,
-                        cflags VARCHAR,
-                        cxxflags VARCHAR
-                    );
-                """
-            data += """
+                CREATE TABLE extrainfo (
+                    idpackage INTEGER(10) PRIMARY KEY NOT NULL,
+                    description VARCHAR(256) NOT NULL,
+                    homepage VARCHAR(256) NOT NULL,
+                    download VARCHAR(512) NOT NULL,
+                    size VARCHAR(128) NOT NULL,
+                    chost VARCHAR(256) NOT NULL,
+                    cflags VARCHAR(256) NOT NULL,
+                    cxxflags VARCHAR(256) NOT NULL,
+                    digest VARCHAR(32) NOT NULL,
+                    datecreation VARCHAR(32) NOT NULL,
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
                 CREATE TABLE content (
-                    idpackage INTEGER,
-                    file VARCHAR,
-                    type VARCHAR,
+                    idpackage INTEGER(10) NOT NULL,
+                    file VARCHAR(512) NOT NULL,
+                    type VARCHAR(3) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE contentsafety (
-                    idpackage INTEGER,
-                    file VARCHAR,
+                    idpackage INTEGER(10) NOT NULL,
+                    file VARCHAR(512) NOT NULL,
                     mtime FLOAT,
-                    sha256 VARCHAR,
+                    sha256 VARCHAR(64) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provide (
-                    idpackage INTEGER,
-                    atom VARCHAR,
-                    is_default INTEGER DEFAULT 0,
+                    idpackage INTEGER(10) NOT NULL,
+                    atom VARCHAR(75) NOT NULL,
+                    is_default INTEGER(10) NOT NULL DEFAULT 0,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependencies (
-                    idpackage INTEGER,
-                    iddependency INTEGER,
-                    type INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    iddependency INTEGER(10) NOT NULL,
+                    type INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependenciesreference (
-                    iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
-                    dependency VARCHAR
+                    iddependency INTEGER(10) NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
+                    dependency VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE conflicts (
-                    idpackage INTEGER,
-                    conflict VARCHAR,
+                    idpackage INTEGER(10) NOT NULL,
+                    conflict VARCHAR(128) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE mirrorlinks (
-                    mirrorname VARCHAR,
-                    mirrorlink VARCHAR
+                    mirrorname VARCHAR(75) NOT NULL,
+                    mirrorlink VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE sources (
-                    idpackage INTEGER,
-                    idsource INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    idsource INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sourcesreference (
-                    idsource INTEGER PRIMARY KEY AUTOINCREMENT,
-                    source VARCHAR
+                    idsource INTEGER(10) AUTO_INCREMENT PRIMARY KEY,
+                    source VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE useflags (
-                    idpackage INTEGER,
-                    idflag INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    idflag INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE useflagsreference (
-                    idflag INTEGER PRIMARY KEY AUTOINCREMENT,
-                    flagname VARCHAR
+                    idflag INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    flagname VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE keywords (
-                    idpackage INTEGER,
-                    idkeyword INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    idkeyword INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE keywordsreference (
-                    idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
-                    keywordname VARCHAR
+                    idkeyword INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    keywordname VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE configprotect (
-                    idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idprotect INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectmask (
-                    idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idprotect INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectreference (
-                    idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
-                    protect VARCHAR
+                    idprotect INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    protect VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE systempackages (
-                    idpackage INTEGER PRIMARY KEY,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE injected (
-                    idpackage INTEGER PRIMARY KEY,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE installedtable (
-                    idpackage INTEGER PRIMARY KEY,
-                    repositoryname VARCHAR,
-                    source INTEGER,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    repositoryname VARCHAR(75) NOT NULL,
+                    source INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sizes (
-                    idpackage INTEGER PRIMARY KEY,
-                    size INTEGER,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    size INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE counters (
-                    counter INTEGER,
-                    idpackage INTEGER,
-                    branch VARCHAR,
+                    counter INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) NOT NULL,
+                    branch VARCHAR(75) NOT NULL,
                     PRIMARY KEY(idpackage,branch),
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE trashedcounters (
-                    counter INTEGER
+                    counter INTEGER(10) NOT NULL
                 );
 
                 CREATE TABLE needed (
-                    idpackage INTEGER,
-                    idneeded INTEGER,
-                    elfclass INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    idneeded INTEGER(10) NOT NULL,
+                    elfclass INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE neededreference (
-                    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
-                    library VARCHAR
+                    idneeded INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    library VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE provided_libs (
-                    idpackage INTEGER,
-                    library VARCHAR,
-                    path VARCHAR,
-                    elfclass INTEGER,
+                    idpackage INTEGER(10) NOT NULL,
+                    library VARCHAR(75) NOT NULL,
+                    path VARCHAR(75) NOT NULL,
+                    elfclass INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE treeupdates (
-                    repository VARCHAR PRIMARY KEY,
-                    digest VARCHAR
+                    repository VARCHAR(75) NOT NULL PRIMARY KEY,
+                    digest VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE treeupdatesactions (
-                    idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
-                    repository VARCHAR,
-                    command VARCHAR,
-                    branch VARCHAR,
-                    date VARCHAR
+                    idupdate INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    repository VARCHAR(75) NOT NULL,
+                    command VARCHAR(256) NOT NULL,
+                    branch VARCHAR(75) NOT NULL,
+                    date VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE licensedata (
-                    licensename VARCHAR UNIQUE,
-                    text BLOB,
-                    compressed INTEGER
+                    licensename VARCHAR(75) NOT NULL UNIQUE,
+                    `text` BLOB,
+                    compressed INTEGER(10) NOT NULL
                 );
 
                 CREATE TABLE licenses_accepted (
-                    licensename VARCHAR UNIQUE
+                    licensename VARCHAR(75) NOT NULL UNIQUE
                 );
 
                 CREATE TABLE triggers (
-                    idpackage INTEGER PRIMARY KEY,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
                     data BLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_misc_counters (
-                    idtype INTEGER PRIMARY KEY,
-                    counter INTEGER
+                    idtype INTEGER(10) NOT NULL PRIMARY KEY,
+                    counter INTEGER(10) NOT NULL
                 );
 
                 CREATE TABLE categoriesdescription (
-                    category VARCHAR,
-                    locale VARCHAR,
-                    description VARCHAR
+                    category VARCHAR(128) NOT NULL,
+                    locale VARCHAR(75) NOT NULL,
+                    description VARCHAR(256) NOT NULL
                 );
 
                 CREATE TABLE packagesets (
-                    setname VARCHAR,
-                    dependency VARCHAR
+                    setname VARCHAR(75) NOT NULL,
+                    dependency VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE packagechangelogs (
-                    category VARCHAR,
-                    name VARCHAR,
-                    changelog BLOB,
+                    category VARCHAR(75) NOT NULL,
+                    name VARCHAR(75) NOT NULL,
+                    changelog BLOB NOT NULL,
                     PRIMARY KEY (category, name)
                 );
 
                 CREATE TABLE automergefiles (
-                    idpackage INTEGER,
-                    configfile VARCHAR,
-                    md5 VARCHAR,
+                    idpackage INTEGER(10) NOT NULL,
+                    configfile VARCHAR(512) NOT NULL,
+                    `md5` VARCHAR(32) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagedesktopmime (
-                    idpackage INTEGER,
-                    name VARCHAR,
-                    mimetype VARCHAR,
-                    executable VARCHAR,
-                    icon VARCHAR,
+                    idpackage INTEGER(10) NOT NULL,
+                    name VARCHAR(75) NOT NULL,
+                    mimetype VARCHAR(512) NOT NULL,
+                    executable VARCHAR(128) NOT NULL,
+                    icon VARCHAR(75),
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagedownloads (
-                    idpackage INTEGER,
-                    download VARCHAR,
-                    type VARCHAR,
-                    size INTEGER,
-                    disksize INTEGER,
-                    md5 VARCHAR,
-                    sha1 VARCHAR,
-                    sha256 VARCHAR,
-                    sha512 VARCHAR,
-                    gpg BLOB,
+                    idpackage INTEGER(10) NOT NULL,
+                    download VARCHAR(512)  NOT NULL,
+                    type VARCHAR(75) NOT NULL,
+                    size INTEGER(10) NOT NULL,
+                    disksize INTEGER(10) NOT NULL,
+                    `md5` VARCHAR(32) NOT NULL,
+                    `sha1` VARCHAR(40) NOT NULL,
+                    `sha256` VARCHAR(64) NOT NULL,
+                    `sha512` VARCHAR(128) NOT NULL,
+                    `gpg` BLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provided_mime (
-                    mimetype VARCHAR,
-                    idpackage INTEGER,
+                    mimetype VARCHAR(512) NOT NULL,
+                    idpackage INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagesignatures (
-                    idpackage INTEGER PRIMARY KEY,
-                    sha1 VARCHAR,
-                    sha256 VARCHAR,
-                    sha512 VARCHAR,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    sha1 VARCHAR(40),
+                    sha256 VARCHAR(64),
+                    sha512 VARCHAR(128),
                     gpg BLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmphases (
-                    idpackage INTEGER PRIMARY KEY,
-                    phases VARCHAR,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    phases VARCHAR(512) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmrepository (
-                    idpackage INTEGER PRIMARY KEY,
-                    repository VARCHAR,
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    repository VARCHAR(75) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_branch_migration (
-                    repository VARCHAR,
-                    from_branch VARCHAR,
-                    to_branch VARCHAR,
-                    post_migration_md5sum VARCHAR,
-                    post_upgrade_md5sum VARCHAR,
+                    repository VARCHAR(75) NOT NULL,
+                    from_branch VARCHAR(75) NOT NULL,
+                    to_branch VARCHAR(75) NOT NULL,
+                    post_migration_md5sum VARCHAR(75) NOT NULL,
+                    post_upgrade_md5sum VARCHAR(75) NOT NULL,
                     PRIMARY KEY (repository, from_branch, to_branch)
                 );
 
                 CREATE TABLE xpakdata (
-                    idpackage INTEGER PRIMARY KEY,
-                    data BLOB
+                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    data BLOB NOT NULL
                 );
 
                 CREATE TABLE settings (
-                    setting_name VARCHAR,
-                    setting_value VARCHAR,
+                    setting_name VARCHAR(75) NOT NULL,
+                    setting_value VARCHAR(75) NOT NULL,
                     PRIMARY KEY(setting_name)
                 );
 
             """
             return data
 
-    def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        name = None, indexing = True, skipChecks = False, temporary = False):
+    def __init__(self, uri, readOnly = False, xcache = False,
+        name = None, indexing = True, skipChecks = False):
         """
-        EntropyRepository constructor.
+        EntropyMySQLRepository constructor.
 
+        @param uri: the connection URI
+        @type uri: string
         @keyword readOnly: open file in read-only mode
         @type readOnly: bool
-        @keyword dbFile: path to database to open
-        @type dbFile: string
         @keyword xcache: enable on-disk cache
         @type xcache: bool
         @keyword name: repository identifier
@@ -470,10 +449,9 @@ class EntropyRepository(EntropyRepositoryBase):
         @type indexing: bool
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
-        @keyword temporary: if True, dbFile will be automatically removed
-            on close()
-        @type temporary: bool
         """
+        self._mysql = MySQLProxy.get()
+
         self._live_cacher = EntropyRepositoryCacher()
         self.__connection_pool = {}
         self.__connection_pool_mutex = threading.RLock()
@@ -486,19 +464,58 @@ class EntropyRepository(EntropyRepositoryBase):
         if name is None:
             name = etpConst['genericdbid']
 
-        EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
+        EntropyRepositoryBase.__init__(self, readOnly, xcache, False,
             name)
 
-        self._db_path = dbFile
-        if self._db_path is None:
-            raise AttributeError("valid database path needed")
-
-        # tracking mtime to validate repository Live cache as
-        # well.
+        # setup uri mysql://user:pass@host/database
+        split_url = entropy.tools.spliturl(uri)
+        if split_url is None:
+            raise DatabaseError("Invalid URI")
+        if split_url.scheme != "mysql":
+            raise DatabaseError("Invalid Scheme")
+        netloc = split_url.netloc
+        if not netloc:
+            raise DatabaseError("Invalid Netloc")
         try:
-            self._cur_mtime = self.mtime()
-        except (OSError, IOError):
-            self._cur_mtime = None
+            self._host = netloc.split("@", 1)[-1]
+        except IndexError:
+            raise DatabaseError("Invalid Host")
+        try:
+            user_pass = "@".join(netloc.split("@")[:-1])
+            self._user = user_pass.split(":")[0]
+        except IndexError:
+            raise DatabaseError("Invalid User")
+        try:
+            self._password = user_pass.split(":", 1)[1]
+        except IndexError:
+            raise DatabaseError("Invalid Password")
+
+        db_port = split_url.path.lstrip("/")
+        if not db_port:
+            raise DatabaseError("Invalid Database")
+        try:
+            if ":" in db_port:
+                self._db = ":".join(db_port.split(":")[:-1])
+            else:
+                self._db = db_port
+        except IndexError:
+            raise DatabaseError("Invalid Database Name")
+        try:
+            if ":" in db_port:
+                port = db_port.split(":")[-1].strip()
+                if port:
+                    self._port = int(port)
+                else:
+                    raise ValueError()
+            else:
+                raise IndexError()
+        except IndexError:
+            self._port = MySQLProxy.PORT
+        except ValueError:
+            raise DatabaseError("Invalid Port")
+
+        # MySQL repositories don't support mtime
+        self._cur_mtime = None
 
         # setup service interface
         self.__skip_checks = skipChecks
@@ -506,29 +523,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__structure_update = False
         if not self.__skip_checks:
 
-            if not entropy.tools.is_user_in_entropy_group():
-                # forcing since we won't have write access to db
-                self.__indexing = False
-            # live systems don't like wasting RAM
-            if entropy.tools.islive() and not etpConst['systemroot']:
-                self.__indexing = False
-
-            def _is_avail():
-                if self._db_path == ":memory:":
-                    return True
-                return os.access(self._db_path, os.W_OK)
-
             try:
-                if _is_avail() and self._doesTableExist('baseinfo') and \
-                    self._doesTableExist('extrainfo'):
+                if self._doesTableExist('baseinfo') and \
+                        self._doesTableExist('extrainfo'):
+                    self.__structure_update = True
 
-                    if entropy.tools.islive(): # this works
-                        if etpConst['systemroot']:
-                            self.__structure_update = True
-                    else:
-                        self.__structure_update = True
-
-            except Error:
+            except MySQLProxy.exceptions().Error:
                 self._cleanup_stale_cur_conn(kill_all = True)
                 raise
 
@@ -537,25 +537,25 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _connection_pool(self):
         """
-        Return the SQLite3 Connection Pool mapping object
+        Return the Connection Pool mapping object
         """
         return self.__connection_pool
 
     def _connection_pool_mutex(self):
         """
-        Return the SQLite3 Connection Pool mapping mutex
+        Return the Connection Pool mapping mutex
         """
         return self.__connection_pool_mutex
 
     def _cursor_pool(self):
         """
-        Return the SQLite3 Cursor Pool mapping object
+        Return the Cursor Pool mapping object
         """
         return self.__cursor_pool
 
     def _cursor_pool_mutex(self):
         """
-        Return the SQLite3 Cursor Pool mapping mutex
+        Return the Cursor Pool mapping mutex
         """
         return self.__cursor_pool_mutex
 
@@ -563,12 +563,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if (not self._readonly) and (self._db_path != ":memory:"):
-            if os.getuid() != 0:
-                # make sure that user can write to file
-                # before returning False, override actual
-                # readonly status
-                return not os.access(self._db_path, os.W_OK)
         return self._readonly
 
     def setIndexing(self, indexing):
@@ -581,7 +575,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__indexing = bool(indexing)
 
     def _get_cur_th_key(self):
-        return self._db_path, thread.get_ident(), os.getpid()
+        return self._db, thread.get_ident(), os.getpid()
 
     def _cleanup_stale_cur_conn(self, kill_all = False):
 
@@ -599,17 +593,17 @@ class EntropyRepository(EntropyRepositoryBase):
                 if not self._readonly:
                     try:
                         conn.commit()
-                    except OperationalError:
+                    except MySQLProxy.exceptions().OperationalError:
                         # no transaction is active can
                         # cause this, bleh!
                         pass
                 try:
                     conn.close()
-                except OperationalError:
+                except MySQLProxy.exceptions().OperationalError:
                     try:
                         conn.interrupt()
                         conn.close()
-                    except OperationalError:
+                    except MySQLProxy.exceptions().OperationalError:
                         # heh, unable to close due to
                         # unfinalized statements
                         # interpreter shutdown?
@@ -632,6 +626,53 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _cursor(self):
 
+        class MySQLCursorWrapper:
+            """
+            This class wraps a MySQL cursor and
+            makes execute(), executemany() return
+            the cursor itself.
+            """
+
+            def __init__(self, cursor):
+                self._cur = cursor
+
+            def execute(self, *args, **kwargs):
+                self._cur.execute(*args, **kwargs)
+                return self._cur
+
+            def executemany(self, *args, **kwargs):
+                self._cur.executemany(*args, **kwargs)
+                return self._cur
+
+            def close(self, *args, **kwargs):
+                return self._cur.close(*args, **kwargs)
+
+            def fetchone(self, *args, **kwargs):
+                return self._cur.fetchone(*args, **kwargs)
+
+            def fetchall(self, *args, **kwargs):
+                return self._cur.fetchall(*args, **kwargs)
+
+            def fetchmany(self, *args, **kwargs):
+                return self._cur.fetchmany(*args, **kwargs)
+
+            def executescript(self, script):
+                for sql in script.split(";"):
+                    if not sql.strip():
+                        continue
+                    self._cur.execute(sql)
+                return self._cur
+
+            def __iter__(self):
+                return iter(self._cur)
+
+            def next(self):
+                return self._cur.next()
+
+            @property
+            def lastrowid(self):
+                return self._cur.lastrowid
+
         # thanks to hotshot
         # this avoids calling _cleanup_stale_cur_conn logic zillions of time
         t1 = time.time()
@@ -646,18 +687,17 @@ class EntropyRepository(EntropyRepositoryBase):
             if cursor is None:
                 conn = self._connection()
                 cursor = conn.cursor()
-                # !!! enable foreign keys pragma !!! do not remove this
-                # otherwise removePackage won't work properly
-                cursor.execute("pragma foreign_keys = 1").fetchall()
-                # setup temporary tables and indices storage
-                # to in-memory value
-                # http://www.sqlite.org/pragma.html#pragma_temp_store
-                cursor.execute("pragma temp_store = 2").fetchall()
+                engine = "InnoDB"
+                if self._db == ":memory:":
+                    engine = "MEMORY"
+                cursor.execute("SET storage_engine=%s;" % (engine,))
+                cursor.fetchall()
+                cursor = MySQLCursorWrapper(cursor)
                 self._cursor_pool()[c_key] = cursor
                 _init_db = True
         # memory databases are critical because every new cursor brings
         # up a totally empty repository. So, enforce initialization.
-        if _init_db and self._db_path == ":memory:":
+        if _init_db and self._db == ":memory:":
             self.initializeRepository()
         return cursor
 
@@ -667,17 +707,29 @@ class EntropyRepository(EntropyRepositoryBase):
         with self._connection_pool_mutex():
             conn = self._connection_pool().get(c_key)
             if conn is None:
-                # check_same_thread still required for
-                # conn.close() called from
-                # arbitrary thread
-                conn = dbapi2.connect(self._db_path, timeout=30.0,
-                                  check_same_thread = False)
+                kwargs = {
+                    "host": self._host,
+                    "user": self._user,
+                    "passwd": self._password,
+                    "db": self._db,
+                    "port": self._port,
+                    "conv": MySQLProxy.conversions(),
+                    }
+                try:
+                    conn = self._mysql.connect(**kwargs)
+                    conn.set_character_set("utf8")
+                except MySQLProxy.exceptions().OperationalError as err:
+                    raise OperationalError("Cannot connect: %s" % (repr(err),))
                 self._connection_pool()[c_key] = conn
         return conn
 
     def __show_info(self):
-        first_part = "<EntropyRepository instance at %s, %s" % (
-            hex(id(self)), self._db_path,)
+        password = hashlib.new("md5")
+        password.update(self._password)
+        first_part = "<EntropyRepository instance at "
+        "%s - host: %s, db: %s, port: %s, user: %s, hpass: %s" % (
+            hex(id(self)), self._host, self._db, self._port, self._user,
+            password.hexdigest(),)
         second_part = ", ro: %s|%s, caching: %s, indexing: %s" % (
             self._readonly, self.readonly(), self.caching(),
             self.__indexing,)
@@ -700,26 +752,8 @@ class EntropyRepository(EntropyRepositoryBase):
     def __hash__(self):
         return id(self)
 
-    def _setCacheSize(self, size):
-        """
-        Change low-level, storage engine based cache size.
-
-        @param size: new size
-        @type size: int
-        """
-        self._cursor().execute('PRAGMA cache_size = %s' % (size,))
-
-    def _setDefaultCacheSize(self, size):
-        """
-        Change default low-level, storage engine based cache size.
-
-        @param size: new default size
-        @type size: int
-        """
-        self._cursor().execute('PRAGMA default_cache_size = %s' % (size,))
-
     def _getLiveCacheKey(self):
-        return etpConst['systemroot'] + "_" + self._db_path + "_" + \
+        return etpConst['systemroot'] + "_" + self._db + "_" + \
             self.name + "_"
 
     def _clearLiveCache(self, key):
@@ -732,13 +766,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._live_cacher.set(self._getLiveCacheKey() + key, value)
 
     def _getLiveCache(self, key):
-        try:
-            mtime = self.mtime()
-        except (OSError, IOError):
-            mtime = None
-        if self._cur_mtime != mtime:
-            self._cur_mtime = mtime
-            self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
     @staticmethod
@@ -768,15 +795,9 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        super(EntropyRepository, self).close()
+        super(EntropyMySQLRepository, self).close()
 
         self._cleanup_stale_cur_conn(kill_all = True)
-        if self._temporary and (self._db_path != ":memory:") and \
-            os.path.isfile(self._db_path):
-            try:
-                os.remove(self._db_path)
-            except (OSError, IOError,):
-                pass
         # live cache must be discarded every time the repository is closed
         # in order to avoid data mismatches for long-running processes
         # that load and unload Entropy Framework often.
@@ -794,7 +815,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        if force or (not self.readonly()):
+        if force or not self.readonly():
             # NOTE: the actual commit MUST be executed before calling
             # the superclass method (that is going to call EntropyRepositoryBase
             # plugins). This to avoid that other connection to the same exact
@@ -803,10 +824,13 @@ class EntropyRepository(EntropyRepositoryBase):
             # So, FIRST commit changes, then call plugins.
             try:
                 self._connection().commit()
-            except Error:
+            except MySQLProxy.exceptions().Error:
                 pass
+        elif self.readonly():
+            # rollback instead if read-only
+            self.rollback()
 
-        super(EntropyRepository, self).commit(force = force,
+        super(EntropyMySQLRepository, self).commit(force = force,
             no_plugins = no_plugins)
 
     def rollback(self):
@@ -821,26 +845,27 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         my = self.Schema()
         self.dropAllIndexes()
-        for table in self._listAllTables():
-            try:
-                self._cursor().execute("DROP TABLE %s" % (table,))
-            except OperationalError:
-                # skip tables that can't be dropped
-                continue
+        self._cursor().execute("SET FOREIGN_KEY_CHECKS = 0;")
+        try:
+            for table in self._listAllTables():
+                try:
+                    self._cursor().execute("DROP TABLE %s" % (table,))
+                except MySQLProxy.exceptions().OperationalError:
+                    # skip tables that can't be dropped
+                    continue
+        finally:
+            self._cursor().execute("SET FOREIGN_KEY_CHECKS = 1;")
         self._cursor().executescript(my.get_init())
-        self.commit()
         self._clearLiveCache("_doesTableExist")
         self._clearLiveCache("_doesColumnInTableExist")
         self._setupInitialSettings()
-        # set cache size
-        self._setCacheSize(8192)
-        self._setDefaultCacheSize(8192)
         self._databaseStructureUpdates()
 
-        self.commit()
         self._clearLiveCache("_doesTableExist")
         self._clearLiveCache("_doesColumnInTableExist")
-        super(EntropyRepository, self).initializeRepository()
+        self.commit()
+
+        super(EntropyMySQLRepository, self).initializeRepository()
 
     def handlePackage(self, pkg_data, forcedRevision = -1,
         formattedContent = False):
@@ -880,28 +905,6 @@ class EntropyRepository(EntropyRepositoryBase):
         elif 'revision' not in pkg_data:
             pkg_data['revision'] = revision
 
-        _baseinfo_extrainfo_2010 = self._isBaseinfoExtrainfo2010()
-        catid = None
-        licid = None
-        idflags = None
-        if not _baseinfo_extrainfo_2010:
-            # create new category if it doesn't exist
-            catid = self._isCategoryAvailable(pkg_data['category'])
-            if catid == -1:
-                catid = self._addCategory(pkg_data['category'])
-
-            # create new license if it doesn't exist
-            licid = self._isLicenseAvailable(pkg_data['license'])
-            if licid == -1:
-                licid = self._addLicense(pkg_data['license'])
-
-            idflags = self._areCompileFlagsAvailable(pkg_data['chost'],
-                pkg_data['cflags'], pkg_data['cxxflags'])
-            if idflags == -1:
-                idflags = self._addCompileFlags(pkg_data['chost'],
-                    pkg_data['cflags'], pkg_data['cxxflags'])
-
-
         idprotect = self._isProtectAvailable(pkg_data['config_protect'])
         if idprotect == -1:
             idprotect = self._addProtect(pkg_data['config_protect'])
@@ -922,18 +925,11 @@ class EntropyRepository(EntropyRepositoryBase):
         # add atom metadatum
         pkg_data['atom'] = pkgatom
 
-        if not _baseinfo_extrainfo_2010:
-            mybaseinfo_data = (pkgatom, catid, pkg_data['name'],
-                pkg_data['version'], pkg_data['versiontag'], revision,
-                pkg_data['branch'], pkg_data['slot'],
-                licid, pkg_data['etpapi'], trigger,
-            )
-        else:
-            mybaseinfo_data = (pkgatom, pkg_data['category'], pkg_data['name'],
-                pkg_data['version'], pkg_data['versiontag'], revision,
-                pkg_data['branch'], pkg_data['slot'],
-                pkg_data['license'], pkg_data['etpapi'], trigger,
-            )
+        mybaseinfo_data = (
+            pkgatom, pkg_data['category'], pkg_data['name'],
+            pkg_data['version'], pkg_data['versiontag'], revision,
+            pkg_data['branch'], pkg_data['slot'],
+            pkg_data['license'], pkg_data['etpapi'], trigger)
 
         mypackage_id_string = 'NULL'
         if isinstance(package_id, int):
@@ -944,7 +940,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # does it exist?
             self.removePackage(package_id, do_cleanup = False,
                 do_commit = False, from_add_package = True)
-            mypackage_id_string = '?'
+            mypackage_id_string = '%s'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
             # merge old manual dependencies
@@ -960,40 +956,29 @@ class EntropyRepository(EntropyRepositoryBase):
             package_id = None
 
         cur = self._cursor().execute("""
-        INSERT INTO baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
+        INSERT INTO baseinfo VALUES
+        (%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % (
             mypackage_id_string,), mybaseinfo_data)
         if package_id is None:
             package_id = cur.lastrowid
 
         # extrainfo
-        if not _baseinfo_extrainfo_2010:
-            self._cursor().execute(
-                'INSERT INTO extrainfo VALUES (?,?,?,?,?,?,?,?)',
-                (   package_id,
-                    pkg_data['description'],
-                    pkg_data['homepage'],
-                    pkg_data['download'],
-                    pkg_data['size'],
-                    idflags,
-                    pkg_data['digest'],
-                    pkg_data['datecreation'],
-                )
+        self._cursor().execute(
+            """INSERT INTO extrainfo VALUES
+            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """,
+            (   package_id,
+                pkg_data['description'],
+                pkg_data['homepage'],
+                pkg_data['download'],
+                pkg_data['size'],
+                pkg_data['chost'],
+                pkg_data['cflags'],
+                pkg_data['cxxflags'],
+                pkg_data['digest'],
+                pkg_data['datecreation'],
             )
-        else:
-            self._cursor().execute(
-                'INSERT INTO extrainfo VALUES (?,?,?,?,?,?,?,?,?,?)',
-                (   package_id,
-                    pkg_data['description'],
-                    pkg_data['homepage'],
-                    pkg_data['download'],
-                    pkg_data['size'],
-                    pkg_data['chost'],
-                    pkg_data['cflags'],
-                    pkg_data['cxxflags'],
-                    pkg_data['digest'],
-                    pkg_data['datecreation'],
-                )
-            )
+        )
         # baseinfo and extrainfo are tainted
         self.clearCache()
         ### other information iserted below are not as
@@ -1089,7 +1074,8 @@ class EntropyRepository(EntropyRepositoryBase):
         if do_commit:
             self.commit()
 
-        super(EntropyRepository, self).addPackage(pkg_data, revision = revision,
+        super(EntropyMySQLRepository, self).addPackage(
+            pkg_data, revision = revision,
             package_id = package_id, do_commit = do_commit,
             formatted_content = formatted_content)
 
@@ -1115,49 +1101,14 @@ class EntropyRepository(EntropyRepositoryBase):
         Needs to call superclass method.
         """
         self.clearCache()
-        super(EntropyRepository, self).removePackage(package_id,
+        super(EntropyMySQLRepository, self).removePackage(package_id,
             do_cleanup = do_cleanup, do_commit = do_commit,
             from_add_package = from_add_package)
         self.clearCache()
 
-        try:
-            new_way = self.getSetting("on_delete_cascade")
-        except KeyError:
-            new_way = ''
-        # TODO: remove this before 31-12-2011 (deprecate)
-        if new_way:
-            # this will work thanks to ON DELETE CASCADE !
-            self._cursor().execute(
-                "DELETE FROM baseinfo WHERE idpackage = (?)", (package_id,))
-        else:
-            r_tup = (package_id,)*20
-            self._cursor().executescript("""
-                DELETE FROM baseinfo WHERE idpackage = %d;
-                DELETE FROM extrainfo WHERE idpackage = %d;
-                DELETE FROM dependencies WHERE idpackage = %d;
-                DELETE FROM provide WHERE idpackage = %d;
-                DELETE FROM conflicts WHERE idpackage = %d;
-                DELETE FROM configprotect WHERE idpackage = %d;
-                DELETE FROM configprotectmask WHERE idpackage = %d;
-                DELETE FROM sources WHERE idpackage = %d;
-                DELETE FROM useflags WHERE idpackage = %d;
-                DELETE FROM keywords WHERE idpackage = %d;
-                DELETE FROM content WHERE idpackage = %d;
-                DELETE FROM counters WHERE idpackage = %d;
-                DELETE FROM sizes WHERE idpackage = %d;
-                DELETE FROM needed WHERE idpackage = %d;
-                DELETE FROM triggers WHERE idpackage = %d;
-                DELETE FROM systempackages WHERE idpackage = %d;
-                DELETE FROM injected WHERE idpackage = %d;
-                DELETE FROM installedtable WHERE idpackage = %d;
-                DELETE FROM packagedesktopmime WHERE idpackage = %d;
-                DELETE FROM provided_mime WHERE idpackage = %d;
-            """ % r_tup)
-            # Added on Aug. 2011
-            if self._doesTableExist("packagedownloads"):
-                self._cursor().execute("""
-                DELETE FROM packagedownloads WHERE idpackage = (?)""",
-                (package_id,))
+        # this will work thanks to ON DELETE CASCADE !
+        self._cursor().execute(
+            "DELETE FROM baseinfo WHERE idpackage = %s", (package_id,))
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -1175,7 +1126,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mirrorname: string
         """
         self._cursor().execute("""
-        DELETE FROM mirrorlinks WHERE mirrorname = (?)
+        DELETE FROM mirrorlinks WHERE mirrorname = %s
         """, (mirrorname,))
 
     def _addMirrors(self, mirrorname, mirrorlist):
@@ -1189,33 +1140,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mirrorlist: list
         """
         self._cursor().executemany("""
-        INSERT INTO mirrorlinks VALUES (?,?)
+        INSERT into mirrorlinks VALUES (%s, %s)
         """, [(mirrorname, x,) for x in mirrorlist])
-
-    def _addCategory(self, category):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package category string to repository. Return its identifier
-        (idcategory).
-
-        @param category: name of the category to add
-        @type category: string
-        @return: category identifier (idcategory)
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        INSERT INTO categories VALUES (NULL,?)
-        """, (category,))
-        self._clearLiveCache("retrieveCategory")
-        self._clearLiveCache("searchNameCategory")
-        self._clearLiveCache("retrieveKeySlot")
-        self._clearLiveCache("retrieveKeySplit")
-        self._clearLiveCache("searchKeySlot")
-        self._clearLiveCache("searchKeySlotTag")
-        self._clearLiveCache("retrieveKeySlotAggregated")
-        self._clearLiveCache("getStrictData")
-        return cur.lastrowid
 
     def _addProtect(self, protect):
         """
@@ -1228,7 +1154,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT INTO configprotectreference VALUES (NULL,?)
+        INSERT into configprotectreference VALUES (NULL, %s)
         """, (protect,))
         return cur.lastrowid
 
@@ -1243,7 +1169,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT INTO sourcesreference VALUES (NULL,?)
+        INSERT into sourcesreference VALUES (NULL, %s)
         """, (source,))
         return cur.lastrowid
 
@@ -1258,7 +1184,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT INTO dependenciesreference VALUES (NULL,?)
+        INSERT into dependenciesreference VALUES (NULL, %s)
         """, (dependency,))
         return cur.lastrowid
 
@@ -1273,7 +1199,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT INTO keywordsreference VALUES (NULL,?)
+        INSERT into keywordsreference VALUES (NULL, %s)
         """, (keyword,))
         return cur.lastrowid
 
@@ -1287,9 +1213,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @return: useflag identifier (iduseflag)
         @rtype: int
         """
-        self._clearLiveCache("retrieveUseflags")
         cur = self._cursor().execute("""
-        INSERT INTO useflagsreference VALUES (NULL,?)
+        INSERT into useflagsreference VALUES (NULL, %s)
         """, (useflag,))
         return cur.lastrowid
 
@@ -1304,48 +1229,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT INTO neededreference VALUES (NULL,?)
+        INSERT into neededreference VALUES (NULL, %s)
         """, (needed,))
-        return cur.lastrowid
-
-    def _addLicense(self, pkglicense):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package license name string to repository.
-        Return its identifier (idlicense).
-
-        @param pkglicense: license name string
-        @type pkglicense: string
-        @return: license name identifier (idlicense)
-        @rtype: int
-        """
-        if not entropy.tools.is_valid_string(pkglicense):
-            pkglicense = ' ' # workaround for broken license entries
-        cur = self._cursor().execute("""
-        INSERT INTO licenses VALUES (NULL,?)
-        """, (pkglicense,))
-        return cur.lastrowid
-
-    def _addCompileFlags(self, chost, cflags, cxxflags):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package Compiler flags used to repository.
-        Return its identifier (idflags).
-
-        @param chost: CHOST string
-        @type chost: string
-        @param cflags: CFLAGS string
-        @type cflags: string
-        @param cxxflags: CXXFLAGS string
-        @type cxxflags: string
-        @return: Compiler flags triple identifier (idflags)
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        INSERT INTO flags VALUES (NULL,?,?,?)
-        """, (chost, cflags, cxxflags,))
         return cur.lastrowid
 
     def _setSystemPackage(self, package_id, do_commit = True):
@@ -1359,7 +1244,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type do_commit: bool
         """
         self._cursor().execute("""
-        INSERT INTO systempackages VALUES (?)
+        INSERT into systempackages VALUES (%s)
         """, (package_id,))
         if do_commit:
             self.commit()
@@ -1370,7 +1255,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         if not self.isInjected(package_id):
             self._cursor().execute("""
-            INSERT INTO injected VALUES (?)
+            INSERT into injected VALUES (%s)
             """, (package_id,))
         if do_commit:
             self.commit()
@@ -1380,7 +1265,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)
+        UPDATE extrainfo SET datecreation = %s WHERE idpackage = %s
         """, (str(date), package_id,))
 
     def setDigest(self, package_id, digest):
@@ -1388,17 +1273,16 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)
+        UPDATE extrainfo SET digest = %s WHERE idpackage = %s
         """, (digest, package_id,))
-        self._clearLiveCache("retrieveDigest")
 
     def setSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE packagesignatures SET sha1 = (?), sha256 = (?), sha512 = (?),
-        gpg = (?) WHERE idpackage = (?)
+        UPDATE packagesignatures SET sha1 = %s, sha256 = %s, sha512 = %s,
+        gpg = %s WHERE idpackage = %s
         """, (sha1, sha256, sha512, gpg, package_id))
 
     def setDownloadURL(self, package_id, url):
@@ -1411,47 +1295,28 @@ class EntropyRepository(EntropyRepositoryBase):
         @type url: string
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET download = (?) WHERE idpackage = (?)
+        UPDATE extrainfo SET download = %s WHERE idpackage = %s
         """, (url, package_id,))
 
     def setCategory(self, package_id, category):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            self._cursor().execute("""
-            UPDATE baseinfo SET category = (?) WHERE idpackage = (?)
-            """, (category, package_id,))
-        else:
-            # create new category if it doesn't exist
-            catid = self._isCategoryAvailable(category)
-            if catid == -1:
-                # create category
-                catid = self._addCategory(category)
-            self._cursor().execute("""
-            UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)
-            """, (catid, package_id,))
-
-        self._clearLiveCache("retrieveCategory")
-        self._clearLiveCache("searchNameCategory")
-        self._clearLiveCache("retrieveKeySlot")
-        self._clearLiveCache("retrieveKeySplit")
-        self._clearLiveCache("searchKeySlot")
-        self._clearLiveCache("searchKeySlotTag")
-        self._clearLiveCache("retrieveKeySlotAggregated")
-        self._clearLiveCache("getStrictData")
+        self._cursor().execute("""
+        UPDATE baseinfo SET category = %s WHERE idpackage = %s
+        """, (category, package_id,))
 
     def setCategoryDescription(self, category, description_data):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM categoriesdescription WHERE category = (?)
+        DELETE FROM categoriesdescription WHERE category = %s
         """, (category,))
         for locale in description_data:
             mydesc = description_data[locale]
             self._cursor().execute("""
-            INSERT INTO categoriesdescription VALUES (?,?,?)
+            INSERT INTO categoriesdescription VALUES (%s, %s, %s)
             """, (category, locale, mydesc,))
 
     def setName(self, package_id, name):
@@ -1459,23 +1324,16 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET name = (?) WHERE idpackage = (?)
+        UPDATE baseinfo SET name = %s WHERE idpackage = %s
         """, (name, package_id,))
-        self._clearLiveCache("searchNameCategory")
-        self._clearLiveCache("retrieveKeySlot")
-        self._clearLiveCache("retrieveKeySplit")
-        self._clearLiveCache("searchKeySlot")
-        self._clearLiveCache("searchKeySlotTag")
-        self._clearLiveCache("retrieveKeySlotAggregated")
-        self._clearLiveCache("getStrictData")
 
     def setDependency(self, iddependency, dependency):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE dependenciesreference SET dependency = (?)
-        WHERE iddependency = (?)
+        UPDATE dependenciesreference SET dependency = %s
+        WHERE iddependency = %s
         """, (dependency, iddependency,))
 
     def setAtom(self, package_id, atom):
@@ -1483,45 +1341,31 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)
+        UPDATE baseinfo SET atom = %s WHERE idpackage = %s
         """, (atom, package_id,))
-        self._clearLiveCache("searchNameCategory")
-        self._clearLiveCache("getStrictScopeData")
-        self._clearLiveCache("getStrictData")
 
     def setSlot(self, package_id, slot):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)
+        UPDATE baseinfo SET slot = %s WHERE idpackage = %s
         """, (slot, package_id,))
-        self._clearLiveCache("retrieveSlot")
-        self._clearLiveCache("retrieveKeySlot")
-        self._clearLiveCache("searchKeySlot")
-        self._clearLiveCache("searchKeySlotTag")
-        self._clearLiveCache("retrieveKeySlotAggregated")
-        self._clearLiveCache("getStrictScopeData")
-        self._clearLiveCache("getStrictData")
 
     def setRevision(self, package_id, revision):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET revision = (?) WHERE idpackage = (?)
+        UPDATE baseinfo SET revision = %s WHERE idpackage = %s
         """, (revision, package_id,))
-        self._clearLiveCache("retrieveRevision")
-        self._clearLiveCache("getVersioningData")
-        self._clearLiveCache("getStrictScopeData")
-        self._clearLiveCache("getStrictData")
 
     def removeDependencies(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM dependencies WHERE idpackage = (?)
+        DELETE FROM dependencies WHERE idpackage = %s
         """, (package_id,))
 
     def insertDependencies(self, package_id, depdata):
@@ -1550,7 +1394,7 @@ class EntropyRepository(EntropyRepositoryBase):
         del dcache
 
         self._cursor().executemany("""
-        INSERT INTO dependencies VALUES (?,?,?)
+        INSERT into dependencies VALUES (%s, %s, %s)
         """, deps)
 
     def insertContent(self, package_id, content, already_formatted = False):
@@ -1579,11 +1423,11 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if already_formatted:
             self._cursor().executemany("""
-            INSERT INTO content VALUES (?,?,?)
+            INSERT INTO content VALUES (%s, %s, %s)
             """, MyIter(package_id, content, already_formatted))
         else:
             self._cursor().executemany("""
-            INSERT INTO content VALUES (?,?,?)
+            INSERT INTO content VALUES (%s, %s, %s)
             """, MyIter(package_id, content, already_formatted))
 
     def _insertContentSafety(self, package_id, content_safety):
@@ -1591,29 +1435,28 @@ class EntropyRepository(EntropyRepositoryBase):
         Currently supported: sha256, mtime.
         Insert into contentsafety table package files sha256sum and mtime.
         """
-        if self._doesTableExist("contentsafety"):
-            if isinstance(content_safety, dict):
-                self._cursor().executemany("""
-                INSERT INTO contentsafety VALUES (?,?,?,?)
-                """, [(package_id, k, v['mtime'], v['sha256']) \
-                          for k, v in content_safety.items()])
-            else:
-                # support for iterators containing tuples like this:
-                # (path, sha256, mtime)
-                class MyIterWrapper:
-                    def __init__(self, _iter):
-                        self._iter = _iter
-                    def __iter__(self):
-                        return self
-                    def next(self):
-                        path, sha256, mtime = self._iter.next()
-                        # this is the insert order, with mtime
-                        # and sha256 swapped.
-                        return package_id, path, mtime, sha256
+        if isinstance(content_safety, dict):
+            self._cursor().executemany("""
+            INSERT into contentsafety VALUES (%s, %s, %s, %s)
+            """, [(package_id, k, v['mtime'], v['sha256']) \
+                      for k, v in content_safety.items()])
+        else:
+            # support for iterators containing tuples like this:
+            # (path, sha256, mtime)
+            class MyIterWrapper:
+                def __init__(self, _iter):
+                    self._iter = _iter
+                def __iter__(self):
+                    return self
+                def next(self):
+                    path, sha256, mtime = self._iter.next()
+                    # this is the insert order, with mtime
+                    # and sha256 swapped.
+                    return package_id, path, mtime, sha256
 
-                self._cursor().executemany("""
-                INSERT INTO contentsafety VALUES (?,?,?,?)
-                """, MyIterWrapper(content_safety))
+            self._cursor().executemany("""
+            INSERT into contentsafety VALUES (%s, %s, %s, %s)
+            """, MyIterWrapper(content_safety))
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
         """
@@ -1626,14 +1469,15 @@ class EntropyRepository(EntropyRepositoryBase):
         @type libs_metadata: list
         """
         self._cursor().executemany("""
-        INSERT INTO provided_libs VALUES (?,?,?,?)
+        INSERT INTO provided_libs VALUES (%s, %s, %s, %s)
         """, [(package_id, x, y, z,) for x, y, z in libs_metadata])
 
     def insertAutomergefiles(self, package_id, automerge_data):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().executemany('INSERT INTO automergefiles VALUES (?,?,?)',
+        self._cursor().executemany("""
+        INSERT INTO automergefiles VALUES (%s, %s, %s)""",
             [(package_id, x, y,) for x, y in automerge_data])
 
     def _insertChangelog(self, category, name, changelog_txt):
@@ -1651,11 +1495,11 @@ class EntropyRepository(EntropyRepositoryBase):
         mytxt = changelog_txt.encode('raw_unicode_escape')
 
         self._cursor().execute("""
-        DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)
+        DELETE FROM packagechangelogs WHERE category = %s AND name = %s
         """, (category, name,))
 
         self._cursor().execute("""
-        INSERT INTO packagechangelogs VALUES (?,?,?)
+        INSERT INTO packagechangelogs VALUES (%s, %s, %s)
         """, (category, name, const_get_buffer()(mytxt),))
 
     def _insertLicenses(self, licenses_data):
@@ -1686,7 +1530,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # set() used after filter to remove duplicates
         self._cursor().executemany("""
-        INSERT INTO licensedata VALUES (?,?,?)
+        INSERT INTO licensedata VALUES (%s, %s, %s)
         """, list(map(my_mm, set(filter(my_mf, mylicenses)))))
 
     def _insertConfigProtect(self, package_id, idprotect, mask = False):
@@ -1711,7 +1555,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if mask:
             mytable += 'mask'
         self._cursor().execute("""
-        INSERT INTO %s VALUES (?,?)
+        INSERT INTO %s VALUES (%%s, %%s)
         """ % (mytable,), (package_id, idprotect,))
 
     def _insertMirrors(self, mirrors):
@@ -1756,7 +1600,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idkeyword,)
 
         self._cursor().executemany("""
-        INSERT INTO keywords VALUES (?,?)
+        INSERT INTO keywords VALUES (%s, %s)
         """, list(map(mymf, keywords)))
 
     def _insertUseflags(self, package_id, useflags):
@@ -1777,9 +1621,8 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, iduseflag,)
 
         self._cursor().executemany("""
-        INSERT INTO useflags VALUES (?,?)
+        INSERT INTO useflags VALUES (%s, %s)
         """, list(map(mymf, useflags)))
-        self._clearLiveCache("retrieveUseflags")
 
     def _insertSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
         """
@@ -1796,21 +1639,9 @@ class EntropyRepository(EntropyRepositoryBase):
         @keyword gpg: GPG signature file content
         @type gpg: string
         """
-        try:
-            # be optimistic and delay if condition, _doesColumnInTableExist
-            # is really slow
-            self._cursor().execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?,?)
-            """, (package_id, sha1, sha256, sha512, gpg))
-        except OperationalError:
-            # perhaps, gpg column does not exist, check now
-            if self._doesColumnInTableExist("packagesignatures", "gpg"):
-                # something is really wrong, and it's not about our cols
-                raise
-            # fallback to old instert (without gpg table)
-            self._cursor().execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?)
-            """, (package_id, sha1, sha256, sha512))
+        self._cursor().execute("""
+        INSERT INTO packagesignatures VALUES (%s, %s, %s, %s, %s)
+        """, (package_id, sha1, sha256, sha512, gpg))
 
     def _insertExtraDownload(self, package_id, package_downloads_data):
         """
@@ -1822,22 +1653,13 @@ class EntropyRepository(EntropyRepositoryBase):
             (download, type, size, md5, sha1, sha256, sha512, gpg) as keys
         @type package_downloads_data: list
         """
-        def _do_insert():
-            self._cursor().executemany("""
-            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?,?,?)
-            """, [(package_id, edw['download'], edw['type'], edw['size'],
-                    edw['disksize'], edw['md5'], edw['sha1'], edw['sha256'],
-                    edw['sha512'], edw['gpg']) for edw in \
-                        package_downloads_data])
-
-        try:
-            # be optimistic and delay if condition
-            _do_insert()
-        except OperationalError:
-            if self._doesTableExist("packagedownloads"):
-                raise
-            self._createPackageDownloadsTable()
-            _do_insert()
+        self._cursor().executemany("""
+        INSERT INTO packagedownloads VALUES
+        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, [(package_id, edw['download'], edw['type'], edw['size'],
+                edw['disksize'], edw['md5'], edw['sha1'], edw['sha256'],
+                edw['sha512'], edw['gpg']) for edw in \
+                    package_downloads_data])
 
     def _insertDesktopMime(self, package_id, metadata):
         """
@@ -1851,7 +1673,8 @@ class EntropyRepository(EntropyRepositoryBase):
         mime_data = [(package_id, x['name'], x['mimetype'], x['executable'],
             x['icon']) for x in metadata]
         self._cursor().executemany("""
-        INSERT INTO packagedesktopmime VALUES (?,?,?,?,?)""", mime_data)
+        INSERT INTO packagedesktopmime VALUES (%s, %s, %s, %s, %s)
+        """, mime_data)
 
     def _insertProvidedMime(self, package_id, mimetypes):
         """
@@ -1865,7 +1688,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mimetypes: list
         """
         self._cursor().executemany("""
-        INSERT INTO provided_mime VALUES (?,?)""",
+        INSERT INTO provided_mime VALUES (%s, %s)""",
             [(x, package_id) for x in mimetypes])
 
     def _insertSpmPhases(self, package_id, phases):
@@ -1881,7 +1704,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type phases: list
         """
         self._cursor().execute("""
-        INSERT INTO packagespmphases VALUES (?,?)
+        INSERT INTO packagespmphases VALUES (%s, %s)
         """, (package_id, phases,))
 
     def _insertSpmRepository(self, package_id, repository):
@@ -1896,7 +1719,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type repository: string
         """
         self._cursor().execute("""
-        INSERT INTO packagespmrepository VALUES (?,?)
+        INSERT INTO packagespmrepository VALUES (%s, %s)
         """, (package_id, repository,))
 
     def _insertSources(self, package_id, sources):
@@ -1921,7 +1744,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idsource,)
 
         self._cursor().executemany("""
-        INSERT INTO sources VALUES (?,?)
+        INSERT INTO sources VALUES (%s, %s)
         """, [x for x in map(mymf, sources) if x != 0])
 
     def _insertConflicts(self, package_id, conflicts):
@@ -1934,7 +1757,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type conflicts: list
         """
         self._cursor().executemany("""
-        INSERT INTO conflicts VALUES (?,?)
+        INSERT INTO conflicts VALUES (%s, %s)
         """, [(package_id, x,) for x in conflicts])
 
     def _insertProvide(self, package_id, provides):
@@ -1956,14 +1779,14 @@ class EntropyRepository(EntropyRepositoryBase):
         default_provides = [x for x in provides if x[1]]
 
         self._cursor().executemany("""
-        INSERT INTO provide VALUES (?,?,?)
+        INSERT INTO provide VALUES (%s, %s, %s)
         """, [(package_id, x, y,) for x, y in provides])
 
         if default_provides:
             # reset previously set default provides
             self._cursor().executemany("""
-            UPDATE provide SET is_default=0 WHERE atom = (?) AND
-            idpackage != (?)
+            UPDATE provide SET is_default=0 WHERE atom = %s AND
+            idpackage != %s
             """, default_provides)
 
     def _insertNeeded(self, package_id, neededs):
@@ -1984,7 +1807,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return (package_id, idneeded, elfclass,)
 
         self._cursor().executemany("""
-        INSERT INTO needed VALUES (?,?,?)
+        INSERT INTO needed VALUES (%s, %s, %s)
         """, list(map(mymf, neededs)))
 
     def _insertOnDiskSize(self, package_id, mysize):
@@ -1997,7 +1820,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type mysize: int
         """
         self._cursor().execute("""
-        INSERT INTO sizes VALUES (?,?)
+        INSERT INTO sizes VALUES (%s, %s)
         """, (package_id, mysize,))
 
     def _insertTrigger(self, package_id, trigger):
@@ -2013,7 +1836,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @type trigger: string
         """
         self._cursor().execute("""
-        INSERT INTO triggers VALUES (?,?)
+        INSERT INTO triggers VALUES (%s, %s)
         """, (package_id, const_get_buffer()(trigger),))
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
@@ -2022,7 +1845,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        INSERT OR REPLACE INTO entropy_branch_migration VALUES (?,?,?,?,?)
+        REPLACE INTO entropy_branch_migration VALUES (%s, %s, %s, %s, %s)
         """, (
                 repository, from_branch,
                 to_branch, post_migration_md5sum,
@@ -2036,8 +1859,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE entropy_branch_migration SET post_upgrade_md5sum = (?) WHERE
-        repository = (?) AND from_branch = (?) AND to_branch = (?)
+        UPDATE entropy_branch_migration SET post_upgrade_md5sum = %s WHERE
+        repository = %s AND from_branch = %s AND to_branch = %s
         """, (post_upgrade_md5sum, repository, from_branch, to_branch,))
 
 
@@ -2066,14 +1889,8 @@ class EntropyRepository(EntropyRepositoryBase):
             # special cases
             my_uid = self.getFakeSpmUid()
 
-        try:
-            self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
-                (my_uid, package_id, branch,))
-        except IntegrityError:
-            # we have a PRIMARY KEY we need to remove
-            self._migrateCountersTable()
-            self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
-                (my_uid, package_id, branch,))
+        self._cursor().execute('INSERT INTO counters VALUES (%s, %s, %s)',
+            (my_uid, package_id, branch,))
 
         return my_uid
 
@@ -2084,13 +1901,13 @@ class EntropyRepository(EntropyRepositoryBase):
         branch = self._settings['repositories']['branch']
 
         self._cursor().execute("""
-        DELETE FROM counters WHERE counter = (?)
-        AND branch = (?)
+        DELETE FROM counters WHERE counter = %s
+        AND branch = %s
         """, (spm_package_uid, branch,))
         # the "OR REPLACE" clause handles the UPDATE
         # of the counter value in case of clashing
         self._cursor().execute("""
-        INSERT OR REPLACE INTO counters VALUES (?,?,?);
+        REPLACE INTO counters VALUES (%s, %s, %s);
         """, (spm_package_uid, package_id, branch,))
 
     def setTrashedUid(self, spm_package_uid):
@@ -2098,7 +1915,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        INSERT OR REPLACE INTO trashedcounters VALUES (?)
+        REPLACE INTO trashedcounters VALUES %s
         """, (spm_package_uid,))
 
     def removeTrashedUids(self, spm_package_uids):
@@ -2107,7 +1924,7 @@ class EntropyRepository(EntropyRepositoryBase):
         the "trashed" list. This is only used by Entropy Server.
         """
         self._cursor().executemany("""
-        DELETE FROM trashedcounters WHERE counter = (?)
+        DELETE FROM trashedcounters WHERE counter = %s
         """, [(x,) for x in spm_package_uids])
 
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
@@ -2117,19 +1934,19 @@ class EntropyRepository(EntropyRepositoryBase):
         branchstring = ''
         insertdata = (spm_package_uid, package_id)
         if branch:
-            branchstring = ', branch = (?)'
+            branchstring = ', branch = %s'
             insertdata += (branch,)
 
         self._cursor().execute("""
-        UPDATE or REPLACE counters SET counter = (?) %s
-        WHERE idpackage = (?)""" % (branchstring,), insertdata)
+        UPDATE or REPLACE counters SET counter = %%s %s
+        WHERE idpackage = %%s""" % (branchstring,), insertdata)
 
     def setContentSafety(self, package_id, content_safety):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM contentsafety where idpackage = (?)
+        DELETE FROM contentsafety where idpackage = %s
         """, (package_id,))
         self._insertContentSafety(package_id, content_safety)
 
@@ -2148,7 +1965,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # create random table
         self._cursor().executescript("""
             DROP TABLE IF EXISTS `%s`;
-            CREATE TEMPORARY TABLE `%s` ( file VARCHAR, ftype VARCHAR );
+            CREATE TEMPORARY TABLE `%s` ( file VARCHAR(75), ftype VARCHAR(3) );
             """ % (randomtable, randomtable,)
         )
 
@@ -2156,7 +1973,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
             content_iter = dbconn.retrieveContentIter(dbconn_package_id)
             self._cursor().executemany("""
-            INSERT INTO `%s` VALUES (?, ?)""" % (randomtable,),
+            INSERT INTO `%s` VALUES (%%s, %%s)""" % (randomtable,),
                 content_iter)
 
             # remove this when the one in retrieveContent will be removed
@@ -2168,7 +1985,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 ftype_str = ", type"
             cur = self._cursor().execute("""
             SELECT file%s FROM content
-            WHERE content.idpackage = (?) AND
+            WHERE content.idpackage = %%s AND
             content.file NOT IN (SELECT file from `%s`)""" % (
                     ftype_str, randomtable,), (package_id,))
 
@@ -2228,20 +2045,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Cleanup "changelog" metadata unused references to save space.
         """
-        if self._isBaseinfoExtrainfo2010():
-            self._cursor().execute("""
-            DELETE FROM packagechangelogs
-            WHERE category || "/" || name NOT IN
-            (SELECT baseinfo.category || "/" || baseinfo.name FROM baseinfo)
-            """)
-        else:
-            self._cursor().execute("""
-            DELETE FROM packagechangelogs
-            WHERE category || "/" || name NOT IN
-            (SELECT categories.category || "/" || baseinfo.name
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory)
-            """)
+        self._cursor().execute("""
+        DELETE FROM packagechangelogs
+        WHERE CONCAT(category, '/', name) NOT IN
+        (SELECT CONCAT(baseinfo.category, '/', baseinfo.name) FROM baseinfo)
+        """)
 
     def getFakeSpmUid(self):
         """
@@ -2250,7 +2058,7 @@ class EntropyRepository(EntropyRepositoryBase):
         try:
             cur = self._cursor().execute('SELECT min(counter) FROM counters')
             dbcounter = cur.fetchone()
-        except Error:
+        except MySQLProxy.exceptions().Error:
             # first available counter
             return -2
 
@@ -2280,8 +2088,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT dependency FROM dependenciesreference WHERE iddependency = (?)
-        LIMIT 1
+        SELECT dependency FROM dependenciesreference WHERE iddependency = %s
         """, (iddependency,))
         dep = cur.fetchone()
         if dep:
@@ -2292,7 +2099,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = (?)
+        SELECT idpackage FROM baseinfo WHERE atom = %s
         """, (atom,))
         return self._cur2frozenset(cur)
 
@@ -2304,16 +2111,14 @@ class EntropyRepository(EntropyRepositoryBase):
         if endswith:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo
-            WHERE extrainfo.download LIKE (?) AND
+            WHERE extrainfo.download LIKE %s AND
             baseinfo.idpackage = extrainfo.idpackage
-            LIMIT 1
             """, ("%"+download_relative_path,))
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo
-            WHERE extrainfo.download = (?) AND
+            WHERE extrainfo.download = %s AND
             baseinfo.idpackage = extrainfo.idpackage
-            LIMIT 1
             """, (download_relative_path,))
 
         package_id = cur.fetchone()
@@ -2325,163 +2130,75 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("getVersioningData")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, version, versiontag, revision FROM baseinfo
-            """)
-            cached = dict((pkg_id, (ver, tag, rev)) for pkg_id, ver, tag,
-                rev in cur.fetchall())
-            self._setLiveCache("getVersioningData", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT version, versiontag, revision FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        return cur.fetchone()
 
     def getStrictData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("getStrictData")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT idpackage, category || "/" || name, slot, version,
-                    versiontag, revision, atom FROM baseinfo
-                """)
-            else:
-                # we must guarantee backward compatibility
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage, categories.category || "/" ||
-                    baseinfo.name, baseinfo.slot, baseinfo.version,
-                    baseinfo.versiontag, baseinfo.revision, baseinfo.atom
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """)
-            cached = dict((pkg_id, (key, slot, version, tag, rev, atom)) for
-                pkg_id, key, slot, version, tag, rev, atom in cur.fetchall())
-            self._setLiveCache("getStrictData", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT CONCAT(category, '/', name), slot, version,
+            versiontag, revision, atom FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        return cur.fetchone()
 
     def getStrictScopeData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("getStrictScopeData")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, atom, slot, revision FROM baseinfo
-            """)
-            cached = dict((pkg_id, (atom, slot, rev)) for pkg_id, atom, slot,
-                rev in cur.fetchall())
-            self._setLiveCache("getStrictScopeData", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT atom, slot, revision FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        return cur.fetchone()
 
     def getScopeData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT atom, category, name, version, slot, versiontag,
-                revision, branch, etpapi FROM baseinfo
-            WHERE baseinfo.idpackage = (?)""", (package_id,))
-        else:
-            # we must guarantee backward compatibility
-            cur = self._cursor().execute("""
-            SELECT
-                baseinfo.atom,
-                categories.category,
-                baseinfo.name,
-                baseinfo.version,
-                baseinfo.slot,
-                baseinfo.versiontag,
-                baseinfo.revision,
-                baseinfo.branch,
-                baseinfo.etpapi
-            FROM
-                baseinfo,
-                categories
-            WHERE
-                baseinfo.idpackage = (?)
-                and baseinfo.idcategory = categories.idcategory
-            """, (package_id,))
+        cur = self._cursor().execute("""
+        SELECT atom, category, name, version, slot, versiontag,
+            revision, branch, etpapi FROM baseinfo
+        WHERE baseinfo.idpackage = %s""", (package_id,))
         return cur.fetchone()
 
     def getBaseData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            sql = """
-            SELECT
-                baseinfo.atom,
-                baseinfo.name,
-                baseinfo.version,
-                baseinfo.versiontag,
-                extrainfo.description,
-                baseinfo.category,
-                extrainfo.chost,
-                extrainfo.cflags,
-                extrainfo.cxxflags,
-                extrainfo.homepage,
-                baseinfo.license,
-                baseinfo.branch,
-                extrainfo.download,
-                extrainfo.digest,
-                baseinfo.slot,
-                baseinfo.etpapi,
-                extrainfo.datecreation,
-                extrainfo.size,
-                baseinfo.revision
-            FROM
-                baseinfo,
-                extrainfo
-            WHERE
-                baseinfo.idpackage = (?)
-                AND baseinfo.idpackage = extrainfo.idpackage
-            """
-        else:
-            sql = """
-            SELECT
-                baseinfo.atom,
-                baseinfo.name,
-                baseinfo.version,
-                baseinfo.versiontag,
-                extrainfo.description,
-                categories.category,
-                flags.chost,
-                flags.cflags,
-                flags.cxxflags,
-                extrainfo.homepage,
-                licenses.license,
-                baseinfo.branch,
-                extrainfo.download,
-                extrainfo.digest,
-                baseinfo.slot,
-                baseinfo.etpapi,
-                extrainfo.datecreation,
-                extrainfo.size,
-                baseinfo.revision
-            FROM
-                baseinfo,
-                extrainfo,
-                categories,
-                flags,
-                licenses
-            WHERE
-                baseinfo.idpackage = (?)
-                and baseinfo.idpackage = extrainfo.idpackage
-                and baseinfo.idcategory = categories.idcategory
-                and extrainfo.idflags = flags.idflags
-                and baseinfo.idlicense = licenses.idlicense
-            """
+        sql = """
+        SELECT
+            baseinfo.atom,
+            baseinfo.name,
+            baseinfo.version,
+            baseinfo.versiontag,
+            extrainfo.description,
+            baseinfo.category,
+            extrainfo.chost,
+            extrainfo.cflags,
+            extrainfo.cxxflags,
+            extrainfo.homepage,
+            baseinfo.license,
+            baseinfo.branch,
+            extrainfo.download,
+            extrainfo.digest,
+            baseinfo.slot,
+            baseinfo.etpapi,
+            extrainfo.datecreation,
+            extrainfo.size,
+            baseinfo.revision
+        FROM
+            baseinfo,
+            extrainfo
+        WHERE
+            baseinfo.idpackage = %s
+            AND baseinfo.idpackage = extrainfo.idpackage
+        """
         cur = self._cursor().execute(sql, (package_id,))
         return cur.fetchone()
 
@@ -2499,7 +2216,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._live_cacher.clear()
-        super(EntropyRepository, self).clearCache()
+        super(EntropyMySQLRepository, self).clearCache()
         self._live_cacher.clear()
 
     def retrieveRepositoryUpdatesDigest(self, repository):
@@ -2507,7 +2224,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT digest FROM treeupdates WHERE repository = (?) LIMIT 1
+        SELECT digest FROM treeupdates WHERE repository = %s
         """, (repository,))
 
         mydigest = cur.fetchone()
@@ -2537,8 +2254,8 @@ class EntropyRepository(EntropyRepositoryBase):
         params = (repository,)
 
         cur = self._cursor().execute("""
-        SELECT command FROM treeupdatesactions WHERE 
-        repository = (?) order by date""", params)
+        SELECT command FROM treeupdatesactions WHERE
+        repository = %s order by date""", params)
         return self._cur2tuple(cur)
 
     def bumpTreeUpdatesActions(self, updates):
@@ -2547,7 +2264,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._cursor().execute('DELETE FROM treeupdatesactions')
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)
+        INSERT INTO treeupdatesactions VALUES (%s, %s, %s, %s, %s)
         """, updates)
 
     def removeTreeUpdatesActions(self, repository):
@@ -2555,7 +2272,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdatesactions WHERE repository = (?)
+        DELETE FROM treeupdatesactions WHERE repository = %s
         """, (repository,))
 
     def insertTreeUpdatesActions(self, updates, repository):
@@ -2564,7 +2281,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         myupdates = [[repository]+list(x) for x in updates]
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
+        INSERT INTO treeupdatesactions VALUES (NULL, %s, %s, %s, %s)
         """, myupdates)
 
     def setRepositoryUpdatesDigest(self, repository, digest):
@@ -2572,10 +2289,10 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdates where repository = (?)
+        DELETE FROM treeupdates where repository = %s
         """, (repository,))
         self._cursor().execute("""
-        INSERT INTO treeupdates VALUES (?,?)
+        INSERT INTO treeupdates VALUES (%s, %s)
         """, (repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
@@ -2588,7 +2305,7 @@ class EntropyRepository(EntropyRepositoryBase):
             if not self._doesTreeupdatesActionExist(repository, x, branch)
         ]
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
+        INSERT INTO treeupdatesactions VALUES (NULL, %s, %s, %s, %s)
         """, myupdates)
 
     def _doesTreeupdatesActionExist(self, repository, command, branch):
@@ -2609,8 +2326,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idupdate FROM treeupdatesactions
-        WHERE repository = (?) and command = (?)
-        and branch = (?)""", (repository, command, branch,))
+        WHERE repository = %s and command = %s
+        and branch = %s""", (repository, command, branch,))
 
         result = cur.fetchone()
         if result:
@@ -2636,7 +2353,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
 
-        self._cursor().executemany('INSERT INTO packagesets VALUES (?,?)',
+        self._cursor().executemany('INSERT INTO packagesets VALUES (%s, %s)',
             mysets)
 
     def retrievePackageSets(self):
@@ -2657,7 +2374,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT dependency FROM packagesets WHERE setname = (?)""",
+        SELECT dependency FROM packagesets WHERE setname = %s""",
             (setname,))
         return self._cur2frozenset(cur)
 
@@ -2666,7 +2383,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT atom FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        SELECT atom FROM baseinfo WHERE idpackage = %s
         """, (package_id,))
         atom = cur.fetchone()
         if atom:
@@ -2677,7 +2394,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT branch FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        SELECT branch FROM baseinfo WHERE idpackage = %s
         """, (package_id,))
         branch = cur.fetchone()
         if branch:
@@ -2688,7 +2405,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT data FROM triggers WHERE idpackage = (?) LIMIT 1
+        SELECT data FROM triggers WHERE idpackage = %s
         """, (package_id,))
         trigger = cur.fetchone()
         if not trigger:
@@ -2701,7 +2418,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT download FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        SELECT download FROM extrainfo WHERE idpackage = %s
         """, (package_id,))
         download = cur.fetchone()
         if download:
@@ -2712,7 +2429,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT description FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        SELECT description FROM extrainfo WHERE idpackage = %s
         """, (package_id,))
         description = cur.fetchone()
         if description:
@@ -2723,7 +2440,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT homepage FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        SELECT homepage FROM extrainfo WHERE idpackage = %s
         """, (package_id,))
         home = cur.fetchone()
         if home:
@@ -2735,7 +2452,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT counters.counter FROM counters,baseinfo
-        WHERE counters.idpackage = (?) AND
+        WHERE counters.idpackage = %s AND
         baseinfo.idpackage = counters.idpackage AND
         baseinfo.branch = counters.branch LIMIT 1
         """, (package_id,))
@@ -2749,7 +2466,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT size FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        SELECT size FROM extrainfo WHERE idpackage = %s
         """, (package_id,))
         size = cur.fetchone()
         if size:
@@ -2763,7 +2480,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT size FROM sizes WHERE idpackage = (?) LIMIT 1
+        SELECT size FROM sizes WHERE idpackage = %s
         """, (package_id,))
         size = cur.fetchone()
         if size:
@@ -2774,35 +2491,23 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveDigest")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, digest FROM extrainfo
-            """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveDigest", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT digest FROM extrainfo WHERE idpackage = %s
+        """, (package_id,))
+        digest = cur.fetchone()
+        if digest:
+            return digest[0]
+        return None
 
     def retrieveSignatures(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        try:
-            cur = self._cursor().execute("""
-            SELECT sha1, sha256, sha512, gpg FROM packagesignatures
-            WHERE idpackage = (?) LIMIT 1
-            """, (package_id,))
-            data = cur.fetchone()
-        except OperationalError:
-            # TODO: remove this before 31-12-2011
-            cur = self._cursor().execute("""
-            SELECT sha1, sha256, sha512 FROM packagesignatures
-            WHERE idpackage = (?) LIMIT 1
-            """, (package_id,))
-            data = cur.fetchone() + (None,)
+        cur = self._cursor().execute("""
+        SELECT sha1, sha256, sha512, gpg FROM packagesignatures
+        WHERE idpackage = %s
+        """, (package_id,))
+        data = cur.fetchone()
 
         if data:
             return data
@@ -2815,19 +2520,14 @@ class EntropyRepository(EntropyRepositoryBase):
         down_type_str = ""
         params = [package_id]
         if down_type is not None:
-            down_type_str = " AND down_type = (?)"
+            down_type_str = " AND down_type = %s"
             params.append(down_type)
 
-        try:
-            cur = self._cursor().execute("""
-            SELECT download, type, size, disksize, md5, sha1,
-                sha256, sha512, gpg
-            FROM packagedownloads WHERE idpackage = (?)
-            """ + down_type_str, params)
-        except OperationalError:
-            if self._doesTableExist("packagedownloads"):
-                raise
-            return tuple()
+        cur = self._cursor().execute("""
+        SELECT download, type, size, disksize, md5, sha1,
+            sha256, sha512, gpg
+        FROM packagedownloads WHERE idpackage = %s
+        """ + down_type_str, params)
 
         result = []
         for download, d_type, size, d_size, md5, sha1, sha256, sha512, gpg in \
@@ -2850,7 +2550,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT name FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        SELECT name FROM baseinfo WHERE idpackage = %s
         """, (package_id,))
         name = cur.fetchone()
         if name:
@@ -2860,134 +2560,78 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveKeySplit")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT idpackage, category, name FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage, categories.category, baseinfo.name
-                FROM baseinfo, categories
-                WHERE categories.idcategory = baseinfo.idcategory
-                """)
-            cached = dict((pkg_id, (category, name)) for pkg_id, category,
-                name in cur.fetchall())
-            self._setLiveCache("retrieveKeySplit", cached)
-
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT category, name FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        return cur.fetchone()
 
     def retrieveKeySlot(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveKeySlot")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT idpackage, category || "/" || name, slot FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage,
-                    categories.category || "/" || baseinfo.name, baseinfo.slot
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """)
-            cached = dict((pkg_id, (key, slot)) for pkg_id, key, slot in \
-                cur.fetchall())
-            self._setLiveCache("retrieveKeySlot", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT CONCAT(category, '/', name), slot FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        return cur.fetchone()
 
     def retrieveKeySlotAggregated(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveKeySlotAggregated")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT idpackage, category || "/" || name || "%s" || slot
-                FROM baseinfo
-                """ % (etpConst['entropyslotprefix'],))
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage, categories.category || "/" ||
-                    baseinfo.name || "%s" || baseinfo.slot
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """ % (etpConst['entropyslotprefix'],))
-            cached = dict((pkg_id, key) for pkg_id, key in cur.fetchall())
-            self._setLiveCache("retrieveKeySlotAggregated", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT CONCAT(category, '/', name, '%s', slot) FROM baseinfo
+        WHERE idpackage = %%s
+        """ % (etpConst['entropyslotprefix'],), (package_id,))
+        keyslot = cur.fetchone()
+        if keyslot:
+            return keyslot[0]
+        return None
 
     def retrieveKeySlotTag(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT category || "/" || name, slot,
-            versiontag FROM baseinfo WHERE
-            idpackage = (?) LIMIT 1
-            """, (package_id,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT categories.category || "/" || baseinfo.name, baseinfo.slot,
-            baseinfo.versiontag FROM baseinfo, categories WHERE
-            baseinfo.idpackage = (?) AND
-            baseinfo.idcategory = categories.idcategory LIMIT 1
-            """, (package_id,))
+        cur = self._cursor().execute("""
+        SELECT CONCAT(category, '/', name), slot,
+        versiontag FROM baseinfo WHERE
+        idpackage = %s
+        """, (package_id,))
         return cur.fetchone()
 
     def retrieveVersion(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveVersion")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, version FROM baseinfo
-            """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveVersion", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT version FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        version = cur.fetchone()
+        if version:
+            return version[0]
+        return None
 
     def retrieveRevision(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveRevision")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, revision FROM baseinfo
-            """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveRevision", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT revision FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        rev = cur.fetchone()
+        if rev:
+            return rev[0]
+        return None
 
     def retrieveCreationDate(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT datecreation FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        SELECT datecreation FROM extrainfo WHERE idpackage = %s
         """, (package_id,))
         date = cur.fetchone()
         if date:
@@ -2998,7 +2642,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT etpapi FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        SELECT etpapi FROM baseinfo WHERE idpackage = %s
         """, (package_id,))
         api = cur.fetchone()
         if api:
@@ -3008,29 +2652,20 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveUseflags")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT useflags.idpackage, useflagsreference.flagname
-            FROM useflags, useflagsreference
-            WHERE useflags.idflag = useflagsreference.idflag
-            """)
-            cached = {}
-            for pkg_id, flag in cur.fetchall():
-                obj = cached.setdefault(pkg_id, set())
-                obj.add(flag)
-            self._setLiveCache("retrieveUseflags", cached)
-        # avoid python3.x memleak
-        obj = frozenset(cached.get(package_id, frozenset()))
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT useflagsreference.flagname
+        FROM useflags, useflagsreference
+        WHERE useflags.idpackage = %s
+        AND useflags.idflag = useflagsreference.idflag
+        """, (package_id,))
+        return self._cur2frozenset(cur)
 
     def retrieveSpmPhases(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT phases FROM packagespmphases WHERE idpackage = (?) LIMIT 1
+        SELECT phases FROM packagespmphases WHERE idpackage = %s
         """, (package_id,))
         spm_phases = cur.fetchone()
 
@@ -3043,7 +2678,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT repository FROM packagespmrepository
-        WHERE idpackage = (?) LIMIT 1
+        WHERE idpackage = %s
         """, (package_id,))
         spm_repo = cur.fetchone()
 
@@ -3054,12 +2689,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if not self._doesTableExist("packagedesktopmime"):
-            return []
-
         cur = self._cursor().execute("""
         SELECT name, mimetype, executable, icon FROM packagedesktopmime
-        WHERE idpackage = (?)""", (package_id,))
+        WHERE idpackage = %s""", (package_id,))
         data = []
         for row in cur.fetchall():
             item = {}
@@ -3072,11 +2704,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if not self._doesTableExist("provided_mime"):
-            return frozenset()
-
         cur = self._cursor().execute("""
-        SELECT mimetype FROM provided_mime WHERE idpackage = (?)""",
+        SELECT mimetype FROM provided_mime WHERE idpackage = %s""",
         (package_id,))
         return self._cur2frozenset(cur)
 
@@ -3086,7 +2715,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT library FROM needed,neededreference
-        WHERE needed.idpackage = (?) AND
+        WHERE needed.idpackage = %s AND
         needed.idneeded = neededreference.idneeded""", (package_id,))
         return self._cur2frozenset(cur)
 
@@ -3098,7 +2727,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
             cur = self._cursor().execute("""
             SELECT library,elfclass FROM needed,neededreference
-            WHERE needed.idpackage = (?) AND
+            WHERE needed.idpackage = %s AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
             needed = tuple(cur)
@@ -3107,7 +2736,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
             cur = self._cursor().execute("""
             SELECT library FROM needed,neededreference
-            WHERE needed.idpackage = (?) AND
+            WHERE needed.idpackage = %s AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
             needed = self._cur2tuple(cur)
@@ -3122,7 +2751,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT library, path, elfclass FROM provided_libs
-        WHERE idpackage = (?)
+        WHERE idpackage = %s
         """, (package_id,))
         return frozenset(cur)
 
@@ -3131,7 +2760,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT conflict FROM conflicts WHERE idpackage = (?)
+        SELECT conflict FROM conflicts WHERE idpackage = %s
         """, (package_id,))
         return self._cur2frozenset(cur)
 
@@ -3139,20 +2768,10 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        try:
-            # be optimistic, _doesColumnInTableExist is very slow.
-            cur = self._cursor().execute("""
-            SELECT atom,is_default FROM provide WHERE idpackage = (?)
-            """, (package_id,))
-        except OperationalError:
-            # TODO: remove this before 31-12-2011
-            if self._doesColumnInTableExist("provide", "is_default"):
-                # something is really wrong
-                raise
-            cur = self._cursor().execute("""
-            SELECT atom,0 FROM provide WHERE idpackage = (?)
-            """, (package_id,))
-
+        # be optimistic, _doesColumnInTableExist is very slow.
+        cur = self._cursor().execute("""
+        SELECT atom,is_default FROM provide WHERE idpackage = %s
+        """, (package_id,))
         return frozenset(cur)
 
     def retrieveDependenciesList(self, package_id, exclude_deptypes = None,
@@ -3169,10 +2788,10 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT dependenciesreference.dependency
         FROM dependencies, dependenciesreference
-        WHERE dependencies.idpackage = (?) AND
+        WHERE dependencies.idpackage = %%s AND
         dependencies.iddependency = dependenciesreference.iddependency %s
-        UNION SELECT "!" || conflict FROM conflicts
-        WHERE idpackage = (?)""" % (excluded_deptypes_query,),
+        UNION SELECT CONCAT('!', conflict) FROM conflicts
+        WHERE idpackage = %%s""" % (excluded_deptypes_query,),
         (package_id, package_id,))
         if resolve_conditional_deps:
             return frozenset(entropy.dep.expand_dependencies(cur, [self]))
@@ -3224,7 +2843,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         depstring = ''
         if deptype is not None:
-            depstring = 'and dependencies.type = (?)'
+            depstring = 'and dependencies.type = %s'
             searchdata += (deptype,)
 
         excluded_deptypes_query = ""
@@ -3237,7 +2856,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency,dependencies.type
             FROM dependencies,dependenciesreference
-            WHERE dependencies.idpackage = (?) AND
+            WHERE dependencies.idpackage = %%s AND
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
@@ -3246,7 +2865,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency
             FROM dependencies,dependenciesreference
-            WHERE dependencies.idpackage = (?) AND
+            WHERE dependencies.idpackage = %%s AND
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
@@ -3258,7 +2877,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT keywordname FROM keywords,keywordsreference
-        WHERE keywords.idpackage = (?) AND
+        WHERE keywords.idpackage = %s AND
         keywords.idkeyword = keywordsreference.idkeyword""", (package_id,))
         return self._cur2frozenset(cur)
 
@@ -3268,9 +2887,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT protect FROM configprotect,configprotectreference
-        WHERE configprotect.idpackage = (?) AND
+        WHERE configprotect.idpackage = %s AND
         configprotect.idprotect = configprotectreference.idprotect
-        LIMIT 1
         """, (package_id,))
 
         protect = cur.fetchone()
@@ -3284,7 +2902,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT protect FROM configprotectmask,configprotectreference
-        WHERE idpackage = (?) AND
+        WHERE idpackage = %s AND
         configprotectmask.idprotect = configprotectreference.idprotect
         """, (package_id,))
 
@@ -3299,7 +2917,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT sourcesreference.source FROM sources, sourcesreference
-        WHERE idpackage = (?) AND
+        WHERE idpackage = %s AND
         sources.idsource = sourcesreference.idsource
         """, (package_id,))
         sources = self._cur2frozenset(cur)
@@ -3333,7 +2951,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)
+        SELECT configfile, md5 FROM automergefiles WHERE idpackage = %s
         """, (package_id,))
         data = frozenset(cur)
 
@@ -3362,47 +2980,29 @@ class EntropyRepository(EntropyRepositoryBase):
                 order_by = "idpackage"
             order_by_string = ' order by %s' % (order_by,)
 
-        did_try = False
-        while True:
-            try:
+        cur = self._cursor().execute("""
+        SELECT %s file%s FROM content WHERE idpackage = %%s %s""" % (
+            extstring_package_id, extstring, order_by_string,),
+            searchkeywords)
 
-                cur = self._cursor().execute("""
-                SELECT %s file%s FROM content WHERE idpackage = (?) %s""" % (
-                    extstring_package_id, extstring, order_by_string,),
-                    searchkeywords)
+        if extended and insert_formatted:
+            fl = tuple(cur)
 
-                if extended and insert_formatted:
-                    fl = tuple(cur)
+        elif extended and formatted:
+            fl = {}
+            items = cur.fetchone()
+            while items:
+                fl[items[0]] = items[1]
+                items = cur.fetchone()
 
-                elif extended and formatted:
-                    fl = {}
-                    items = cur.fetchone()
-                    while items:
-                        fl[items[0]] = items[1]
-                        items = cur.fetchone()
+        elif extended:
+            fl = tuple(cur)
 
-                elif extended:
-                    fl = tuple(cur)
-
-                else:
-                    if order_by:
-                        fl = self._cur2tuple(cur)
-                    else:
-                        fl = self._cur2frozenset(cur)
-
-                break
-
-            except OperationalError:
-
-                if did_try:
-                    raise
-                did_try = True
-
-                # TODO: remove this before 31-12-2011
-                # Support for old entropy db entries, which were
-                # not inserted in utf-8
-                self._connection().text_factory = const_convert_to_unicode
-                continue
+        else:
+            if order_by:
+                fl = self._cur2tuple(cur)
+            else:
+                fl = self._cur2frozenset(cur)
 
         return fl
 
@@ -3436,7 +3036,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 order_by, ordering_term)
 
         cur = self._cursor().execute("""
-        SELECT file, type FROM content WHERE idpackage = (?) %s""" % (
+        SELECT file, type FROM content WHERE idpackage = %%s %s""" % (
             order_by_string,), searchkeywords)
         return MyIter(cur)
 
@@ -3444,12 +3044,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2012
-        if not self._doesTableExist('contentsafety'):
-            return {}
-
         cur = self._cursor().execute("""
-        SELECT file, sha256, mtime from contentsafety WHERE idpackage = (?)
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = %s
         """, (package_id,))
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
             sha256, mtime in cur.fetchall())
@@ -3458,10 +3054,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2012
-        if not self._doesTableExist('contentsafety'):
-            return {}
-
         class MyIter:
 
             def __init__(self, _cur):
@@ -3474,7 +3066,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 return self._cur.next()
 
         cur = self._cursor().execute("""
-        SELECT file, sha256, mtime from contentsafety WHERE idpackage = (?)
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = %s
         """, (package_id,))
         return MyIter(cur)
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
@@ -3484,25 +3076,13 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT packagechangelogs.changelog
-            FROM packagechangelogs, baseinfo
-            WHERE baseinfo.idpackage = (?) AND
-            packagechangelogs.category = baseinfo.category AND
-            packagechangelogs.name = baseinfo.name
-            LIMIT 1
-            """, (package_id,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT packagechangelogs.changelog
-            FROM packagechangelogs, baseinfo, categories
-            WHERE baseinfo.idpackage = (?) AND
-            baseinfo.idcategory = categories.idcategory AND
-            packagechangelogs.name = baseinfo.name AND
-            packagechangelogs.category = categories.category
-            LIMIT 1
-            """, (package_id,))
+        cur = self._cursor().execute("""
+        SELECT packagechangelogs.changelog
+        FROM packagechangelogs, baseinfo
+        WHERE baseinfo.idpackage = %s AND
+        packagechangelogs.category = baseinfo.category AND
+        packagechangelogs.name = baseinfo.name
+        """, (package_id,))
         changelog = cur.fetchone()
         if changelog:
             changelog = changelog[0]
@@ -3518,8 +3098,8 @@ class EntropyRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT changelog FROM packagechangelogs WHERE category = (?) AND
-        name = (?) LIMIT 1
+        SELECT changelog FROM packagechangelogs WHERE category = %s AND
+        name = %s
         """, (category, name,))
 
         changelog = cur.fetchone()
@@ -3530,41 +3110,34 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveSlot")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, slot FROM baseinfo
-            """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveSlot", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT slot FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        slot = cur.fetchone()
+        if slot:
+            return slot[0]
+        return None
 
     def retrieveTag(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveTag")
-        # gain 2% speed on atomMatch()
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, versiontag FROM baseinfo
-            """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveTag", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT versiontag FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        tag = cur.fetchone()
+        if tag:
+            return tag[0]
+        return None
 
     def retrieveMirrorData(self, mirrorname):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)
+        SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = %s
         """, (mirrorname,))
         return self._cur2frozenset(cur)
 
@@ -3572,25 +3145,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("retrieveCategory")
-        # this gives 14% speed boost in atomMatch()
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT idpackage, category FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage, categories.category
-                FROM baseinfo,categories WHERE
-                baseinfo.idcategory = categories.idcategory
-                """)
-            cached = dict(cur)
-            self._setLiveCache("retrieveCategory", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT category FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
+        category = cur.fetchone()
+        if category:
+            return category[0]
+        return None
 
     def retrieveCategoryDescription(self, category):
         """
@@ -3598,7 +3160,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT description, locale FROM categoriesdescription
-        WHERE category = (?)
+        WHERE category = %s
         """, (category,))
 
         return dict((locale, desc,) for desc, locale in cur.fetchall())
@@ -3621,7 +3183,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 continue
 
             cur = self._cursor().execute("""
-            SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
+            SELECT text FROM licensedata WHERE licensename = %s
             """, (licname,))
             lictext = cur.fetchone()
             if lictext is not None:
@@ -3652,7 +3214,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 continue
 
             cur = self._cursor().execute("""
-            SELECT licensename FROM licensedata WHERE licensename = (?) LIMIT 1
+            SELECT licensename FROM licensedata WHERE licensename = %s
             """, (licname,))
             lic_id = cur.fetchone()
             if lic_id:
@@ -3667,7 +3229,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
+        SELECT text FROM licensedata WHERE licensename = %s
         """, (license_name,))
 
         text = cur.fetchone()
@@ -3678,17 +3240,10 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT license FROM baseinfo
-            WHERE idpackage = (?) LIMIT 1
-            """, (package_id,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT license FROM baseinfo,licenses
-            WHERE baseinfo.idpackage = (?) AND
-            baseinfo.idlicense = licenses.idlicense LIMIT 1
-            """, (package_id,))
+        cur = self._cursor().execute("""
+        SELECT license FROM baseinfo
+        WHERE idpackage = %s
+        """, (package_id,))
 
         licname = cur.fetchone()
         if licname:
@@ -3698,15 +3253,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT chost,cflags,cxxflags FROM extrainfo
-            WHERE extrainfo.idpackage = (?)""", (package_id,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT chost,cflags,cxxflags FROM flags,extrainfo
-            WHERE extrainfo.idpackage = (?) AND
-            extrainfo.idflags = flags.idflags""", (package_id,))
+        cur = self._cursor().execute("""
+        SELECT chost,cflags,cxxflags FROM extrainfo
+        WHERE extrainfo.idpackage = %s""", (package_id,))
         flags = cur.fetchone()
         if not flags:
             flags = ("N/A", "N/A", "N/A",)
@@ -3755,47 +3304,24 @@ class EntropyRepository(EntropyRepositoryBase):
                     excluded_deptypes_query, dep_ids_str,))
                 result = self._cur2frozenset(cur)
         elif key_slot:
-            if self._isBaseinfoExtrainfo2010():
-                if extended:
-                    cur = self._cursor().execute("""
-                    SELECT baseinfo.category || "/" || baseinfo.name,
-                        baseinfo.slot, dependenciesreference.dependency
-                    FROM baseinfo, dependencies, dependenciesreference
-                    WHERE baseinfo.idpackage = dependencies.idpackage %s AND
-                    dependencies.iddependency =
-                        dependenciesreference.iddependency AND
-                    dependencies.iddependency IN ( %s )""" % (
-                        excluded_deptypes_query, dep_ids_str,))
-                else:
-                    cur = self._cursor().execute("""
-                    SELECT baseinfo.category || "/" || baseinfo.name,
-                        baseinfo.slot
-                    FROM baseinfo, dependencies
-                    WHERE baseinfo.idpackage = dependencies.idpackage %s AND
-                    dependencies.iddependency IN ( %s )""" % (
-                        excluded_deptypes_query, dep_ids_str,))
+            if extended:
+                cur = self._cursor().execute("""
+                SELECT CONCAT(baseinfo.category, '/', baseinfo.name),
+                    baseinfo.slot, dependenciesreference.dependency
+                FROM baseinfo, dependencies, dependenciesreference
+                WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+                dependencies.iddependency =
+                    dependenciesreference.iddependency AND
+                dependencies.iddependency IN ( %s )""" % (
+                    excluded_deptypes_query, dep_ids_str,))
             else:
-                if extended:
-                    cur = self._cursor().execute("""
-                    SELECT categories.category || "/" || baseinfo.name,
-                        baseinfo.slot, dependenciesreference.dependency
-                    FROM baseinfo, categories,
-                        dependencies, dependenciesreference
-                    WHERE baseinfo.idpackage = dependencies.idpackage AND
-                    dependencies.iddependency =
-                        dependenciesreference.iddependency AND
-                    categories.idcategory = baseinfo.idcategory %s AND
-                    dependencies.iddependency IN ( %s )""" % (
-                        excluded_deptypes_query, dep_ids_str,))
-                else:
-                    cur = self._cursor().execute("""
-                    SELECT categories.category || "/" || baseinfo.name,
-                        baseinfo.slot
-                    FROM baseinfo, categories, dependencies
-                    WHERE baseinfo.idpackage = dependencies.idpackage AND
-                    categories.idcategory = baseinfo.idcategory %s AND
-                    dependencies.iddependency IN ( %s )""" % (
-                        excluded_deptypes_query, dep_ids_str,))
+                cur = self._cursor().execute("""
+                SELECT CONCAT(baseinfo.category, '/', baseinfo.name),
+                    baseinfo.slot
+                FROM baseinfo, dependencies
+                WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+                dependencies.iddependency IN ( %s )""" % (
+                    excluded_deptypes_query, dep_ids_str,))
             result = tuple(cur)
         elif excluded_deptypes_query:
             if extended:
@@ -3879,30 +3405,12 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        SELECT idpackage FROM baseinfo WHERE idpackage = %s
         """, (package_id,))
         result = cur.fetchone()
         if not result:
             return False
         return True
-
-    def _isCategoryAvailable(self, category):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-        Return whether given category is available in repository.
-
-        @param category: category name
-        @type category: string
-        @return: availability (True if available)
-        @rtype: bool
-        """
-        cur = self._cursor().execute("""
-        SELECT idcategory FROM categories WHERE category = (?) LIMIT 1
-        """, (category,))
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
 
     def _isProtectAvailable(self, protect):
         """
@@ -3916,35 +3424,9 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: bool
         """
         cur = self._cursor().execute("""
-        SELECT idprotect FROM configprotectreference WHERE protect = (?)
-        LIMIT 1
+        SELECT idprotect FROM configprotectreference WHERE protect = %s
         """, (protect,))
         result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
-
-    def _isLicenseAvailable(self, pkglicense):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Return whether license metdatatum (NOT license name) is available
-        in repository.
-
-        @param pkglicense: "license" package metadatum (returned by
-            retrieveLicense)
-        @type pkglicense: string
-        @return: "license" metadatum identifier (idlicense)
-        @rtype: int
-        """
-        if not entropy.tools.is_valid_string(pkglicense):
-            pkglicense = ' '
-
-        cur = self._cursor().execute("""
-        SELECT idlicense FROM licenses WHERE license = (?) LIMIT 1
-        """, (pkglicense,))
-        result = cur.fetchone()
-
         if result:
             return result[0]
         return -1
@@ -3954,7 +3436,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM content WHERE file = (?)""", (path,))
+        SELECT idpackage FROM content WHERE file = %s""", (path,))
         result = self._cur2frozenset(cur)
         if get_id:
             return result
@@ -3969,18 +3451,18 @@ class EntropyRepository(EntropyRepositoryBase):
         args = (needed,)
         elfclass_txt = ''
         if elfclass != -1:
-            elfclass_txt = ' AND provided_libs.elfclass = (?)'
+            elfclass_txt = ' AND provided_libs.elfclass = %s'
             args = (needed, elfclass,)
 
         if extended:
             cur = self._cursor().execute("""
             SELECT idpackage, path FROM provided_libs
-            WHERE library = (?)""" + elfclass_txt, args)
+            WHERE library = %s""" + elfclass_txt, args)
             return frozenset(cur)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM provided_libs
-        WHERE library = (?)""" + elfclass_txt, args)
+        WHERE library = %s""" + elfclass_txt, args)
         return self._cur2frozenset(cur)
 
     def _isSourceAvailable(self, source):
@@ -3994,7 +3476,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idsource FROM sourcesreference WHERE source = (?) LIMIT 1
+        SELECT idsource FROM sourcesreference WHERE source = %s
         """, (source,))
         result = cur.fetchone()
         if result:
@@ -4012,8 +3494,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT iddependency FROM dependenciesreference WHERE dependency = (?)
-        LIMIT 1""", (dependency,))
+        SELECT iddependency FROM dependenciesreference WHERE dependency = %s
+        """, (dependency,))
         result = cur.fetchone()
         if result:
             return result[0]
@@ -4030,7 +3512,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idkeyword FROM keywordsreference WHERE keywordname = (?) LIMIT 1
+        SELECT idkeyword FROM keywordsreference WHERE keywordname = %s
         """, (keyword,))
         result = cur.fetchone()
         if result:
@@ -4048,7 +3530,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idflag FROM useflagsreference WHERE flagname = (?) LIMIT 1
+        SELECT idflag FROM useflagsreference WHERE flagname = %s
         """, (useflag,))
         result = cur.fetchone()
         if result:
@@ -4060,7 +3542,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idneeded FROM neededreference WHERE library = (?) LIMIT 1
+        SELECT idneeded FROM neededreference WHERE library = %s
         """, (needed,))
         result = cur.fetchone()
         if result:
@@ -4072,7 +3554,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT counter FROM counters WHERE counter = (?) LIMIT 1
+        SELECT counter FROM counters WHERE counter = %s
         """, (spm_uid,))
         result = cur.fetchone()
         if result:
@@ -4084,7 +3566,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT counter FROM trashedcounters WHERE counter = (?) LIMIT 1
+        SELECT counter FROM trashedcounters WHERE counter = %s
         """, (spm_uid,))
         result = cur.fetchone()
         if result:
@@ -4096,7 +3578,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT licensename FROM licensedata WHERE licensename = (?) LIMIT 1
+        SELECT licensename FROM licensedata WHERE licensename = %s
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -4108,8 +3590,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT licensename FROM licenses_accepted WHERE licensename = (?)
-        LIMIT 1
+        SELECT licensename FROM licenses_accepted WHERE licensename = %s
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -4121,10 +3602,10 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        super(EntropyRepository, self).acceptLicense(license_name)
+        super(EntropyMySQLRepository, self).acceptLicense(license_name)
 
         self._cursor().execute("""
-        INSERT OR IGNORE INTO licenses_accepted VALUES (?)
+        INSERT IGNORE INTO licenses_accepted VALUES (%s)
         """, (license_name,))
 
     def isSystemPackage(self, package_id):
@@ -4132,7 +3613,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM systempackages WHERE idpackage = (?) LIMIT 1
+        SELECT idpackage FROM systempackages WHERE idpackage = %s
         """, (package_id,))
         result = cur.fetchone()
         if result:
@@ -4144,37 +3625,12 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM injected WHERE idpackage = (?) LIMIT 1
+        SELECT idpackage FROM injected WHERE idpackage = %s
         """, (package_id,))
         result = cur.fetchone()
         if result:
             return True
         return False
-
-    def _areCompileFlagsAvailable(self, chost, cflags, cxxflags):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-        Return whether given Compiler FLAGS are available in repository.
-
-        @param chost: CHOST flag
-        @type chost: string
-        @param cflags: CFLAGS flag
-        @type cflags: string
-        @param cxxflags: CXXFLAGS flag
-        @type cxxflags: string
-        @return: availability (True if available)
-        @rtype: bool
-        """
-        cur = self._cursor().execute("""
-        SELECT idflags FROM flags WHERE chost = (?)
-        AND cflags = (?) AND cxxflags = (?) LIMIT 1
-        """,
-            (chost, cflags, cxxflags,)
-        )
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
 
     def searchBelongs(self, bfile, like = False):
         """
@@ -4183,11 +3639,11 @@ class EntropyRepository(EntropyRepositoryBase):
         if like:
             cur = self._cursor().execute("""
             SELECT content.idpackage FROM content,baseinfo
-            WHERE file LIKE (?) AND
+            WHERE file LIKE %s AND
             content.idpackage = baseinfo.idpackage""", (bfile,))
         else:
             cur = self._cursor().execute("""SELECT content.idpackage
-            FROM content, baseinfo WHERE file = (?)
+            FROM content, baseinfo WHERE file = %s
             AND content.idpackage = baseinfo.idpackage""", (bfile,))
 
         return self._cur2frozenset(cur)
@@ -4205,7 +3661,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idpackage, file, sha256, mtime
-        FROM contentsafety WHERE file = (?)""", (sfile,))
+        FROM contentsafety WHERE file = %s""", (sfile,))
         return tuple(({'package_id': x, 'path': y, 'sha256': z, 'mtime': m} for
             x, y, z, m in cur))
 
@@ -4215,12 +3671,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         if atoms:
             cur = self._cursor().execute("""
-            SELECT atom, idpackage FROM baseinfo WHERE versiontag = (?)
+            SELECT atom, idpackage FROM baseinfo WHERE versiontag = %s
             """, (tag,))
             return frozenset(cur)
 
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE versiontag = (?)
+        SELECT idpackage FROM baseinfo WHERE versiontag = %s
         """, (tag,))
         return self._cur2frozenset(cur)
 
@@ -4229,7 +3685,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE revision = (?)
+        SELECT idpackage FROM baseinfo WHERE revision = %s
         """, (revision,))
         return self._cur2frozenset(cur)
 
@@ -4240,21 +3696,17 @@ class EntropyRepository(EntropyRepositoryBase):
         if not entropy.tools.is_valid_string(keyword):
             return frozenset()
 
-        license_query = """baseinfo, licenses
-            WHERE LOWER(licenses.license) LIKE (?) AND
-            licenses.idlicense = baseinfo.idlicense"""
-        if self._isBaseinfoExtrainfo2010():
-            license_query = "baseinfo WHERE LOWER(baseinfo.license) LIKE (?)"
-
         if just_id:
             cur = self._cursor().execute("""
-            SELECT baseinfo.idpackage FROM %s
-            """ % (license_query,), ("%"+keyword+"%".lower(),))
+            SELECT baseinfo.idpackage FROM
+            baseinfo WHERE LOWER(baseinfo.license) LIKE %s
+            """, ("%"+keyword+"%".lower(),))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
-            SELECT baseinfo.atom, baseinfo.idpackage FROM %s
-            """ % (license_query,), ("%"+keyword+"%".lower(),))
+            SELECT baseinfo.atom, baseinfo.idpackage FROM
+            baseinfo WHERE LOWER(baseinfo.license) LIKE %s
+            """, ("%"+keyword+"%".lower(),))
             return frozenset(cur)
 
     def searchSlotted(self, keyword, just_id = False):
@@ -4263,11 +3715,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         if just_id:
             cur = self._cursor().execute("""
-            SELECT idpackage FROM baseinfo WHERE slot = (?)""", (keyword,))
+            SELECT idpackage FROM baseinfo WHERE slot = %s""", (keyword,))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
-            SELECT atom,idpackage FROM baseinfo WHERE slot = (?)
+            SELECT atom, idpackage FROM baseinfo WHERE slot = %s
             """, (keyword,))
             return frozenset(cur)
 
@@ -4275,60 +3727,22 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("searchKeySlot")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT category, name, slot, idpackage FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT categories.category, baseinfo.name, baseinfo.slot,
-                    baseinfo.idpackage
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """)
-            cached = {}
-            for d_cat, d_name, d_slot, pkg_id in cur.fetchall():
-                obj = cached.setdefault(
-                    (d_cat, d_name, d_slot), set())
-                obj.add(pkg_id)
-            self._setLiveCache("searchKeySlot", cached)
-        cat, name = key.split("/", 1)
-        # avoid python3.x memleak
-        obj = frozenset(cached.get((cat, name, slot), frozenset()))
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo
+        WHERE CONCAT(category, '/', name) = %s AND slot = %s
+        """, (key, slot,))
+        return self._cur2frozenset(cur)
 
     def searchKeySlotTag(self, key, slot, tag):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("searchKeySlotTag")
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT category, name, slot, versiontag, idpackage
-                FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT categories.category, baseinfo.name, baseinfo.slot,
-                    baseinfo.versiontag, baseinfo.idpackage
-                FROM baseinfo, categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """)
-            cached = {}
-            for d_cat, d_name, d_slot, d_tag, pkg_id in cur.fetchall():
-                obj = cached.setdefault(
-                    (d_cat, d_name, d_slot, d_tag), set())
-                obj.add(pkg_id)
-            self._setLiveCache("searchKeySlotTag", cached)
-        cat, name = key.split("/", 1)
-        # avoid python3.x memleak
-        obj = frozenset(cached.get((cat, name, slot, tag), frozenset()))
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo
+        WHERE CONCAT(category, '/', name) = %s AND slot = %s
+        AND tag = %s
+        """, (key, slot, tag))
+        return self._cur2frozenset(cur)
 
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
@@ -4339,19 +3753,19 @@ class EntropyRepository(EntropyRepositoryBase):
         elfsearch = ''
         search_args = (needed,)
         if elfclass != -1:
-            elfsearch = ' AND needed.elfclass = (?)'
+            elfsearch = ' AND needed.elfclass = %s'
             search_args = (needed, elfclass,)
 
         if like:
             cur = self._cursor().execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library LIKE (?) %s AND
+            WHERE library LIKE %%s %s AND
             needed.idneeded = neededreference.idneeded
             """ % (elfsearch,), search_args)
         else:
             cur = self._cursor().execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library = (?) %s AND
+            WHERE library = %%s %s AND
             needed.idneeded = neededreference.idneeded
             """ % (elfsearch,), search_args)
 
@@ -4364,12 +3778,12 @@ class EntropyRepository(EntropyRepositoryBase):
         keyword = "%"+conflict+"%"
         if strings:
             cur = self._cursor().execute("""
-            SELECT conflict FROM conflicts WHERE conflict LIKE (?)
+            SELECT conflict FROM conflicts WHERE conflict LIKE %s
             """, (keyword,))
             return self._cur2tuple(cur)
 
         cur = self._cursor().execute("""
-        SELECT idpackage, conflict FROM conflicts WHERE conflict LIKE (?)
+        SELECT idpackage, conflict FROM conflicts WHERE conflict LIKE %s
         """, (keyword,))
         return tuple(cur)
 
@@ -4387,7 +3801,7 @@ class EntropyRepository(EntropyRepositoryBase):
             item = 'dependency'
 
         cur = self._cursor().execute("""
-        SELECT %s FROM dependenciesreference WHERE dependency %s (?)
+        SELECT %s FROM dependenciesreference WHERE dependency %s %%s
         """ % (item, sign,), (dep,))
 
         if multi:
@@ -4403,7 +3817,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM dependencies WHERE iddependency = (?)
+        SELECT idpackage FROM dependencies WHERE iddependency = %s
         """, (dependency_id,))
         return self._cur2frozenset(cur)
 
@@ -4411,11 +3825,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME: remove this before 31-12-2011
-        if not self._doesTableExist("packagesets"):
-            return frozenset()
         cur = self._cursor().execute("""
-        SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)
+        SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE %s
         """, ("%"+keyword+"%",))
 
         return self._cur2frozenset(cur)
@@ -4424,12 +3835,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME: remove this before 31-12-2011
-        if not self._doesTableExist("provided_mime"):
-            return tuple()
         cur = self._cursor().execute("""
         SELECT provided_mime.idpackage FROM provided_mime, baseinfo
-        WHERE provided_mime.mimetype = (?)
+        WHERE provided_mime.mimetype = %s
         AND baseinfo.idpackage = provided_mime.idpackage
         ORDER BY baseinfo.atom""",
         (mimetype,))
@@ -4444,7 +3852,7 @@ class EntropyRepository(EntropyRepositoryBase):
             s_item = 'atom'
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        WHERE soundex(%s) = soundex((?)) ORDER BY %s
+        WHERE soundex(%s) = soundex(%%s) ORDER BY %s
         """ % (s_item, s_item,), (keyword,))
 
         return self._cur2tuple(cur)
@@ -4462,12 +3870,12 @@ class EntropyRepository(EntropyRepositoryBase):
         slotstring = ''
         if slot:
             searchkeywords += (slot,)
-            slotstring = ' AND slot = (?)'
+            slotstring = ' AND slot = %s'
 
         tagstring = ''
         if tag:
             searchkeywords += (tag,)
-            tagstring = ' AND versiontag = (?)'
+            tagstring = ' AND versiontag = %s'
 
         order_by_string = ''
         if order_by is not None:
@@ -4498,11 +3906,11 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT DISTINCT %s FROM (
                 SELECT %s FROM baseinfo t
-                    WHERE t.atom LIKE (?)
+                    WHERE t.atom LIKE %%s
                 UNION ALL
                 SELECT %s FROM baseinfo d, provide as p
                     WHERE d.idpackage = p.idpackage
-                    AND p.atom LIKE (?)
+                    AND p.atom LIKE %%s
             ) WHERE 1=1 %s %s %s
             """ % (search_elements, search_elements_all,
                 search_elements_provide_all, slotstring, tagstring,
@@ -4511,11 +3919,11 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT DISTINCT %s FROM (
                 SELECT %s FROM baseinfo t
-                    WHERE LOWER(t.atom) LIKE (?)
+                    WHERE LOWER(t.atom) LIKE %%s
                 UNION ALL
                 SELECT %s FROM baseinfo d, provide as p
                     WHERE d.idpackage = p.idpackage
-                    AND LOWER(p.atom) LIKE (?)
+                    AND LOWER(p.atom) LIKE %%s
             ) WHERE 1=1 %s %s %s
             """ % (search_elements, search_elements_all,
                 search_elements_provide_all, slotstring, tagstring,
@@ -4539,16 +3947,16 @@ class EntropyRepository(EntropyRepositoryBase):
             # be optimistic, cope with _doesColumnInTableExist slowness
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage,provide.is_default FROM baseinfo,provide
-            WHERE provide.atom = (?) AND
+            WHERE provide.atom = %s AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             # TODO: remove this before 31-12-2011
             if self._doesColumnInTableExist("provide", "is_default"):
                 # something is really wrong
                 raise
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage,0 FROM baseinfo,provide
-            WHERE provide.atom = (?) AND
+            WHERE provide.atom = %s AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
 
         return tuple(cur)
@@ -4561,7 +3969,7 @@ class EntropyRepository(EntropyRepositoryBase):
         query_str_list = []
         query_args = []
         for sub_keyword in keyword_split:
-            query_str_list.append("LOWER(extrainfo.description) LIKE (?)")
+            query_str_list.append("LOWER(extrainfo.description) LIKE %s")
             query_args.append("%" + sub_keyword + "%")
         query_str = " AND ".join(query_str_list)
         if just_id:
@@ -4587,7 +3995,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT useflags.idpackage FROM useflags, useflagsreference
             WHERE useflags.idflag = useflagsreference.idflag
-            AND useflagsreference.flagname = (?)
+            AND useflagsreference.flagname = %s
             """, (keyword,))
             return self._cur2frozenset(cur)
         else:
@@ -4596,7 +4004,7 @@ class EntropyRepository(EntropyRepositoryBase):
             FROM baseinfo, useflags, useflagsreference
             WHERE useflags.idflag = useflagsreference.idflag
             AND baseinfo.idpackage = useflags.idpackage
-            AND useflagsreference.flagname = (?)
+            AND useflagsreference.flagname = %s
             """, (keyword,))
             return frozenset(cur)
 
@@ -4607,14 +4015,14 @@ class EntropyRepository(EntropyRepositoryBase):
         if just_id:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.homepage) LIKE (?) AND
+            WHERE LOWER(extrainfo.homepage) LIKE %s AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom, baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.homepage) LIKE (?) AND
+            WHERE LOWER(extrainfo.homepage) LIKE %s AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
             return frozenset(cur)
@@ -4630,12 +4038,12 @@ class EntropyRepository(EntropyRepositoryBase):
         if sensitive:
             cur = self._cursor().execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE name = (?)
+            WHERE name = %%s
             """ % (atomstring,), (keyword,))
         else:
             cur = self._cursor().execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE LOWER(name) = (?)
+            WHERE LOWER(name) = %%s
             """ % (atomstring,), (keyword.lower(),))
 
         if just_id:
@@ -4647,34 +4055,20 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        like_string = "= (?)"
+        like_string = "= %s"
         if like:
-            like_string = "LIKE (?)"
+            like_string = "LIKE %s"
 
-        if self._isBaseinfoExtrainfo2010():
-            if just_id:
-                cur = self._cursor().execute("""
-                SELECT idpackage FROM baseinfo
-                WHERE baseinfo.category %s
-                """ % (like_string,), (keyword,))
-            else:
-                cur = self._cursor().execute("""
-                SELECT atom, idpackage FROM baseinfo
-                WHERE baseinfo.category %s
-                """ % (like_string,), (keyword,))
+        if just_id:
+            cur = self._cursor().execute("""
+            SELECT idpackage FROM baseinfo
+            WHERE baseinfo.category %s
+            """ % (like_string,), (keyword,))
         else:
-            if just_id:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.idpackage FROM baseinfo,categories
-                WHERE categories.category %s AND
-                baseinfo.idcategory = categories.idcategory
-                """ % (like_string,), (keyword,))
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
-                WHERE categories.category %s AND
-                baseinfo.idcategory = categories.idcategory
-                """ % (like_string,), (keyword,))
+            cur = self._cursor().execute("""
+            SELECT atom, idpackage FROM baseinfo
+            WHERE baseinfo.category %s
+            """ % (like_string,), (keyword,))
 
         if just_id:
             return self._cur2frozenset(cur)
@@ -4684,30 +4078,18 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("searchNameCategory")
-        # this gives 30% speed boost on atomMatch()
-        if cached is None:
-            if self._isBaseinfoExtrainfo2010():
-                cur = self._cursor().execute("""
-                SELECT name, category, atom, idpackage FROM baseinfo
-                """)
-            else:
-                cur = self._cursor().execute("""
-                SELECT baseinfo.name,categories.category,
-                baseinfo.atom, baseinfo.idpackage FROM baseinfo,categories
-                WHERE baseinfo.idcategory = categories.idcategory
-                """)
-            cached = {}
-            for nam, cat, atom, pkg_id in cur.fetchall():
-                obj = cached.setdefault((nam, cat), set())
-                obj.add((atom, pkg_id))
-            self._setLiveCache("searchNameCategory", cached)
-        data = frozenset(cached.get((name, category), frozenset()))
-        # This avoids memory leaks with python 3.x
-        del cached
         if just_id:
-            return frozenset((y for x, y in data))
-        return data
+            cur = self._cursor().execute("""
+            SELECT idpackage FROM baseinfo
+            WHERE name = %s AND category = %s
+            """, (name, category))
+            return self._cur2frozenset(cur)
+
+        cur = self._cursor().execute("""
+        SELECT atom, idpackage FROM baseinfo
+        WHERE name = %s AND category = %s
+        """, (name, category))
+        return tuple(cur)
 
     def isPackageScopeAvailable(self, atom, slot, revision):
         """
@@ -4716,7 +4098,7 @@ class EntropyRepository(EntropyRepositoryBase):
         searchdata = (atom, slot, revision,)
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        where atom = (?)  AND slot = (?) AND revision = (?) LIMIT 1
+        where atom = %s  AND slot = %s AND revision = %s
         """, searchdata)
         rslt = cur.fetchone()
 
@@ -4731,8 +4113,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT post_migration_md5sum, post_upgrade_md5sum
         FROM entropy_branch_migration
-        WHERE repository = (?) AND from_branch = (?) AND to_branch = (?)
-        LIMIT 1
+        WHERE repository = %s AND from_branch = %s AND to_branch = %s
         """, (repository, from_branch, to_branch,))
         return cur.fetchone()
 
@@ -4750,17 +4131,9 @@ class EntropyRepository(EntropyRepositoryBase):
                 order_by = "idpackage"
             order_by_string = ' order by %s' % (order_by,)
 
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT idpackage FROM baseinfo where category = (?)
-            """ + order_by_string, (category,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT idpackage FROM baseinfo, categories WHERE
-                categories.category = (?) AND
-                baseinfo.idcategory = categories.idcategory
-            """ + order_by_string, (category,))
-
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo where category = %s
+        """ + order_by_string, (category,))
         return self._cur2frozenset(cur)
 
     def listAllPackages(self, get_scope = False, order_by = None):
@@ -4828,7 +4201,7 @@ class EntropyRepository(EntropyRepositoryBase):
             if order_by:
                 return self._cur2tuple(cur)
             return self._cur2frozenset(cur)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             if order_by:
                 return tuple()
             return frozenset()
@@ -4875,14 +4248,9 @@ class EntropyRepository(EntropyRepositoryBase):
         order_string = ''
         if do_sort:
             order_string = ' ORDER BY download'
-        try:
-            cur = self._cursor().execute("""
-            SELECT download FROM packagedownloads
-            """ + order_string)
-        except OperationalError:
-            if self._doesTableExist("packagedownloads"):
-                raise
-            return tuple()
+        cur = self._cursor().execute("""
+        SELECT download FROM packagedownloads
+        """ + order_string)
 
         if do_sort:
             results = self._cur2tuple(cur)
@@ -4918,13 +4286,9 @@ class EntropyRepository(EntropyRepositoryBase):
                 raise AttributeError("invalid order_by argument")
             order_by_string = 'ORDER BY %s' % (order_by,)
 
-        if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute(
-                "SELECT DISTINCT category FROM baseinfo %s" % (
-                    order_by_string,))
-        else:
-            cur = self._cursor().execute(
-                "SELECT category FROM categories %s" % (order_by_string,))
+        cur = self._cursor().execute(
+            "SELECT DISTINCT category FROM baseinfo %s" % (
+                order_by_string,))
         return self._cur2frozenset(cur)
 
     def listConfigProtectEntries(self, mask = False):
@@ -4951,8 +4315,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET branch = (?)
-        WHERE idpackage = (?)""", (tobranch, package_id,))
+        UPDATE baseinfo SET branch = %s
+        WHERE idpackage = %s""", (tobranch, package_id,))
         self.clearCache()
 
     def getSetting(self, setting_name):
@@ -4967,9 +4331,9 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             cur = self._cursor().execute("""
-            SELECT setting_value FROM settings WHERE setting_name = (?)
+            SELECT setting_value FROM settings WHERE setting_name = %s
             """, (setting_name,))
-        except Error:
+        except MySQLProxy.exceptions().Error:
             obj = KeyError("cannot find setting_name '%s'" % (setting_name,))
             self.__settings_cache[setting_name] = obj
             raise obj
@@ -4992,7 +4356,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # Always force const_convert_to_unicode() to setting_value
         # and setting_name or "OR REPLACE" won't work (sqlite3 bug?)
         cur = self._cursor().execute("""
-        INSERT OR REPLACE INTO settings VALUES (?, ?)
+        REPLACE INTO settings VALUES (%s, %s)
         """, (const_convert_to_unicode(setting_name),
               const_convert_to_unicode(setting_value),))
         self.__settings_cache.clear()
@@ -5002,13 +4366,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Setup initial repository settings
         """
         query = """
-        INSERT OR REPLACE INTO settings VALUES ("arch", "%s");
-        INSERT OR REPLACE INTO settings VALUES ("on_delete_cascade", "%s");
-        """ % (etpConst['currentarch'], "1")
-        if EntropyRepository._SCHEMA_2010_SUPPORT:
-            query += """
-            INSERT OR REPLACE INTO settings VALUES ("_baseinfo_extrainfo_2010",
-            "%s");""" % ("1",)
+        REPLACE INTO settings VALUES ("arch", '%s');
+        """ % (etpConst['currentarch'],)
         self._cursor().executescript(query)
         self.commit()
         self.__settings_cache.clear()
@@ -5022,67 +4381,14 @@ class EntropyRepository(EntropyRepositoryBase):
         except (KeyError, ValueError):
             current_schema_rev = -1
 
-        if (current_schema_rev == EntropyRepository._SCHEMA_REVISION) and \
+        if (current_schema_rev == EntropyMySQLRepository._SCHEMA_REVISION) and \
             (not os.getenv("ETP_REPO_SCHEMA_UPDATE")):
             return
 
         old_readonly = self._readonly
         self._readonly = False
 
-        if not self._doesTableExist("packagedesktopmime"):
-            self._createPackageDesktopMimeTable()
-        if not self._doesTableExist("provided_mime"):
-            self._createProvidedMimeTable()
-
-        if not self._doesTableExist("licenses_accepted"):
-            self._createLicensesAcceptedTable()
-
-        if not self._doesColumnInTableExist("installedtable", "source"):
-            self._createInstalledTableSource()
-
-        if not self._doesColumnInTableExist("provide", "is_default"):
-            self._createProvideDefault()
-
-        if not self._doesTableExist("packagesets"):
-            self._createPackagesetsTable()
-
-        if not self._doesTableExist("packagechangelogs"):
-            self._createPackagechangelogsTable()
-
-        if not self._doesTableExist("automergefiles"):
-            self._createAutomergefilesTable()
-
-        if not self._doesTableExist("packagesignatures"):
-            self._createPackagesignaturesTable()
-        elif not self._doesColumnInTableExist("packagesignatures", "gpg"):
-            self._createPackagesignaturesGpgColumn()
-
-        if not self._doesTableExist("packagespmphases"):
-            self._createPackagespmphases()
-
-        if not self._doesTableExist("packagespmrepository"):
-            self._createPackagespmrepository()
-
-        if not self._doesTableExist("entropy_branch_migration"):
-            self._createEntropyBranchMigrationTable()
-
-        if not self._doesTableExist("settings"):
-            self._createSettingsTable()
-
-        # added on Aug, 2010
-        if not self._doesTableExist("contentsafety"):
-            self._createContentSafetyTable()
-        if not self._doesTableExist('provided_libs'):
-            self._createProvidedLibs()
-
-        # added on Aug. 2011
-        if not self._doesTableExist("packagedownloads"):
-            self._createPackageDownloadsTable()
-
-        # added on Sept. 2010, keep forever? ;-)
-        self._migrateBaseinfoExtrainfo()
-
-        self._foreignKeySupport()
+        # !!! insert schema changes here
 
         self._readonly = old_readonly
         self._connection().commit()
@@ -5091,21 +4397,14 @@ class EntropyRepository(EntropyRepositoryBase):
             # it seems that it's causing locking issues
             # so, just execute it when in read/write mode
             self._setSetting("schema_revision",
-                EntropyRepository._SCHEMA_REVISION)
+                EntropyMySQLRepository._SCHEMA_REVISION)
             self._connection().commit()
 
     def integrity_check(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("PRAGMA quick_check(1)")
-        try:
-            check_data = cur.fetchone()[0]
-            if check_data != "ok":
-                raise ValueError()
-        except (IndexError, ValueError, TypeError,):
-            raise SystemDatabaseError(
-                "sqlite3 reports database being corrupted")
+        return
 
     def validate(self):
         """
@@ -5121,20 +4420,19 @@ class EntropyRepository(EntropyRepositoryBase):
         del cached
 
         mytxt = "Repository is corrupted, missing SQL tables!"
-        cur = self._cursor().execute("""
-        SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND
-            name IN ("extrainfo", "baseinfo", "keywords")
-        """)
-        rslt = cur.fetchone()
-        if rslt is None:
-            raise SystemDatabaseError(mytxt)
-        elif rslt[0] != 3:
+        if not (self._doesTableExist("extrainfo") and \
+                    self._doesTableExist("baseinfo") and \
+                    self._doesTableExist("keywords")):
             raise SystemDatabaseError(mytxt)
 
         # execute checksum
+        _exceptions = (
+            MySQLProxy.exceptions().OperationalError,
+            MySQLProxy.exceptions().DatabaseError
+            )
         try:
             self.checksum()
-        except (OperationalError, DatabaseError,) as err:
+        except _exceptions as err:
             mytxt = "Repository is corrupted, checksum error"
             raise SystemDatabaseError("%s: %s" % (mytxt, err,))
 
@@ -5250,90 +4548,46 @@ class EntropyRepository(EntropyRepositoryBase):
     def importRepository(dumpfile, db, data = None):
         """
         Reimplemented from EntropyRepositoryBase.
-        @todo: remove /usr/bin/sqlite3 dependency
         """
-        dbfile = os.path.realpath(db)
-        tmp_dbfile = dbfile + ".import_repository"
         dumpfile = os.path.realpath(dumpfile)
-        if not entropy.tools.is_valid_path_string(dbfile):
-            raise AttributeError("dbfile value is invalid")
         if not entropy.tools.is_valid_path_string(dumpfile):
             raise AttributeError("dumpfile value is invalid")
-        with open(dumpfile, "rb") as in_f:
-            try:
-                proc = subprocess.Popen(("/usr/bin/sqlite3", tmp_dbfile,),
-                    bufsize = -1, stdin = in_f)
-            except OSError:
-                # ouch ! wtf!
-                return 1
-            rc = proc.wait()
-            if rc == 0:
-                os.rename(tmp_dbfile, dbfile)
-        return rc
+        if data is None:
+            raise AttributeError(
+                "connection data required (dict)")
+
+        try:
+            host, port, user, password = data['host'], \
+                data['port'], data['user'], data['password']
+        except KeyError as err:
+            raise AttributeError(err)
+
+        try:
+            with open(dumpfile, "rb") as f_in:
+                proc = subprocess.Popen(
+                    ("/usr/bin/mysql",
+                     "-u", user, "-h", host,
+                     "-P", str(port), "-p" + password,
+                     "-D", db), bufsize = -1, stdin = f_in)
+                return proc.wait()
+        except OSError:
+            return 1
 
     def exportRepository(self, dumpfile):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        exclude_tables = []
-        gentle_with_tables = True
-        toraw = const_convert_to_rawstring
+        try:
+            proc = subprocess.Popen(
+                ("/usr/bin/mysqldump",
+                 "-u", self._user, "-h", self._host,
+                 "-P", str(self._port), "-p" + self._password,
+                 "--databases", self._db), bufsize = -1, stdout = dumpfile)
+            return proc.wait()
+        except OSError:
+            return 1
 
-        dumpfile.write(toraw("BEGIN TRANSACTION;\n"))
-        cur = self._cursor().execute("""
-        SELECT name, type, sql FROM sqlite_master
-        WHERE sql NOT NULL AND type=='table'
-        """)
-        for name, x, sql in cur.fetchall():
-
-            self.output(
-                red("%s " % (
-                    _("Exporting database table"),
-                ) ) + "["+blue(str(name))+"]",
-                importance = 0,
-                level = "info",
-                back = True,
-                header = "   "
-            )
-            if name.startswith("sqlite_"):
-                continue
-
-            t_cmd = "CREATE TABLE"
-            if sql.startswith(t_cmd) and gentle_with_tables:
-                sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
-            dumpfile.write(toraw("%s;\n" % sql))
-
-            if name in exclude_tables:
-                continue
-
-            cur2 = self._cursor().execute("PRAGMA table_info('%s')" % name)
-            cols = [r[1] for r in cur2.fetchall()]
-            q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
-            q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
-            q += ")' FROM '%(tbl_name)s'"
-            self._connection().text_factory = const_convert_to_unicode
-            cur3 = self._cursor().execute(q % {'tbl_name': name})
-            for row in cur3:
-                dumpfile.write(toraw("%s;\n" % (row[0],)))
-
-        cur4 = self._cursor().execute("""
-        SELECT name, type, sql FROM sqlite_master
-        WHERE sql NOT NULL AND type!='table' AND type!='meta'
-        """)
-        for name, x, sql in cur4.fetchall():
-            dumpfile.write(toraw("%s;\n" % sql))
-
-        dumpfile.write(toraw("COMMIT;\n"))
-        if hasattr(dumpfile, 'flush'):
-            dumpfile.flush()
-
-        self.output(
-            red(_("Database Export complete.")),
-            importance = 0,
-            level = "info",
-            header = "   "
-        )
-        # remember to close the file
+        raise NotImplementedError()
 
     def _listAllTables(self):
         """
@@ -5343,8 +4597,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @rtype: list
         """
         cur = self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER
-        WHERE type = "table" AND NOT name LIKE "sqlite_%"
+        SHOW TABLES;
         """)
         return self._cur2tuple(cur)
 
@@ -5356,9 +4609,9 @@ class EntropyRepository(EntropyRepositoryBase):
             # we need to handle them with "care"
             try:
                 cur = self._cursor().execute("""
-                SELECT count(*) FROM (?) LIMIT 1""", (table,))
+                SELECT count(*) FROM %s LIMIT 1""", (table,))
                 cur.fetchone()
-            except OperationalError:
+            except MySQLProxy.exceptions().OperationalError:
                 return False
             return True
 
@@ -5372,10 +4625,8 @@ class EntropyRepository(EntropyRepositoryBase):
             del cached
             return obj
 
-        cur = self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
-        LIMIT 1
-        """, (table,))
+        query = "SHOW TABLES LIKE '%s';" % (table,)
+        cur = self._cursor().execute(query)
         rslt = cur.fetchone()
         exists = rslt is not None
 
@@ -5400,11 +4651,12 @@ class EntropyRepository(EntropyRepositoryBase):
             return obj
 
         try:
-            self._cursor().execute("""
-            SELECT `%s` FROM `%s` LIMIT 1
+            cur = self._cursor().execute("""
+            SHOW COLUMNS FROM `%s` WHERE field = `%s`
             """ % (column, table))
-            exists = True
-        except OperationalError:
+            rslt = cur.fetchone()
+            exists = rslt is not None
+        except MySQLProxy.exceptions().OperationalError:
             exists = False
         cached[d_tup] = exists
         self._setLiveCache("_doesColumnInTableExist", cached)
@@ -5417,25 +4669,13 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if self._db_path is None:
-            return 0.0
-        if self._db_path == ":memory:":
-            return 0.0
-        return os.path.getmtime(self._db_path)
+        raise IOError("Not supported by MySQL Repository")
 
     def checksum(self, do_order = False, strict = True,
         strings = True, include_signatures = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cache_key = "checksum_%s_%s_%s_%s" % (do_order, strict, strings,
-            include_signatures)
-        cached = self._getLiveCache(cache_key)
-        if cached is not None:
-            return cached
-        # avoid memleak with python3.x
-        del cached
-
         package_id_order = ''
         category_order = ''
         license_order = ''
@@ -5468,7 +4708,6 @@ class EntropyRepository(EntropyRepositoryBase):
                 result = m.hexdigest()
             else:
                 result = "~empty_db~"
-                self._setLiveCache(cache_key, result)
             return result
 
         if strict:
@@ -5478,7 +4717,7 @@ class EntropyRepository(EntropyRepositoryBase):
         else:
             cur = self._cursor().execute("""
             SELECT idpackage, atom, name, version, versiontag, revision,
-            branch, slot, etpapi, trigger FROM baseinfo
+            branch, slot, etpapi, `trigger` FROM baseinfo
             %s""" % (package_id_order,))
         if strings:
             do_update_hash(m, cur)
@@ -5499,43 +4738,18 @@ class EntropyRepository(EntropyRepositoryBase):
         else:
             b_hash = hash(tuple(cur))
 
-        _baseinfo_extrainfo_2010 = self._isBaseinfoExtrainfo2010()
         c_hash = '0'
-        if not _baseinfo_extrainfo_2010:
-            cur = self._cursor().execute("""
-            SELECT category FROM categories %s
-            """ % (category_order,))
-            if strings:
-                do_update_hash(m, cur)
-            else:
-                c_hash = hash(tuple(cur))
-
         d_hash = '0'
         e_hash = '0'
-        if not _baseinfo_extrainfo_2010:
-            if strict:
-                cur = self._cursor().execute("""
-                SELECT * FROM licenses %s""" % (license_order,))
-                if strings:
-                    do_update_hash(m, cur)
-                else:
-                    d_hash = hash(tuple(cur))
-
-                cur = self._cursor().execute('select * from flags %s' % (
-                    flags_order,))
-                if strings:
-                    do_update_hash(m, cur)
-                else:
-                    e_hash = hash(tuple(cur))
 
         if include_signatures:
             try:
                 # be optimistic and delay if condition, _doesColumnInTableExist
                 # is really slow
                 cur = self._cursor().execute("""
-                SELECT idpackage, sha1,gpg FROM
+                SELECT idpackage, sha1, gpg FROM
                 packagesignatures %s""" % (package_id_order,))
-            except OperationalError:
+            except MySQLProxy.exceptions().OperationalError:
                 # TODO: remove this before 31-12-2011
                 if self._doesColumnInTableExist("packagesignatures", "gpg"):
                     # something is really wrong
@@ -5551,61 +4765,46 @@ class EntropyRepository(EntropyRepositoryBase):
         if strings:
             result = m.hexdigest()
         else:
-            result = "%s:%s:%s:%s:%s" % (a_hash, b_hash, c_hash, d_hash, e_hash)
+            result = "%s:%s:%s:%s:%s" % (
+                a_hash, b_hash, c_hash, d_hash, e_hash)
 
-        self._setLiveCache(cache_key, result)
         return result
 
     def storeInstalledPackage(self, package_id, repoid, source = 0):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._clearLiveCache("getInstalledPackageRepository")
-        self._clearLiveCache("getInstalledPackageSource")
         self._cursor().execute("""
-        INSERT OR REPLACE INTO installedtable VALUES (?,?,?)
+        REPLACE INTO installedtable VALUES (%s, %s, %s)
         """, (package_id, repoid, source,))
 
     def getInstalledPackageRepository(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("getInstalledPackageRepository")
-        if cached is None:
-            cur = self._cursor().execute("""
-            SELECT idpackage, repositoryname FROM installedtable
-            """)
-            cached = dict(cur)
-            self._setLiveCache("getInstalledPackageRepository", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        cur = self._cursor().execute("""
+        SELECT repositoryname FROM installedtable
+        WHERE idpackage = %s
+        """, (package_id,))
+        repo = cur.fetchone()
+        if repo:
+            return repo[0]
+        return None
 
     def getInstalledPackageSource(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self._getLiveCache("getInstalledPackageSource")
-        if cached is None:
-            try:
-                # be optimistic, delay _doesColumnInTableExist as much as
-                # possible
-                cur = self._cursor().execute("""
-                SELECT idpackage, source FROM installedtable
-                """)
-                cached = dict(cur)
-            except OperationalError:
-                # TODO: drop this check in future, backward compatibility
-                if self._doesColumnInTableExist("installedtable", "source"):
-                    # something is really wrong
-                    raise
-                cached = {}
-            self._setLiveCache("getInstalledPackageSource", cached)
-        # avoid python3.x memleak
-        obj = cached.get(package_id)
-        del cached
-        return obj
+        # be optimistic, delay _doesColumnInTableExist as much as
+        # possible
+        cur = self._cursor().execute("""
+        SELECT source FROM installedtable
+        WHERE idpackage = %s
+        """, (package_id,))
+        source = cur.fetchone()
+        if source:
+            return source[0]
+        return None
 
     def dropInstalledPackageFromStore(self, package_id):
         """
@@ -5613,15 +4812,13 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._cursor().execute("""
         DELETE FROM installedtable
-        WHERE idpackage = (?)""", (package_id,))
-        self._clearLiveCache("getInstalledPackageRepository")
-        self._clearLiveCache("getInstalledPackageSource")
+        WHERE idpackage = %s""", (package_id,))
 
     def storeSpmMetadata(self, package_id, blob):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute('INSERT INTO xpakdata VALUES (?,?)',
+        self._cursor().execute('INSERT INTO xpakdata VALUES (%s, %s)',
             (package_id, const_get_buffer()(blob),)
         )
 
@@ -5629,12 +4826,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if not self._doesTableExist("xpakdata"):
-            buf = const_get_buffer()
-            return buf("")
-
         cur = self._cursor().execute("""
-        SELECT data from xpakdata where idpackage = (?) LIMIT 1
+        SELECT data from xpakdata where idpackage = %s
         """, (package_id,))
         mydata = cur.fetchone()
         if not mydata:
@@ -5646,12 +4839,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if not self._doesTableExist('entropy_branch_migration'):
-            return {}
-
         cur = self._cursor().execute("""
         SELECT repository, from_branch, post_migration_md5sum,
-        post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = (?)
+        post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = %s
         """, (to_branch,))
 
         data = cur.fetchall()
@@ -5674,7 +4864,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         try:
             self._cursor().execute('DELETE FROM contentsafety')
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             # table doesn't exist, ignore
             pass
 
@@ -5694,15 +4884,17 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = "index"
-        AND name NOT LIKE "sqlite_%"
-        """)
-        for index in self._cur2frozenset(cur):
-            try:
-                self._cursor().execute('DROP INDEX IF EXISTS %s' % (index,))
-            except Error:
-                continue
+        for table in self._listAllTables():
+            cur = self._cursor().execute("""
+            SHOW INDEX FROM `%s` WHERE Key_Name != 'PRIMARY';
+            """ % (table,))
+            for index in self._cur2frozenset(cur):
+                try:
+                    self._cursor().execute(
+                        "DROP INDEX IF EXISTS `%s`" % (
+                            index,))
+                except MySQLProxy.exceptions().Error:
+                    continue
 
     def createAllIndexes(self):
         """
@@ -5732,17 +4924,13 @@ class EntropyRepository(EntropyRepositoryBase):
         self._createDesktopMimeIndex()
         self._createProvidedMimeIndex()
         self._createPackageDownloadsIndex()
-        if not self._isBaseinfoExtrainfo2010():
-            self._createLicensesIndex()
-            self._createCategoriesIndex()
-            self._createCompileFlagsIndex()
 
     def _createTrashedCountersIndex(self):
         try:
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS trashedcounters_counter
             ON trashedcounters ( counter )""")
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createMirrorlinksIndex(self):
@@ -5750,16 +4938,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
             ON mirrorlinks ( mirrorname )""")
-        except OperationalError:
-            pass
-
-    def _createCompileFlagsIndex(self):
-        try:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS flagsindex ON flags
-                ( chost, cflags, cxxflags )
-            """)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createDesktopMimeIndex(self):
@@ -5767,7 +4946,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
             ON packagedesktopmime ( idpackage )""")
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createProvidedMimeIndex(self):
@@ -5778,7 +4957,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS provided_mime_mimetype
             ON provided_mime ( mimetype )""")
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createPackagesetsIndex(self):
@@ -5786,7 +4965,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagesetsindex
             ON packagesets ( setname )""")
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createProvidedLibsIndex(self):
@@ -5797,7 +4976,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
                 ON provided_libs ( library, elfclass );
             """)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createAutomergefilesIndex(self):
@@ -5808,7 +4987,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS automergefiles_file_md5
                 ON automergefiles ( configfile, md5 );
             """)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createPackageDownloadsIndex(self):
@@ -5817,7 +4996,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS packagedownloads_idpackage_type
                 ON packagedownloads ( idpackage, type );
             """)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createNeededIndex(self):
@@ -5830,7 +5009,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS neededindex_idn_elfclass ON needed
                     ( idneeded, elfclass );
             """)
-        except OperationalError:
+        except MySQLProxy.exceptions().OperationalError:
             pass
 
     def _createUseflagsIndex(self):
@@ -5846,13 +5025,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """)
 
     def _createContentIndex(self):
-        if self._doesTableExist("content"):
-            self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS contentindex_couple
-                    ON content ( idpackage );
-                CREATE INDEX IF NOT EXISTS contentindex_file
-                    ON content ( file );
-            """)
+        self._cursor().executescript("""
+            CREATE INDEX IF NOT EXISTS contentindex_couple
+                ON content ( idpackage );
+            CREATE INDEX IF NOT EXISTS contentindex_file
+                ON content ( file );
+        """)
 
     def _createConfigProtectReferenceIndex(self):
         self._cursor().execute("""
@@ -5867,36 +5045,17 @@ class EntropyRepository(EntropyRepositoryBase):
         CREATE INDEX IF NOT EXISTS baseindex_branch_name
             ON baseinfo ( name, branch );
         """)
-        if self._isBaseinfoExtrainfo2010():
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS baseindex_branch_name_category
-                ON baseinfo ( name, category, branch );
-            CREATE INDEX IF NOT EXISTS baseindex_category
-                ON baseinfo ( category );
-            """)
-        else:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
-                ON baseinfo ( name, idcategory, branch );
-            CREATE INDEX IF NOT EXISTS baseindex_idlicense
-                ON baseinfo ( idlicense, idcategory );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS baseindex_branch_name_category
+            ON baseinfo ( name, category, branch );
+        CREATE INDEX IF NOT EXISTS baseindex_category
+            ON baseinfo ( category );
+        """)
 
     def _createLicensedataIndex(self):
         self._cursor().execute("""
         CREATE INDEX IF NOT EXISTS licensedataindex
             ON licensedata ( licensename )
-        """)
-
-    def _createLicensesIndex(self):
-        self._cursor().execute("""
-        CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )
-        """)
-
-    def _createCategoriesIndex(self):
-        self._cursor().execute("""
-        CREATE INDEX IF NOT EXISTS categoriesindex_category
-            ON categories ( category )
         """)
 
     def _createKeywordsIndex(self):
@@ -5962,9 +5121,9 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executescript("""
         DROP TABLE IF EXISTS counters_regen;
         CREATE TEMPORARY TABLE counters_regen (
-            counter INTEGER,
-            idpackage INTEGER,
-            branch VARCHAR,
+            counter INTEGER(10),
+            idpackage INTEGER(10),
+            branch VARCHAR(75),
             PRIMARY KEY(idpackage, branch)
         );
         """)
@@ -6003,7 +5162,7 @@ class EntropyRepository(EntropyRepositoryBase):
             insert_data.append((spm_uid, myid, mybranch))
 
         self._cursor().executemany("""
-        INSERT OR REPLACE into counters_regen VALUES (?,?,?)
+        REPLACE into counters_regen VALUES (%s, %s, %s)
         """, insert_data)
 
         self._cursor().executescript("""
@@ -6017,7 +5176,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdates WHERE repository = (?)
+        DELETE FROM treeupdates WHERE repository = %s
         """, (repository,))
 
     def resetTreeupdatesDigests(self):
@@ -6025,511 +5184,6 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute('UPDATE treeupdates SET digest = "-1"')
-
-    def _isBaseinfoExtrainfo2010(self):
-        """
-        Return is _baseinfo_extrainfo_2010 setting is found via getSetting()
-        """
-        try:
-            self.getSetting("_baseinfo_extrainfo_2010")
-            # extra check to avoid issues with settings table creation
-            # before the actual schema update, check if baseinfo has the
-            # category column.
-            return self._doesColumnInTableExist("baseinfo", "category")
-        except KeyError:
-            return False
-
-    def _migrateBaseinfoExtrainfo(self):
-        """
-        Support for optimized baseinfo table, migration function.
-        """
-        if not EntropyRepository._SCHEMA_2010_SUPPORT:
-            # support not yet enabled.
-            return
-        if self._isBaseinfoExtrainfo2010():
-            return
-        if not self._doesTableExist("baseinfo"):
-            return
-        if not self._doesTableExist("extrainfo"):
-            return
-        if not self._doesTableExist("licenses"):
-            return
-        if not self._doesTableExist("categories"):
-            return
-        if not self._doesTableExist("flags"):
-            return
-
-        mytxt = "%s: [%s] %s" % (
-            bold(_("ATTENTION")),
-            purple(self.name),
-            red(_("updating repository metadata layout, please wait!")),
-        )
-        self.output(
-            mytxt,
-            importance = 1,
-            level = "warning")
-
-        self.dropAllIndexes()
-        self._cursor().execute("pragma foreign_keys = OFF").fetchall()
-        self._cursor().executescript("""
-            BEGIN TRANSACTION;
-
-            DROP TABLE IF EXISTS baseinfo_new_temp;
-            CREATE TABLE baseinfo_new_temp (
-                idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                atom VARCHAR,
-                category VARCHAR,
-                name VARCHAR,
-                version VARCHAR,
-                versiontag VARCHAR,
-                revision INTEGER,
-                branch VARCHAR,
-                slot VARCHAR,
-                license VARCHAR,
-                etpapi INTEGER,
-                trigger INTEGER
-            );
-            INSERT INTO baseinfo_new_temp
-                SELECT idpackage, atom, category, name, version, versiontag,
-                    revision, branch, slot, license, etpapi, trigger
-                FROM baseinfo, licenses, categories WHERE
-                    categories.idcategory = baseinfo.idcategory AND
-                    licenses.idlicense = baseinfo.idlicense;
-            DROP TABLE baseinfo;
-            ALTER TABLE baseinfo_new_temp RENAME TO baseinfo;
-            DROP TABLE categories;
-            DROP TABLE licenses;
-
-            DROP TABLE IF EXISTS extrainfo_new_temp;
-            CREATE TABLE extrainfo_new_temp (
-                idpackage INTEGER PRIMARY KEY,
-                description VARCHAR,
-                homepage VARCHAR,
-                download VARCHAR,
-                size VARCHAR,
-                chost VARCHAR,
-                cflags VARCHAR,
-                cxxflags VARCHAR,
-                digest VARCHAR,
-                datecreation VARCHAR,
-                FOREIGN KEY(idpackage)
-                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-            );
-            INSERT INTO extrainfo_new_temp
-                SELECT idpackage, description, homepage, download, size,
-                    flags.chost, flags.cflags, flags.cxxflags,
-                    digest, datecreation
-                FROM extrainfo, flags WHERE flags.idflags = extrainfo.idflags;
-            DROP TABLE extrainfo;
-            ALTER TABLE extrainfo_new_temp RENAME TO extrainfo;
-            DROP TABLE flags;
-
-            COMMIT;
-        """)
-        self._cursor().execute("pragma foreign_keys = ON").fetchall()
-
-        self._clearLiveCache("_doesColumnInTableExist")
-        self._setSetting("_baseinfo_extrainfo_2010", "1")
-        self._connection().commit()
-
-    def _foreignKeySupport(self):
-
-        # entropy.qa uses this name, must skip migration
-        if self.name in ("qa_testing", "mem_repo"):
-            return
-
-        tables = ("extrainfo", "dependencies" , "provide",
-            "conflicts", "configprotect", "configprotectmask", "sources",
-            "useflags", "keywords", "content", "counters", "sizes",
-            "needed", "triggers", "systempackages", "injected",
-            "installedtable", "automergefiles", "packagesignatures",
-            "packagespmphases", "provided_libs"
-        )
-
-        done_something = False
-        foreign_keys_supported = False
-        for table in tables:
-            if not self._doesTableExist(table): # wtf
-                continue
-
-            cur = self._cursor().execute("PRAGMA foreign_key_list(%s)" % (table,))
-            foreign_keys = cur.fetchone()
-
-            # print table, "foreign keys", foreign_keys
-            if foreign_keys is not None:
-                # seems so, more or less
-                foreign_keys_supported = True
-                continue
-
-            if not done_something:
-                mytxt = "%s: [%s] %s" % (
-                    bold(_("ATTENTION")),
-                    purple(self.name),
-                    red(_("updating repository metadata layout, please wait!")),
-                )
-                self.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning"
-                )
-
-            done_something = True
-            # need to add foreign key to this table
-            cur = self._cursor().execute("""SELECT sql FROM sqlite_master
-            WHERE type='table' and name = (?)""", (table,))
-            cur_sql = cur.fetchone()[0]
-
-            # change table name
-            tmp_table = table+"_fk_sup"
-            self._cursor().execute("DROP TABLE IF EXISTS %s" % (tmp_table,))
-
-            bracket_idx = cur_sql.find("(")
-            cur_sql = cur_sql[bracket_idx:]
-            cur_sql = "CREATE TABLE %s %s" % (tmp_table, cur_sql)
-
-            # remove final parenthesis and strip
-            cur_sql = cur_sql[:-1].strip()
-            # add foreign key stmt
-            cur_sql += """,
-            FOREIGN KEY(idpackage) REFERENCES
-                baseinfo(idpackage) ON DELETE CASCADE );"""
-            self._cursor().executescript(cur_sql)
-            self._moveContent(table, tmp_table)
-            self._atomicRename(tmp_table, table)
-
-        if done_something:
-            self._setSetting("on_delete_cascade", "1")
-            self._connection().commit()
-            # recreate indexes
-            self.createAllIndexes()
-        elif foreign_keys_supported:
-            # some devel version didn't have this set
-            try:
-                self.getSetting("on_delete_cascade")
-            except KeyError:
-                self._setSetting("on_delete_cascade", "1")
-                self._connection().commit()
-
-    def _moveContent(self, from_table, to_table):
-        self._cursor().execute("""
-            INSERT INTO %s SELECT * FROM %s
-        """ % (to_table, from_table,))
-
-    def _atomicRename(self, from_table, to_table):
-        self._cursor().executescript("""
-            BEGIN TRANSACTION;
-            DROP TABLE IF EXISTS %s;
-            ALTER TABLE %s RENAME TO %s;
-            COMMIT;
-        """ % (to_table, from_table, to_table,))
-
-    def _migrateCountersTable(self):
-        self._cursor().executescript("""
-            BEGIN TRANSACTION;
-            DROP TABLE IF EXISTS counterstemp;
-            CREATE TABLE counterstemp (
-                counter INTEGER, idpackage INTEGER, branch VARCHAR,
-                PRIMARY KEY(idpackage,branch),
-                FOREIGN KEY(idpackage)
-                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-            );
-            INSERT INTO counterstemp (counter, idpackage, branch)
-                SELECT counter, idpackage, branch FROM counters;
-            DROP TABLE IF EXISTS counters;
-            ALTER TABLE counterstemp RENAME TO counters;
-            COMMIT;
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createSettingsTable(self):
-        self._cursor().executescript("""
-            CREATE TABLE settings (
-                setting_name VARCHAR,
-                setting_value VARCHAR,
-                PRIMARY KEY(setting_name)
-            );
-        """)
-        self._setupInitialSettings()
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createProvidedLibs(self):
-
-        def do_create():
-            self._cursor().executescript("""
-                CREATE TABLE provided_libs (
-                    idpackage INTEGER,
-                    library VARCHAR,
-                    path VARCHAR,
-                    elfclass INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage)
-                    ON DELETE CASCADE
-                );
-            """)
-            self._clearLiveCache("_doesTableExist")
-            self._clearLiveCache("_doesColumnInTableExist")
-
-        if self.name != etpConst['clientdbid']:
-            return do_create()
-
-        mytxt = "%s: %s" % (
-            bold(_("ATTENTION")),
-            red(_("generating provided_libs metadata, please wait!")),
-        )
-        self.output(
-            mytxt,
-            importance = 1,
-            level = "warning"
-        )
-
-        try:
-            self._generateProvidedLibsMetadata()
-        except (IOError, OSError, Error) as err:
-            mytxt = "%s: %s: [%s]" % (
-                bold(_("ATTENTION")),
-                red("cannot generate provided_libs metadata"),
-                err,
-            )
-            self.output(
-                mytxt,
-                importance = 1,
-                level = "warning"
-            )
-            do_create()
-
-    def _createPackageDownloadsTable(self):
-        self._cursor().executescript("""
-            CREATE TABLE packagedownloads (
-                idpackage INTEGER,
-                download VARCHAR,
-                type VARCHAR,
-                size INTEGER,
-                disksize INTEGER,
-                md5 VARCHAR,
-                sha1 VARCHAR,
-                sha256 VARCHAR,
-                sha512 VARCHAR,
-                gpg BLOB,
-                FOREIGN KEY(idpackage)
-                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-            );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _generateProvidedLibsMetadata(self):
-
-        def collect_provided(pkg_dir, content):
-
-            provided_libs = set()
-            ldpaths = entropy.tools.collect_linker_paths()
-            for obj, ftype in list(content.items()):
-
-                if ftype == "dir":
-                    continue
-                obj_dir, obj_name = os.path.split(obj)
-
-                if obj_dir not in ldpaths:
-                    continue
-
-                unpack_obj = os.path.join(pkg_dir, obj)
-                try:
-                    os.stat(unpack_obj)
-                except OSError:
-                    continue
-
-                # do not trust ftype
-                if os.path.isdir(unpack_obj):
-                    continue
-                if not entropy.tools.is_elf_file(unpack_obj):
-                    continue
-
-                elf_class = entropy.tools.read_elf_class(unpack_obj)
-                provided_libs.add((obj_name, obj, elf_class,))
-
-            return provided_libs
-
-        self._cursor().executescript("""
-            DROP TABLE IF EXISTS provided_libs_tmp;
-            CREATE TABLE provided_libs_tmp (
-                idpackage INTEGER,
-                library VARCHAR,
-                path VARCHAR,
-                elfclass INTEGER,
-                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage)
-                ON DELETE CASCADE
-            );
-        """)
-
-        pkgs = self.listAllPackageIds()
-        for package_id in pkgs:
-
-            content = self.retrieveContent(package_id, extended = True,
-                formatted = True)
-            provided_libs = collect_provided(etpConst['systemroot'], content)
-
-            self._cursor().executemany("""
-            INSERT INTO provided_libs_tmp VALUES (?,?,?,?)
-            """, [(package_id, x, y, z,) for x, y, z in provided_libs])
-
-        # rename
-        self._cursor().execute("""
-        ALTER TABLE provided_libs_tmp RENAME TO provided_libs;
-        """)
-        # make sure that live_cache reports correct info regarding tables
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createProvideDefault(self):
-        self._cursor().execute("""
-        ALTER TABLE provide ADD COLUMN is_default INTEGER DEFAULT 0
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createInstalledTableSource(self):
-        self._cursor().execute("""
-        ALTER TABLE installedtable ADD source INTEGER;
-        """)
-        self._cursor().execute("""
-        UPDATE installedtable SET source = (?)
-        """, (etpConst['install_sources']['unknown'],))
-        self._clearLiveCache("getInstalledPackageRepository")
-        self._clearLiveCache("getInstalledPackageSource")
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagechangelogsTable(self):
-        self._cursor().execute("""
-        CREATE TABLE packagechangelogs ( category VARCHAR,
-            name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createAutomergefilesTable(self):
-        self._cursor().execute("""
-        CREATE TABLE automergefiles ( idpackage INTEGER,
-            configfile VARCHAR, md5 VARCHAR,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage)
-            ON DELETE CASCADE );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagesignaturesTable(self):
-        self._cursor().execute("""
-        CREATE TABLE packagesignatures (
-        idpackage INTEGER PRIMARY KEY,
-        sha1 VARCHAR,
-        sha256 VARCHAR,
-        sha512 VARCHAR,
-        gpg BLOB,
-        FOREIGN KEY(idpackage)
-            REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagesignaturesGpgColumn(self):
-        self._cursor().execute("""
-        ALTER TABLE packagesignatures ADD gpg BLOB;
-        """)
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagespmphases(self):
-        self._cursor().execute("""
-            CREATE TABLE packagespmphases (
-                idpackage INTEGER PRIMARY KEY,
-                phases VARCHAR,
-                FOREIGN KEY(idpackage)
-                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-            );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagespmrepository(self):
-        self._cursor().execute("""
-            CREATE TABLE packagespmrepository (
-                idpackage INTEGER PRIMARY KEY,
-                repository VARCHAR,
-                FOREIGN KEY(idpackage)
-                    REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-            );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createEntropyBranchMigrationTable(self):
-        self._cursor().execute("""
-            CREATE TABLE entropy_branch_migration (
-                repository VARCHAR,
-                from_branch VARCHAR,
-                to_branch VARCHAR,
-                post_migration_md5sum VARCHAR,
-                post_upgrade_md5sum VARCHAR,
-                PRIMARY KEY (repository, from_branch, to_branch)
-            );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackagesetsTable(self):
-        self._cursor().execute("""
-        CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createPackageDesktopMimeTable(self):
-        self._cursor().execute("""
-        CREATE TABLE packagedesktopmime (
-            idpackage INTEGER,
-            name VARCHAR,
-            mimetype VARCHAR,
-            executable VARCHAR,
-            icon VARCHAR,
-            FOREIGN KEY(idpackage)
-                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-        );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createProvidedMimeTable(self):
-        self._cursor().execute("""
-        CREATE TABLE provided_mime (
-            mimetype VARCHAR,
-            idpackage INTEGER,
-            FOREIGN KEY(idpackage)
-                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-        );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createLicensesAcceptedTable(self):
-        self._cursor().execute("""
-        CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
-
-    def _createContentSafetyTable(self):
-        self._cursor().execute("""
-        CREATE TABLE contentsafety (
-            idpackage INTEGER,
-            file VARCHAR,
-            mtime FLOAT,
-            sha256 VARCHAR,
-            FOREIGN KEY(idpackage)
-                REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-        );
-        """)
-        self._clearLiveCache("_doesTableExist")
-        self._clearLiveCache("_doesColumnInTableExist")
 
     def __generateReverseDependenciesMetadata(self):
         """
@@ -6541,7 +5195,7 @@ class EntropyRepository(EntropyRepositoryBase):
         except (OSError, IOError):
             mtime = "0.0"
         hash_str = "%s|%s|%s|%s|%s" % (
-            repr(self._db_path),
+            repr(self._db),
             repr(etpConst['systemroot']),
             repr(self.name),
             repr(checksum),
@@ -6582,8 +5236,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     obj = dep_data.setdefault(iddep, set())
                     obj.add(package_id)
 
-        self._setLiveCache("reverseDependenciesMetadata",
-                dep_data)
+        self._setLiveCache("reverseDependenciesMetadata", dep_data)
         try:
             self._cacher.save(cache_key, dep_data)
         except IOError:
@@ -6596,6 +5249,6 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE counters SET branch = (?)
+        UPDATE counters SET branch = %s
         """, (to_branch,))
         self.clearCache()

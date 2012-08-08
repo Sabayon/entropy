@@ -3743,15 +3743,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         raise NotImplementedError()
 
     @staticmethod
-    def importRepository(dumpfile, dbfile):
+    def importRepository(dumpfile, db, data = None):
         """
-        Import SQLite3 dump file to this database.
+        Import dump file to this database.
 
-        @param dumpfile: SQLite3 dump file to read
+        @param dumpfile: dump file to read
         @type dumpfile: string
-        @param dbfile: database file to write to
+        @param dbfile: database file path or reference name
         @type dbfile: string
-        @return: sqlite3 import return code
+        @keyword data: connection data (dict object)
+        @type data: dict or None
+        @return: import return code (0 = OK)
         @rtype: int
         @raise AttributeError: if given paths are invalid
         """
@@ -3759,7 +3761,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
     def exportRepository(self, dumpfile):
         """
-        Export running SQLite3 database to file.
+        Export running database to file.
 
         @param dumpfile: dump file object to write to
         @type dumpfile: file object (hint: open())
