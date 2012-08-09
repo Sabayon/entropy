@@ -5632,7 +5632,7 @@ class EntropyRepository(EntropyRepositoryBase):
         for index in self._cur2frozenset(cur):
             try:
                 self._cursor().execute('DROP INDEX IF EXISTS %s' % (index,))
-            except Error:
+            except OperationalError:
                 continue
 
     def createAllIndexes(self):
