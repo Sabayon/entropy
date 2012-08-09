@@ -5268,7 +5268,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # we need to handle them with "care"
             try:
                 cur = self._cursor().execute("""
-                SELECT count(*) FROM (?) LIMIT 1""", (table,))
+                SELECT count(*) FROM `%s` LIMIT 1""" % (table,))
                 cur.fetchone()
             except OperationalError:
                 return False
