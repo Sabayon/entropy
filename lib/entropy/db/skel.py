@@ -3720,6 +3720,26 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def _getIdpackagesDifferences(self, foreign_package_ids):
+        """
+        Return differences between in-repository package identifiers and
+        list provided.
+
+        @param foreign_package_ids: list of foreign package_ids
+        @type foreign_package_ids: iterable
+        @return: tuple composed by package_ids that would be added
+            and package_ids that would be removed
+        @rtype: tuple
+        """
+        myids = self.listAllPackageIds()
+        if isinstance(foreign_package_ids, (list, tuple)):
+            outids = set(foreign_package_ids)
+        else:
+            outids = foreign_package_ids
+        added_ids = outids - myids
+        removed_ids = myids - outids
+        return added_ids, removed_ids
+
     def alignDatabases(self, dbconn, force = False, output_header = "  ",
         align_limit = 300):
         """
@@ -3740,7 +3760,90 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             -1 = nothing to do)
         @rtype: int
         """
-        raise NotImplementedError()
+        added_ids, removed_ids = self._getIdpackagesDifferences(
+            dbconn.listAllPackageIds())
+
+        if not force:
+            if len(added_ids) > align_limit: # too much hassle
+                return 0
+            if len(removed_ids) > align_limit: # too much hassle
+                return 0
+
+        if not added_ids and not removed_ids:
+            return -1
+
+        mytxt = red("%s, %s ...") % (
+            _("Syncing current database"),
+            _("please wait"),
+        )
+        self.output(
+            mytxt,
+            importance = 1,
+            level = "info",
+            header = output_header,
+            back = True
+        )
+
+        maxcount = len(removed_ids)
+        mycount = 0
+        for package_id in removed_ids:
+            mycount += 1
+            mytxt = "%s: %s" % (
+                red(_("Removing entry")),
+                blue(str(self.retrieveAtom(package_id))),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                level = "info",
+                header = output_header,
+                back = True,
+                count = (mycount, maxcount)
+            )
+
+            self.removePackage(
+                package_id,
+                do_cleanup = False, do_commit = False)
+
+        maxcount = len(added_ids)
+        mycount = 0
+        for package_id in added_ids:
+            mycount += 1
+            mytxt = "%s: %s" % (
+                red(_("Adding entry")),
+                blue(str(dbconn.retrieveAtom(package_id))),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                level = "info",
+                header = output_header,
+                back = True,
+                count = (mycount, maxcount)
+            )
+            mydata = dbconn.getPackageData(package_id, get_content = True,
+                content_insert_formatted = True)
+            self.addPackage(
+                mydata,
+                revision = mydata['revision'],
+                package_id = package_id,
+                do_commit = False,
+                formatted_content = True
+            )
+
+        # do some cleanups
+        self.clean()
+        # clear caches
+        self.clearCache()
+        self.commit()
+        dbconn.clearCache()
+
+        # verify both checksums, if they don't match, bomb out
+        mycheck = self.checksum(do_order = True, strict = False)
+        outcheck = dbconn.checksum(do_order = True, strict = False)
+        if mycheck == outcheck:
+            return 1
+        return 0
 
     @staticmethod
     def importRepository(dumpfile, db, data = None):
