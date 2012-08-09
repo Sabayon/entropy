@@ -113,7 +113,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 CREATE TABLE extrainfo (
                     idpackage INTEGER(10) PRIMARY KEY NOT NULL,
                     description VARCHAR(256) NOT NULL,
-                    homepage VARCHAR(256) NOT NULL,
+                    homepage VARCHAR(512) NOT NULL,
                     download VARCHAR(512) NOT NULL,
                     size VARCHAR(128) NOT NULL,
                     chost VARCHAR(256) NOT NULL,
@@ -160,7 +160,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 CREATE TABLE dependenciesreference (
                     iddependency INTEGER(10) NOT NULL
                         AUTO_INCREMENT PRIMARY KEY,
-                    dependency VARCHAR(512) NOT NULL
+                    dependency VARCHAR(640) NOT NULL
                 );
 
                 CREATE TABLE conflicts (
@@ -335,7 +335,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE packagesets (
                     setname VARCHAR(75) NOT NULL,
-                    dependency VARCHAR(512) NOT NULL
+                    dependency VARCHAR(640) NOT NULL
                 );
 
                 CREATE TABLE packagechangelogs (
@@ -356,7 +356,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 CREATE TABLE packagedesktopmime (
                     idpackage INTEGER(10) NOT NULL,
                     name VARCHAR(75),
-                    mimetype VARCHAR(512),
+                    mimetype VARCHAR(640),
                     executable VARCHAR(128),
                     icon VARCHAR(75),
                     FOREIGN KEY(idpackage)
@@ -365,7 +365,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE packagedownloads (
                     idpackage INTEGER(10) NOT NULL,
-                    download VARCHAR(512)  NOT NULL,
+                    download VARCHAR(512) NOT NULL,
                     type VARCHAR(75) NOT NULL,
                     size INTEGER(10) NOT NULL,
                     disksize INTEGER(10) NOT NULL,
@@ -379,7 +379,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE provided_mime (
-                    mimetype VARCHAR(512) NOT NULL,
+                    mimetype VARCHAR(640) NOT NULL,
                     idpackage INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
