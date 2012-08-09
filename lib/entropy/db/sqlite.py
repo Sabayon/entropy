@@ -2249,7 +2249,9 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         try:
-            cur = self._cursor().execute('SELECT min(counter) FROM counters')
+            cur = self._cursor().execute("""
+            SELECT min(counter) FROM counters LIMIT 1
+            """)
             dbcounter = cur.fetchone()
         except Error:
             # first available counter
@@ -2270,7 +2272,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute('SELECT max(etpapi) FROM baseinfo')
+        cur = self._cursor().execute("""
+        SELECT max(etpapi) FROM baseinfo LIMIT 1
+        """)
         api = cur.fetchone()
         if api:
             return api[0]
@@ -2392,7 +2396,9 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT atom, category, name, version, slot, versiontag,
                 revision, branch, etpapi FROM baseinfo
-            WHERE baseinfo.idpackage = (?)""", (package_id,))
+            WHERE baseinfo.idpackage = (?)
+            LIMIT 1
+            """, (package_id,))
         else:
             # we must guarantee backward compatibility
             cur = self._cursor().execute("""
@@ -2412,6 +2418,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE
                 baseinfo.idpackage = (?)
                 and baseinfo.idcategory = categories.idcategory
+            LIMIT 1
             """, (package_id,))
         return cur.fetchone()
 
@@ -2447,6 +2454,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE
                 baseinfo.idpackage = (?)
                 AND baseinfo.idpackage = extrainfo.idpackage
+            LIMIT 1
             """
         else:
             sql = """
@@ -2482,6 +2490,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 and baseinfo.idcategory = categories.idcategory
                 and extrainfo.idflags = flags.idflags
                 and baseinfo.idlicense = licenses.idlicense
+            LIMIT 1
             """
         cur = self._cursor().execute(sql, (package_id,))
         return cur.fetchone()
@@ -2611,7 +2620,8 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT idupdate FROM treeupdatesactions
         WHERE repository = (?) and command = (?)
-        and branch = (?)""", (repository, command, branch,))
+        and branch = (?) LIMIT 1
+        """, (repository, command, branch,))
 
         result = cur.fetchone()
         if result:
@@ -3287,6 +3297,7 @@ class EntropyRepository(EntropyRepositoryBase):
         SELECT protect FROM configprotectmask,configprotectreference
         WHERE idpackage = (?) AND
         configprotectmask.idprotect = configprotectreference.idprotect
+        LIMIT 1
         """, (package_id,))
 
         protect = cur.fetchone()
@@ -3702,12 +3713,14 @@ class EntropyRepository(EntropyRepositoryBase):
         if self._isBaseinfoExtrainfo2010():
             cur = self._cursor().execute("""
             SELECT chost,cflags,cxxflags FROM extrainfo
-            WHERE extrainfo.idpackage = (?)""", (package_id,))
+            WHERE extrainfo.idpackage = (?)
+            LIMIT 1""", (package_id,))
         else:
             cur = self._cursor().execute("""
             SELECT chost,cflags,cxxflags FROM flags,extrainfo
             WHERE extrainfo.idpackage = (?) AND
-            extrainfo.idflags = flags.idflags""", (package_id,))
+            extrainfo.idflags = flags.idflags
+            LIMIT 1""", (package_id,))
         flags = cur.fetchone()
         if not flags:
             flags = ("N/A", "N/A", "N/A",)
@@ -3866,7 +3879,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         sql = """SELECT count(idpackage) FROM baseinfo
-        WHERE idpackage IN (%s)""" % (','.join(
+        WHERE idpackage IN (%s) LIMIT 1""" % (','.join(
             [str(x) for x in set(package_ids)]),
         )
         cur = self._cursor().execute(sql)
@@ -4380,16 +4393,19 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         sign = "="
+        limit = ""
         if like:
             sign = "LIKE"
             dep = "%"+dep+"%"
         item = 'iddependency'
         if strings:
             item = 'dependency'
+        if not multi:
+            limit = "LIMIT 1"
 
         cur = self._cursor().execute("""
-        SELECT %s FROM dependenciesreference WHERE dependency %s (?)
-        """ % (item, sign,), (dep,))
+        SELECT %s FROM dependenciesreference WHERE dependency %s (?) %s
+        """ % (item, sign, limit,), (dep,))
 
         if multi:
             return self._cur2frozenset(cur)
@@ -4898,7 +4914,9 @@ class EntropyRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         if count:
-            cur = self._cursor().execute('SELECT count(file) FROM content')
+            cur = self._cursor().execute("""
+            SELECT count(file) FROM content LIMIT 1
+            """)
         else:
             cur = self._cursor().execute('SELECT file FROM content')
 
@@ -4968,7 +4986,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             cur = self._cursor().execute("""
-            SELECT setting_value FROM settings WHERE setting_name = (?)
+            SELECT setting_value FROM settings WHERE setting_name = (?) LIMIT 1
             """, (setting_name,))
         except Error:
             obj = KeyError("cannot find setting_name '%s'" % (setting_name,))
@@ -5124,7 +5142,7 @@ class EntropyRepository(EntropyRepositoryBase):
         mytxt = "Repository is corrupted, missing SQL tables!"
         cur = self._cursor().execute("""
         SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND
-            name IN ("extrainfo", "baseinfo", "keywords")
+            name IN ("extrainfo", "baseinfo", "keywords") LIMIT 1
         """)
         rslt = cur.fetchone()
         if rslt is None:
