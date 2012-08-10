@@ -32,50 +32,39 @@ class MySQLProxy:
 
     _mod = None
     _excs = None
-    _conv = None
-    _convlock = threading.Lock()
+    _errnos = None
     _lock = threading.Lock()
     PORT = 3306
 
     @staticmethod
     def get():
         """
-        Lazily load the MySQLdb module.
+        Lazily load the MySQL module.
         """
         if MySQLProxy._mod is None:
             with MySQLProxy._lock:
                 if MySQLProxy._mod is None:
-                    import MySQLdb
-                    import _mysql_exceptions
-                    import MySQLdb.converters
-                    MySQLProxy._excs = _mysql_exceptions
-                    MySQLProxy._mod = MySQLdb
+                    import oursql
+                    MySQLProxy._excs = oursql
+                    MySQLProxy._mod = oursql
+                    MySQLProxy._errnos = oursql.errnos
         return MySQLProxy._mod
 
     @staticmethod
     def exceptions():
         """
-        Lazily load the MySQLdb exceptions module.
+        Lazily load the MySQL exceptions module.
         """
         _mod = MySQLProxy.get()
         return MySQLProxy._excs
 
     @staticmethod
-    def conversions():
+    def errno():
         """
-        Lazily load MySQL conversions dict.
+        Lazily load the MySQL errno module.
         """
-        if MySQLProxy._conv is None:
-            mysql = MySQLProxy.get()
-            with MySQLProxy._convlock:
-                convs = mysql.converters.conversions.copy()
-                convs[mysql.constants.FIELD_TYPE.DECIMAL] = int
-                convs[mysql.constants.FIELD_TYPE.LONG] = int
-                convs[mysql.constants.FIELD_TYPE.LONGLONG] = int
-                convs[mysql.constants.FIELD_TYPE.FLOAT] = float
-                convs[mysql.constants.FIELD_TYPE.NEWDECIMAL] = float
-                MySQLProxy._conv = convs
-        return MySQLProxy._conv
+        _mod = MySQLProxy.get()
+        return MySQLProxy._errnos
 
 
 class EntropyMySQLRepository(EntropyRepositoryBase):
@@ -507,6 +496,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 self._db = db_port
         except IndexError:
             raise DatabaseError("Invalid Database Name")
+
+        if self._db == ":memory:":
+            raise DatabaseError(
+                "Memory Database not supported (I use BLOBs)")
+
         try:
             if ":" in db_port:
                 port = db_port.split(":")[-1].strip()
@@ -532,7 +526,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
             try:
                 if self._doesTableExist('baseinfo') and \
-                        self._doesTableExist('extrainfo'):
+                        self._doesTableExist('extrainfo') and \
+                        self._doesTableExist('settings'):
                     self.__structure_update = True
 
             except MySQLProxy.exceptions().Error:
@@ -608,7 +603,6 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                     conn.close()
                 except MySQLProxy.exceptions().OperationalError:
                     try:
-                        conn.interrupt()
                         conn.close()
                     except MySQLProxy.exceptions().OperationalError:
                         # heh, unable to close due to
@@ -644,12 +638,16 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 self._cur = cursor
 
             def execute(self, *args, **kwargs):
+                # force oursql to empty the resultset
+                self._cur = self._cur.connection.cursor()
                 self._cur.execute(*args, **kwargs)
-                return self._cur
+                return self
 
             def executemany(self, *args, **kwargs):
+                # force oursql to empty the resultset
+                self._cur = self._cur.connection.cursor()
                 self._cur.executemany(*args, **kwargs)
-                return self._cur
+                return self
 
             def close(self, *args, **kwargs):
                 return self._cur.close(*args, **kwargs)
@@ -667,8 +665,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 for sql in script.split(";"):
                     if not sql.strip():
                         continue
-                    self._cur.execute(sql)
-                return self._cur
+                    self.execute(sql)
+                return self
 
             def __iter__(self):
                 return iter(self._cur)
@@ -680,6 +678,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             def lastrowid(self):
                 return self._cur.lastrowid
 
+            @property
+            def rowcount(self):
+                return self._cur.rowcount
+
         # thanks to hotshot
         # this avoids calling _cleanup_stale_cur_conn logic zillions of time
         t1 = time.time()
@@ -688,24 +690,15 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             self._cleanup_stale_cur_conn_t = t1
 
         c_key = self._get_cur_th_key()
-        _init_db = False
         with self._cursor_pool_mutex():
             cursor = self._cursor_pool().get(c_key)
             if cursor is None:
                 conn = self._connection()
                 cursor = conn.cursor()
-                engine = "InnoDB"
-                if self._db == ":memory:":
-                    engine = "MEMORY"
-                cursor.execute("SET storage_engine=%s;" % (engine,))
-                cursor.fetchall()
+                cursor.execute("SET storage_engine=InnoDB;")
+                cursor.execute("SET autocommit=OFF;")
                 cursor = MySQLCursorWrapper(cursor)
                 self._cursor_pool()[c_key] = cursor
-                _init_db = True
-        # memory databases are critical because every new cursor brings
-        # up a totally empty repository. So, enforce initialization.
-        if _init_db and self._db == ":memory:":
-            self.initializeRepository()
         return cursor
 
     def _connection(self):
@@ -720,14 +713,14 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                     "passwd": self._password,
                     "db": self._db,
                     "port": self._port,
-                    "conv": MySQLProxy.conversions(),
                     }
                 try:
                     conn = self._mysql.connect(**kwargs)
-                    conn.set_character_set("utf8")
                 except MySQLProxy.exceptions().OperationalError as err:
                     raise OperationalError("Cannot connect: %s" % (repr(err),))
                 self._connection_pool()[c_key] = conn
+            else:
+                conn.ping()
         return conn
 
     def __show_info(self):
@@ -856,12 +849,13 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         try:
             for table in self._listAllTables():
                 try:
-                    self._cursor().execute("DROP TABLE %s" % (table,))
+                    cur = self._cursor().execute("DROP TABLE %s" % (table,))
                 except MySQLProxy.exceptions().OperationalError:
                     # skip tables that can't be dropped
                     continue
         finally:
             self._cursor().execute("SET FOREIGN_KEY_CHECKS = 1;")
+        self.commit()
         self._cursor().executescript(my.get_init())
         self._clearLiveCache("_doesTableExist")
         self._clearLiveCache("_doesColumnInTableExist")
@@ -947,7 +941,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             # does it exist?
             self.removePackage(package_id, do_cleanup = False,
                 do_commit = False, from_add_package = True)
-            mypackage_id_string = '%s'
+            mypackage_id_string = '?'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
             # merge old manual dependencies
@@ -964,7 +958,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         cur = self._cursor().execute("""
         INSERT INTO baseinfo VALUES
-        (%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)""" % (
+        (%s, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""" % (
             mypackage_id_string,), mybaseinfo_data)
         if package_id is None:
             package_id = cur.lastrowid
@@ -972,7 +966,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         # extrainfo
         self._cursor().execute(
             """INSERT INTO extrainfo VALUES
-            (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (   package_id,
                 pkg_data['description'],
@@ -1115,7 +1109,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         # this will work thanks to ON DELETE CASCADE !
         self._cursor().execute(
-            "DELETE FROM baseinfo WHERE idpackage = %s", (package_id,))
+            "DELETE FROM baseinfo WHERE idpackage = ?", (package_id,))
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -1133,7 +1127,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type mirrorname: string
         """
         self._cursor().execute("""
-        DELETE FROM mirrorlinks WHERE mirrorname = %s
+        DELETE FROM mirrorlinks WHERE mirrorname = ?
         """, (mirrorname,))
 
     def _addMirrors(self, mirrorname, mirrorlist):
@@ -1147,7 +1141,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type mirrorlist: list
         """
         self._cursor().executemany("""
-        INSERT into mirrorlinks VALUES (%s, %s)
+        INSERT into mirrorlinks VALUES (?, ?)
         """, [(mirrorname, x,) for x in mirrorlist])
 
     def _addProtect(self, protect):
@@ -1161,7 +1155,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into configprotectreference VALUES (NULL, %s)
+        INSERT into configprotectreference VALUES (NULL, ?)
         """, (protect,))
         return cur.lastrowid
 
@@ -1176,7 +1170,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into sourcesreference VALUES (NULL, %s)
+        INSERT into sourcesreference VALUES (NULL, ?)
         """, (source,))
         return cur.lastrowid
 
@@ -1191,7 +1185,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into dependenciesreference VALUES (NULL, %s)
+        INSERT into dependenciesreference VALUES (NULL, ?)
         """, (dependency,))
         return cur.lastrowid
 
@@ -1206,7 +1200,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into keywordsreference VALUES (NULL, %s)
+        INSERT into keywordsreference VALUES (NULL, ?)
         """, (keyword,))
         return cur.lastrowid
 
@@ -1221,7 +1215,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into useflagsreference VALUES (NULL, %s)
+        INSERT into useflagsreference VALUES (NULL, ?)
         """, (useflag,))
         return cur.lastrowid
 
@@ -1236,7 +1230,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        INSERT into neededreference VALUES (NULL, %s)
+        INSERT into neededreference VALUES (NULL, ?)
         """, (needed,))
         return cur.lastrowid
 
@@ -1251,7 +1245,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type do_commit: bool
         """
         self._cursor().execute("""
-        INSERT into systempackages VALUES (%s)
+        INSERT into systempackages VALUES (?)
         """, (package_id,))
         if do_commit:
             self.commit()
@@ -1262,7 +1256,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         if not self.isInjected(package_id):
             self._cursor().execute("""
-            INSERT into injected VALUES (%s)
+            INSERT into injected VALUES (?)
             """, (package_id,))
         if do_commit:
             self.commit()
@@ -1272,7 +1266,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET datecreation = %s WHERE idpackage = %s
+        UPDATE extrainfo SET datecreation = ? WHERE idpackage = ?
         """, (str(date), package_id,))
 
     def setDigest(self, package_id, digest):
@@ -1280,7 +1274,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET digest = %s WHERE idpackage = %s
+        UPDATE extrainfo SET digest = ? WHERE idpackage = ?
         """, (digest, package_id,))
 
     def setSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
@@ -1288,8 +1282,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE packagesignatures SET sha1 = %s, sha256 = %s, sha512 = %s,
-        gpg = %s WHERE idpackage = %s
+        UPDATE packagesignatures SET sha1 = ?, sha256 = ?, sha512 = ?,
+        gpg = ? WHERE idpackage = ?
         """, (sha1, sha256, sha512, gpg, package_id))
 
     def setDownloadURL(self, package_id, url):
@@ -1302,7 +1296,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type url: string
         """
         self._cursor().execute("""
-        UPDATE extrainfo SET download = %s WHERE idpackage = %s
+        UPDATE extrainfo SET download = ? WHERE idpackage = ?
         """, (url, package_id,))
 
     def setCategory(self, package_id, category):
@@ -1310,7 +1304,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET category = %s WHERE idpackage = %s
+        UPDATE baseinfo SET category = ? WHERE idpackage = ?
         """, (category, package_id,))
 
     def setCategoryDescription(self, category, description_data):
@@ -1318,12 +1312,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM categoriesdescription WHERE category = %s
+        DELETE FROM categoriesdescription WHERE category = ?
         """, (category,))
         for locale in description_data:
             mydesc = description_data[locale]
             self._cursor().execute("""
-            INSERT INTO categoriesdescription VALUES (%s, %s, %s)
+            INSERT INTO categoriesdescription VALUES (?, ?, ?)
             """, (category, locale, mydesc,))
 
     def setName(self, package_id, name):
@@ -1331,7 +1325,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET name = %s WHERE idpackage = %s
+        UPDATE baseinfo SET name = ? WHERE idpackage = ?
         """, (name, package_id,))
 
     def setDependency(self, iddependency, dependency):
@@ -1339,8 +1333,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE dependenciesreference SET dependency = %s
-        WHERE iddependency = %s
+        UPDATE dependenciesreference SET dependency = ?
+        WHERE iddependency = ?
         """, (dependency, iddependency,))
 
     def setAtom(self, package_id, atom):
@@ -1348,7 +1342,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET atom = %s WHERE idpackage = %s
+        UPDATE baseinfo SET atom = ? WHERE idpackage = ?
         """, (atom, package_id,))
 
     def setSlot(self, package_id, slot):
@@ -1356,7 +1350,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET slot = %s WHERE idpackage = %s
+        UPDATE baseinfo SET slot = ? WHERE idpackage = ?
         """, (slot, package_id,))
 
     def setRevision(self, package_id, revision):
@@ -1364,7 +1358,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET revision = %s WHERE idpackage = %s
+        UPDATE baseinfo SET revision = ? WHERE idpackage = ?
         """, (revision, package_id,))
 
     def removeDependencies(self, package_id):
@@ -1372,7 +1366,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM dependencies WHERE idpackage = %s
+        DELETE FROM dependencies WHERE idpackage = ?
         """, (package_id,))
 
     def insertDependencies(self, package_id, depdata):
@@ -1401,7 +1395,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         del dcache
 
         self._cursor().executemany("""
-        INSERT into dependencies VALUES (%s, %s, %s)
+        INSERT into dependencies VALUES (?, ?, ?)
         """, deps)
 
     def insertContent(self, package_id, content, already_formatted = False):
@@ -1430,11 +1424,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         if already_formatted:
             self._cursor().executemany("""
-            INSERT INTO content VALUES (%s, %s, %s)
+            INSERT INTO content VALUES (?, ?, ?)
             """, MyIter(package_id, content, already_formatted))
         else:
             self._cursor().executemany("""
-            INSERT INTO content VALUES (%s, %s, %s)
+            INSERT INTO content VALUES (?, ?, ?)
             """, MyIter(package_id, content, already_formatted))
 
     def _insertContentSafety(self, package_id, content_safety):
@@ -1444,7 +1438,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         if isinstance(content_safety, dict):
             self._cursor().executemany("""
-            INSERT into contentsafety VALUES (%s, %s, %s, %s)
+            INSERT into contentsafety VALUES (?, ?, ?, ?)
             """, [(package_id, k, v['mtime'], v['sha256']) \
                       for k, v in content_safety.items()])
         else:
@@ -1462,7 +1456,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                     return package_id, path, mtime, sha256
 
             self._cursor().executemany("""
-            INSERT into contentsafety VALUES (%s, %s, %s, %s)
+            INSERT into contentsafety VALUES (?, ?, ?, ?)
             """, MyIterWrapper(content_safety))
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
@@ -1476,7 +1470,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type libs_metadata: list
         """
         self._cursor().executemany("""
-        INSERT INTO provided_libs VALUES (%s, %s, %s, %s)
+        INSERT INTO provided_libs VALUES (?, ?, ?, ?)
         """, [(package_id, x, y, z,) for x, y, z in libs_metadata])
 
     def insertAutomergefiles(self, package_id, automerge_data):
@@ -1484,7 +1478,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().executemany("""
-        INSERT INTO automergefiles VALUES (%s, %s, %s)""",
+        INSERT INTO automergefiles VALUES (?, ?, ?)""",
             [(package_id, x, y,) for x, y in automerge_data])
 
     def _insertChangelog(self, category, name, changelog_txt):
@@ -1502,11 +1496,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         mytxt = changelog_txt.encode('raw_unicode_escape')
 
         self._cursor().execute("""
-        DELETE FROM packagechangelogs WHERE category = %s AND name = %s
+        DELETE FROM packagechangelogs WHERE category = ? AND name = ?
         """, (category, name,))
 
         self._cursor().execute("""
-        INSERT INTO packagechangelogs VALUES (%s, %s, %s)
+        INSERT INTO packagechangelogs VALUES (?, ?, ?)
         """, (category, name, const_get_buffer()(mytxt),))
 
     def _insertLicenses(self, licenses_data):
@@ -1537,7 +1531,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         # set() used after filter to remove duplicates
         self._cursor().executemany("""
-        INSERT INTO licensedata VALUES (%s, %s, %s)
+        INSERT INTO licensedata VALUES (?, ?, ?)
         """, list(map(my_mm, set(filter(my_mf, mylicenses)))))
 
     def _insertConfigProtect(self, package_id, idprotect, mask = False):
@@ -1562,7 +1556,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if mask:
             mytable += 'mask'
         self._cursor().execute("""
-        INSERT INTO %s VALUES (%%s, %%s)
+        INSERT INTO %s VALUES (?, ?)
         """ % (mytable,), (package_id, idprotect,))
 
     def _insertMirrors(self, mirrors):
@@ -1607,7 +1601,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             return (package_id, idkeyword,)
 
         self._cursor().executemany("""
-        INSERT INTO keywords VALUES (%s, %s)
+        INSERT INTO keywords VALUES (?, ?)
         """, list(map(mymf, keywords)))
 
     def _insertUseflags(self, package_id, useflags):
@@ -1628,7 +1622,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             return (package_id, iduseflag,)
 
         self._cursor().executemany("""
-        INSERT INTO useflags VALUES (%s, %s)
+        INSERT INTO useflags VALUES (?, ?)
         """, list(map(mymf, useflags)))
 
     def _insertSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
@@ -1647,7 +1641,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type gpg: string
         """
         self._cursor().execute("""
-        INSERT INTO packagesignatures VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO packagesignatures VALUES (?, ?, ?, ?, ?)
         """, (package_id, sha1, sha256, sha512, gpg))
 
     def _insertExtraDownload(self, package_id, package_downloads_data):
@@ -1662,7 +1656,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         self._cursor().executemany("""
         INSERT INTO packagedownloads VALUES
-        (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, [(package_id, edw['download'], edw['type'], edw['size'],
                 edw['disksize'], edw['md5'], edw['sha1'], edw['sha256'],
                 edw['sha512'], edw['gpg']) for edw in \
@@ -1678,9 +1672,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type metadata: list
         """
         mime_data = [(package_id, x['name'], x['mimetype'], x['executable'],
-            x['icon']) for x in metadata]
+                      x['icon']) for x in metadata]
         self._cursor().executemany("""
-        INSERT INTO packagedesktopmime VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO packagedesktopmime VALUES (?, ?, ?, ?, ?)
         """, mime_data)
 
     def _insertProvidedMime(self, package_id, mimetypes):
@@ -1695,7 +1689,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type mimetypes: list
         """
         self._cursor().executemany("""
-        INSERT INTO provided_mime VALUES (%s, %s)""",
+        INSERT INTO provided_mime VALUES (?, ?)""",
             [(x, package_id) for x in mimetypes])
 
     def _insertSpmPhases(self, package_id, phases):
@@ -1711,7 +1705,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type phases: list
         """
         self._cursor().execute("""
-        INSERT INTO packagespmphases VALUES (%s, %s)
+        INSERT INTO packagespmphases VALUES (?, ?)
         """, (package_id, phases,))
 
     def _insertSpmRepository(self, package_id, repository):
@@ -1726,7 +1720,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type repository: string
         """
         self._cursor().execute("""
-        INSERT INTO packagespmrepository VALUES (%s, %s)
+        INSERT INTO packagespmrepository VALUES (?, ?)
         """, (package_id, repository,))
 
     def _insertSources(self, package_id, sources):
@@ -1751,7 +1745,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             return (package_id, idsource,)
 
         self._cursor().executemany("""
-        INSERT INTO sources VALUES (%s, %s)
+        INSERT INTO sources VALUES (?, ?)
         """, [x for x in map(mymf, sources) if x != 0])
 
     def _insertConflicts(self, package_id, conflicts):
@@ -1764,7 +1758,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type conflicts: list
         """
         self._cursor().executemany("""
-        INSERT INTO conflicts VALUES (%s, %s)
+        INSERT INTO conflicts VALUES (?, ?)
         """, [(package_id, x,) for x in conflicts])
 
     def _insertProvide(self, package_id, provides):
@@ -1786,14 +1780,14 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         default_provides = [x for x in provides if x[1]]
 
         self._cursor().executemany("""
-        INSERT INTO provide VALUES (%s, %s, %s)
+        INSERT INTO provide VALUES (?, ?, ?)
         """, [(package_id, x, y,) for x, y in provides])
 
         if default_provides:
             # reset previously set default provides
             self._cursor().executemany("""
-            UPDATE provide SET is_default=0 WHERE atom = %s AND
-            idpackage != %s
+            UPDATE provide SET is_default=0 WHERE atom = ? AND
+            idpackage != ?
             """, default_provides)
 
     def _insertNeeded(self, package_id, neededs):
@@ -1814,7 +1808,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             return (package_id, idneeded, elfclass,)
 
         self._cursor().executemany("""
-        INSERT INTO needed VALUES (%s, %s, %s)
+        INSERT INTO needed VALUES (?, ?, ?)
         """, list(map(mymf, neededs)))
 
     def _insertOnDiskSize(self, package_id, mysize):
@@ -1827,7 +1821,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type mysize: int
         """
         self._cursor().execute("""
-        INSERT INTO sizes VALUES (%s, %s)
+        INSERT INTO sizes VALUES (?, ?)
         """, (package_id, mysize,))
 
     def _insertTrigger(self, package_id, trigger):
@@ -1843,7 +1837,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @type trigger: string
         """
         self._cursor().execute("""
-        INSERT INTO triggers VALUES (%s, %s)
+        INSERT INTO triggers VALUES (?, ?)
         """, (package_id, const_get_buffer()(trigger),))
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
@@ -1852,7 +1846,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        REPLACE INTO entropy_branch_migration VALUES (%s, %s, %s, %s, %s)
+        REPLACE INTO entropy_branch_migration VALUES (?, ?, ?, ?, ?)
         """, (
                 repository, from_branch,
                 to_branch, post_migration_md5sum,
@@ -1866,8 +1860,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE entropy_branch_migration SET post_upgrade_md5sum = %s WHERE
-        repository = %s AND from_branch = %s AND to_branch = %s
+        UPDATE entropy_branch_migration SET post_upgrade_md5sum = ? WHERE
+        repository = ? AND from_branch = ? AND to_branch = ?
         """, (post_upgrade_md5sum, repository, from_branch, to_branch,))
 
 
@@ -1896,7 +1890,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             # special cases
             my_uid = self.getFakeSpmUid()
 
-        self._cursor().execute('INSERT INTO counters VALUES (%s, %s, %s)',
+        self._cursor().execute('INSERT INTO counters VALUES (?, ?, ?)',
             (my_uid, package_id, branch,))
 
         return my_uid
@@ -1908,13 +1902,13 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         branch = self._settings['repositories']['branch']
 
         self._cursor().execute("""
-        DELETE FROM counters WHERE counter = %s
-        AND branch = %s
+        DELETE FROM counters WHERE counter = ?
+        AND branch = ?
         """, (spm_package_uid, branch,))
         # the "OR REPLACE" clause handles the UPDATE
         # of the counter value in case of clashing
         self._cursor().execute("""
-        REPLACE INTO counters VALUES (%s, %s, %s);
+        REPLACE INTO counters VALUES (?, ?, ?);
         """, (spm_package_uid, package_id, branch,))
 
     def setTrashedUid(self, spm_package_uid):
@@ -1922,7 +1916,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        REPLACE INTO trashedcounters VALUES %s
+        REPLACE INTO trashedcounters VALUES ?
         """, (spm_package_uid,))
 
     def removeTrashedUids(self, spm_package_uids):
@@ -1931,7 +1925,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         the "trashed" list. This is only used by Entropy Server.
         """
         self._cursor().executemany("""
-        DELETE FROM trashedcounters WHERE counter = %s
+        DELETE FROM trashedcounters WHERE counter = ?
         """, [(x,) for x in spm_package_uids])
 
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
@@ -1941,19 +1935,19 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         branchstring = ''
         insertdata = (spm_package_uid, package_id)
         if branch:
-            branchstring = ', branch = %s'
+            branchstring = ', branch = ?'
             insertdata += (branch,)
 
         self._cursor().execute("""
-        UPDATE or REPLACE counters SET counter = %%s %s
-        WHERE idpackage = %%s""" % (branchstring,), insertdata)
+        UPDATE or REPLACE counters SET counter = ? %s
+        WHERE idpackage = ?""" % (branchstring,), insertdata)
 
     def setContentSafety(self, package_id, content_safety):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM contentsafety where idpackage = %s
+        DELETE FROM contentsafety where idpackage = ?
         """, (package_id,))
         self._insertContentSafety(package_id, content_safety)
 
@@ -1980,7 +1974,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
             content_iter = dbconn.retrieveContentIter(dbconn_package_id)
             self._cursor().executemany("""
-            INSERT INTO `%s` VALUES (%%s, %%s)""" % (randomtable,),
+            INSERT INTO `%s` VALUES (?, ?)""" % (randomtable,),
                 content_iter)
 
             # remove this when the one in retrieveContent will be removed
@@ -1992,7 +1986,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 ftype_str = ", type"
             cur = self._cursor().execute("""
             SELECT file%s FROM content
-            WHERE content.idpackage = %%s AND
+            WHERE content.idpackage = ? AND
             content.file NOT IN (SELECT file from `%s`)""" % (
                     ftype_str, randomtable,), (package_id,))
 
@@ -2063,7 +2057,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         try:
-            cur = self._cursor().execute('SELECT min(counter) FROM counters')
+            cur = self._cursor().execute("""
+            SELECT min(counter) FROM counters LIMIT 1
+            """)
             dbcounter = cur.fetchone()
         except MySQLProxy.exceptions().Error:
             # first available counter
@@ -2084,7 +2080,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute('SELECT max(etpapi) FROM baseinfo')
+        cur = self._cursor().execute("""
+        SELECT max(etpapi) FROM baseinfo LIMIT 1
+        """)
         api = cur.fetchone()
         if api:
             return api[0]
@@ -2095,7 +2093,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT dependency FROM dependenciesreference WHERE iddependency = %s
+        SELECT dependency FROM dependenciesreference WHERE iddependency = ?
+        LIMIT 1
         """, (iddependency,))
         dep = cur.fetchone()
         if dep:
@@ -2106,7 +2105,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = %s
+        SELECT idpackage FROM baseinfo WHERE atom = ?
         """, (atom,))
         return self._cur2frozenset(cur)
 
@@ -2118,14 +2117,16 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if endswith:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo
-            WHERE extrainfo.download LIKE %s AND
+            WHERE extrainfo.download LIKE ? AND
             baseinfo.idpackage = extrainfo.idpackage
+            LIMIT 1
             """, ("%"+download_relative_path,))
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo
-            WHERE extrainfo.download = %s AND
+            WHERE extrainfo.download = ? AND
             baseinfo.idpackage = extrainfo.idpackage
+            LIMIT 1
             """, (download_relative_path,))
 
         package_id = cur.fetchone()
@@ -2139,7 +2140,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT version, versiontag, revision FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2150,7 +2151,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT CONCAT(category, '/', name), slot, version,
             versiontag, revision, atom FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2160,7 +2161,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT atom, slot, revision FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2171,7 +2172,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT atom, category, name, version, slot, versiontag,
             revision, branch, etpapi FROM baseinfo
-        WHERE baseinfo.idpackage = %s""", (package_id,))
+        WHERE baseinfo.idpackage = ? LIMIT 1
+        """, (package_id,))
         return cur.fetchone()
 
     def getBaseData(self, package_id):
@@ -2203,8 +2205,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             baseinfo,
             extrainfo
         WHERE
-            baseinfo.idpackage = %s
+            baseinfo.idpackage = ?
             AND baseinfo.idpackage = extrainfo.idpackage
+        LIMIT 1
         """
         cur = self._cursor().execute(sql, (package_id,))
         return cur.fetchone()
@@ -2216,6 +2219,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         return frozenset(mycontent)
 
     def _cur2tuple(self, cur):
+        # NOTE: fetchall() is required in order to force
+        # oursql to transfer all data from MySQL.
         return tuple(itertools.chain.from_iterable(cur))
 
     def clearCache(self):
@@ -2231,7 +2236,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT digest FROM treeupdates WHERE repository = %s
+        SELECT digest FROM treeupdates WHERE repository = ? LIMIT 1
         """, (repository,))
 
         mydigest = cur.fetchone()
@@ -2262,7 +2267,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         cur = self._cursor().execute("""
         SELECT command FROM treeupdatesactions WHERE
-        repository = %s order by date""", params)
+        repository = ? order by date""", params)
         return self._cur2tuple(cur)
 
     def bumpTreeUpdatesActions(self, updates):
@@ -2271,7 +2276,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         self._cursor().execute('DELETE FROM treeupdatesactions')
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO treeupdatesactions VALUES (?, ?, ?, ?, ?)
         """, updates)
 
     def removeTreeUpdatesActions(self, repository):
@@ -2279,7 +2284,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdatesactions WHERE repository = %s
+        DELETE FROM treeupdatesactions WHERE repository = ?
         """, (repository,))
 
     def insertTreeUpdatesActions(self, updates, repository):
@@ -2288,7 +2293,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         myupdates = [[repository]+list(x) for x in updates]
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (NULL, %s, %s, %s, %s)
+        INSERT INTO treeupdatesactions VALUES (NULL, ?, ?, ?, ?)
         """, myupdates)
 
     def setRepositoryUpdatesDigest(self, repository, digest):
@@ -2296,10 +2301,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdates where repository = %s
+        DELETE FROM treeupdates where repository = ?
         """, (repository,))
         self._cursor().execute("""
-        INSERT INTO treeupdates VALUES (%s, %s)
+        INSERT INTO treeupdates VALUES (?, ?)
         """, (repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
@@ -2312,7 +2317,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             if not self._doesTreeupdatesActionExist(repository, x, branch)
         ]
         self._cursor().executemany("""
-        INSERT INTO treeupdatesactions VALUES (NULL, %s, %s, %s, %s)
+        INSERT INTO treeupdatesactions VALUES (NULL, ?, ?, ?, ?)
         """, myupdates)
 
     def _doesTreeupdatesActionExist(self, repository, command, branch):
@@ -2333,8 +2338,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idupdate FROM treeupdatesactions
-        WHERE repository = %s and command = %s
-        and branch = %s""", (repository, command, branch,))
+        WHERE repository = ? and command = ?
+        and branch = ? LIMIT 1
+        """, (repository, command, branch,))
 
         result = cur.fetchone()
         if result:
@@ -2360,7 +2366,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
 
-        self._cursor().executemany('INSERT INTO packagesets VALUES (%s, %s)',
+        self._cursor().executemany('INSERT INTO packagesets VALUES (?, ?)',
             mysets)
 
     def retrievePackageSets(self):
@@ -2368,10 +2374,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("SELECT setname, dependency FROM packagesets")
-        data = cur.fetchall()
 
         sets = {}
-        for setname, dependency in data:
+        for setname, dependency in cur:
             obj = sets.setdefault(setname, set())
             obj.add(dependency)
         return sets
@@ -2381,7 +2386,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT dependency FROM packagesets WHERE setname = %s""",
+        SELECT dependency FROM packagesets WHERE setname = ?""",
             (setname,))
         return self._cur2frozenset(cur)
 
@@ -2390,7 +2395,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT atom FROM baseinfo WHERE idpackage = %s
+        SELECT atom FROM baseinfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         atom = cur.fetchone()
         if atom:
@@ -2401,7 +2406,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT branch FROM baseinfo WHERE idpackage = %s
+        SELECT branch FROM baseinfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         branch = cur.fetchone()
         if branch:
@@ -2412,7 +2417,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT data FROM triggers WHERE idpackage = %s
+        SELECT data FROM triggers WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         trigger = cur.fetchone()
         if not trigger:
@@ -2425,7 +2430,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT download FROM extrainfo WHERE idpackage = %s
+        SELECT download FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         download = cur.fetchone()
         if download:
@@ -2436,7 +2441,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT description FROM extrainfo WHERE idpackage = %s
+        SELECT description FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         description = cur.fetchone()
         if description:
@@ -2447,7 +2452,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT homepage FROM extrainfo WHERE idpackage = %s
+        SELECT homepage FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         home = cur.fetchone()
         if home:
@@ -2459,7 +2464,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT counters.counter FROM counters,baseinfo
-        WHERE counters.idpackage = %s AND
+        WHERE counters.idpackage = ? AND
         baseinfo.idpackage = counters.idpackage AND
         baseinfo.branch = counters.branch LIMIT 1
         """, (package_id,))
@@ -2473,7 +2478,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT size FROM extrainfo WHERE idpackage = %s
+        SELECT size FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         size = cur.fetchone()
         if size:
@@ -2487,7 +2492,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT size FROM sizes WHERE idpackage = %s
+        SELECT size FROM sizes WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         size = cur.fetchone()
         if size:
@@ -2499,7 +2504,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT digest FROM extrainfo WHERE idpackage = %s
+        SELECT digest FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         digest = cur.fetchone()
         if digest:
@@ -2512,7 +2517,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT sha1, sha256, sha512, gpg FROM packagesignatures
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         data = cur.fetchone()
 
@@ -2527,18 +2532,18 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         down_type_str = ""
         params = [package_id]
         if down_type is not None:
-            down_type_str = " AND down_type = %s"
+            down_type_str = " AND down_type = ?"
             params.append(down_type)
 
         cur = self._cursor().execute("""
         SELECT download, type, size, disksize, md5, sha1,
             sha256, sha512, gpg
-        FROM packagedownloads WHERE idpackage = %s
+        FROM packagedownloads WHERE idpackage = ?
         """ + down_type_str, params)
 
         result = []
         for download, d_type, size, d_size, md5, sha1, sha256, sha512, gpg in \
-            cur.fetchall():
+                cur:
             result.append({
                 "download": download,
                 "type": d_type,
@@ -2557,7 +2562,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT name FROM baseinfo WHERE idpackage = %s
+        SELECT name FROM baseinfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         name = cur.fetchone()
         if name:
@@ -2569,7 +2574,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT category, name FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2579,7 +2584,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT CONCAT(category, '/', name), slot FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2589,7 +2594,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT CONCAT(category, '/', name, '%s', slot) FROM baseinfo
-        WHERE idpackage = %%s
+        WHERE idpackage = ? LIMIT 1
         """ % (etpConst['entropyslotprefix'],), (package_id,))
         keyslot = cur.fetchone()
         if keyslot:
@@ -2603,7 +2608,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT CONCAT(category, '/', name), slot,
         versiontag FROM baseinfo WHERE
-        idpackage = %s
+        idpackage = ? LIMIT 1
         """, (package_id,))
         return cur.fetchone()
 
@@ -2613,7 +2618,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT version FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         version = cur.fetchone()
         if version:
@@ -2626,7 +2631,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT revision FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         rev = cur.fetchone()
         if rev:
@@ -2638,7 +2643,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT datecreation FROM extrainfo WHERE idpackage = %s
+        SELECT datecreation FROM extrainfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         date = cur.fetchone()
         if date:
@@ -2649,7 +2654,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT etpapi FROM baseinfo WHERE idpackage = %s
+        SELECT etpapi FROM baseinfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         api = cur.fetchone()
         if api:
@@ -2662,7 +2667,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT useflagsreference.flagname
         FROM useflags, useflagsreference
-        WHERE useflags.idpackage = %s
+        WHERE useflags.idpackage = ?
         AND useflags.idflag = useflagsreference.idflag
         """, (package_id,))
         return self._cur2frozenset(cur)
@@ -2672,7 +2677,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT phases FROM packagespmphases WHERE idpackage = %s
+        SELECT phases FROM packagespmphases WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         spm_phases = cur.fetchone()
 
@@ -2685,7 +2690,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT repository FROM packagespmrepository
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         spm_repo = cur.fetchone()
 
@@ -2698,9 +2703,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT name, mimetype, executable, icon FROM packagedesktopmime
-        WHERE idpackage = %s""", (package_id,))
+        WHERE idpackage = ?""", (package_id,))
         data = []
-        for row in cur.fetchall():
+        for row in cur:
             item = {}
             item['name'], item['mimetype'], item['executable'], \
                 item['icon'] = row
@@ -2712,8 +2717,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT mimetype FROM provided_mime WHERE idpackage = %s""",
-        (package_id,))
+        SELECT mimetype FROM provided_mime WHERE idpackage = ?
+        """, (package_id,))
         return self._cur2frozenset(cur)
 
     def retrieveNeededRaw(self, package_id):
@@ -2722,7 +2727,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT library FROM needed,neededreference
-        WHERE needed.idpackage = %s AND
+        WHERE needed.idpackage = ? AND
         needed.idneeded = neededreference.idneeded""", (package_id,))
         return self._cur2frozenset(cur)
 
@@ -2734,7 +2739,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
             cur = self._cursor().execute("""
             SELECT library,elfclass FROM needed,neededreference
-            WHERE needed.idpackage = %s AND
+            WHERE needed.idpackage = ? AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
             needed = tuple(cur)
@@ -2743,7 +2748,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
             cur = self._cursor().execute("""
             SELECT library FROM needed,neededreference
-            WHERE needed.idpackage = %s AND
+            WHERE needed.idpackage = ? AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
             needed = self._cur2tuple(cur)
@@ -2758,7 +2763,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT library, path, elfclass FROM provided_libs
-        WHERE idpackage = %s
+        WHERE idpackage = ?
         """, (package_id,))
         return frozenset(cur)
 
@@ -2767,7 +2772,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT conflict FROM conflicts WHERE idpackage = %s
+        SELECT conflict FROM conflicts WHERE idpackage = ?
         """, (package_id,))
         return self._cur2frozenset(cur)
 
@@ -2777,7 +2782,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         # be optimistic, _doesColumnInTableExist is very slow.
         cur = self._cursor().execute("""
-        SELECT atom,is_default FROM provide WHERE idpackage = %s
+        SELECT atom,is_default FROM provide WHERE idpackage = ?
         """, (package_id,))
         return frozenset(cur)
 
@@ -2795,13 +2800,14 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT dependenciesreference.dependency
         FROM dependencies, dependenciesreference
-        WHERE dependencies.idpackage = %%s AND
-        dependencies.iddependency = dependenciesreference.iddependency %s
+        WHERE dependencies.idpackage = ? AND
+        dependencies.iddependency = dependenciesreference.iddependency ?
         UNION SELECT CONCAT('!', conflict) FROM conflicts
-        WHERE idpackage = %%s""" % (excluded_deptypes_query,),
+        WHERE idpackage = ?""" % (excluded_deptypes_query,),
         (package_id, package_id,))
         if resolve_conditional_deps:
-            return frozenset(entropy.dep.expand_dependencies(cur, [self]))
+            return frozenset(entropy.dep.expand_dependencies(
+                    cur, [self]))
         else:
             return self._cur2frozenset(cur)
 
@@ -2850,7 +2856,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         depstring = ''
         if deptype is not None:
-            depstring = 'and dependencies.type = %s'
+            depstring = 'and dependencies.type = ?'
             searchdata += (deptype,)
 
         excluded_deptypes_query = ""
@@ -2863,20 +2869,22 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency,dependencies.type
             FROM dependencies,dependenciesreference
-            WHERE dependencies.idpackage = %%s AND
+            WHERE dependencies.idpackage = ? AND
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return tuple(entropy.dep.expand_dependencies(cur, [self]))
+            return tuple(entropy.dep.expand_dependencies(
+                    cur, [self]))
         else:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency
             FROM dependencies,dependenciesreference
-            WHERE dependencies.idpackage = %%s AND
+            WHERE dependencies.idpackage = ? AND
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return frozenset(entropy.dep.expand_dependencies(cur, [self]))
+            return frozenset(entropy.dep.expand_dependencies(
+                    cur, [self]))
 
     def retrieveKeywords(self, package_id):
         """
@@ -2884,7 +2892,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT keywordname FROM keywords,keywordsreference
-        WHERE keywords.idpackage = %s AND
+        WHERE keywords.idpackage = ? AND
         keywords.idkeyword = keywordsreference.idkeyword""", (package_id,))
         return self._cur2frozenset(cur)
 
@@ -2894,8 +2902,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT protect FROM configprotect,configprotectreference
-        WHERE configprotect.idpackage = %s AND
+        WHERE configprotect.idpackage = ? AND
         configprotect.idprotect = configprotectreference.idprotect
+        LIMIT 1
         """, (package_id,))
 
         protect = cur.fetchone()
@@ -2909,8 +2918,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT protect FROM configprotectmask,configprotectreference
-        WHERE idpackage = %s AND
+        WHERE idpackage = ? AND
         configprotectmask.idprotect = configprotectreference.idprotect
+        LIMIT 1
         """, (package_id,))
 
         protect = cur.fetchone()
@@ -2924,7 +2934,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT sourcesreference.source FROM sources, sourcesreference
-        WHERE idpackage = %s AND
+        WHERE idpackage = ? AND
         sources.idsource = sourcesreference.idsource
         """, (package_id,))
         sources = self._cur2frozenset(cur)
@@ -2958,7 +2968,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT configfile, md5 FROM automergefiles WHERE idpackage = %s
+        SELECT configfile, md5 FROM automergefiles WHERE idpackage = ?
         """, (package_id,))
         data = frozenset(cur)
 
@@ -2988,7 +2998,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             order_by_string = ' order by %s' % (order_by,)
 
         cur = self._cursor().execute("""
-        SELECT %s file%s FROM content WHERE idpackage = %%s %s""" % (
+        SELECT %s file%s FROM content WHERE idpackage = ? %s""" % (
             extstring_package_id, extstring, order_by_string,),
             searchkeywords)
 
@@ -3043,7 +3053,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 order_by, ordering_term)
 
         cur = self._cursor().execute("""
-        SELECT file, type FROM content WHERE idpackage = %%s %s""" % (
+        SELECT file, type FROM content WHERE idpackage = ? %s""" % (
             order_by_string,), searchkeywords)
         return MyIter(cur)
 
@@ -3052,10 +3062,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT file, sha256, mtime from contentsafety WHERE idpackage = %s
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = ?
         """, (package_id,))
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
-            sha256, mtime in cur.fetchall())
+            sha256, mtime in cur)
 
     def retrieveContentSafetyIter(self, package_id):
         """
@@ -3073,11 +3083,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 return self._cur.next()
 
         cur = self._cursor().execute("""
-        SELECT file, sha256, mtime from contentsafety WHERE idpackage = %s
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = ?
         """, (package_id,))
         return MyIter(cur)
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
-            sha256, mtime in cur.fetchall())
+            sha256, mtime in cur)
 
     def retrieveChangelog(self, package_id):
         """
@@ -3086,9 +3096,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT packagechangelogs.changelog
         FROM packagechangelogs, baseinfo
-        WHERE baseinfo.idpackage = %s AND
+        WHERE baseinfo.idpackage = ? AND
         packagechangelogs.category = baseinfo.category AND
         packagechangelogs.name = baseinfo.name
+        LIMIT 1
         """, (package_id,))
         changelog = cur.fetchone()
         if changelog:
@@ -3105,8 +3116,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT changelog FROM packagechangelogs WHERE category = %s AND
-        name = %s
+        SELECT changelog FROM packagechangelogs WHERE category = ? AND
+        name = ? LIMIT 1
         """, (category, name,))
 
         changelog = cur.fetchone()
@@ -3119,7 +3130,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT slot FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         slot = cur.fetchone()
         if slot:
@@ -3132,7 +3143,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT versiontag FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         tag = cur.fetchone()
         if tag:
@@ -3144,7 +3155,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = %s
+        SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = ?
         """, (mirrorname,))
         return self._cur2frozenset(cur)
 
@@ -3154,7 +3165,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT category FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         category = cur.fetchone()
         if category:
@@ -3167,10 +3178,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT description, locale FROM categoriesdescription
-        WHERE category = %s
+        WHERE category = ?
         """, (category,))
 
-        return dict((locale, desc,) for desc, locale in cur.fetchall())
+        return dict((locale, desc,) for desc, locale in cur)
 
     def retrieveLicenseData(self, package_id):
         """
@@ -3190,7 +3201,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 continue
 
             cur = self._cursor().execute("""
-            SELECT text FROM licensedata WHERE licensename = %s
+            SELECT text FROM licensedata WHERE licensename = ? LIMIT 1
             """, (licname,))
             lictext = cur.fetchone()
             if lictext is not None:
@@ -3221,7 +3232,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 continue
 
             cur = self._cursor().execute("""
-            SELECT licensename FROM licensedata WHERE licensename = %s
+            SELECT licensename FROM licensedata WHERE licensename = ? LIMIT 1
             """, (licname,))
             lic_id = cur.fetchone()
             if lic_id:
@@ -3236,7 +3247,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
-        SELECT text FROM licensedata WHERE licensename = %s
+        SELECT text FROM licensedata WHERE licensename = ? LIMIT 1
         """, (license_name,))
 
         text = cur.fetchone()
@@ -3249,7 +3260,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT license FROM baseinfo
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
 
         licname = cur.fetchone()
@@ -3262,7 +3273,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT chost,cflags,cxxflags FROM extrainfo
-        WHERE extrainfo.idpackage = %s""", (package_id,))
+        WHERE extrainfo.idpackage = ? LIMIT 1""", (package_id,))
         flags = cur.fetchone()
         if not flags:
             flags = ("N/A", "N/A", "N/A",)
@@ -3398,7 +3409,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         sql = """SELECT count(idpackage) FROM baseinfo
-        WHERE idpackage IN (%s)""" % (','.join(
+        WHERE idpackage IN (%s) LIMIT 1""" % (','.join(
             [str(x) for x in set(package_ids)]),
         )
         cur = self._cursor().execute(sql)
@@ -3412,7 +3423,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE idpackage = %s
+        SELECT idpackage FROM baseinfo WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         result = cur.fetchone()
         if not result:
@@ -3431,7 +3442,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: bool
         """
         cur = self._cursor().execute("""
-        SELECT idprotect FROM configprotectreference WHERE protect = %s
+        SELECT idprotect FROM configprotectreference WHERE protect = ? LIMIT 1
         """, (protect,))
         result = cur.fetchone()
         if result:
@@ -3443,7 +3454,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM content WHERE file = %s""", (path,))
+        SELECT idpackage FROM content WHERE file = ?""", (path,))
         result = self._cur2frozenset(cur)
         if get_id:
             return result
@@ -3458,18 +3469,18 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         args = (needed,)
         elfclass_txt = ''
         if elfclass != -1:
-            elfclass_txt = ' AND provided_libs.elfclass = %s'
+            elfclass_txt = ' AND provided_libs.elfclass = ?'
             args = (needed, elfclass,)
 
         if extended:
             cur = self._cursor().execute("""
             SELECT idpackage, path FROM provided_libs
-            WHERE library = %s""" + elfclass_txt, args)
+            WHERE library = ?""" + elfclass_txt, args)
             return frozenset(cur)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM provided_libs
-        WHERE library = %s""" + elfclass_txt, args)
+        WHERE library = ?""" + elfclass_txt, args)
         return self._cur2frozenset(cur)
 
     def _isSourceAvailable(self, source):
@@ -3483,7 +3494,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idsource FROM sourcesreference WHERE source = %s
+        SELECT idsource FROM sourcesreference WHERE source = ? LIMIT 1
         """, (source,))
         result = cur.fetchone()
         if result:
@@ -3501,7 +3512,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT iddependency FROM dependenciesreference WHERE dependency = %s
+        SELECT iddependency FROM dependenciesreference WHERE dependency = ?
+        LIMIT 1
         """, (dependency,))
         result = cur.fetchone()
         if result:
@@ -3519,7 +3531,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idkeyword FROM keywordsreference WHERE keywordname = %s
+        SELECT idkeyword FROM keywordsreference WHERE keywordname = ? LIMIT 1
         """, (keyword,))
         result = cur.fetchone()
         if result:
@@ -3537,7 +3549,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @rtype: int
         """
         cur = self._cursor().execute("""
-        SELECT idflag FROM useflagsreference WHERE flagname = %s
+        SELECT idflag FROM useflagsreference WHERE flagname = ? LIMIT 1
         """, (useflag,))
         result = cur.fetchone()
         if result:
@@ -3549,7 +3561,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idneeded FROM neededreference WHERE library = %s
+        SELECT idneeded FROM neededreference WHERE library = ? LIMIT 1
         """, (needed,))
         result = cur.fetchone()
         if result:
@@ -3561,7 +3573,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT counter FROM counters WHERE counter = %s
+        SELECT counter FROM counters WHERE counter = ? LIMIT 1
         """, (spm_uid,))
         result = cur.fetchone()
         if result:
@@ -3573,7 +3585,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT counter FROM trashedcounters WHERE counter = %s
+        SELECT counter FROM trashedcounters WHERE counter = ? LIMIT 1
         """, (spm_uid,))
         result = cur.fetchone()
         if result:
@@ -3585,7 +3597,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT licensename FROM licensedata WHERE licensename = %s
+        SELECT licensename FROM licensedata WHERE licensename = ? LIMIT 1
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -3597,7 +3609,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT licensename FROM licenses_accepted WHERE licensename = %s
+        SELECT licensename FROM licenses_accepted WHERE licensename = ? LIMIT 1
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -3612,7 +3624,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         super(EntropyMySQLRepository, self).acceptLicense(license_name)
 
         self._cursor().execute("""
-        INSERT IGNORE INTO licenses_accepted VALUES (%s)
+        INSERT IGNORE INTO licenses_accepted VALUES (?)
         """, (license_name,))
 
     def isSystemPackage(self, package_id):
@@ -3620,7 +3632,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM systempackages WHERE idpackage = %s
+        SELECT idpackage FROM systempackages WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         result = cur.fetchone()
         if result:
@@ -3632,7 +3644,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM injected WHERE idpackage = %s
+        SELECT idpackage FROM injected WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         result = cur.fetchone()
         if result:
@@ -3646,11 +3658,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if like:
             cur = self._cursor().execute("""
             SELECT content.idpackage FROM content,baseinfo
-            WHERE file LIKE %s AND
+            WHERE file LIKE ? AND
             content.idpackage = baseinfo.idpackage""", (bfile,))
         else:
             cur = self._cursor().execute("""SELECT content.idpackage
-            FROM content, baseinfo WHERE file = %s
+            FROM content, baseinfo WHERE file = ?
             AND content.idpackage = baseinfo.idpackage""", (bfile,))
 
         return self._cur2frozenset(cur)
@@ -3668,7 +3680,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idpackage, file, sha256, mtime
-        FROM contentsafety WHERE file = %s""", (sfile,))
+        FROM contentsafety WHERE file = ?""", (sfile,))
         return tuple(({'package_id': x, 'path': y, 'sha256': z, 'mtime': m} for
             x, y, z, m in cur))
 
@@ -3678,12 +3690,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         if atoms:
             cur = self._cursor().execute("""
-            SELECT atom, idpackage FROM baseinfo WHERE versiontag = %s
+            SELECT atom, idpackage FROM baseinfo WHERE versiontag = ?
             """, (tag,))
             return frozenset(cur)
 
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE versiontag = %s
+        SELECT idpackage FROM baseinfo WHERE versiontag = ?
         """, (tag,))
         return self._cur2frozenset(cur)
 
@@ -3692,7 +3704,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE revision = %s
+        SELECT idpackage FROM baseinfo WHERE revision = ?
         """, (revision,))
         return self._cur2frozenset(cur)
 
@@ -3706,13 +3718,13 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if just_id:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM
-            baseinfo WHERE LOWER(baseinfo.license) LIKE %s
+            baseinfo WHERE LOWER(baseinfo.license) LIKE ?
             """, ("%"+keyword+"%".lower(),))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom, baseinfo.idpackage FROM
-            baseinfo WHERE LOWER(baseinfo.license) LIKE %s
+            baseinfo WHERE LOWER(baseinfo.license) LIKE ?
             """, ("%"+keyword+"%".lower(),))
             return frozenset(cur)
 
@@ -3722,11 +3734,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         if just_id:
             cur = self._cursor().execute("""
-            SELECT idpackage FROM baseinfo WHERE slot = %s""", (keyword,))
+            SELECT idpackage FROM baseinfo WHERE slot = ?""", (keyword,))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
-            SELECT atom, idpackage FROM baseinfo WHERE slot = %s
+            SELECT atom, idpackage FROM baseinfo WHERE slot = ?
             """, (keyword,))
             return frozenset(cur)
 
@@ -3736,7 +3748,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        WHERE CONCAT(category, '/', name) = %s AND slot = %s
+        WHERE CONCAT(category, '/', name) = ? AND slot = ?
         """, (key, slot,))
         return self._cur2frozenset(cur)
 
@@ -3746,8 +3758,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        WHERE CONCAT(category, '/', name) = %s AND slot = %s
-        AND tag = %s
+        WHERE CONCAT(category, '/', name) = ? AND slot = ?
+        AND tag = ?
         """, (key, slot, tag))
         return self._cur2frozenset(cur)
 
@@ -3760,19 +3772,19 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         elfsearch = ''
         search_args = (needed,)
         if elfclass != -1:
-            elfsearch = ' AND needed.elfclass = %s'
+            elfsearch = ' AND needed.elfclass = ?'
             search_args = (needed, elfclass,)
 
         if like:
             cur = self._cursor().execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library LIKE %%s %s AND
+            WHERE library LIKE ? %s AND
             needed.idneeded = neededreference.idneeded
             """ % (elfsearch,), search_args)
         else:
             cur = self._cursor().execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library = %%s %s AND
+            WHERE library = ? %s AND
             needed.idneeded = neededreference.idneeded
             """ % (elfsearch,), search_args)
 
@@ -3785,12 +3797,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         keyword = "%"+conflict+"%"
         if strings:
             cur = self._cursor().execute("""
-            SELECT conflict FROM conflicts WHERE conflict LIKE %s
+            SELECT conflict FROM conflicts WHERE conflict LIKE ?
             """, (keyword,))
             return self._cur2tuple(cur)
 
         cur = self._cursor().execute("""
-        SELECT idpackage, conflict FROM conflicts WHERE conflict LIKE %s
+        SELECT idpackage, conflict FROM conflicts WHERE conflict LIKE ?
         """, (keyword,))
         return tuple(cur)
 
@@ -3800,15 +3812,18 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         sign = "="
+        limit = ""
         if like:
             sign = "LIKE"
             dep = "%"+dep+"%"
         item = 'iddependency'
         if strings:
             item = 'dependency'
+        if not multi:
+            limit = "LIMIT 1"
 
         cur = self._cursor().execute("""
-        SELECT %s FROM dependenciesreference WHERE dependency %s %%s
+        SELECT %s FROM dependenciesreference WHERE dependency %s ? %s
         """ % (item, sign,), (dep,))
 
         if multi:
@@ -3824,7 +3839,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT idpackage FROM dependencies WHERE iddependency = %s
+        SELECT idpackage FROM dependencies WHERE iddependency = ?
         """, (dependency_id,))
         return self._cur2frozenset(cur)
 
@@ -3833,7 +3848,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE %s
+        SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE ?
         """, ("%"+keyword+"%",))
 
         return self._cur2frozenset(cur)
@@ -3844,7 +3859,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT provided_mime.idpackage FROM provided_mime, baseinfo
-        WHERE provided_mime.mimetype = %s
+        WHERE provided_mime.mimetype = ?
         AND baseinfo.idpackage = provided_mime.idpackage
         ORDER BY baseinfo.atom""",
         (mimetype,))
@@ -3859,7 +3874,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             s_item = 'atom'
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        WHERE soundex(%s) = soundex(%%s) ORDER BY %s
+        WHERE soundex(%s) = soundex(?) ORDER BY %s
         """ % (s_item, s_item,), (keyword,))
 
         return self._cur2tuple(cur)
@@ -3877,12 +3892,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         slotstring = ''
         if slot:
             searchkeywords += (slot,)
-            slotstring = ' AND slot = %s'
+            slotstring = ' AND slot = ?'
 
         tagstring = ''
         if tag:
             searchkeywords += (tag,)
-            tagstring = ' AND versiontag = %s'
+            tagstring = ' AND versiontag = ?'
 
         order_by_string = ''
         if order_by is not None:
@@ -3913,11 +3928,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT DISTINCT %s FROM (
                 SELECT %s FROM baseinfo t
-                    WHERE t.atom LIKE %%s
+                    WHERE t.atom LIKE ?
                 UNION ALL
                 SELECT %s FROM baseinfo d, provide as p
                     WHERE d.idpackage = p.idpackage
-                    AND p.atom LIKE %%s
+                    AND p.atom LIKE ?
             ) WHERE 1=1 %s %s %s
             """ % (search_elements, search_elements_all,
                 search_elements_provide_all, slotstring, tagstring,
@@ -3926,11 +3941,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT DISTINCT %s FROM (
                 SELECT %s FROM baseinfo t
-                    WHERE LOWER(t.atom) LIKE %%s
+                    WHERE LOWER(t.atom) LIKE ?
                 UNION ALL
                 SELECT %s FROM baseinfo d, provide as p
                     WHERE d.idpackage = p.idpackage
-                    AND LOWER(p.atom) LIKE %%s
+                    AND LOWER(p.atom) LIKE ?
             ) WHERE 1=1 %s %s %s
             """ % (search_elements, search_elements_all,
                 search_elements_provide_all, slotstring, tagstring,
@@ -3954,7 +3969,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             # be optimistic, cope with _doesColumnInTableExist slowness
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage,provide.is_default FROM baseinfo,provide
-            WHERE provide.atom = %s AND
+            WHERE provide.atom = ? AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
         except MySQLProxy.exceptions().OperationalError:
             # TODO: remove this before 31-12-2011
@@ -3963,7 +3978,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 raise
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage,0 FROM baseinfo,provide
-            WHERE provide.atom = %s AND
+            WHERE provide.atom = ? AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
 
         return tuple(cur)
@@ -3976,7 +3991,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         query_str_list = []
         query_args = []
         for sub_keyword in keyword_split:
-            query_str_list.append("LOWER(extrainfo.description) LIKE %s")
+            query_str_list.append("LOWER(extrainfo.description) LIKE ?")
             query_args.append("%" + sub_keyword + "%")
         query_str = " AND ".join(query_str_list)
         if just_id:
@@ -4002,7 +4017,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT useflags.idpackage FROM useflags, useflagsreference
             WHERE useflags.idflag = useflagsreference.idflag
-            AND useflagsreference.flagname = %s
+            AND useflagsreference.flagname = ?
             """, (keyword,))
             return self._cur2frozenset(cur)
         else:
@@ -4011,7 +4026,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             FROM baseinfo, useflags, useflagsreference
             WHERE useflags.idflag = useflagsreference.idflag
             AND baseinfo.idpackage = useflags.idpackage
-            AND useflagsreference.flagname = %s
+            AND useflagsreference.flagname = ?
             """, (keyword,))
             return frozenset(cur)
 
@@ -4022,14 +4037,14 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if just_id:
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.homepage) LIKE %s AND
+            WHERE LOWER(extrainfo.homepage) LIKE ? AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
             return self._cur2frozenset(cur)
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom, baseinfo.idpackage FROM extrainfo, baseinfo
-            WHERE LOWER(extrainfo.homepage) LIKE %s AND
+            WHERE LOWER(extrainfo.homepage) LIKE ? AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
             return frozenset(cur)
@@ -4045,12 +4060,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if sensitive:
             cur = self._cursor().execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE name = %%s
+            WHERE name = ?
             """ % (atomstring,), (keyword,))
         else:
             cur = self._cursor().execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE LOWER(name) = %%s
+            WHERE LOWER(name) = ?
             """ % (atomstring,), (keyword.lower(),))
 
         if just_id:
@@ -4062,9 +4077,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        like_string = "= %s"
+        like_string = "= ?"
         if like:
-            like_string = "LIKE %s"
+            like_string = "LIKE ?"
 
         if just_id:
             cur = self._cursor().execute("""
@@ -4088,13 +4103,13 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         if just_id:
             cur = self._cursor().execute("""
             SELECT idpackage FROM baseinfo
-            WHERE name = %s AND category = %s
+            WHERE name = ? AND category = ?
             """, (name, category))
             return self._cur2frozenset(cur)
 
         cur = self._cursor().execute("""
         SELECT atom, idpackage FROM baseinfo
-        WHERE name = %s AND category = %s
+        WHERE name = ? AND category = ?
         """, (name, category))
         return tuple(cur)
 
@@ -4105,7 +4120,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         searchdata = (atom, slot, revision,)
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo
-        where atom = %s  AND slot = %s AND revision = %s
+        where atom = ?  AND slot = ? AND revision = ? LIMIT 1
         """, searchdata)
         rslt = cur.fetchone()
 
@@ -4120,7 +4135,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT post_migration_md5sum, post_upgrade_md5sum
         FROM entropy_branch_migration
-        WHERE repository = %s AND from_branch = %s AND to_branch = %s
+        WHERE repository = ? AND from_branch = ? AND to_branch = ? LIMIT 1
         """, (repository, from_branch, to_branch,))
         return cur.fetchone()
 
@@ -4139,7 +4154,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             order_by_string = ' order by %s' % (order_by,)
 
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo where category = %s
+        SELECT idpackage FROM baseinfo where category = ?
         """ + order_by_string, (category,))
         return self._cur2frozenset(cur)
 
@@ -4272,7 +4287,9 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         self._connection().text_factory = const_convert_to_unicode
 
         if count:
-            cur = self._cursor().execute('SELECT count(file) FROM content')
+            cur = self._cursor().execute("""
+            SELECT count(file) FROM content LIMIT 1
+            """)
         else:
             cur = self._cursor().execute('SELECT file FROM content')
 
@@ -4322,8 +4339,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE baseinfo SET branch = %s
-        WHERE idpackage = %s""", (tobranch, package_id,))
+        UPDATE baseinfo SET branch = ?
+        WHERE idpackage = ?""", (tobranch, package_id,))
         self.clearCache()
 
     def getSetting(self, setting_name):
@@ -4338,7 +4355,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         try:
             cur = self._cursor().execute("""
-            SELECT setting_value FROM settings WHERE setting_name = %s
+            SELECT setting_value FROM settings WHERE setting_name = ? LIMIT 1
             """, (setting_name,))
         except MySQLProxy.exceptions().Error:
             obj = KeyError("cannot find setting_name '%s'" % (setting_name,))
@@ -4363,7 +4380,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         # Always force const_convert_to_unicode() to setting_value
         # and setting_name or "OR REPLACE" won't work (sqlite3 bug?)
         cur = self._cursor().execute("""
-        REPLACE INTO settings VALUES (%s, %s)
+        REPLACE INTO settings VALUES (?, ?)
         """, (const_convert_to_unicode(setting_name),
               const_convert_to_unicode(setting_value),))
         self.__settings_cache.clear()
@@ -4495,9 +4512,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         @return: available tables
         @rtype: list
         """
-        cur = self._cursor().execute("""
-        SHOW TABLES;
-        """)
+        cur = self._cursor().execute("SHOW TABLES;")
         return self._cur2tuple(cur)
 
     def _doesTableExist(self, table, temporary = False):
@@ -4508,7 +4523,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             # we need to handle them with "care"
             try:
                 cur = self._cursor().execute("""
-                SELECT count(*) FROM %s LIMIT 1""", (table,))
+                SELECT count(*) FROM `%s` LIMIT 1""" % (table,))
                 cur.fetchone()
             except MySQLProxy.exceptions().OperationalError:
                 return False
@@ -4524,10 +4539,10 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             del cached
             return obj
 
-        query = "SHOW TABLES LIKE '%s';" % (table,)
+        exists = False
+        query = "SHOW TABLES LIKE '%s'" % (table,)
         cur = self._cursor().execute(query)
-        rslt = cur.fetchone()
-        exists = rslt is not None
+        rslt = cur.fetchone() is not None
 
         cached[table] = exists
         self._setLiveCache("_doesTableExist", cached)
@@ -4549,12 +4564,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             del cached
             return obj
 
+        exists = False
         try:
             cur = self._cursor().execute("""
             SHOW COLUMNS FROM `%s` WHERE field = `%s`
             """ % (column, table))
-            rslt = cur.fetchone()
-            exists = rslt is not None
+            rslt = cur.fetchone() is not None
         except MySQLProxy.exceptions().OperationalError:
             exists = False
         cached[d_tup] = exists
@@ -4674,7 +4689,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        REPLACE INTO installedtable VALUES (%s, %s, %s)
+        REPLACE INTO installedtable VALUES (?, ?, ?)
         """, (package_id, repoid, source,))
 
     def getInstalledPackageRepository(self, package_id):
@@ -4683,7 +4698,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT repositoryname FROM installedtable
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         repo = cur.fetchone()
         if repo:
@@ -4698,7 +4713,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         # possible
         cur = self._cursor().execute("""
         SELECT source FROM installedtable
-        WHERE idpackage = %s
+        WHERE idpackage = ? LIMIT 1
         """, (package_id,))
         source = cur.fetchone()
         if source:
@@ -4711,13 +4726,13 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         self._cursor().execute("""
         DELETE FROM installedtable
-        WHERE idpackage = %s""", (package_id,))
+        WHERE idpackage = ?""", (package_id,))
 
     def storeSpmMetadata(self, package_id, blob):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute('INSERT INTO xpakdata VALUES (%s, %s)',
+        self._cursor().execute('INSERT INTO xpakdata VALUES (?, ?)',
             (package_id, const_get_buffer()(blob),)
         )
 
@@ -4726,7 +4741,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT data from xpakdata where idpackage = %s
+        SELECT data from xpakdata where idpackage = ? LIMIT 1
         """, (package_id,))
         mydata = cur.fetchone()
         if not mydata:
@@ -4740,12 +4755,11 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT repository, from_branch, post_migration_md5sum,
-        post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = %s
+        post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = ?
         """, (to_branch,))
 
-        data = cur.fetchall()
         meta = {}
-        for repo, from_branch, post_migration_md5, post_upgrade_md5 in data:
+        for repo, from_branch, post_migration_md5, post_upgrade_md5 in cur:
             obj = meta.setdefault(repo, {})
             obj[from_branch] = (post_migration_md5, post_upgrade_md5,)
         return meta
@@ -4785,15 +4799,20 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         """
         for table in self._listAllTables():
             cur = self._cursor().execute("""
-            SHOW INDEX FROM `%s` WHERE Key_Name != 'PRIMARY';
+            SHOW INDEX FROM `%s` WHERE Key_name != 'PRIMARY';
             """ % (table,))
-            for index in self._cur2frozenset(cur):
+            for index_tuple in cur:
+                index = index_tuple[2]
                 try:
                     self._cursor().execute(
-                        "DROP INDEX IF EXISTS `%s`" % (
-                            index,))
-                except MySQLProxy.exceptions().Error:
+                        "DROP INDEX `%s` ON `%s`" % (
+                            index, table,))
+                except MySQLProxy.exceptions().OperationalError:
                     continue
+                except MySQLProxy.exceptions().IntegrityError as err:
+                    errno = MySQLProxy.errno()
+                    if err.errno != errno['ER_DROP_INDEX_FK']:
+                        raise
 
     def createAllIndexes(self):
         """
@@ -5061,7 +5080,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
             insert_data.append((spm_uid, myid, mybranch))
 
         self._cursor().executemany("""
-        REPLACE into counters_regen VALUES (%s, %s, %s)
+        REPLACE into counters_regen VALUES (?, ?, ?)
         """, insert_data)
 
         self._cursor().executescript("""
@@ -5075,7 +5094,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        DELETE FROM treeupdates WHERE repository = %s
+        DELETE FROM treeupdates WHERE repository = ?
         """, (repository,))
 
     def resetTreeupdatesDigests(self):
@@ -5148,6 +5167,6 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        UPDATE counters SET branch = %s
+        UPDATE counters SET branch = ?
         """, (to_branch,))
         self.clearCache()
