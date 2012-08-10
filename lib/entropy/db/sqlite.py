@@ -2422,6 +2422,7 @@ class EntropyRepository(EntropySQLRepository):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        data = None
         try:
             cur = self._cursor().execute("""
             SELECT sha1, sha256, sha512, gpg FROM packagesignatures
@@ -2429,12 +2430,13 @@ class EntropyRepository(EntropySQLRepository):
             """, (package_id,))
             data = cur.fetchone()
         except self.ModuleProxy.exceptions().OperationalError:
-            # TODO: remove this before 31-12-2011
-            cur = self._cursor().execute("""
-            SELECT sha1, sha256, sha512 FROM packagesignatures
-            WHERE idpackage = (?) LIMIT 1
-            """, (package_id,))
-            data = cur.fetchone() + (None,)
+            if self._doesTableExist("packagesignatures"):
+                # TODO: remove this before 31-12-2011
+                cur = self._cursor().execute("""
+                SELECT sha1, sha256, sha512 FROM packagesignatures
+                WHERE idpackage = (?) LIMIT 1
+                """, (package_id,))
+                data = cur.fetchone() + (None,)
 
         if data:
             return data
