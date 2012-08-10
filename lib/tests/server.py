@@ -8,7 +8,8 @@ import shutil
 from entropy.server.interfaces import Server
 from entropy.const import etpConst, initconfig_entropy_constants, etpSys
 from entropy.core.settings.base import SystemSettings
-from entropy.db import EntropyRepository, EntropyRepositoryCacher
+from entropy.db import EntropyRepository
+from entropy.db.cache import EntropyRepositoryCacher
 from entropy.exceptions import RepositoryError
 import entropy.tools
 import tests._misc as _misc
