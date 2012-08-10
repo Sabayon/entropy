@@ -822,8 +822,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         old_base_data = self.test_db.getBaseData(idpackage)
         old_cats = self.test_db.listAllCategories()
 
-        old_val = EntropyRepository._SCHEMA_2010_SUPPORT
-        EntropyRepository._SCHEMA_2010_SUPPORT = True
         test_db = self.__open_test_db(":memory:")
         idpackage = test_db.addPackage(data)
         new_data = test_db.getPackageData(idpackage)
@@ -836,7 +834,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(old_cats, new_cats)
 
         test_db.close()
-        EntropyRepository._SCHEMA_2010_SUPPORT = old_val
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:
