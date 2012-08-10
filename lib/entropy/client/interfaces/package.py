@@ -125,6 +125,7 @@ class Package:
 
         def close(self):
             if self._f is not None:
+                self._f.flush()
                 self._f.close()
                 self._f = None
 
@@ -169,6 +170,7 @@ class Package:
 
         def close(self):
             if self._f is not None:
+                self._f.flush()
                 self._f.close()
                 self._f = None
 
