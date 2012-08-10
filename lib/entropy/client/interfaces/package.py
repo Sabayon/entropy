@@ -44,6 +44,7 @@ class Package:
                 self._enc = enc
             self._cpath = path
             self._f = None
+            self._eof = False
 
         def _open_f(self):
             if isinstance(self._cpath, int):
@@ -63,12 +64,17 @@ class Package:
             self.close()
 
         def next(self):
+            if self._eof:
+                raise StopIteration()
             if self._f is None:
                 self._open_f()
+
             line = self._f.readline()
             if not line:
                 self.close()
+                self._eof = True
                 raise StopIteration()
+
             _package_id, _ftype, _path = line[:-1].split("|", 2)
             # must be legal or die!
             _package_id = int(_package_id)
@@ -183,6 +189,7 @@ class Package:
                 self._enc = enc
             self._cpath = path
             self._f = None
+            self._eof = False
 
         def _open_f(self):
             if isinstance(self._cpath, int):
@@ -202,12 +209,17 @@ class Package:
             self.close()
 
         def next(self):
+            if self._eof:
+                raise StopIteration()
             if self._f is None:
                 self._open_f()
+
             line = self._f.readline()
             if not line:
                 self.close()
+                self._eof = True
                 raise StopIteration()
+
             _mtime, _sha256, _path = line[:-1].split("|", 2)
             # must be legal or die!
             _mtime = float(_mtime)
