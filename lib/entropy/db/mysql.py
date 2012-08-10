@@ -2801,7 +2801,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         SELECT dependenciesreference.dependency
         FROM dependencies, dependenciesreference
         WHERE dependencies.idpackage = ? AND
-        dependencies.iddependency = dependenciesreference.iddependency ?
+        dependencies.iddependency = dependenciesreference.iddependency %s
         UNION SELECT CONCAT('!', conflict) FROM conflicts
         WHERE idpackage = ?""" % (excluded_deptypes_query,),
         (package_id, package_id,))
@@ -3824,7 +3824,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
         cur = self._cursor().execute("""
         SELECT %s FROM dependenciesreference WHERE dependency %s ? %s
-        """ % (item, sign,), (dep,))
+        """ % (item, sign, limit), (dep,))
 
         if multi:
             return self._cur2frozenset(cur)
