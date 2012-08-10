@@ -539,8 +539,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
 
             try:
                 if self._doesTableExist('baseinfo') and \
-                        self._doesTableExist('extrainfo') and \
-                        self._doesTableExist('settings'):
+                        self._doesTableExist('extrainfo'):
                     self.__structure_update = True
 
             except self.ModuleProxy.exceptions().Error:

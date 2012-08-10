@@ -163,8 +163,7 @@ class EntropyRepository(EntropySQLRepository):
 
             try:
                 if _is_avail() and self._doesTableExist('baseinfo') and \
-                        self._doesTableExist('extrainfo') and \
-                        self._doesTableExist('settings'):
+                        self._doesTableExist('extrainfo'):
 
                     if entropy.tools.islive(): # this works
                         if etpConst['systemroot']:
