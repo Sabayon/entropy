@@ -364,6 +364,32 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     """
 
     VIRTUAL_META_PACKAGE_CATEGORY = "virtual"
+    # You can extend this with custom settings for your Repository
+    SETTING_KEYS = ("arch", "schema_revision")
+
+    class ModuleProxy:
+
+        @staticmethod
+        def get():
+            """
+            Lazily load the Repository module.
+            """
+            raise NotImplementedError()
+
+        @staticmethod
+        def exceptions():
+            """
+            Get the Repository exceptions module.
+            """
+            raise NotImplementedError()
+
+        @staticmethod
+        def errno():
+            """
+            Get the Repository errno module.
+            """
+            raise NotImplementedError()
+
 
     def __init__(self, readonly, xcache, temporary, name):
         """
@@ -3694,7 +3720,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Return stored Repository setting.
         For currently supported setting_name values look at
-        EntropyRepository._SETTING_KEYS.
+        EntropyRepository.SETTING_KEYS.
 
         @param setting_name: name of repository setting
         @type setting_name: string
