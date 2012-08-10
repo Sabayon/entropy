@@ -21,7 +21,6 @@ except ImportError:
     import _thread as thread
 import threading
 import subprocess
-from sqlite3 import dbapi2
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
@@ -32,16 +31,17 @@ from entropy.exceptions import SystemDatabaseError, \
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
 
 from entropy.spm.plugins.factory import get_default_instance as get_spm
-from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
-    DatabaseError
-from entropy.db.skel import EntropyRepositoryBase
+from entropy.db.exceptions import OperationalError
+
 from entropy.db.cache import EntropyRepositoryCacher
+from entropy.db.sql import EntropySQLRepository
 from entropy.i18n import _
 
 import entropy.dep
 import entropy.tools
 
-class EntropyRepository(EntropyRepositoryBase):
+
+class EntropyRepository(EntropySQLRepository):
 
     """
     EntropyRepository implements SQLite3 based storage. In a Model-View based
@@ -56,348 +56,44 @@ class EntropyRepository(EntropyRepositoryBase):
     # should be triggered
     _SCHEMA_REVISION = 3
 
-    _SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
+    SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
 
-    class Schema:
+    class SQLiteProxy:
 
-        def get_init(self):
-            data = """
-                CREATE TABLE baseinfo (
-                    idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                    atom VARCHAR,
-                    category VARCHAR,
-                    name VARCHAR,
-                    version VARCHAR,
-                    versiontag VARCHAR,
-                    revision INTEGER,
-                    branch VARCHAR,
-                    slot VARCHAR,
-                    license VARCHAR,
-                    etpapi INTEGER,
-                    trigger INTEGER
-                );
+        _mod = None
+        _excs = None
+        _lock = threading.Lock()
 
-                CREATE TABLE extrainfo (
-                    idpackage INTEGER PRIMARY KEY,
-                    description VARCHAR,
-                    homepage VARCHAR,
-                    download VARCHAR,
-                    size VARCHAR,
-                    chost VARCHAR,
-                    cflags VARCHAR,
-                    cxxflags VARCHAR,
-                    digest VARCHAR,
-                    datecreation VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-                CREATE TABLE content (
-                    idpackage INTEGER,
-                    file VARCHAR,
-                    type VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE contentsafety (
-                    idpackage INTEGER,
-                    file VARCHAR,
-                    mtime FLOAT,
-                    sha256 VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE provide (
-                    idpackage INTEGER,
-                    atom VARCHAR,
-                    is_default INTEGER DEFAULT 0,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE dependencies (
-                    idpackage INTEGER,
-                    iddependency INTEGER,
-                    type INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE dependenciesreference (
-                    iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
-                    dependency VARCHAR
-                );
-
-                CREATE TABLE conflicts (
-                    idpackage INTEGER,
-                    conflict VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE mirrorlinks (
-                    mirrorname VARCHAR,
-                    mirrorlink VARCHAR
-                );
-
-                CREATE TABLE sources (
-                    idpackage INTEGER,
-                    idsource INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE sourcesreference (
-                    idsource INTEGER PRIMARY KEY AUTOINCREMENT,
-                    source VARCHAR
-                );
-
-                CREATE TABLE useflags (
-                    idpackage INTEGER,
-                    idflag INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE useflagsreference (
-                    idflag INTEGER PRIMARY KEY AUTOINCREMENT,
-                    flagname VARCHAR
-                );
-
-                CREATE TABLE keywords (
-                    idpackage INTEGER,
-                    idkeyword INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE keywordsreference (
-                    idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
-                    keywordname VARCHAR
-                );
-
-                CREATE TABLE configprotect (
-                    idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE configprotectmask (
-                    idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE configprotectreference (
-                    idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
-                    protect VARCHAR
-                );
-
-                CREATE TABLE systempackages (
-                    idpackage INTEGER PRIMARY KEY,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE injected (
-                    idpackage INTEGER PRIMARY KEY,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE installedtable (
-                    idpackage INTEGER PRIMARY KEY,
-                    repositoryname VARCHAR,
-                    source INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE sizes (
-                    idpackage INTEGER PRIMARY KEY,
-                    size INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE counters (
-                    counter INTEGER,
-                    idpackage INTEGER,
-                    branch VARCHAR,
-                    PRIMARY KEY(idpackage,branch),
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE trashedcounters (
-                    counter INTEGER
-                );
-
-                CREATE TABLE needed (
-                    idpackage INTEGER,
-                    idneeded INTEGER,
-                    elfclass INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE neededreference (
-                    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
-                    library VARCHAR
-                );
-
-                CREATE TABLE provided_libs (
-                    idpackage INTEGER,
-                    library VARCHAR,
-                    path VARCHAR,
-                    elfclass INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE treeupdates (
-                    repository VARCHAR PRIMARY KEY,
-                    digest VARCHAR
-                );
-
-                CREATE TABLE treeupdatesactions (
-                    idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
-                    repository VARCHAR,
-                    command VARCHAR,
-                    branch VARCHAR,
-                    date VARCHAR
-                );
-
-                CREATE TABLE licensedata (
-                    licensename VARCHAR UNIQUE,
-                    text BLOB,
-                    compressed INTEGER
-                );
-
-                CREATE TABLE licenses_accepted (
-                    licensename VARCHAR UNIQUE
-                );
-
-                CREATE TABLE triggers (
-                    idpackage INTEGER PRIMARY KEY,
-                    data BLOB,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE entropy_misc_counters (
-                    idtype INTEGER PRIMARY KEY,
-                    counter INTEGER
-                );
-
-                CREATE TABLE categoriesdescription (
-                    category VARCHAR,
-                    locale VARCHAR,
-                    description VARCHAR
-                );
-
-                CREATE TABLE packagesets (
-                    setname VARCHAR,
-                    dependency VARCHAR
-                );
-
-                CREATE TABLE packagechangelogs (
-                    category VARCHAR,
-                    name VARCHAR,
-                    changelog BLOB,
-                    PRIMARY KEY (category, name)
-                );
-
-                CREATE TABLE automergefiles (
-                    idpackage INTEGER,
-                    configfile VARCHAR,
-                    md5 VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE packagedesktopmime (
-                    idpackage INTEGER,
-                    name VARCHAR,
-                    mimetype VARCHAR,
-                    executable VARCHAR,
-                    icon VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE packagedownloads (
-                    idpackage INTEGER,
-                    download VARCHAR,
-                    type VARCHAR,
-                    size INTEGER,
-                    disksize INTEGER,
-                    md5 VARCHAR,
-                    sha1 VARCHAR,
-                    sha256 VARCHAR,
-                    sha512 VARCHAR,
-                    gpg BLOB,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE provided_mime (
-                    mimetype VARCHAR,
-                    idpackage INTEGER,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE packagesignatures (
-                    idpackage INTEGER PRIMARY KEY,
-                    sha1 VARCHAR,
-                    sha256 VARCHAR,
-                    sha512 VARCHAR,
-                    gpg BLOB,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE packagespmphases (
-                    idpackage INTEGER PRIMARY KEY,
-                    phases VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE packagespmrepository (
-                    idpackage INTEGER PRIMARY KEY,
-                    repository VARCHAR,
-                    FOREIGN KEY(idpackage)
-                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE entropy_branch_migration (
-                    repository VARCHAR,
-                    from_branch VARCHAR,
-                    to_branch VARCHAR,
-                    post_migration_md5sum VARCHAR,
-                    post_upgrade_md5sum VARCHAR,
-                    PRIMARY KEY (repository, from_branch, to_branch)
-                );
-
-                CREATE TABLE xpakdata (
-                    idpackage INTEGER PRIMARY KEY,
-                    data BLOB
-                );
-
-                CREATE TABLE settings (
-                    setting_name VARCHAR,
-                    setting_value VARCHAR,
-                    PRIMARY KEY(setting_name)
-                );
-
+        @staticmethod
+        def get():
             """
-            return data
+            Lazily load the SQLite3 module.
+            """
+            if EntropyRepository.SQLiteProxy._mod is None:
+                with EntropyRepository.SQLiteProxy._lock:
+                    if EntropyRepository.SQLiteProxy._mod is None:
+                        from sqlite3 import dbapi2
+                        EntropyRepository.SQLiteProxy._excs = dbapi2
+                        EntropyRepository.SQLiteProxy._mod = dbapi2
+            return EntropyRepository.SQLiteProxy._mod
+
+        @staticmethod
+        def exceptions():
+            """
+            Get the SQLite3 exceptions module.
+            """
+            _mod = EntropyRepository.SQLiteProxy.get()
+            return EntropyRepository.SQLiteProxy._excs
+
+        @staticmethod
+        def errno():
+            """
+            Get the SQLite3 errno module (not avail).
+            """
+            raise NotImplementedError()
+
+    ModuleProxy = SQLiteProxy
 
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
         name = None, indexing = True, skipChecks = False, temporary = False):
@@ -420,6 +116,7 @@ class EntropyRepository(EntropyRepositoryBase):
             on close()
         @type temporary: bool
         """
+        self._sqlite = self.ModuleProxy.get()
         self._live_cacher = EntropyRepositoryCacher()
         self.__connection_pool = {}
         self.__connection_pool_mutex = threading.RLock()
@@ -432,7 +129,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if name is None:
             name = etpConst['genericdbid']
 
-        EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
+        EntropySQLRepository.__init__(self, readOnly, xcache, temporary,
             name)
 
         self._db_path = dbFile
@@ -475,7 +172,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     else:
                         self.__structure_update = True
 
-            except Error:
+            except self.ModuleProxy.exceptions().Error:
                 self._cleanup_stale_cur_conn(kill_all = True)
                 raise
 
@@ -546,17 +243,17 @@ class EntropyRepository(EntropyRepositoryBase):
                 if not self._readonly:
                     try:
                         conn.commit()
-                    except OperationalError:
+                    except self.ModuleProxy.exceptions().OperationalError:
                         # no transaction is active can
                         # cause this, bleh!
                         pass
                 try:
                     conn.close()
-                except OperationalError:
+                except self.ModuleProxy.exceptions().OperationalError:
                     try:
                         conn.interrupt()
                         conn.close()
-                    except OperationalError:
+                    except self.ModuleProxy.exceptions().OperationalError:
                         # heh, unable to close due to
                         # unfinalized statements
                         # interpreter shutdown?
@@ -617,8 +314,9 @@ class EntropyRepository(EntropyRepositoryBase):
                 # check_same_thread still required for
                 # conn.close() called from
                 # arbitrary thread
-                conn = dbapi2.connect(self._db_path, timeout=30.0,
-                                  check_same_thread = False)
+                conn = self._sqlite.connect(
+                    self._db_path, timeout=30.0,
+                    check_same_thread = False)
                 self._connection_pool()[c_key] = conn
         return conn
 
@@ -688,28 +386,6 @@ class EntropyRepository(EntropyRepositoryBase):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    @staticmethod
-    def update(entropy_client, repository_id, force, gpg):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        return EntropyRepositoryBase.update(entropy_client, repository_id,
-            force, gpg)
-
-    @staticmethod
-    def revision(repository_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        return EntropyRepositoryBase.revision(repository_id)
-
-    @staticmethod
-    def remote_revision(repository_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        return EntropyRepositoryBase.remote_revision(repository_id)
-
     def close(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -750,7 +426,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # So, FIRST commit changes, then call plugins.
             try:
                 self._connection().commit()
-            except Error:
+            except self.ModuleProxy.exceptions().Error:
                 pass
 
         super(EntropyRepository, self).commit(force = force,
@@ -771,7 +447,7 @@ class EntropyRepository(EntropyRepositoryBase):
         for table in self._listAllTables():
             try:
                 self._cursor().execute("DROP TABLE %s" % (table,))
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError:
                 # skip tables that can't be dropped
                 continue
         self._cursor().executescript(my.get_init())
@@ -1749,11 +1425,11 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?,?)
             """, (package_id, sha1, sha256, sha512, gpg))
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             # perhaps, gpg column does not exist, check now
             if self._doesColumnInTableExist("packagesignatures", "gpg"):
                 # something is really wrong, and it's not about our cols
-                raise
+                raise OperationalError(repr(err))
             # fallback to old instert (without gpg table)
             self._cursor().execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
@@ -1780,9 +1456,9 @@ class EntropyRepository(EntropyRepositoryBase):
         try:
             # be optimistic and delay if condition
             _do_insert()
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             if self._doesTableExist("packagedownloads"):
-                raise
+                raise OperationalError(repr(err))
             self._createPackageDownloadsTable()
             _do_insert()
 
@@ -2016,7 +1692,7 @@ class EntropyRepository(EntropyRepositoryBase):
         try:
             self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
                 (my_uid, package_id, branch,))
-        except IntegrityError:
+        except self.ModuleProxy.exceptions().IntegrityError:
             # we have a PRIMARY KEY we need to remove
             self._migrateCountersTable()
             self._cursor().execute('INSERT INTO counters VALUES (?,?,?)',
@@ -2199,7 +1875,7 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT min(counter) FROM counters LIMIT 1
             """)
             dbcounter = cur.fetchone()
-        except Error:
+        except self.ModuleProxy.exceptions().Error:
             # first available counter
             return -2
 
@@ -2753,7 +2429,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE idpackage = (?) LIMIT 1
             """, (package_id,))
             data = cur.fetchone()
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             # TODO: remove this before 31-12-2011
             cur = self._cursor().execute("""
             SELECT sha1, sha256, sha512 FROM packagesignatures
@@ -2781,9 +2457,9 @@ class EntropyRepository(EntropyRepositoryBase):
                 sha256, sha512, gpg
             FROM packagedownloads WHERE idpackage = (?)
             """ + down_type_str, params)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             if self._doesTableExist("packagedownloads"):
-                raise
+                raise OperationalError(repr(err))
             return tuple()
 
         result = []
@@ -3101,11 +2777,11 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT atom,is_default FROM provide WHERE idpackage = (?)
             """, (package_id,))
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             # TODO: remove this before 31-12-2011
             if self._doesColumnInTableExist("provide", "is_default"):
                 # something is really wrong
-                raise
+                raise OperationalError(repr(err))
             cur = self._cursor().execute("""
             SELECT atom,0 FROM provide WHERE idpackage = (?)
             """, (package_id,))
@@ -3350,10 +3026,10 @@ class EntropyRepository(EntropyRepositoryBase):
 
                 break
 
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError as err:
 
                 if did_try:
-                    raise
+                    raise OperationalError(repr(err))
                 did_try = True
 
                 # TODO: remove this before 31-12-2011
@@ -4504,11 +4180,11 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT baseinfo.idpackage,provide.is_default FROM baseinfo,provide
             WHERE provide.atom = (?) AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             # TODO: remove this before 31-12-2011
             if self._doesColumnInTableExist("provide", "is_default"):
                 # something is really wrong
-                raise
+                raise OperationalError(repr(err))
             cur = self._cursor().execute("""
             SELECT baseinfo.idpackage,0 FROM baseinfo,provide
             WHERE provide.atom = (?) AND
@@ -4791,7 +4467,7 @@ class EntropyRepository(EntropyRepositoryBase):
             if order_by:
                 return self._cur2tuple(cur)
             return self._cur2frozenset(cur)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             if order_by:
                 return tuple()
             return frozenset()
@@ -4842,9 +4518,9 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT download FROM packagedownloads
             """ + order_string)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError as err:
             if self._doesTableExist("packagedownloads"):
-                raise
+                raise OperationalError(repr(err))
             return tuple()
 
         if do_sort:
@@ -4934,7 +4610,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?) LIMIT 1
             """, (setting_name,))
-        except Error:
+        except self.ModuleProxy.exceptions().Error:
             obj = KeyError("cannot find setting_name '%s'" % (setting_name,))
             self.__settings_cache[setting_name] = obj
             raise obj
@@ -5095,9 +4771,10 @@ class EntropyRepository(EntropyRepositoryBase):
             raise SystemDatabaseError(mytxt)
 
         # execute checksum
+        exc_mod = self.ModuleProxy.exceptions()
         try:
             self.checksum()
-        except (OperationalError, DatabaseError,) as err:
+        except (exc_mod.OperationalError, exc_mod.DatabaseError,) as err:
             mytxt = "Repository is corrupted, checksum error"
             raise SystemDatabaseError("%s: %s" % (mytxt, err,))
 
@@ -5233,7 +4910,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 cur = self._cursor().execute("""
                 SELECT count(*) FROM `%s` LIMIT 1""" % (table,))
                 cur.fetchone()
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError:
                 return False
             return True
 
@@ -5279,7 +4956,7 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT `%s` FROM `%s` LIMIT 1
             """ % (column, table))
             exists = True
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             exists = False
         cached[d_tup] = exists
         self._setLiveCache("_doesColumnInTableExist", cached)
@@ -5410,11 +5087,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 cur = self._cursor().execute("""
                 SELECT idpackage, sha1,gpg FROM
                 packagesignatures %s""" % (package_id_order,))
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError as err:
                 # TODO: remove this before 31-12-2011
                 if self._doesColumnInTableExist("packagesignatures", "gpg"):
                     # something is really wrong
-                    raise
+                    raise OperationalError(repr(err))
                 cur = self._cursor().execute("""
                 SELECT idpackage, sha1 FROM
                 packagesignatures %s""" % (package_id_order,))
@@ -5470,11 +5147,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 SELECT idpackage, source FROM installedtable
                 """)
                 cached = dict(cur)
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError as err:
                 # TODO: drop this check in future, backward compatibility
                 if self._doesColumnInTableExist("installedtable", "source"):
                     # something is really wrong
-                    raise
+                    raise OperationalError(repr(err))
                 cached = {}
             self._setLiveCache("getInstalledPackageSource", cached)
         # avoid python3.x memleak
@@ -5549,7 +5226,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         try:
             self._cursor().execute('DELETE FROM contentsafety')
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             # table doesn't exist, ignore
             pass
 
@@ -5576,7 +5253,7 @@ class EntropyRepository(EntropyRepositoryBase):
         for index in self._cur2frozenset(cur):
             try:
                 self._cursor().execute('DROP INDEX IF EXISTS %s' % (index,))
-            except OperationalError:
+            except self.ModuleProxy.exceptions().OperationalError:
                 continue
 
     def createAllIndexes(self):
@@ -5617,7 +5294,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS trashedcounters_counter
             ON trashedcounters ( counter )""")
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createMirrorlinksIndex(self):
@@ -5625,7 +5302,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
             ON mirrorlinks ( mirrorname )""")
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createCompileFlagsIndex(self):
@@ -5634,7 +5311,7 @@ class EntropyRepository(EntropyRepositoryBase):
             CREATE INDEX IF NOT EXISTS flagsindex ON flags
                 ( chost, cflags, cxxflags )
             """)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createDesktopMimeIndex(self):
@@ -5642,7 +5319,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
             ON packagedesktopmime ( idpackage )""")
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createProvidedMimeIndex(self):
@@ -5653,7 +5330,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS provided_mime_mimetype
             ON provided_mime ( mimetype )""")
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createPackagesetsIndex(self):
@@ -5661,7 +5338,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagesetsindex
             ON packagesets ( setname )""")
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createProvidedLibsIndex(self):
@@ -5672,7 +5349,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
                 ON provided_libs ( library, elfclass );
             """)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createAutomergefilesIndex(self):
@@ -5683,7 +5360,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS automergefiles_file_md5
                 ON automergefiles ( configfile, md5 );
             """)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createPackageDownloadsIndex(self):
@@ -5692,7 +5369,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS packagedownloads_idpackage_type
                 ON packagedownloads ( idpackage, type );
             """)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createNeededIndex(self):
@@ -5705,7 +5382,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE INDEX IF NOT EXISTS neededindex_idn_elfclass ON needed
                     ( idneeded, elfclass );
             """)
-        except OperationalError:
+        except self.ModuleProxy.exceptions().OperationalError:
             pass
 
     def _createUseflagsIndex(self):
@@ -6015,8 +5692,7 @@ class EntropyRepository(EntropyRepositoryBase):
             "useflags", "keywords", "content", "counters", "sizes",
             "needed", "triggers", "systempackages", "injected",
             "installedtable", "automergefiles", "packagesignatures",
-            "packagespmphases", "provided_libs"
-        )
+            "packagespmphases", "provided_libs")
 
         done_something = False
         foreign_keys_supported = False
@@ -6024,7 +5700,9 @@ class EntropyRepository(EntropyRepositoryBase):
             if not self._doesTableExist(table): # wtf
                 continue
 
-            cur = self._cursor().execute("PRAGMA foreign_key_list(%s)" % (table,))
+            cur = self._cursor().execute("""
+            PRAGMA foreign_key_list(%s)
+            """ % (table,))
             foreign_keys = cur.fetchone()
 
             # print table, "foreign keys", foreign_keys
@@ -6157,7 +5835,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             self._generateProvidedLibsMetadata()
-        except (IOError, OSError, Error) as err:
+        except (IOError, OSError, self.ModuleProxy.exceptions().Error) as err:
             mytxt = "%s: %s: [%s]" % (
                 bold(_("ATTENTION")),
                 red("cannot generate provided_libs metadata"),
