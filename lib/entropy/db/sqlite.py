@@ -6,7 +6,7 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    I{EntropyRepository} is the sqlite3 implementation of the repository
+    I{EntropyRepository} is the SQLite3 implementation of the repository
     interface.
 
 """
@@ -55,10 +55,6 @@ class EntropyRepository(EntropyRepositoryBase):
     # bump this every time schema changes and databaseStructureUpdate
     # should be triggered
     _SCHEMA_REVISION = 3
-    # Enable new database schema? keep it disabled for now
-    _SCHEMA_2010_SUPPORT = True
-    if os.getenv("ETP_REPO_DISABLE_SCHEMA_2010"):
-        _SCHEMA_2010_SUPPORT = False
 
     _SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
@@ -66,86 +62,36 @@ class EntropyRepository(EntropyRepositoryBase):
     class Schema:
 
         def get_init(self):
-            if EntropyRepository._SCHEMA_2010_SUPPORT:
-                data = """
-                    CREATE TABLE baseinfo (
-                        idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                        atom VARCHAR,
-                        category VARCHAR,
-                        name VARCHAR,
-                        version VARCHAR,
-                        versiontag VARCHAR,
-                        revision INTEGER,
-                        branch VARCHAR,
-                        slot VARCHAR,
-                        license VARCHAR,
-                        etpapi INTEGER,
-                        trigger INTEGER
-                    );
+            data = """
+                CREATE TABLE baseinfo (
+                    idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
+                    atom VARCHAR,
+                    category VARCHAR,
+                    name VARCHAR,
+                    version VARCHAR,
+                    versiontag VARCHAR,
+                    revision INTEGER,
+                    branch VARCHAR,
+                    slot VARCHAR,
+                    license VARCHAR,
+                    etpapi INTEGER,
+                    trigger INTEGER
+                );
 
-                    CREATE TABLE extrainfo (
-                        idpackage INTEGER PRIMARY KEY,
-                        description VARCHAR,
-                        homepage VARCHAR,
-                        download VARCHAR,
-                        size VARCHAR,
-                        chost VARCHAR,
-                        cflags VARCHAR,
-                        cxxflags VARCHAR,
-                        digest VARCHAR,
-                        datecreation VARCHAR,
-                        FOREIGN KEY(idpackage)
-                            REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                    );
-                """
-            else:
-                data = """
-                    CREATE TABLE baseinfo (
-                        idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                        atom VARCHAR,
-                        idcategory INTEGER,
-                        name VARCHAR,
-                        version VARCHAR,
-                        versiontag VARCHAR,
-                        revision INTEGER,
-                        branch VARCHAR,
-                        slot VARCHAR,
-                        idlicense INTEGER,
-                        etpapi INTEGER,
-                        trigger INTEGER
-                    );
-
-                    CREATE TABLE extrainfo (
-                        idpackage INTEGER PRIMARY KEY,
-                        description VARCHAR,
-                        homepage VARCHAR,
-                        download VARCHAR,
-                        size VARCHAR,
-                        idflags INTEGER,
-                        digest VARCHAR,
-                        datecreation VARCHAR,
-                        FOREIGN KEY(idpackage)
-                           REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                    );
-
-                    CREATE TABLE categories (
-                        idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
-                        category VARCHAR
-                    );
-
-                    CREATE TABLE licenses (
-                        idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
-                        license VARCHAR
-                    );
-
-                    CREATE TABLE flags (
-                        idflags INTEGER PRIMARY KEY AUTOINCREMENT,
-                        chost VARCHAR,
-                        cflags VARCHAR,
-                        cxxflags VARCHAR
-                    );
-                """
-            data += """
+                CREATE TABLE extrainfo (
+                    idpackage INTEGER PRIMARY KEY,
+                    description VARCHAR,
+                    homepage VARCHAR,
+                    download VARCHAR,
+                    size VARCHAR,
+                    chost VARCHAR,
+                    cflags VARCHAR,
+                    cxxflags VARCHAR,
+                    digest VARCHAR,
+                    datecreation VARCHAR,
+                    FOREIGN KEY(idpackage)
+                        REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
                 CREATE TABLE content (
                     idpackage INTEGER,
                     file VARCHAR,
@@ -5023,11 +4969,9 @@ class EntropyRepository(EntropyRepositoryBase):
         query = """
         INSERT OR REPLACE INTO settings VALUES ("arch", "%s");
         INSERT OR REPLACE INTO settings VALUES ("on_delete_cascade", "%s");
-        """ % (etpConst['currentarch'], "1")
-        if EntropyRepository._SCHEMA_2010_SUPPORT:
-            query += """
-            INSERT OR REPLACE INTO settings VALUES ("_baseinfo_extrainfo_2010",
-            "%s");""" % ("1",)
+        INSERT OR REPLACE INTO settings VALUES ("_baseinfo_extrainfo_2010",
+            "%s");
+        """ % (etpConst['currentarch'], "1", "1")
         self._cursor().executescript(query)
         self.commit()
         self.__settings_cache.clear()
@@ -5974,9 +5918,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Support for optimized baseinfo table, migration function.
         """
-        if not EntropyRepository._SCHEMA_2010_SUPPORT:
-            # support not yet enabled.
-            return
         if self._isBaseinfoExtrainfo2010():
             return
         if not self._doesTableExist("baseinfo"):
