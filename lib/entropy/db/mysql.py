@@ -35,10 +35,107 @@ from entropy.i18n import _
 import entropy.dep
 import entropy.tools
 
-from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
-    DatabaseError
 from entropy.db.sql import EntropySQLRepository
 from entropy.db.cache import EntropyRepositoryCacher
+
+from entropy.db.exceptions import Warning, Error, InterfaceError, \
+    DatabaseError, DataError, OperationalError, IntegrityError, \
+    InternalError, ProgrammingError, NotSupportedError
+
+class MySQLCursorWrapper:
+    """
+    This class wraps a MySQL cursor and
+    makes execute(), executemany() return
+    the cursor itself.
+    """
+
+    def __init__(self, cursor, exceptions):
+        self._cur = cursor
+        self._excs = exceptions
+
+    def _proxy_call(self, method, *args, **kwargs):
+        """
+        This method is tricky because it wraps every
+        underlying engine call catching all its exceptions
+        and respawning them as entropy.db.exceptions.
+        This provides optimum abstraction.
+        """
+        try:
+            # do not change the exception handling
+            # order, we need to reverse the current
+            # hierarchy to avoid catching super
+            # classes before their subs.
+            return method(*args, **kwargs)
+        except self._excs.InterfaceError as err:
+            raise InterfaceError(err)
+
+        except self._excs.DataError as err:
+            raise DataError(err)
+        except self._excs.OperationalError as err:
+            raise OperationalError(err)
+        except self._excs.IntegrityError as err:
+            raise IntegrityError(err)
+        except self._excs.InternalError as err:
+            raise InternalError(err)
+        except self._excs.ProgrammingError as err:
+            raise ProgrammingError(err)
+        except self._excs.NotSupportedError as err:
+            raise NotSupportedError(err)
+        except self._excs.DatabaseError as err:
+            # this is the parent of all the above
+            raise DatabaseError(err)
+
+        except self._excs.Error as err:
+            raise Error(err)
+        except self._excs.Warning as err:
+            raise Warning(err)
+        except self._excs.Note as err:
+            raise Warning(err)
+
+    def execute(self, *args, **kwargs):
+        # force oursql to empty the resultset
+        self._cur = self._cur.connection.cursor()
+        self._proxy_call(self._cur.execute, *args, **kwargs)
+        return self
+
+    def executemany(self, *args, **kwargs):
+        # force oursql to empty the resultset
+        self._cur = self._cur.connection.cursor()
+        self._proxy_call(self._cur.executemany, *args, **kwargs)
+        return self
+
+    def close(self, *args, **kwargs):
+        return self._proxy_call(self._cur.close, *args, **kwargs)
+
+    def fetchone(self, *args, **kwargs):
+        return self._proxy_call(self._cur.fetchone, *args, **kwargs)
+
+    def fetchall(self, *args, **kwargs):
+        return self._proxy_call(self._cur.fetchall, *args, **kwargs)
+
+    def fetchmany(self, *args, **kwargs):
+        return self._proxy_call(self._cur.fetchmany, *args, **kwargs)
+
+    def executescript(self, script):
+        for sql in script.split(";"):
+            if not sql.strip():
+                continue
+            self.execute(sql)
+        return self
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        return self._proxy_call(self._cur.next, [], {})
+
+    @property
+    def lastrowid(self):
+        return self._cur.lastrowid
+
+    @property
+    def rowcount(self):
+        return self._cur.rowcount
 
 
 class EntropyMySQLRepository(EntropySQLRepository):
@@ -52,7 +149,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
     # should be triggered
     _SCHEMA_REVISION = 1
 
-    class Schema:
+    class MySQLSchema:
 
         def get_init(self):
             data = """
@@ -439,6 +536,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             _mod = EntropyMySQLRepository.MySQLProxy.get()
             return EntropyMySQLRepository.MySQLProxy._errnos
 
+    Schema = MySQLSchema
     ModuleProxy = MySQLProxy
 
     def __init__(self, uri, readOnly = False, xcache = False,
@@ -542,7 +640,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                         self._doesTableExist('extrainfo'):
                     self.__structure_update = True
 
-            except self.ModuleProxy.exceptions().Error:
+            except Error:
                 self._cleanup_stale_cur_conn(kill_all = True)
                 raise
 
@@ -607,16 +705,16 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 if not self._readonly:
                     try:
                         conn.commit()
-                    except self.ModuleProxy.exceptions().OperationalError:
+                    except OperationalError:
                         # no transaction is active can
                         # cause this, bleh!
                         pass
                 try:
                     conn.close()
-                except self.ModuleProxy.exceptions().OperationalError:
+                except OperationalError:
                     try:
                         conn.close()
-                    except self.ModuleProxy.exceptions().OperationalError:
+                    except OperationalError:
                         # heh, unable to close due to
                         # unfinalized statements
                         # interpreter shutdown?
@@ -638,62 +736,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
                         kill_me(path, th_id, pid)
 
     def _cursor(self):
-
-        class MySQLCursorWrapper:
-            """
-            This class wraps a MySQL cursor and
-            makes execute(), executemany() return
-            the cursor itself.
-            """
-
-            def __init__(self, cursor):
-                self._cur = cursor
-
-            def execute(self, *args, **kwargs):
-                # force oursql to empty the resultset
-                self._cur = self._cur.connection.cursor()
-                self._cur.execute(*args, **kwargs)
-                return self
-
-            def executemany(self, *args, **kwargs):
-                # force oursql to empty the resultset
-                self._cur = self._cur.connection.cursor()
-                self._cur.executemany(*args, **kwargs)
-                return self
-
-            def close(self, *args, **kwargs):
-                return self._cur.close(*args, **kwargs)
-
-            def fetchone(self, *args, **kwargs):
-                return self._cur.fetchone(*args, **kwargs)
-
-            def fetchall(self, *args, **kwargs):
-                return self._cur.fetchall(*args, **kwargs)
-
-            def fetchmany(self, *args, **kwargs):
-                return self._cur.fetchmany(*args, **kwargs)
-
-            def executescript(self, script):
-                for sql in script.split(";"):
-                    if not sql.strip():
-                        continue
-                    self.execute(sql)
-                return self
-
-            def __iter__(self):
-                return iter(self._cur)
-
-            def next(self):
-                return self._cur.next()
-
-            @property
-            def lastrowid(self):
-                return self._cur.lastrowid
-
-            @property
-            def rowcount(self):
-                return self._cur.rowcount
-
         # thanks to hotshot
         # this avoids calling _cleanup_stale_cur_conn logic zillions of time
         t1 = time.time()
@@ -709,7 +751,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 cursor = conn.cursor()
                 cursor.execute("SET storage_engine=InnoDB;")
                 cursor.execute("SET autocommit=OFF;")
-                cursor = MySQLCursorWrapper(cursor)
+                cursor = MySQLCursorWrapper(
+                    cursor, self.ModuleProxy.exceptions())
                 self._cursor_pool()[c_key] = cursor
         return cursor
 
@@ -728,7 +771,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                     }
                 try:
                     conn = self._mysql.connect(**kwargs)
-                except self.ModuleProxy.exceptions().OperationalError as err:
+                except OperationalError as err:
                     raise OperationalError("Cannot connect: %s" % (repr(err),))
                 self._connection_pool()[c_key] = conn
             else:
@@ -814,7 +857,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             # So, FIRST commit changes, then call plugins.
             try:
                 self._connection().commit()
-            except self.ModuleProxy.exceptions().Error:
+            except Error:
                 pass
         elif self.readonly():
             # rollback instead if read-only
@@ -840,7 +883,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             for table in self._listAllTables():
                 try:
                     cur = self._cursor().execute("DROP TABLE %s" % (table,))
-                except self.ModuleProxy.exceptions().OperationalError:
+                except OperationalError:
                     # skip tables that can't be dropped
                     continue
         finally:
@@ -2051,7 +2094,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             SELECT min(counter) FROM counters LIMIT 1
             """)
             dbcounter = cur.fetchone()
-        except self.ModuleProxy.exceptions().Error:
+        except Error:
             # first available counter
             return -2
 
@@ -3961,7 +4004,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             SELECT baseinfo.idpackage,provide.is_default FROM baseinfo,provide
             WHERE provide.atom = ? AND
             provide.idpackage = baseinfo.idpackage""", (keyword,))
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             # TODO: remove this before 31-12-2011
             if self._doesColumnInTableExist("provide", "is_default"):
                 # something is really wrong
@@ -4213,7 +4256,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             if order_by:
                 return self._cur2tuple(cur)
             return self._cur2frozenset(cur)
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             if order_by:
                 return tuple()
             return frozenset()
@@ -4347,7 +4390,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = ? LIMIT 1
             """, (setting_name,))
-        except self.ModuleProxy.exceptions().Error:
+        except Error:
             obj = KeyError("cannot find setting_name '%s'" % (setting_name,))
             self.__settings_cache[setting_name] = obj
             raise obj
@@ -4441,8 +4484,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
 
         # execute checksum
         _exceptions = (
-            self.ModuleProxy.exceptions().OperationalError,
-            self.ModuleProxy.exceptions().DatabaseError
+            OperationalError,
+            DatabaseError
             )
         try:
             self.checksum()
@@ -4515,7 +4558,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 cur = self._cursor().execute("""
                 SELECT count(*) FROM `%s` LIMIT 1""" % (table,))
                 cur.fetchone()
-            except self.ModuleProxy.exceptions().OperationalError:
+            except OperationalError:
                 return False
             return True
 
@@ -4560,7 +4603,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             SHOW COLUMNS FROM `%s` WHERE field = `%s`
             """ % (column, table))
             rslt = cur.fetchone() is not None
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             exists = False
         cached[d_tup] = exists
         self._setLiveCache("_doesColumnInTableExist", cached)
@@ -4653,7 +4696,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 cur = self._cursor().execute("""
                 SELECT idpackage, sha1, gpg FROM
                 packagesignatures %s""" % (package_id_order,))
-            except self.ModuleProxy.exceptions().OperationalError:
+            except OperationalError:
                 # TODO: remove this before 31-12-2011
                 if self._doesColumnInTableExist("packagesignatures", "gpg"):
                     # something is really wrong
@@ -4767,7 +4810,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
         """
         try:
             self._cursor().execute('DELETE FROM contentsafety')
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             # table doesn't exist, ignore
             pass
 
@@ -4797,9 +4840,9 @@ class EntropyMySQLRepository(EntropySQLRepository):
                     self._cursor().execute(
                         "DROP INDEX `%s` ON `%s`" % (
                             index, table,))
-                except self.ModuleProxy.exceptions().OperationalError:
+                except OperationalError:
                     continue
-                except self.ModuleProxy.exceptions().IntegrityError as err:
+                except IntegrityError as err:
                     errno = self.ModuleProxy.errno()
                     if err.errno != errno['ER_DROP_INDEX_FK']:
                         raise
@@ -4838,7 +4881,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS trashedcounters_counter
             ON trashedcounters ( counter )""")
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createMirrorlinksIndex(self):
@@ -4846,7 +4889,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
             ON mirrorlinks ( mirrorname )""")
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createDesktopMimeIndex(self):
@@ -4854,7 +4897,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
             ON packagedesktopmime ( idpackage )""")
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createProvidedMimeIndex(self):
@@ -4865,7 +4908,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS provided_mime_mimetype
             ON provided_mime ( mimetype )""")
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createPackagesetsIndex(self):
@@ -4873,7 +4916,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
             self._cursor().execute("""
             CREATE INDEX IF NOT EXISTS packagesetsindex
             ON packagesets ( setname )""")
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createProvidedLibsIndex(self):
@@ -4884,7 +4927,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
                 ON provided_libs ( library, elfclass );
             """)
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createAutomergefilesIndex(self):
@@ -4895,7 +4938,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 CREATE INDEX IF NOT EXISTS automergefiles_file_md5
                 ON automergefiles ( configfile, md5 );
             """)
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createPackageDownloadsIndex(self):
@@ -4904,7 +4947,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 CREATE INDEX IF NOT EXISTS packagedownloads_idpackage_type
                 ON packagedownloads ( idpackage, type );
             """)
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createNeededIndex(self):
@@ -4917,7 +4960,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 CREATE INDEX IF NOT EXISTS neededindex_idn_elfclass ON needed
                     ( idneeded, elfclass );
             """)
-        except self.ModuleProxy.exceptions().OperationalError:
+        except OperationalError:
             pass
 
     def _createUseflagsIndex(self):

@@ -9,9 +9,6 @@
     B{Entropy Framework repository exceptions module}.
 
 """
-import sys
-
-# this is used for documentation purposes
 
 class Warning(Exception):
     """ Exception raised for important warnings like data
@@ -71,14 +68,3 @@ class NotSupportedError(Error):
         .rollback() on a connection that does not support
         transaction or has transactions turned off.  It must be a
         subclass of DatabaseError. """
-
-_exc_types = ('DataError', 'DatabaseError', 'Error', 'IntegrityError',
-    'InterfaceError', 'InternalError', 'NotSupportedError', 'OperationalError',
-    'ProgrammingError', 'Warning')
-
-# Do NOT remove this, TODO: make this pluggable
-# This is the actual exception wrapper
-from sqlite3 import dbapi2
-_mod = sys.modules[__name__]
-for _exc_type in _exc_types:
-    setattr(_mod, _exc_type, getattr(dbapi2, _exc_type, None))
