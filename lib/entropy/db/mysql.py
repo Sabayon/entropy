@@ -96,7 +96,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
         def get_init(self):
             data = """
                 CREATE TABLE baseinfo (
-                    idpackage INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     atom VARCHAR(75) NOT NULL,
                     category VARCHAR(128) NOT NULL,
                     name VARCHAR(75) NOT NULL,
@@ -111,21 +112,21 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE extrainfo (
-                    idpackage INTEGER(10) PRIMARY KEY NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED PRIMARY KEY NOT NULL,
                     description VARCHAR(256) NOT NULL,
-                    homepage VARCHAR(512) NOT NULL,
+                    homepage VARCHAR(1024) NOT NULL,
                     download VARCHAR(512) NOT NULL,
                     size VARCHAR(128) NOT NULL,
                     chost VARCHAR(256) NOT NULL,
                     cflags VARCHAR(512) NOT NULL,
                     cxxflags VARCHAR(512) NOT NULL,
-                    digest VARCHAR(32) NOT NULL,
+                    digest CHAR(32) NOT NULL,
                     datecreation VARCHAR(32) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
                 CREATE TABLE content (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     file VARCHAR(512) NOT NULL,
                     type VARCHAR(3) NOT NULL,
                     FOREIGN KEY(idpackage)
@@ -133,16 +134,16 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE contentsafety (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     file VARCHAR(512) NOT NULL,
                     mtime FLOAT,
-                    sha256 VARCHAR(64) NOT NULL,
+                    sha256 CHAR(64) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provide (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     atom VARCHAR(75) NOT NULL,
                     is_default INTEGER(10) NOT NULL DEFAULT 0,
                     FOREIGN KEY(idpackage)
@@ -150,21 +151,21 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE dependencies (
-                    idpackage INTEGER(10) NOT NULL,
-                    iddependency INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
+                    iddependency INTEGER(10) UNSIGNED NOT NULL,
                     type INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependenciesreference (
-                    iddependency INTEGER(10) NOT NULL
+                    iddependency INTEGER(10) UNSIGNED NOT NULL
                         AUTO_INCREMENT PRIMARY KEY,
-                    dependency VARCHAR(640) NOT NULL
+                    dependency VARCHAR(1024) NOT NULL
                 );
 
                 CREATE TABLE conflicts (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     conflict VARCHAR(128) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
@@ -176,74 +177,78 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE sources (
-                    idpackage INTEGER(10) NOT NULL,
-                    idsource INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
+                    idsource INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sourcesreference (
-                    idsource INTEGER(10) AUTO_INCREMENT PRIMARY KEY,
+                    idsource INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     source VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE useflags (
-                    idpackage INTEGER(10) NOT NULL,
-                    idflag INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
+                    idflag INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE useflagsreference (
-                    idflag INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idflag INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     flagname VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE keywords (
-                    idpackage INTEGER(10) NOT NULL,
-                    idkeyword INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
+                    idkeyword INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE keywordsreference (
-                    idkeyword INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idkeyword INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     keywordname VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE configprotect (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    idprotect INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    idprotect INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectmask (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    idprotect INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    idprotect INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectreference (
-                    idprotect INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idprotect INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     protect VARCHAR(512) NOT NULL
                 );
 
                 CREATE TABLE systempackages (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE injected (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE installedtable (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
                     repositoryname VARCHAR(75) NOT NULL,
                     source INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
@@ -251,17 +256,17 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE sizes (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    size INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    size BIGINT UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE counters (
                     counter INTEGER(10) NOT NULL,
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     branch VARCHAR(75) NOT NULL,
-                    PRIMARY KEY(idpackage,branch),
+                    PRIMARY KEY(idpackage, branch),
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
@@ -271,20 +276,21 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE needed (
-                    idpackage INTEGER(10) NOT NULL,
-                    idneeded INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
+                    idneeded INTEGER(10) UNSIGNED NOT NULL,
                     elfclass INTEGER(10) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE neededreference (
-                    idneeded INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idneeded INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     library VARCHAR(75) NOT NULL
                 );
 
                 CREATE TABLE provided_libs (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     library VARCHAR(75) NOT NULL,
                     path VARCHAR(75) NOT NULL,
                     elfclass INTEGER(10) NOT NULL,
@@ -294,11 +300,12 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE treeupdates (
                     repository VARCHAR(75) NOT NULL PRIMARY KEY,
-                    digest VARCHAR(75) NOT NULL
+                    digest CHAR(32) NOT NULL
                 );
 
                 CREATE TABLE treeupdatesactions (
-                    idupdate INTEGER(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                    idupdate INTEGER(10) UNSIGNED NOT NULL
+                        AUTO_INCREMENT PRIMARY KEY,
                     repository VARCHAR(75) NOT NULL,
                     command VARCHAR(256) NOT NULL,
                     branch VARCHAR(75) NOT NULL,
@@ -307,7 +314,7 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE licensedata (
                     licensename VARCHAR(75) NOT NULL UNIQUE,
-                    `text` BLOB,
+                    `text` MEDIUMBLOB,
                     compressed INTEGER(10) NOT NULL
                 );
 
@@ -316,8 +323,8 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE triggers (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    data BLOB,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    data MEDIUMBLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
@@ -335,28 +342,28 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE packagesets (
                     setname VARCHAR(75) NOT NULL,
-                    dependency VARCHAR(640) NOT NULL
+                    dependency VARCHAR(1024) NOT NULL
                 );
 
                 CREATE TABLE packagechangelogs (
                     category VARCHAR(75) NOT NULL,
                     name VARCHAR(75) NOT NULL,
-                    changelog BLOB NOT NULL,
+                    changelog MEDIUMBLOB NOT NULL,
                     PRIMARY KEY (category, name)
                 );
 
                 CREATE TABLE automergefiles (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     configfile VARCHAR(512) NOT NULL,
-                    `md5` VARCHAR(32) NOT NULL,
+                    `md5` CHAR(32) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagedesktopmime (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     name VARCHAR(75),
-                    mimetype VARCHAR(640),
+                    mimetype VARCHAR(4096),
                     executable VARCHAR(128),
                     icon VARCHAR(75),
                     FOREIGN KEY(idpackage)
@@ -364,15 +371,15 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                 );
 
                 CREATE TABLE packagedownloads (
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     download VARCHAR(512) NOT NULL,
                     type VARCHAR(75) NOT NULL,
-                    size INTEGER(10) NOT NULL,
-                    disksize INTEGER(10) NOT NULL,
-                    `md5` VARCHAR(32) NOT NULL,
-                    `sha1` VARCHAR(40) NOT NULL,
-                    `sha256` VARCHAR(64) NOT NULL,
-                    `sha512` VARCHAR(128) NOT NULL,
+                    size BIGINT UNSIGNED NOT NULL,
+                    disksize BIGINT UNSIGNED NOT NULL,
+                    `md5` CHAR(32) NOT NULL,
+                    `sha1` CHAR(40) NOT NULL,
+                    `sha256` CHAR(64) NOT NULL,
+                    `sha512` CHAR(128) NOT NULL,
                     `gpg` BLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
@@ -380,30 +387,30 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
 
                 CREATE TABLE provided_mime (
                     mimetype VARCHAR(640) NOT NULL,
-                    idpackage INTEGER(10) NOT NULL,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagesignatures (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    sha1 VARCHAR(40),
-                    sha256 VARCHAR(64),
-                    sha512 VARCHAR(128),
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    sha1 CHAR(40),
+                    sha256 CHAR(64),
+                    sha512 CHAR(128),
                     gpg BLOB,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmphases (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
                     phases VARCHAR(512) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmrepository (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
                     repository VARCHAR(75) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
@@ -413,14 +420,14 @@ class EntropyMySQLRepository(EntropyRepositoryBase):
                     repository VARCHAR(75) NOT NULL,
                     from_branch VARCHAR(75) NOT NULL,
                     to_branch VARCHAR(75) NOT NULL,
-                    post_migration_md5sum VARCHAR(75) NOT NULL,
-                    post_upgrade_md5sum VARCHAR(75) NOT NULL,
+                    post_migration_md5sum CHAR(32) NOT NULL,
+                    post_upgrade_md5sum CHAR(32) NOT NULL,
                     PRIMARY KEY (repository, from_branch, to_branch)
                 );
 
                 CREATE TABLE xpakdata (
-                    idpackage INTEGER(10) NOT NULL PRIMARY KEY,
-                    data BLOB NOT NULL
+                    idpackage INTEGER(10) UNSIGNED NOT NULL PRIMARY KEY,
+                    data LONGBLOB NOT NULL
                 );
 
                 CREATE TABLE settings (
