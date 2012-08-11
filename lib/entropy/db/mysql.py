@@ -191,7 +191,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 CREATE TABLE contentsafety (
                     idpackage INTEGER(10) UNSIGNED NOT NULL,
                     file VARCHAR(512) NOT NULL,
-                    mtime FLOAT,
+                    mtime REAL,
                     sha256 CHAR(64) NOT NULL,
                     FOREIGN KEY(idpackage)
                         REFERENCES baseinfo(idpackage) ON DELETE CASCADE
