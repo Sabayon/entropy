@@ -124,10 +124,7 @@ class MySQLCursorWrapper:
         return self
 
     def __iter__(self):
-        return self
-
-    def next(self):
-        return self._proxy_call(self._cur.next, [], {})
+        return iter(self._cur)
 
     @property
     def lastrowid(self):
