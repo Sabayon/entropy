@@ -9,7 +9,6 @@
     B{Entropy Framework repository database prototype classes module}.
 """
 import os
-import sys
 import shutil
 import warnings
 import hashlib
@@ -367,7 +366,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     # You can extend this with custom settings for your Repository
     SETTING_KEYS = ("arch", "schema_revision")
 
-    class ModuleProxy:
+    class ModuleProxy(object):
 
         @staticmethod
         def get():
@@ -1502,7 +1501,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             # risky to add to the sql above, still
             'counter': self.retrieveSpmUid(package_id),
             'messages': [],
-            # FIXME: backward compatibility, drop after 2011
+            # TODO: backward compatibility, drop after 2011
             'eclasses': [],
             'trigger': self.retrieveTrigger(package_id),
             'disksize': self.retrieveOnDiskSize(package_id),
@@ -1702,7 +1701,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         for action in actions:
             command = action.split()
             mytxt = "%s: %s: %s." % (
-                bold(_("ENTROPY")),
+                bold(_("Entropy")),
                 red(_("action")),
                 blue(action),
             )
@@ -1720,14 +1719,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     executed_actions.append(action)
                 quickpkg_atoms |= move_actions
             elif command[0] == "slotmove":
-                slotmove_actions = self._runTreeUpdatesSlotmoveAction(command[1:],
+                slotmove_actions = self._runTreeUpdatesSlotmoveAction(
+                    command[1:],
                     quickpkg_atoms)
                 if slotmove_actions:
                     executed_actions.append(action)
                 quickpkg_atoms |= slotmove_actions
 
             mytxt = "%s: %s." % (
-                bold(_("ENTROPY")),
+                bold(_("Entropy")),
                 blue(_("package move actions complete")),
             )
             self.output(
@@ -1750,7 +1750,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 entropy.tools.print_traceback()
 
         mytxt = "%s: %s." % (
-            bold(_("ENTROPY")),
+            bold(_("Entropy")),
             blue(_("package moves completed successfully")),
         )
         self.output(

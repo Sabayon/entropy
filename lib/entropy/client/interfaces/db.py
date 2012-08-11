@@ -119,8 +119,8 @@ class InstalledPackagesRepository(CachedRepository):
     def __init__(self, *args, **kwargs):
         EntropyRepository.__init__(self, *args, **kwargs)
         # ensure proper repository file permissions
-        if entropy.tools.is_root() and os.path.isfile(self._db_path):
-            const_setup_file(self._db_path, etpConst['entropygid'], 0o644,
+        if entropy.tools.is_root() and os.path.isfile(self._db):
+            const_setup_file(self._db, etpConst['entropygid'], 0o644,
                 uid = etpConst['uid'])
 
     def handlePackage(self, pkg_data, forcedRevision = -1,
@@ -2467,8 +2467,8 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
     def __init__(self, *args, **kwargs):
         EntropyRepository.__init__(self, *args, **kwargs)
         # ensure proper repository file permissions
-        if entropy.tools.is_root() and os.path.isfile(self._db_path):
-            const_setup_file(self._db_path, etpConst['entropygid'], 0o644,
+        if entropy.tools.is_root() and os.path.isfile(self._db):
+            const_setup_file(self._db, etpConst['entropygid'], 0o644,
                 uid = etpConst['uid'])
 
     @staticmethod

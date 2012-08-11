@@ -586,7 +586,8 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         cur_cache = self.test_db._cursor_pool().keys()
         self.assertTrue(len(cur_cache) > 0)
-        self.test_db._cleanup_stale_cur_conn(kill_all = True)
+        self.test_db._EntropySQLiteRepository__cleanup_stale_cur_conn(
+            kill_all = True)
         cur_cache = self.test_db._cursor_pool().keys()
         self.assertEqual(len(cur_cache), 0)
 

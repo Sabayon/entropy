@@ -23,8 +23,9 @@
     interface, as written above.
 
 """
-from entropy.db.sqlite import EntropyRepository
+from entropy.db.sqlite import EntropySQLiteRepository as EntropyRepository
 from entropy.db.mysql import EntropyMySQLRepository
 from entropy.db.cache import EntropyRepositoryCacher
 
-__all__ = ["EntropyRepository", "EntropyMySQLRepository", "EntropyRepositoryCacher"]
+__all__ = ["EntropyRepository", "EntropyMySQLRepository",
+           "EntropyRepositoryCacher"]
