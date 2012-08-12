@@ -766,10 +766,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             # database file are opened and used before data is actually written
             # to disk, causing a tricky race condition hard to exploit.
             # So, FIRST commit changes, then call plugins.
-            try:
-                self._connection().commit()
-            except Error:
-                pass
+            self._connection().commit()
 
         super(EntropySQLRepository, self).commit(
             force = force, no_plugins = no_plugins)
