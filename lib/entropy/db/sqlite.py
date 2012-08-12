@@ -546,7 +546,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         raise NotImplementedError()
 
     def _addPackage(self, pkg_data, revision = -1, package_id = None,
-        do_commit = True, formatted_content = False):
+        formatted_content = False):
         """
         Reimplemented from EntropySQLRepository.
         We must handle _baseinfo_extrainfo_2010.
@@ -623,7 +623,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
             # does it exist?
             self.removePackage(package_id, do_cleanup = False,
-                do_commit = False, from_add_package = True)
+                from_add_package = True)
             mypackage_id_string = '?'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
@@ -751,10 +751,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._insertConfigProtect(package_id, idprotect_mask, mask = True)
         # injected?
         if pkg_data.get('injected'):
-            self.setInjected(package_id, do_commit = False)
+            self.setInjected(package_id)
         # is it a system package?
         if pkg_data.get('systempackage'):
-            self._setSystemPackage(package_id, do_commit = False)
+            self._setSystemPackage(package_id)
 
         # this will always be optional !
         # (see entropy.client.interfaces.package)
@@ -766,13 +766,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         # ensure that cache is clear even here
         self.clearCache()
 
-        if do_commit:
-            self.commit()
-
         return package_id
 
     def _removePackage(self, package_id, do_cleanup = True,
-                       do_commit = True, from_add_package = False):
+                       from_add_package = False):
         """
         Reimplemented from EntropySQLRepository.
         We must handle on_delete_cascade.
@@ -819,9 +816,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if do_cleanup:
             # Cleanups if at least one package has been removed
             self.clean()
-
-        if do_commit:
-            self.commit()
 
     def __addCategory(self, category):
         """

@@ -258,8 +258,7 @@ class ServerPackagesRepository(CachedRepository):
             manual_deps |= self.retrieveManualDependencies(package_id,
                 resolve_conditional_deps = False)
             # injected packages wouldn't be removed by addPackage
-            self.removePackage(package_id, do_cleanup = False,
-                do_commit = False)
+            self.removePackage(package_id, do_cleanup = False)
 
         if forcedRevision == -1:
             current_rev += 1
@@ -273,8 +272,7 @@ class ServerPackagesRepository(CachedRepository):
         for r_package_id in removelist:
             manual_deps |= self.retrieveManualDependencies(r_package_id,
                 resolve_conditional_deps = False)
-            self.removePackage(r_package_id, do_cleanup = False,
-                do_commit = False)
+            self.removePackage(r_package_id, do_cleanup = False)
 
         # inject old manual dependencies back to package metadata
         for manual_dep in manual_deps:

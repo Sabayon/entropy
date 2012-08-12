@@ -255,6 +255,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         mydbconn = entropy_client.open_generic_repository(tmp_path)
         mydbconn.initializeRepository()
         idpackage = mydbconn.addPackage(mydata, revision = mydata['revision'])
+        mydbconn.commit()
         mydbconn.close()
         entropy.tools.aggregate_entropy_metadata(etptbz2path, tmp_path)
         os.remove(tmp_path)

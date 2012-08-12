@@ -810,7 +810,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         raise NotImplementedError()
 
     def _addPackage(self, pkg_data, revision = -1, package_id = None,
-        do_commit = True, formatted_content = False):
+        formatted_content = False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
@@ -859,7 +859,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
             # does it exist?
             self.removePackage(package_id, do_cleanup = False,
-                do_commit = False, from_add_package = True)
+                from_add_package = True)
             mypackage_id_string = '?'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
@@ -973,10 +973,10 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._insertConfigProtect(package_id, idprotect_mask, mask = True)
         # injected?
         if pkg_data.get('injected'):
-            self.setInjected(package_id, do_commit = False)
+            self.setInjected(package_id)
         # is it a system package?
         if pkg_data.get('systempackage'):
-            self._setSystemPackage(package_id, do_commit = False)
+            self._setSystemPackage(package_id)
 
         # this will always be optional ! (see entropy.client.interfaces.package)
         original_repository = pkg_data.get('original_repository')
@@ -987,31 +987,28 @@ class EntropySQLRepository(EntropyRepositoryBase):
         # ensure that cache is clear even here
         self.clearCache()
 
-        if do_commit:
-            self.commit()
-
         return package_id
 
     def addPackage(self, pkg_data, revision = -1, package_id = None,
-        do_commit = True, formatted_content = False):
+        formatted_content = False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
         try:
             package_id = self._addPackage(pkg_data, revision = revision,
-                package_id = package_id, do_commit = do_commit,
+                package_id = package_id,
                 formatted_content = formatted_content)
             super(EntropySQLRepository, self).addPackage(
                 pkg_data, revision = revision,
-                package_id = package_id, do_commit = do_commit,
+                package_id = package_id,
                 formatted_content = formatted_content)
             return package_id
         except:
             self._connection().rollback()
             raise
 
-    def removePackage(self, package_id, do_cleanup = True, do_commit = True,
+    def removePackage(self, package_id, do_cleanup = True,
         from_add_package = False):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -1021,18 +1018,17 @@ class EntropySQLRepository(EntropyRepositoryBase):
             self.clearCache()
             super(EntropySQLRepository, self).removePackage(
                 package_id, do_cleanup = do_cleanup,
-                do_commit = do_commit,
                 from_add_package = from_add_package)
             self.clearCache()
 
             return self._removePackage(package_id, do_cleanup = do_cleanup,
-                do_commit = do_commit, from_add_package = from_add_package)
+                from_add_package = from_add_package)
         except:
             self._connection().rollback()
             raise
 
     def _removePackage(self, package_id, do_cleanup = True,
-                       do_commit = True, from_add_package = False):
+                       from_add_package = False):
         """
         Reimplement in subclasses.
         """
@@ -1144,7 +1140,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         Add package libraries' ELF object NEEDED string to repository.
         Return its identifier (idneeded).
 
-        @param needed: NEEDED string (as shown in `readelf -d elf.so`) 
+        @param needed: NEEDED string (as shown in `readelf -d elf.so`)
         @type needed: string
         @return: needed identifier (idneeded)
         @rtype: int
@@ -1154,23 +1150,19 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """, (needed,))
         return cur.lastrowid
 
-    def _setSystemPackage(self, package_id, do_commit = True):
+    def _setSystemPackage(self, package_id):
         """
         Mark a package as system package, which means that entropy.client
         will deny its removal.
 
         @param package_id: package identifier
         @type package_id: int
-        @keyword do_commit: determine whether executing commit or not
-        @type do_commit: bool
         """
         self._cursor().execute("""
         INSERT INTO systempackages VALUES (?)
         """, (package_id,))
-        if do_commit:
-            self.commit()
 
-    def setInjected(self, package_id, do_commit = True):
+    def setInjected(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -1178,8 +1170,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             INSERT INTO injected VALUES (?)
             """, (package_id,))
-        if do_commit:
-            self.commit()
 
     def setCreationDate(self, package_id, date):
         """

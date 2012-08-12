@@ -156,8 +156,7 @@ class EntropyPortageConverter(TextInterface):
                 count = (count, max_count),
                 importance = 0,
                 back = True)
-            self._repo.removePackage(package_id, do_cleanup = False,
-                do_commit = False)
+            self._repo.removePackage(package_id, do_cleanup = False)
 
         self.output(purple("Done removing packages."),
             header = teal(" @@ "),
@@ -216,7 +215,7 @@ class EntropyPortageConverter(TextInterface):
                 e_mtime = str(os.path.getmtime(ebuild_path))
             entropy_meta['datecreation'] = e_mtime
 
-            self._repo.addPackage(entropy_meta, do_commit = False)
+            self._repo.addPackage(entropy_meta)
 
         finally:
             os.remove(tmp_path)
@@ -262,8 +261,7 @@ class EntropyPortageConverter(TextInterface):
                 count = (count, max_count),
                 importance = 0, back = True)
 
-            self._repo.removePackage(package_id, do_cleanup = False,
-                do_commit = False)
+            self._repo.removePackage(package_id, do_cleanup = False)
             self.__add_package(pkg_atom, spm_repo, count, max_count)
 
         self._repo.commit()

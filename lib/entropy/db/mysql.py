@@ -797,7 +797,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
         """
         raise NotImplementedError()
 
-    def _removePackage(self, package_id, do_cleanup = True, do_commit = True,
+    def _removePackage(self, package_id, do_cleanup = True,
         from_add_package = False):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -810,9 +810,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
         if do_cleanup:
             # Cleanups if at least one package has been removed
             self.clean()
-
-        if do_commit:
-            self.commit()
 
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """

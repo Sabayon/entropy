@@ -1785,7 +1785,7 @@ class Package:
         automerge_metadata = inst_repo.retrieveAutomergefiles(
             self.pkgmeta['removeidpackage'], get_dict = True)
         inst_repo.removePackage(
-            self.pkgmeta['removeidpackage'], do_commit = False,
+            self.pkgmeta['removeidpackage'],
             do_cleanup = False)
 
         # commit changes, to avoid users pressing CTRL+C and still having

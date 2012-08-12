@@ -760,7 +760,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         return removelist
 
     def addPackage(self, pkg_data, revision = -1, package_id = None,
-        do_commit = True, formatted_content = False):
+        formatted_content = False):
         """
         Add package to this Entropy repository. The main difference between
         handlePackage and this is that from here, no packages are going to be
@@ -778,9 +778,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             provided package identifier, this is very dangerous and could
             cause packages with the same identifier to be removed.
         @type package_id: int
-        @keyword do_commit: if True, automatically commits the executed
-            transaction (could cause slowness)
-        @type do_commit: bool
         @keyword formatted_content: if True, determines whether the content
             metadata (usually the biggest part) in pkg_data is already
             prepared for insertion
@@ -797,7 +794,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     "[add_package_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-    def removePackage(self, package_id, do_cleanup = True, do_commit = True,
+    def removePackage(self, package_id, do_cleanup = True,
         from_add_package = False):
         """
         Remove package from this Entropy repository using it's identifier
@@ -810,9 +807,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @keyword do_cleanup: if True, executes repository metadata cleanup
             at the end
         @type do_cleanup: bool
-        @keyword do_commit: if True, commits the transaction (could cause
-            slowness)
-        @type do_commit: bool
         @keyword from_add_package: inform function that it's being called from
             inside addPackage().
         @type from_add_package: bool
@@ -827,7 +821,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     "[remove_package_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-    def setInjected(self, package_id, do_commit = True):
+    def setInjected(self, package_id):
         """
         Mark package as injected, injection is usually set for packages
         manually added to repository. Injected packages are not removed
@@ -837,8 +831,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         @param package_id: package indentifier
         @type package_id: int
-        @keyword do_commit: determine whether executing commit or not
-        @type do_commit: bool
         """
         raise NotImplementedError()
 
@@ -3829,7 +3821,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
             self.removePackage(
                 package_id,
-                do_cleanup = False, do_commit = False)
+                do_cleanup = False)
 
         maxcount = len(added_ids)
         mycount = 0
@@ -3853,7 +3845,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 mydata,
                 revision = mydata['revision'],
                 package_id = package_id,
-                do_commit = False,
                 formatted_content = True
             )
 

@@ -133,8 +133,7 @@ class InstalledPackagesRepository(CachedRepository):
             pkg_data['slot'], pkg_data['injected']
         )
         for r_package_id in removelist:
-            self.removePackage(r_package_id, do_cleanup = False,
-                do_commit = False)
+            self.removePackage(r_package_id, do_cleanup = False)
         return self.addPackage(pkg_data, revision = forcedRevision,
             formatted_content = formattedContent)
 
@@ -1452,6 +1451,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return False
         finally:
             if repo_db is not None:
+                repo_db.commit()
                 repo_db.close()
 
         return False
@@ -1694,7 +1694,7 @@ class AvailablePackagesRepositoryUpdater(object):
             try:
                 mydbconn.addPackage(
                     mydata, revision = mydata['revision'],
-                    package_id = idpackage, do_commit = False,
+                    package_id = idpackage,
                     formatted_content = True
                 )
             except (Error,) as err:
@@ -1722,8 +1722,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "  ", back = (not etpUi['verbose'])
             )
             try:
-                mydbconn.removePackage(idpackage, do_cleanup = False,
-                    do_commit = False)
+                mydbconn.removePackage(idpackage, do_cleanup = False)
             except (Error,):
                 self._entropy.output(
                     blue(_("repository error while removing packages")),
@@ -2520,14 +2519,14 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
             "cannot execute handlePackage on this repository")
 
     def addPackage(self, pkg_data, revision = -1, package_id = None,
-        do_commit = True, formatted_content = False):
+        formatted_content = False):
         """
         Reimplemented from EntropyRepository
         """
         raise PermissionDenied(
             "cannot execute addPackage on this repository")
 
-    def removePackage(self, package_id, do_cleanup = True, do_commit = True,
+    def removePackage(self, package_id, do_cleanup = True,
         from_add_package = False):
         """
         Reimplemented from EntropyRepository

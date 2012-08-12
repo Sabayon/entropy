@@ -301,7 +301,6 @@ exit ${?}
                     del data['original_repository']
                 dest_package_id = dest_repo.addPackage(data,
                     revision = data['revision'],
-                    do_commit = False,
                     formatted_content = True)
 
                 source = etpConst['install_sources']['unknown']

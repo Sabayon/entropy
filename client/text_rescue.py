@@ -503,6 +503,7 @@ def _database_spmsync(entropy_client):
                     )
                     print_info(mytxt)
                     entropy_client.installed_repository().removePackage(x)
+                entropy_client.installed_repository().commit()
                 print_info(brown(" @@ ") + \
                     blue("%s." % (_("Database removal complete"),) ))
 
@@ -710,9 +711,10 @@ def _database_generate(entropy_client):
         mydata['digest'] = saved_digest
 
         idpk = entropy_client.installed_repository().addPackage(mydata,
-            revision = mydata['revision'], do_commit = False)
+            revision = mydata['revision'])
         entropy_client.installed_repository().storeInstalledPackage(idpk,
             etpConst['spmdbid'])
+        entropy_client.installed_repository().commit()
         os.remove(temp_pkg_path)
 
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))

@@ -343,10 +343,10 @@ def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):
                         multiMatch = True)
                     target_pkg_ids |= matches
             for target_pkg_id in target_pkg_ids:
-                dest_db.removePackage(target_pkg_id, do_cleanup = False,
-                    do_commit = False)
+                dest_db.removePackage(target_pkg_id, do_cleanup = False)
             dest_pkg_id = dest_db.addPackage(pkg_meta,
-                do_commit = False, formatted_content = True)
+                formatted_content = True)
+            dest_db.commit()
 
         print_info("[%s] %s" % (
             teal(source_repo), blue(_("done merging packages")),))
