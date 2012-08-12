@@ -385,6 +385,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
     # For SQLite3 it's "INSERT OR REPLACE"
     # while for MySQL it's "REPLACE"
     _INSERT_OR_REPLACE = None
+    # the "INSERT OR IGNORE" dialect
+    _INSERT_OR_IGNORE = None
 
     def __init__(self, db, read_only, skip_checks, indexing,
                  xcache, temporary, name):
@@ -575,9 +577,20 @@ class EntropySQLRepository(EntropyRepositoryBase):
     def commit(self, force = False, no_plugins = False):
         """
         Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method. This is a stub,
-        please implement the SQL logic.
+        Needs to call superclass method.
         """
+        if force or not self.readonly():
+            # NOTE: the actual commit MUST be executed before calling
+            # the superclass method (that is going to call EntropyRepositoryBase
+            # plugins). This to avoid that other connection to the same exact
+            # database file are opened and used before data is actually written
+            # to disk, causing a tricky race condition hard to exploit.
+            # So, FIRST commit changes, then call plugins.
+            try:
+                self._connection().commit()
+            except Error:
+                pass
+
         super(EntropySQLRepository, self).commit(
             force = force, no_plugins = no_plugins)
 
@@ -1858,9 +1871,15 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def getStrictData(self, package_id):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(("category", "'/'", "name"))
+        cur = self._cursor().execute("""
+        SELECT %s, slot, version, versiontag, revision, atom
+        FROM baseinfo
+        WHERE idpackage = ? LIMIT 1
+        """ % (concat,), (package_id,))
+        return cur.fetchone()
 
     def getStrictScopeData(self, package_id):
         """
@@ -2270,21 +2289,45 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def retrieveKeySlot(self, package_id):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(("category", "'/'", "name"))
+        cur = self._cursor().execute("""
+        SELECT %s, slot FROM baseinfo
+        WHERE idpackage = ? LIMIT 1
+        """ % (concat,), (package_id,))
+        return cur.fetchone()
 
     def retrieveKeySlotAggregated(self, package_id):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(
+            ("category",
+             "'/'",
+             "name",
+             "'%s'" % (etpConst['entropyslotprefix'],),
+             "slot"))
+        cur = self._cursor().execute("""
+        SELECT %s FROM baseinfo
+        WHERE idpackage = ? LIMIT 1
+        """ % (concat,), (package_id,))
+        keyslot = cur.fetchone()
+        if keyslot:
+            return keyslot[0]
+        return None
 
     def retrieveKeySlotTag(self, package_id):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(("category", "'/'", "name"))
+        cur = self._cursor().execute("""
+        SELECT %s, slot, versiontag
+        FROM baseinfo WHERE
+        idpackage = ? LIMIT 1
+        """ % (concat,), (package_id,))
+        return cur.fetchone()
 
     def retrieveVersion(self, package_id):
         """
@@ -3409,6 +3452,17 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """, (revision,))
         return self._cur2frozenset(cur)
 
+    def acceptLicense(self, license_name):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        Needs to call superclass method.
+        """
+        super(EntropySQLRepository, self).acceptLicense(license_name)
+
+        self._cursor().execute("""
+        %s INTO licenses_accepted VALUES (?)
+        """ % (self._INSERT_OR_IGNORE,), (license_name,))
+
     def searchLicense(self, keyword, just_id = False):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3445,15 +3499,26 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def searchKeySlot(self, key, slot):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(("category", "'/'", "name"))
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo
+        WHERE %s = ? AND slot = ?
+        """ % (concat,), (key, slot,))
+        return self._cur2frozenset(cur)
 
     def searchKeySlotTag(self, key, slot, tag):
         """
-        Not implemented, subclasses must implement this.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        concat = self._concatOperator(("category", "'/'", "name"))
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo
+        WHERE %s = ? AND slot = ?
+        AND tag = ?
+        """ % (concat,), (key, slot, tag))
+        return self._cur2frozenset(cur)
 
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """

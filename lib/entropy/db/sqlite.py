@@ -140,6 +140,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
     _SCHEMA_REVISION = 3
 
     _INSERT_OR_REPLACE = "INSERT OR REPLACE"
+    _INSERT_OR_IGNORE = "INSERT OR IGNORE"
 
     SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
@@ -524,26 +525,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         """
         self._cursor().execute("vacuum")
-
-    def commit(self, force = False, no_plugins = False):
-        """
-        Reimplemented from EntropySQLRepository.
-        Needs to call superclass method.
-        """
-        if force or (not self.readonly()):
-            # NOTE: the actual commit MUST be executed before calling
-            # the superclass method (that is going to call EntropyRepositoryBase
-            # plugins). This to avoid that other connection to the same exact
-            # database file are opened and used before data is actually written
-            # to disk, causing a tricky race condition hard to exploit.
-            # So, FIRST commit changes, then call plugins.
-            try:
-                self._connection().commit()
-            except Error:
-                pass
-
-        super(EntropySQLiteRepository, self).commit(force = force,
-            no_plugins = no_plugins)
 
     def initializeRepository(self):
         """
@@ -1660,17 +1641,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if result:
             return result[0]
         return -1
-
-    def acceptLicense(self, license_name):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method.
-        """
-        super(EntropySQLiteRepository, self).acceptLicense(license_name)
-
-        self._cursor().execute("""
-        INSERT OR IGNORE INTO licenses_accepted VALUES (?)
-        """, (license_name,))
 
     def __areCompileFlagsAvailable(self, chost, cflags, cxxflags):
         """

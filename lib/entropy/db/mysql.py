@@ -137,6 +137,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
     _SCHEMA_REVISION = 1
 
     _INSERT_OR_REPLACE = "REPLACE"
+    _INSERT_OR_IGNORE = "INSERT IGNORE"
 
     class MySQLSchema(object):
 
@@ -777,29 +778,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
         """
         return
 
-    def commit(self, force = False, no_plugins = False):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method.
-        """
-        if force or not self.readonly():
-            # NOTE: the actual commit MUST be executed before calling
-            # the superclass method (that is going to call EntropyRepositoryBase
-            # plugins). This to avoid that other connection to the same exact
-            # database file are opened and used before data is actually written
-            # to disk, causing a tricky race condition hard to exploit.
-            # So, FIRST commit changes, then call plugins.
-            try:
-                self._connection().commit()
-            except Error:
-                pass
-        elif self.readonly():
-            # rollback instead if read-only
-            self.rollback()
-
-        super(EntropyMySQLRepository, self).commit(force = force,
-            no_plugins = no_plugins)
-
     def initializeRepository(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -876,83 +854,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
             cur = self._cursor().execute("""
             REPLACE INTO counters SET counter = ? %s
             WHERE idpackage = ?""" % (branchstring,), insertdata)
-
-    def getStrictData(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT CONCAT(category, '/', name), slot, version,
-            versiontag, revision, atom FROM baseinfo
-        WHERE idpackage = ? LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
-
-    def retrieveKeySlot(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT CONCAT(category, '/', name), slot FROM baseinfo
-        WHERE idpackage = ? LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
-
-    def retrieveKeySlotAggregated(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT CONCAT(category, '/', name, '%s', slot) FROM baseinfo
-        WHERE idpackage = ? LIMIT 1
-        """ % (etpConst['entropyslotprefix'],), (package_id,))
-        keyslot = cur.fetchone()
-        if keyslot:
-            return keyslot[0]
-        return None
-
-    def retrieveKeySlotTag(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT CONCAT(category, '/', name), slot,
-        versiontag FROM baseinfo WHERE
-        idpackage = ? LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
-
-    def acceptLicense(self, license_name):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method.
-        """
-        super(EntropyMySQLRepository, self).acceptLicense(license_name)
-
-        self._cursor().execute("""
-        INSERT IGNORE INTO licenses_accepted VALUES (?)
-        """, (license_name,))
-
-    def searchKeySlot(self, key, slot):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo
-        WHERE CONCAT(category, '/', name) = ? AND slot = ?
-        """, (key, slot,))
-        return self._cur2frozenset(cur)
-
-    def searchKeySlotTag(self, key, slot, tag):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo
-        WHERE CONCAT(category, '/', name) = ? AND slot = ?
-        AND tag = ?
-        """, (key, slot, tag))
-        return self._cur2frozenset(cur)
 
     def _setupInitialSettings(self):
         """
