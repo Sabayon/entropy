@@ -26,13 +26,15 @@ from entropy.const import etpConst, \
 import entropy.dep
 import entropy.tools
 
-from entropy.db.sql import EntropySQLRepository
+from entropy.db.sql import EntropySQLRepository, SQLConnectionWrapper, \
+    SQLCursorWrapper
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
     InternalError, ProgrammingError, NotSupportedError
 
-class MySQLCursorWrapper:
+class MySQLCursorWrapper(SQLCursorWrapper):
+
     """
     This class wraps a MySQL cursor and
     makes execute(), executemany() return
@@ -40,47 +42,7 @@ class MySQLCursorWrapper:
     """
 
     def __init__(self, cursor, exceptions):
-        self._cur = cursor
-        self._excs = exceptions
-
-    def _proxy_call(self, method, *args, **kwargs):
-        """
-        This method is tricky because it wraps every
-        underlying engine call catching all its exceptions
-        and respawning them as entropy.db.exceptions.
-        This provides optimum abstraction.
-        """
-        try:
-            # do not change the exception handling
-            # order, we need to reverse the current
-            # hierarchy to avoid catching super
-            # classes before their subs.
-            return method(*args, **kwargs)
-        except self._excs.InterfaceError as err:
-            raise InterfaceError(err)
-
-        except self._excs.DataError as err:
-            raise DataError(err)
-        except self._excs.OperationalError as err:
-            raise OperationalError(err)
-        except self._excs.IntegrityError as err:
-            raise IntegrityError(err)
-        except self._excs.InternalError as err:
-            raise InternalError(err)
-        except self._excs.ProgrammingError as err:
-            raise ProgrammingError(err)
-        except self._excs.NotSupportedError as err:
-            raise NotSupportedError(err)
-        except self._excs.DatabaseError as err:
-            # this is the parent of all the above
-            raise DatabaseError(err)
-
-        except self._excs.Error as err:
-            raise Error(err)
-        except self._excs.Warning as err:
-            raise Warning(err)
-        except self._excs.Note as err:
-            raise Warning(err)
+        SQLCursorWrapper.__init__(self, cursor, exceptions)
 
     def execute(self, *args, **kwargs):
         # force oursql to empty the resultset
@@ -113,16 +75,37 @@ class MySQLCursorWrapper:
             self.execute(sql)
         return self
 
+    def callproc(self, *args, **kwargs):
+        return self._proxy_call(self._cur.callproc, *args, **kwargs)
+
+    def nextset(self, *args, **kwargs):
+        return self._proxy_call(self._cur.nextset, *args, **kwargs)
+
     def __iter__(self):
         return iter(self._cur)
 
-    @property
-    def lastrowid(self):
-        return self._cur.lastrowid
 
-    @property
-    def rowcount(self):
-        return self._cur.rowcount
+class MySQLConnectionWrapper(SQLConnectionWrapper):
+
+    """
+    This class wraps a MySQL connection and
+    makes execute(), executemany() return
+    the connection itself.
+    """
+
+    def __init__(self, connection, exceptions):
+        SQLConnectionWrapper.__init__(self, connection, exceptions)
+
+    def interrupt(self):
+        # Not supported by MySQL, NO-OP
+        return
+
+    def ping(self):
+        return self._proxy_call(self._excs, self._con.ping)
+
+    def unicode(self):
+        # This is a NO-OP, we are always unicode
+        return
 
 
 class EntropyMySQLRepository(EntropySQLRepository):
@@ -709,13 +692,12 @@ class EntropyMySQLRepository(EntropySQLRepository):
         with self._connection_pool_mutex():
             conn = self._connection_pool().get(c_key)
             if conn is None:
-                try:
-                    conn = self._mysql.connect(
-                        host = self._host, user = self._user,
-                        passwd = self._password, db = self._db,
-                        port = self._port)
-                except OperationalError as err:
-                    raise OperationalError("Cannot connect: %s" % (repr(err),))
+                conn = MySQLConnectionWrapper.connect(
+                    self.ModuleProxy, self._mysql,
+                    MySQLConnectionWrapper,
+                    host = self._host, user = self._user,
+                    passwd = self._password, db = self._db,
+                    port = self._port)
                 self._connection_pool()[c_key] = conn
             else:
                 conn.ping()

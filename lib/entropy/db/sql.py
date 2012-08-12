@@ -30,8 +30,186 @@ import entropy.tools
 
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.db.cache import EntropyRepositoryCacher
-from entropy.db.exceptions import Error, \
-    DatabaseError, OperationalError
+from entropy.db.exceptions import Warning, Error, InterfaceError, \
+    DatabaseError, DataError, OperationalError, IntegrityError, \
+    InternalError, ProgrammingError, NotSupportedError
+
+
+class SQLConnectionWrapper(object):
+
+    """
+    This class wraps an implementation dependent
+    Connection object, exposing a common API which
+    resembles the Python DBAPI 2.0.
+    All the underlying library calls are wrapped
+    around using a proxy method in order to catch
+    and then raise entropy.db.exceptions exceptions.
+    """
+
+    def __init__(self, connection, exceptions):
+        self._con = connection
+        self._excs = exceptions
+
+    @staticmethod
+    def _proxy_call(exceptions, method, *args, **kwargs):
+        """
+        This method is tricky because it wraps every
+        underlying engine call catching all its exceptions
+        and respawning them as entropy.db.exceptions.
+        This provides optimum abstraction.
+        """
+        try:
+            # do not change the exception handling
+            # order, we need to reverse the current
+            # hierarchy to avoid catching super
+            # classes before their subs.
+            return method(*args, **kwargs)
+        except exceptions.InterfaceError as err:
+            raise InterfaceError(err)
+
+        except exceptions.DataError as err:
+            raise DataError(err)
+        except exceptions.OperationalError as err:
+            raise OperationalError(err)
+        except exceptions.IntegrityError as err:
+            raise IntegrityError(err)
+        except exceptions.InternalError as err:
+            raise InternalError(err)
+        except exceptions.ProgrammingError as err:
+            raise ProgrammingError(err)
+        except exceptions.NotSupportedError as err:
+            raise NotSupportedError(err)
+        except exceptions.DatabaseError as err:
+            # this is the parent of all the above
+            raise DatabaseError(err)
+
+        except exceptions.Error as err:
+            raise Error(err)
+        except exceptions.Warning as err:
+            raise Warning(err)
+
+    @staticmethod
+    def connect(module_proxy, module, subclass, *args, **kwargs):
+        conn_impl = SQLConnectionWrapper._proxy_call(
+            module_proxy.exceptions(), module.connect,
+            *args, **kwargs)
+        return subclass(conn_impl, module_proxy.exceptions())
+
+    def commit(self):
+        return self._proxy_call(self._excs, self._con.commit)
+
+    def rollback(self):
+        return self._proxy_call(self._excs, self._con.rollback)
+
+    def close(self):
+        return self._proxy_call(self._excs, self._con.close)
+
+    def cursor(self):
+        return self._proxy_call(self._excs, self._con.cursor)
+
+    def ping(self):
+        raise NotImplementedError()
+
+    def unicode(self):
+        raise NotImplementedError()
+
+    def interrupt(self):
+        raise NotImplementedError()
+
+
+class SQLCursorWrapper(object):
+
+    """
+    This class wraps an implementation dependent
+    Cursor object, exposing a common API which
+    resembles the Python DBAPI 2.0.
+    All the underlying library calls are wrapped
+    around using a proxy method in order to catch
+    and then raise entropy.db.exceptions exceptions.
+    """
+
+    def __init__(self, cursor, exceptions):
+        self._cur = cursor
+        self._excs = exceptions
+
+    def _proxy_call(self, method, *args, **kwargs):
+        """
+        This method is tricky because it wraps every
+        underlying engine call catching all its exceptions
+        and respawning them as entropy.db.exceptions.
+        This provides optimum abstraction.
+        """
+        try:
+            # do not change the exception handling
+            # order, we need to reverse the current
+            # hierarchy to avoid catching super
+            # classes before their subs.
+            return method(*args, **kwargs)
+        except self._excs.InterfaceError as err:
+            raise InterfaceError(err)
+
+        except self._excs.DataError as err:
+            raise DataError(err)
+        except self._excs.OperationalError as err:
+            raise OperationalError(err)
+        except self._excs.IntegrityError as err:
+            raise IntegrityError(err)
+        except self._excs.InternalError as err:
+            raise InternalError(err)
+        except self._excs.ProgrammingError as err:
+            raise ProgrammingError(err)
+        except self._excs.NotSupportedError as err:
+            raise NotSupportedError(err)
+        except self._excs.DatabaseError as err:
+            # this is the parent of all the above
+            raise DatabaseError(err)
+
+        except self._excs.Error as err:
+            raise Error(err)
+        except self._excs.Warning as err:
+            raise Warning(err)
+
+    def execute(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def executemany(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def close(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def fetchone(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def fetchall(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def fetchmany(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def executescript(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def callproc(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def nextset(self, *args, **kwargs):
+        raise NotImplementedError()
+
+    def __iter__(self):
+        raise NotImplementedError()
+
+    @property
+    def lastrowid(self):
+        return self._cur.lastrowid
+
+    @property
+    def rowcount(self):
+        return self._cur.rowcount
+
+    @property
+    def description(self):
+        return self._cur.description
 
 
 class EntropySQLRepository(EntropyRepositoryBase):
@@ -465,14 +643,16 @@ class EntropySQLRepository(EntropyRepositoryBase):
     def _connection(self):
         """
         Return a valid Connection object for this thread.
-        Must be implemented by subclasses.
+        Must be implemented by subclasses and must return
+        a SQLConnectionWrapper object.
         """
         raise NotImplementedError()
 
     def _cursor(self):
         """
         Return a valid Cursor object for this thread.
-        Must be implemented by subclasses.
+        Must be implemented by subclasses and must return
+        a SQLCursorWrapper object.
         """
         raise NotImplementedError()
 
@@ -1700,7 +1880,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 content_iter)
 
             # remove this when the one in retrieveContent will be removed
-            self._connection().text_factory = const_convert_to_unicode
+            self._connection().unicode()
 
             # now compare
             ftype_str = ""
@@ -2683,7 +2863,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         # like portage does
-        self._connection().text_factory = const_convert_to_unicode
+        self._connection().unicode()
 
         cur = self._cursor().execute("""
         SELECT configfile, md5 FROM automergefiles WHERE idpackage = ?
@@ -2830,7 +3010,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._connection().text_factory = const_convert_to_unicode
+        self._connection().unicode()
 
         cur = self._cursor().execute("""
         SELECT changelog FROM packagechangelogs WHERE category = ? AND
@@ -2963,7 +3143,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._connection().text_factory = const_convert_to_unicode
+        self._connection().unicode()
 
         cur = self._cursor().execute("""
         SELECT text FROM licensedata WHERE licensename = ? LIMIT 1
@@ -4037,7 +4217,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._connection().text_factory = const_convert_to_unicode
+        self._connection().unicode()
 
         if count:
             cur = self._cursor().execute("""

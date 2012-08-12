@@ -29,7 +29,8 @@ from entropy.output import bold, red, blue, purple
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
     InternalError, ProgrammingError, NotSupportedError
-from entropy.db.sql import EntropySQLRepository
+from entropy.db.sql import EntropySQLRepository, SQLConnectionWrapper, \
+    SQLCursorWrapper
 
 from entropy.i18n import _
 
@@ -37,55 +38,17 @@ import entropy.dep
 import entropy.tools
 
 
-class SQLiteCursorWrapper:
+class SQLiteCursorWrapper(SQLCursorWrapper):
+
     """
-    This class wraps a MySQL cursor and
-    makes execute(), executemany() return
-    the cursor itself.
+    This class wraps a SQLite cursor in order to have
+    it thrown entropy.db.exceptions objects.
+    The API is a subset of the one specified in
+    Python DBAPI 2.0.
     """
 
     def __init__(self, cursor, exceptions):
-        self._cur = cursor
-        self._excs = exceptions
-
-    def _proxy_call(self, method, *args, **kwargs):
-        """
-        This method is tricky because it wraps every
-        underlying engine call catching all its exceptions
-        and respawning them as entropy.db.exceptions.
-        This provides optimum abstraction.
-        """
-        try:
-            # do not change the exception handling
-            # order, we need to reverse the current
-            # hierarchy to avoid catching super
-            # classes before their subs.
-            return method(*args, **kwargs)
-        except self._excs.InterfaceError as err:
-            raise InterfaceError(err)
-
-        except self._excs.DataError as err:
-            raise DataError(err)
-        except self._excs.OperationalError as err:
-            raise OperationalError(err)
-        except self._excs.IntegrityError as err:
-            raise IntegrityError(err)
-        except self._excs.InternalError as err:
-            raise InternalError(err)
-        except self._excs.ProgrammingError as err:
-            raise ProgrammingError(err)
-        except self._excs.NotSupportedError as err:
-            raise NotSupportedError(err)
-        except self._excs.DatabaseError as err:
-            # this is the parent of all the above
-            raise DatabaseError(err)
-
-        except self._excs.Error as err:
-            raise Error(err)
-        except self._excs.Warning as err:
-            raise Warning(err)
-        except self._excs.Note as err:
-            raise Warning(err)
+        SQLCursorWrapper.__init__(self, cursor, exceptions)
 
     def execute(self, *args, **kwargs):
         return self._proxy_call(self._cur.execute, *args, **kwargs)
@@ -108,20 +71,34 @@ class SQLiteCursorWrapper:
     def executescript(self, *args, **kwargs):
         return self._proxy_call(self._cur.executescript, *args, **kwargs)
 
+    def callproc(self, *args, **kwargs):
+        return self._proxy_call(self._cur.callproc, *args, **kwargs)
+
+    def nextset(self, *args, **kwargs):
+        return self._proxy_call(self._cur.nextset, *args, **kwargs)
+
     def __iter__(self):
         return iter(self._cur)
 
-    @property
-    def lastrowid(self):
-        return self._cur.lastrowid
 
-    @property
-    def rowcount(self):
-        return self._cur.rowcount
+class SQLiteConnectionWrapper(SQLConnectionWrapper):
+    """
+    This class wraps a SQLite connection and
+    makes execute(), executemany() return
+    the connection itself.
+    """
 
-    @property
-    def description(self):
-        return self._cur.description
+    def __init__(self, connection, exceptions):
+        SQLConnectionWrapper.__init__(self, connection, exceptions)
+
+    def ping(self):
+        return
+
+    def unicode(self):
+        self._con.text_factory = const_convert_to_unicode
+
+    def interrupt(self):
+        return self._proxy_call(self._excs, self._con.interrupt)
 
 
 class EntropySQLiteRepository(EntropySQLRepository):
@@ -431,9 +408,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 # check_same_thread still required for
                 # conn.close() called from
                 # arbitrary thread
-                conn = self._sqlite.connect(
+                conn = SQLiteConnectionWrapper.connect(
+                    self.ModuleProxy, self._sqlite,
+                    SQLiteConnectionWrapper,
                     self._db, timeout=30.0,
-                    check_same_thread = False)
+                    check_same_thread=False)
                 self._connection_pool()[c_key] = conn
         return conn
 
@@ -2108,7 +2087,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
             q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
             q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
-            self._connection().text_factory = const_convert_to_unicode
+            self._connection().unicode()
             cur3 = self._cursor().execute(q % {'tbl_name': name})
             for row in cur3:
                 dumpfile.write(toraw("%s;\n" % (row[0],)))
