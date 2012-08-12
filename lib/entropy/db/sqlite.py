@@ -622,8 +622,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 resolve_conditional_deps = False)
 
             # does it exist?
-            self.removePackage(package_id, do_cleanup = False,
-                from_add_package = True)
+            self.removePackage(package_id, from_add_package = True)
             mypackage_id_string = '?'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
@@ -768,8 +767,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
         return package_id
 
-    def _removePackage(self, package_id, do_cleanup = True,
-                       from_add_package = False):
+    def _removePackage(self, package_id, from_add_package = False):
         """
         Reimplemented from EntropySQLRepository.
         We must handle on_delete_cascade.
@@ -812,10 +810,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 self._cursor().execute("""
                 DELETE FROM packagedownloads WHERE idpackage = (?)""",
                 (package_id,))
-
-        if do_cleanup:
-            # Cleanups if at least one package has been removed
-            self.clean()
 
     def __addCategory(self, category):
         """

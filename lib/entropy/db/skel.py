@@ -794,8 +794,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     "[add_package_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-    def removePackage(self, package_id, do_cleanup = True,
-        from_add_package = False):
+    def removePackage(self, package_id, from_add_package = False):
         """
         Remove package from this Entropy repository using it's identifier
         (package_id).
@@ -804,9 +803,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         @param package_id: Entropy repository package indentifier
         @type package_id: int
-        @keyword do_cleanup: if True, executes repository metadata cleanup
-            at the end
-        @type do_cleanup: bool
         @keyword from_add_package: inform function that it's being called from
             inside addPackage().
         @type from_add_package: bool
@@ -3819,9 +3815,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 count = (mycount, maxcount)
             )
 
-            self.removePackage(
-                package_id,
-                do_cleanup = False)
+            self.removePackage(package_id)
 
         maxcount = len(added_ids)
         mycount = 0

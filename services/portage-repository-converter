@@ -156,7 +156,7 @@ class EntropyPortageConverter(TextInterface):
                 count = (count, max_count),
                 importance = 0,
                 back = True)
-            self._repo.removePackage(package_id, do_cleanup = False)
+            self._repo.removePackage(package_id)
 
         self.output(purple("Done removing packages."),
             header = teal(" @@ "),
@@ -261,7 +261,7 @@ class EntropyPortageConverter(TextInterface):
                 count = (count, max_count),
                 importance = 0, back = True)
 
-            self._repo.removePackage(package_id, do_cleanup = False)
+            self._repo.removePackage(package_id)
             self.__add_package(pkg_atom, spm_repo, count, max_count)
 
         self._repo.commit()

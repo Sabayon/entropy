@@ -1785,8 +1785,7 @@ class Package:
         automerge_metadata = inst_repo.retrieveAutomergefiles(
             self.pkgmeta['removeidpackage'], get_dict = True)
         inst_repo.removePackage(
-            self.pkgmeta['removeidpackage'],
-            do_cleanup = False)
+            self.pkgmeta['removeidpackage'])
 
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration

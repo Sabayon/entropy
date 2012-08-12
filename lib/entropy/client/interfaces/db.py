@@ -133,7 +133,7 @@ class InstalledPackagesRepository(CachedRepository):
             pkg_data['slot'], pkg_data['injected']
         )
         for r_package_id in removelist:
-            self.removePackage(r_package_id, do_cleanup = False)
+            self.removePackage(r_package_id)
         return self.addPackage(pkg_data, revision = forcedRevision,
             formatted_content = formattedContent)
 
@@ -1722,7 +1722,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "  ", back = (not etpUi['verbose'])
             )
             try:
-                mydbconn.removePackage(idpackage, do_cleanup = False)
+                mydbconn.removePackage(idpackage)
             except (Error,):
                 self._entropy.output(
                     blue(_("repository error while removing packages")),
@@ -2526,8 +2526,7 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         raise PermissionDenied(
             "cannot execute addPackage on this repository")
 
-    def removePackage(self, package_id, do_cleanup = True,
-        from_add_package = False):
+    def removePackage(self, package_id, from_add_package = False):
         """
         Reimplemented from EntropyRepository
         """

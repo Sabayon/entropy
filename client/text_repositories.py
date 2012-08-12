@@ -343,7 +343,7 @@ def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):
                         multiMatch = True)
                     target_pkg_ids |= matches
             for target_pkg_id in target_pkg_ids:
-                dest_db.removePackage(target_pkg_id, do_cleanup = False)
+                dest_db.removePackage(target_pkg_id)
             dest_pkg_id = dest_db.addPackage(pkg_meta,
                 formatted_content = True)
             dest_db.commit()

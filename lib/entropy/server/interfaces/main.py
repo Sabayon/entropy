@@ -2767,6 +2767,7 @@ class Server(Client):
 
                 # remove package from old db
                 dbconn.removePackage(idpackage)
+                dbconn.clean()
                 dbconn.commit()
 
             self.output(
@@ -2954,7 +2955,8 @@ class Server(Client):
                 header = brown(" @@ ")
             )
             dbconn.removePackage(idpackage)
-            dbconn.commit()
+        dbconn.clean()
+        dbconn.commit()
         self.close_repository(dbconn)
         self.output(
             "[%s] %s" % (

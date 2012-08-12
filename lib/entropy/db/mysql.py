@@ -797,8 +797,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
         """
         raise NotImplementedError()
 
-    def _removePackage(self, package_id, do_cleanup = True,
-        from_add_package = False):
+    def _removePackage(self, package_id, from_add_package = False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
@@ -806,10 +805,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
         # this will work thanks to ON DELETE CASCADE !
         self._cursor().execute(
             "DELETE FROM baseinfo WHERE idpackage = ?", (package_id,))
-
-        if do_cleanup:
-            # Cleanups if at least one package has been removed
-            self.clean()
 
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """

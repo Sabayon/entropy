@@ -858,8 +858,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 resolve_conditional_deps = False)
 
             # does it exist?
-            self.removePackage(package_id, do_cleanup = False,
-                from_add_package = True)
+            self.removePackage(package_id, from_add_package = True)
             mypackage_id_string = '?'
             mybaseinfo_data = (package_id,)+mybaseinfo_data
 
@@ -1008,8 +1007,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             self._connection().rollback()
             raise
 
-    def removePackage(self, package_id, do_cleanup = True,
-        from_add_package = False):
+    def removePackage(self, package_id, from_add_package = False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
@@ -1017,18 +1015,16 @@ class EntropySQLRepository(EntropyRepositoryBase):
         try:
             self.clearCache()
             super(EntropySQLRepository, self).removePackage(
-                package_id, do_cleanup = do_cleanup,
-                from_add_package = from_add_package)
+                package_id, from_add_package = from_add_package)
             self.clearCache()
 
-            return self._removePackage(package_id, do_cleanup = do_cleanup,
+            return self._removePackage(package_id,
                 from_add_package = from_add_package)
         except:
             self._connection().rollback()
             raise
 
-    def _removePackage(self, package_id, do_cleanup = True,
-                       from_add_package = False):
+    def _removePackage(self, package_id, from_add_package = False):
         """
         Reimplement in subclasses.
         """
