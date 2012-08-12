@@ -75,6 +75,30 @@ class Package:
                 self._eof = True
                 raise StopIteration()
 
+            # non-deterministic BUG with
+            # ca-certificates and Python crappy
+            # API causes readline() to return
+            # partial lines when non ASCII cruft
+            # is on the line. This is probably a
+            # Python bug.
+            # Example of partial readline():
+            # 0|obj|/usr/share/ca-certificates/mozilla/NetLock_Arany_=Class_Gold=_F\xc3\x85
+            # and the next call:
+            # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
+            # Try to workaround it by reading ahead
+            # if line does not end with \n
+            while not line.endswith("\n"):
+                part_line = self._f.readline()
+                line += part_line
+                sys.stderr.write(
+                    "FileContentReader, broken readline()"
+                    ", executing fixup code\n")
+                sys.stderr.write("%s\n" % (repr(part_line),))
+                # break infinite loops
+                # and let it crash
+                if not part_line: # EOF
+                    break
+
             _package_id, _ftype, _path = line[:-1].split("|", 2)
             # must be legal or die!
             _package_id = int(_package_id)
@@ -219,6 +243,30 @@ class Package:
                 self.close()
                 self._eof = True
                 raise StopIteration()
+
+            # non-deterministic BUG with
+            # ca-certificates and Python crappy
+            # API causes readline() to return
+            # partial lines when non ASCII cruft
+            # is on the line. This is probably a
+            # Python bug.
+            # Example of partial readline():
+            # 0|obj|/usr/share/ca-certificates/mozilla/NetLock_Arany_=Class_Gold=_F\xc3\x85
+            # and the next call:
+            # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
+            # Try to workaround it by reading ahead
+            # if line does not end with \n
+            while not line.endswith("\n"):
+                part_line = self._f.readline()
+                line += part_line
+                sys.stderr.write(
+                    "FileContentReader, broken readline()"
+                    ", executing fixup code\n")
+                sys.stderr.write("%s\n" % (repr(part_line),))
+                # break infinite loops
+                # and let it crash
+                if not part_line: # EOF
+                    break
 
             _mtime, _sha256, _path = line[:-1].split("|", 2)
             # must be legal or die!
