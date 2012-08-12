@@ -1437,8 +1437,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
         # set() used after filter to remove duplicates
         self._cursor().executemany("""
-        INSERT INTO licensedata VALUES (?, ?, ?)
-        """, list(map(my_mm, set(filter(my_mf, mylicenses)))))
+        %s INTO licensedata VALUES (?, ?, ?)
+        """ % (self._INSERT_OR_REPLACE,),
+        list(map(my_mm, set(filter(my_mf, mylicenses)))))
 
     def _insertConfigProtect(self, package_id, idprotect, mask = False):
         """
