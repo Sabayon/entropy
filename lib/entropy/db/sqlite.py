@@ -97,8 +97,14 @@ class SQLiteConnectionWrapper(SQLConnectionWrapper):
     def unicode(self):
         self._con.text_factory = const_convert_to_unicode
 
+    def rawstring(self):
+        self._con.text_factory = const_convert_to_rawstring
+
     def interrupt(self):
         return self._proxy_call(self._excs, self._con.interrupt)
+
+    def _iterdump(self):
+        return self._con.iterdump()
 
 
 class EntropySQLiteRepository(EntropySQLRepository):

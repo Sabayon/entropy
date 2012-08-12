@@ -108,12 +108,27 @@ class SQLConnectionWrapper(object):
         return self._proxy_call(self._excs, self._con.cursor)
 
     def ping(self):
+        """
+        Ping the underlying connection to keep it alive.
+        """
         raise NotImplementedError()
 
     def unicode(self):
+        """
+        Enforce Unicode strings.
+        """
+        raise NotImplementedError()
+
+    def rawstring(self):
+        """
+        Enforce byte strings.
+        """
         raise NotImplementedError()
 
     def interrupt(self):
+        """
+        Interrupt any pending activity.
+        """
         raise NotImplementedError()
 
 
