@@ -85,7 +85,7 @@
                         <property name="height_request">40</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="max_length">100</property>
+                        <property name="max_length">512</property>
                         <property name="invisible_char">●</property>
                         <property name="invisible_char_set">True</property>
                         <property name="primary_icon_stock">gtk-find</property>
