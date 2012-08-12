@@ -47,12 +47,15 @@ class Package:
             self._eof = False
 
         def _open_f(self):
+            # opening the file in universal newline mode
+            # fixes the readline() issues wrt
+            # truncated lines.
             if isinstance(self._cpath, int):
                 self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "r", self._enc)
+                    self._cpath, "rU", self._enc)
             else:
                 self._f = codecs.open(
-                    self._cpath, "r", self._enc)
+                    self._cpath, "rU", self._enc)
 
         def __iter__(self):
             return self
@@ -87,6 +90,9 @@ class Package:
             # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
             # Try to workaround it by reading ahead
             # if line does not end with \n
+            # HOWEVER: opening the file in
+            # Universal Newline mode fixes it.
+            # But let's keep the check for QA.
             while not line.endswith("\n"):
                 part_line = self._f.readline()
                 line += part_line
@@ -216,12 +222,15 @@ class Package:
             self._eof = False
 
         def _open_f(self):
+            # opening the file in universal newline mode
+            # fixes the readline() issues wrt
+            # truncated lines.
             if isinstance(self._cpath, int):
                 self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "r", self._enc)
+                    self._cpath, "rU", self._enc)
             else:
                 self._f = codecs.open(
-                    self._cpath, "r", self._enc)
+                    self._cpath, "rU", self._enc)
 
         def __iter__(self):
             return self
@@ -256,6 +265,9 @@ class Package:
             # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
             # Try to workaround it by reading ahead
             # if line does not end with \n
+            # HOWEVER: opening the file in
+            # Universal Newline mode fixes it.
+            # But let's keep the check for QA.
             while not line.endswith("\n"):
                 part_line = self._f.readline()
                 line += part_line
