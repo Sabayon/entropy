@@ -1,3 +1,269 @@
+commit 366396bfe710dfb198c233c82d4feaed84343e7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 17:51:29 2012 +0200
+
+    Release Entropy 133
+
+commit 8d00d5beec6ce1cbb23de461949b836b223a7497
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 10:26:22 2012 +0200
+
+    [entropy.db.sql] make custom iterators work across multiple iterations
+
+commit a6286b0e219262076d27e70f3e08771b9b049e4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 10:13:14 2012 +0200
+
+    [entropy.client.package] add one more note about the universal newline mode
+
+commit 56616e4520a667586701f2268eafb7e0b3f16ae0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 09:41:29 2012 +0200
+
+    [entropy.db.mysql] add some missing docstrings
+
+commit 427949d481110b352c3c98070c897288b7d3eae9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 09:39:44 2012 +0200
+
+    [entropy.client.package] make FileContent*Reader iterator work multiple times
+    
+    As explained in the code comments, this is mandatory for scenarios
+    in where the iterator has to run multiple times because transactions
+    can be rolled back and replayed indefinitely.
+
+commit 8c0c0dc10a2edf2027ee5a87c8d7ad1f25ab90d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 22:11:49 2012 +0200
+
+    [entropy.db.sql] _insertLicenses: tolerate unique constraint violations
+    
+    The licensename column is declared as UNIQUE, multiple threads inserting
+    rows can cause unique constraint violations. Considering the nature of
+    the data, using "INSERT OR REPLACE" can be considered safe and actually
+    wanted.
+
+commit e05b649f98bbc25b7b231dfdf2bc1b560c80a0cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 16:15:23 2012 +0200
+
+    [entropy.db] remove do_cleanup argument from removePackage()
+
+commit 9d665e050c9d1c16c0f618df0d1838ecfea2fc96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 16:00:02 2012 +0200
+
+    [entropy.db] remove do_commit argument from methods
+
+commit 6f54ac4459f04f750f5ea9f1225f712ca6c387f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 15:45:28 2012 +0200
+
+    [entropy.client.package] use Universal Newline mode when opening content files
+    
+    This fixes the readline() truncation issue, as explained in the comments
+
+commit f9ee58b48fd4d22b813ddab97307789429cc30fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 12:51:58 2012 +0200
+
+    [entropy.db.sql] add SQLConnectionWrapper.rawstring() and docstrings
+
+commit a8e2bbd3baf82079c40ea2b28cad11effc1906f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 12:08:23 2012 +0200
+
+    [entropy.db.sql] do not catch any exception in commit()
+
+commit 3679fa966a3a5f2b76b0e6494dcd33332fb8292d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 12:05:50 2012 +0200
+
+    [Rigo] increase search bar maximum entry length to 512 chars.
+
+commit 70c6823b90567c43bd6528c3f59bac2a9e79c494
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 11:53:50 2012 +0200
+
+    [entropy.client.package] fix non-deterministic bug with Python File.readline()
+    
+    This issue caused a load of issues with the ca-certificates.
+    
+    Example of partial readline():
+    0|obj|/usr/share/ca-certificates/mozilla/NetLock_Arany_=Class_Gold=_F\xc3\x85
+    and the next call:
+    \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
+    
+    Trying to workaround it by reading ahead if line does not end with \n
+
+commit c5e80d41535a6c41013b33712a4732da9f7f045b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 11:39:36 2012 +0200
+
+    [entropy.db.sql] define a common API for Cursor and Connection wrappers
+
+commit beb21f166071f346c55df71942e578d657a6a952
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 12 10:29:41 2012 +0200
+
+    [entropy.db] move other standard SQL code to entropy.db.sql
+
+commit 27a51598a0f481ad5675471923cc9e8c3e2b1d6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 11 21:58:41 2012 +0200
+
+    [entropy.db] move most of the standard SQL code to entropy.db.sql
+
+commit 4ea217f3fd7c8073af236eb0f08551e50cc0b585
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 11 20:24:28 2012 +0200
+
+    [entropy.db.mysql] replace FLOAT with REAL for mtime (FLOAT did not give enough precision)
+
+commit 74f7b4d73075f54832b3f409d8ebbb258d55cfdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 11 18:15:33 2012 +0200
+
+    [entropy.db.mysql] fix __iter__ support, iter(self._cur) MUST returned
+
+commit 7a950cb4b9924a59f173806780a4a842e90f2fb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 21:35:50 2012 +0200
+
+    [entropy.db] abstract exceptions away from sqlite3
+    
+    Wrap the Cursor object around and execute every method through
+    a proxy function that catches adapter-specific exceptions and
+    translates them into entropy.db.exceptions ones. This way Entropy
+    is eventually sqlite3 agnostic and adapters for several storage
+    engines can be written without affecting the rest of the codebase.
+
+commit 8ac22f4beb2fd1ff36086c0b9d9b4a1e00bb1ad9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 17:51:22 2012 +0200
+
+    [entropy.client.package] FileContent*Reader: keep raising StopIteration() at the end
+
+commit 08a43435978a762f95074f93b67c05d91c67960e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 17:44:12 2012 +0200
+
+    [entropy.client.package] add a bit of paranoia to Content*Writers' close()
+
+commit 2e6e790677ac30f7dd53c52d2d85e947b3826c6b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 14:06:24 2012 +0200
+
+    [entropy.db.sqlite] EntropyRepository.retrieveSignatures: check if table exists
+
+commit 0461ca413aebf114c80fe32434d0f2587b7ed77c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 14:05:31 2012 +0200
+
+    [entropy.db] do not check if "settings" table exists, we're fault tolerant
+
+commit 90400c4adee2ec944c938afac771c9c618a8bda4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 14:05:05 2012 +0200
+
+    [tests/db] drop SCHEMA_2010 related code
+
+commit dc4556ef4647264dfa422b03adc041e23ae557a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 11:41:29 2012 +0200
+
+    [entropy.db] create entropy.db.sql (holding standard SQL methods)
+    
+    entropy.db.mysql and entropy.db.sqlite are now subclassing
+    EntropySQLRepository. Methods will be moved there during the
+    next forthcoming overhaul. Implement ModuleProxy support and
+    alleviate the exception class objects issue (sqlite3 based
+    exceptions are thrown by entropy.db.sqlite and oursql based
+    exceptions are thrown by entropydb.mysql, and there is no
+    easy/quick fix for this apparently, besides wrapping all the
+    cursor calls).
+
+commit 95d23764c3df72df3b7cd8e8efa145662408934c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 11:39:30 2012 +0200
+
+    [entropy.db.skel] move SETTING_KEYS and add ModuleProxy to EntropyRepositoryBase
+
+commit 23847b99eb0e8764d55eb65a613bc40b86498c94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 11:38:55 2012 +0200
+
+    [tests/server] directly import EntropyRepositoryCacher from entropy.db.cache
+
+commit ea1922bc9d7aff328f9da154c3c8f4935c130f7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 10:41:08 2012 +0200
+
+    [entropy.db.mysql] fix typos in string format
+
+commit 8ebf92f17bc9fa784bd5c83530dadd71214be4c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 10:24:57 2012 +0200
+
+    [entropy.db.sqlite] enable _SCHEMA_2010_SUPPORT by default.
+
+commit b65962382df454cb4e534ac148821a8e95f59a49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 10:09:43 2012 +0200
+
+    [entropy.db.mysql] migrate to oursql (from MySQLdb)
+
+commit e24bf78b63ca4765580137fa8ec0db88abe687e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 10 10:09:18 2012 +0200
+
+    [entropy.db.mysql] finalize schema (data types)
+
+commit 2bac80d76adf09e20ea5bbfafd26186cefb56245
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 17:25:11 2012 +0200
+
+    [entropy.db.sqlite] catch OperationalError instead of Error
+
+commit 37e1d0f465e15164f66c7100a42195fedf3bf6b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 15:05:06 2012 +0200
+
+    [entropy.db.sqlite] always enforce LIMIT 1 when using Cursor.fetchone()
+    
+    Certain adapters don't clear cursor data automatically if fetchone()
+    is used and LIMIT 1 is not enforced.
+
+commit ea17f96d999f3095176f2d2473524a02f0d6a842
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 15:04:16 2012 +0200
+
+    [entropy.db.sqlite] check if settings table exists before spawning schema updates
+
+commit 690984caf492070c07955b3d5d1c80033135db94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 13:40:24 2012 +0200
+
+    [entropy.db.sqlite] fix query statement
+
+commit 7e6c9530c180f211b663f1af58e5f5c274fd3554
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 13:40:04 2012 +0200
+
+    [entropy.db] move alignDatabases() to entropy.db.skel class
+
+commit 4ddc1624286652cae1ac392059d2514b550075e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 09:45:59 2012 +0200
+
+    [entropy.db.mysql] increase datatypes' size
+
+commit 462d98e4a8181efca5f87f99fd97d328b04026da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 9 01:07:50 2012 +0200
+
+    Tagging Entropy version 132
+
 commit 56be066b5a4150b31d4a2f91dff6c616b6aa7410
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 9 01:07:48 2012 +0200
