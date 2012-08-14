@@ -102,6 +102,9 @@ class Package:
             # HOWEVER: opening the file in
             # Universal Newline mode fixes it.
             # But let's keep the check for QA.
+            # 2012-08-14: is has been observed that
+            # Universal Newline mode is not enough
+            # to avoid this issue.
             while not line.endswith("\n"):
                 part_line = self._f.readline()
                 line += part_line
@@ -286,6 +289,9 @@ class Package:
             # HOWEVER: opening the file in
             # Universal Newline mode fixes it.
             # But let's keep the check for QA.
+            # 2012-08-14: is has been observed that
+            # Universal Newline mode is not enough
+            # to avoid this issue.
             while not line.endswith("\n"):
                 part_line = self._f.readline()
                 line += part_line
