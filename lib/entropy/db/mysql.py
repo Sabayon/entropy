@@ -20,7 +20,7 @@ except ImportError:
 import threading
 import subprocess
 
-from entropy.const import etpConst, \
+from entropy.const import etpConst, const_debug_write, \
     const_convert_to_unicode, const_pid_exists
 
 import entropy.dep
@@ -31,7 +31,7 @@ from entropy.db.sql import EntropySQLRepository, SQLConnectionWrapper, \
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
-    InternalError, ProgrammingError, NotSupportedError
+    InternalError, ProgrammingError, NotSupportedError, RestartTransaction
 
 class MySQLCursorWrapper(SQLCursorWrapper):
 
@@ -41,8 +41,32 @@ class MySQLCursorWrapper(SQLCursorWrapper):
     the cursor itself.
     """
 
-    def __init__(self, cursor, exceptions):
+    def __init__(self, cursor, exceptions, errno):
+        self._errno = errno
+        self._conn_wr = cursor.connection
         SQLCursorWrapper.__init__(self, cursor, exceptions)
+
+    def _proxy_call(self, *args, **kwargs):
+        """
+        Reimplemented from SQLCursorWrapper.
+        Raise RestartTransaction if MySQL fails to execute
+        the query due to a detected deadlock.
+        """
+        try:
+            return super(MySQLCursorWrapper, self)._proxy_call(
+                *args, **kwargs)
+        except ProgrammingError as err:
+            tx_errnos = (
+                self._errno['ER_LOCK_WAIT_TIMEOUT'],
+                self._errno['ER_LOCK_DEADLOCK'])
+            if err.args[0].errno in tx_errnos:
+                const_debug_write(
+                    __name__,
+                    "deadlock detected, asking to restart transaction")
+                # rollback, is it needed?
+                self._conn_wr.rollback()
+                raise RestartTransaction(err.args[0])
+            raise
 
     def execute(self, *args, **kwargs):
         # force oursql to empty the resultset
@@ -688,7 +712,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
                 cursor.execute("SET storage_engine=InnoDB;")
                 cursor.execute("SET autocommit=OFF;")
                 cursor = MySQLCursorWrapper(
-                    cursor, self.ModuleProxy.exceptions())
+                    cursor, self.ModuleProxy.exceptions(),
+                    self.ModuleProxy().errno())
                 self._cursor_pool()[c_key] = cursor
         return cursor
 
