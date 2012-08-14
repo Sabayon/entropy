@@ -68,3 +68,8 @@ class NotSupportedError(Error):
         .rollback() on a connection that does not support
         transaction or has transactions turned off.  It must be a
         subclass of DatabaseError. """
+
+class RestartTransaction(Error):
+    """ Exception raised in case the whole transaction has
+        been aborted by the database and caller is kindly
+        required to restart it from the beginning. """
