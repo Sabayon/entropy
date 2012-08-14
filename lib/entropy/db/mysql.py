@@ -97,13 +97,22 @@ class MySQLConnectionWrapper(SQLConnectionWrapper):
         SQLConnectionWrapper.__init__(self, connection, exceptions)
 
     def interrupt(self):
+        """
+        Reimplemented from SQLConnectionWrapper.
+        """
         # Not supported by MySQL, NO-OP
         return
 
     def ping(self):
+        """
+        Reimplemented from SQLConnectionWrapper.
+        """
         return self._proxy_call(self._excs, self._con.ping)
 
     def unicode(self):
+        """
+        Reimplemented from SQLConnectionWrapper.
+        """
         # This is a NO-OP, we are always unicode
         return
 
