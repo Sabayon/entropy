@@ -58,6 +58,15 @@ class Package:
                     self._cpath, "rU", self._enc)
 
         def __iter__(self):
+            # reset object status, this makes possible
+            # to reuse the iterator more than once
+            # restarting from the beginning. It is really
+            # important for scenarios where transactions
+            # have to be rolled back and replayed.
+            self.close()
+            self._open_f()
+            # reset EOF status on each new iteration
+            self._eof = False
             return self
 
         def __enter__(self):
@@ -233,6 +242,15 @@ class Package:
                     self._cpath, "rU", self._enc)
 
         def __iter__(self):
+            # reset object status, this makes possible
+            # to reuse the iterator more than once
+            # restarting from the beginning. It is really
+            # important for scenarios where transactions
+            # have to be rolled back and replayed.
+            self.close()
+            self._open_f()
+            # reset EOF status on each new iteration
+            self._eof = False
             return self
 
         def __enter__(self):
