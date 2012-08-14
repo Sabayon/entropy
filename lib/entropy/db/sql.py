@@ -1314,10 +1314,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
             def __init__(self, _package_id, _content, _already_fmt):
                 self._package_id = _package_id
                 self._content = _content
-                self._iter = iter(_content)
                 self._already_fmt = _already_fmt
+                self._iter = iter(self._content)
 
             def __iter__(self):
+                # reinit iter
+                self._iter = iter(self._content)
                 return self
 
             def next(self):
@@ -1352,9 +1354,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
             # (path, sha256, mtime)
             class MyIterWrapper:
                 def __init__(self, _iter):
-                    self._iter = _iter
+                    self._iter = iter(_iter)
+
                 def __iter__(self):
+                    # reinit iter
+                    self._iter = iter(self._iter)
                     return self
+
                 def next(self):
                     path, sha256, mtime = self._iter.next()
                     # this is the insert order, with mtime
@@ -2927,10 +2933,19 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         class MyIter:
 
-            def __init__(self, _cur):
-                self._cur = cur
+            def __init__(self, db, query, keywords):
+                self._cur = None
+                self._db = db
+                self._query = query
+                self._keywords = keywords
+                self._init_cur()
+
+            def _init_cur(self):
+                self._cur = self._db._cursor().execute(
+                    self._query, self._keywords)
 
             def __iter__(self):
+                self._init_cur()
                 return self
 
             def next(self):
@@ -2949,10 +2964,10 @@ class EntropySQLRepository(EntropyRepositoryBase):
             order_by_string = " order by %s %s" % (
                 order_by, ordering_term)
 
-        cur = self._cursor().execute("""
+        query = """
         SELECT file, type FROM content WHERE idpackage = ? %s""" % (
-            order_by_string,), searchkeywords)
-        return MyIter(cur)
+            order_by_string,)
+        return MyIter(self, query, searchkeywords)
 
     def retrieveContentSafety(self, package_id):
         """
@@ -2970,19 +2985,28 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         class MyIter:
 
-            def __init__(self, _cur):
-                self._cur = cur
+            def __init__(self, db, query, keywords):
+                self._cur = None
+                self._db = db
+                self._query = query
+                self._keywords = keywords
+                self._init_cur()
+
+            def _init_cur(self):
+                self._cur = self._db._cursor().execute(
+                    self._query, self._keywords)
 
             def __iter__(self):
+                self._init_cur()
                 return self
 
             def next(self):
                 return self._cur.next()
 
-        cur = self._cursor().execute("""
+        query = """
         SELECT file, sha256, mtime from contentsafety WHERE idpackage = ?
-        """, (package_id,))
-        return MyIter(cur)
+        """
+        return MyIter(self, query, (package_id,))
 
     def retrieveChangelog(self, package_id):
         """
