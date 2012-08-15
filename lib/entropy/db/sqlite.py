@@ -22,7 +22,7 @@ import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_buffer, const_convert_to_rawstring, const_pid_exists, \
-    const_is_python3
+    const_is_python3, const_debug_write
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
 
@@ -186,7 +186,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         @type temporary: bool
         """
         self._sqlite = self.ModuleProxy.get()
-        self.__cleanup_stale_cur_conn_t = time.time()
 
         EntropySQLRepository.__init__(
             self, dbFile, readOnly, skipChecks, indexing,
@@ -228,7 +227,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                         self.__structure_update = True
 
             except Error:
-                self.__cleanup_stale_cur_conn(kill_all = True)
+                self._cleanup_all(_cleanup_main_thread=False)
                 raise
 
         if self.__structure_update:
@@ -318,72 +317,29 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 return not os.access(self._db, os.W_OK)
         return self._readonly
 
-    def __cleanup_stale_cur_conn(self, kill_all = False):
-
-        th_ids = [x.ident for x in threading.enumerate() if x.ident]
-
-        def kill_me(path, th_id, pid):
-            with self._cursor_pool_mutex():
-                with self._connection_pool_mutex():
-                    cur = self._cursor_pool().pop((path, th_id, pid), None)
-                    if cur is not None:
-                        cur.close()
-                    conn = self._connection_pool().pop(
-                        (path, th_id, pid), None)
-
-            if conn is not None:
-                if not self._readonly:
-                    try:
-                        conn.commit()
-                    except OperationalError:
-                        # no transaction is active can
-                        # cause this, bleh!
-                        pass
-                try:
-                    conn.close()
-                except OperationalError:
-                    try:
-                        conn.interrupt()
-                        conn.close()
-                    except OperationalError:
-                        # heh, unable to close due to
-                        # unfinalized statements
-                        # interpreter shutdown?
-                        pass
-
-        with self._cursor_pool_mutex():
-            with self._connection_pool_mutex():
-                th_data = set(self._cursor_pool().keys())
-                th_data |= set(self._connection_pool().keys())
-                for path, th_id, pid in th_data:
-                    do_kill = False
-                    if kill_all:
-                        do_kill = True
-                    elif th_id not in th_ids:
-                        do_kill = True
-                    elif not const_pid_exists(pid):
-                        do_kill = True
-                    if do_kill:
-                        kill_me(path, th_id, pid)
-
     def _cursor(self):
         """
         Reimplemented from EntropySQLRepository.
         """
-        # thanks to hotshot
-        # this avoids calling __cleanup_stale_cur_conn
-        # logic zillions of time
-        t1 = time.time()
-        if abs(t1 - self.__cleanup_stale_cur_conn_t) > 3:
-            self.__cleanup_stale_cur_conn()
-            self.__cleanup_stale_cur_conn_t = t1
+        current_thread = threading.current_thread()
+        c_key = self._cursor_connection_pool_key()
 
-        c_key = self._db, thread.get_ident(), os.getpid()
         _init_db = False
+        cursor = None
         with self._cursor_pool_mutex():
-            cursor = self._cursor_pool().get(c_key)
+            threads = set()
+            cursor_pool = self._cursor_pool()
+            cursor_data = cursor_pool.get(c_key)
+            if cursor_data is not None:
+                cursor, threads = cursor_data
+            # handle possible thread ident clashing
+            # in the cleanup thread function, because
+            # thread idents are recycled
+            # on thread termination
+            threads.add(current_thread)
+
             if cursor is None:
-                conn = self._connection()
+                conn = self._connection_impl(_from_cursor=True)
                 cursor = SQLiteCursorWrapper(
                     conn.cursor(),
                     self.ModuleProxy.exceptions())
@@ -394,7 +350,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 # to in-memory value
                 # http://www.sqlite.org/pragma.html#pragma_temp_store
                 cursor.execute("pragma temp_store = 2").fetchall()
-                self._cursor_pool()[c_key] = cursor
+                cursor_pool[c_key] = cursor, threads
+                self._start_cleanup_monitor(current_thread, c_key)
                 _init_db = True
         # memory databases are critical because every new cursor brings
         # up a totally empty repository. So, enforce initialization.
@@ -402,14 +359,28 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self.initializeRepository()
         return cursor
 
-    def _connection(self):
+    def _connection_impl(self, _from_cursor=False):
         """
-        Reimplemented from EntropySQLRepository.
+        Connection getter method implementation, adds
+        _from_cursor argument to avoid calling the
+        cleanup routine if True.
         """
-        self.__cleanup_stale_cur_conn()
-        c_key = self._db, thread.get_ident(), os.getpid()
+        current_thread = threading.current_thread()
+        c_key = self._cursor_connection_pool_key()
+
+        conn = None
         with self._connection_pool_mutex():
-            conn = self._connection_pool().get(c_key)
+            threads = set()
+            connection_pool = self._connection_pool()
+            conn_data = connection_pool.get(c_key)
+            if conn_data is not None:
+                conn, threads = conn_data
+            # handle possible thread ident clashing
+            # in the cleanup thread function
+            # because thread idents are recycled on
+            # thread termination
+            threads.add(current_thread)
+
             if conn is None:
                 # check_same_thread still required for
                 # conn.close() called from
@@ -419,8 +390,16 @@ class EntropySQLiteRepository(EntropySQLRepository):
                     SQLiteConnectionWrapper,
                     self._db, timeout=30.0,
                     check_same_thread=False)
-                self._connection_pool()[c_key] = conn
+                connection_pool[c_key] = conn, threads
+                if not _from_cursor:
+                    self._start_cleanup_monitor(current_thread, c_key)
         return conn
+
+    def _connection(self):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        return self._connection_impl()
 
     def __show_info(self):
         first_part = "<EntropySQLiteRepository instance at %s, %s" % (
@@ -485,14 +464,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    def close(self):
+    def close(self, safe=False):
         """
         Reimplemented from EntropySQLRepository.
         Needs to call superclass method.
         """
-        super(EntropySQLiteRepository, self).close()
+        super(EntropySQLiteRepository, self).close(safe=safe)
 
-        self.__cleanup_stale_cur_conn(kill_all = True)
+        self._cleanup_all(_cleanup_main_thread=not safe)
         if self._temporary and (self._db != ":memory:") and \
             os.path.isfile(self._db):
             try:

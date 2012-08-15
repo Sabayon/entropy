@@ -99,7 +99,7 @@ class CachedRepository(EntropyRepository):
         """
         self._close_token = token
 
-    def close(self, _token = None):
+    def close(self, safe=False, _token = None):
         """
         Reimplemented from EntropyRepository
         """
@@ -108,7 +108,7 @@ class CachedRepository(EntropyRepository):
             if (_token is None) or (_token != close_token):
                 raise PermissionDenied(
                     "cannot close this repository directly. Software bug!")
-        return EntropyRepository.close(self)
+        return EntropyRepository.close(self, safe=safe)
 
 
 class InstalledPackagesRepository(CachedRepository):

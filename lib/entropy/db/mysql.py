@@ -564,7 +564,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
         @type skipChecks: bool
         """
         self._mysql = self.ModuleProxy.get()
-        self.__cleanup_stale_cur_conn_t = time.time()
 
         # setup uri mysql://user:pass@host/database
         split_url = entropy.tools.spliturl(uri)
@@ -631,7 +630,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
                     self.__structure_update = True
 
             except Error:
-                self.__cleanup_stale_cur_conn(kill_all = True)
+                self._cleanup_all(
+                    _cleanup_main_thread=False)
                 raise
 
         if self.__structure_update:
@@ -643,99 +643,80 @@ class EntropyMySQLRepository(EntropySQLRepository):
         """
         return "CONCAT(" + ", ".join(fields) + ")"
 
-    def __cleanup_stale_cur_conn(self, kill_all = False):
-
-        th_ids = [x.ident for x in threading.enumerate() if x.ident]
-
-        def kill_me(path, th_id, pid):
-            with self._cursor_pool_mutex():
-                with self._connection_pool_mutex():
-                    cur = self._cursor_pool().pop(
-                        (path, th_id, pid), None)
-                    if cur is not None:
-                        cur.close()
-                    conn = self._connection_pool().pop(
-                        (path, th_id, pid), None)
-
-            if conn is not None:
-                if not self._readonly:
-                    try:
-                        conn.commit()
-                    except OperationalError:
-                        # no transaction is active can
-                        # cause this, bleh!
-                        pass
-                try:
-                    conn.close()
-                except OperationalError:
-                    try:
-                        conn.close()
-                    except OperationalError:
-                        # heh, unable to close due to
-                        # unfinalized statements
-                        # interpreter shutdown?
-                        pass
-
-        with self._cursor_pool_mutex():
-            with self._connection_pool_mutex():
-                th_data = set(self._cursor_pool().keys())
-                th_data |= set(self._connection_pool().keys())
-                for path, th_id, pid in th_data:
-                    do_kill = False
-                    if kill_all:
-                        do_kill = True
-                    elif th_id not in th_ids:
-                        do_kill = True
-                    elif not const_pid_exists(pid):
-                        do_kill = True
-                    if do_kill:
-                        kill_me(path, th_id, pid)
-
     def _cursor(self):
         """
         Reimplemented from EntropySQLRepository.
         """
-        # thanks to hotshot
-        # this avoids calling _cleanup_stale_cur_conn
-        # logic zillions of time
-        t1 = time.time()
-        if abs(t1 - self.__cleanup_stale_cur_conn_t) > 3:
-            self.__cleanup_stale_cur_conn()
-            self.__cleanup_stale_cur_conn_t = t1
+        current_thread = threading.current_thread()
+        c_key = self._cursor_connection_pool_key()
 
-        c_key = self._db, thread.get_ident(), os.getpid()
+        cursor = None
         with self._cursor_pool_mutex():
-            cursor = self._cursor_pool().get(c_key)
+            threads = set()
+            cursor_pool = self._cursor_pool()
+            cursor_data = cursor_pool.get(c_key)
+            if cursor_data is not None:
+                cursor, threads = cursor_data
+            # handle possible thread ident clashing
+            # in the cleanup thread function, because
+            # thread idents are recycled
+            # on thread termination
+            threads.add(current_thread)
+
             if cursor is None:
-                conn = self._connection()
+                conn = self._connection_impl(_from_cursor=True)
                 cursor = conn.cursor()
                 cursor.execute("SET storage_engine=InnoDB;")
                 cursor.execute("SET autocommit=OFF;")
                 cursor = MySQLCursorWrapper(
                     cursor, self.ModuleProxy.exceptions(),
                     self.ModuleProxy().errno())
-                self._cursor_pool()[c_key] = cursor
+                cursor_pool[c_key] = cursor, threads
+                self._start_cleanup_monitor(current_thread, c_key)
+
         return cursor
 
-    def _connection(self):
+    def _connection_impl(self, _from_cursor=False):
         """
-        Reimplemented from EntropySQLRepository.
+        Connection getter method implementation, adds
+        _from_cursor argument to avoid calling the
+        cleanup routine if True.
         """
-        self.__cleanup_stale_cur_conn()
-        c_key = self._db, thread.get_ident(), os.getpid()
+        current_thread = threading.current_thread()
+        c_key = self._cursor_connection_pool_key()
+
+        conn = None
         with self._connection_pool_mutex():
-            conn = self._connection_pool().get(c_key)
+            threads = set()
+            connection_pool = self._connection_pool()
+            conn_data = connection_pool.get(c_key)
+            if conn_data is not None:
+                conn, threads = conn_data
+            # handle possible thread ident clashing
+            # in the cleanup thread function
+            # because thread idents are recycled on
+            # thread termination
+            threads.add(current_thread)
+
             if conn is None:
                 conn = MySQLConnectionWrapper.connect(
                     self.ModuleProxy, self._mysql,
                     MySQLConnectionWrapper,
                     host = self._host, user = self._user,
                     passwd = self._password, db = self._db,
-                    port = self._port)
-                self._connection_pool()[c_key] = conn
+                    port = self._port, autoreconnect = True)
+                connection_pool[c_key] = conn, threads
+                if not _from_cursor:
+                    self._start_cleanup_monitor(current_thread, c_key)
             else:
                 conn.ping()
         return conn
+
+    def _connection(self):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        return self._connection_impl()
 
     def __show_info(self):
         password = hashlib.new("md5")
@@ -773,14 +754,14 @@ class EntropyMySQLRepository(EntropySQLRepository):
         return etpConst['systemroot'] + "_" + self._db + "_" + \
             self.name + "_"
 
-    def close(self):
+    def close(self, safe=False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
         super(EntropyMySQLRepository, self).close()
 
-        self.__cleanup_stale_cur_conn(kill_all = True)
+        self._cleanup_all(_cleanup_main_thread=not safe)
         # live cache must be discarded every time the repository is closed
         # in order to avoid data mismatches for long-running processes
         # that load and unload Entropy Framework often.

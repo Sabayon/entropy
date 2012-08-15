@@ -16,12 +16,13 @@ import itertools
 import time
 import threading
 
-from entropy.const import etpConst, \
-    const_isunicode, const_convert_to_unicode, const_get_buffer, \
-    const_convert_to_rawstring, const_is_python3
+from entropy.const import etpConst, const_debug_write, \
+    const_debug_enabled, const_isunicode, const_convert_to_unicode, \
+    const_get_buffer, const_convert_to_rawstring, const_is_python3
 from entropy.exceptions import SystemDatabaseError, SPMError
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.output import bold, red
+from entropy.misc import ParallelTask
 
 from entropy.i18n import _
 
@@ -581,8 +582,20 @@ class EntropySQLRepository(EntropyRepositoryBase):
     # the "INSERT OR IGNORE" dialect
     _INSERT_OR_IGNORE = None
 
+    def _get_main_thread():
+        for _thread in threading.enumerate():
+            if _thread.name == "MainThread":
+                return _thread
+        raise AssertionError("Where the fuck is the MainThread?")
+
+    _MAIN_THREAD = _get_main_thread()
+
     def __init__(self, db, read_only, skip_checks, indexing,
                  xcache, temporary, name):
+        # connection and cursor automatic cleanup support
+        self._cleanup_monitor_cache_mutex = threading.Lock()
+        self._cleanup_monitor_cache = {}
+
         self._db = db
         self._indexing = indexing
         self._skip_checks = skip_checks
@@ -597,6 +610,185 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
         EntropyRepositoryBase.__init__(self, read_only, xcache,
                                        temporary, name)
+
+    def _cursor_connection_pool_key(self):
+        """
+        Return the Cursor and Connection Pool key
+        that can be used inside the current thread
+        and process (multiprocessing not supported).
+        """
+        current_thread = threading.current_thread()
+        thread_id = current_thread.ident
+        pid = os.getpid()
+        return self._db, thread_id, pid
+
+    def _cleanup_all(self, _cleanup_main_thread=True):
+        """
+        Clean all the Cursor and Connection resources
+        left open.
+        """
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "called _cleanup_all() for %s" % (self,))
+        with self._cursor_pool_mutex():
+            with self._connection_pool_mutex():
+                th_data = set(self._cursor_pool().keys())
+                th_data.update(self._connection_pool().keys())
+                for c_key in th_data:
+                    self._cleanup_killer(
+                        c_key,
+                        _cleanup_main_thread=_cleanup_main_thread)
+
+    def _cleanup_monitor(self, target_thread, c_key):
+        """
+        Execute Cursor and Connection resources
+        termination.
+        """
+        # join on thread
+        target_thread.join()
+
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "thread '%s' exited [%s], cleaning: %s" % (
+                    target_thread, hex(target_thread.ident),
+                    c_key,))
+        with self._cleanup_monitor_cache_mutex:
+            self._cleanup_monitor_cache.pop(c_key, None)
+        self._cleanup_killer(c_key)
+
+    def _start_cleanup_monitor(self, current_thread, c_key):
+        """
+        Allocate a new thread that monitors the thread object
+        passed as "current_thread". Once this thread terminates,
+        all its resources are automatically released.
+        current_thread is actually joined() and live cursor and
+        connections are checked against thread identity value
+        clashing (because thread.ident values are recycled).
+        For the main thread, this method is a NO-OP.
+        The allocated thread is a daemon thread, so it should
+        be safe to use join() on daemon threads as well.
+        """
+        if current_thread is self._MAIN_THREAD:
+            const_debug_write(
+                __name__,
+                "NOT setting up a cleanup monitor for the MainThread")
+            # do not install any cleanup monitor then
+            return
+
+        with self._cleanup_monitor_cache_mutex:
+            mon = self._cleanup_monitor_cache.get(c_key)
+            if mon is not None:
+                # there is already a monitor for this
+                # cache key, quit straight away
+                return
+            self._cleanup_monitor_cache[c_key] = mon
+
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "setting up a new cleanup monitor")
+        mon = ParallelTask(self._cleanup_monitor,
+                           current_thread, c_key)
+        mon.name = "CleanupMonitor"
+        mon.daemon = True
+        mon.start()
+
+    def _cleanup_killer(self, c_key, _cleanup_main_thread=False):
+        """
+        Cursor and Connection cleanup method.
+        """
+        db, th_ident, pid = c_key
+
+        with self._cursor_pool_mutex():
+            with self._connection_pool_mutex():
+                cursor_pool = self._cursor_pool()
+                cur = None
+                threads = set()
+
+                cur_data = cursor_pool.get(c_key)
+                if cur_data is not None:
+                    cur, threads = cur_data
+
+                connection_pool = self._connection_pool()
+                conn_data = connection_pool.get(c_key)
+                conn = None
+                if conn_data is not None:
+                    conn, _threads = conn_data
+                    threads |= _threads
+
+                if not threads:
+                    # no threads?
+                    return
+
+                # now cleanup threads set() first
+                # if it's empty, we can kill both
+                # connection and cursor
+                _dead_threads = set(
+                    (x for x in threads if not x.is_alive()))
+                # we need to use the method rather than
+                # the operator, because we alter its data in
+                # place.
+                threads.difference_update(_dead_threads)
+
+                # also remove myself from the list
+                current_thread = threading.current_thread()
+                threads.discard(current_thread)
+
+                # closing the main thread objects (forcibly)
+                # is VERY dangerous, but it turned out
+                # that the original version of EntropyRepository.close()
+                # did that (that is why we have rwsems encapsulating
+                # entropy calls in RigoDaemon and Rigo).
+                # Also, one expects that close() really terminates
+                # all the connections and releases all the resources.
+                if _cleanup_main_thread and threads:
+                    threads.discard(self._MAIN_THREAD)
+
+                if threads:
+                    if const_debug_enabled():
+                        const_debug_write(
+                            __name__,
+                            "_cleanup_killer: "
+                            "there are still alive threads, "
+                            "not cleaning up resources, "
+                            "alive: %s -- dead: %s" % (
+                                threads, _dead_threads,))
+                    return
+
+                cursor_pool.pop(c_key, None)
+                connection_pool.pop(c_key, None)
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_cleanup_killer: "
+                    "all threads sharing the same "
+                    "ident are gone, i canz kill thread "
+                    "ids: %s." % (hex(th_ident),))
+
+            # WARNING !! BEHAVIOUR CHANGE
+            # no more implicit commit()
+            # caller has to do it!
+            try:
+                conn.close()
+            except OperationalError as err:
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_cleanup_killer_1: %s" % (err,))
+                try:
+                    conn.interrupt()
+                    conn.close()
+                except OperationalError as err:
+                    # heh, unable to close due to
+                    # unfinalized statements
+                    # interpreter shutdown?
+                    if const_debug_enabled():
+                        const_debug_write(
+                            __name__,
+                            "_cleanup_killer_2: %s" % (err,))
 
     def _concatOperator(self, fields):
         """
@@ -755,13 +947,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         self._indexing = bool(indexing)
 
-    def close(self):
+    def close(self, safe=False):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method. This is a stub,
         please implement the SQL logic.
         """
-        super(EntropySQLRepository, self).close()
+        super(EntropySQLRepository, self).close(safe=safe)
 
     def vacuum(self):
         """
@@ -774,6 +966,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "commit(), "
+                "force: %s, no_plugins: %s, readonly: %s | %s" % (
+                    force, no_plugins, self.readonly(), self))
         if force or not self.readonly():
             # NOTE: the actual commit MUST be executed before calling
             # the superclass method (that is going to call EntropyRepositoryBase

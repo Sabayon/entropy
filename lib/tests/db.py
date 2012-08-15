@@ -586,10 +586,101 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         cur_cache = self.test_db._cursor_pool().keys()
         self.assertTrue(len(cur_cache) > 0)
-        self.test_db._EntropySQLiteRepository__cleanup_stale_cur_conn(
-            kill_all = True)
+        self.test_db._cleanup_all()
         cur_cache = self.test_db._cursor_pool().keys()
         self.assertEqual(len(cur_cache), 0)
+
+    def test_db_close_all(self):
+        """
+        This tests if EntropyRepository.close() really closes
+        all the resources, including those allocated by the
+        main thread.
+        """
+
+        test_pkg = _misc.get_test_entropy_package_tag()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        _tmp_data = {
+            "path": None,
+            "db": None,
+            "T1": False,
+            "T2": False,
+            "T3": False,
+        }
+
+        def handle_pkg(_tmp_data, xdata):
+            idpackage = self.test_db.addPackage(xdata)
+            db_data = self.test_db.getPackageData(idpackage)
+            del db_data['original_repository']
+            del db_data['extra_download']
+            self.assertEqual(xdata, db_data)
+            self.test_db.commit()
+            fd, buf_file = tempfile.mkstemp()
+            os.close(fd)
+            buf = open(buf_file, "wb")
+            self.test_db.exportRepository(buf)
+            buf.flush()
+            buf.close()
+
+            fd, buf_file_db = tempfile.mkstemp()
+            os.close(fd)
+            self.test_db.importRepository(buf_file, buf_file_db)
+            os.remove(buf_file)
+            db = self.Client.open_generic_repository(buf_file_db)
+            self.assertTrue(db is not None)
+            pkg_ids = db.listAllPackageIds()
+            self.assertTrue(1 in pkg_ids)
+            _tmp_data['path'] = buf_file_db
+            _tmp_data['db'] = db
+            _tmp_data['T1'] = True
+
+        def select_pkg(_tmp_data, t1):
+            t1.join() # wait for t1 to finish
+            pkg_ids = _tmp_data['db'].listAllPackageIds()
+            self.assertTrue(1 in pkg_ids)
+            self.assertTrue(len(pkg_ids) == 1)
+            _tmp_data['T2'] = True
+
+        def close_all(_tmp_data, t1, t2):
+            t1.join()
+            t2.join()
+
+            _tmp_data['db']._cleanup_all(_cleanup_main_thread=False)
+            with _tmp_data['db']._cursor_pool_mutex():
+                cur_cache = _tmp_data['db']._cursor_pool().keys()
+            self.assertEqual(len(cur_cache), 1) # just MainThread
+
+            _tmp_data['db'].close()
+            with _tmp_data['db']._cursor_pool_mutex():
+                cur_cache = _tmp_data['db']._cursor_pool().keys()
+            self.assertEqual(len(cur_cache), 0) # nothing left
+            _tmp_data['T3'] = True
+
+        t1 = ParallelTask(handle_pkg, _tmp_data, data)
+        t1.name = "T1"
+        t2 = ParallelTask(select_pkg, _tmp_data, t1)
+        t2.name = "T2"
+        t3 = ParallelTask(close_all, _tmp_data, t1, t2)
+        t3.name = "T3"
+        t1.start()
+        t2.start()
+
+        t1.join()
+        pkg_ids = _tmp_data['db'].listAllPackageIds()
+
+        t2.join()
+        t3.start()
+        t3.join()
+
+        self.assertTrue(_tmp_data['T1'] and _tmp_data['T2'] \
+                            and _tmp_data['T3'])
+
+        self.assertTrue(1 in pkg_ids)
+        self.assertTrue(len(pkg_ids) == 1)
+        _tmp_data['db'].close()
+        with _tmp_data['db']._cursor_pool_mutex():
+            cur_cache = _tmp_data['db']._cursor_pool().keys()
+        self.assertEqual(len(cur_cache), 0) # nothing left
+        os.remove(_tmp_data['path'])
 
     def test_db_reverse_deps(self):
 

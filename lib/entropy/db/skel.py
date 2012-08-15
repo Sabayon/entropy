@@ -454,12 +454,22 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         return self.name
 
-    def close(self):
+    def close(self, safe=False):
         """
         Close repository storage communication and open disk files.
         You can still use this instance, but closed files will be reopened.
         Attention: call this method from your subclass, otherwise
         EntropyRepositoryPlugins won't be notified of a repo close.
+
+        @param safe: if True, the MainThread resources won't be
+        released. This is vital if both MainThread and a random
+        thread access the Repository concurrently. With safe=False
+        (original behaviour) MainThread cursors may become invalid
+        and cause random exceptions in a racey fashion.
+        But on the other hand, if closing all the resources is what
+        is really wanted, safe must be False, or the MainThread ones
+        will be never released.
+        @type safe: bool
         """
         if not self._readonly:
             self.commit()
