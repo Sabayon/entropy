@@ -582,6 +582,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
     # the "INSERT OR IGNORE" dialect
     _INSERT_OR_IGNORE = None
 
+    ## Optionals
+
+    # If not None, must contain the
+    # "UPDATE OR REPLACE" dialect
+    _UPDATE_OR_REPLACE = None
+
     def _get_main_thread():
         for _thread in threading.enumerate():
             if _thread.name == "MainThread":
@@ -1224,9 +1230,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def _removePackage(self, package_id, from_add_package = False):
         """
-        Reimplement in subclasses.
+        Reimplemented from EntropyRepositoryBase.
+        This method uses "ON DELETE CASCADE" to implement quick
+        and reliable package removal.
         """
-        raise NotImplementedError()
+        self._cursor().execute(
+            "DELETE FROM baseinfo WHERE idpackage = ?", (package_id,))
 
     def _removeMirrorEntries(self, mirrorname):
         """
@@ -2041,10 +2050,36 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """
-        Not implemented, subclasses must implement this.
-        It will likely use REPLACE statements, which are non-standard SQL.
+        Reimplemented from EntropyRepositoryBase.
         """
-        raise NotImplementedError()
+        branchstring = ''
+        insertdata = (spm_package_uid, package_id)
+        if branch:
+            branchstring = ', branch = (?)'
+            insertdata += (branch,)
+
+        if self._UPDATE_OR_REPLACE is not None:
+            self._cursor().execute("""
+            %s counters SET counter = (?) %s
+            WHERE idpackage = (?)""" % (
+                    self._UPDATE_OR_REPLACE,
+                    branchstring,), insertdata)
+        else:
+            try:
+                cur = self._cursor().execute("""
+                UPDATE counters SET counter = ? %s
+                WHERE idpackage = ?""" % (branchstring,), insertdata)
+            except IntegrityError as err:
+                # this was used by MySQL
+                # errno = self.ModuleProxy.errno()
+                # if err.args[0].errno != errno['ER_DUP_ENTRY']:
+                #     raise
+                # fallback to replace
+                cur = self._cursor().execute("""
+                %s INTO counters SET counter = ? %s
+                WHERE idpackage = ?""" % (
+                        self._INSERT_OR_REPLACE,
+                        branchstring,), insertdata)
 
     def setContentSafety(self, package_id, content_safety):
         """

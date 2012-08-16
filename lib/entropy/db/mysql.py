@@ -154,6 +154,7 @@ class EntropyMySQLRepository(EntropySQLRepository):
 
     _INSERT_OR_REPLACE = "REPLACE"
     _INSERT_OR_IGNORE = "INSERT IGNORE"
+    _UPDATE_OR_REPLACE = None
 
     class MySQLSchema(object):
 
@@ -805,30 +806,16 @@ class EntropyMySQLRepository(EntropySQLRepository):
 
         super(EntropyMySQLRepository, self).initializeRepository()
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
-        """
-        Reimplemented from EntropySQLRepository.
-        """
-        raise NotImplementedError()
-
-    def _removePackage(self, package_id, from_add_package = False):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method.
-        """
-        # this will work thanks to ON DELETE CASCADE !
-        self._cursor().execute(
-            "DELETE FROM baseinfo WHERE idpackage = ?", (package_id,))
-
     def setSpmUid(self, package_id, spm_package_uid, branch = None):
         """
-        Reimplemented from EntropyRepositoryBase.
+        Reimplemented from EntropySQLRepository.
+        Specialized version that only handles UNIQUE
+        constraint violations.
         """
         branchstring = ''
         insertdata = (spm_package_uid, package_id)
         if branch:
-            branchstring = ', branch = ?'
+            branchstring = ', branch = (?)'
             insertdata += (branch,)
 
         try:
@@ -839,10 +826,17 @@ class EntropyMySQLRepository(EntropySQLRepository):
             errno = self.ModuleProxy.errno()
             if err.args[0].errno != errno['ER_DUP_ENTRY']:
                 raise
-            # fallback to replace (to mimic UPDATE OR REPLACE)
+            # fallback to replace
             cur = self._cursor().execute("""
             REPLACE INTO counters SET counter = ? %s
             WHERE idpackage = ?""" % (branchstring,), insertdata)
+
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        raise NotImplementedError()
 
     def _setupInitialSettings(self):
         """

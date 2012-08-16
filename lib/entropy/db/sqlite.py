@@ -124,6 +124,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
     _INSERT_OR_REPLACE = "INSERT OR REPLACE"
     _INSERT_OR_IGNORE = "INSERT OR IGNORE"
+    _UPDATE_OR_REPLACE = "UPDATE OR REPLACE"
 
     SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
@@ -973,20 +974,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             return super(EntropySQLiteRepository,
                          self)._bindSpmPackageUid(
                 package_id, spm_package_uid, branch)
-
-    def setSpmUid(self, package_id, spm_package_uid, branch = None):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        branchstring = ''
-        insertdata = (spm_package_uid, package_id)
-        if branch:
-            branchstring = ', branch = (?)'
-            insertdata += (branch,)
-
-        self._cursor().execute("""
-        UPDATE OR REPLACE counters SET counter = (?) %s
-        WHERE idpackage = (?)""" % (branchstring,), insertdata)
 
     def _cleanupChangelogs(self):
         """
