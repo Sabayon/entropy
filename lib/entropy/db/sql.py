@@ -1021,7 +1021,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         formatted_content = False):
         """
         Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method.
         """
         if revision == -1:
             try:
@@ -1031,6 +1030,27 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 revision = 0
         elif 'revision' not in pkg_data:
             pkg_data['revision'] = revision
+
+        _baseinfo_extrainfo_2010 = self._isBaseinfoExtrainfo2010()
+        catid = None
+        licid = None
+        idflags = None
+        if not _baseinfo_extrainfo_2010:
+            # create new category if it doesn't exist
+            catid = self.__isCategoryAvailable(pkg_data['category'])
+            if catid == -1:
+                catid = self.__addCategory(pkg_data['category'])
+
+            # create new license if it doesn't exist
+            licid = self.__isLicenseAvailable(pkg_data['license'])
+            if licid == -1:
+                licid = self.__addLicense(pkg_data['license'])
+
+            idflags = self.__areCompileFlagsAvailable(pkg_data['chost'],
+                pkg_data['cflags'], pkg_data['cxxflags'])
+            if idflags == -1:
+                idflags = self.__addCompileFlags(pkg_data['chost'],
+                    pkg_data['cflags'], pkg_data['cxxflags'])
 
         idprotect = self._isProtectAvailable(pkg_data['config_protect'])
         if idprotect == -1:
@@ -1053,11 +1073,18 @@ class EntropySQLRepository(EntropyRepositoryBase):
         # add atom metadatum
         pkg_data['atom'] = pkgatom
 
-        mybaseinfo_data = (
-            pkgatom, pkg_data['category'], pkg_data['name'],
-            pkg_data['version'], pkg_data['versiontag'], revision,
-            pkg_data['branch'], pkg_data['slot'],
-            pkg_data['license'], pkg_data['etpapi'], trigger)
+        if not _baseinfo_extrainfo_2010:
+            mybaseinfo_data = (pkgatom, catid, pkg_data['name'],
+                pkg_data['version'], pkg_data['versiontag'], revision,
+                pkg_data['branch'], pkg_data['slot'],
+                licid, pkg_data['etpapi'], trigger,
+            )
+        else:
+            mybaseinfo_data = (pkgatom, pkg_data['category'], pkg_data['name'],
+                pkg_data['version'], pkg_data['versiontag'], revision,
+                pkg_data['branch'], pkg_data['slot'],
+                pkg_data['license'], pkg_data['etpapi'], trigger,
+            )
 
         mypackage_id_string = 'NULL'
         if package_id is not None:
@@ -1086,22 +1113,34 @@ class EntropySQLRepository(EntropyRepositoryBase):
             package_id = cur.lastrowid
 
         # extrainfo
-        self._cursor().execute(
-            """INSERT INTO extrainfo VALUES
-            (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            (   package_id,
-                pkg_data['description'],
-                pkg_data['homepage'],
-                pkg_data['download'],
-                pkg_data['size'],
-                pkg_data['chost'],
-                pkg_data['cflags'],
-                pkg_data['cxxflags'],
-                pkg_data['digest'],
-                pkg_data['datecreation'],
+        if not _baseinfo_extrainfo_2010:
+            self._cursor().execute(
+                'INSERT INTO extrainfo VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (   package_id,
+                    pkg_data['description'],
+                    pkg_data['homepage'],
+                    pkg_data['download'],
+                    pkg_data['size'],
+                    idflags,
+                    pkg_data['digest'],
+                    pkg_data['datecreation'],
+                )
             )
-        )
+        else:
+            self._cursor().execute(
+                'INSERT INTO extrainfo VALUES (?,?,?,?,?,?,?,?,?,?)',
+                (   package_id,
+                    pkg_data['description'],
+                    pkg_data['homepage'],
+                    pkg_data['download'],
+                    pkg_data['size'],
+                    pkg_data['chost'],
+                    pkg_data['cflags'],
+                    pkg_data['cxxflags'],
+                    pkg_data['digest'],
+                    pkg_data['datecreation'],
+                )
+            )
         # baseinfo and extrainfo are tainted
         self.clearCache()
         ### other information iserted below are not as
@@ -1143,19 +1182,22 @@ class EntropySQLRepository(EntropyRepositoryBase):
             self._insertExtraDownload(package_id, extra_download)
 
         if pkg_data.get('provided_libs'):
-            self._insertProvidedLibraries(package_id, pkg_data['provided_libs'])
+            self._insertProvidedLibraries(
+                package_id, pkg_data['provided_libs'])
 
         # spm phases
         if pkg_data.get('spm_phases') is not None:
             self._insertSpmPhases(package_id, pkg_data['spm_phases'])
 
         if pkg_data.get('spm_repository') is not None:
-            self._insertSpmRepository(package_id, pkg_data['spm_repository'])
+            self._insertSpmRepository(
+                package_id, pkg_data['spm_repository'])
 
         # not depending on other tables == no select done
         self.insertContent(package_id, pkg_data['content'],
             already_formatted = formatted_content)
-        # insert content safety metadata (checksum, mtime), if metadatum exists
+        # insert content safety metadata (checksum, mtime)
+        # if metadatum exists
         content_safety = pkg_data.get('content_safety')
         if content_safety is not None:
             self._insertContentSafety(package_id, content_safety)
@@ -1185,7 +1227,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
         if pkg_data.get('systempackage'):
             self._setSystemPackage(package_id)
 
-        # this will always be optional ! (see entropy.client.interfaces.package)
+        # this will always be optional !
+        # (see entropy.client.interfaces.package)
         original_repository = pkg_data.get('original_repository')
         if original_repository is not None:
             self.storeInstalledPackage(package_id, original_repository)
