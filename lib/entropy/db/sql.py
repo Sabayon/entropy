@@ -51,6 +51,9 @@ class SQLConnectionWrapper(object):
         self._con = connection
         self._excs = exceptions
 
+    def __hash__(self):
+        return id(self)
+
     @staticmethod
     def _proxy_call(exceptions, method, *args, **kwargs):
         """
@@ -849,9 +852,10 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     def _getLiveCacheKey(self):
         """
-        Return a cache key for this Repository instance.
+        Reimplemented from EntropySQLRepository.
         """
-        raise NotImplementedError()
+        return etpConst['systemroot'] + "_" + self._db + "_" + \
+            self.name + "_"
 
     def _connection(self):
         """

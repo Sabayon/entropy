@@ -424,9 +424,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
     def __unicode__(self):
         return self.__show_info()
 
-    def __hash__(self):
-        return id(self)
-
     def __setCacheSize(self, size):
         """
         Change low-level, storage engine based cache size.
@@ -444,13 +441,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         @type size: int
         """
         self._cursor().execute('PRAGMA default_cache_size = %s' % (size,))
-
-    def _getLiveCacheKey(self):
-        """
-        Reimplemented from EntropySQLRepository.
-        """
-        return etpConst['systemroot'] + "_" + self._db + "_" + \
-            self.name + "_"
 
     def _getLiveCache(self, key):
         """
@@ -560,7 +550,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             if idflags == -1:
                 idflags = self.__addCompileFlags(pkg_data['chost'],
                     pkg_data['cflags'], pkg_data['cxxflags'])
-
 
         idprotect = self._isProtectAvailable(pkg_data['config_protect'])
         if idprotect == -1:

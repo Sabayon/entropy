@@ -745,16 +745,6 @@ class EntropyMySQLRepository(EntropySQLRepository):
     def __unicode__(self):
         return self.__show_info()
 
-    def __hash__(self):
-        return id(self)
-
-    def _getLiveCacheKey(self):
-        """
-        Reimplemented from EntropySQLRepository.
-        """
-        return etpConst['systemroot'] + "_" + self._db + "_" + \
-            self.name + "_"
-
     def close(self, safe=False):
         """
         Reimplemented from EntropyRepositoryBase.
