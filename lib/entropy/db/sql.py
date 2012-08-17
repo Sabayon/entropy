@@ -1565,6 +1565,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         # respect iterators, so that if they're true iterators
         # we save a lot of memory.
         class MyIter:
+
             def __init__(self, _package_id, _content, _already_fmt):
                 self._package_id = _package_id
                 self._content = _content
@@ -1575,6 +1576,14 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 # reinit iter
                 self._iter = iter(self._content)
                 return self
+
+            def __next__(self):
+                if self._already_fmt:
+                    a, x, y = next(self._iter)
+                    return self._package_id, x, y
+                else:
+                    x = next(self._iter)
+                    return self._package_id, x, self._content[x]
 
             def next(self):
                 if self._already_fmt:
@@ -1614,6 +1623,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
                     # reinit iter
                     self._iter = iter(self._iter)
                     return self
+
+                def __next__(self):
+                    path, sha256, mtime = next(self._iter)
+                    # this is the insert order, with mtime
+                    # and sha256 swapped.
+                    return package_id, path, mtime, sha256
 
                 def next(self):
                     path, sha256, mtime = self._iter.next()
@@ -3228,6 +3243,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 self._init_cur()
                 return self
 
+            def __next__(self):
+                return next(self._cur)
+
             def next(self):
                 return self._cur.next()
 
@@ -3279,6 +3297,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
             def __iter__(self):
                 self._init_cur()
                 return self
+
+            def __next__(self):
+                return next(self._cur)
 
             def next(self):
                 return self._cur.next()
