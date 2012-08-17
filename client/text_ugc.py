@@ -240,16 +240,6 @@ def _ugc_votes(entropy_client, options):
         )
         return 1
 
-    username = webserv.get_credentials()
-    if username is None:
-        print_info(
-            "[%s] %s" % (
-                darkgreen(repository),
-                blue(_("Not logged in, please login first.")),
-            )
-        )
-        return 0
-
     rc = 0
     if cmd == "get":
 
@@ -268,6 +258,16 @@ def _ugc_votes(entropy_client, options):
         _show_vote(vote, repository, pkgkey)
 
     elif cmd == "add":
+
+        username = webserv.get_credentials()
+        if username is None:
+            print_info(
+                "[%s] %s" % (
+                    darkgreen(repository),
+                    blue(_("Not logged in, please login first.")),
+                )
+            )
+            return 0
 
         print_info(" %s [%s] %s" % (
                 bold("@@"),
