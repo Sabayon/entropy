@@ -18,17 +18,20 @@ import json
 import tempfile
 import threading
 import hashlib
-import urllib
+
 import socket
 
-from entropy.const import const_is_python3
+from entropy.const import const_is_python3, const_convert_to_rawstring, \
+    const_get_int
 
 if const_is_python3():
     import http.client as httplib
     from io import StringIO
+    import urllib.parse as urllib_parse
 else:
     import httplib
     from cStringIO import StringIO
+    import urllib as urllib_parse
 
 import entropy.dump
 from entropy.core import Singleton
@@ -485,7 +488,8 @@ class WebService(object):
                     if params[k] is None:
                         # will be converted to ""
                         continue
-                    supported_types = (float, long, int, list, tuple)
+                    int_types = const_get_int()
+                    supported_types = (float, list, tuple) + int_types
                     if not isinstance(params[k], supported_types):
                         raise WebService.UnsupportedParameters(
                             "%s is unsupported type %s" % (k, type(params[k])))
@@ -502,7 +506,7 @@ class WebService(object):
             body = None
             if not file_params:
                 headers["Content-Type"] = "application/x-www-form-urlencoded"
-                encoded_params = urllib.urlencode(params)
+                encoded_params = urllib_parse.urlencode(params)
                 data_size = len(encoded_params)
                 if self._transfer_callback is not None:
                     self._transfer_callback(0, data_size, False)
@@ -586,7 +590,7 @@ class WebService(object):
                 total_length = int(total_length)
             except ValueError:
                 total_length = -1
-            outcome = ""
+            outcome = const_convert_to_rawstring("")
             current_len = 0
             if self._transfer_callback is not None:
                 self._transfer_callback(current_len, total_length, True)
@@ -606,6 +610,8 @@ class WebService(object):
             if self._transfer_callback is not None:
                 self._transfer_callback(total_length, total_length, True)
 
+            if const_is_python3():
+                outcome = const_convert_to_unicode(outcome)
             if not outcome:
                 return None, response
             return outcome, response
