@@ -3165,7 +3165,7 @@ class PortagePlugin(SpmPlugin):
             # new slot format for kernel tagged packages
             myslot = entropy.dep.remove_tag_from_slot(myslot)
 
-        keyslot = const_convert_to_rawstring(key+":"+myslot)
+        keyslot = key + ":" + myslot
         key = const_convert_to_rawstring(key)
         world_file = self.get_user_installed_packages_file()
         world_dir = os.path.dirname(world_file)
