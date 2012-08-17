@@ -75,6 +75,9 @@ class Package:
         def __exit__(self, exc_type, exc_val, tb):
             self.close()
 
+        def __next__(self):
+            return self.next()
+
         def next(self):
             if self._eof:
                 raise StopIteration()
@@ -261,6 +264,9 @@ class Package:
 
         def __exit__(self, exc_type, exc_val, tb):
             self.close()
+
+        def __next__(self):
+            return self.next()
 
         def next(self):
             if self._eof:
