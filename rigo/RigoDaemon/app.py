@@ -1066,20 +1066,27 @@ class RigoDaemonService(dbus.service.Object):
                          debug=True)
             return
 
-        write_output("_installed_repository_updated: checking...",
+        # The probability that two subsequent calls to Equo or
+        # other clients are issued is usually high in the first
+        # seconds after the exclusive lock is released, so delay
+        # the execution by 20 seconds to avoid this.
+        sleep_t = 20.0
+        write_output("_installed_repository_updated: "
+                     "checking in 20 seconds...",
                      debug=True)
         task = ParallelTask(
-            self._installed_repository_updated_worker)
+            self._installed_repository_updated_worker, sleep_t)
         task.daemon = True
         task.name = "InstalledRepositoryUpdatedWorker"
         task.start()
 
-    def _installed_repository_updated_worker(self):
+    def _installed_repository_updated_worker(self, sleep_t):
         """
         Determine if Installed Repository has changed and
         recalculate updates and signal updates_available()
         """
         with self._installed_repository_updated_serializer:
+            time.sleep(sleep_t)
             with self._activity_mutex:
                 self._acquire_shared()
                 try:
