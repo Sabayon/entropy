@@ -164,12 +164,11 @@ class StdoutSplitter(object):
     def isatty(self):
         return self._std.isatty()
 
-    if not const_is_python3():
-        def next(self):
-            return self._std.next()
-    else:
-        def __next__(self):
-            return next(self._std)
+    def next(self):
+        return self._std.next()
+
+    def __next__(self):
+        return next(self._std)
 
     def read(self, *args, **kwargs):
         return self._std.read(*args, **kwargs)
