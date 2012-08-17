@@ -25,7 +25,7 @@ import tempfile
 import shutil
 import subprocess
 import copy
-from threading import Lock, RLock, Timer, Semaphore
+from threading import Lock, RLock, Timer, Semaphore, BoundedSemaphore
 from collections import deque
 
 # this makes the daemon to not write the entropy pid file
@@ -436,6 +436,10 @@ class RigoDaemonService(dbus.service.Object):
     BUS_NAME = DbusConfig.BUS_NAME
     OBJECT_PATH = DbusConfig.OBJECT_PATH
 
+    _INSTALLED_REPO_GIO_EVENTS = (
+        Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
+        Gio.FileMonitorEvent.CHANGED)
+
     API_VERSION = 7
 
     """
@@ -685,7 +689,7 @@ class RigoDaemonService(dbus.service.Object):
         # repository changes
         # the latter is mainly for lockless clients
         repo_path = self._entropy.installed_repository_path()
-        self._installed_repository_updated_serializer = Lock()
+        self._installed_repository_updated_serializer = BoundedSemaphore(1)
         self._inst_mon = None
         if os.path.isfile(repo_path):
             inst_repo_file = Gio.file_new_for_path(repo_path)
@@ -756,22 +760,48 @@ class RigoDaemonService(dbus.service.Object):
         Gio handler for Installed Packages Repository
         modification events.
         """
-        if self._installed_repository_updated_serializer.locked():
-            write_output("_installed_repository_changed: "
-                         "serializer locked, skipping",
-                         debug=True)
+        if event not in self._INSTALLED_REPO_GIO_EVENTS:
             return
 
-        events = [
-            Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
-            Gio.FileMonitorEvent.CHANGED]
-        if event in events:
-            write_output("Installed Packages Repository changed, "
-                         "%s" % (locals(),), debug=True)
-            task = ParallelTask(self._installed_repository_updated)
+        serializer = self._installed_repository_updated_serializer
+        acquired = False
+        started = False
+        try:
+            # cannot block in this thread (it's the MainThread)
+            acquired = serializer.acquire(False)
+            if not acquired:
+                write_output("_installed_repository_changed: "
+                             "serializer already acquired, "
+                             "we're already sleeping, skipping",
+                             debug=True)
+                return
+
+            # pass the lock (semaphore) to our child thread
+            # so that no other threads will be able to get
+            # here before the worker is done completely.
+            # this way we are 100% sure that no other damn
+            # threads get to here and avoid bursts completely.
+            write_output("_installed_repository_changed: "
+                         "launching thread", debug=True)
+            task = ParallelTask(
+                self._installed_repository_updated,
+                serializer)
             task.name = "InstalledRepositoryCheckHandler"
             task.daemon = True
             task.start()
+            started = True
+
+        finally:
+            if not started and acquired:
+                # this means that the serializer has been acquired
+                # but the thread wasn't able to start, which is
+                # the French for exceptions OMG. Thus, release the
+                # semaphore explicitly
+                write_output("_installed_repository_updated: "
+                             "serializer acquired, thread dead, "
+                             "releasing the semaphore !!",
+                             debug=True)
+                serializer.release()
 
     def _rigo_daemon_executable_changed(self, mon, gio_f, data, event):
         """
@@ -1043,49 +1073,25 @@ class RigoDaemonService(dbus.service.Object):
             # use kill so that GObject main loop will quit as well
             os.kill(os.getpid(), signal.SIGTERM)
 
-    def _installed_repository_updated(self, *args):
+    def _installed_repository_updated(self, serializer):
         """
         Callback spawned when Installed Repository directory content
         changes.
+        Attention: this method is called with serializer acquired.
         """
-        # Cannot block inside this method because it's running off
-        # the main thread, so execute NB checks and spawn a new
-        # thread only if these shallow checks are passed.
-        if self._acquired_exclusive:
-            # it's us
-            write_output("_installed_repository_updated: it's us",
-                         debug=True)
-            return
-        if self._activity_mutex.locked():
+        try:
+            # The probability that two subsequent calls to Equo or
+            # other clients are issued is usually high in the first
+            # seconds after the exclusive lock is released, so delay
+            # the execution by 20 seconds to avoid this.
+            # Note however that this is a one-time sleep, the wait
+            # timer doesn't restart from the beginning each time
+            # the exclusive lock is acquired by external sources.
+            sleep_t = 20.0
             write_output("_installed_repository_updated: "
-                         "busy checking or sleeping or us",
+                         "acquiring locks in 20 seconds...",
                          debug=True)
-            return
-        if self._installed_repository_updated_serializer.locked():
-            write_output("_installed_repository_updated: skipping",
-                         debug=True)
-            return
 
-        # The probability that two subsequent calls to Equo or
-        # other clients are issued is usually high in the first
-        # seconds after the exclusive lock is released, so delay
-        # the execution by 20 seconds to avoid this.
-        sleep_t = 20.0
-        write_output("_installed_repository_updated: "
-                     "checking in 20 seconds...",
-                     debug=True)
-        task = ParallelTask(
-            self._installed_repository_updated_worker, sleep_t)
-        task.daemon = True
-        task.name = "InstalledRepositoryUpdatedWorker"
-        task.start()
-
-    def _installed_repository_updated_worker(self, sleep_t):
-        """
-        Determine if Installed Repository has changed and
-        recalculate updates and signal updates_available()
-        """
-        with self._installed_repository_updated_serializer:
             time.sleep(sleep_t)
             with self._activity_mutex:
                 self._acquire_shared()
@@ -1100,11 +1106,18 @@ class RigoDaemonService(dbus.service.Object):
                         self._rwsem.reader_release()
                 finally:
                     self._release_shared()
+        finally:
+            write_output("_installed_repository_updated: "
+                         "releasing serializer (baton)",
+                         debug=True)
+            # release the serializer object that our parent gave
+            # us.
+            serializer.release()
 
     def _installed_repository_updated_unlocked(self):
         """
         Unlocked (not activity mutex, no shared locking, no
-        rwsem) version of _installed_repository_updated_worker()
+        rwsem) version of _installed_repository_updated()
         """
         write_output("_installed_repository_updated_unlocked:"
                      " changed, sending signal",
