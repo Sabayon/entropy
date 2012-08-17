@@ -93,7 +93,10 @@ class StdoutSplitter(object):
                     break
                 raise
             try:
-                self._std.write(chunk)
+                if const_is_python3():
+                    self._std.buffer.write(chunk)
+                else:
+                    self._std.write(chunk)
             except (OSError, IOError) as err:
                 sys.__stderr__.write(
                     "_pusher thread: "
