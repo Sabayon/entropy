@@ -12,12 +12,12 @@ Backlog (raw)
 
     - rewrite entropy.Security() to be O(1) (dump sulfur first)
 
-  1.0, long term:
+  long term:
 
     - move variables away from etpConst
       (to SystemSettings || Client || Server as static methods)
 
-  1.1:
+  long long term:
 
     - pkgcore spm plugin
         NEEDED is missing
