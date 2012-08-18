@@ -32,8 +32,6 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     # always slap exception data (including stack content)
     entropy.tools.print_exception(tb_data = exc_tb)
 
-    raise exc_instance
-
 def install_exception_handler():
     sys.excepthook = handle_exception
 
