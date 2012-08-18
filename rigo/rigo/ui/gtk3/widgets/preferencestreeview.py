@@ -20,7 +20,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, GObject
 
-from cellrenderers import CellButtonRenderer, CellRendererPreferenceView, \
+from .cellrenderers import CellButtonRenderer, CellRendererPreferenceView, \
     PreferenceCellButtonIDs
 
 from rigo.ui.gtk3.models.preferencesliststore import PreferencesListStore

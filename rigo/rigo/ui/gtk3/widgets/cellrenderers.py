@@ -29,7 +29,7 @@ from rigo.em import Ems
 from rigo.utils import escape_markup
 from rigo.enums import Icons
 
-from stars import StarRenderer, StarSize
+from .stars import StarRenderer, StarSize
 
 
 class CellButtonIDs:
@@ -1574,7 +1574,7 @@ class CellButtonRenderer:
         elif not markup_variants: return
 
         self.markup_variants = markup_variants
-        self.current_variant = markup_variants.keys()[0]
+        self.current_variant = list(markup_variants.keys())[0]
         return
 
     def set_variant(self, current_var):

@@ -202,7 +202,6 @@ class NoticeBoardViewController(GObject.Object):
             self._nc.append(box)
 
     def _on_show_notice(self, view, notice):
-        print notice
         tmp_fd, tmp_path = None, None
         try:
             fname = notice.title().replace("/", "-")

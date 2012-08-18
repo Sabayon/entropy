@@ -20,7 +20,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, GObject
 
-from cellrenderers import CellButtonRenderer, CellRendererNoticeView, \
+from .cellrenderers import CellButtonRenderer, CellRendererNoticeView, \
     NoticeCellButtonIDs
 
 from rigo.utils import open_url

@@ -23,7 +23,7 @@ import os
 
 from entropy.i18n import _
 
-from cellrenderers import CellRendererAppView, CellButtonRenderer, \
+from .cellrenderers import CellRendererAppView, CellButtonRenderer, \
     CellButtonIDs
 
 from rigo.em import em, StockEms

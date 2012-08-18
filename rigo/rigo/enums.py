@@ -64,7 +64,7 @@ class RigoViewStates:
         PREFERENCES_VIEW_STATE,
         REPOSITORY_VIEW_STATE,
         GROUPS_VIEW_STATE,
-    ) = range(9)
+    ) = list(range(9))
 
 class LocalActivityStates:
     (
@@ -72,7 +72,7 @@ class LocalActivityStates:
         UPDATING_REPOSITORIES,
         MANAGING_APPLICATIONS,
         UPGRADING_SYSTEM,
-    ) = range(4)
+    ) = list(range(4))
 
     class BusyError(Exception):
         """

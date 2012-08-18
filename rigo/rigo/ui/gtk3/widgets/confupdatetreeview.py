@@ -24,7 +24,7 @@ from threading import Lock
 
 from entropy.i18n import _
 
-from cellrenderers import CellButtonRenderer, \
+from .cellrenderers import CellButtonRenderer, \
     CellRendererConfigUpdateView, ConfigUpdateCellButtonIDs
 
 from rigo.em import em, StockEms, Ems
