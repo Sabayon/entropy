@@ -40,7 +40,7 @@ class ActivityStates:
         MANAGING_APPLICATIONS,
         UPGRADING_SYSTEM,
         INTERNAL_ROUTINES
-    ) = range(6)
+    ) = list(range(6))
 
 class AppActions:
 

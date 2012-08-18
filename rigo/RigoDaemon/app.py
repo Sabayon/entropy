@@ -2880,7 +2880,7 @@ class RigoDaemonService(dbus.service.Object):
                 simulate, children
 
         # ha ha! now try to guess what's doing...
-        items = list(filter(lambda x: x is not None, map(_item_map, items)))
+        items = list([x for x in map(_item_map, items) if x is not None])
         return items
 
     @dbus.service.method(BUS_NAME, in_signature='is',
