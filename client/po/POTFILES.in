@@ -64,6 +64,9 @@
 ../client/text_smart.py
 ../client/equo.py
 ../client/text_ui.py
+../client/solo.py
+../client/solo/*.py
+../client/solo/commands/*.py
 ../magneto/src/magneto/kde/interfaces.py
 ../magneto/src/magneto/kde/components.py
 ../magneto/src/magneto/kde/__init__.py

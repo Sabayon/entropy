@@ -3,7 +3,10 @@ Backlog (raw)
   1.0:
 
     - rework client/ code, as done with eit
-      - ditch etpUi
+      - kernel-switcher is using text_ui
+      - drop entropy.cli
+      - drop etpUi
+      - drop etpConst['errorstatus']
 
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
