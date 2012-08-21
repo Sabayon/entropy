@@ -32,6 +32,7 @@ from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
     const_convert_to_rawstring, const_convert_to_unicode
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
+from entropy.fetchers import UrlFetcher
 
 class Document(dict):
     """
@@ -1371,6 +1372,11 @@ class ClientWebService(WebService):
             # cached, just return
             return local_document
 
+        fetch_errors = (
+            UrlFetcher.TIMEOUT_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_WARN,
+        )
         local_document_dir = os.path.dirname(local_document)
         tmp_fd, tmp_path = None, None
         try:
@@ -1381,7 +1387,7 @@ class ClientWebService(WebService):
                 document_url, tmp_path, resume = False)
             rc = fetcher.download()
 
-            if rc in ("-1", "-2", "-3", "-4"):
+            if rc in fetch_errors:
                 raise ClientWebService.DocumentError(
                     "Document download failed: %s" % (rc,))
 

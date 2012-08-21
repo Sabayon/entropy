@@ -29,6 +29,7 @@ from entropy.client.interfaces.client import Client
 from entropy.client.mirrors import StatusInterface
 from entropy.core.settings.base import SystemSettings
 from entropy.security import Repository as RepositorySecurity
+from entropy.fetchers import UrlFetcher
 
 import entropy.dep
 import entropy.tools
@@ -494,13 +495,11 @@ class Package:
         if diff_map:
             defval = -1
             for key, val in tuple(diff_map.items()):
-                if val == "-1": # general error
-                    diff_map[key] = -1
-                elif val == "-2":
+                if val == UrlFetcher.GENERIC_FETCH_WARN:
                     diff_map[key] = -2
-                elif val == "-4": # timeout
+                elif val == UrlFetcher.TIMEOUT_FETCH_ERROR:
                     diff_map[key] = -4
-                elif val == "-3": # not found
+                elif val == UrlFetcher.GENERIC_FETCH_ERROR:
                     diff_map[key] = -3
                 elif val == -100:
                     defval = -100
@@ -944,11 +943,17 @@ class Package:
             return [], 0.0, True
         data_transfer = fetch_intf.get_transfer_rate()
 
+        fetch_errors = (
+            UrlFetcher.TIMEOUT_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_WARN,
+        )
+
         valid_idxs = []
         for url_data_map_idx, cksum in tuple(data.items()):
 
-            if cksum.startswith("-"):
-                # download failed => "-1", "-2", "-3", etc
+            if cksum in fetch_errors:
+                # download failed
                 continue
 
             pkg_id, repo, url, dest_path, orig_cksum, edelta_url, \
@@ -1029,6 +1034,11 @@ class Package:
             range(max_tries)]
         delta_resume = resume
         fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+        fetch_errors = (
+            UrlFetcher.TIMEOUT_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_WARN,
+        )
 
         for delta_url, delta_save in download_plan:
 
@@ -1047,9 +1057,8 @@ class Package:
             except Exception:
                 return -1, data_transfer
 
-            # "-3", "-4", etc are considered errors, so give up.
-            if delta_checksum.startswith("-"):
-                # make sure this points to the hell
+            if delta_checksum in fetch_errors:
+                # make sure this points to hell
                 delta_resume = False
                 # retry
                 continue
@@ -1159,7 +1168,7 @@ class Package:
             if (not existed_before) or (not resume):
                 do_stfu_rm(save_path)
             return -1, data_transfer, resumed
-        if fetch_checksum == "-3":
+        if fetch_checksum == UrlFetcher.GENERIC_FETCH_ERROR:
             # !! not found
             # maybe we already have it?
             # this handles the case where network is unavailable
@@ -1167,8 +1176,7 @@ class Package:
             fetch_checksum = do_get_md5sum(save_path)
             if (fetch_checksum != digest) or fetch_checksum is None:
                 return -3, data_transfer, resumed
-        elif fetch_checksum == "-4":
-            # !! timeout
+        elif fetch_checksum == UrlFetcher.TIMEOUT_FETCH_ERROR:
             # maybe we already have it?
             # this handles the case where network is unavailable
             # but file is already downloaded
