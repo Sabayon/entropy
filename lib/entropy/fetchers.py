@@ -66,6 +66,10 @@ class UrlFetcher(TextInterface):
         'ssh': True,
     }
 
+    GENERIC_FETCH_ERROR = "-3"
+    TIMEOUT_FETCH_ERROR = "-4"
+    GENERIC_FETCH_WARN = "-2"
+
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
@@ -219,7 +223,7 @@ class UrlFetcher(TextInterface):
                 # we cannot calculate the md5 on the way
                 self.__status = md5sum(self.__path_to_save)
             return self.__status
-        self.__status = "-2"
+        self.__status = UrlFetcher.GENERIC_FETCH_WARN
         return self.__status
 
     def __fork_cmd(self, args, environ, update_output_callback):
@@ -305,8 +309,11 @@ class UrlFetcher(TextInterface):
         """
         Start downloading URL given at construction time.
 
-        @return: download status in string format. "-3" or "-4" mean error.
-        "-2" means "ok but unable to calculate md5 of file.
+        @return: download status, which can be either one of:
+            UrlFetcher.GENERIC_FETCH_ERROR means error.
+            UrlFetcher.TIMEOUT_FETCH_ERROR means timeout error.
+            UrlFetcher.GENERIC_FETCH_WARN means warning,
+                downloaded fine but unable to calculate the md5 hash.
         Otherwise returns md5 hash.
         @rtype: string
         @todo: improve return data
@@ -325,7 +332,7 @@ class UrlFetcher(TextInterface):
         if downloader is None:
             # return error, protocol not supported
             self._update_speed()
-            self.__status = "-3"
+            self.__status = UrlFetcher.GENERIC_FETCH_ERROR
             return self.__status
 
         self._init_vars()
@@ -465,7 +472,7 @@ class UrlFetcher(TextInterface):
             "spawned rsync fetch(%s): status: %s" % (self.__th_id, sts,))
         if sts != 0:
             self.__rsync_close(True)
-            self.__status = "-3"
+            self.__status = UrlFetcher.GENERIC_FETCH_ERROR
             return self.__status
 
         const_debug_write(__name__,
@@ -476,7 +483,7 @@ class UrlFetcher(TextInterface):
             "spawned rsync fetch(%s): status: %s" % (self.__th_id, sts,))
         if sts != 0:
             self.__rsync_close(True)
-            self.__status = "-3"
+            self.__status = UrlFetcher.GENERIC_FETCH_ERROR
             return self.__status
 
         # kill thread
@@ -547,7 +554,7 @@ class UrlFetcher(TextInterface):
             except httplib.InvalidURL:
                 # malformed url!
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 do_return = True
 
             except urlmod_error.HTTPError as e:
@@ -557,29 +564,29 @@ class UrlFetcher(TextInterface):
                     u_agent_error = True
                     continue
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 do_return = True
 
             except urlmod_error.URLError as err: # timeout error
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 do_return = True
 
             except httplib.BadStatusLine:
                 # obviously, something to cope with
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 do_return = True
 
             except socket.timeout:
                 # arghv!!
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.TIMEOUT_FETCH_ERROR
                 do_return = True
 
             except ValueError: # malformed, unsupported URL? raised by urllib
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 do_return = True
 
             except Exception:
@@ -650,7 +657,7 @@ class UrlFetcher(TextInterface):
             raise
         except:
             self.__urllib_close(True)
-            self.__status = "-3"
+            self.__status = UrlFetcher.GENERIC_FETCH_ERROR
             return self.__status
 
         if self.__remotesize > 0:
@@ -664,7 +671,7 @@ class UrlFetcher(TextInterface):
                 (url != self.__remotefile.geturl()):
 
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 return self.__status
 
         while True:
@@ -681,12 +688,12 @@ class UrlFetcher(TextInterface):
                 raise
             except socket.timeout:
                 self.__urllib_close(False)
-                self.__status = "-4"
+                self.__status = UrlFetcher.TIMEOUT_FETCH_ERROR
                 return self.__status
             except:
                 # python 2.4 timeouts go here
                 self.__urllib_close(True)
-                self.__status = "-3"
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
                 return self.__status
 
             self.__urllib_commit(rsx)
@@ -993,11 +1000,12 @@ class MultipleUrlFetcher(TextInterface):
         """
         Start downloading URL given at construction time.
 
-        @return: dict containing:
-            download status in string format. "-3" or "-4" mean error.
-            "-2" means "ok but unable to calculate md5 of file.
-            Key is UrlFetcher.get_id() and value is UrlFetcher.download() return
-            code.
+        @return: dict containing UrlFetcher.get_id() as key
+            and download status as value, which can be either one of:
+            UrlFetcher.GENERIC_FETCH_ERROR means error.
+            UrlFetcher.TIMEOUT_FETCH_ERROR means timeout error.
+            UrlFetcher.GENERIC_FETCH_WARN means warning,
+                downloaded fine but unable to calculate the md5 hash.
         @rtype: dict
         """
         self._init_vars()
@@ -1073,7 +1081,8 @@ class MultipleUrlFetcher(TextInterface):
             # complete download_statuses with error info
             for th_id, th in self.__thread_pool.items():
                 if th_id not in self.__download_statuses:
-                    self.__download_statuses[th_id] = "-3"
+                    self.__download_statuses[th_id] = \
+                        UrlFetcher.GENERIC_FETCH_ERROR
 
         return self.__download_statuses
 
