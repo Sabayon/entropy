@@ -1042,6 +1042,7 @@ class MultipleUrlFetcher(TextInterface):
 
             t = ParallelTask(do_download, self.__download_statuses, th_id,
                 downloader)
+            t.name = "UrlFetcher{%s}" % (url,)
             t.daemon = True
             self.__thread_pool[th_id] = t
             t.start()
@@ -1050,12 +1051,29 @@ class MultipleUrlFetcher(TextInterface):
         self.__show_download_files_info()
         self.__show_progress = True
 
-        while len(self.__url_path_list) != len(self.__download_statuses):
-            try:
-                time.sleep(0.5)
-            except (SystemExit, KeyboardInterrupt,):
-                self.__stop_threads = True
-                raise
+        # wait until all the threads are done
+        # do not block the main thread
+        # but rather use timeout and check
+        try:
+            while True:
+                _all_joined = True
+                for th_id, th in self.__thread_pool.items():
+                    th.join(0.3)
+                    if th.is_alive():
+                        # timeout then
+                        _all_joined = False
+                if _all_joined:
+                    break
+        except (SystemExit, KeyboardInterrupt):
+            self.__stop_threads = True
+            raise
+
+        if len(self.__url_path_list) != len(self.__download_statuses):
+            # there has been an error (exception)
+            # complete download_statuses with error info
+            for th_id, th in self.__thread_pool.items():
+                if th_id not in self.__download_statuses:
+                    self.__download_statuses[th_id] = "-3"
 
         return self.__download_statuses
 
