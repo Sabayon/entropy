@@ -6,7 +6,7 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    B{Entropy Infrastructure Toolkit}.
+    B{Entropy Command Line Client}.
 
 """
 import argparse
@@ -60,7 +60,7 @@ Yell at user.
 
     def parse(self):
         """
-        Parse help command
+        Parse command
         """
         return self._show_yell, []
 

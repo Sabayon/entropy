@@ -14,11 +14,12 @@ import sys
 import errno
 import tempfile
 import argparse
+import pdb
 
 from entropy.i18n import _
 from entropy.output import print_error, print_warning, bold, purple, \
-    teal, blue, darkred, readtext, TextInterface
-from entropy.const import etpConst, etpUi
+    teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface
+from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, PermissionDenied, FileNotFound, SPMError
 
@@ -43,8 +44,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(101)
 
     generic_exc_classes = (OnlineMirrorError, RepositoryError,
-        TransceiverError, PermissionDenied, TransceiverConnectionError,
-        FileNotFound, SPMError, SystemError)
+        PermissionDenied, FileNotFound, SPMError, SystemError)
     if exc_class in generic_exc_classes:
         _text.output(
             "%s: %s" % (exc_instance, darkred(_("Cannot continue")),),

@@ -75,6 +75,29 @@ class SoloCommand(object):
         """
         raise NotImplementedError()
 
+    def _bashcomp(self, stdout, last_arg, available_args):
+        """
+        This method must be called from inside bashcomp() and
+        does the actual bash-completion rendering on stdout.
+        """
+        def _startswith(string):
+            if last_arg is not None:
+                if last_arg not in available_args:
+                    return string.startswith(last_arg)
+            return True
+
+        if self._args:
+            # only filter out if last_arg is actually
+            # something after this.NAME.
+            available_args = sorted(filter(_startswith, available_args))
+
+        for arg in self._args:
+            if arg in available_args:
+                available_args.remove(arg)
+
+        stdout.write(" ".join(available_args) + "\n")
+        stdout.flush()
+
     def man(self):
         """
         Return a dictionary containing the following man
@@ -156,63 +179,105 @@ class SoloCommand(object):
         """
         return Client(*args, **kwargs)
 
-    def _call_locked(self, func, repo):
+    def _entropy_bashcomp(self):
+        """
+        Return an Entropy Client object that MUST
+        be used only inside bashcomp methods.
+        This object is faster to load than the standard
+        Entropy object loaded by _entropy() at the cost
+        of less consistency checks.
+        """
+        return Client(indexing=False, repo_validation=False)
+
+    def _entropy_ws(self, entropy_client, repository_id, tx_cb=False):
+        """
+        Initialize an Entropy Web Services object for the given
+        Repository name.
+
+        @param entropy_client: Entropy Client interface
+        @type entropy_client: entropy.client.interfaces.Client
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: the ClientWebService instance
+        @rtype: entropy.client.services.interfaces.ClientWebService
+        @raise WebService.UnsupportedService: if service is unsupported by
+            repository
+        """
+        def _transfer_callback(transfered, total, download):
+            if download:
+                action = _("Downloading")
+            else:
+                action = _("Uploading")
+            percent = 100
+            if (total > 0) and (transfered <= total):
+                percent = int(round((float(transfered)/total) * 100, 1))
+            msg = "[%s%s] %s ..." % (
+                purple(str(percent)), "%", teal(action))
+            entropy_client.output(msg, back=True)
+
+        factory = entropy_client.WebServices()
+        webserv = factory.new(repository_id)
+        if tx_cb:
+            webserv._set_transfer_callback(_transfer_callback)
+        return webserv
+
+    def _call_locked(self, func):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock, for given repository at repo.
-        The signature of func is: int func(entropy_server).
+        The signature of func is: int func(entropy_client).
         """
-        server = None
+        client = None
         acquired = False
         try:
             try:
-                server = self._entropy(default_repository=repo)
+                client = self._entropy()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            acquired = entropy.tools.acquire_entropy_locks(server)
+            acquired = entropy.tools.acquire_entropy_locks(client)
             if not acquired:
-                server.output(
+                client.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
-            return func(server)
+            return func(client)
         finally:
-            if server is not None:
+            if client is not None:
                 if acquired:
-                    entropy.tools.release_entropy_locks(server)
-                server.shutdown()
+                    entropy.tools.release_entropy_locks(client)
+                client.shutdown()
 
-    def _call_unlocked(self, func, repo):
+    def _call_unlocked(self, func):
         """
         Execute the given function at func after acquiring Entropy
         Resources Lock in shared mode, for given repository at repo.
-        The signature of func is: int func(entropy_server).
+        The signature of func is: int func(entropy_client).
         """
-        server = None
+        client = None
         acquired = False
         try:
             try:
-                server = self._entropy(default_repository=repo)
+                client = self._entropy()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
             # use blocking mode to avoid tainting stdout
             acquired = entropy.tools.acquire_entropy_locks(
-                server, blocking=True, shared=True)
+                client, blocking=True, shared=True)
             if not acquired:
-                server.output(
+                client.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
-            return func(server)
+            return func(client)
         finally:
-            if server is not None:
+            if client is not None:
                 if acquired:
-                    entropy.tools.release_entropy_locks(server)
-                server.shutdown()
+                    entropy.tools.release_entropy_locks(client)
+                client.shutdown()
 
     def _settings(self):
         """
