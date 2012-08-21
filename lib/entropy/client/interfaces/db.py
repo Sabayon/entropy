@@ -30,6 +30,7 @@ from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     PermissionDenied
 from entropy.security import Repository as RepositorySecurity
 from entropy.misc import TimeScheduled, ParallelTask
+from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.db.skel import EntropyRepositoryPlugin, EntropyRepositoryBase
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
@@ -872,6 +873,11 @@ class AvailablePackagesRepositoryUpdater(object):
 
         try:
 
+            fetch_errors = (
+                UrlFetcher.GENERIC_FETCH_WARN,
+                UrlFetcher.TIMEOUT_FETCH_WARN,
+                UrlFetcher.GENERIC_FETCH_ERROR)
+
             fetcher = self._entropy._url_fetcher(
                 url,
                 temp_filepath,
@@ -880,7 +886,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
 
             rc = fetcher.download()
-            if rc in ("-1", "-2", "-3", "-4"):
+            if rc in fetch_errors:
                 return False
             try:
                 os.rename(temp_filepath, filepath)

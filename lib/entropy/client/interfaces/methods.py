@@ -36,6 +36,7 @@ from entropy.db.skel import EntropyRepositoryBase
 from entropy.db.exceptions import Error as EntropyRepositoryError
 from entropy.cache import EntropyCacher
 from entropy.misc import FlockFile
+from entropy.fetchers import UrlFetcher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
     InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
 from entropy.client.mirrors import StatusInterface
@@ -2135,12 +2136,15 @@ class MiscMixin:
                 )
 
                 download_speeds = []
+                fetch_errors = (
+                    UrlFetcher.TIMEOUT_FETCH_ERROR,
+                    UrlFetcher.GENERIC_FETCH_ERROR)
                 for idx in range(retries):
                     fetcher = self._url_fetcher(mirror_url, tmp_path,
                         resume = False, show_speed = False,
                         timeout = reasonable_timeout)
                     rc = fetcher.download()
-                    if rc not in ("-3", "-4"):
+                    if rc not in fetch_errors:
                         download_speeds.append(fetcher.get_transfer_rate())
 
                 result_speed = 0.0

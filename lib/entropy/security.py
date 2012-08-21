@@ -30,6 +30,7 @@ from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
+from entropy.fetchers import UrlFetcher
 
 import entropy.tools
 
@@ -249,11 +250,16 @@ class System:
         @return: download status (True if download succeeded)
         @rtype: bool
         """
+        fetch_errors = (
+            UrlFetcher.TIMEOUT_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_ERROR,
+            UrlFetcher.GENERIC_FETCH_WARN,
+        )
         fetcher = self._entropy._url_fetcher(url, save_to, resume = False,
             show_speed = show_speed)
         rc_fetch = fetcher.download()
         del fetcher
-        if rc_fetch in ("-1", "-2", "-3", "-4"):
+        if rc_fetch in fetch_errors:
             return False
         # setup permissions
         const_setup_file(save_to, etpConst['entropygid'], 0o664)
