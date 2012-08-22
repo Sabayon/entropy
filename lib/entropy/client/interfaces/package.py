@@ -2328,6 +2328,8 @@ class Package:
         # fetch info
         smart_pkg = self.pkgmeta['smartpackage']
         dbconn = self._entropy.open_repository(self.pkgmeta['repository'])
+        splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
+            self.pkgmeta['splitdebug_dirs']
 
         if smart_pkg or self.pkgmeta['merge_from']:
 
@@ -2339,7 +2341,10 @@ class Package:
             content = dbconn.retrieveContentIter(
                 self.pkgmeta['idpackage'])
             content_file = self.__generate_content_file(
-                content, package_id = self.pkgmeta['idpackage'])
+                content, package_id = self.pkgmeta['idpackage'],
+                filter_splitdebug = True,
+                splitdebug = splitdebug,
+                splitdebug_dirs = splitdebug_dirs)
 
             content_safety = dbconn.retrieveContentSafetyIter(
                 self.pkgmeta['idpackage'])
@@ -2373,7 +2378,10 @@ class Package:
             content = pkg_dbconn.retrieveContentIter(
                 pkg_idpackage)
             content_file = self.__generate_content_file(
-                content, package_id = self.pkgmeta['idpackage'])
+                content, package_id = self.pkgmeta['idpackage'],
+                filter_splitdebug = True,
+                splitdebug = splitdebug,
+                splitdebug_dirs = splitdebug_dirs)
 
             # setup content safety metadata, get from package
             content_safety = pkg_dbconn.retrieveContentSafetyIter(
@@ -2403,6 +2411,8 @@ class Package:
                 items_installed)
 
         # filter out files not installed from content metadata
+        # these include splitdebug files, when splitdebug is
+        # disabled.
         if items_not_installed:
             def _filter(_path):
                 return _path not in items_not_installed
@@ -4300,7 +4310,10 @@ class Package:
                     pass
 
     @staticmethod
-    def _generate_content_file(content, package_id = None):
+    def _generate_content_file(content, package_id = None,
+                               filter_splitdebug = False,
+                               splitdebug = None,
+                               splitdebug_dirs = None):
         """
         Generate a file containing the "content" metadata,
         reading by content list or iterator. Each item
@@ -4326,6 +4339,18 @@ class Package:
                 dir=tmp_dir)
             with Package.FileContentWriter(tmp_fd) as tmp_f:
                 for path, ftype in content:
+                    if filter_splitdebug and not splitdebug:
+                        # if filter_splitdebug is enabled, this
+                        # code filters out all the paths starting
+                        # with splitdebug_dirs, if splitdebug is
+                        # disabled for package.
+                        _skip = False
+                        for split_dir in splitdebug_dirs:
+                            if path.startswith(split_dir):
+                                _skip = True
+                                break
+                        if _skip:
+                            continue
                     tmp_f.write(package_id, path, ftype)
 
             generated = True
@@ -4429,11 +4454,17 @@ class Package:
                 if err.errno != errno.ENOENT:
                     raise
 
-    def __generate_content_file(self, content, package_id = None):
+    def __generate_content_file(self, content, package_id = None,
+                                filter_splitdebug = False,
+                                splitdebug = None,
+                                splitdebug_dirs = None):
         content_path = None
         try:
             content_path = Package._generate_content_file(
-                content, package_id = package_id)
+                content, package_id = package_id,
+                filter_splitdebug = filter_splitdebug,
+                splitdebug = splitdebug,
+                splitdebug_dirs = splitdebug_dirs)
             return content_path
         finally:
             if content_path is not None:
