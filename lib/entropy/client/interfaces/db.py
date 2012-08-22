@@ -875,7 +875,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
             fetch_errors = (
                 UrlFetcher.GENERIC_FETCH_WARN,
-                UrlFetcher.TIMEOUT_FETCH_WARN,
+                UrlFetcher.TIMEOUT_FETCH_ERROR,
                 UrlFetcher.GENERIC_FETCH_ERROR)
 
             fetcher = self._entropy._url_fetcher(
