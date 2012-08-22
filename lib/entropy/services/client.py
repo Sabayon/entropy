@@ -753,7 +753,7 @@ class WebService(object):
                 # IOError is raised when cache cannot be written to disk
                 if const_debug_enabled():
                     const_debug_write(__name__,
-                        "WebService.%s(%s) = cache store error: %s" % (
+                        "WebService._set_cached(%s) = cache store error: %s" % (
                             cache_key, repr(err),))
 
     def _drop_cached(self, method):
