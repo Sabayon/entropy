@@ -35,6 +35,12 @@ from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
     InternalError, ProgrammingError, NotSupportedError
 
+def _get_main_thread():
+    for _thread in threading.enumerate():
+        if _thread.name == "MainThread":
+            return _thread
+    raise AssertionError("Where the fuck is the MainThread?")
+
 
 class SQLConnectionWrapper(object):
 
@@ -591,12 +597,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
     # "UPDATE OR REPLACE" dialect
     _UPDATE_OR_REPLACE = None
 
-    def _get_main_thread():
-        for _thread in threading.enumerate():
-            if _thread.name == "MainThread":
-                return _thread
-        raise AssertionError("Where the fuck is the MainThread?")
-
     _MAIN_THREAD = _get_main_thread()
 
     def __init__(self, db, read_only, skip_checks, indexing,
@@ -1017,6 +1017,131 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         raise NotImplementedError()
 
+    def _addCompileFlags(self, chost, cflags, cxxflags):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+
+        Add package Compiler flags used to repository.
+        Return its identifier (idflags).
+
+        @param chost: CHOST string
+        @type chost: string
+        @param cflags: CFLAGS string
+        @type cflags: string
+        @param cxxflags: CXXFLAGS string
+        @type cxxflags: string
+        @return: Compiler flags triple identifier (idflags)
+        @rtype: int
+        """
+        cur = self._cursor().execute("""
+        INSERT INTO flags VALUES (NULL,?,?,?)
+        """, (chost, cflags, cxxflags,))
+        return cur.lastrowid
+
+    def _areCompileFlagsAvailable(self, chost, cflags, cxxflags):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+        Return whether given Compiler FLAGS are available in repository.
+
+        @param chost: CHOST flag
+        @type chost: string
+        @param cflags: CFLAGS flag
+        @type cflags: string
+        @param cxxflags: CXXFLAGS flag
+        @type cxxflags: string
+        @return: availability (True if available)
+        @rtype: bool
+        """
+        cur = self._cursor().execute("""
+        SELECT idflags FROM flags WHERE chost = (?)
+        AND cflags = (?) AND cxxflags = (?) LIMIT 1
+        """,
+            (chost, cflags, cxxflags,)
+        )
+        result = cur.fetchone()
+        if result:
+            return result[0]
+        return -1
+
+    def _isLicenseAvailable(self, pkglicense):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+
+        Return whether license metdatatum (NOT license name) is available
+        in repository.
+
+        @param pkglicense: "license" package metadatum (returned by
+            retrieveLicense)
+        @type pkglicense: string
+        @return: "license" metadatum identifier (idlicense)
+        @rtype: int
+        """
+        if not entropy.tools.is_valid_string(pkglicense):
+            pkglicense = ' '
+
+        cur = self._cursor().execute("""
+        SELECT idlicense FROM licenses WHERE license = (?) LIMIT 1
+        """, (pkglicense,))
+        result = cur.fetchone()
+
+        if result:
+            return result[0]
+        return -1
+
+    def _addLicense(self, pkglicense):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+
+        Add package license name string to repository.
+        Return its identifier (idlicense).
+
+        @param pkglicense: license name string
+        @type pkglicense: string
+        @return: license name identifier (idlicense)
+        @rtype: int
+        """
+        if not entropy.tools.is_valid_string(pkglicense):
+            pkglicense = ' ' # workaround for broken license entries
+        cur = self._cursor().execute("""
+        INSERT INTO licenses VALUES (NULL,?)
+        """, (pkglicense,))
+        return cur.lastrowid
+
+    def _isCategoryAvailable(self, category):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+        Return whether given category is available in repository.
+
+        @param category: category name
+        @type category: string
+        @return: availability (True if available)
+        @rtype: bool
+        """
+        cur = self._cursor().execute("""
+        SELECT idcategory FROM categories WHERE category = (?) LIMIT 1
+        """, (category,))
+        result = cur.fetchone()
+        if result:
+            return result[0]
+        return -1
+
+    def _addCategory(self, category):
+        """
+        NOTE: only working with _baseinfo_extrainfo_2010 disabled
+
+        Add package category string to repository. Return its identifier
+        (idcategory).
+
+        @param category: name of the category to add
+        @type category: string
+        @return: category identifier (idcategory)
+        @rtype: int
+        """
+        cur = self._cursor().execute("""
+        INSERT INTO categories VALUES (NULL,?)
+        """, (category,))
+        return cur.lastrowid
+
     def _addPackage(self, pkg_data, revision = -1, package_id = None,
         formatted_content = False):
         """
@@ -1037,19 +1162,19 @@ class EntropySQLRepository(EntropyRepositoryBase):
         idflags = None
         if not _baseinfo_extrainfo_2010:
             # create new category if it doesn't exist
-            catid = self.__isCategoryAvailable(pkg_data['category'])
+            catid = self._isCategoryAvailable(pkg_data['category'])
             if catid == -1:
-                catid = self.__addCategory(pkg_data['category'])
+                catid = self._addCategory(pkg_data['category'])
 
             # create new license if it doesn't exist
-            licid = self.__isLicenseAvailable(pkg_data['license'])
+            licid = self._isLicenseAvailable(pkg_data['license'])
             if licid == -1:
-                licid = self.__addLicense(pkg_data['license'])
+                licid = self._addLicense(pkg_data['license'])
 
-            idflags = self.__areCompileFlagsAvailable(pkg_data['chost'],
+            idflags = self._areCompileFlagsAvailable(pkg_data['chost'],
                 pkg_data['cflags'], pkg_data['cxxflags'])
             if idflags == -1:
-                idflags = self.__addCompileFlags(pkg_data['chost'],
+                idflags = self._addCompileFlags(pkg_data['chost'],
                     pkg_data['cflags'], pkg_data['cxxflags'])
 
         idprotect = self._isProtectAvailable(pkg_data['config_protect'])
@@ -3865,14 +3990,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         if not result:
             return False
         return True
-
-    def acceptLicense(self, license_name):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        Needs to call superclass method. This is a stub,
-        please implement the SQL logic.
-        """
-        super(EntropySQLRepository, self).acceptLicense(license_name)
 
     def isSystemPackage(self, package_id):
         """

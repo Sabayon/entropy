@@ -559,21 +559,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 DELETE FROM packagedownloads WHERE idpackage = (?)""",
                 (package_id,))
 
-    def __addCategory(self, category):
+    def _addCategory(self, category):
         """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package category string to repository. Return its identifier
-        (idcategory).
-
-        @param category: name of the category to add
-        @type category: string
-        @return: category identifier (idcategory)
-        @rtype: int
+        Reimplemented from EntropySQLRepository.
         """
-        cur = self._cursor().execute("""
-        INSERT INTO categories VALUES (NULL,?)
-        """, (category,))
         self._clearLiveCache("retrieveCategory")
         self._clearLiveCache("searchNameCategory")
         self._clearLiveCache("retrieveKeySlot")
@@ -582,47 +571,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("searchKeySlotTag")
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
-        return cur.lastrowid
-
-    def __addLicense(self, pkglicense):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package license name string to repository.
-        Return its identifier (idlicense).
-
-        @param pkglicense: license name string
-        @type pkglicense: string
-        @return: license name identifier (idlicense)
-        @rtype: int
-        """
-        if not entropy.tools.is_valid_string(pkglicense):
-            pkglicense = ' ' # workaround for broken license entries
-        cur = self._cursor().execute("""
-        INSERT INTO licenses VALUES (NULL,?)
-        """, (pkglicense,))
-        return cur.lastrowid
-
-    def __addCompileFlags(self, chost, cflags, cxxflags):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Add package Compiler flags used to repository.
-        Return its identifier (idflags).
-
-        @param chost: CHOST string
-        @type chost: string
-        @param cflags: CFLAGS string
-        @type cflags: string
-        @param cxxflags: CXXFLAGS string
-        @type cxxflags: string
-        @return: Compiler flags triple identifier (idflags)
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        INSERT INTO flags VALUES (NULL,?,?,?)
-        """, (chost, cflags, cxxflags,))
-        return cur.lastrowid
+        return super(EntropySQLiteRepository, self)._addCategory(category)
 
     def setCategory(self, package_id, category):
         """
@@ -635,10 +584,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
             """, (category, package_id,))
         else:
             # create new category if it doesn't exist
-            catid = self.__isCategoryAvailable(category)
+            catid = self._isCategoryAvailable(category)
             if catid == -1:
                 # create category
-                catid = self.__addCategory(category)
+                catid = self._addCategory(category)
             self._cursor().execute("""
             UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)
             """, (catid, package_id,))
@@ -1305,74 +1254,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         if not flags:
             flags = ("N/A", "N/A", "N/A")
         return flags
-
-    def __isCategoryAvailable(self, category):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-        Return whether given category is available in repository.
-
-        @param category: category name
-        @type category: string
-        @return: availability (True if available)
-        @rtype: bool
-        """
-        cur = self._cursor().execute("""
-        SELECT idcategory FROM categories WHERE category = (?) LIMIT 1
-        """, (category,))
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
-
-    def __isLicenseAvailable(self, pkglicense):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-
-        Return whether license metdatatum (NOT license name) is available
-        in repository.
-
-        @param pkglicense: "license" package metadatum (returned by
-            retrieveLicense)
-        @type pkglicense: string
-        @return: "license" metadatum identifier (idlicense)
-        @rtype: int
-        """
-        if not entropy.tools.is_valid_string(pkglicense):
-            pkglicense = ' '
-
-        cur = self._cursor().execute("""
-        SELECT idlicense FROM licenses WHERE license = (?) LIMIT 1
-        """, (pkglicense,))
-        result = cur.fetchone()
-
-        if result:
-            return result[0]
-        return -1
-
-    def __areCompileFlagsAvailable(self, chost, cflags, cxxflags):
-        """
-        NOTE: only working with _baseinfo_extrainfo_2010 disabled
-        Return whether given Compiler FLAGS are available in repository.
-
-        @param chost: CHOST flag
-        @type chost: string
-        @param cflags: CFLAGS flag
-        @type cflags: string
-        @param cxxflags: CXXFLAGS flag
-        @type cxxflags: string
-        @return: availability (True if available)
-        @rtype: bool
-        """
-        cur = self._cursor().execute("""
-        SELECT idflags FROM flags WHERE chost = (?)
-        AND cflags = (?) AND cxxflags = (?) LIMIT 1
-        """,
-            (chost, cflags, cxxflags,)
-        )
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
 
     def searchLicense(self, keyword, just_id = False):
         """
