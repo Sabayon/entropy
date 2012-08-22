@@ -593,7 +593,7 @@ class FlockFile(object):
                 self._f = open(self._path, "a+")
             except IOError as err:
                 if err.errno in (errno.ENOENT, errno.EACCES):
-                    raise FlockFileInitFailure(err)
+                    raise FlockFile.FlockFileInitFailure(err)
                 raise
 
     def acquire_shared(self):
