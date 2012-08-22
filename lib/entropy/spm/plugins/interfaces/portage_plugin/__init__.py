@@ -154,12 +154,13 @@ class StdoutSplitter(object):
         err = None
         try:
             os.close(self._wfd)
-        except OSError as err:
-            pass
+        except OSError as _err:
+            err = _err
         try:
             os.close(self._rfd)
-        except OSError:
-            pass
+        except OSError as _err:
+            err = _err
+
         self._task.join()
         if err is not None:
             raise err
