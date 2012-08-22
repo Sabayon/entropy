@@ -1785,10 +1785,13 @@ class PortagePlugin(SpmPlugin):
             raise SPMError("SPM package directory not found")
 
         enc = etpConst['conf_encoding']
-        with codecs.open(counter_path, "w", encoding=enc) as count_f:
-            new_counter = vartree.dbapi.counter_tick(root, mycpv = package)
-            count_f.write(const_convert_to_unicode(new_counter))
-            count_f.flush()
+        try:
+            with codecs.open(counter_path, "w", encoding=enc) as count_f:
+                new_counter = vartree.dbapi.counter_tick(root, mycpv = package)
+                count_f.write(const_convert_to_unicode(new_counter))
+                count_f.flush()
+        finally:
+            self._bump_vartree_mtime(package, root = root)
 
         return new_counter
 
@@ -2818,13 +2821,14 @@ class PortagePlugin(SpmPlugin):
         return phase_calls[portage_phase](action_name, action_metadata,
             package_metadata)
 
-    def _bump_vartree_mtime(self, portage_cpv):
+    def _bump_vartree_mtime(self, portage_cpv, root = None):
         """
         Properly bump pkg vdb entry mtime. As oppsed to
         vartree.dbapi._bump_mtime() this method also bumps
         mtime of the pkg directory, which is vital as well.
         """
-        root = etpConst['systemroot'] + os.path.sep
+        if root is None:
+            root = etpConst['systemroot'] + os.path.sep
         base = self._get_vdb_path(root = root)
         pkg_path = os.path.join(base, portage_cpv)
         catdir = os.path.dirname(pkg_path)
@@ -2834,7 +2838,10 @@ class PortagePlugin(SpmPlugin):
             try:
                 os.utime(x, t)
             except OSError as err:
-                sys.stderr.write("Cannot update %s mtime, %s\n" % (
+                sys.stderr.write("OSError, cannot update %s mtime, %s\n" % (
+                        x, repr(err),))
+            except IOError as err:
+                sys.stderr.write("IOError, cannot update %s mtime, %s\n" % (
                         x, repr(err),))
 
     def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
@@ -2929,17 +2936,17 @@ class PortagePlugin(SpmPlugin):
                         # device?
                         content_meta[path] = (dev_t,)
 
+        utf_sys_root = etpConst['systemroot'] + os.path.sep
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
-        self._bump_vartree_mtime(portage_cpv)
+        self._bump_vartree_mtime(portage_cpv, root = utf_sys_root)
 
         enc = etpConst['conf_encoding']
         with codecs.open(cont_path, "w", encoding=enc) as cont_f:
-            utf_sys_root = etpConst['systemroot'] + os.path.sep
             # NOTE: content_meta contains paths with ROOT prefix, it's ok
             write_contents(content_meta, utf_sys_root, cont_f)
             cont_f.flush()
 
-        self._bump_vartree_mtime(portage_cpv)
+        self._bump_vartree_mtime(portage_cpv, root = utf_sys_root)
 
     def _get_portage_sets_object(self):
         try:
@@ -2976,8 +2983,8 @@ class PortagePlugin(SpmPlugin):
 
     class _PortageVdbLocker(object):
 
-        def __init__(self, parent):
-            self.__vdb_path = parent._get_vdb_path()
+        def __init__(self, parent, root = None):
+            self.__vdb_path = parent._get_vdb_path(root = root)
             self.__vdb_lock = None
             self.__parent = parent
             self.__locked = 0
@@ -2998,11 +3005,14 @@ class PortagePlugin(SpmPlugin):
 
     class _PortageWorldSetLocker(object):
 
-        def __init__(self, parent):
+        def __init__(self, parent, root = None):
             self.__world_set = None
             world_set = parent._get_world_set_object()
             if world_set is not None:
-                self.__root = etpConst['systemroot'] + os.path.sep
+                if root is None:
+                    self.__root = etpConst['systemroot'] + os.path.sep
+                else:
+                    self.__root = root
                 self.__world_set = world_set(self.__root)
             self.__locked = 0
 
@@ -3028,7 +3038,9 @@ class PortagePlugin(SpmPlugin):
         key = entropy.dep.dep_getkey(spm_package)
         category = key.split("/")[0]
 
-        build = self.get_installed_package_build_script_path(spm_package)
+        root = etpConst['systemroot'] + os.path.sep
+        build = self.get_installed_package_build_script_path(
+            spm_package, root = root)
         pkg_dir = package_metadata.get('unittest_root', '') + \
             os.path.dirname(build)
         cat_dir = os.path.dirname(pkg_dir)
@@ -3045,12 +3057,14 @@ class PortagePlugin(SpmPlugin):
         for xatom in atomsfound:
 
             try:
-                if self.get_installed_package_metadata(xatom, "SLOT") != myslot:
+                if self.get_installed_package_metadata(
+                    xatom, "SLOT", root = root) != myslot:
                     continue
             except KeyError: # package not found??
                 continue
 
-            mybuild = self.get_installed_package_build_script_path(xatom)
+            mybuild = self.get_installed_package_build_script_path(
+                xatom, root = root)
             remove_path = os.path.dirname(mybuild)
             shutil.rmtree(remove_path, True)
 
@@ -3085,7 +3099,7 @@ class PortagePlugin(SpmPlugin):
                     splitdebug_dirs)
 
             # lock vdb before making changes
-            with self._PortageVdbLocker(self):
+            with self._PortageVdbLocker(self, root = root):
 
                 tmp_dir = tempfile.mkdtemp(dir=cat_dir,
                     prefix="-MERGING-")
@@ -3103,7 +3117,7 @@ class PortagePlugin(SpmPlugin):
                     os.rename(tmp_dir, pkg_dir)
                 except (IOError, OSError) as err:
                     mytxt = "%s: %s: %s: %s" % (red(_("QA")),
-                        brown(_("Cannot update Portage database to destination")),
+                        brown(_("Cannot update Portage package metadata")),
                         purple(tmp_dir), err,)
                     self.__output.output(
                         mytxt,
@@ -3126,7 +3140,7 @@ class PortagePlugin(SpmPlugin):
 
                     try:
                         counter = self.assign_uid_to_installed_package(
-                            spm_package)
+                            spm_package, root = root)
                     except SPMError as err:
                         mytxt = "%s: %s [%s]" % (
                             brown(_("SPM uid update error")), pkg_dir, err,
@@ -3139,17 +3153,8 @@ class PortagePlugin(SpmPlugin):
                         )
                         counter = -1
 
-                if not vdb_failed:
-                    # from this point, every vardb change has to be committed
-                    self._bump_vartree_mtime(spm_package)
-
-        try:
-            # We also need to bump vdb mtime now, otherwise Portage
-            # will potentially pick up wrong cache data
-            os.utime(pkg_dir, None)
-        except OSError as err:
-            if err.errno != errno.ENOENT:
-                raise
+        # from this point, every vardb change has to be committed
+        self._bump_vartree_mtime(spm_package, root = root)
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:
