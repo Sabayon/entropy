@@ -1,3 +1,252 @@
+commit 04ce12e276165e9aa7f28586867925f9101db0b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:19:34 2012 +0200
+
+    Release Entropy 134
+
+commit aae376f3690ff806006ef8bac2debc38d835fd62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:09:54 2012 +0200
+
+    [entropy.client.package] filter out splitdebug paths if splitdebug is disabled
+    
+    If splitdebug was previously enabled for a package, and its
+    files were installed, when splitdebug is turned off Package kept
+    printing collision messages about /usr/lib/debug files.
+    This happened because packages contain /usr/lib/debug paths in
+    their content metadata (even those with separate splitdebug tarballs)
+    and this wasn't cleared out before installed packages repository
+    metadata update. Thus, during the cleanup step, these paths popped out
+    generating invalid warnings.
+
+commit 657478b4ee14c3c13a395ff3dc43a0a74653a58d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 12:07:56 2012 +0200
+
+    [entropy.spm] ensure that Portage vdb cache is always invalidated
+    
+    It happened that assign_uid_to_installed_package() did not explicitly
+    invalidate the Portage vdb cache and, while this is used inside
+    add_installed_package(), which did invalidate the vdb cache on its own
+    already, it is also called directly by entropy.client.interfaces.package
+    code.
+    Moreover, root= value wasn't properly handled throughout the execution
+    of add_installed_package(), which may have caused cache invalidation
+    issues described above.
+
+commit fc8ed7329de0cc25597f177f4aab55d12b2c3124
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 10:46:56 2012 +0200
+
+    [entropy.*] don't use magic constants for UrlFetcher errors
+
+commit af7ed0d04c623b0a3adad0d2060a632f10c087a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 10:28:16 2012 +0200
+
+    [entropy.fetchers] UrlFetcher: expose generic error codes via class property
+
+commit b68e9104b5abf02a658fcea88e42f9ca662d01de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 09:31:15 2012 +0200
+
+    [entropy.fetchers] MultipleUrlFetcher: join() threads explicitly
+    
+    This avoids a potentially infinite loop if one of the threads dies
+    unexpectedly.
+
+commit 6bf5b0441e7d7fd76ab908550b72f138f8598505
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 20 16:30:57 2012 +0200
+
+    [repo] remove empty README file
+
+commit 2e6b176c833f91a3003ae787bb9085285affc17d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 19 00:25:31 2012 +0200
+
+    [eit] do not raise any exception in sys.excepthook
+
+commit 796e71e9ac4a9c7026ccbfdb6fdd6d250a5069df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 16:53:32 2012 +0200
+
+    [repo] migrate shebangs to /usr/bin/python
+
+commit c9242e2517a9c3678ec6560eb1e690b2538ab1ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 10:13:46 2012 +0200
+
+    [todo] update TODO
+
+commit d56cd777c8b4a0eec3a5a82acb84f51b68e64591
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:53:18 2012 +0200
+
+    [RigoDaemon] some minor Python 3.x related fixes
+
+commit facd0ec069c8d9a90da0664396364f4678a6bbe3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:51:14 2012 +0200
+
+    [equo] update entropy.pot
+
+commit 41adc104ca222fce3775fe9d3a0680bb3ccd7e8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:50:58 2012 +0200
+
+    [equo] update translations
+
+commit e2c0ddb526192c9e32f75e7b330a91412cd4f095
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 18 09:44:26 2012 +0200
+
+    [Rigo] Python 3.x compatibility fixes
+
+commit 1f84203788a1388e6e87c55a40ebf349b7b8379d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 22:42:36 2012 +0200
+
+    [entropy.spm] PortagePlugin: Python 3.x, use f.buffer.write() with bytes()
+
+commit fb6957e5fa7d70dbc4e81eca66757d47e5ff10c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 22:32:50 2012 +0200
+
+    [equo] fix UGC vote get command, do not require login credentials
+
+commit ff133b432a1081963a6f3a9d4e3629eea58a37d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 22:30:45 2012 +0200
+
+    [entropy.services.client] restore Python 3.x compatibility
+
+commit 333e82ea108cf6eda1798ca6283af41b99d8b35a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 22:30:03 2012 +0200
+
+    [entropy.spm] PortagePlugin: keep keyslot as unicode, Python 3.x compatibility
+
+commit e90cb74c27df0d2c669151e592277f3507a041ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 21:41:08 2012 +0200
+
+    [entropy.spm] PortagePlugin: expose __next__() unconditionally
+
+commit 206fe4920318b8f885f64d56b165b9daa3405f1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 21:40:55 2012 +0200
+
+    [entropy.db.sql] add __next__() to iterators, make Python3 happy
+
+commit 61eeaed14e6979c0bc332684ea622828906597bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 21:40:35 2012 +0200
+
+    [entropy.client.package] add __next__() to iterators, make Python3 happy
+
+commit 96976374fe1eb1c0aeee3e97e8f6827315a57ae7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 12:27:55 2012 +0200
+
+    [RigoDaemon] rewrite Installed Repository I/O event handler
+    
+    Rewrite the serialization code of the I/O events coming in when
+    the Installed Packages Repository is modified (at filesystem level)
+    to better deal with bursts of events.
+    The new code uses a "baton" Semaphore as mutex that can be passed
+    through threads. The MainThread event handler function tries to
+    acquire the Semaphore in NB mode, if it does, it spawns a thread
+    that executes all the operations (acquire locks in blocking mode,
+    calculate updates, etc) and releases the Semaphore once done.
+    
+    Olympic win!
+
+commit c5cf96ace0686cdb2cf0bc94f41cb4c3a8e3a690
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 17 11:03:58 2012 +0200
+
+    [RigoDaemon] delay updates calculation by 20 seconds after locks are released
+
+commit a37d7ca195c85369c81b25a1dc3dfa6f1c6f9090
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 16 21:35:45 2012 +0200
+
+    [entropy.db.sqlite] move _addPackage() to entropy.db.sql
+
+commit 5a49098515def81fcd87cfe496635779523422a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 16 21:30:51 2012 +0200
+
+    [entropy.db] move _getLiveCacheKey and __hash__ to entropy.db.sql
+
+commit a0394ba9a58be3f4ef0e77b39a966c96076be9c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 16 21:20:46 2012 +0200
+
+    [entropy.db.sql] introduce _UPDATE_OR_REPLACE and move remaining SQL to entropy.db.sql
+
+commit 1b101776401392c968c844261ce4c48370acea42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 15 20:35:36 2012 +0200
+
+    [entropy.db.sql] major cursor and connection pooling rework
+    
+    The original idea was to avoid doing cursor and connection resources
+    cleanup (left by old and dead threads) synchronously every time
+    _connection() and/or _cursor() is accessed. This strategy also had
+    a huge drawback: with no activity on the object, resources were
+    left hanging there forever.
+    
+    This commit introduces a better strategy for transparent and automatic
+    cleanup of resources belonging to terminated threads: every time a new
+    thread_id arrives at _cursor() or _connection(), a new daemon thread
+    starts and synchronizes with the caller through a simple Thread.join()
+    (because it's a daemon thread, we can join() daemon threads as well,
+    even if this is not really compliant with the specs, but it seems to work
+    just fine in Python).
+    When the caller thread is joined, it is possible to start the resources
+    cleanup procedure, carefully taking into account that thread_ids are
+    recycled and thus there might be clashing with newly created threads.
+    
+    This helped a design issue to emerge from the sand (like a zombie
+    at the seaside): it is impossible to cleanup resources left by the
+    MainThread because this thread never ends living, and if it dies,
+    everything dies, obviously. So, the first implementation of this new
+    strategy was NOT touching the MainThread resources but then, the old
+    behaviour was to kill them as well on EntropyRepository.close().
+    So, the final version of this patch kept the old buggy behaviour of
+    touching MainThread stuff (nein, nein, nein, nein would Hitler say).
+    However, a new keyword argument "safe" has been added to the close()
+    method so it is possible to start migrating code to the dark side of the
+    power.
+    
+    This means nothing really changed for API consumers yet, just entropy.db.sql
+    code being more efficient (no weird for loops and synchronous crap)
+    and actually faster (multi-threading ftw).
+
+commit f1c60ec30b7757ee9ae5f556ced6004d0f6ba1fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 19:26:46 2012 +0200
+
+    [entropy.db.mysql] implement support for RestartTransaction through _proxy_call()
+
+commit 9a699e7ae88c50c4a0bedef008d8dcbb922bb72f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 19:25:22 2012 +0200
+
+    [entropy.db.exceptions] introduce RestartTransaction exception
+    
+    Exception raised in case the whole transaction has
+    been aborted by the database and caller is kindly
+    required to restart it from the beginning.
+
+commit 760685674e538d6ba1aa88adc764aeca24531a32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 14 17:51:30 2012 +0200
+
+    Tagging Entropy version 133
+
 commit 366396bfe710dfb198c233c82d4feaed84343e7f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 14 17:51:29 2012 +0200
