@@ -1,3 +1,45 @@
+commit b2c88b0c20745bbdf9edc7140174c533b842e9c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:41 2012 +0200
+
+    Release Entropy 135
+
+commit 385c50b54888a0a584b4827e95a307a653e641a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:11 2012 +0200
+
+    [entropy.services] fix string format arguments
+
+commit ab76d2254d381b485b91b1e8ef3b334914d28e56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:42:25 2012 +0200
+
+    [entropy.client.interfaces.db] fix undefined reference to TIMEOUT_FETCH_ERROR
+
+commit 541f518ec3581fe1ab5e501db329c81c5284f12a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:42:05 2012 +0200
+
+    [entropy.misc] fix undefined reference to class object
+
+commit c64441dcfc0bf6a75aa24bc28b6f749fe882bd9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:41:27 2012 +0200
+
+    [entropy.spm] PortagePlugin: explicitly save err object
+
+commit 4da0c49b07ca61b3b7ac6bfa07eac83038cdb7e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:41:01 2012 +0200
+
+    [entropy.db.sql] move methods used by _addPackage() into class
+
+commit 359ac047ff9052d1ab7b63794639247029e9659d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:19:35 2012 +0200
+
+    Tagging Entropy version 134
+
 commit 04ce12e276165e9aa7f28586867925f9101db0b2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 22 13:19:34 2012 +0200
