@@ -1111,6 +1111,9 @@ class PortagePlugin(SpmPlugin):
         kmod_pfx = "/lib/modules"
         kmox_sfx = ".ko"
         modinfo_path = "/sbin/modinfo"
+        if not os.path.lexists(modinfo_path):
+            # try and hope for /usr/bin
+            modinfo_path = "/usr/bin/modinfo"
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
         content = [x for x in content if x.endswith(kmox_sfx)]
         enc = etpConst['conf_encoding']
