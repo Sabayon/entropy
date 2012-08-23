@@ -853,8 +853,12 @@ class ServerPackagesRepositoryUpdater(object):
             if os.path.isdir(mytmpdir):
                 os.rmdir(mytmpdir)
 
+            # we must unlock all the mirrors not just the one we
+            # downloaded from, or it will be stuck in locked state.
+            remote_uris = self._entropy.remote_repository_mirrors(
+                self._repository_id)
             self._mirrors.lock_mirrors(self._repository_id, False,
-                mirrors = [uri])
+                mirrors = remote_uris)
 
         finally:
             # remove temporary directories
