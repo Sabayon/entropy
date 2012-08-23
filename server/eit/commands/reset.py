@@ -16,10 +16,10 @@ from entropy.i18n import _
 from entropy.output import darkgreen
 
 from eit.commands.descriptor import EitCommandDescriptor
-from eit.commands.push import EitPush
+from eit.commands.pull import EitPull
 
 
-class EitReset(EitPush):
+class EitReset(EitPull):
     """
     Main Eit reset command.
     """
@@ -28,7 +28,7 @@ class EitReset(EitPush):
     ALIASES = []
 
     def __init__(self, args):
-        EitPush.__init__(self, args)
+        EitPull.__init__(self, args)
         self._reset_repository_id = None
         self._local = False
 
@@ -98,7 +98,7 @@ re-fetching the remote version available on mirrors.
         return self._man()
 
     def parse(self):
-        """ Overridden from EitPush """
+        """ Overridden from EitPull """
         parser = self._get_parser()
         try:
             nsargs = parser.parse_args(self._args)
@@ -136,7 +136,7 @@ re-fetching the remote version available on mirrors.
         if self._local:
             return 0
 
-        return self._push(entropy_server)
+        return self._pull(entropy_server)
 
 EitCommandDescriptor.register(
     EitCommandDescriptor(
