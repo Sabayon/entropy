@@ -1,3 +1,39 @@
+commit 67447959127bdf7488b8110b55e6b08530c923ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 24 16:16:15 2012 +0200
+
+    Release Entropy 136
+
+commit 3be15f077b410792873909e1d98961388f2b0654
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 11:28:49 2012 +0200
+
+    [entropy.server.db] when download is complete, unlock all the mirrors
+    
+    Unlocking just the working one causes the others to be left in
+    locked status until a manual unlock is issued.
+
+commit ec1e2b431de99c918df8e85fbc94a93e1f40810a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 11:05:17 2012 +0200
+
+    [eit.commands.reset] subclass EitPull rather than EitPush
+
+commit d530ae4cb3b1b3eca04360b85160258787d2d341
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 09:29:21 2012 +0200
+
+    [entropy.spm] look for modinfo inside /usr/bin
+    
+    After more than 10 years people still change paths like this.
+    :-/
+
+commit ae8e6f6c3c24431a68301673686449c59d697b1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:43 2012 +0200
+
+    Tagging Entropy version 135
+
 commit b2c88b0c20745bbdf9edc7140174c533b842e9c0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 22 17:43:41 2012 +0200
