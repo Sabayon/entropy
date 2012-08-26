@@ -137,9 +137,27 @@ Update Entropy Repositories.
                 entropy_client.output(
                     "%s" % (err,), level="error", importance=1)
 
+        # try with introspection first, Gtk3.x stuff
+        glib_err = None
         try:
-            import glib
-            import gobject
+            from gi.repository import GLib as glib
+        except ImportError as err:
+            glib = None
+            glib_err = err
+
+        if glib is None:
+            # fallback to good old GLib, Gtk2.x style
+            try:
+                import glib
+            except ImportError as err:
+                glib = None # make things clear
+                glib_err = err
+
+        if glib is None:
+            bail_out(glib_err)
+            return 1
+
+        try:
             import dbus
             from dbus.mainloop.glib import DBusGMainLoop
         except ImportError as err:
@@ -148,8 +166,7 @@ Update Entropy Repositories.
 
         dbus_loop = DBusGMainLoop(set_as_default = True)
         loop = glib.MainLoop()
-        
-        gobject.threads_init()
+        glib.threads_init()
 
         _entropy_dbus_object = None
         tries = 5
