@@ -1205,7 +1205,7 @@ class PortagePlugin(SpmPlugin):
 
         try:
             tmp_fd, tmp_path = tempfile.mkstemp(
-                prefix="entropy.spm.__source_env_get_gar")
+                prefix="entropy.spm.__source_env_get_var")
 
             sts = subprocess.call(args, stdout = tmp_fd)
             if sts != 0:
