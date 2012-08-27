@@ -1,3 +1,35 @@
+commit 84b13ffb955922231587785cecf83942221db7c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:37:50 2012 +0200
+
+    Release Entropy 137
+
+commit 0b9acb24a44e5d282abd1dac3fb50d0bcc92b1b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:32:42 2012 +0200
+
+    [entropy.spm] __source_env_get_var: avoid deadlocking due to stdout buffer full
+    
+    Using subprocess.PIPE and Popen.wait() causes the child process to
+    block in case of write (stdout) buffer full. Rewrite the whole
+    function to use simple a simple fd via mkstemp(). This way, even
+    if the env variable is very long, the process won't hang.
+    
+    This issue has been observed in dev-texlive/texlive-latexextra-2012's
+    SRC_URI, which is more than 131k chars long!
+
+commit 0e0483e9c93b150575a3b1d8620940abd7679c3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 10:15:36 2012 +0200
+
+    [eit] handle OnlineMirrorError more nicely.
+
+commit c3c5e9e97dcc47d83a781fded9e48e3fe1be93f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 24 16:16:17 2012 +0200
+
+    Tagging Entropy version 136
+
 commit 67447959127bdf7488b8110b55e6b08530c923ab
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Aug 24 16:16:15 2012 +0200
