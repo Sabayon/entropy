@@ -1200,16 +1200,39 @@ class PortagePlugin(SpmPlugin):
         dirname = os.path.dirname(current_mod)
         exec_path = os.path.join(dirname, "env_sourcer.sh")
         args = [exec_path, env_file, env_var]
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        tmp_fd, tmp_path = None, None
+        raw_enc = etpConst['conf_raw_encoding']
+
         try:
-            sts = proc.wait()
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="entropy.spm.__source_env_get_gar")
+
+            sts = subprocess.call(args, stdout = tmp_fd)
             if sts != 0:
                 raise IOError("cannot source %s and get %s" % (
                         env_file, env_var,))
-            output = proc.stdout.read().strip()
+
+            # this way buffers are flushed out
+            os.close(tmp_fd)
+            tmp_fd = None
+            with codecs.open(tmp_path, "r", encoding = raw_enc) as tmp_r:
+                # cut down to 1M... anything longer is just insane
+                output = tmp_r.read(1024000).rstrip()
+
+            return const_convert_to_unicode(output, enctype = raw_enc)
+
         finally:
-            proc.stdout.close()
-        return const_convert_to_unicode(output)
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError as err:
+                    if err.errno != errno.ENOENT:
+                        raise
 
     def __pkg_sources_filtering(self, sources):
         sources.discard("->")
