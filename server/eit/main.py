@@ -17,6 +17,7 @@ from entropy.i18n import _
 from entropy.output import print_error
 import entropy.tools
 
+from entropy.exceptions import OnlineMirrorError
 from eit.commands.descriptor import EitCommandDescriptor
 
 
@@ -27,6 +28,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     entropy.tools.kill_threads()
 
     if exc_class is KeyboardInterrupt:
+        raise SystemExit(1)
+
+    if exc_class is OnlineMirrorError:
+        print_error("Mirror error: %s" % (
+                exc_instance,))
         raise SystemExit(1)
 
     # always slap exception data (including stack content)
