@@ -140,6 +140,15 @@ repositories.
         """
         Actual Eit lock|unlock --status code. Just show repo status.
         """
+        repositories = entropy_server.repositories()
+        if self._repository_id not in repositories:
+            entropy_server.output(
+                "%s: %s" % (
+                    _("Invalid Repository"),
+                    self._repository_id),
+                level="error",
+                importance=1)
+            return 1
         if not self._quiet:
             entropy_server.output(
                 "%s:" % (darkgreen(_("Mirrors status")),),
@@ -192,6 +201,16 @@ repositories.
         Actual Eit lock code. self._action_lock is determining if it's
         lock or unlock.
         """
+        repositories = entropy_server.repositories()
+        if self._repository_id not in repositories:
+            entropy_server.output(
+                "%s: %s" % (
+                    _("Invalid Repository"),
+                    self._repository_id),
+                level="error",
+                importance=1)
+            return 1
+
         done = entropy_server.Mirrors.lock_mirrors(
             self._repository_id, self._action_lock,
             quiet = self._quiet)
@@ -203,6 +222,16 @@ repositories.
         """
         Actual Eit lock code (for --client only).
         """
+        repositories = entropy_server.repositories()
+        if self._repository_id not in repositories:
+            entropy_server.output(
+                "%s: %s" % (
+                    _("Invalid Repository"),
+                    self._repository_id),
+                level="error",
+                importance=1)
+            return 1
+
         done = entropy_server.Mirrors.lock_mirrors_for_download(
             self._repository_id, self._action_lock,
             quiet = self._quiet)
