@@ -5,6 +5,10 @@ Backlog (raw)
     - rework client/ code, as done with eit
       - ditch etpUi
 
+    - preserved-libs registry:
+      only drop old sonames when installed packages
+      no longer need them
+
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
       Test package generation and entropy client behaviour
