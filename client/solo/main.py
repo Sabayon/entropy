@@ -291,18 +291,18 @@ def main():
             cmd_class = catch_all
             allowed = False
 
-    func, func_args = cmd_obj.parse()
-    exit_st = func(*func_args)
-    if exit_st == -10:
-        # syntax error, yell at user
-        func, func_args = yell_class(args).parse()
-        func(*func_args)
-        raise SystemExit(10)
-    else:
-        yell_class.reset()
-
     if allowed:
+        func, func_args = cmd_obj.parse()
+        exit_st = func(*func_args)
+        if exit_st == -10:
+            # syntax error, yell at user
+            func, func_args = yell_class(args).parse()
+            func(*func_args)
+            raise SystemExit(10)
+        else:
+            yell_class.reset()
         raise SystemExit(exit_st)
+
     else:
         print_error(_("superuser access required"))
         raise SystemExit(1)
