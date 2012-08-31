@@ -195,6 +195,10 @@ Backlog (raw)
       - drop etpUi
       - drop etpConst['errorstatus']
 
+    - preserved-libs registry:
+      only drop old sonames when installed packages
+      no longer need them
+
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
       Test package generation and entropy client behaviour
