@@ -2,6 +2,9 @@ Backlog (raw)
 
   1.0:
 
+    equo repo add, remove, list, mirrorsort, merge
+    equo notice
+
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
       - drop entropy.cli
