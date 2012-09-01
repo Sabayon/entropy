@@ -1,3 +1,45 @@
+commit 3d923e07272bb3cd3efa8111ec7b19948ab99965
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:24:16 2012 +0200
+
+    Release Entropy 138
+
+commit 7ddb21276c97614be0d2d3394d15003d02dd74fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:18:11 2012 +0200
+
+    [entropy.dump] do not use os.fdopen() in dumpobj()
+    
+    It has been observed that using os.fdopen() below in multi-threaded
+    scenarios is causing EBADF (thus OSError). There is probably a racen
+    condition down in the stack or mkstemp() itself is not guaranteed against
+    concurrent access. For now, just consume one more file descriptor and
+    avoid the race completely.
+
+commit 0c0ac3261f45d21a88fab67a9340b43304ef2fde
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 31 21:31:46 2012 +0200
+
+    [docs] update TODO
+
+commit db542393fa860131b8d374a25517b93be778892e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 29 16:40:38 2012 +0200
+
+    [eit.commands.lock] validate repository_id in "eit lock" and "eit unlock"
+
+commit 32104fe63cc0481d4cafbd14cdfc468e27c3443c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:47:00 2012 +0200
+
+    [entropy.spm] __source_env_get_var: fix typo in tmp file prefix string
+
+commit 3138bbad8dd1f38b1063b7a2c249a67121000530
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:37:52 2012 +0200
+
+    Tagging Entropy version 137
+
 commit 84b13ffb955922231587785cecf83942221db7c6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Aug 27 11:37:50 2012 +0200
