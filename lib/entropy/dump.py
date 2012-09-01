@@ -109,13 +109,17 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
             dmp_name = os.path.basename(dmpfile)
             tmp_fd, tmp_dmpfile = tempfile.mkstemp(
                 dir=c_dump_dir, prefix=dmp_name)
-            with os.fdopen(tmp_fd, "wb") as dmp_f:
+            # WARNING: it has been observed that using
+            # os.fdopen() below in multi-threaded scenarios
+            # is causing EBADF. There is probably a race
+            # condition down in the stack.
+            with open(tmp_dmpfile, "wb") as dmp_f:
                 if const_is_python3():
                     pickle.dump(my_object, dmp_f,
                         protocol = COMPAT_PICKLE_PROTOCOL, fix_imports = True)
                 else:
                     pickle.dump(my_object, dmp_f)
-                dmp_f.flush()
+
             const_setup_file(tmp_dmpfile, E_GID, custom_permissions)
             os.rename(tmp_dmpfile, dmpfile)
 
