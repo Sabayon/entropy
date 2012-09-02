@@ -878,7 +878,7 @@ class Application(object):
             if name is None:
                 if self._vanished_callback is not None:
                     self._vanished_callback(self)
-                return _("N/A")
+                return escape_markup(_("N/A"))
             name = " ".join([x.capitalize() for x in \
                                  name.replace("-"," ").split()])
             return escape_markup(name)
@@ -1294,7 +1294,7 @@ class Application(object):
             inst_repo = self._entropy.installed_repository()
             strict = repo.getStrictData(self._pkg_id)
             if strict is None:
-                return _("N/A")
+                return escape_markup(_("N/A"))
             key, slot, version, tag, revision, atom = strict
 
             name = key.split("/", 1)[-1]
