@@ -2,8 +2,194 @@ Backlog (raw)
 
   1.0:
 
-    equo repo add, remove, list, mirrorsort, merge
-    equo notice
+    notice
+
+    search
+
+    match
+        --multimatch
+        --installed
+        --multirepo
+        --showrepo
+        --showdesc
+
+    hop <branch>
+
+    upgrade
+        --ask
+        --fetch
+        --pretend
+        --verbose
+        --replay
+        --empty
+        --resume
+        --skipfirst
+        --multifetch
+        --multifetch=N
+
+    security
+        oscheck
+          --mtime
+          --assimilate
+          --reinstall
+          --quiet
+          --verbose
+        update
+          --force
+        list
+          --affected
+          --unaffected
+        info
+        install
+          --ask
+          --fetch
+          --pretend
+          --quiet
+
+    install
+      --ask
+      --pretend
+      --fetch
+      --nodeps
+      --bdeps
+      --resume
+      --skipfirst
+      --clean
+      --empty
+      --relaxed
+      --deep
+      --verbose
+      --configfiles
+      --multifetch
+      --multifetch=N
+
+    source
+      --ask
+      --pretend
+      --nodeps
+      --relaxed
+      --savehere
+
+    fetch
+      --ask
+      --pretend
+      --nodeps
+      --relaxed
+      --multifetch
+      --multifetch=N
+
+    remove
+      --ask
+      --pretend
+      --nodeps
+      --deep
+      --empty
+      --configfiles
+      --force-system
+      --resume
+
+    mask
+      --ask
+      --pretend
+
+    unmask
+      --ask
+      --pretend
+
+    config
+      --ask
+      --pretend
+
+    deptest
+      --quiet
+      --ask
+      --pretend
+
+    unusedpackages
+      --quiet
+      --sortbysize
+
+    libtest
+      --dump
+      --listfiles
+      --quiet
+      --ask
+      --pretend
+
+    conf
+      update
+
+    query
+      belongs
+      changelog
+      revdeps
+      description
+      files
+      installed
+      license
+      list
+        installed
+          --by-user
+        available
+        mimetype
+          --installed
+        associate
+          --installed
+        needed
+        orphans
+        removal
+        required
+        sets
+        slot
+        tags
+        graph
+          --complete
+        revgraph
+          --complete
+
+        --verbose
+        --quiet
+
+    smart
+      package
+      quickpkg
+        --savedir
+      inflate
+        --savedir
+      deflate
+        --savedir
+      extract
+        --savedir
+
+    rescue
+      check
+      vacuum
+      generate
+      resurrect
+      spmuids
+      spmsync
+      backup
+      restore
+
+    ugc
+      login
+      logout
+        --force
+      documents
+        get
+        add
+        remove
+      vote
+        get
+        add
+
+    cache
+      clean
+      --verbose
+      --quiet
+
+    cleanup
+    --info
 
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
