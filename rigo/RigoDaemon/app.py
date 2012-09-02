@@ -12,6 +12,8 @@
 """
 import os
 import stat
+import random
+random.seed()
 
 # entropy.i18n will pick this up
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
@@ -750,7 +752,7 @@ class RigoDaemonService(dbus.service.Object):
         Start timer thread that handles automatic repositories
         update.
         """
-        task = Timer(3600 * 4, self._auto_repositories_update)
+        task = Timer(3600 * 8, self._auto_repositories_update)
         task.daemon = True
         task.name = "AutoRepositoriesUpdateTimer"
         task.start()
@@ -861,6 +863,11 @@ class RigoDaemonService(dbus.service.Object):
         """
         Execute automatic Repositories Update Activity.
         """
+        # Add entropy to the scheduled execution to
+        # avoid bursts against the web service
+        rand_secs = random.randint(1800, 7200)
+        time.sleep(rand_secs)
+
         if self._is_system_on_batteries():
             self._start_repositories_update_timer()
             return
