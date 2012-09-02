@@ -1,3 +1,26 @@
+commit 4a37aed84a66505a524cbed9fccd5bcb2a4927dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 17:21:40 2012 +0200
+
+    Release Entropy 139
+
+commit fa0eb83df4eb79d0bb69e3141a3ae7e5c5c55b5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 17:00:03 2012 +0200
+
+    [RigoDaemon] half the timer frequency and add some randomization in _auto_repositories_update()
+    
+    When sabayon-weekly is updated, the web service is hit by a huge amount of
+    requests. This commits add a bit more entropy on the execution of
+    _auto_repositories_update() (random between 30mins to 2 hours) and reduces
+    the timer frequency to 8hrs (from 4).
+
+commit c332d1a6f855abbd92fc631bbd7e03942e391ae1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:24:17 2012 +0200
+
+    Tagging Entropy version 138
+
 commit 3d923e07272bb3cd3efa8111ec7b19948ab99965
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 1 15:24:16 2012 +0200
