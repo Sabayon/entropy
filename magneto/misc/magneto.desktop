@@ -5,5 +5,4 @@ Icon=magneto
 Exec=magneto --startup-delay=30
 Type=Application
 Terminal=false
-Encoding=UTF-8
-Categories=System;Application;
+Categories=System;
