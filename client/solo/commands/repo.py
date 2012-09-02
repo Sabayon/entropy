@@ -6,7 +6,7 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    B{Entropy Infrastructure Toolkit}.
+    B{Entropy Command Line Client}.
 
 """
 import os
