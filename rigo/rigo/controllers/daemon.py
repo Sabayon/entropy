@@ -731,7 +731,7 @@ class RigoServiceController(GObject.Object):
         Notify User about Application Management errors.
         """
         if app is None:
-            app_name = _("Application")
+            app_name = prepare_markup(_("Application"))
         else:
             app_name = app.name
         msg = prepare_markup(_("An <b>unknown error</b> occurred"))
