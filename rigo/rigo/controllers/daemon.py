@@ -1075,6 +1075,16 @@ class RigoServiceController(GObject.Object):
         if self._wc is not None:
             self._wc.reset_progress()
 
+        # revalidate all the repositories
+        # so that Entropy.repositories() and other internal
+        # metadata is consistent with the newly available
+        # repositories.
+        self._entropy.rwsem().writer_acquire()
+        try:
+            self._entropy._validate_repositories()
+        finally:
+            self._entropy.rwsem().writer_release()
+
         local_activity = LocalActivityStates.UPDATING_REPOSITORIES
         # we don't expect to fail here, it would
         # mean programming error.
