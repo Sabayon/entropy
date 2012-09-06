@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-18 09:51+0200\n"
+"POT-Creation-Date: 2012-09-06 20:03+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,38 +18,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: ../../lib/entropy/db/sqlite.py:1795
+#: ../../lib/entropy/db/sqlite.py:1676
 msgid "Exporting database table"
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:1835
+#: ../../lib/entropy/db/sqlite.py:1716
 msgid "Database Export complete."
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:2213 ../../lib/entropy/db/sqlite.py:2317
-#: ../../lib/entropy/db/sqlite.py:2428 ../../lib/entropy/db/sqlite.py:2441
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2576
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2714
+#: ../../lib/entropy/db/sqlite.py:2094 ../../lib/entropy/db/sqlite.py:2198
+#: ../../lib/entropy/db/sqlite.py:2309 ../../lib/entropy/db/sqlite.py:2322
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2606
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2744
 #: ../../lib/entropy/client/interfaces/client.py:949
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:599 ../../client/text_rescue.py:806
 msgid "ATTENTION"
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:2215 ../../lib/entropy/db/sqlite.py:2319
+#: ../../lib/entropy/db/sqlite.py:2096 ../../lib/entropy/db/sqlite.py:2200
 msgid "updating repository metadata layout, please wait!"
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:2429
+#: ../../lib/entropy/db/sqlite.py:2310
 msgid "generating provided_libs metadata, please wait!"
 msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1680 ../../lib/entropy/db/skel.py:2028
-#: ../../lib/entropy/client/interfaces/trigger.py:493
-#: ../../lib/entropy/client/interfaces/trigger.py:503
-#: ../../lib/entropy/client/interfaces/trigger.py:513
-#: ../../lib/entropy/client/interfaces/trigger.py:523
-#: ../../lib/entropy/client/interfaces/trigger.py:533
+#: ../../lib/entropy/client/interfaces/trigger.py:534
+#: ../../lib/entropy/client/interfaces/trigger.py:544
+#: ../../lib/entropy/client/interfaces/trigger.py:554
+#: ../../lib/entropy/client/interfaces/trigger.py:564
+#: ../../lib/entropy/client/interfaces/trigger.py:574
 msgid "SPM"
 msgstr ""
 
@@ -75,8 +75,8 @@ msgid "package move actions complete"
 msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1743
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2556
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2751
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2586
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2781
 msgid "WARNING"
 msgstr ""
 
@@ -101,7 +101,7 @@ msgid "Syncing current database"
 msgstr ""
 
 #: ../../lib/entropy/db/skel.py:3801
-#: ../../lib/entropy/client/interfaces/db.py:286
+#: ../../lib/entropy/client/interfaces/db.py:287
 msgid "please wait"
 msgstr ""
 
@@ -113,241 +113,241 @@ msgstr ""
 msgid "Adding entry"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:246
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:247
 msgid "Accessibility"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:248
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:249
 msgid "Accessibility applications"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:252
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:253
 msgid "Office"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:253
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:254
 msgid "Applications used in office environments"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:259
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:260
 msgid "Development"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:260
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:261
 msgid "Applications or system libraries"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:264
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:265
 msgid "System"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:265
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:266
 msgid "System applications or libraries"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:269
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:270
 msgid "Games"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:270
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:271
 msgid "Games, enjoy your spare time"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:274
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:275
 msgid "GNOME Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:276
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:277
 msgid "Applications and libraries for the GNOME Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:280
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:281
 msgid "KDE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:282
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:283
 msgid "Applications and libraries for the KDE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:286
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:287
 msgid "XFCE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:288
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:289
 msgid "Applications and libraries for the XFCE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:292
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:293
 msgid "LXDE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:294
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:295
 msgid "Applications and libraries for the LXDE Desktop"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:298
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:299
 msgid "Multimedia"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:300
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:301
 msgid "Applications and libraries for Multimedia"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:304
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:305
 msgid "Networking"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:306
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:307
 msgid "Applications and libraries for Networking"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:310
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:311
 msgid "Science"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:312
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:313
 msgid "Scientific applications and libraries"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:316
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:317
 msgid "Security"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:318
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:319
 msgid "Security oriented applications"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:322
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:323
 msgid "X11"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:324
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:325
 msgid "Applications and libraries for X11"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:608
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:609
 msgid "Reloading Portage modules"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1083
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1084
 msgid "error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1085
-#: ../../lib/entropy/client/interfaces/package.py:677
-#: ../../lib/entropy/client/interfaces/package.py:1349
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1086
+#: ../../lib/entropy/client/interfaces/package.py:693
+#: ../../lib/entropy/client/interfaces/package.py:1374
 msgid "not found"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2241
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2315
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2407
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2479
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2895
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3105
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4680
-#: ../../lib/entropy/client/interfaces/trigger.py:276
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2271
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2345
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2437
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2509
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2929
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3146
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4712
+#: ../../lib/entropy/client/interfaces/trigger.py:280
 msgid "QA"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2242
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2316
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2408
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2272
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2346
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2438
 msgid "Cannot run Source Package Manager trigger for"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2251
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2325
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2417
-#: ../../lib/entropy/client/interfaces/trigger.py:279
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2281
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2355
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2447
+#: ../../lib/entropy/client/interfaces/trigger.py:283
 msgid "Please report it"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2252
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2326
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2418
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2282
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2356
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2448
 msgid "Attach this"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2480
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2510
 msgid "Cannot run SPM configure phase for"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2484
-#: ../../lib/entropy/client/interfaces/trigger.py:73
-#: ../../lib/entropy/client/interfaces/package.py:3427
-#: ../../lib/entropy/client/interfaces/package.py:3464
-#: ../../lib/entropy/client/interfaces/package.py:3591
-#: ../../lib/entropy/client/interfaces/package.py:3598
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2514
+#: ../../lib/entropy/client/interfaces/trigger.py:74
+#: ../../lib/entropy/client/interfaces/package.py:3483
+#: ../../lib/entropy/client/interfaces/package.py:3520
+#: ../../lib/entropy/client/interfaces/package.py:3647
 #: ../../lib/entropy/client/interfaces/package.py:3654
-#: ../../lib/entropy/client/interfaces/package.py:3682
-#: ../../lib/entropy/client/interfaces/package.py:3908
-#: ../../lib/entropy/client/interfaces/package.py:3928
-#: ../../lib/entropy/security.py:654 ../../client/text_rescue.py:750
+#: ../../lib/entropy/client/interfaces/package.py:3710
+#: ../../lib/entropy/client/interfaces/package.py:3738
+#: ../../lib/entropy/client/interfaces/package.py:3964
+#: ../../lib/entropy/client/interfaces/package.py:3984
+#: ../../lib/entropy/security.py:660 ../../client/text_rescue.py:750
 msgid "Error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2535
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2565
 msgid "package not available on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2544
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2574
 msgid "repackaging"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2557
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2587
 msgid "Cannot complete quickpkg for atom"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2559
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2754
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2589
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2784
 msgid "do it manually"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2577
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2607
 msgid "package files rebuild did not run properly"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2578
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2608
 msgid "Please update packages manually"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2715
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2745
 msgid "forcing package updates"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2716
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2746
 msgid "Syncing with"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2752
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2782
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2896
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2930
 msgid "Cannot stat path"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3106
-msgid "Cannot update Portage database to destination"
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3147
+msgid "Cannot update Portage package metadata"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3132
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3173
 msgid "SPM uid update error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3210
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3242
 msgid "Cannot update SPM installed pkgs file"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3303
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3335
 msgid "Portage world file is corrupted"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3357
-#: ../../lib/entropy/client/interfaces/db.py:402
-#: ../../lib/entropy/client/interfaces/db.py:508
-#: ../../lib/entropy/client/interfaces/db.py:1809 ../../lib/entropy/qa.py:795
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3389
+#: ../../lib/entropy/client/interfaces/db.py:403
+#: ../../lib/entropy/client/interfaces/db.py:509
+#: ../../lib/entropy/client/interfaces/db.py:1815 ../../lib/entropy/qa.py:795
 #: ../../client/text_rescue.py:282 ../../client/text_rescue.py:294
 #: ../../client/text_ui.py:1570 ../../client/text_ui.py:1571
 #: ../../client/text_ui.py:1573 ../../client/text_ui.py:1574
@@ -355,112 +355,112 @@ msgstr ""
 msgid "Attention"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3358
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3390
 msgid "preserved libraries have been found on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3493
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3643
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3525
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3675
 #: ../../client/text_security.py:116 ../../client/text_smart.py:111
 msgid "does not exist"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3493
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3525
 msgid "Overwriting"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3539
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3571
 msgid "variable differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3539
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3628
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3571
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3660
 msgid "Updating"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3554
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3586
 msgid "updating critical variables"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3628
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3660
 msgid "differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3643
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3675
 msgid "Reverting"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3658
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3690
 msgid "Skipping configuration files update, you are not root."
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3918
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3950
 msgid "Error calculating dependencies"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4402
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4434
 msgid "not supported"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4403
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4435
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4524
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4556
 msgid "IOError while reading"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4681
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4713
 msgid "illegal Entropy package tag in ebuild"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:60
+#: ../../lib/entropy/client/services/interfaces.py:61
 msgid "Unknown documents"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:61
+#: ../../lib/entropy/client/services/interfaces.py:62
 msgid "Comments"
 msgstr ""
 
 #. BBCODE_TYPE_ID: _('BBcode Documents'),
-#: ../../lib/entropy/client/services/interfaces.py:63
+#: ../../lib/entropy/client/services/interfaces.py:64
 msgid "Images/Screenshots"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:64
+#: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Generic Files"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:65
+#: ../../lib/entropy/client/services/interfaces.py:66
 msgid "Videos"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:66
+#: ../../lib/entropy/client/services/interfaces.py:67
 msgid "Icons"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:69
+#: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Unknown document"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:70
+#: ../../lib/entropy/client/services/interfaces.py:71
 msgid "Comment"
 msgstr ""
 
 #. BBCODE_TYPE_ID: _('BBcode Document'),
-#: ../../lib/entropy/client/services/interfaces.py:72
+#: ../../lib/entropy/client/services/interfaces.py:73
 msgid "Image/Screenshot"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:73
+#: ../../lib/entropy/client/services/interfaces.py:74
 msgid "Generic File"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:74
+#: ../../lib/entropy/client/services/interfaces.py:75
 msgid "Video"
 msgstr ""
 
-#: ../../lib/entropy/client/services/interfaces.py:75
+#: ../../lib/entropy/client/services/interfaces.py:76
 msgid "Icon"
 msgstr ""
 
@@ -509,14 +509,14 @@ msgid "Set not found or unable to remove"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/cache.py:106
-#: ../../lib/entropy/client/interfaces/methods.py:99
-#: ../../lib/entropy/client/interfaces/methods.py:124
+#: ../../lib/entropy/client/interfaces/methods.py:100
+#: ../../lib/entropy/client/interfaces/methods.py:125
 #: ../../client/text_ui.py:482
 msgid "Repository"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/cache.py:107
-#: ../../lib/entropy/client/interfaces/methods.py:125
+#: ../../lib/entropy/client/interfaces/methods.py:126
 msgid "is corrupted"
 msgstr ""
 
@@ -524,850 +524,854 @@ msgstr ""
 msgid "Cannot calculate the checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:72
+#: ../../lib/entropy/client/interfaces/trigger.py:73
 msgid "Source Package Manager interface can't be loaded"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:75
+#: ../../lib/entropy/client/interfaces/trigger.py:76
 msgid "please fix"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:277
+#: ../../lib/entropy/client/interfaces/trigger.py:281
 msgid "Cannot run External trigger for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:493
+#: ../../lib/entropy/client/interfaces/trigger.py:515
+msgid "Installing info"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/trigger.py:534
 msgid "post-install phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:503
+#: ../../lib/entropy/client/interfaces/trigger.py:544
 msgid "pre-install phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:513
+#: ../../lib/entropy/client/interfaces/trigger.py:554
 msgid "setup phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:523
+#: ../../lib/entropy/client/interfaces/trigger.py:564
 msgid "pre-remove phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:533
+#: ../../lib/entropy/client/interfaces/trigger.py:574
 msgid "post-remove phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:80
+#: ../../lib/entropy/client/interfaces/methods.py:81
 msgid "Please update your repositories now in order to remove this message!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:100
+#: ../../lib/entropy/client/interfaces/methods.py:101
 #: ../../client/text_ui.py:1822
 msgid "is not available"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:100
-#: ../../lib/entropy/client/interfaces/methods.py:125
+#: ../../lib/entropy/client/interfaces/methods.py:101
+#: ../../lib/entropy/client/interfaces/methods.py:126
 msgid "Cannot validate"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:274
+#: ../../lib/entropy/client/interfaces/methods.py:275
 msgid "bad repository id specified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:299
+#: ../../lib/entropy/client/interfaces/methods.py:300
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1089
+#: ../../lib/entropy/client/interfaces/methods.py:1090
 msgid "System database not found or corrupted"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1090
+#: ../../lib/entropy/client/interfaces/methods.py:1091
 msgid "running in safe mode using temporary, empty repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1270
+#: ../../lib/entropy/client/interfaces/methods.py:1271
 msgid "Backing up repository to"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1290
+#: ../../lib/entropy/client/interfaces/methods.py:1291
 msgid "Repository backed up successfully"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1299
-#: ../../lib/entropy/client/interfaces/methods.py:1357
+#: ../../lib/entropy/client/interfaces/methods.py:1300
+#: ../../lib/entropy/client/interfaces/methods.py:1358
 #: ../../lib/entropy/const.py:669
 msgid "All fine"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1318
+#: ../../lib/entropy/client/interfaces/methods.py:1319
 msgid "Restoring backed up repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1336
+#: ../../lib/entropy/client/interfaces/methods.py:1337
 msgid "Unable to unpack"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1346
+#: ../../lib/entropy/client/interfaces/methods.py:1347
 msgid "Repository restored successfully"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1469
-#: ../../lib/entropy/client/interfaces/package.py:4035
+#: ../../lib/entropy/client/interfaces/methods.py:1470
+#: ../../lib/entropy/client/interfaces/package.py:4091
 #: ../../client/text_rescue.py:501
 msgid "Removing"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1916
+#: ../../lib/entropy/client/interfaces/methods.py:1917
 msgid "Resources unlocked, let's go!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1924
+#: ../../lib/entropy/client/interfaces/methods.py:1925
 msgid "Resources still locked, giving up!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1932
+#: ../../lib/entropy/client/interfaces/methods.py:1933
 msgid "Resources locked, sleeping..."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:2126
+#: ../../lib/entropy/client/interfaces/methods.py:2127
 msgid "Checking speed of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:2154
+#: ../../lib/entropy/client/interfaces/methods.py:2158
 msgid "Mirror speed"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:2668
+#: ../../lib/entropy/client/interfaces/methods.py:2672
 msgid "not a valid method"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:372
+#: ../../lib/entropy/client/interfaces/package.py:373
 msgid "Already prepared"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:377
+#: ../../lib/entropy/client/interfaces/package.py:378
 msgid "Not yet prepared"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:594
-#: ../../lib/entropy/client/interfaces/package.py:1256
+#: ../../lib/entropy/client/interfaces/package.py:610
+#: ../../lib/entropy/client/interfaces/package.py:1281
 msgid "Mirror"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:596
-#: ../../lib/entropy/client/interfaces/package.py:1258
+#: ../../lib/entropy/client/interfaces/package.py:612
+#: ../../lib/entropy/client/interfaces/package.py:1283
 msgid "maximum failure threshold reached"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:641
+#: ../../lib/entropy/client/interfaces/package.py:657
 msgid "success"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:650
+#: ../../lib/entropy/client/interfaces/package.py:666
 msgid "Aggregated transfer rate"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:653
-#: ../../lib/entropy/client/interfaces/package.py:1314
-#: ../../lib/entropy/client/interfaces/package.py:3352
+#: ../../lib/entropy/client/interfaces/package.py:669
+#: ../../lib/entropy/client/interfaces/package.py:1339
+#: ../../lib/entropy/client/interfaces/package.py:3408
 msgid "second"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:668
-#: ../../lib/entropy/client/interfaces/package.py:1330
-#: ../../lib/entropy/client/interfaces/package.py:3367
+#: ../../lib/entropy/client/interfaces/package.py:684
+#: ../../lib/entropy/client/interfaces/package.py:1355
+#: ../../lib/entropy/client/interfaces/package.py:3423
 msgid "Error downloading from"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:672
+#: ../../lib/entropy/client/interfaces/package.py:688
 msgid "data not available on this mirror"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:675
-#: ../../lib/entropy/client/interfaces/package.py:1339
+#: ../../lib/entropy/client/interfaces/package.py:691
+#: ../../lib/entropy/client/interfaces/package.py:1364
 msgid "wrong checksum"
 msgstr ""
 
 #. timeout!
-#: ../../lib/entropy/client/interfaces/package.py:679
+#: ../../lib/entropy/client/interfaces/package.py:695
 msgid "timeout error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:681
-#: ../../lib/entropy/client/interfaces/package.py:1360
-#: ../../lib/entropy/client/interfaces/package.py:3378
+#: ../../lib/entropy/client/interfaces/package.py:697
+#: ../../lib/entropy/client/interfaces/package.py:1385
+#: ../../lib/entropy/client/interfaces/package.py:3434
 msgid "discarded download"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:684
-#: ../../lib/entropy/client/interfaces/package.py:1363
-#: ../../lib/entropy/client/interfaces/package.py:3380
+#: ../../lib/entropy/client/interfaces/package.py:700
+#: ../../lib/entropy/client/interfaces/package.py:1388
+#: ../../lib/entropy/client/interfaces/package.py:3436
 msgid "unknown reason"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1286
+#: ../../lib/entropy/client/interfaces/package.py:1311
 msgid "Downloading from"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1308
-#: ../../lib/entropy/client/interfaces/package.py:3349
+#: ../../lib/entropy/client/interfaces/package.py:1333
+#: ../../lib/entropy/client/interfaces/package.py:3405
 msgid "Successfully downloaded from"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1313
-#: ../../lib/entropy/client/interfaces/package.py:3352
+#: ../../lib/entropy/client/interfaces/package.py:1338
+#: ../../lib/entropy/client/interfaces/package.py:3408
 msgid "at"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1336
-#: ../../lib/entropy/client/interfaces/package.py:3373
+#: ../../lib/entropy/client/interfaces/package.py:1361
+#: ../../lib/entropy/client/interfaces/package.py:3429
 msgid "file not available on this mirror"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1344
+#: ../../lib/entropy/client/interfaces/package.py:1369
 msgid "Disabling resume"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1354
+#: ../../lib/entropy/client/interfaces/package.py:1379
 msgid "timeout, retrying on this mirror"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1357
+#: ../../lib/entropy/client/interfaces/package.py:1382
 msgid "timeout, giving up"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1462
+#: ../../lib/entropy/client/interfaces/package.py:1487
 msgid "Package signature verification error for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1494
+#: ../../lib/entropy/client/interfaces/package.py:1519
 msgid "disabled"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1507
+#: ../../lib/entropy/client/interfaces/package.py:1532
 msgid "Checking package signature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1518
+#: ../../lib/entropy/client/interfaces/package.py:1543
 msgid "Package signature verification"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1520
+#: ../../lib/entropy/client/interfaces/package.py:1545
 msgid "temporarily unavailable"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1530
+#: ../../lib/entropy/client/interfaces/package.py:1555
 msgid "Package signature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1532
+#: ../../lib/entropy/client/interfaces/package.py:1557
 msgid "does not match the recorded one"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1542
+#: ../../lib/entropy/client/interfaces/package.py:1567
 msgid "matches"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1557
+#: ../../lib/entropy/client/interfaces/package.py:1582
 msgid "Checking package checksum..."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1570
+#: ../../lib/entropy/client/interfaces/package.py:1595
 msgid "Package checksum matches"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1590
+#: ../../lib/entropy/client/interfaces/package.py:1615
 #, python-format
 msgid "Checksum does not match. Download attempt #%s"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1612
+#: ../../lib/entropy/client/interfaces/package.py:1637
 msgid "Cannot properly fetch package! Quitting."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1624
+#: ../../lib/entropy/client/interfaces/package.py:1649
 msgid "Cannot fetch package or checksum does not match"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1625
+#: ../../lib/entropy/client/interfaces/package.py:1650
 msgid "Try to download latest repositories"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1654
-#: ../../lib/entropy/client/interfaces/package.py:4007
+#: ../../lib/entropy/client/interfaces/package.py:1679
+#: ../../lib/entropy/client/interfaces/package.py:4063
 msgid "Unpacking"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1695
+#: ../../lib/entropy/client/interfaces/package.py:1720
 msgid "Unpack error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1724
+#: ../../lib/entropy/client/interfaces/package.py:1749
 msgid "Unable to find Entropy metadata in package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1788
+#: ../../lib/entropy/client/interfaces/package.py:1813
 msgid "configuration phase"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1805
+#: ../../lib/entropy/client/interfaces/package.py:1830
 msgid "Removing from Entropy"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1890
+#: ../../lib/entropy/client/interfaces/package.py:1916
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1912
+#: ../../lib/entropy/client/interfaces/package.py:1938
 #: ../../client/text_ui.py:2264
 msgid "remove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1913
-#: ../../lib/entropy/client/interfaces/package.py:3240
+#: ../../lib/entropy/client/interfaces/package.py:1939
+#: ../../lib/entropy/client/interfaces/package.py:3296
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:1932
+#: ../../lib/entropy/client/interfaces/package.py:1958
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2042
+#: ../../lib/entropy/client/interfaces/package.py:2075
 msgid "Collision found during removal of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2158
+#: ../../lib/entropy/client/interfaces/package.py:2191
 msgid "Updating database"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2630
+#: ../../lib/entropy/client/interfaces/package.py:2676
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2655
+#: ../../lib/entropy/client/interfaces/package.py:2701
 msgid "directory expected, symlink found"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2658
-#: ../../lib/entropy/client/interfaces/package.py:2952
+#: ../../lib/entropy/client/interfaces/package.py:2704
+#: ../../lib/entropy/client/interfaces/package.py:3008
 msgid "Removing in 20 seconds !!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2704
+#: ../../lib/entropy/client/interfaces/package.py:2750
 msgid "Cannot remove symlink"
 msgstr ""
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
-#: ../../lib/entropy/client/interfaces/package.py:2858
+#: ../../lib/entropy/client/interfaces/package.py:2914
 msgid "Automerging config file, never modified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2887
-#: ../../lib/entropy/client/interfaces/package.py:2909
+#: ../../lib/entropy/client/interfaces/package.py:2943
+#: ../../lib/entropy/client/interfaces/package.py:2965
 msgid "Circular symlink issue"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:2949
+#: ../../lib/entropy/client/interfaces/package.py:3005
 msgid "file expected, directory found"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3002
+#: ../../lib/entropy/client/interfaces/package.py:3058
 msgid "File move error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3005
+#: ../../lib/entropy/client/interfaces/package.py:3061
 msgid "please report"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3157
+#: ../../lib/entropy/client/interfaces/package.py:3213
 msgid "Cannot protect broken symlink"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3196
+#: ../../lib/entropy/client/interfaces/package.py:3252
 msgid "Skipping file installation/removal"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3257
+#: ../../lib/entropy/client/interfaces/package.py:3313
 msgid "Collision found during install for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3260
+#: ../../lib/entropy/client/interfaces/package.py:3316
 msgid "cannot overwrite"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3333
-#: ../../lib/entropy/client/interfaces/package.py:3396
-#: ../../lib/entropy/client/interfaces/package.py:3443
+#: ../../lib/entropy/client/interfaces/package.py:3389
+#: ../../lib/entropy/client/interfaces/package.py:3452
+#: ../../lib/entropy/client/interfaces/package.py:3499
 #: ../../lib/entropy/cli.py:357
 msgid "Downloading"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3360
+#: ../../lib/entropy/client/interfaces/package.py:3416
 msgid "Local path"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3426
+#: ../../lib/entropy/client/interfaces/package.py:3482
 msgid "Package cannot be fetched. Try to update repositories"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3445
+#: ../../lib/entropy/client/interfaces/package.py:3501
 msgid "archive"
 msgid_plural "archives"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3462
+#: ../../lib/entropy/client/interfaces/package.py:3518
 msgid "Some packages cannot be fetched"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3463
+#: ../../lib/entropy/client/interfaces/package.py:3519
 msgid "Try to update your repositories and retry"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3491
+#: ../../lib/entropy/client/interfaces/package.py:3547
 msgid "Package cannot be downloaded, unknown error."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3500
+#: ../../lib/entropy/client/interfaces/package.py:3556
 msgid "Installed package in queue vanished, skipping."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3536
+#: ../../lib/entropy/client/interfaces/package.py:3592
 msgid "Merging package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3589
+#: ../../lib/entropy/client/interfaces/package.py:3645
 msgid "You are running out of disk space"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3590
+#: ../../lib/entropy/client/interfaces/package.py:3646
 msgid "I bet, you're probably Michele"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3594
+#: ../../lib/entropy/client/interfaces/package.py:3650
 msgid "An error occured while trying to unpack the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3597
 #: ../../lib/entropy/client/interfaces/package.py:3653
+#: ../../lib/entropy/client/interfaces/package.py:3709
 msgid "Check if your system is healthy"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3616
+#: ../../lib/entropy/client/interfaces/package.py:3672
 msgid "Installing package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3636
+#: ../../lib/entropy/client/interfaces/package.py:3692
 msgid "unsupported splitdebug usage (package files)"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3640
+#: ../../lib/entropy/client/interfaces/package.py:3696
 msgid "<3 debug files installation enabled <3"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3652
+#: ../../lib/entropy/client/interfaces/package.py:3708
 msgid "An error occured while trying to install the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3667
+#: ../../lib/entropy/client/interfaces/package.py:3723
 msgid "Removing data"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3680
+#: ../../lib/entropy/client/interfaces/package.py:3736
 msgid "An error occured while trying to remove the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3681
+#: ../../lib/entropy/client/interfaces/package.py:3737
 msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3695
-#: ../../lib/entropy/client/interfaces/package.py:4043
+#: ../../lib/entropy/client/interfaces/package.py:3751
+#: ../../lib/entropy/client/interfaces/package.py:4099
 #: ../../lib/entropy/cli.py:43
 msgid "Cleaning"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3754
+#: ../../lib/entropy/client/interfaces/package.py:3810
 msgid "Error during package files permissions setup"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3786
+#: ../../lib/entropy/client/interfaces/package.py:3842
 msgid "Cleaning previously installed application data."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3893
+#: ../../lib/entropy/client/interfaces/package.py:3949
 msgid "Configuring package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3905
-#: ../../lib/entropy/client/interfaces/package.py:3925
+#: ../../lib/entropy/client/interfaces/package.py:3961
+#: ../../lib/entropy/client/interfaces/package.py:3981
 msgid "An error occured while trying to configure the package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3907
+#: ../../lib/entropy/client/interfaces/package.py:3963
 msgid "Make sure that your system is healthy"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3927
+#: ../../lib/entropy/client/interfaces/package.py:3983
 msgid "It seems that Source Package Manager entry is missing"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3951
+#: ../../lib/entropy/client/interfaces/package.py:4007
 msgid "Installed package vanished"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3957
+#: ../../lib/entropy/client/interfaces/package.py:4013
 msgid "Fetch not available"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3964
+#: ../../lib/entropy/client/interfaces/package.py:4020
 msgid "Fetching"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3972
+#: ../../lib/entropy/client/interfaces/package.py:4028
 msgid "Multi Fetching"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3973
-#: ../../lib/entropy/client/interfaces/package.py:3993
+#: ../../lib/entropy/client/interfaces/package.py:4029
+#: ../../lib/entropy/client/interfaces/package.py:4049
 #: ../../client/text_query.py:523 ../../client/text_ui.py:1147
 msgid "package"
 msgid_plural "packages"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3979
+#: ../../lib/entropy/client/interfaces/package.py:4035
 msgid "Fetching sources"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3985
+#: ../../lib/entropy/client/interfaces/package.py:4041
 msgid "Verifying"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3992
+#: ../../lib/entropy/client/interfaces/package.py:4048
 msgid "Multi Verification"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:3999
+#: ../../lib/entropy/client/interfaces/package.py:4055
 msgid "Merging"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4020
+#: ../../lib/entropy/client/interfaces/package.py:4076
 msgid "Installing"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4051
+#: ../../lib/entropy/client/interfaces/package.py:4107
 msgid "Postinstall"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4059
+#: ../../lib/entropy/client/interfaces/package.py:4115
 msgid "Setup"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4067
+#: ../../lib/entropy/client/interfaces/package.py:4123
 msgid "Preinstall"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4075
+#: ../../lib/entropy/client/interfaces/package.py:4131
 msgid "Preremove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4083
+#: ../../lib/entropy/client/interfaces/package.py:4139
 msgid "Postremove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4097
+#: ../../lib/entropy/client/interfaces/package.py:4153
 msgid "Configuring"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package.py:4150
+#: ../../lib/entropy/client/interfaces/package.py:4206
 msgid "An error occured. Action aborted."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:284
+#: ../../lib/entropy/client/interfaces/db.py:285
 msgid "Injecting downloaded dump"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:372
+#: ../../lib/entropy/client/interfaces/db.py:373
 msgid "Repository URL"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:380
+#: ../../lib/entropy/client/interfaces/db.py:381
 msgid "Repository local path"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:388
+#: ../../lib/entropy/client/interfaces/db.py:389
 msgid "Repository API"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:403
+#: ../../lib/entropy/client/interfaces/db.py:404
 msgid "Repository is being updated"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:404
+#: ../../lib/entropy/client/interfaces/db.py:405
 msgid "Try again in a few minutes"
 msgstr ""
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:465
+#: ../../lib/entropy/client/interfaces/db.py:466
 msgid "Downloading repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:509
+#: ../../lib/entropy/client/interfaces/db.py:510
 msgid "unable to download the repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:529
+#: ../../lib/entropy/client/interfaces/db.py:530
 msgid "Downloading checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:554
+#: ../../lib/entropy/client/interfaces/db.py:555
 msgid "Cannot fetch checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:555
-#: ../../lib/entropy/client/interfaces/db.py:1126
+#: ../../lib/entropy/client/interfaces/db.py:556
+#: ../../lib/entropy/client/interfaces/db.py:1132
 msgid "Cannot verify repository integrity"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:646
+#: ../../lib/entropy/client/interfaces/db.py:647
 msgid "Unpacking database to"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:663
+#: ../../lib/entropy/client/interfaces/db.py:664
 msgid "Cannot unpack compressed package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:664
+#: ../../lib/entropy/client/interfaces/db.py:665
 msgid "Skipping repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:698
+#: ../../lib/entropy/client/interfaces/db.py:699
 msgid "Repository is invalid"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:722
+#: ../../lib/entropy/client/interfaces/db.py:723
 msgid "Indexing Repository metadata"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:933
+#: ../../lib/entropy/client/interfaces/db.py:939
 msgid "Downloading repository metafile"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:943
+#: ../../lib/entropy/client/interfaces/db.py:949
 msgid "Downloading GPG signature of repository metafile"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:953
+#: ../../lib/entropy/client/interfaces/db.py:959
 msgid "Downloading Notice Board"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:979
+#: ../../lib/entropy/client/interfaces/db.py:985
 msgid "unpacked meta file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:985
+#: ../../lib/entropy/client/interfaces/db.py:991
 msgid "removed meta file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1002
+#: ../../lib/entropy/client/interfaces/db.py:1008
 msgid "not available, it's ok"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1006
+#: ../../lib/entropy/client/interfaces/db.py:1012
 msgid "not available, not very ok!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1019
+#: ../../lib/entropy/client/interfaces/db.py:1025
 msgid "available, w00t!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1037
+#: ../../lib/entropy/client/interfaces/db.py:1043
 msgid "cannot be unpacked, not very ok!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1088
+#: ../../lib/entropy/client/interfaces/db.py:1094
 #: ../../client/text_repositories.py:417
 msgid "Repository revision"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1111
+#: ../../lib/entropy/client/interfaces/db.py:1117
 msgid "Checking downloaded repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1125
+#: ../../lib/entropy/client/interfaces/db.py:1131
 msgid "Cannot open digest"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1136
-#: ../../lib/entropy/client/interfaces/db.py:1147
+#: ../../lib/entropy/client/interfaces/db.py:1142
+#: ../../lib/entropy/client/interfaces/db.py:1153
 msgid "Downloaded repository status"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1137
+#: ../../lib/entropy/client/interfaces/db.py:1143
 msgid "OK"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1148
+#: ../../lib/entropy/client/interfaces/db.py:1154
 msgid "ERROR"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1157
+#: ../../lib/entropy/client/interfaces/db.py:1163
 msgid "An error occured while checking repository integrity"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1158
+#: ../../lib/entropy/client/interfaces/db.py:1164
 msgid "Giving up"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1180
-#: ../../lib/entropy/security.py:279
+#: ../../lib/entropy/client/interfaces/db.py:1186
+#: ../../lib/entropy/security.py:285
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1199
+#: ../../lib/entropy/client/interfaces/db.py:1205
 msgid "This repository suports GPG-signed packages"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1206
+#: ../../lib/entropy/client/interfaces/db.py:1212
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1240
-#: ../../lib/entropy/security.py:318
+#: ../../lib/entropy/client/interfaces/db.py:1246
+#: ../../lib/entropy/security.py:324
 msgid "GPG key changed for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1260
-#: ../../lib/entropy/security.py:337
+#: ../../lib/entropy/client/interfaces/db.py:1266
+#: ../../lib/entropy/security.py:343
 msgid "GPG key already installed for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1273
+#: ../../lib/entropy/client/interfaces/db.py:1279
 msgid "GPG key EXPIRED for repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1285
+#: ../../lib/entropy/client/interfaces/db.py:1291
 msgid "Installing GPG key for repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1303
-#: ../../lib/entropy/client/interfaces/db.py:1335
-#: ../../lib/entropy/security.py:375
+#: ../../lib/entropy/client/interfaces/db.py:1309
+#: ../../lib/entropy/client/interfaces/db.py:1341
+#: ../../lib/entropy/security.py:381
 msgid "Error during GPG key installation"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1313
+#: ../../lib/entropy/client/interfaces/db.py:1319
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1347
+#: ../../lib/entropy/client/interfaces/db.py:1353
 msgid "Successfully installed GPG key for repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1356
-#: ../../lib/entropy/security.py:395
+#: ../../lib/entropy/client/interfaces/db.py:1362
+#: ../../lib/entropy/security.py:401
 msgid "Fingerprint"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1396
+#: ../../lib/entropy/client/interfaces/db.py:1402
 msgid "Verifying GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1410
+#: ../../lib/entropy/client/interfaces/db.py:1416
 msgid "Verified GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1420
-#: ../../lib/entropy/security.py:420
+#: ../../lib/entropy/client/interfaces/db.py:1426
+#: ../../lib/entropy/security.py:426
 msgid "Error during GPG verification of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1429
-#: ../../lib/entropy/security.py:429
+#: ../../lib/entropy/client/interfaces/db.py:1435
+#: ../../lib/entropy/security.py:435
 msgid "It could mean a potential security risk"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1484
+#: ../../lib/entropy/client/interfaces/db.py:1490
 msgid "Web Service"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1485
+#: ../../lib/entropy/client/interfaces/db.py:1491
 msgid "skipping differential sync"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1486
+#: ../../lib/entropy/client/interfaces/db.py:1492
 msgid "threshold"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1520
+#: ../../lib/entropy/client/interfaces/db.py:1526
 msgid "Web Service communication error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1540
+#: ../../lib/entropy/client/interfaces/db.py:1546
 msgid "Web Service data error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1556
+#: ../../lib/entropy/client/interfaces/db.py:1562
 msgid "Local status"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1588
+#: ../../lib/entropy/client/interfaces/db.py:1594
 msgid "Fetching segments"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1624
-#: ../../lib/entropy/client/interfaces/db.py:1643
-#: ../../lib/entropy/client/interfaces/db.py:1660
+#: ../../lib/entropy/client/interfaces/db.py:1630
+#: ../../lib/entropy/client/interfaces/db.py:1649
+#: ../../lib/entropy/client/interfaces/db.py:1666
 msgid "Web Service status"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1625
+#: ../../lib/entropy/client/interfaces/db.py:1631
 msgid "cannot fetch repository metadata"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1644
+#: ../../lib/entropy/client/interfaces/db.py:1650
 msgid "cannot update treeupdates data"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1661
+#: ../../lib/entropy/client/interfaces/db.py:1667
 msgid "cannot update package sets data"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1677
+#: ../../lib/entropy/client/interfaces/db.py:1683
 msgid "Fetch error on segment while adding"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1704
+#: ../../lib/entropy/client/interfaces/db.py:1710
 msgid "repository error while adding packages"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1728
+#: ../../lib/entropy/client/interfaces/db.py:1734
 msgid "repository error while removing packages"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1744
+#: ../../lib/entropy/client/interfaces/db.py:1750
 msgid "Repository checksum doesn't match remote."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1747
+#: ../../lib/entropy/client/interfaces/db.py:1753
 msgid "local"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1752
+#: ../../lib/entropy/client/interfaces/db.py:1758
 msgid "remote"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1810
+#: ../../lib/entropy/client/interfaces/db.py:1816
 msgid "repository is already up to date"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:2014
+#: ../../lib/entropy/client/interfaces/db.py:2020
 msgid "Configuration files update error, not critical, continuing"
 msgstr ""
 
@@ -1433,117 +1437,117 @@ msgstr ""
 msgid "Calculating updates"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:785
+#: ../../lib/entropy/fetchers.py:792
 msgid "infinite"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:857
+#: ../../lib/entropy/fetchers.py:864
 msgid "[F]"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:858 ../../lib/entropy/fetchers.py:1212
+#: ../../lib/entropy/fetchers.py:865 ../../lib/entropy/fetchers.py:1239
 msgid "ETA"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:859 ../../lib/entropy/fetchers.py:1213
+#: ../../lib/entropy/fetchers.py:866 ../../lib/entropy/fetchers.py:1240
 msgid "sec"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1094
+#: ../../lib/entropy/fetchers.py:1121
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../lib/entropy/fetchers.py:1096
+#: ../../lib/entropy/fetchers.py:1123
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../lib/entropy/security.py:350
+#: ../../lib/entropy/security.py:356
 msgid "GPG key EXPIRED for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:361
+#: ../../lib/entropy/security.py:367
 msgid "Installing GPG key for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:386
+#: ../../lib/entropy/security.py:392
 msgid "Successfully installed GPG key for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:440 ../../lib/entropy/security.py:1015
-#: ../../lib/entropy/security.py:1030 ../../lib/entropy/security.py:1037
-#: ../../lib/entropy/security.py:1079 ../../lib/entropy/security.py:1102
-#: ../../lib/entropy/security.py:1114 ../../lib/entropy/security.py:1131
-#: ../../lib/entropy/security.py:1143 ../../lib/entropy/security.py:1155
-#: ../../lib/entropy/security.py:1167 ../../lib/entropy/security.py:1188
-#: ../../lib/entropy/security.py:1216 ../../lib/entropy/security.py:1228
+#: ../../lib/entropy/security.py:446 ../../lib/entropy/security.py:1021
+#: ../../lib/entropy/security.py:1036 ../../lib/entropy/security.py:1043
+#: ../../lib/entropy/security.py:1085 ../../lib/entropy/security.py:1108
+#: ../../lib/entropy/security.py:1120 ../../lib/entropy/security.py:1137
+#: ../../lib/entropy/security.py:1149 ../../lib/entropy/security.py:1161
+#: ../../lib/entropy/security.py:1173 ../../lib/entropy/security.py:1194
+#: ../../lib/entropy/security.py:1222 ../../lib/entropy/security.py:1234
 msgid "Security Advisories"
 msgstr ""
 
-#: ../../lib/entropy/security.py:441
+#: ../../lib/entropy/security.py:447
 msgid "GPG key verification successful"
 msgstr ""
 
-#: ../../lib/entropy/security.py:657 ../../client/text_ui.py:789
+#: ../../lib/entropy/security.py:663 ../../client/text_ui.py:789
 #: ../../client/text_ui.py:1820 ../../client/text_ui.py:1882
 #: ../../client/text_ui.py:1913 ../../client/text_ui.py:2018
 msgid "Warning"
 msgstr ""
 
-#: ../../lib/entropy/security.py:659
+#: ../../lib/entropy/security.py:665
 msgid "advisory broken"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1016
+#: ../../lib/entropy/security.py:1022
 msgid "getting latest advisories"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1031
+#: ../../lib/entropy/security.py:1037
 msgid "updated successfully"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1038
+#: ../../lib/entropy/security.py:1044
 msgid "already up to date"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1080
+#: ../../lib/entropy/security.py:1086
 msgid "cannot download checksum, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1103
+#: ../../lib/entropy/security.py:1109
 msgid "unable to download advisories, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1115
+#: ../../lib/entropy/security.py:1121
 msgid "Verifying checksum"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1132
+#: ../../lib/entropy/security.py:1138
 msgid "cannot open packages, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1144
+#: ../../lib/entropy/security.py:1150
 msgid "cannot read the checksum, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1156
+#: ../../lib/entropy/security.py:1162
 msgid "digest verification failed, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1168
+#: ../../lib/entropy/security.py:1174
 msgid "verification successful"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1189
+#: ../../lib/entropy/security.py:1195
 msgid "GPG service not available"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1217
+#: ../../lib/entropy/security.py:1223
 msgid "digest verification failed, try again later"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1229
+#: ../../lib/entropy/security.py:1235
 msgid "installing"
 msgstr ""
 
