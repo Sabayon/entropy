@@ -383,6 +383,23 @@ class Package:
             raise AttributeError("Action must be in %s" % (
                 self._valid_actions,))
 
+    _INFO_EXTS = (
+        const_convert_to_unicode(".gz"),
+        const_convert_to_unicode(".bz2")
+        )
+
+    def _get_info_directories(self):
+        """
+        Return a list of `info` directories as declared in the
+        INFOPATH and INFODIR environment variable.
+        """
+        info_dirs = os.getenv("INFOPATH", "").split(":")
+        info_dirs += os.getenv("INFODIR", "").split(":")
+        info_dirs = [const_convert_to_unicode(
+                os.path.normpath(x)) for x in info_dirs]
+        info_dirs.sort()
+        return info_dirs
+
     @staticmethod
     def get_standard_fetch_disk_path(download):
         """
@@ -1842,6 +1859,7 @@ class Package:
         Body of the _remove_content_from_system() method.
         """
         inst_repo = self._entropy.installed_repository()
+        info_dirs = self._get_info_directories()
 
         for _pkg_id, item, ftype in remove_content:
 
@@ -1983,8 +2001,15 @@ class Package:
                 continue
 
             # collect for Trigger
-            self.pkgmeta['affected_directories'].add(
-                os.path.dirname(item))
+            dir_name = os.path.dirname(item)
+            self.pkgmeta['affected_directories'].add(dir_name)
+
+            # account for info files, if any
+            if dir_name in info_dirs:
+                for _ext in self._INFO_EXTS:
+                    if item.endswith(_ext):
+                        self.pkgmeta['affected_infofiles'].add(item)
+                        break
 
             # add its parent directory
             dirobj = const_convert_to_unicode(
@@ -2422,6 +2447,8 @@ class Package:
         # this is needed to make postinstall trigger work properly
         self.pkgmeta['triggers']['install']['affected_directories'] = \
             self.pkgmeta['affected_directories']
+        self.pkgmeta['triggers']['install']['affected_infofiles'] = \
+            self.pkgmeta['affected_infofiles']
 
         # always set data['injected'] to False
         # installed packages database SHOULD never have more
@@ -2599,6 +2626,7 @@ class Package:
         col_protect = misc_data['collisionprotect']
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
             self.pkgmeta['splitdebug_dirs']
+        info_dirs = self._get_info_directories()
 
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
@@ -2799,6 +2827,16 @@ class Package:
                 rel_fromfile_dir)
             self.pkgmeta['affected_directories'].add(
                 rel_fromfile_dir_utf)
+
+            # account for info files, if any
+            if rel_fromfile_dir_utf in info_dirs:
+                rel_fromfile_utf = const_convert_to_unicode(
+                    rel_fromfile)
+                for _ext in self._INFO_EXTS:
+                    if rel_fromfile_utf.endswith(_ext):
+                        self.pkgmeta['affected_infofiles'].add(
+                            rel_fromfile_utf)
+                        break
 
             # splitdebug (.debug files) support
             # If splitdebug is not enabled, do not create
@@ -4514,6 +4552,7 @@ class Package:
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         self.pkgmeta['affected_directories'] = set()
+        self.pkgmeta['affected_infofiles'] = set()
 
         self.pkgmeta['triggers']['remove'] = \
             inst_repo.getTriggerData(idpackage)
@@ -4522,6 +4561,8 @@ class Package:
             return 0
         self.pkgmeta['triggers']['remove']['affected_directories'] = \
             self.pkgmeta['affected_directories']
+        self.pkgmeta['triggers']['remove']['affected_infofiles'] = \
+            self.pkgmeta['affected_infofiles']
 
         self.pkgmeta['triggers']['remove']['spm_repository'] = \
             inst_repo.retrieveSpmRepository(
@@ -4708,6 +4749,7 @@ class Package:
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         self.pkgmeta['affected_directories'] = set()
+        self.pkgmeta['affected_infofiles'] = set()
 
         # smartpackage ?
         self.pkgmeta['smartpackage'] = False
@@ -4769,6 +4811,8 @@ class Package:
                 # pass reference, not copy! nevva!
                 self.pkgmeta['triggers']['remove']['affected_directories'] = \
                     self.pkgmeta['affected_directories']
+                self.pkgmeta['triggers']['remove']['affected_infofiles'] = \
+                    self.pkgmeta['affected_infofiles']
 
                 self.pkgmeta['triggers']['remove']['spm_repository'] = \
                     inst_repo.retrieveSpmRepository(idpackage)
