@@ -1,3 +1,27 @@
+commit 5c1f8d9b94c70b97cbdb7daa773fbbc6329d643a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:04:42 2012 +0200
+
+    Release Entropy 141
+
+commit a1077e6c0a3ddac9aee8ed9b5872db5c916578da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:03:51 2012 +0200
+
+    [client] update entropy.pot
+
+commit 4bbf8d773be4af0ffb0c77dacf5cff82f96965a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:01:17 2012 +0200
+
+    [entropy.client.trigger] implement support for automagic /usr/share/info/*/dir update
+
+commit b464e3dd4a77a9151471446627bcd9a2167cafde
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 3 19:25:02 2012 +0200
+
+    Tagging Entropy version 140
+
 commit 91a96abd457ba0f110bad0fa7c9af52a09853fa9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Sep 3 19:25:01 2012 +0200
