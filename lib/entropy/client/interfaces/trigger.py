@@ -18,7 +18,7 @@ import codecs
 from entropy.client.interfaces.client import Client
 from entropy.const import etpConst, const_isunicode, etpSys, etpUi, \
     const_convert_to_rawstring
-from entropy.output import brown, bold, darkred, red
+from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
 
 import entropy.dep
@@ -35,6 +35,7 @@ class Trigger:
 
     VALID_PHASES = ("setup", "preinstall", "postinstall", "preremove",
         "postremove",)
+    INSTALL_INFO_EXEC = "/usr/bin/install-info"
 
     def __init__(self, entropy_client, action, phase, package_metadata,
         action_metadata):
@@ -141,6 +142,9 @@ class Trigger:
             env_dirs = spm_class.ENV_DIRS
             if len(env_dirs) != len(env_dirs - cont_dirs):
                 functions.insert(0, self._trigger_env_update)
+
+        if self._pkgdata['affected_infofiles']:
+            functions.append(self._trigger_infofile_install)
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_postinstall)
@@ -486,6 +490,43 @@ class Trigger:
                 "[POST] Running env_update"
             )
             self._spm.environment_update()
+
+    def _trigger_infofile_install(self):
+        info_exec = Trigger.INSTALL_INFO_EXEC
+        if not os.path.isfile(info_exec):
+            self._entropy.logger.log(
+                "[Trigger]",
+                etpConst['logging']['normal_loglevel_id'],
+                "[POST] %s is not available" % (info_exec,)
+            )
+            return 0
+        if not os.access(info_exec, os.X_OK | os.R_OK):
+            self._entropy.logger.log(
+                "[Trigger]",
+                etpConst['logging']['normal_loglevel_id'],
+                "[POST] %s is not executable" % (info_exec,)
+            )
+            return 0
+
+        env = os.environ.copy()
+        for info_file in self._pkgdata['affected_infofiles']:
+            self._entropy.output(
+                "%s: %s" % (
+                    teal(_("Installing info")),
+                    info_file,),
+                importance = 0,
+                header = purple("    # ")
+            )
+            info_root = os.path.dirname(info_file)
+            args = (
+                info_exec,
+                "--dir-file=%s/dir" % (info_root,),
+                info_file)
+            proc = subprocess.Popen(
+                args, stdout = sys.stdout, stderr = sys.stderr,
+                env = env)
+            proc.wait() # ignore any error
+        return 0
 
     def _trigger_spm_postinstall(self):
         if self._spm is not None:
