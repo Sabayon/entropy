@@ -294,22 +294,33 @@ def const_default_settings(rootdir):
     @rtype: None
     @return: None
     """
-    default_etp_dir = os.getenv('DEV_ETP_VAR_DIR', rootdir+"/var/lib/entropy")
+    if not rootdir.strip():
+        rootdir = os.path.sep
+    default_etp_dir = os.getenv(
+        'DEV_ETP_VAR_DIR',
+        os.path.join(rootdir, "var/lib/entropy"))
     default_etp_tmpdir = "/tmp"
-    default_etp_dbdir = "/database/"+ETP_ARCH_CONST
+
+    default_etp_dbdir = os.path.join("database", ETP_ARCH_CONST)
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
-    default_etp_client_repodir = "/client"
-    default_etp_cachesdir = "/caches/"
-    default_etp_securitydir = "/glsa/"
-    default_etp_logdir = default_etp_dir+"/"+"logs"
-    default_etp_confdir = os.getenv('DEV_ETP_ETC_DIR', rootdir+"/etc/entropy")
-    default_etp_syslogdir = os.getenv('DEV_ETP_LOG_DIR',
-        rootdir+"/var/log/entropy/")
-    default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
-        rootdir+"/var/tmp/entropy")
+    default_etp_client_repodir = "client"
+    default_etp_cachesdir = "caches"
+    default_etp_securitydir = "glsa"
+    default_etp_logdir = "logs"
+
+    default_etp_confdir = os.getenv(
+        'DEV_ETP_ETC_DIR',
+        os.path.join(rootdir, "etc/entropy"))
+    default_etp_syslogdir = os.getenv(
+        'DEV_ETP_LOG_DIR',
+        os.path.join(rootdir, "var/log/entropy"))
+    default_etp_vardir = os.getenv(
+        'DEV_ETP_TMP_DIR',
+        os.path.join(rootdir, "var/tmp/entropy"))
+
     default_etp_tmpcache_dir = os.getenv('DEV_ETP_CACHE_DIR',
-        default_etp_dir+default_etp_cachesdir)
+        os.path.join(default_etp_dir, default_etp_cachesdir))
 
     etpConst.clear()
     my_const = {
@@ -339,7 +350,7 @@ def const_default_settings(rootdir):
         # new (since 0.99.48) Entropy downloaded packages location
         # equals to /var/lib/entropy/client/packages containing packages/,
         # packages-nonfree/, packages-restricted/ etc
-        'entropypackagesworkdir': os.path.join(default_etp_dir + \
+        'entropypackagesworkdir': os.path.join(default_etp_dir,
             default_etp_client_repodir, "packages"),
         # Entropy unpack directory
         'entropyunpackdir': default_etp_vardir,
@@ -548,18 +559,22 @@ def const_default_settings(rootdir):
         # Entropy Socket Interface log level
         'socketloglevel': 2,
         # Log dir where ebuilds store their stuff
-        'logdir': default_etp_logdir,
+        'logdir': os.path.join(default_etp_dir, default_etp_logdir),
 
-        'syslogdir': default_etp_syslogdir, # Entropy system tools log directory
-        'entropylogfile': default_etp_syslogdir+"entropy.log",
-        'securitylogfile': default_etp_syslogdir+"security.log",
+        # Entropy system tools log directory
+        'syslogdir': default_etp_syslogdir,
+        'entropylogfile': os.path.join(
+            default_etp_syslogdir, "entropy.log"),
+        'securitylogfile': os.path.join(
+            default_etp_syslogdir, "security.log"),
 
-        'etpdatabaseclientdir': default_etp_dir + default_etp_client_repodir + \
-            default_etp_dbdir,
+        'etpdatabaseclientdir': os.path.join(
+            default_etp_dir, default_etp_client_repodir,
+            default_etp_dbdir),
         # path to equo.db - client side database file
-        'etpdatabaseclientfilepath': default_etp_dir + \
-            default_etp_client_repodir + default_etp_dbdir + os.path.sep + \
-            default_etp_dbclientfile,
+        'etpdatabaseclientfilepath': os.path.join(
+            default_etp_dir, default_etp_client_repodir,
+            default_etp_dbdir, default_etp_dbclientfile),
         # prefix of database backups
         'dbbackupprefix': 'entropy_backup_',
 
@@ -655,10 +670,10 @@ def const_default_settings(rootdir):
 
         # data storage directory, useful to speed up
         # entropy client across multiple issued commands
-        #'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
         'dumpstoragedir': default_etp_tmpcache_dir,
         # where GLSAs are stored
-        'securitydir': default_etp_dir+default_etp_securitydir,
+        'securitydir': os.path.join(
+            default_etp_dir, default_etp_securitydir),
         'securityurl': "http://community.sabayon.org/security"
             "/security-advisories.tar.bz2",
 
