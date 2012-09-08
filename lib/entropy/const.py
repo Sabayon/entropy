@@ -1101,7 +1101,7 @@ def const_configure_lock_paths():
     @return: None
     """
     etpConst['locks'] = {
-        'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],
+        'using_resources': os.path.join(etpConst['entropyworkdir'],
             '.using_resources'),
     }
 
