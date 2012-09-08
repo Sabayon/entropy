@@ -294,6 +294,7 @@ def const_default_settings(rootdir):
     @rtype: None
     @return: None
     """
+    original_rootdir = rootdir
     if not rootdir.strip():
         rootdir = os.path.sep
     default_etp_dir = os.getenv(
@@ -636,7 +637,7 @@ def const_default_settings(rootdir):
         # Product identificator (standard, professional...)
         'product': "standard",
         'errorstatus': default_etp_confdir+"/code",
-        'systemroot': rootdir, # default system root
+        'systemroot': original_rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'entropygid': None,
         'entropygid_nopriv': None,
