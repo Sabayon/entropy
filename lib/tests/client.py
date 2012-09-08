@@ -222,6 +222,7 @@ class EntropyClientTest(unittest.TestCase):
         trigger = None
         try:
             pkgdata['affected_directories'] = set()
+            pkgdata['affected_infofiles'] = set()
             pkgdata['trigger'] = """\
 #!%s
 echo $@
@@ -248,6 +249,7 @@ exit 42
         trigger = None
         try:
             pkgdata['affected_directories'] = set()
+            pkgdata['affected_infofiles'] = set()
             pkgdata['trigger'] = """\
 import os
 os.system("echo hello")
@@ -272,6 +274,7 @@ my_ext_status = 42
         trigger = None
         try:
             pkgdata['affected_directories'] = set()
+            pkgdata['affected_infofiles'] = set()
             pkgdata['trigger'] = """\
 import os
 import subprocess
