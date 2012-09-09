@@ -1,3 +1,70 @@
+commit 724a4d7e8797b5a9a804711351e3d161b1e39d4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 9 18:07:21 2012 +0200
+
+    Release Entropy 142
+
+commit 3ee803c2ba32702c3476b517f8df4c4aa5f578d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 9 18:04:52 2012 +0200
+
+    [entropy.const] implement a debug watchdog thread dumper thread.
+    
+    If ETP_DEBUG_WATCHDOG env variable is set, entropy.const will create
+    a timer thread that prints to stderr the full application thread dump.
+    This is quite useful in case of hard to reproduce deadlocks at the library
+    level.
+
+commit b25e2b8f03f9fec101a01f72b48b7a1ee804e4e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 9 17:31:47 2012 +0200
+
+    [entropy.cache] replace fork() usage with multithreading.
+    
+    Mixing multiprocessing with multithreading is bad and we all know that.
+    However, in this specific case there was nothing wrong in running tiny
+    functions in another process.
+    It seems that entropy.dump.dumpobj() is efficient enough nowadays to
+    have it running in the same process anyway.
+
+commit 446432c64de934e29b233e01ea5222b3a8a12a59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:57:08 2012 +0200
+
+    [entropy.const] do not alter etpConst['systemroot'] variable
+
+commit c39bec886b400d6dc5695403e8d135125eb8d363
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:56:44 2012 +0200
+
+    [tests] fix Entropy Client tests (add affected_infofiles metadata)
+
+commit 627af78498402db1eb66f58107fcae8eae10f6e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:34:05 2012 +0200
+
+    [entropy.const] move Entropy Resources Lock path to /var/lib/entropy
+    
+    This commit moves the Entropy Resources Lock from:
+    > /var/lib/entropy/client/database/<arch>/.using_resources
+    to a simpler:
+    > /var/lib/entropy/.using_resources
+    
+    The main reason for the move is to make such path more consistent across
+    architectures.
+
+commit ab9e3e9791b1c3fca93c51ec47f773675c1879d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:28:31 2012 +0200
+
+    [entropy.const] remove hardcoded slashes, rewrite paths using os.path.join()
+
+commit ceedf8d16105b9b5ad95d9749b1df700e6bfaa70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:04:43 2012 +0200
+
+    Tagging Entropy version 141
+
 commit 5c1f8d9b94c70b97cbdb7daa773fbbc6329d643a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Sep 6 20:04:42 2012 +0200
