@@ -2,15 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    search
-
-    match
-        --multimatch
-        --installed
-        --multirepo
-        --showrepo
-        --showdesc
-
     hop <branch>
 
     upgrade
