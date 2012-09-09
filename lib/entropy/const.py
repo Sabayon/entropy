@@ -1676,3 +1676,34 @@ def const_get_cpus():
 
 # load config
 initconfig_entropy_constants(etpSys['rootdir'])
+
+# Debug Watchdog support. If enabled, a thread dump
+# will be pushed to stderr every ETP_DEBUG_WATCHDOG_INTERVAL
+# seconds (or 60 seconds if unset).
+_debug_watchdog = os.getenv("ETP_DEBUG_WATCHDOG")
+if _debug_watchdog is not None:
+    from threading import Timer
+    _default_debug_watchdog_interval = 60
+    _debug_watchdog_interval = os.getenv(
+        "ETP_DEBUG_WATCHDOG_INTERVAL",
+        _default_debug_watchdog_interval)
+    try:
+        _debug_watchdog_interval = int(_debug_watchdog_interval)
+    except (ValueError, TypeError):
+        _debug_watchdog_interval = _default_debug_watchdog_interval
+
+    const_debug_write(
+        __name__,
+        "DebugWatchdogTimer enabled, interval: %d" % (
+            _debug_watchdog_interval,))
+
+    def _dumper():
+        dump_signal(None, None)
+        _setup_timer()
+
+    def _setup_timer():
+        _timer = Timer(_debug_watchdog_interval, _dumper)
+        _timer.name = "DebugWatchdogTimer"
+        _timer.daemon = True
+        _timer.start()
+    _setup_timer()
