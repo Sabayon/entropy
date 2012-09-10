@@ -2,6 +2,14 @@ Backlog (raw)
 
   1.0:
 
+    mask
+      --ask
+      --pretend
+
+    unmask
+      --ask
+      --pretend
+
     hop <branch>
 
     upgrade
@@ -76,14 +84,6 @@ Backlog (raw)
       --configfiles
       --force-system
       --resume
-
-    mask
-      --ask
-      --pretend
-
-    unmask
-      --ask
-      --pretend
 
     config
       --ask
