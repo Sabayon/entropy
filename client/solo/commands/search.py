@@ -105,7 +105,11 @@ Search for packages.
         """
         Overridden from SoloCommand.
         """
-        return self._bashcomp(sys.stdout, last_arg, [])
+        args = [
+            "--quiet", "--verbose",
+            "--installed", "--available"]
+        args.sort()
+        return self._bashcomp(sys.stdout, last_arg, args)
 
     def _search_string(self, entropy_client, string):
         """
