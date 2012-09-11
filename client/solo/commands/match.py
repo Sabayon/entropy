@@ -57,7 +57,13 @@ Match package names.
         """
         Overridden from SoloCommand.
         """
-        return self._bashcomp(sys.stdout, last_arg, [])
+        args = [
+            "--quiet", "--verbose",
+            "--installed", "--available",
+            "--multimatch", "--multirepo",
+            "--showrepo"]
+        args.sort()
+        return self._bashcomp(sys.stdout, last_arg, args)
 
     def _get_parser(self):
         """
