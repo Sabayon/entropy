@@ -180,6 +180,7 @@ Backlog (raw)
     cleanup
     --info
 
+    - critical updates -> relaxed enabled
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
       - drop entropy.cli
