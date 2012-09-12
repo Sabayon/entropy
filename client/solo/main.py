@@ -248,6 +248,8 @@ def warn_live_system():
 
 def main():
 
+    warn_version_mismatch()
+
     install_exception_handler()
 
     descriptors = SoloCommandDescriptor.obtain()
