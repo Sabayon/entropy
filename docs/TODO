@@ -169,7 +169,6 @@ Backlog (raw)
       --verbose
       --quiet
 
-    cleanup
     --info
 
     solo.utils.show_you_meant !

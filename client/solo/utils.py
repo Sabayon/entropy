@@ -11,6 +11,7 @@
 """
 import os
 import codecs
+import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.i18n import _
@@ -42,6 +43,36 @@ def read_client_release():
             return myrev
 
     return "0"
+
+def cleanup(entropy_client, directories):
+    """
+    Temporary files cleaner.
+
+    @param directories: list of directory paths
+    @type directories: list
+    @return: exit status
+    @rtype: int
+    """
+    counter = 0
+    for xdir in directories:
+        if not os.path.isdir(xdir):
+            continue
+        entropy_client.output(
+            "%s %s %s..." % (
+                _("Cleaning"), darkgreen(xdir),
+                _("directory"),),
+            back = True)
+        for data in os.listdir(xdir):
+            subprocess.call(["rm", "-rf", os.path.join(xdir, data)])
+            counter += 1
+
+    entropy_client.output(
+        "%s: %s %s" % (
+            _("Cleaned"),
+            counter,
+            _("files and directories"),)
+        )
+    return 0
 
 def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
     side_color = darkgreen):
