@@ -28,7 +28,7 @@ class SoloStatus(SoloCommand):
     """
 
     NAME = "status"
-    ALIASES = ["st"]
+    ALIASES = ["st", "--info"]
     ALLOW_UNPRIVILEGED = True
 
     INTRODUCTION = """\

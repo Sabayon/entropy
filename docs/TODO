@@ -169,8 +169,6 @@ Backlog (raw)
       --verbose
       --quiet
 
-    --info
-
     solo.utils.show_you_meant !
 
     - critical updates -> relaxed enabled
