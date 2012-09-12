@@ -2,14 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    mask
-      --ask
-      --pretend
-
-    unmask
-      --ask
-      --pretend
-
     hop <branch>
 
     upgrade
@@ -179,6 +171,8 @@ Backlog (raw)
 
     cleanup
     --info
+
+    solo.utils.show_you_meant !
 
     - critical updates -> relaxed enabled
     - rework client/ code, as done with eit

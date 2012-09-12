@@ -96,6 +96,38 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
         else:
             print_generic(cols)
 
+def enlightenatom(atom):
+    """
+    Colorize package atoms with standard colors.
+
+    @param atom: atom string
+    @type atom: string
+    @return: colorized string
+    @rtype: string
+    """
+    entropy_rev = entropy.dep.dep_get_entropy_revision(atom)
+    if entropy_rev is None:
+        entropy_rev = ''
+    else:
+        entropy_rev = '~%s' % (str(entropy_rev),)
+    entropy_tag = entropy.dep.dep_gettag(atom)
+    if entropy_tag is None:
+        entropy_tag = ''
+    else:
+        entropy_tag = '#%s' % (entropy_tag,)
+    clean_atom = entropy.dep.remove_entropy_revision(atom)
+    clean_atom = entropy.dep.remove_tag(clean_atom)
+    only_cpv = entropy.dep.dep_getcpv(clean_atom)
+    operator = clean_atom[:len(clean_atom)-len(only_cpv)]
+    cat, name, pv, rev = entropy.dep.catpkgsplit(only_cpv)
+    if rev == "r0":
+        rev = ''
+    else:
+        rev = '-%s' % (rev,)
+    return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
+        darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
+        teal(entropy_rev),)
+
 def show_dependencies_legend(entropy_client, indent = '',
                              get_data = False):
     data = []
@@ -398,3 +430,35 @@ def print_package_info(package_id, entropy_client, entropy_repository,
             teal(pkglic)))
 
     print_table(toc, cell_spacing = 3)
+
+def show_you_meant(entropy_client, package, from_installed):
+    """
+    Print Package "did you mean"-like message to stdout.
+    """
+    items = entropy_client.get_meant_packages(
+        package, from_installed = from_installed)
+    if not items:
+        return
+
+    items_cache = set()
+    mytxt = "%s %s %s %s %s" % (
+        bold("   ?"),
+        red(_("When you wrote")),
+        bold(package),
+        darkgreen(_("You Meant(tm)")),
+        red(_("one of these below?")),
+    )
+    entropy_client.output(mytxt)
+    for match in items:
+        if from_installed:
+            dbconn = entropy_client.installed_repository()
+            idpackage = match[0]
+        else:
+            dbconn = entropy_client.open_repository(match[1])
+            idpackage = match[0]
+        key, slot = dbconn.retrieveKeySlot(idpackage)
+        if (key, slot) not in items_cache:
+            entropy_client.output(
+                red("    # ")+blue(key)+":" + \
+                    brown(str(slot))+red(" ?"))
+        items_cache.add((key, slot))
