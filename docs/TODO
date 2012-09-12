@@ -2,8 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    hop <branch>
-
     upgrade
         --ask
         --fetch
