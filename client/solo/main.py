@@ -286,8 +286,9 @@ def main():
     # non-root users not allowed
     allowed = True
     if os.getuid() != 0 and \
-            cmd_class is not catch_all:
-        if not cmd_class.ALLOW_UNPRIVILEGED:
+            cmd_class is not catch_all and \
+            not cmd_class.ALLOW_UNPRIVILEGED and \
+            "--help" not in args:
             cmd_class = catch_all
             allowed = False
 
