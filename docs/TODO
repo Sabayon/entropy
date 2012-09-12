@@ -164,11 +164,7 @@ Backlog (raw)
         get
         add
 
-    cache
-      clean
-      --verbose
-      --quiet
-
+    add running off Live System warning
     solo.utils.show_you_meant !
 
     - critical updates -> relaxed enabled
