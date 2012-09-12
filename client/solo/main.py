@@ -237,6 +237,15 @@ def warn_version_mismatch():
             blue(entropy_ver),))
         print_warning("")
 
+def warn_live_system():
+    print_warning("")
+    print_warning(
+        purple(_("Entropy is running off a Live System")))
+    print_warning(
+        teal(_("Performance and stability could get"
+             " severely compromised")))
+    print_warning("")
+
 def main():
 
     install_exception_handler()
@@ -293,6 +302,11 @@ def main():
             allowed = False
 
     if allowed:
+
+        if not cmd_class.ALLOW_UNPRIVILEGED:
+            if entropy.tools.islive():
+                warn_live_system()
+
         func, func_args = cmd_obj.parse()
         exit_st = func(*func_args)
         if exit_st == -10:
