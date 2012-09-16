@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-06 20:03+0200\n"
+"POT-Creation-Date: 2012-09-16 11:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -601,7 +601,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1300
 #: ../../lib/entropy/client/interfaces/methods.py:1358
-#: ../../lib/entropy/const.py:669
+#: ../../lib/entropy/const.py:685
 msgid "All fine"
 msgstr ""
 
@@ -1551,75 +1551,75 @@ msgstr ""
 msgid "installing"
 msgstr ""
 
-#: ../../lib/entropy/const.py:647
+#: ../../lib/entropy/const.py:663
 msgid "Runtime dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:648
+#: ../../lib/entropy/const.py:664
 msgid "Post dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:649
+#: ../../lib/entropy/const.py:665
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:650
+#: ../../lib/entropy/const.py:666
 msgid "Build dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:670
+#: ../../lib/entropy/const.py:686
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:702
+#: ../../lib/entropy/const.py:718
 msgid "reason not available"
 msgstr ""
 
-#: ../../lib/entropy/const.py:703
+#: ../../lib/entropy/const.py:719
 msgid "user package.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:704
+#: ../../lib/entropy/const.py:720
 msgid "system keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:705
+#: ../../lib/entropy/const.py:721
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:706
+#: ../../lib/entropy/const.py:722
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:707
+#: ../../lib/entropy/const.py:723
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:708
+#: ../../lib/entropy/const.py:724
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:709
+#: ../../lib/entropy/const.py:725
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:710
+#: ../../lib/entropy/const.py:726
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:711
+#: ../../lib/entropy/const.py:727
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:712
+#: ../../lib/entropy/const.py:728
 msgid "user license.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:713
+#: ../../lib/entropy/const.py:729
 msgid "user live unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:714
+#: ../../lib/entropy/const.py:730
 msgid "user live mask"
 msgstr ""
 
