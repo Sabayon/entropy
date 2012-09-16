@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import errno
 import sys
 sys.path.insert(0, "../lib")
 import tempfile
@@ -122,8 +123,19 @@ def cleanup_package_deltas(directory, quiet):
         for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
             pkg_path_a = os.path.join(directory, from_pkg_name)
             next_pkg_path = os.path.join(directory, to_pkg_name)
-            hash_tag = entropy.tools.md5sum(pkg_path_a) + \
-                entropy.tools.md5sum(next_pkg_path)
+            try:
+                pkg_md5 = entropy.tools.md5sum(pkg_path_a)
+            except IOError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                continue
+            try:
+                next_md5 = entropy.tools.md5sum(next_pkg_path)
+            except IOError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                continue
+            hash_tag = pkg_md5 + next_md5
             delta_fn = entropy.tools.generate_entropy_delta_file_name(
                 from_pkg_name, to_pkg_name, hash_tag)
             delta_path = os.path.join(directory,
