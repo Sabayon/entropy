@@ -232,6 +232,7 @@ class AppListStore(Gtk.ListStore):
                         if len(self) == 0:
                             self.emit("all-vanished")
                         return
+                path.next()
 
         GLib.idle_add(_remove, app)
 
