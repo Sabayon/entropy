@@ -61,9 +61,7 @@ repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonl
 # repository = sabayonlinux.org||http://mirror.optusnet.com.au/sabayon/entropy|
 # repository = sabayonlinux.org||ftp://mirror.optusnet.com.au/sabayon/entropy|
 
-# AArnet.edu/Internode, Australia
-# repository = sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
-# repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
+# Internode, Australia
 repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayon/entropy|
 
 # Instituto Federal de Educação, Ciência e Tecnologia do Cearà, Brazil
