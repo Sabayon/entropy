@@ -15,6 +15,7 @@ import entropy.dep
 import entropy.tools
 
 MAX_PKG_FILE_SIZE = 10*1024000 # 10 mb
+MIN_PKG_FILE_SIZE = 1024000
 
 def generate_pkg_map(packages_directory):
     """
@@ -69,12 +70,17 @@ def generate_package_deltas(directory, quiet):
             try:
                 f_size = entropy.tools.get_file_size(pkg_path_a)
             except (IOError, OSError) as err:
-                sys.stderr.write("error: %s\n" % (err,))
+                if not quiet:
+                    sys.stderr.write("error: %s\n" % (err,))
                 continue
 
             if f_size > MAX_PKG_FILE_SIZE:
                 if not quiet:
                     sys.stderr.write("%s too big\n" % (pkg_path_a,))
+                continue
+            if f_size <= MIN_PKG_FILE_SIZE:
+                if not quiet:
+                    sys.stderr.write("%s too small\n" % (pkg_path_a,))
                 continue
 
             next_pkg_path = os.path.join(directory, to_pkg_name)
