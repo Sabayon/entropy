@@ -10,3 +10,4 @@ repository = sabayon-limbo||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
 repository = sabayon-limbo||http://mirror.yandex.ru/sabayon/entropy|
 repository = sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
 repository = sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+repository = sabayon-limbo||http://mirror.de.sabayon.org/entropy|
