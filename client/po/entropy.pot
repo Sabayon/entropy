@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-20 12:58+0200\n"
+"POT-Creation-Date: 2012-09-20 13:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1107,11 +1107,11 @@ msgid "Looking for an alternate route using package mirrors"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:407
-msgid "Checking repository URL:"
+msgid "Checking repository URL"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:428
-msgid "Found repository at URL:"
+msgid "Found repository at URL"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:440
