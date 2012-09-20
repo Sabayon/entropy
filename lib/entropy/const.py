@@ -301,8 +301,10 @@ def const_default_settings(rootdir):
         'DEV_ETP_VAR_DIR',
         os.path.join(rootdir, "var/lib/entropy"))
     default_etp_tmpdir = "/tmp"
+    default_etp_dbdir_name = "database"
 
-    default_etp_dbdir = os.path.join("database", ETP_ARCH_CONST)
+    default_etp_dbdir = os.path.join(
+        default_etp_dbdir_name, ETP_ARCH_CONST)
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
     default_etp_client_repodir = "client"
@@ -346,6 +348,7 @@ def const_default_settings(rootdir):
         'packagesrelativepaths': ("packages", "packages-nonfree",
             "packages-restricted"),
         'packagesrelativepath_basename': ETP_ARCH_CONST,
+        'databaserelativepath_basedir': default_etp_dbdir_name,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir
         # new (since 0.99.48) Entropy downloaded packages location
