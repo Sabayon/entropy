@@ -2,6 +2,8 @@ Backlog (raw)
 
   1.0:
 
+    - be more nazi wrt critical package updates
+      -> forcefully add them to install queue
     - rework client/ code, as done with eit
       - ditch etpUi
 
