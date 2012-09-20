@@ -404,7 +404,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         for package_uri in package_uris:
             self._entropy.output(
-                "%s:" % (brown(_("Checking repository URL:")),),
+                "%s:" % (brown(_("Checking repository URL")),),
                 importance = 1, level = "warning", header = "\t",
                 )
             self._entropy.output(
@@ -425,7 +425,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 self._repo_uri = url
 
                 self._entropy.output(
-                    "%s:" % (brown(_("Found repository at URL:")),),
+                    "%s:" % (brown(_("Found repository at URL")),),
                     importance = 1, level = "warning", header = "\t",
                     )
                 self._entropy.output(
