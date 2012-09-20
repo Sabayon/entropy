@@ -1373,9 +1373,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 raise AttributeError("invalid repository database URL")
         mydata['plain_database'] = repodatabase
 
-        mydata['database'] = repodatabase + os.path.sep + product + \
-            os.path.sep + reponame + "/database/" + etpConst['currentarch'] + \
-            os.path.sep + branch
+        database = entropy.tools.expand_plain_database_mirror(
+            repodatabase, product, reponame, branch)
+        if database is None:
+            database = const_convert_to_unicode("")
+        mydata['database'] = database
 
         mydata['notice_board'] = mydata['database'] + os.path.sep + \
             etpConst['rss-notice-board']
@@ -1419,9 +1421,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
 
         for repo_package in repopackages:
-            if not entropy.tools.is_valid_uri(repo_package):
-                # filter out
-                continue
             new_repo_package = entropy.tools.expand_plain_package_mirror(
                 repo_package, product, reponame)
             if new_repo_package is None:

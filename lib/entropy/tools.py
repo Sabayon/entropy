@@ -2490,16 +2490,34 @@ def expand_plain_package_mirror(mirror, product, repository_id):
     @type product: string
     @param repository_id: repository identifier
     @type repository_id: string
-    @return: expanded URL or None, if mirror url is invalid
+    @return: expanded URL or None if invalid
     @rtype: string or None
     """
     if not is_valid_uri(mirror):
         return None
-    try:
-        mirror = str(mirror)
-    except (UnicodeDecodeError, UnicodeEncodeError,):
+    sep = const_convert_to_unicode("/")
+    return mirror + sep + product + sep + repository_id
+
+def expand_plain_database_mirror(mirror, product, repository_id, branch):
+    """
+    Expand plain database mirror URL adding product, repository identifier
+    and branch data to it.
+
+    @param mirror: mirror URL
+    @type mirror: string
+    @param product: Entropy repository product
+    @type product: string
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: expanded URL or None if invalid
+    @rtype: string or None
+    """
+    if not is_valid_uri(mirror):
         return None
-    return mirror + os.path.sep + product + os.path.sep + repository_id
+    sep = const_convert_to_unicode("/")
+    return mirror + sep + product + sep + repository_id + sep + \
+        etpConst['databaserelativepath_basedir'] + sep + \
+        etpConst['currentarch'] + sep + branch
 
 _repo_re = re.compile("^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$", re.IGNORECASE)
 def validate_repository_id(repository_id):
