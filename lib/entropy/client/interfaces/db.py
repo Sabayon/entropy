@@ -20,7 +20,7 @@ import codecs
 import errno
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
-    etpUi, const_set_nice_level, const_setup_file
+    etpUi, const_set_nice_level, const_setup_file, const_convert_to_unicode
 from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
     bold, TextInterface
 from entropy.dump import dumpobj, loadobj
@@ -176,6 +176,14 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = self._settings['repositories']['available']
         if self._repository_id not in avail_data:
             raise KeyError("Repository not available")
+
+        # default to the officially listed Repository URL
+        # in case of connection issues, we will fallback
+        # to packages mirrors.
+        # This is particularily for improving fault-tolerance
+        # and for Chinese people.
+        repo_data = avail_data[self._repository_id]
+        self._repo_uri = repo_data['database']
 
     @property
     def _webservices(self):
@@ -359,6 +367,81 @@ class AvailablePackagesRepositoryUpdater(object):
                 return False
         return True
 
+    def __select_database_mirror(self):
+        """
+        Verify that the database mirror URL is available and working.
+        If this is not the case, fallback to the first available
+        and working packages mirror URL.
+        """
+        current_uri = self._repo_uri
+        revision = self.remote_revision()
+        if revision != -1:
+            return
+
+        self._entropy.output(
+            "%s: %s" % (
+                darkred(_("Attention")),
+                brown(_("repository is not available at the following URL:")),
+                ),
+            importance = 1, level = "warning", header = "\t",
+        )
+        self._entropy.output(
+            "%s" % (current_uri,),
+            importance = 1, level = "warning", header = "\t",
+        )
+        self._entropy.output(
+            "%s" % (
+                purple(
+                    _("Looking for an alternate route using package mirrors")
+                    ),),
+            importance = 1, level = "warning", header = "\t",
+        )
+
+        repos_data = self._settings['repositories']
+        avail_data = repos_data['available']
+        repo_data = avail_data[self._repository_id]
+        package_uris = repo_data['plain_packages']
+
+        for package_uri in package_uris:
+            self._entropy.output(
+                "%s:" % (brown(_("Checking repository URL:")),),
+                importance = 1, level = "warning", header = "\t",
+                )
+            self._entropy.output(
+                "%s" % (package_uri,),
+                importance = 1, level = "warning", header = "\t",
+                )
+
+            url = entropy.tools.expand_plain_database_mirror(
+                package_uri, repos_data['product'],
+                self._repository_id,
+                repos_data['branch'])
+            if url == current_uri:
+                # skip same URL
+                continue
+            revision = self.remote_revision(_repo_uri = url)
+            if revision != -1:
+                # found
+                self._repo_uri = url
+
+                self._entropy.output(
+                    "%s:" % (brown(_("Found repository at URL:")),),
+                    importance = 1, level = "warning", header = "\t",
+                    )
+                self._entropy.output(
+                    "%s" % (url,),
+                    importance = 1, level = "warning", header = "\t",
+                    )
+                return
+
+        self._entropy.output(
+            "%s" % (
+                purple(
+                    _("Unable to find alternate repository mirrors. Sorry.")
+                    ),),
+            importance = 1, level = "warning", header = "\t",
+        )
+
     def __show_repository_information(self):
 
         avail_data = self._settings['repositories']['available']
@@ -371,7 +454,7 @@ class AvailablePackagesRepositoryUpdater(object):
             header = blue("  # ")
         )
         mytxt = "%s: %s" % (red(_("Repository URL")),
-            darkgreen(repo_data['database']),)
+            darkgreen(self._repo_uri),)
         self._entropy.output(
             mytxt,
             importance = 1,
@@ -753,7 +836,7 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
-        repo_db = repo_data['database']
+        repo_db = self._repo_uri
         repo_dbpath = repo_data['dbpath']
         ec_hash = etpConst['etpdatabasehashfile']
         repo_lock_file = etpConst['etpdatabasedownloadlockfile']
@@ -1763,9 +1846,9 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return result
 
-    def remote_revision(self):
+    def remote_revision(self, _repo_uri = None):
 
-        if self._repo_eapi == 3:
+        if self._repo_eapi == 3 and _repo_uri is None:
             # ask WebService then
             revision = self.__get_webserv_repository_revision()
             if revision is not None:
@@ -1782,8 +1865,10 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
-        url = repo_data['database'] + "/" + \
-            etpConst['etpdatabaserevisionfile']
+        if _repo_uri is None:
+            _repo_uri = self._repo_uri
+        sep = const_convert_to_unicode("/")
+        url = _repo_uri + sep + etpConst['etpdatabaserevisionfile']
         status = entropy.tools.get_remote_data(url,
             timeout = self.__big_sock_timeout)
         if status:
@@ -1806,6 +1891,9 @@ class AvailablePackagesRepositoryUpdater(object):
                 "cannot update repository as unprivileged user")
 
         self.__show_repository_information()
+
+        # China loves us!
+        self.__select_database_mirror()
 
         # this calls writes self._last_rev which is used to write back
         # updated repository revision, do not remove!
