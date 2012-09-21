@@ -2232,12 +2232,16 @@ class Server(object):
 
             package_path = self._entropy.complete_local_package_path(
                 package_rel, repository_id)
+            # if package files are stuck in the upload/ directory
+            # it means that the repository itself has never been pushed
+            up_package_path = self._entropy.complete_local_upload_package_path(
+                package_rel, repository_id)
             package_path_expired = package_path + \
                 etpConst['packagesexpirationfileext']
 
             # .expired for all the paths in removal doesn't sound
             # that ok but since we handle ENOENT, that's fine
-            my_rm_list = (package_path, package_path_expired)
+            my_rm_list = (package_path, up_package_path, package_path_expired)
             for myfile in my_rm_list:
                 try:
                     os.remove(myfile)
