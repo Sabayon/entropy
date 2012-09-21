@@ -3135,7 +3135,8 @@ class CalculatorsMixin:
         return queue
 
     def get_install_queue(self, package_matches, empty, deep,
-        relaxed = False, build = False, quiet = False, recursive = True):
+        relaxed = False, build = False, quiet = False, recursive = True,
+        critical_updates = True):
         """
         Return the ordered installation queue (including dependencies, if
         required), for given package matches.
@@ -3161,6 +3162,8 @@ class CalculatorsMixin:
         @keyword recursive: scan dependencies recursively (usually, this is
             the wanted behaviour)
         @type recursive: bool
+        @keyword critical_updates: pull in critical updates if any
+        @type recursive: bool
         @return: tuple composed by a list of package matches to install and
             a list of package matches to remove (informational)
         @raise DependenciesCollision: packages pulled in conflicting depedencies
@@ -3172,10 +3175,63 @@ class CalculatorsMixin:
             found. The encapsulated .value object attribute contains a list of
             not found dependencies.
         """
+        cl_settings = self._settings[self.sys_settings_client_plugin_id]
+        misc_settings = cl_settings['misc']
         install = []
         removal = []
+        # we don't know the input type, standardize to list()
+        internal_matches = list(package_matches)
+
+        def _filter_key_slot(pkg_matches):
+            """
+            Return True if pkg_match (through its
+            key + slot) is already pulled in, in internal_matches
+            """
+            internal_matches_key_slot = set()
+            internal_matches_set = set(internal_matches)
+
+            # simple match filter, set is faster -> O(log n)
+            pkg_matches = [x for x in pkg_matches if \
+                               x not in internal_matches_set]
+
+            for pkg_id, _repo_id in internal_matches_set:
+                _key_slot = self.open_repository(_repo_id).retrieveKeySlot(
+                    pkg_id)
+                if _key_slot is not None:
+                    internal_matches_key_slot.add(_key_slot)
+
+            new_pkg_matches = []
+            for pkg_match in pkg_matches:
+                pkg_id, _repo_id = pkg_match
+                _key_slot = self.open_repository(_repo_id).retrieveKeySlot(
+                    pkg_id)
+                # ignore None
+                if _key_slot not in internal_matches_key_slot:
+                    new_pkg_matches.append(pkg_match)
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "get_install_queue(), "
+                    "critical updates filtered: %s" % (new_pkg_matches,))
+
+            return new_pkg_matches
+
+        # critical updates hook, if enabled
+        # this will force callers to receive only critical updates
+        if misc_settings.get('forcedupdates') and critical_updates:
+            upd_atoms, upd_matches = self.calculate_critical_updates(
+                use_cache = self.xcache)
+            if upd_matches:
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "get_install_queue(), "
+                        "critical updates available: %s" % (upd_matches,))
+                internal_matches += _filter_key_slot(upd_matches)
+
         try:
-            deptree = self._get_required_packages(package_matches,
+            deptree = self._get_required_packages(internal_matches,
                 empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed,
                 build_deps = build, quiet = quiet, recursive = recursive)
         except DependenciesCollision as exc:
