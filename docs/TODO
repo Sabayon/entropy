@@ -2,6 +2,86 @@ Backlog (raw)
 
   1.0:
 
+    deptest
+      --quiet
+      --ask
+      --pretend
+
+    libtest
+      --dump
+      --listfiles
+      --quiet
+      --ask
+      --pretend
+
+    unusedpackages
+      --quiet
+      --sortbysize
+
+    ugc
+      login
+      logout
+        --force
+      documents
+        get
+        add
+        remove
+      vote
+        get
+        add
+
+    smart
+      package
+      quickpkg
+        --savedir
+      inflate
+        --savedir
+      deflate
+        --savedir
+      extract
+        --savedir
+
+    query
+      belongs
+      changelog
+      revdeps
+      description
+      files
+      installed
+      license
+      list
+        installed
+          --by-user
+        available
+        mimetype
+          --installed
+        associate
+          --installed
+        needed
+        orphans
+        removal
+        required
+        sets
+        slot
+        tags
+        graph
+          --complete
+        revgraph
+          --complete
+
+        --verbose
+        --quiet
+
+    rescue
+      check
+      vacuum
+      generate
+      resurrect
+      spmuids
+      spmsync
+      backup
+      restore
+
     upgrade
         --ask
         --fetch
@@ -79,92 +159,10 @@ Backlog (raw)
       --ask
       --pretend
 
-    deptest
-      --quiet
-      --ask
-      --pretend
 
-    unusedpackages
-      --quiet
-      --sortbysize
-
-    libtest
-      --dump
-      --listfiles
-      --quiet
-      --ask
-      --pretend
-
-    conf
-      update
-
-    query
-      belongs
-      changelog
-      revdeps
-      description
-      files
-      installed
-      license
-      list
-        installed
-          --by-user
-        available
-        mimetype
-          --installed
-        associate
-          --installed
-        needed
-        orphans
-        removal
-        required
-        sets
-        slot
-        tags
-        graph
-          --complete
-        revgraph
-          --complete
-
-        --verbose
-        --quiet
-
-    smart
-      package
-      quickpkg
-        --savedir
-      inflate
-        --savedir
-      deflate
-        --savedir
-      extract
-        --savedir
-
-    rescue
-      check
-      vacuum
-      generate
-      resurrect
-      spmuids
-      spmsync
-      backup
-      restore
-
-    ugc
-      login
-      logout
-        --force
-      documents
-        get
-        add
-        remove
-      vote
-        get
-        add
-
+    test unicode with solo conf update (and others)
     solo.utils.show_you_meant !
 
-    - critical updates -> relaxed enabled
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
       - drop entropy.cli
