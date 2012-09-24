@@ -14,10 +14,6 @@ Backlog (raw)
       --ask
       --pretend
 
-    unusedpackages
-      --quiet
-      --sortbysize
-
     ugc
       login
       logout
@@ -160,6 +156,8 @@ Backlog (raw)
       --pretend
 
 
+    equo unused -> add to "equo query unused"
+    move etpConst['install_sources'] to entropy.db
     test unicode with solo conf update (and others)
     solo.utils.show_you_meant !
 
