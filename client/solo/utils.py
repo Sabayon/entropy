@@ -214,6 +214,38 @@ def _formatted_print(entropy_client, data, header, reset_columns,
     if get_data:
         return out_data
 
+def get_entropy_webservice(entropy_client, repository_id, tx_cb = False):
+    """
+    Get Entropy Web Services service object (ClientWebService).
+
+    @param entropy_client: Entropy Client interface
+    @type entropy_client: entropy.client.interfaces.Client
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: the ClientWebService instance
+    @rtype: entropy.client.services.interfaces.ClientWebService
+    @raise WebService.UnsupportedService: if service is unsupported by
+        repository
+    """
+    def _transfer_callback(transfered, total, download):
+        if download:
+            action = _("Downloading")
+        else:
+            action = _("Uploading")
+
+        percent = 100
+        if (total > 0) and (transfered <= total):
+            percent = int(round((float(transfered)/total) * 100, 1))
+
+        msg = "[%s%s] %s ..." % (purple(str(percent)), "%", teal(action))
+        entropy_client.output(msg, back=True)
+
+    factory = entropy_client.WebServices()
+    webserv = factory.new(repository_id)
+    if tx_cb:
+        webserv._set_transfer_callback(_transfer_callback)
+    return webserv
+
 def print_package_info(package_id, entropy_client, entropy_repository,
     installed_search = False, strict_output = False, extended = False,
     quiet = False, show_repo_if_quiet = False, show_desc_if_quiet = False):
