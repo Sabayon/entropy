@@ -50,10 +50,10 @@ class ColorfulFormatter(argparse.RawTextHelpFormatter):
 
         # long action name; start on the next line
         else:
-            tup = self._current_indent, '', action_header
+            tup = self._current_indent, '', action_width, action_header
             tup_str = '%*s%-*s  ' % tup
             action_header = self.__colors(tup_str, orig_action_header)
-            indent_first = help_position
+            indent_first = 0
 
         # collect the pieces of the action help
         parts = [action_header]
