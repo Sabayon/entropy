@@ -388,7 +388,7 @@ Manage Entropy Repositories.
 
         toc.append((purple(_("Repository URL:")), darkgreen(db_url)))
         toc.append(" ")
-        print_table(toc)
+        print_table(entropy_client, toc)
 
         added = entropy_client.add_repository(repodata)
         if added:

@@ -15,7 +15,7 @@ import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.i18n import _
-from entropy.output import print_generic, darkgreen, purple, blue, \
+from entropy.output import darkgreen, purple, blue, \
     brown, bold, red, darkred, teal, decolorize
 
 import entropy.dep
@@ -74,8 +74,9 @@ def cleanup(entropy_client, directories):
         )
     return 0
 
-def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
-    side_color = darkgreen):
+def print_table(entropy_client, lines_data,
+                cell_spacing=2, cell_padding=0,
+                side_color=darkgreen):
     """
     Print a table composed by len(lines_data[i]) columns and len(lines_data)
     rows.
@@ -111,21 +112,24 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
     if col_n > 0:
         column_sizes[col_n - 1] = 0
     for cols in lines_data:
-        print_generic(side_color(">>") + " ", end = " ")
+        txt = side_color(">>") + "  "
+
         if isinstance(cols, (list, tuple)):
             col_n = 0
             for cell in cols:
                 max_len = column_sizes[col_n]
                 cell = " "*padding_side + cell + " "*padding_side
-                delta_len = max_len - len(decolorize(cell.split("\n")[0])) + \
+                delta_len = max_len - \
+                    len(decolorize(cell.split("\n")[0])) + \
                     cell_spacing
                 if col_n == (len(cols) - 1):
-                    print_generic(cell)
+                    txt += cell
                 else:
-                    print_generic(cell, end = " "*delta_len)
+                    txt += cell + " "*delta_len
                 col_n += 1
         else:
-            print_generic(cols)
+            txt += cols
+        entropy_client.output(txt, level="generic")
 
 def enlightenatom(atom):
     """
@@ -492,7 +496,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
         toc.append((darkgreen("       %s:" % (_("License"),)),
             teal(pkglic)))
 
-    print_table(toc, cell_spacing = 3)
+    print_table(entropy_client, toc, cell_spacing = 3)
 
 def show_you_meant(entropy_client, package, from_installed):
     """

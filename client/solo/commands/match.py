@@ -200,7 +200,7 @@ Match package names.
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
                 matches_found,
                 brown(ngettext("entry", "entries", matches_found)),)))
-            print_table(toc)
+            print_table(entropy_client, toc)
 
         if not matches_found:
             return 1
