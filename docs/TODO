@@ -2,18 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    deptest
-      --quiet
-      --ask
-      --pretend
-
-    libtest
-      --dump
-      --listfiles
-      --quiet
-      --ask
-      --pretend
-
     smart
       package
       quickpkg
@@ -24,37 +12,6 @@ Backlog (raw)
         --savedir
       extract
         --savedir
-
-    query
-      belongs
-      changelog
-      revdeps
-      description
-      files
-      installed
-      license
-      list
-        installed
-          --by-user
-        available
-        mimetype
-          --installed
-        associate
-          --installed
-        needed
-        orphans
-        removal
-        required
-        sets
-        slot
-        tags
-        graph
-          --complete
-        revgraph
-          --complete
-
-        --verbose
-        --quiet
 
     rescue
       check
@@ -143,15 +100,26 @@ Backlog (raw)
       --ask
       --pretend
 
+    deptest
+      --quiet
+      --ask
+      --pretend
+
+    libtest
+      --dump
+      --listfiles
+      --quiet
+      --ask
+      --pretend
+
 
     equo unused -> add to "equo query unused"
     move etpConst['install_sources'] to entropy.db
     test unicode with solo conf update (and others)
     solo.utils.show_you_meant !
-
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
-      - drop entropy.cli
+      - drop entropy.cli (it is used by other stuff, what to do?)
       - drop etpUi
       - drop etpConst['errorstatus']
 
