@@ -35,13 +35,17 @@ Search for packages.
 """
     SEE_ALSO = ""
 
-    def __init__(self, args):
+    def __init__(self, args, quiet=False, verbose=False, installed=False,
+                 available=False, packages=None):
         SoloCommand.__init__(self, args)
-        self._quiet = False
-        self._verbose = False
-        self._installed = False
-        self._available = False
-        self._packages = []
+        self._quiet = quiet
+        self._verbose = verbose
+        self._installed = installed
+        self._available = available
+        if packages is not None:
+            self._packages = packages
+        else:
+            self._packages = []
 
     def man(self):
         """
