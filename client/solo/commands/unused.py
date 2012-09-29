@@ -64,7 +64,7 @@ Report unused packages that could be removed.
         parser.add_argument("--quiet", action="store_true",
                             default=self._quiet,
                             help=_("show less details (useful for scripting)"))
-        _commands.append("--sortbysize")
+        _commands.append("--quiet")
 
         parser.add_argument("--sortbysize", action="store_true",
                             default=self._sortbysize,
