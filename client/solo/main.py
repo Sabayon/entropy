@@ -321,5 +321,9 @@ def main():
         raise SystemExit(exit_st)
 
     else:
+        # execute this anyway so that commands are
+        # incomplete or invalid, the command error
+        # message will take precedence.
+        _func, _func_args = cmd_obj.parse()
         print_error(_("superuser access required"))
         raise SystemExit(1)
