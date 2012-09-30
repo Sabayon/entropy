@@ -175,7 +175,9 @@ Repository query tools.
             help=_("only list packages installed from given repositories"))
         self._setup_verbose_quiet_parser(installed_parser)
         installed_parser.set_defaults(func=self._list_installed)
-        list_d["installed"] = {}
+        list_d["installed"] = {
+            "--by-user": {},
+        }
 
         available_parser = list_subparsers.add_parser(
             "available", help=_("list available packages"))
@@ -198,7 +200,9 @@ Repository query tools.
             help=_("only show installed packages"))
         self._setup_verbose_quiet_parser(mime_parser)
         mime_parser.set_defaults(func=self._mimetype)
-        _commands["mimetype"] = {}
+        _commands["mimetype"] = {
+            "--installed": {},
+        }
 
         associate_parser = subparsers.add_parser(
             "associate",
@@ -211,7 +215,9 @@ Repository query tools.
             help=_("only show installed packages"))
         self._setup_verbose_quiet_parser(associate_parser)
         associate_parser.set_defaults(func=self._associate)
-        _commands["associate"] = {}
+        _commands["associate"] = {
+            "--installed": {},
+        }
 
         needed_parser = subparsers.add_parser(
             "needed",
@@ -292,7 +298,9 @@ Repository query tools.
                    "and circular dependencies information"))
         self._setup_verbose_quiet_parser(graph_parser)
         graph_parser.set_defaults(func=self._graph)
-        _commands["graph"] = {}
+        _commands["graph"] = {
+            "--complete": {},
+        }
 
         revgraph_parser = subparsers.add_parser(
             "revgraph",
@@ -307,7 +315,9 @@ Repository query tools.
                    "and circular dependencies information"))
         self._setup_verbose_quiet_parser(revgraph_parser)
         revgraph_parser.set_defaults(func=self._revgraph)
-        _commands["revgraph"] = {}
+        _commands["revgraph"] = {
+            "--complete": {},
+        }
 
 
         self._commands = _commands
@@ -331,7 +341,7 @@ Repository query tools.
         """
         Overridden from SoloCommand.
         """
-        outcome = []
+        outcome = ["--quiet", "--verbose"]
         parser = self._get_parser()
 
         # navigate through commands, finding the list of commands
