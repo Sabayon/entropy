@@ -9,6 +9,9 @@
     B{Entropy Command Line Client}.
 
 """
+import os
+import argparse
+
 from entropy.i18n import _
 from entropy.output import darkgreen, print_error
 from entropy.exceptions import PermissionDenied
@@ -50,6 +53,16 @@ class SoloCommand(object):
         the ArgumentParser object that will be used by parse().
         """
         raise NotImplementedError()
+
+    def _argparse_is_valid_directory(self, string):
+        """
+        To be used with argparse add_argument() type parameter for
+        validating directory paths.
+        """
+        if os.path.isdir(string):
+            return string
+        msg = "%s: %s" % (_("not a valid directory"), string)
+        raise argparse.ArgumentTypeError(msg)
 
     def parse(self):
         """
