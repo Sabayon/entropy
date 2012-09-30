@@ -59,7 +59,8 @@ class SoloCommand(object):
         To be used with argparse add_argument() type parameter for
         validating directory paths.
         """
-        if os.path.isdir(string):
+        if os.path.isdir(string) and os.path.exists(string):
+            # cope with broken symlinks
             return string
         msg = "%s: %s" % (_("not a valid directory"), string)
         raise argparse.ArgumentTypeError(msg)
