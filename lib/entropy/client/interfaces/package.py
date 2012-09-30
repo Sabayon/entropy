@@ -2515,6 +2515,15 @@ class Package:
             inst_repo.insertAutomergefiles(idpackage, automerge_data)
 
         inst_repo.commit()
+
+        # replace current empty "content" metadata info
+        # content metadata is required by
+        # _spm_install_package() -> Spm.add_installed_package()
+        # in case of injected packages (SPM metadata might be
+        # incomplete).
+        self.pkgmeta['triggers']['install']['content'] = \
+            Package.FileContentReader(content_file)
+
         return idpackage
 
     def __fill_image_dir(self, merge_from, image_dir):

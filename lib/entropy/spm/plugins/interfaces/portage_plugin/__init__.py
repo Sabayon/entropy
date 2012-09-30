@@ -2908,63 +2908,52 @@ class PortagePlugin(SpmPlugin):
         contents_file_exists = os.path.exists(cont_path)
         if contents_file_exists:
             return # all fine already
-        entropy_content = entropy_package_metadata['content'] # this is a set
 
         from portage.dbapi.vartree import write_contents
 
-        obj_t = const_convert_to_rawstring("obj")
-        sym_t = const_convert_to_rawstring("sym")
-        dir_t = const_convert_to_rawstring("dir")
-        fif_t = const_convert_to_rawstring("fif")
-        dev_t = const_convert_to_rawstring("dev")
+        entropy_content_iter = entropy_package_metadata['content']
         sys_root = const_convert_to_rawstring(etpConst['systemroot'])
-
         content_meta = {}
-        for path_orig in sorted(entropy_content):
 
-            path_orig = const_convert_to_rawstring(path_orig)
-            path = sys_root + path_orig
+        try:
+            for _package_id, _path, _ftype in entropy_content_iter:
 
-            if not os.path.lexists(path):
-                mytxt = "%s: %s: %s" % (red(_("QA")),
-                    brown(_("Cannot stat path")),
-                    purple(repr(path)),)
-                self.__output.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning",
-                    header = darkred("   ## ")
-                )
-                continue
+                _ftype = const_convert_to_rawstring(_ftype)
+                path_orig = const_convert_to_rawstring(_path)
+                path = sys_root + path_orig
 
-            is_sym = os.path.islink(path)
-            if os.path.isfile(path) and not is_sym:
-                md5sum = entropy.tools.md5sum(path)
-                mtime = int(os.path.getmtime(path))
-                content_meta[path] = (obj_t, mtime, md5sum,)
-            elif os.path.isdir(path) and not is_sym:
-                content_meta[path] = (dir_t,)
-            elif is_sym:
-                try:
+                is_sym = os.path.islink(path)
+                if os.path.isfile(path) and not is_sym:
+                    md5sum = entropy.tools.md5sum(path)
                     mtime = int(os.path.getmtime(path))
-                except OSError:
-                    # broken symlink!
-                    mtime = int(time.time())
-                content_meta[path] = (sym_t, mtime, os.readlink(path),)
-            else:
-                try:
-                    lstat = os.lstat(path)
-                except (OSError, AttributeError):
-                    lstat = None
-                if lstat is not None:
-                    if stat.S_ISFIFO(lstat[stat.ST_MODE]):
-                        content_meta[path] = (fif_t,)
-                    elif not stat.S_ISREG(lstat[stat.ST_MODE]):
-                        # device?
-                        content_meta[path] = (dev_t,)
+                    content_meta[path] = (_ftype, mtime, md5sum)
+                elif os.path.isdir(path) and not is_sym:
+                    content_meta[path] = (_ftype,)
+                elif is_sym:
+                    try:
+                        mtime = int(os.path.getmtime(path))
+                    except OSError:
+                        # broken symlink!
+                        mtime = int(time.time())
+                    content_meta[path] = (_ftype, mtime, os.readlink(path))
+                else:
+                    try:
+                        lstat = os.lstat(path)
+                    except (OSError, AttributeError):
+                        lstat = None
+                    if lstat is not None:
+                        if stat.S_ISFIFO(lstat[stat.ST_MODE]):
+                            content_meta[path] = (_ftype,)
+                        elif not stat.S_ISREG(lstat[stat.ST_MODE]):
+                            # device?
+                            content_meta[path] = (_ftype,)
+        finally:
+            if hasattr(entropy_content_iter, "close"):
+                entropy_content_iter.close()
 
         utf_sys_root = etpConst['systemroot'] + os.path.sep
-        portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
+        portage_cpv = PortagePlugin._pkg_compose_atom(
+            entropy_package_metadata)
         self._bump_vartree_mtime(portage_cpv, root = utf_sys_root)
 
         enc = etpConst['conf_encoding']
@@ -2973,6 +2962,7 @@ class PortagePlugin(SpmPlugin):
             write_contents(content_meta, utf_sys_root, cont_f)
             cont_f.flush()
 
+        del content_meta
         self._bump_vartree_mtime(portage_cpv, root = utf_sys_root)
 
     def _get_portage_sets_object(self):
