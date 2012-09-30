@@ -65,6 +65,17 @@ class SoloCommand(object):
         msg = "%s: %s" % (_("not a valid directory"), string)
         raise argparse.ArgumentTypeError(msg)
 
+    def _argparse_is_valid_entropy_package(self, string):
+        """
+        To be used with argparse add_argument() type parameter for
+        validating entropy package paths.
+        """
+        if os.path.isfile(string) and os.path.exists(string):
+            if entropy.tools.is_entropy_package_file(string):
+                return string
+        msg = "%s: %s" % (_("not a valid Entropy package file"), string)
+        raise argparse.ArgumentTypeError(msg)
+
     def parse(self):
         """
         Parse the actual arguments and return
