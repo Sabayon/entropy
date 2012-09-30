@@ -53,7 +53,6 @@ Report unused packages that could be removed.
         Overridden from SoloCommand.
         """
         _commands = []
-        self._real_command = sys.argv[0]
         descriptor = SoloCommandDescriptor.obtain_descriptor(
             SoloUnused.NAME)
         parser = argparse.ArgumentParser(

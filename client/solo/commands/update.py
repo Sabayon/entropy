@@ -53,7 +53,6 @@ Update Entropy Repositories.
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         descriptor = SoloCommandDescriptor.obtain_descriptor(
             SoloUpdate.NAME)
         parser = argparse.ArgumentParser(

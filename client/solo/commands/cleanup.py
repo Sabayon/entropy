@@ -52,7 +52,6 @@ Remove downloaded packages and clean temporary directories.
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         descriptor = SoloCommandDescriptor.obtain_descriptor(
             SoloCleanup.NAME)
         parser = argparse.ArgumentParser(

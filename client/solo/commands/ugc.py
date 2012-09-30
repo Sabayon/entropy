@@ -58,7 +58,6 @@ Manage User Generate Content (votes, comments, files).
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         _commands = {}
 
         descriptor = SoloCommandDescriptor.obtain_descriptor(

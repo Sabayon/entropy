@@ -61,7 +61,6 @@ Manage package file updates.
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         _commands = []
 
         descriptor = SoloCommandDescriptor.obtain_descriptor(

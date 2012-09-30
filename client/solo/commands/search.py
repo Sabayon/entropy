@@ -57,7 +57,6 @@ Search for packages.
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         descriptor = SoloCommandDescriptor.obtain_descriptor(
             SoloSearch.NAME)
         parser = argparse.ArgumentParser(

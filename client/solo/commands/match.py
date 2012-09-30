@@ -69,7 +69,6 @@ Match package names.
         """
         Overridden from SoloCommand.
         """
-        self._real_command = sys.argv[0]
         descriptor = SoloCommandDescriptor.obtain_descriptor(
             SoloMatch.NAME)
         parser = argparse.ArgumentParser(
