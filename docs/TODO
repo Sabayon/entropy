@@ -2,17 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    smart
-      package
-      quickpkg
-        --savedir
-      inflate
-        --savedir
-      deflate
-        --savedir
-      extract
-        --savedir
-
     rescue
       check
       vacuum
