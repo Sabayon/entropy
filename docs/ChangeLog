@@ -1,3 +1,29 @@
+commit a27d922cb4a31e774b12092bc304a7bd02076837
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 21:53:40 2012 +0200
+
+    Release Entropy 145
+
+commit 398379294f7f6762779f6885e6e08785fba37444
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 21:33:09 2012 +0200
+
+    [entropy.{spm,client}] fix content generation for injected packages
+    
+    Since Entropy Client migration to file iterator-based content metadata,
+    such information became unavailable to Entropy SPM's add_installed_package().
+    In the Portage SPM plugin implementation, such method was responsible of
+    reconstructing the XPAK CONTENTS file if missing. Injected packages are actually
+    missing that file (because it does not get created through "emerge -B").
+    The net result is that Portage vdb metadata for Entropy injected packages was
+    incomplete.
+
+commit 8f04abbc634a26fe0c969b10653b73ddf18c012f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 21 16:45:55 2012 +0200
+
+    Tagging Entropy version 144
+
 commit 34f3e248d2a4a0d83758ef21e390ceed28de1f22
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 21 16:45:54 2012 +0200
