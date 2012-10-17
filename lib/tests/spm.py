@@ -249,6 +249,54 @@ class SpmTest(unittest.TestCase):
 
         self.assertEqual(resolved_deps, expected_deps)
 
+    def test_eapi5_portage_slotdeps(self):
+
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+        spm = self.Client.Spm()
+
+        iuse = "system-sqlite"
+        use = "amd64 dbus elibc_glibc kernel_linux multilib " + \
+            "startup-notification userland_GNU"
+        license = "MPL-1.1 GPL-2"
+        depend = """
+        >=mail-client/thunderbird-3.1.1-r1:2=[system-sqlite=]
+        >=mail-client/thunderbird-3.1.1-r1:2*[system-sqlite=]
+        >=mail-client/thunderbird-3.1.1-r1:2*
+        >=mail-client/thunderbird-3.1.1-r1:2=
+        >=mail-client/thunderbird-3.1.1-r1:=
+        >=mail-client/thunderbird-3.1.1-r1:*
+        """.replace("\n", " ")
+        rdepend = depend[:]
+        pdepend = depend[:]
+        provide = ""
+        sources = ""
+        eapi = "2"
+
+        os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE'] = "1"
+        try:
+            portage_metadata = spm._calculate_dependencies(
+                iuse, use, license,
+                depend, rdepend, pdepend, provide, sources, eapi)
+        finally:
+            del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
+
+        expected_deps = [
+            '>=mail-client/thunderbird-3.1.1-r1:2[-system-sqlite]',
+            '>=mail-client/thunderbird-3.1.1-r1:2[-system-sqlite]',
+            '>=mail-client/thunderbird-3.1.1-r1:2',
+            '>=mail-client/thunderbird-3.1.1-r1:2',
+            '>=mail-client/thunderbird-3.1.1-r1',
+            '>=mail-client/thunderbird-3.1.1-r1',
+            ]
+        expected_deps.sort()
+
+        for k in ("RDEPEND", "PDEPEND", "DEPEND"):
+            resolved_deps = portage_metadata[k]
+            resolved_deps.sort()
+            self.assertEqual(resolved_deps, expected_deps)
+
     def test_portage_or_selector(self):
         spm_class = self.Client.Spm_class()
         if spm_class.PLUGIN_NAME != "portage":

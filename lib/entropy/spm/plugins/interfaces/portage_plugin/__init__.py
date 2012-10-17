@@ -3932,6 +3932,7 @@ class PortagePlugin(SpmPlugin):
                 else:
                     deps = self._paren_choose(deps)
                 if k.endswith("DEPEND"):
+                    deps = self._slotdeps_eapi5_reduce(deps)
                     deps = self._usedeps_reduce(deps, enabled_use)
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -3950,6 +3951,65 @@ class PortagePlugin(SpmPlugin):
             metadata[k] = deps
 
         return metadata
+
+    def _slotdeps_eapi5_reduce(self, dependencies):
+        newlist = []
+
+        for raw_dependency in dependencies:
+
+            split_deps = entropy.dep.dep_split_or_deps(raw_dependency)
+            filtered_deps = []
+            for depstring in split_deps:
+
+                new_depstring = []
+                # conditional deps support
+                for _depstring in depstring.split():
+
+                    # keep use dependencies
+                    slot = entropy.dep.dep_getslot(_depstring)
+
+                    # support conditional dependencies
+                    # as in, just ignore any filtering if
+                    # _depstring is an "operator"
+                    # however, I don't know why we have this here
+                    if slot and _depstring not in ("(", ")", "&", "|"):
+
+                        usedeps = entropy.dep.dep_getusedeps(_depstring)
+                        _depstring = entropy.dep.remove_usedeps(_depstring)
+
+                        if slot in ("=", "*"):
+                            # build related slot operators
+                            # filter them out
+                            _depstring = entropy.dep.remove_slot(
+                                _depstring)
+
+                        elif slot[-1] in ("=", "*"):
+                            # if slot part ends with either = or *
+                            # then kill them.
+                            _depstring = entropy.dep.remove_slot(
+                                _depstring)
+                            _depstring = _depstring + ":" + slot[:-1]
+
+                        # re-add usedeps if any
+                        if usedeps:
+                            _depstring = "%s[%s]" % (
+                                _depstring,
+                                ','.join(usedeps),)
+
+                    new_depstring.append(_depstring)
+
+                depstring = " ".join(new_depstring)
+                filtered_deps.append(depstring)
+
+            if len(filtered_deps) > 1:
+                or_dep = etpConst['entropyordepsep']
+                raw_dependency = or_dep.join(filtered_deps) + \
+                    etpConst['entropyordepquestion']
+            else:
+                raw_dependency = filtered_deps[0]
+            newlist.append(raw_dependency)
+
+        return newlist
 
     def _usedeps_reduce(self, dependencies, enabled_useflags):
         newlist = []
