@@ -267,6 +267,8 @@ class SpmTest(unittest.TestCase):
         >=mail-client/thunderbird-3.1.1-r1:2=
         >=mail-client/thunderbird-3.1.1-r1:=
         >=mail-client/thunderbird-3.1.1-r1:*
+        >=mail-client/thunderbird-3.1.1-r1:0/1
+        >=mail-client/thunderbird-3.1.1-r1:0/1=
         """.replace("\n", " ")
         rdepend = depend[:]
         pdepend = depend[:]
@@ -289,6 +291,8 @@ class SpmTest(unittest.TestCase):
             '>=mail-client/thunderbird-3.1.1-r1:2',
             '>=mail-client/thunderbird-3.1.1-r1',
             '>=mail-client/thunderbird-3.1.1-r1',
+            '>=mail-client/thunderbird-3.1.1-r1:0',
+            '>=mail-client/thunderbird-3.1.1-r1:0',
             ]
         expected_deps.sort()
 
