@@ -3952,17 +3952,17 @@ class PortagePlugin(SpmPlugin):
 
         return metadata
 
+    def _strip_slash_from_slot(self, slot_s):
+        """
+        EAPI5: strip /* substring from SLOT string.
+        """
+        slash_idx = slot_s.find("/")
+        if slash_idx != -1:
+            slot_s = slot_s[:slash_idx]
+        return slot_s
+
     def _slotdeps_eapi5_reduce(self, dependencies):
         newlist = []
-
-        def kill_slash(slot_s):
-            # remove /* substring from SLOT string.
-            # we are reading vdb data here, which
-            # has SLOT information expanded
-            slash_idx = slot_s.find("/")
-            if slash_idx != -1:
-                slot_s = slot_s[:slash_idx]
-            return slot_s
 
         for raw_dependency in dependencies:
 
@@ -3998,13 +3998,13 @@ class PortagePlugin(SpmPlugin):
                             _depstring = entropy.dep.remove_slot(
                                 _depstring)
                             _depstring = _depstring + ":" + \
-                                kill_slash(slot[:-1])
+                                self._strip_slash_from_slot(slot[:-1])
 
                         elif "/" in slot:
                             _depstring = entropy.dep.remove_slot(
                                 _depstring)
                             _depstring = _depstring + ":" + \
-                                kill_slash(slot)
+                                self._strip_slash_from_slot(slot)
 
                         # re-add usedeps if any
                         if usedeps:
