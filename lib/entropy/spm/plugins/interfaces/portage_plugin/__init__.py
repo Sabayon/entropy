@@ -714,6 +714,19 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
+        data = self._get_installed_package_metadata(
+            package, key, root = root)
+        if key == "SLOT" and data:
+            # EAPI5, strip /* from SLOT
+            data = self._strip_slash_from_slot(data)
+        return data
+
+    def _get_installed_package_metadata(self, package, key, root = None):
+        """
+        Internal version of get_installed_package_metadata().
+        This method doesn't do any automagic mangling to returned
+        data.
+        """
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
         vartree = self._get_portage_vartree(root = root)
@@ -1320,6 +1333,9 @@ class PortagePlugin(SpmPlugin):
                         uncompressed_env_file, env_var)
             data[item] = value
 
+        # EAPI5 support
+        data['slot'] = self._strip_slash_from_slot(data['slot'])
+
         #if not data['chost']:
         #    # stupid portage devs and virtual pkgs!
         #    # try to cope
@@ -1641,9 +1657,11 @@ class PortagePlugin(SpmPlugin):
             atoms = self.match_package(cp, match_type = "match-visible")
             if atoms:
                 for atom in atoms:
-                    slots.add(portdb.aux_get(atom, ["SLOT"])[0])
+                    slot = portdb.aux_get(atom, ["SLOT"])[0]
+                    slot = self._strip_slash_from_slot(slot)
+                    slots.add(slot)
                 for slot in slots:
-                    visibles.add(cp+":"+slot)
+                    visibles.add(cp + ":" + slot)
 
         # now match visibles
         available = set()
