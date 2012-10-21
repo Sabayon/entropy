@@ -10,10 +10,11 @@
 
 """
 import os
+import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, print_error
+from entropy.output import darkgreen, teal, purple, print_error
 from entropy.exceptions import PermissionDenied
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
@@ -99,6 +100,44 @@ class SoloCommand(object):
         @type last_arg: string or None
         """
         raise NotImplementedError()
+
+    def _hierarchical_bashcomp(self, last_arg, outcome, commands):
+        """
+        This method implements bash completion through
+        a hierarchical (commands) dictionary object.
+        """
+        parser = self._get_parser()
+
+        # navigate through commands, finding the list of commands
+
+        if not self._args:
+            # show all the commands
+            outcome += sorted(commands.keys())
+
+        for index, item in enumerate(self._args):
+            if item in commands:
+                commands = commands[item]
+                if index == (len(self._args) - 1):
+                    # if this is the last one, generate
+                    # proper outcome elements.
+                    outcome += sorted(commands.keys())
+                    # reset last_arg so that outcome list
+                    # won't be filtered
+                    last_arg = ""
+            elif index == (len(self._args) - 1):
+                # if this is the last one, and item
+                # is not in commands, outcome becomes
+                # commands.keys()
+                outcome += sorted(commands.keys())
+                # no need to break here
+            else:
+                # item not in commands, but that's not the
+                # last one, we must generate proper outcome
+                # elements and stop right after
+                outcome += sorted(commands.keys())
+                break
+
+        return self._bashcomp(sys.stdout, last_arg, outcome)
 
     def _bashcomp(self, stdout, last_arg, available_args):
         """

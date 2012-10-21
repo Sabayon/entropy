@@ -178,40 +178,7 @@ Manage User Generate Content (votes, comments, files).
         """
         Overridden from SoloCommand.
         """
-        outcome = []
-        parser = self._get_parser()
-
-        # navigate through commands, finding the list of commands
-
-        if not self._args:
-            # show all the commands
-            outcome += sorted(self._commands.keys())
-
-        commands = self._commands
-        for index, item in enumerate(self._args):
-            if item in commands:
-                commands = self._commands[item]
-                if index == (len(self._args) - 1):
-                    # if this is the last one, generate
-                    # proper outcome elements.
-                    outcome += sorted(commands.keys())
-                    # reset last_arg so that outcome list
-                    # won't be filtered
-                    last_arg = ""
-            elif index == (len(self._args) - 1):
-                # if this is the last one, and item
-                # is not in commands, outcome becomes
-                # commands.keys()
-                outcome += sorted(commands.keys())
-                # no need to break here
-            else:
-                # item not in commands, but that's not the
-                # last one, we must generate proper outcome
-                # elements and stop right after
-                outcome += sorted(commands.keys())
-                break
-
-        return self._bashcomp(sys.stdout, last_arg, outcome)
+        return self._hierarchical_bashcomp(last_arg, [], self._commands)
 
     def _login(self, entropy_client):
         """
