@@ -75,8 +75,7 @@ Show Repositories status.
         """
         Overridden from SoloCommand.
         """
-        import sys
-        return self._bashcomp(sys.stdout, last_arg, outcome)
+        return self._bashcomp(sys.stdout, last_arg, [])
 
     def _status(self, entropy_client):
         """
