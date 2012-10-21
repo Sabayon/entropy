@@ -71,17 +71,19 @@ Tools to rescue the running system.
             description=_("execute advanced tasks on packages"),
             help=_("available commands"))
 
-        def _add_ask_to_parser(p):
+        def _add_ask_to_parser(p, _cmd_dict):
             p.add_argument(
                 "--ask", action="store_true",
                 default=False,
                 help=_("ask before making any changes"))
+            _cmd_dict["--ask"] = {}
 
-        def _add_pretend_to_parser(p):
+        def _add_pretend_to_parser(p, _cmd_dict):
             p.add_argument(
                 "--pretend", action="store_true",
                 default=False,
                 help=_("show what would be done"))
+            _cmd_dict["--pretend"] = {}
 
         check_parser = subparsers.add_parser(
             "check", help=_("check installed packages "
@@ -112,11 +114,12 @@ Tools to rescue the running system.
             "spmsync",
             help=_("update Entropy installed packages repository "
                    "merging Source Package Manager changes"))
+        _cmd_dict = {}
+        _commands["spmsync"] = _cmd_dict
         mg_group = spmsync_parser.add_mutually_exclusive_group()
-        _add_ask_to_parser(mg_group)
-        _add_pretend_to_parser(mg_group)
+        _add_ask_to_parser(mg_group, _cmd_dict)
+        _add_pretend_to_parser(mg_group, _cmd_dict)
         spmsync_parser.set_defaults(func=self._spmsync)
-        _commands["spmsync"] = {}
 
         backup_parser = subparsers.add_parser(
             "backup",
