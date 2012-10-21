@@ -155,6 +155,7 @@ Tools to rescue the running system.
         """
         Overridden from SoloCommand.
         """
+        self._get_parser() # this will generate self._commands
         return self._hierarchical_bashcomp(last_arg, [], self._commands)
 
     def _check_repository(self, entropy_client, repo):

@@ -340,6 +340,7 @@ Repository query tools.
         """
         Overridden from SoloCommand.
         """
+        self._get_parser() # this will generate self._commands
         outcome = ["--quiet", "--verbose"]
         return self._hierarchical_bashcomp(
             last_arg, outcome, self._commands)

@@ -178,6 +178,7 @@ Manage User Generate Content (votes, comments, files).
         """
         Overridden from SoloCommand.
         """
+        self._get_parser() # this will generate self._commands
         return self._hierarchical_bashcomp(last_arg, [], self._commands)
 
     def _login(self, entropy_client):
