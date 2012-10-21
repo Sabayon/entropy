@@ -2,16 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    rescue
-      check
-      vacuum
-      generate
-      resurrect
-      spmuids
-      spmsync
-      backup
-      restore
-
     upgrade
         --ask
         --fetch
@@ -102,9 +92,11 @@ Backlog (raw)
       --pretend
 
 
+    drop "append_xpak()" in xpaktools
     equo unused -> add to "equo query unused"
     move etpConst['install_sources'] to entropy.db
     test unicode with solo conf update (and others)
+    memoization on spm scan of entropy.server
     solo.utils.show_you_meant !
     - rework client/ code, as done with eit
       - kernel-switcher is using text_ui
