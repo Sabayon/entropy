@@ -70,6 +70,9 @@ def generate_package_deltas(directory, quiet):
             try:
                 f_size = entropy.tools.get_file_size(pkg_path_a)
             except (IOError, OSError) as err:
+                if err.errno == errno.ENOENT:
+                    # race, file vanished, ignore
+                    continue
                 if not quiet:
                     sys.stderr.write("error: %s\n" % (err,))
                 continue
@@ -88,6 +91,9 @@ def generate_package_deltas(directory, quiet):
                 hash_tag = entropy.tools.md5sum(pkg_path_a) + \
                     entropy.tools.md5sum(next_pkg_path)
             except (IOError, OSError) as err:
+                if err.errno == errno.ENOENT:
+                    # race, file vanished, ignore
+                    continue
                 sys.stderr.write("error: %s\n" % (err,))
                 continue
 
