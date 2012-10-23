@@ -9,29 +9,10 @@ Backlog (raw)
         --verbose
         --replay
         --empty
-        --resume
+        --resume * drop
         --skipfirst
         --multifetch
         --multifetch=N
-
-    security
-        oscheck
-          --mtime
-          --assimilate
-          --reinstall
-          --quiet
-          --verbose
-        update
-          --force
-        list
-          --affected
-          --unaffected
-        info
-        install
-          --ask
-          --fetch
-          --pretend
-          --quiet
 
     install
       --ask
@@ -39,7 +20,7 @@ Backlog (raw)
       --fetch
       --nodeps
       --bdeps
-      --resume
+      --resume * drop
       --skipfirst
       --clean
       --empty
@@ -65,19 +46,28 @@ Backlog (raw)
       --multifetch
       --multifetch=N
 
-    remove
-      --ask
-      --pretend
-      --nodeps
-      --deep
-      --empty
-      --configfiles
-      --force-system
-      --resume
-
     config
       --ask
       --pretend
+
+    security
+        oscheck
+          --mtime
+          --assimilate
+          --reinstall
+          --quiet
+          --verbose
+        update
+          --force
+        list
+          --affected
+          --unaffected
+        info
+        install
+          --ask
+          --fetch
+          --pretend
+          --quiet
 
     deptest
       --quiet
