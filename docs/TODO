@@ -31,13 +31,6 @@ Backlog (raw)
       --multifetch
       --multifetch=N
 
-    source
-      --ask
-      --pretend
-      --nodeps
-      --relaxed
-      --savehere
-
     fetch
       --ask
       --pretend
