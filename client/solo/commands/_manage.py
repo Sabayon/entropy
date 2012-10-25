@@ -13,17 +13,19 @@ import os
 import sys
 import argparse
 
-from entropy.const import const_convert_to_unicode, etpConst
+from entropy.const import const_convert_to_unicode, etpConst, \
+    const_debug_write
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
     darkred
 from entropy.exceptions import EntropyPackageException, \
     DependenciesCollision, DependenciesNotFound
+from entropy.services.client import WebService
 
 import entropy.tools
 import entropy.dep
 
-from solo.utils import enlightenatom
+from solo.utils import enlightenatom, get_entropy_webservice
 from solo.commands.command import SoloCommand
 
 class SoloManage(SoloCommand):
@@ -56,6 +58,23 @@ class SoloManage(SoloCommand):
 
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func]
+
+    def _signal_ugc(self, entropy_client, package_keys):
+        """
+        Signal UGC activity.
+        """
+        for repository_id, pkgkeys in package_keys.items():
+            try:
+                webserv = get_entropy_webservice(entropy_client,
+                    repository_id, tx_cb = False)
+            except WebService.UnsupportedService:
+                continue
+            try:
+                webserv.add_downloads(sorted(package_keys),
+                    clear_available_cache = True)
+            except WebService.WebServiceException as err:
+                const_debug_write(__name__, repr(err))
+                continue
 
     def _show_config_files_update(self, entropy_client):
         """
@@ -582,3 +601,102 @@ class SoloManage(SoloCommand):
             return None, None
 
         return run_queue, removal_queue
+
+    def _download_packages(self, entropy_client, package_matches,
+                           downdata, multifetch=1, checksum=True):
+        """
+        Download packages from mirrors, essentially.
+        """
+        # read multifetch parameter from config if needed.
+        client_settings = entropy_client.ClientSettings()
+        misc_settings = client_settings['misc']
+        if multifetch <= 1:
+            multifetch = misc_settings.get('multifetch', 1)
+
+        mymultifetch = multifetch
+        if multifetch > 1:
+            myqueue = []
+            mystart = 0
+            while True:
+                mylist = package_matches[mystart:mymultifetch]
+                if not mylist:
+                    break
+                myqueue.append(mylist)
+                mystart += multifetch
+                mymultifetch += multifetch
+
+            count = 0
+            total = len(myqueue)
+            for matches in myqueue:
+                count += 1
+
+                metaopts = {}
+                metaopts['dochecksum'] = checksum
+                pkg = None
+                try:
+                    pkg = entropy_client.Package()
+                    pkg.prepare(matches, "multi_fetch", metaopts)
+                    myrepo_data = pkg.pkgmeta['repository_atoms']
+                    for myrepo in myrepo_data:
+                        obj = downdata.setdefault(myrepo, set())
+                        for atom in myrepo_data[myrepo]:
+                            obj.add(entropy.dep.dep_getkey(atom))
+
+                    xterm_header = "equo (%s) :: %d of %d ::" % (
+                        _("download"), count, total)
+                    entropy_client.output(
+                        "%s %s" % (
+                            darkgreen(
+                                const_convert_to_unicode(len(matches))),
+                            ngettext("package", "packages", len(matches))
+                            ),
+                        count=(count, total),
+                        header=darkred(" ::: ") + ">>> ")
+
+                    exit_st = pkg.run(xterm_header=xterm_header)
+                    if exit_st != 0:
+                        return 1
+
+                finally:
+                    if pkg is not None:
+                        pkg.kill()
+
+            return 0
+
+        total = len(package_matches)
+        count = 0
+        # normal fetch
+        for match in package_matches:
+            count += 1
+
+            metaopts = {}
+            metaopts['dochecksum'] = checksum
+            pkg = None
+            try:
+                package_id, repository_id = match
+                atom = entropy_client.open_repository(
+                    repository_id).retrieveAtom(package_id)
+                pkg = entropy_client.Package()
+                pkg.prepare(match, "fetch", metaopts)
+                myrepo = pkg.pkgmeta['repository']
+
+                obj = downdata.setdefault(myrepo, set())
+                obj.add(entropy.dep.dep_getkey(atom))
+
+                xterm_header = "equo (%s) :: %d of %d ::" % (
+                    _("download"), count, total)
+
+                entropy_client.output(
+                    darkgreen(atom),
+                    count=(count, total),
+                    header=darkred(" ::: ") + ">>> ")
+
+                exit_st = pkg.run(xterm_header=xterm_header)
+                if exit_st != 0:
+                    return 1
+
+            finally:
+                if pkg is not None:
+                    pkg.kill()
+
+        return 0
