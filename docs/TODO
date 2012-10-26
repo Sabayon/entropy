@@ -31,10 +31,6 @@ Backlog (raw)
       --multifetch
       --multifetch=N
 
-    config
-      --ask
-      --pretend
-
     security
         oscheck
           --mtime
