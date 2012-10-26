@@ -542,6 +542,34 @@ class SoloManage(SoloCommand):
 
         return final_package_names
 
+    def _scan_installed_packages(self, entropy_client,
+                                 inst_repo, packages):
+        """
+        Scan the Installed Packages repository for matches and
+        return a list of matched package identifiers.
+        """
+        package_ids = []
+        for package in packages:
+            package_id, _result = inst_repo.atomMatch(package)
+            if package_id == -1:
+                mytxt = "!!! %s: %s %s." % (
+                    purple(_("Warning")),
+                    teal(const_convert_to_unicode(package)),
+                    purple(_("is not installed")),
+                )
+                entropy_client.output("!!!", level="warning")
+                entropy_client.output(mytxt, level="warning")
+                entropy_client.output("!!!", level="warning")
+
+                if len(package) > 3:
+                    self._show_did_you_mean(
+                        entropy_client, package, True)
+                    entropy_client.output("!!!", level="warning")
+                continue
+            package_ids.append(package_id)
+
+        return package_ids
+
     def _generate_install_queue(self, entropy_client, packages, deps,
                                 empty, deep, relaxed, bdeps, recursive):
         """

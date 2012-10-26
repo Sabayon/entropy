@@ -120,33 +120,6 @@ Remove previously installed packages from system.
             self._show_config_files_update(entropy_client)
         return exit_st
 
-    def _match_packages(self, entropy_client, inst_repo, packages):
-        """
-        Scan the Installed Packages repository for matches and
-        return a list of matched package identifiers.
-        """
-        package_ids = []
-        for package in packages:
-            package_id, _result = inst_repo.atomMatch(package)
-            if package_id == -1:
-                mytxt = "!!! %s: %s %s." % (
-                    purple(_("Warning")),
-                    teal(const_convert_to_unicode(package)),
-                    purple(_("is not installed")),
-                )
-                entropy_client.output("!!!", level="warning")
-                entropy_client.output(mytxt, level="warning")
-                entropy_client.output("!!!", level="warning")
-
-                if len(package) > 3:
-                    self._show_did_you_mean(
-                        entropy_client, package, True)
-                    entropy_client.output("!!!", level="warning")
-                continue
-            package_ids.append(package_id)
-
-        return package_ids
-
     @staticmethod
     def _execute_action(entropy_client, inst_repo, removal_queue,
                         remove_config_files):
@@ -328,7 +301,7 @@ Remove previously installed packages from system.
 
         packages = entropy_client.packages_expand(packages)
         inst_repo = entropy_client.installed_repository()
-        package_ids = self._match_packages(
+        package_ids = self._scan_installed_packages(
             entropy_client, inst_repo, packages)
 
         if not package_ids:
