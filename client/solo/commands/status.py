@@ -82,9 +82,9 @@ Show Repositories status.
         Command implementation.
         """
         settings = entropy_client.Settings()
-        repo_enum = enumerate(settings['repositories']['order'])
+        repo_enum = enumerate(settings['repositories']['order'], 1)
         for repo_idx, repository_id in repo_enum:
-            self._repository_status(entropy_client, repo_idx + 1,
+            self._repository_status(entropy_client, repo_idx,
                                     repository_id)
         return 0
 

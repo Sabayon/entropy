@@ -113,9 +113,8 @@ Configure installed packages (calling pkg_config() hook).
                 level="error", importance=1)
             return 1, False
 
-        for count, package_id in enumerate(package_ids):
+        for count, package_id in enumerate(package_ids, 1):
 
-            count += 1 # start from zero
             atom = inst_repo.retrieveAtom(package_id)
             installed_from = inst_repo.getInstalledPackageRepository(
                 package_id)
@@ -149,9 +148,8 @@ Configure installed packages (calling pkg_config() hook).
         if pretend:
             return 0, False
 
-        for count, package_id in enumerate(package_ids):
+        for count, package_id in enumerate(package_ids, 1):
 
-            count += 1 # start from zero
             atom = inst_repo.retrieveAtom(package_id)
             pkg = None
 
