@@ -137,7 +137,7 @@ Download packages, essentially.
                 level="error", importance=1)
             return 1
 
-        action = darkgreen(_("Source code download"))
+        action = darkgreen(_("Package download"))
         exit_st = self._show_packages_info(
             entropy_client, packages, deps,
             ask, pretend, verbose, quiet, action_name = action)
