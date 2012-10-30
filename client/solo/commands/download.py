@@ -140,7 +140,7 @@ Download packages, essentially.
         action = darkgreen(_("Package download"))
         exit_st = self._show_packages_info(
             entropy_client, packages, deps,
-            ask, pretend, verbose, quiet, action_name = action)
+            ask, pretend, verbose, quiet, action_name=action)
         if exit_st != 0:
             return 1
 
