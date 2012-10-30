@@ -269,57 +269,6 @@ class SoloManage(SoloCommand):
                 return 1
         return 0
 
-    def _show_removal_info(self, entropy_client, package_ids,
-                           manual = False):
-        """
-        Show packages removal information.
-        """
-        if manual:
-            entropy_client.output(
-                "%s:" % (
-                    blue(_("These are the packages that "
-                      "should be MANUALLY removed")),),
-                header=darkred(" @@ "))
-        else:
-            entropy_client.output(
-                "%s:" % (
-                    blue(_("These are the packages that "
-                      "would be removed")),),
-                header=darkred(" @@ "))
-
-        total = len(package_ids)
-        count = 0
-        inst_repo = entropy_client.installed_repository()
-
-        for package_id in package_ids:
-            count += 1
-            atom = inst_repo.retrieveAtom(package_id)
-            installedfrom = inst_repo.getInstalledPackageRepository(
-                package_id)
-            if installedfrom is None:
-                installedfrom = _("Not available")
-
-            on_disk_size = inst_repo.retrieveOnDiskSize(package_id)
-            pkg_size = inst_repo.retrieveSize(package_id)
-            extra_downloads = inst_repo.retrieveExtraDownload(package_id)
-            for extra_download in extra_downloads:
-                pkg_size += extra_download['size']
-                on_disk_size += extra_download['disksize']
-
-            disksize = entropy.tools.bytes_into_human(on_disk_size)
-            disksize_info = "%s%s%s" % (
-                bold("["),
-                brown("%s" % (disksize,)),
-                bold("]"))
-            repo_info = bold("[") + brown(installedfrom) + bold("]")
-
-            mytxt = "%s %s %s" % (
-                repo_info,
-                enlightenatom(atom),
-                disksize_info)
-
-            entropy_client.output(mytxt, header=darkred(" ## "))
-
     def _scan_packages_expand_tag(self, entropy_client, packages):
         """
         This function assists the user automatically adding package
