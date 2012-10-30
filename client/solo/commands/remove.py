@@ -127,9 +127,7 @@ Remove previously installed packages from system.
         Execute the actual packages removal activity.
         """
         total = len(removal_queue)
-        count = 0
-        for package_id in removal_queue:
-            count += 1
+        for count, package_id in enumerate(removal_queue, 1):
 
             atom = inst_repo.retrieveAtom(package_id)
             metaopts = {}
@@ -181,11 +179,10 @@ Remove previously installed packages from system.
                 header=darkred(" @@ "))
 
         total = len(package_ids)
-        count = 0
         inst_repo = entropy_client.installed_repository()
 
-        for package_id in package_ids:
-            count += 1
+        for count, package_id in enumerate(package_ids, 1):
+
             atom = inst_repo.retrieveAtom(package_id)
             installedfrom = inst_repo.getInstalledPackageRepository(
                 package_id)
@@ -231,11 +228,9 @@ Remove previously installed packages from system.
             header=darkgreen(" @@ "))
 
         total = len(package_ids)
-        count = 0
-        for package_id in package_ids:
-            count += 1
-            atom = inst_repo.retrieveAtom(package_id)
+        for count, package_id in enumerate(package_ids, 1):
 
+            atom = inst_repo.retrieveAtom(package_id)
             if system_packages_check:
                 valid = entropy_client.validate_package_removal(
                     package_id)
