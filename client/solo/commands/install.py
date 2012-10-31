@@ -311,14 +311,14 @@ Install or update packages or package files.
                         old_tag,)
                 old_info += old_tag
 
-                entropy_client.output(
-                    "%s%s%s|%s%s" % (
-                        flags,
-                        repo_info,
-                        enlightenatom(atom),
-                        darkred(const_convert_to_unicode(pkgrev)),
-                        old_info,),
-                    header=darkred(" ##"))
+            entropy_client.output(
+                "%s%s%s|%s%s" % (
+                    flags,
+                    repo_info,
+                    enlightenatom(atom),
+                    darkred(const_convert_to_unicode(pkgrev)),
+                    old_info,),
+                header=darkred(" ##"))
 
         delta_size = on_disk_used_size - on_disk_freed_size
         needed_size = delta_size
