@@ -137,7 +137,26 @@ Install or update packages or package files.
         """
         Solo Install command.
         """
-        exit_st, _show_cfgupd = self._install_action(entropy_client)
+        deps = not self._nsargs.nodeps
+        recursive = not self._nsargs.norecursive
+        pretend = self._nsargs.pretend
+        ask = self._nsargs.ask
+        verbose = self._nsargs.verbose
+        quiet = self._nsargs.quiet
+        empty = self._nsargs.empty
+        config_files = self._nsargs.configfiles
+        deep = self._nsargs.deep
+        fetch = self._nsargs.fetch
+        bdeps = self._nsargs.bdeps
+        relaxed = self._nsargs.relaxed
+        multifetch = self._nsargs.multifetch
+        packages = self._nsargs.packages
+
+        exit_st, _show_cfgupd = self._install_action(
+            entropy_client, deps, recursive,
+            pretend, ask, verbose, quiet, empty,
+            config_files, deep, fetch, bdeps,
+            relaxed, multifetch, packages)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
         return exit_st
@@ -450,24 +469,13 @@ Install or update packages or package files.
                 bold(_("Attention")),
                 header=darkred(" !!! "))
 
-    def _install_action(self, entropy_client):
+    def _install_action(self, entropy_client, deps, recursive,
+                        pretend, ask, verbose, quiet, empty,
+                        config_files, deep, fetch, bdeps,
+                        relaxed, multifetch, packages):
         """
         Solo Install action implementation.
         """
-        deps = not self._nsargs.nodeps
-        recursive = not self._nsargs.norecursive
-        pretend = self._nsargs.pretend
-        ask = self._nsargs.ask
-        verbose = self._nsargs.verbose
-        quiet = self._nsargs.quiet
-        empty = self._nsargs.empty
-        config_files = self._nsargs.configfiles
-        deep = self._nsargs.deep
-        fetch = self._nsargs.fetch
-        bdeps = self._nsargs.bdeps
-        relaxed = self._nsargs.relaxed
-        multifetch = self._nsargs.multifetch
-        packages = self._nsargs.packages
         inst_repo = entropy_client.installed_repository()
 
         self._advise_repository_update(entropy_client)
