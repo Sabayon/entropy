@@ -9,7 +9,6 @@ Backlog (raw)
         --verbose
         --replay
         --empty
-        --resume * drop
         --skipfirst
         --multifetch
         --multifetch=N
@@ -32,11 +31,6 @@ Backlog (raw)
           --fetch
           --pretend
           --quiet
-
-    deptest
-      --quiet
-      --ask
-      --pretend
 
     libtest
       --dump
