@@ -14,23 +14,6 @@ Backlog (raw)
         --multifetch
         --multifetch=N
 
-    install
-      --ask
-      --pretend
-      --fetch
-      --nodeps
-      --bdeps
-      --resume * drop
-      --skipfirst
-      --clean
-      --empty
-      --relaxed
-      --deep
-      --verbose
-      --configfiles
-      --multifetch
-      --multifetch=N
-
     security
         oscheck
           --mtime

@@ -9,18 +9,23 @@
     B{Entropy Command Line Client}.
 
 """
-import os
-import sys
 import argparse
+import errno
+import os
+import shlex
+import subprocess
+import sys
+import tempfile
 
 from entropy.const import const_convert_to_unicode, etpConst, \
     const_debug_write
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
-    darkred
+    darkred, readtext
 from entropy.exceptions import EntropyPackageException, \
     DependenciesCollision, DependenciesNotFound
 from entropy.services.client import WebService
+from entropy.client.interfaces.repository import Repository
 
 import entropy.tools
 import entropy.dep
@@ -37,6 +42,7 @@ class SoloManage(SoloCommand):
 
     def __init__(self, args):
         SoloCommand.__init__(self, args)
+        self._interactive = os.getenv("ETP_NONINTERACTIVE") is None
         self._nsargs = None
 
     def man(self):
@@ -207,11 +213,11 @@ class SoloManage(SoloCommand):
                     darkred(_("Versions")),
                     blue(inst_ver),
                     blue(inst_tag),
-                    blue("%d" % (inst_rev,)),
-                    bold("===>"),
+                    blue(const_convert_to_unicode(inst_rev)),
+                    bold(const_convert_to_unicode("===>")),
                     darkgreen(pkgver),
                     darkgreen(pkgtag),
-                    darkgreen("%d" % (pkgrev,)),
+                    darkgreen(const_convert_to_unicode(pkgrev)),
                 )
                 entropy_client.output(
                     mytxt, header="    ")
@@ -675,5 +681,198 @@ class SoloManage(SoloCommand):
             finally:
                 if pkg is not None:
                     pkg.kill()
+
+        return 0
+
+    def _advise_repository_update(self, entropy_client):
+        """
+        Warn user about old repositories if needed.
+        """
+        old_repos = Repository.are_repositories_old()
+        if old_repos:
+            entropy_client.output("")
+            mytxt = "%s %s" % (
+                purple(_("Repositories are old, please run:")),
+                bold("equo update"),
+            )
+            entropy_client.output(
+                mytxt, level="warning", importance=1)
+            entropy_client.output("")
+
+    def _advise_packages_update(self, entropy_client):
+        """
+        Warn user about critical package updates, if any.
+        """
+        client_settings = entropy_client.ClientSettings()
+        misc_settings = client_settings['misc']
+        splitdebug = misc_settings['splitdebug']
+        forced_updates = misc_settings.get('forcedupdates')
+
+        if forced_updates:
+            crit_atoms, crit_matches = \
+                entropy_client.calculate_critical_updates()
+
+            if crit_atoms:
+                entropy_client.output("")
+                entropy_client.output("")
+
+                update_msg = _("Please update the following "
+                               "critical packages")
+                entropy_client.output("%s:" % (purple(update_msg),),
+                                      level="warning")
+                for name in sorted(crit_atoms):
+                    entropy_client.output(
+                        brown(name),
+                        header=darkred("   # "),
+                        level="warning")
+
+                entropy_client.output(
+                    darkgreen(_("You should install them as "
+                                "soon as possible")),
+                    header=darkred(" !!! "),
+                    level="warning")
+
+                entropy_client.output("")
+                entropy_client.output("")
+
+    @staticmethod
+    def _accept_license(entropy_client, inst_repo, package_matches):
+        """
+        Prompt user licenses to accept.
+        """
+
+        def _read_lic_selection():
+            entropy_client.output(
+                darkred(_("Please select an option")),
+                header="    ")
+            entropy_client.output(
+                "(%d) %s" % (
+                    1,
+                    darkgreen(_("Read the license"))),
+                header="      ")
+            entropy_client.output(
+                "(%d) %s" % (
+                    2,
+                    brown(_("Accept the license (I've read it)"))),
+                header="      ")
+            entropy_client.output(
+                "(%d) %s" % (
+                    3,
+                    darkred(_("Accept the license and don't "
+                              "ask anymore (I've read it)"))),
+                header="      ")
+            entropy_client.output(
+                "(%d) %s" % (0, bold(_("Quit"))),
+                header="      ")
+
+            # wait user interaction
+            try:
+                action = readtext(
+                    "       %s: " % (
+                        _("Your choice (type a number and press enter)"),)
+                    )
+            except EOFError:
+                action = None
+            return action
+
+        def _get_license_text(license_name, repository_id):
+            repo = entropy_client.open_repository(repository_id)
+            text = repo.retrieveLicenseText(license_name)
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            enc = etpConst['conf_raw_encoding']
+            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
+                tmp_f.write(text)
+            return tmp_path
+
+        # before even starting the fetch, make sure
+        # that the user accepts their licenses
+        licenses = entropy_client.get_licenses_to_accept(
+            package_matches)
+        # ACCEPT_LICENSE env var support
+        accept_license = os.getenv("ACCEPT_LICENSE", "").split()
+        for mylic in accept_license:
+            licenses.pop(mylic, None)
+
+        if licenses:
+            entropy_client.output(
+                "%s:" % (
+                    blue(_("You need to accept the licenses below")),),
+                header=darkred(" @@ "))
+
+        for key in sorted(licenses.keys()):
+            entropy_client.output(
+                "%s: %s, %s:" % (
+                    darkred(_("License")),
+                    bold(key),
+                    darkred(_("needed by"))),
+                header="    :: ")
+
+            for package_id, repository_id in licenses[key]:
+                repo = entropy_client.open_repository(repository_id)
+                atom = repo.retrieveAtom(package_id)
+                entropy_client.output(
+                    "[%s:%s] %s" % (
+                        brown(_("from")),
+                        darkred(repository_id),
+                        bold(atom),),
+                    header=blue("     # "))
+
+            while True:
+
+                try:
+                    choice = int(_read_lic_selection())
+                except (ValueError, TypeError):
+                    continue
+
+                if choice not in (0, 1, 2, 3):
+                    continue
+
+                if choice == 0:
+                    return 1
+
+                elif choice == 1: # read
+
+                    # pick one repository and read license text
+                    # from there.
+                    lic_repository_id = None
+                    for package_id, repository_id in licenses[key]:
+                        repo = entropy_client.open_repository(
+                            repository_id)
+                        if repo.isLicenseDataKeyAvailable(key):
+                            lic_repository_id = repository_id
+                            break
+                    if lic_repository_id is None:
+                        entropy_client.output(
+                            "%s!" % (
+                                brown(_("No license data available")),)
+                            )
+                        continue
+
+                    filename = _get_license_text(key, lic_repository_id)
+
+                    viewer = os.getenv("PAGER", "")
+                    viewer_args = shlex.split(viewer)
+                    if not viewer_args:
+                        entropy_client.output(
+                            "%s ! %s %s" % (
+                                brown(_("No file viewer")),
+                                darkgreen(_("License saved into")),
+                                filename))
+                        continue
+
+                    subprocess.call(viewer_args + [filename])
+                    try:
+                        os.remove(filename)
+                    except OSError as err:
+                        if err.errno != errno.ENOENT:
+                            raise
+                    continue
+
+                elif choice == 2:
+                    break
+
+                elif choice == 3:
+                    inst_repo.acceptLicense(key)
+                    break
 
         return 0
