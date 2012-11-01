@@ -115,7 +115,20 @@ Remove previously installed packages from system.
         """
         Solo Remove command.
         """
-        exit_st, _show_cfgupd = self._remove_action(entropy_client)
+        pretend = self._nsargs.pretend
+        ask = self._nsargs.ask
+        deps = not self._nsargs.nodeps
+        deep = self._nsargs.deep
+        empty = self._nsargs.empty
+        recursive = not self._nsargs.norecursive
+        system_packages_check = not self._nsargs.force_system
+        remove_config_files = self._nsargs.configfiles
+        packages = self._nsargs.packages
+
+        exit_st, _show_cfgupd = self._remove_action(
+            entropy_client, pretend, ask, deps, deep, empty,
+            recursive, system_packages_check, remove_config_files,
+            packages)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
         return exit_st
@@ -161,7 +174,7 @@ Remove previously installed packages from system.
         return 0
 
     def _show_removal_info(self, entropy_client, package_ids,
-                           manual = False):
+                           manual=False):
         """
         Show packages removal information.
         """
@@ -331,24 +344,18 @@ Remove previously installed packages from system.
         entropy_client.output(
             mytxt, header=darkred(" @@ "))
 
-    def _remove_action(self, entropy_client):
+    def _remove_action(self, entropy_client, pretend, ask,
+                       deps, deep, empty, recursive,
+                       system_packages_check, remove_config_files,
+                       packages, package_ids=None):
         """
         Solo Remove action implementation.
         """
-        system_packages_check = not self._nsargs.force_system
-        deps = not self._nsargs.nodeps
-        recursive = not self._nsargs.norecursive
-        pretend = self._nsargs.pretend
-        ask = self._nsargs.ask
-        empty = self._nsargs.empty
-        deep = self._nsargs.deep
-        remove_config_files = self._nsargs.configfiles
-        packages = self._nsargs.packages
-
-        packages = entropy_client.packages_expand(packages)
         inst_repo = entropy_client.installed_repository()
-        package_ids = self._scan_installed_packages(
-            entropy_client, inst_repo, packages)
+        if package_ids is None:
+            packages = entropy_client.packages_expand(packages)
+            package_ids = self._scan_installed_packages(
+                entropy_client, inst_repo, packages)
 
         if not package_ids:
             entropy_client.output(
