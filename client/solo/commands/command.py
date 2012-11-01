@@ -298,7 +298,14 @@ class SoloCommand(object):
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            acquired = entropy.tools.acquire_entropy_locks(client)
+            blocking = os.getenv("__EQUO_LOCKS_BLOCKING__")
+            if blocking:
+                client.output(darkgreen(
+                        _("Acquiring Entropy Resources "
+                          "Lock, please wait...")),
+                              back=True)
+            acquired = entropy.tools.acquire_entropy_locks(
+                client, blocking=blocking)
             if not acquired:
                 client.output(
                     darkgreen(_("Another Entropy is currently running.")),
