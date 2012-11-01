@@ -32,7 +32,7 @@ class SoloInstall(SoloManage):
     """
 
     NAME = "install"
-    ALIASES = ["in"]
+    ALIASES = ["i"]
     ALLOW_UNPRIVILEGED = False
 
     INTRODUCTION = """\
@@ -472,7 +472,8 @@ Install or update packages or package files.
     def _install_action(self, entropy_client, deps, recursive,
                         pretend, ask, verbose, quiet, empty,
                         config_files, deep, fetch, bdeps,
-                        relaxed, multifetch, packages):
+                        relaxed, multifetch, packages,
+                        package_matches=None):
         """
         Solo Install action implementation.
         """
@@ -482,14 +483,17 @@ Install or update packages or package files.
         if self._check_critical_updates:
             self._advise_packages_update(entropy_client)
 
-        packages = self._scan_packages(
-            entropy_client, packages)
-        if not packages:
-            entropy_client.output(
-                "%s." % (
-                    darkred(_("No packages found")),),
-                level="error", importance=1)
-            return 1, False
+        if package_matches is None:
+            packages = self._scan_packages(
+                entropy_client, packages)
+            if not packages:
+                entropy_client.output(
+                    "%s." % (
+                        darkred(_("No packages found")),),
+                    level="error", importance=1)
+                return 1, False
+        else:
+            packages = package_matches
 
         exit_st = self._show_packages_info(
             entropy_client, packages, deps,
