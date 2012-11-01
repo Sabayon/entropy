@@ -2,17 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    upgrade
-        --ask
-        --fetch
-        --pretend
-        --verbose
-        --replay
-        --empty
-        --skipfirst
-        --multifetch
-        --multifetch=N
-
     security
         oscheck
           --mtime
