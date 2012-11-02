@@ -17,10 +17,9 @@ from entropy.i18n import _
 from entropy.output import darkred, blue, darkgreen
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
 from solo.commands.install import SoloInstall
 
-class SoloDeptest(SoloCommand):
+class SoloDeptest(SoloInstall):
     """
     Main Solo Deptest command.
     """
@@ -35,7 +34,7 @@ Test system integrity by checking installed packages dependencies.
     SEE_ALSO = "equo-libtest(1)"
 
     def __init__(self, args):
-        SoloCommand.__init__(self, args)
+        SoloInstall.__init__(self, args)
         self._ask = False
         self._quiet = False
         self._pretend = False
@@ -190,16 +189,12 @@ Test system integrity by checking installed packages dependencies.
             entropy_client.output(mytxt, header=darkred(" @@ "))
             time.sleep(10)
 
-        args = sorted(found_deps)
-        if self._ask:
-            args.append("--ask")
-        if self._quiet:
-            args.append("--quiet")
-        if self._pretend:
-            args.append("--pretend")
-        install = SoloInstall(args)
-        func, func_args = install.parse()
-        return func(*func_args)
+        return self._install_action(
+            entropy_client, True, True,
+            self._pretend, self._ask,
+            False, self._quiet, False,
+            False, False, False, False,
+            False, 1, sorted(found_deps))
 
 
 SoloCommandDescriptor.register(
