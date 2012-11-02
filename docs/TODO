@@ -21,13 +21,6 @@ Backlog (raw)
           --pretend
           --quiet
 
-    libtest
-      --dump
-      --listfiles
-      --quiet
-      --ask
-      --pretend
-
 
     drop "append_xpak()" in xpaktools
     equo unused -> add to "equo query unused"
