@@ -605,7 +605,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
     def test_shared_objects(self, entropy_repository, broken_symbols = False,
         task_bombing_func = None, self_dir_check = True,
-        dump_results_to_file = False):
+        dump_results_to_file = False, silent = False):
 
         """
         Scan system looking for broken shared object ELF library dependencies.
@@ -622,18 +622,21 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @type task_bombing_func: callable
         @keyword dump_results_to_file: dump test results to files (printed)
         @type dump_results_to_file: bool
+        @keyword silent: do not print anything to stdout
+        @type silent: bool
         @return: tuple of length 3, composed by (1) a dict of matched packages,
             (2) a list (set) of broken ELF objects and (3) the execution status
             (int, 0 means success).
         @rtype: tuple
         """
 
-        self.output(
-            blue(_("Libraries test")),
-            importance = 2,
-            level = "info",
-            header = red(" @@ ")
-        )
+        if not silent:
+            self.output(
+                blue(_("Libraries test")),
+                importance = 2,
+                level = "info",
+                header = red(" @@ ")
+            )
 
         syms_list_path = None
         files_list_path = None
@@ -648,20 +651,21 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 (_("Broken executables list"), files_list_path,),
             ]
             mytxt = "%s:" % (purple(_("Dumping results into these files")),)
-            self.output(
-                mytxt,
-                importance = 1,
-                level = "info",
-                header = blue(" @@ ")
-            )
-            for txt, path in dmp_data:
-                mytxt = "%s: %s" % (blue(txt), path,)
+            if not silent:
                 self.output(
                     mytxt,
-                    importance = 0,
+                    importance = 1,
                     level = "info",
-                    header = darkgreen("   ## ")
+                    header = blue(" @@ ")
                 )
+                for txt, path in dmp_data:
+                    mytxt = "%s: %s" % (blue(txt), path,)
+                    self.output(
+                        mytxt,
+                        importance = 0,
+                        level = "info",
+                        header = darkgreen("   ## ")
+                    )
 
         myroot = etpConst['systemroot'] + os.path.sep
         if not etpConst['systemroot']:
@@ -723,17 +727,18 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 if sym in ldpaths:
                     while (real_dir in ldpaths):
                         ldpaths.remove(real_dir)
-                    self.output(
-                        "%s: %s, %s: %s" % (
-                            brown(_("discarding directory")),
-                            purple(real_dir),
-                            brown(_("because it's symlinked on")),
-                            purple(sym),
-                        ),
-                        importance = 0,
-                        level = "info",
-                        header = darkgreen(" @@ ")
-                    )
+                    if not silent:
+                        self.output(
+                            "%s: %s, %s: %s" % (
+                                brown(_("discarding directory")),
+                                purple(real_dir),
+                                brown(_("because it's symlinked on")),
+                                purple(sym),
+                            ),
+                            importance = 0,
+                            level = "info",
+                            header = darkgreen(" @@ ")
+                        )
                     break
 
         executables = set()
@@ -768,15 +773,16 @@ class QAInterface(TextInterface, EntropyPluginStore):
             if hasattr(task_bombing_func, '__call__'):
                 task_bombing_func()
             count += 1
-            self.output(
-                blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
-                importance = 0,
-                level = "info",
-                count = (count, total),
-                back = True,
-                percent = True,
-                header = "  "
-            )
+            if not silent:
+                self.output(
+                    blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
+                    importance = 0,
+                    level = "info",
+                    count = (count, total),
+                    back = True,
+                    percent = True,
+                    header = "  "
+                )
             try:
                 ldpath = ldpath.encode('utf-8')
             except (UnicodeEncodeError,):
@@ -786,20 +792,22 @@ class QAInterface(TextInterface, EntropyPluginStore):
             for x in map(_are_elfs, mywalk_iter):
                 executables.update(x)
 
-        self.output(
-            blue(_("Collecting broken executables")),
-            importance = 2,
-            level = "info",
-            header = red(" @@ ")
-        )
-        t = red(_("Attention")) + ": " + \
-            blue(_("don't worry about libraries that are shown here but not later."))
-        self.output(
-            t,
-            importance = 1,
-            level = "info",
-            header = red(" @@ ")
-        )
+        if not silent:
+            self.output(
+                blue(_("Collecting broken executables")),
+                importance = 2,
+                level = "info",
+                header = red(" @@ ")
+            )
+            t = red(_("Attention")) + ": " + \
+                blue(_("don't worry about libraries that "
+                       "are shown here but not later."))
+            self.output(
+                t,
+                importance = 1,
+                level = "info",
+                header = red(" @@ ")
+            )
 
         enc = etpConst['conf_encoding']
         syms_list_f = None
@@ -822,15 +830,16 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             count += 1
             if (count % 10 == 0) or (count == total) or (count == 1):
-                self.output(
-                    scan_txt,
-                    importance = 0,
-                    level = "info",
-                    count = (count, total),
-                    back = True,
-                    percent = True,
-                    header = "  "
-                )
+                if not silent:
+                    self.output(
+                        scan_txt,
+                        importance = 0,
+                        level = "info",
+                        count = (count, total),
+                        back = True,
+                        percent = True,
+                        header = "  "
+                    )
 
             # filter broken paths
             # there are paths known to be broken and must be
@@ -906,14 +915,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     files_list_f.write(executable + "\n")
 
                 alllibs = blue(' :: ').join(sorted(mylibs))
-                self.output(
-                    red(real_exec_path)+" [ "+alllibs+" ]",
-                    importance = 1,
-                    level = "info",
-                    percent = True,
-                    count = (count, total),
-                    header = "  "
-                )
+                if not silent:
+                    self.output(
+                        red(real_exec_path)+" [ "+alllibs+" ]",
+                        importance = 1,
+                        level = "info",
+                        percent = True,
+                        count = (count, total),
+                        header = "  "
+                    )
             elif broken_sym_found:
 
                 allsyms = darkred(' :: ').join([brown(x) for x in \
@@ -925,14 +935,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     syms_list_f.write("%s => %s\n" % (real_exec_path,
                         sorted(broken_sym_found),))
 
-                self.output(
-                    red(real_exec_path)+" { "+allsyms+" }",
-                    importance = 1,
-                    level = "info",
-                    percent = True,
-                    count = (count, total),
-                    header = "  "
-                )
+                if not silent:
+                    self.output(
+                        red(real_exec_path)+" { "+allsyms+" }",
+                        importance = 1,
+                        level = "info",
+                        percent = True,
+                        count = (count, total),
+                        header = "  "
+                    )
 
             plain_brokenexecs.add(executable)
 
@@ -957,12 +968,13 @@ class QAInterface(TextInterface, EntropyPluginStore):
             from entropy.client.interfaces import Client
             client = Client()
 
-            self.output(
-                blue(_("Matching broken libraries/executables")),
-                importance = 1,
-                level = "info",
-                header = red(" @@ ")
-            )
+            if not silent:
+                self.output(
+                    blue(_("Matching broken libraries/executables")),
+                    importance = 1,
+                    level = "info",
+                    header = red(" @@ ")
+                )
             matched = set()
             for brokenlib in plain_brokenexecs:
                 # test with /usr/lib
