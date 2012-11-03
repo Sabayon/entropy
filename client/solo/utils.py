@@ -269,7 +269,8 @@ def get_entropy_webservice(entropy_client, repository_id, tx_cb = False):
 
 def print_package_info(package_id, entropy_client, entropy_repository,
     installed_search = False, strict_output = False, extended = False,
-    quiet = False, show_repo_if_quiet = False, show_desc_if_quiet = False):
+    quiet = False, show_repo_if_quiet = False, show_desc_if_quiet = False,
+    show_slot_if_quiet = False):
     """
     Print Entropy Package Metadata in a pretty and uniform way.
     """
@@ -285,6 +286,9 @@ def print_package_info(package_id, entropy_client, entropy_repository,
                 entropy_repository.retrieveDescription(package_id),)
         if not extended:
             pkgatom = entropy.dep.dep_getkey(pkgatom)
+        if show_slot_if_quiet:
+            pkgatom += etpConst['entropyslotprefix']
+            pkgatom += entropy_repository.retrieveSlot(package_id)
         entropy_client.output(
             "%s%s%s" % (repoinfo, pkgatom, desc,),
             level="generic")

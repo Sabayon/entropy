@@ -45,6 +45,7 @@ Match package names.
         self._multirepo = False
         self._showrepo = False
         self._showdesc = False
+        self._showslot = False
         self._packages = []
 
     def man(self):
@@ -61,7 +62,7 @@ Match package names.
             "--quiet", "--verbose",
             "--installed", "--available",
             "--multimatch", "--multirepo",
-            "--showrepo"]
+            "--showrepo", "--showslot"]
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)
 
@@ -114,6 +115,10 @@ Match package names.
             "--showdesc", action="store_true",
             default=self._showdesc,
             help=_('print description too (w/--quiet)'))
+        parser.add_argument(
+            "--showslot", action="store_true",
+            default=self._showslot,
+            help=_('print ":<slot>" next to package names (w/--quiet)'))
 
         return parser
 
@@ -137,6 +142,7 @@ Match package names.
         self._multirepo = nsargs.multirepo
         self._showrepo = nsargs.showrepo
         self._showdesc = nsargs.showdesc
+        self._showslot = nsargs.showslot
 
         return self._call_unlocked, [self.match]
 
@@ -221,6 +227,7 @@ Match package names.
                 pkg_id, entropy_client, dbconn,
                 show_repo_if_quiet = self._showrepo,
                 show_desc_if_quiet = self._showdesc,
+                show_slot_if_quiet = self._showslot,
                 extended = self._verbose,
                 installed_search = from_client,
                 quiet = self._quiet)
