@@ -77,6 +77,17 @@ class SoloCommand(object):
         msg = "%s: %s" % (_("not a valid Entropy package file"), string)
         raise argparse.ArgumentTypeError(msg)
 
+    def _setup_verbose_quiet_parser(self, parser):
+        """
+        Add --verbose and --quiet switches to parser.
+        """
+        parser.add_argument(
+            "--verbose", "-v", action="store_true", default=False,
+            help=_("verbose output"))
+        parser.add_argument(
+            "--quiet", "-q", action="store_true", default=False,
+            help=_("quiet output"))
+
     def parse(self):
         """
         Parse the actual arguments and return

@@ -30,7 +30,7 @@ from solo.utils import print_package_info, print_table, get_file_mime, \
 
 class SoloQuery(SoloCommand):
     """
-    Main Solo UGC command.
+    Main Solo Query command.
     """
 
     NAME = "query"
@@ -52,17 +52,6 @@ Repository query tools.
         Overridden from SoloCommand.
         """
         return self._man()
-
-    def _setup_verbose_quiet_parser(self, parser):
-        """
-        Add --verbose and --quiet switches to parser.
-        """
-        parser.add_argument(
-            "--verbose", "-v", action="store_true", default=False,
-            help=_("verbose output"))
-        parser.add_argument(
-            "--quiet", "-q", action="store_true", default=False,
-            help=_("quiet output"))
 
     def _get_parser(self):
         """
