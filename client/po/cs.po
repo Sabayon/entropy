@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-03 18:09+0100\n"
+"POT-Creation-Date: 2012-11-03 23:49+0100\n"
 "PO-Revision-Date: 2012-09-30 09:50+0000\n"
 "Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-entropy/"
@@ -1857,8 +1857,8 @@ msgstr "Entropy vyžaduje Vaši pozornost"
 msgid "Yes"
 msgstr "Ano"
 
-#: ../../lib/entropy/output.py:747 ../../client/equo.py:714
-#: ../../client/solo/main.py:168 ../../client/solo/commands/pkg.py:253
+#: ../../lib/entropy/output.py:747 ../../client/solo/main.py:168
+#: ../../client/solo/commands/pkg.py:253
 #: ../../client/solo/commands/config.py:145
 #: ../../client/solo/commands/remove.py:381
 #: ../../client/solo/commands/remove.py:388
@@ -2058,794 +2058,6 @@ msgstr "Vyhledávám odpovídající rozbité binární soubory/knihovny"
 msgid "Not prepared yet"
 msgstr "Ještě nepřipraveno"
 
-#: ../../client/equo.py:48 ../../client/solo/commands/yell.py:34
-msgid "You should run equo --help"
-msgstr "Měli byste spustit equo --help"
-
-#: ../../client/equo.py:49 ../../client/solo/commands/yell.py:35
-msgid "You didn't run equo --help, did you?"
-msgstr "Vy jste nespustili equo --help, že?"
-
-#: ../../client/equo.py:50 ../../client/solo/commands/yell.py:36
-msgid "Did you even read equo --help??"
-msgstr "Už jste četli equo --help?"
-
-#: ../../client/equo.py:51 ../../client/solo/commands/yell.py:37
-msgid "I give up. Run that equo --help !!!!!!!"
-msgstr "Vzdávám se. Spusťte equo --help."
-
-#: ../../client/equo.py:52 ../../client/solo/commands/yell.py:38
-msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
-msgstr "Opravdu, prosím spusťte equo --help."
-
-#: ../../client/equo.py:53 ../../client/solo/commands/yell.py:39
-msgid "Illiteracy is a huge problem in this world"
-msgstr "Negramotnost je velkým problémem dneška"
-
-#: ../../client/equo.py:54 ../../client/solo/commands/yell.py:40
-msgid "Ok i give up, you are hopeless"
-msgstr "Dobrá, vzdávám se, není Vám pomoci"
-
-#: ../../client/equo.py:55 ../../client/solo/commands/yell.py:41
-#: ../../client/solo/commands/yell.py:42 ../../client/solo/commands/yell.py:43
-#: ../../client/solo/commands/yell.py:44 ../../client/solo/commands/yell.py:45
-#: ../../client/solo/commands/yell.py:47
-msgid "Go to hell."
-msgstr "Jděte k čertu."
-
-#: ../../client/equo.py:63
-msgid "Basic Options"
-msgstr "Základní volby"
-
-#: ../../client/equo.py:65
-msgid "this output"
-msgstr "tento výstup"
-
-#: ../../client/equo.py:66
-msgid "print version"
-msgstr "vypsat verzi"
-
-#: ../../client/equo.py:67
-msgid "disable colorized output"
-msgstr "vypnout barevný výstup"
-
-#: ../../client/equo.py:68
-msgid "force colorized output"
-msgstr "vynutit barevný výstup"
-
-#: ../../client/equo.py:69
-msgid "print a bash completion script to stdout"
-msgstr "vypsat skript pro doplňování bash na stdout"
-
-#: ../../client/equo.py:71
-msgid "Application Options"
-msgstr "Možnosti aplikace"
-
-#: ../../client/equo.py:73
-msgid "update configured repositories"
-msgstr "aktualizovat nastavené repozitáře"
-
-#: ../../client/equo.py:74
-msgid "force sync regardless repositories status"
-msgstr "vynutit synchronizaci repozitáře bez ohledu na stav"
-
-#: ../../client/equo.py:76
-msgid "manage your repositories"
-msgstr "spravovat Vaše repozitáře"
-
-#: ../../client/equo.py:77
-msgid "enable given repository"
-msgstr "povolit zadaný repozitář"
-
-#: ../../client/equo.py:78
-msgid "disable given repository"
-msgstr "zakázat zadaný repozitář"
-
-#: ../../client/equo.py:79
-msgid "add repository (pass repository string)"
-msgstr "přidat repozitář (zadejte název repozitáře)"
-
-#: ../../client/equo.py:80
-msgid "remove repository"
-msgstr "odebrat repozitář"
-
-#: ../../client/equo.py:81 ../../client/solo/commands/repo.py:101
-msgid "list active repositories"
-msgstr "vypsat aktivní repozitáře"
-
-#: ../../client/equo.py:82 ../../client/solo/commands/repo.py:106
-msgid "reorder mirrors basing on response time"
-msgstr "seřadit zrcadla podle času odpovědi"
-
-#: ../../client/equo.py:83
-msgid "merge content of source repos to dest [for developers]"
-msgstr "sloučí obsah zdrojových repozitářů do cíle (pro vývojáře)"
-
-#: ../../client/equo.py:84 ../../client/solo/commands/repo.py:125
-msgid "also remove dependency conflicts during merge"
-msgstr "také odstranit konflikty závislostí při sloučení"
-
-#: ../../client/equo.py:85 ../../client/solo/commands/notice.py:211
-msgid "repository notice board reader"
-msgstr "čtečka nástěnky oznámení repozitáře"
-
-#: ../../client/equo.py:86
-msgid "show respositories status"
-msgstr "zobrazit stav repozitářů"
-
-#: ../../client/equo.py:88 ../../client/solo/commands/search.py:214
-msgid "search packages in repositories"
-msgstr "vyhledat balíčky v repozitářích"
-
-#: ../../client/equo.py:89
-msgid "match a package in repositories"
-msgstr "vyhledá odpovídající balíček v repozitářích"
-
-#: ../../client/equo.py:90
-msgid "return all the possible matches"
-msgstr "vrátí všechny dostupné shody"
-
-#: ../../client/equo.py:91
-msgid "match inside installed packages repository"
-msgstr "vyhledat shodu v repozitáři nainstalovaných balíčků"
-
-#: ../../client/equo.py:92
-msgid "return matches from every repository"
-msgstr "vrátí shody ze všech repozitářů"
-
-#: ../../client/equo.py:93 ../../client/solo/commands/match.py:113
-msgid "print repository information (w/--quiet)"
-msgstr "vypsat informace o repozitáři (s --quiet)"
-
-#: ../../client/equo.py:94 ../../client/solo/commands/match.py:117
-msgid "print description too (w/--quiet)"
-msgstr "vypsat také popisek (s --quiet)"
-
-#: ../../client/equo.py:96
-msgid "upgrade your distribution to a new release (branch)"
-msgstr "aktualizovat Vaši distribuci na nové vydání (větev)"
-
-#: ../../client/equo.py:98
-msgid "update system with the latest available packages"
-msgstr "aktualizovat systém s nejnovějšími dostupnými balíčky"
-
-#: ../../client/equo.py:99 ../../client/equo.py:124 ../../client/equo.py:130
-#: ../../client/equo.py:147 ../../client/equo.py:154 ../../client/equo.py:162
-#: ../../client/equo.py:172 ../../client/equo.py:175 ../../client/equo.py:179
-#: ../../client/equo.py:184 ../../client/equo.py:195
-#: ../../client/solo/commands/pkg.py:79
-#: ../../client/solo/commands/config.py:63
-#: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:160
-#: ../../client/solo/commands/remove.py:67
-#: ../../client/solo/commands/deptest.py:61
-#: ../../client/solo/commands/source.py:62
-#: ../../client/solo/commands/libtest.py:61
-#: ../../client/solo/commands/install.py:70
-#: ../../client/solo/commands/upgrade.py:65
-#: ../../client/solo/commands/rescue.py:78
-#: ../../client/solo/commands/download.py:62
-#: ../../client/solo/commands/mask.py:49
-msgid "ask before making any changes"
-msgstr "dotázat se před provedením libovolných změn"
-
-#: ../../client/equo.py:100 ../../client/equo.py:125
-#: ../../client/solo/commands/security.py:96
-#: ../../client/solo/commands/security.py:166
-#: ../../client/solo/commands/install.py:89
-#: ../../client/solo/commands/upgrade.py:84
-msgid "just download packages"
-msgstr "pouze stáhnout balíčky"
-
-#: ../../client/equo.py:101 ../../client/solo/commands/mask.py:53
-msgid "only show what would be done"
-msgstr "pouze zobrazit co by se udělalo"
-
-#: ../../client/equo.py:102 ../../client/equo.py:141
-msgid "show more details about what is going on"
-msgstr "zobrazit více podrobností o prováděné činnosti"
-
-#: ../../client/equo.py:103
-msgid "reinstall all the packages and their dependencies"
-msgstr "přeinstalovat všechny balíčky a jejich závislosti"
-
-#: ../../client/equo.py:104
-msgid "same as --replay"
-msgstr "stejné jako --replay"
-
-#: ../../client/equo.py:105 ../../client/equo.py:135 ../../client/equo.py:169
-msgid "resume previously interrupted operations"
-msgstr "obnoví dříve přerušené operace"
-
-#: ../../client/equo.py:106
-msgid "used with --resume, makes the first package to be skipped"
-msgstr "při použití s --resume přeskočí první balíček"
-
-#: ../../client/equo.py:107 ../../client/equo.py:143 ../../client/equo.py:158
-msgid "download multiple packages in parallel (default 3)"
-msgstr "stáhnout více balíčků naráz (výchozí 3)"
-
-#: ../../client/equo.py:108 ../../client/equo.py:144 ../../client/equo.py:159
-msgid "download N packages in parallel (max 10)"
-msgstr "stáhnout N balíčků paralelně (maximálně 10)"
-
-#: ../../client/equo.py:110
-msgid "security infrastructure functions"
-msgstr "funkce bezpečnostní infrastruktury"
-
-#: ../../client/equo.py:111 ../../client/solo/commands/security.py:73
-msgid "verify installed files using stored checksums"
-msgstr "ověřit nainstalované soubory pomocí uložených kontrolních součtů"
-
-#: ../../client/equo.py:112 ../../client/solo/commands/security.py:77
-msgid "consider mtime instead of SHA256 (false positives ahead)"
-msgstr "brát v potaz mtime místo SHA256 (může způsobit falešnou detekci)"
-
-#: ../../client/equo.py:113 ../../client/solo/commands/security.py:81
-msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-"aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
-
-#: ../../client/equo.py:114 ../../client/solo/commands/security.py:85
-msgid "reinstall faulty packages"
-msgstr "přeinstalovat narušené balíčky"
-
-#: ../../client/equo.py:115 ../../client/equo.py:127 ../../client/equo.py:183
-#: ../../client/equo.py:188 ../../client/equo.py:194
-#: ../../client/solo/commands/deptest.py:64
-#: ../../client/solo/commands/libtest.py:66
-#: ../../client/solo/commands/unused.py:65
-msgid "show less details (useful for scripting)"
-msgstr "zobrazit méně podrobností (užitečné pro skriptování)"
-
-#: ../../client/equo.py:116
-msgid "also list removed files"
-msgstr "také vypsat odstraněné soubory"
-
-#: ../../client/equo.py:117 ../../client/solo/commands/security.py:110
-msgid "download the latest Security Advisories"
-msgstr "stáhnout nejnovější bezpečnostní doporučení"
-
-#: ../../client/equo.py:118
-msgid "force download even if already up-to-date"
-msgstr "vynutit stažení i když je již aktuální"
-
-#: ../../client/equo.py:119 ../../client/solo/commands/security.py:123
-msgid "list all the available Security Advisories"
-msgstr "vypsat všechna dostupná bezpečnostní doporučení"
-
-#: ../../client/equo.py:120 ../../client/solo/commands/security.py:129
-msgid "list only affected"
-msgstr "vypsat pouze ovlivněné"
-
-#: ../../client/equo.py:121 ../../client/solo/commands/security.py:132
-msgid "list only unaffected"
-msgstr "vypsat pouze neovlivněné"
-
-#: ../../client/equo.py:122 ../../client/solo/commands/security.py:141
-msgid "show information about provided advisories identifiers"
-msgstr "zobrazit informace o poskytnutých doporučeních"
-
-#: ../../client/equo.py:123 ../../client/solo/commands/security.py:153
-msgid "automatically install all the available security updates"
-msgstr "automaticky instalovat všechny dostupné bezpečnostní aktualizace"
-
-#: ../../client/equo.py:126 ../../client/equo.py:131 ../../client/equo.py:148
-#: ../../client/equo.py:155 ../../client/equo.py:163 ../../client/equo.py:173
-#: ../../client/equo.py:176 ../../client/equo.py:180 ../../client/equo.py:185
-#: ../../client/equo.py:196 ../../client/solo/commands/deptest.py:67
-#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:301
-msgid "just show what would be done"
-msgstr "pouze zobrazit co by se vykonalo"
-
-#: ../../client/equo.py:129
-msgid "install atoms or binary packages"
-msgstr "instalovat atomy, nebo binární balíčky"
-
-#: ../../client/equo.py:132 ../../client/equo.py:153
-msgid "just download packages without doing the install"
-msgstr "pouze stáhnout balíčky bez provedení instalace"
-
-#: ../../client/equo.py:133 ../../client/equo.py:149 ../../client/equo.py:156
-#: ../../client/equo.py:164
-msgid "do not pull in any dependency"
-msgstr "nepřidávat žádné závislosti"
-
-#: ../../client/equo.py:134
-msgid "also pull in build-time dependencies"
-msgstr "také přidat závislosti sestavení"
-
-#: ../../client/equo.py:136
-msgid "used with --resume, makes the first package in queue to be skipped"
-msgstr "při použití s --resume přeskočí první balíček ve frontě"
-
-#: ../../client/equo.py:137
-msgid "remove downloaded packages after being used"
-msgstr "odstranit stažené soubory po použití"
-
-#: ../../client/equo.py:138
-msgid "pull all the dependencies in, regardless their state"
-msgstr "přidat všechny závislosti, bez ohledu na jejich stav"
-
-#: ../../client/equo.py:139 ../../client/equo.py:150 ../../client/equo.py:157
-msgid "calm down dependencies resolution algorithm (might be risky)"
-msgstr "zklidní algoritmus výpočtu závislostí (může být riskantní)"
-
-#: ../../client/equo.py:140
-msgid "makes dependency rules stricter"
-msgstr "zpřísní pravidla závislostí"
-
-#: ../../client/equo.py:142
-msgid "makes old configuration files to be removed"
-msgstr "odstraní staré konfigurační soubory"
-
-#: ../../client/equo.py:146
-msgid "download atoms source code"
-msgstr "stáhnout zdrojový kód atomů"
-
-#: ../../client/equo.py:151
-msgid "save sources in current working directory"
-msgstr "uložit zdroje v současném pracovním adresáři"
-
-#: ../../client/equo.py:161
-msgid "remove one or more packages"
-msgstr "odebrat jeden, či více balíčků"
-
-#: ../../client/equo.py:165
-msgid "also pull unused dependencies where reverse deps list is empty"
-msgstr ""
-
-#: ../../client/equo.py:166
-msgid "when used with --deep, helps the removal of virtual packages"
-msgstr "při použití s --deep pomáhá odstranění virtuálních balíčků"
-
-#: ../../client/equo.py:167
-msgid "makes configuration files to be removed"
-msgstr "způsobí odstranění konfiguračních souborů"
-
-#: ../../client/equo.py:168
-msgid "dangerous: forces system packages removal, do not use this!"
-msgstr "nebezpečné: vynutí odebrání systémových balíčků, nepoužívejte."
-
-#: ../../client/equo.py:171 ../../client/solo/commands/mask.py:222
-msgid "mask one or more packages"
-msgstr "zamaskovat jeden a nebo více balíčků"
-
-#: ../../client/equo.py:174 ../../client/solo/commands/mask.py:229
-msgid "unmask one or more packages"
-msgstr "odmaskovat jeden a nebo více balíčků"
-
-#: ../../client/equo.py:178
-msgid "configure one or more installed packages"
-msgstr "nastavit jeden, či více nainstalovaných balíčků"
-
-#: ../../client/equo.py:182 ../../client/solo/commands/deptest.py:204
-msgid "look for unsatisfied dependencies"
-msgstr "vyhledat nesplněné závislosti"
-
-#: ../../client/equo.py:187 ../../client/solo/commands/unused.py:162
-msgid "look for unused packages (pay attention)"
-msgstr "vyhledat nevyužité balíčky (dávejte pozor)"
-
-#: ../../client/equo.py:189
-msgid "sort packages by disk size"
-msgstr "seřadit balíčky podle velikosti na disku"
-
-#: ../../client/equo.py:191 ../../client/solo/commands/libtest.py:246
-msgid "look for missing libraries"
-msgstr "vyhledat chybějící knihovny"
-
-#: ../../client/equo.py:192 ../../client/solo/commands/libtest.py:82
-msgid "dump results to files"
-msgstr "vložit výsledky do souborů"
-
-#: ../../client/equo.py:193 ../../client/solo/commands/libtest.py:77
-msgid "print broken files to stdout"
-msgstr "vypsat rozbité soubory na stdout"
-
-#: ../../client/equo.py:198
-msgid "configuration files update tool"
-msgstr "nástroj aktualizace konfiguračních souborů"
-
-#: ../../client/equo.py:199
-msgid "run the configuration files update function"
-msgstr "spustit funkci aktualizace konfiguračních souborů"
-
-#: ../../client/equo.py:201
-msgid "do misc queries on repository and local databases"
-msgstr "různé dotazy na repozitář a místní databáze"
-
-#: ../../client/equo.py:202
-msgid "search from what package a file belongs"
-msgstr "vyhledat z jakého balíčku pochází soubor"
-
-#: ../../client/equo.py:203
-msgid "show packages changelog"
-msgstr "zobrazit seznam změn balíčků"
-
-#: ../../client/equo.py:204
-msgid "search what packages depend on the provided atoms"
-msgstr "vyhledat balíčky závisející na poskytnutých atomech"
-
-#: ../../client/equo.py:205
-msgid "search packages by description"
-msgstr "vyhledat balíčky podle popisku"
-
-#: ../../client/equo.py:206
-msgid "show files owned by the provided atoms"
-msgstr "zobrazit soubory vlastněné poskytnutými atomy"
-
-#: ../../client/equo.py:207
-msgid "search a package into the local database"
-msgstr "vyhledat balíček v místní databázi"
-
-#: ../../client/equo.py:208
-msgid "show packages owning the provided licenses"
-msgstr "zobrazit balíčky vlastnící poskytnutou licenci"
-
-#: ../../client/equo.py:209
-msgid "list packages based on the chosen parameter below"
-msgstr "vypsat balíčky podle níže vybraného parametru"
-
-#: ../../client/equo.py:210 ../../client/solo/commands/query.py:157
-msgid "list installed packages"
-msgstr "vypsat nainstalované balíčky"
-
-#: ../../client/equo.py:211
-msgid "only packages installed by user"
-msgstr "pouze balíčky nainstalované uživatelem"
-
-#: ../../client/equo.py:212 ../../client/solo/commands/query.py:171
-msgid "list available packages"
-msgstr "vypsat dostupné balíčky"
-
-#: ../../client/equo.py:213
-msgid "search packages able to handle given mimetypes"
-msgstr "vyhledat balíčky, které jsou schopny zpracovat zadané MIME typy"
-
-#: ../../client/equo.py:214 ../../client/equo.py:216
-msgid "search among installed packages"
-msgstr "hledat mezi nainstalovanými balíčky"
-
-#: ../../client/equo.py:215
-msgid "associate given file paths to applications able to read them"
-msgstr "spojit zadané cesty souborů k aplikacím, které je přečtou"
-
-#: ../../client/equo.py:217
-msgid "show runtime libraries needed by the provided atoms"
-msgstr "zobrazit knihovny běhu vyžadované poskytnutými atomy"
-
-#: ../../client/equo.py:218
-msgid "search files that do not belong to any package"
-msgstr "vyhledat soubory nepatřící žádnému balíčku"
-
-#: ../../client/equo.py:219
-msgid "show the removal tree for the specified atoms"
-msgstr "zobrazit strom odebrání pro určené atomy"
-
-#: ../../client/equo.py:220
-msgid "show atoms needing the provided libraries"
-msgstr "zobrazit atomy vyžadující poskytnuté knihovny"
-
-#: ../../client/equo.py:221
-msgid "search available package sets"
-msgstr "vyhledat dostupné sady balíčků"
-
-#: ../../client/equo.py:222
-msgid "show packages owning the provided slot"
-msgstr "zobrazit balíčky vlastnící zadaný slot"
-
-#: ../../client/equo.py:223
-msgid "show packages owning the provided tags"
-msgstr "zobrazit balíčky vlastnící zadané značky"
-
-#: ../../client/equo.py:224
-msgid "show direct depdendencies tree for provided installable atoms"
-msgstr "zobrazit přímý strom závislostí pro poskytnuté instalovatelné atomy"
-
-#: ../../client/equo.py:225 ../../client/equo.py:227
-msgid "include system packages, build deps and circularity information"
-msgstr ""
-"zahrnout systémové balíčky, závislosti sestavení a informace o kruhových "
-"závislostech"
-
-#: ../../client/equo.py:226
-msgid "show reverse depdendencies tree for provided installed atoms"
-msgstr ""
-"zobrazit strom reverzních závislostí pro poskytnuté nainstalované atomy"
-
-#: ../../client/equo.py:228 ../../client/equo.py:278
-#: ../../client/solo/commands/cache.py:67
-msgid "show more details"
-msgstr "zobrazit více detailů"
-
-#: ../../client/equo.py:229 ../../client/equo.py:279
-#: ../../client/solo/commands/cache.py:70
-msgid "print results in a scriptable way"
-msgstr "vypíše výstup ve formátu vhodném pro skripty"
-
-#: ../../client/equo.py:235
-msgid "!!! Use --verbose to get full help output"
-msgstr "!!! Použijte --verbose pro úplnou nápovědu"
-
-#: ../../client/equo.py:240
-msgid "Extended Options"
-msgstr "Rozšířené možnosti"
-
-#: ../../client/equo.py:242
-msgid "handles extended functionalities"
-msgstr "ovládá rozšířenou funkcionalitu"
-
-#: ../../client/equo.py:243
-msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
-"vyrobit chytrý balíček pro poskytnuté atomy (více balíčků do jednoho souboru)"
-
-#: ../../client/equo.py:244
-msgid "recreate an Entropy package from your System"
-msgstr "znovu vytvořit balíček Entropy z Vašeho systému"
-
-#: ../../client/equo.py:245 ../../client/equo.py:247 ../../client/equo.py:249
-msgid "save new packages into the specified directory"
-msgstr "uložit nové balíčky do zadaného adresáře"
-
-#: ../../client/equo.py:246
-msgid ""
-"convert provided Source Package Manager package files into Entropy packages"
-msgstr "převést zadané balíčky správce zdrojových balíčků na balíčky Entropy"
-
-#: ../../client/equo.py:248
-msgid "convert provided Entropy packages into Source Package Manager ones"
-msgstr "převést zadané balíčky Entropy na balíčky správce zdrojových balíčků"
-
-#: ../../client/equo.py:250
-msgid "extract Entropy metadata from provided Entropy package files"
-msgstr "rozbalit metadata Entropy z poskytnutých souborů balíčku Entropy"
-
-#: ../../client/equo.py:251
-msgid "save new metadata into the specified directory"
-msgstr "uložit nová metadata do zadaného adresáře"
-
-#: ../../client/equo.py:253
-msgid "contains System rescue tools"
-msgstr "obsahuje nástroje systémové obnovy"
-
-#: ../../client/equo.py:254 ../../client/solo/commands/rescue.py:89
-msgid "check installed packages repository for errors"
-msgstr "zkontrolovat chyby v repozitáři nainstalovaných balíčků"
-
-#: ../../client/equo.py:255
-msgid ""
-"remove installed packages repository internal indexes to save disk space"
-msgstr ""
-"odstranit interní indexy repozitáře nainstalovaných balíčků pro úsporu místa "
-"na disku"
-
-#: ../../client/equo.py:256
-msgid ""
-"generate installed packages database using Source Package Manager "
-"repositories"
-msgstr ""
-"generovat databázi nainstalovaných balíčků pomocí repozitářů správce "
-"zdrojových balíčků"
-
-#: ../../client/equo.py:257
-msgid ""
-"generate installed packages database using files on the system [last hope]"
-msgstr ""
-"vytvořit databázi instalovaných balíčků pomocí souborů v systému [poslední "
-"naděje]"
-
-#: ../../client/equo.py:258
-msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
-msgstr "obnovit mapu UID SZB (SZB <-> balíčky Entropy)"
-
-#: ../../client/equo.py:259
-msgid "makes Entropy aware of your Source Package Manager updated packages"
-msgstr ""
-"umožňuje Entropy vědět o Vašich balíčcích aktualizovaných pomocí správce "
-"zdrojových balíčků"
-
-#: ../../client/equo.py:260
-msgid "backup the current Entropy installed packages database"
-msgstr "zálohovat databázi instalovaných balíčků Entropy"
-
-#: ../../client/equo.py:261
-msgid "restore a previously backed up Entropy installed packages database"
-msgstr "obnovit zálohovanou databázi instalovaných balíčků Entropy"
-
-#: ../../client/equo.py:263
-msgid "handles User Generated Content features"
-msgstr "ovládá vlastnosti uživatelem generovaného obsahu"
-
-#: ../../client/equo.py:264
-msgid "login against a specified repository"
-msgstr "přihlásit se k zadanému repozitáři"
-
-#: ../../client/equo.py:265
-msgid "logout from a specified repository"
-msgstr "odhlásit se ze zadaného repozitáře"
-
-#: ../../client/equo.py:266 ../../client/solo/commands/ugc.py:80
-#: ../../client/solo/commands/ugc.py:90
-msgid "force action"
-msgstr "vynutit činnost"
-
-#: ../../client/equo.py:267
-msgid ""
-"manage package documents for the selected repository (comments, files, "
-"videos)"
-msgstr ""
-"spravovat dokumenty balíčku pro vybraný repozitář (komentáře, soubory, videa)"
-
-#: ../../client/equo.py:268
-msgid ""
-"get available documents for the specified package key (example: x11-libs/qt)"
-msgstr "získat dostupné dokumenty pro zadaný klíč balíčku (např x11-libs/qt)"
-
-#: ../../client/equo.py:269
-msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr "přidat nový dokument pro zadaný klíč balíčku (např x11-libs/qt)"
-
-#: ../../client/equo.py:270 ../../client/solo/commands/ugc.py:124
-msgid "remove documents from database using their identifiers"
-msgstr "odebrat dokumenty z databáze pomocí jejich identifikátorů"
-
-#: ../../client/equo.py:271
-msgid "manage package votes for the selected repository"
-msgstr "spravovat hlasy k balíčkům pro vybraný repozitář"
-
-#: ../../client/equo.py:272
-msgid "get vote for the specified package key (example: x11-libs/qt)"
-msgstr "získat volbu pro zadaný klíč balíčku (např. x11-libs/qt)"
-
-#: ../../client/equo.py:273
-msgid "add vote for the specified package key (example: x11-libs/qt)"
-msgstr "přidat volbu pro zadaný klíč balíčku (např. x11-libs/qt)"
-
-#: ../../client/equo.py:276
-msgid "handles Entropy cache"
-msgstr "ovládá vyrovnávací paměť Entropy"
-
-#: ../../client/equo.py:277
-msgid "clean Entropy cache"
-msgstr "vyčistit vyrovnávací paměť Entropy"
-
-#: ../../client/equo.py:281 ../../client/solo/commands/cleanup.py:97
-msgid "remove downloaded packages and clean temp. directories"
-msgstr "odstranit stažené balíčky a vyčistit dočasné adresáře"
-
-#: ../../client/equo.py:283
-msgid "show system information"
-msgstr "zobrazit informace o systému"
-
-#: ../../client/equo.py:338
-msgid "is deprecated, please use"
-msgstr "je zastaralý, použijte prosím"
-
-#: ../../client/equo.py:351
-msgid "You are not root"
-msgstr "Nejste root"
-
-#: ../../client/equo.py:364 ../../client/solo/commands/command.py:322
-#: ../../client/solo/commands/command.py:352
-#: ../../services/kernel-switcher:155 ../../services/kernel-switcher:262
-msgid "Another Entropy is currently running."
-msgstr "Jiná Entropy již běží."
-
-#: ../../client/equo.py:583
-msgid "not enough parameters"
-msgstr "nedostatek parametrů"
-
-#: ../../client/equo.py:633 ../../client/solo/main.py:40
-msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-"Repozitář nainstalovaných balíčků je narušený. Prosím vytvořte jej znovu"
-
-#: ../../client/equo.py:641 ../../client/solo/main.py:50
-msgid "Cannot continue"
-msgstr "Nelze pokračovat"
-
-#: ../../client/equo.py:670 ../../client/solo/main.py:79
-msgid "Your hard drive is full! Your fault!"
-msgstr "Pevný disk je plný."
-
-#: ../../client/equo.py:676 ../../client/solo/main.py:88
-msgid "No more memory dude! Your fault!"
-msgstr "Došla paměť RAM."
-
-#: ../../client/equo.py:681
-msgid ""
-"Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
-"Well, you know, shit happens."
-msgstr ""
-"Ahoj. Jmenuji se Hlásič chyb. Velice nerad Vám oznamuji, že aplikace Equo "
-"havarovala. Život občas nasere."
-
-#: ../../client/equo.py:682
-msgid ""
-"But there's something you could do to help Equo to be a better application."
-msgstr "Ale můžete pomoci Equo stát se lepší aplikací."
-
-#: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
-msgstr "-- I KDYŽ VÁS NECHCI NECHAT ODESLAT STEJNÉ HLÁŠENÍ VÍCEKRÁT --"
-
-#: ../../client/equo.py:684 ../../client/solo/main.py:111
-msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr "Nyní zobrazím co se stalo. Žádný strach, jsem tu abych Vám pomáhal."
-
-#: ../../client/equo.py:693
-msgid ""
-"Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayon.org."
-msgstr ""
-"Achjo, nemohu ani zapisovat do /tmp. Prosím zkopírujte chybu a pošlete ji na "
-"lxnay@sabayon.org."
-
-#: ../../client/equo.py:712
-msgid "Of course you are on the Internet..."
-msgstr "Samozřejmě jste na internetu..."
-
-#: ../../client/equo.py:713
-msgid ""
-"Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-"Eh... Mohu zaslat chybu a další potřebné údaje\n"
-"o Vašem hardware k mým stvořitelům, aby mě mohli opravit? (Vaše IP bude "
-"zaznamenána)"
-
-#: ../../client/equo.py:715 ../../client/solo/main.py:170
-msgid "Ok, ok ok ok... Sorry!"
-msgstr "Dobře, dobře... Promiňte!"
-
-#: ../../client/equo.py:719 ../../client/solo/main.py:176
-msgid ""
-"If you want to be contacted back (and actively supported), also answer the "
-"questions below:"
-msgstr ""
-"Pokud si přejete být kontaktováni (a získat aktivní podporu), odpovězte také "
-"na následující otázky:"
-
-#: ../../client/equo.py:721 ../../client/solo/main.py:183
-msgid "Your Full name:"
-msgstr "Vaše celé jméno:"
-
-#: ../../client/equo.py:722 ../../client/solo/main.py:184
-msgid "Your E-Mail address:"
-msgstr "Vaše e-mailová adresa:"
-
-#: ../../client/equo.py:723 ../../client/solo/main.py:185
-msgid "What you were doing:"
-msgstr "Co jste dělali:"
-
-#: ../../client/equo.py:742 ../../client/solo/main.py:207
-msgid ""
-"Thank you very much. The error has been reported and hopefully, the problem "
-"will be solved as soon as possible."
-msgstr ""
-"Děkuji. Chyba byla nahlášena a doufejme, že problém bude odstraněn co "
-"nejdříve."
-
-#: ../../client/equo.py:744
-msgid ""
-"Ugh. Cannot send the report. When you want, mail the file below to "
-"lxnay@sabayon.org."
-msgstr ""
-"Uh. Nelze odeslat hlášení. Až budete chtít, zašlete následující soubor na "
-"lxnay@sabayon.org."
-
-#: ../../client/equo.py:763 ../../client/solo/main.py:233
-msgid "Entropy/Equo version mismatch"
-msgstr "Inkonzistence verzí Entropy a Equo"
-
-#: ../../client/equo.py:764 ../../client/solo/main.py:234
-msgid "it could make your system explode!"
-msgstr "může explodovat Váš systém."
-
 #: ../../client/solo/utils.py:534 ../../client/solo/commands/_manage.py:129
 msgid "When you wrote"
 msgstr "Když jste napsal"
@@ -2857,6 +2069,23 @@ msgstr "Myslel jste(tm)"
 #: ../../client/solo/utils.py:537 ../../client/solo/commands/_manage.py:132
 msgid "one of these below?"
 msgstr "jedno z následujících?"
+
+#: ../../client/solo/main.py:40
+msgid "Installed packages repository corrupted. Please re-generate it"
+msgstr ""
+"Repozitář nainstalovaných balíčků je narušený. Prosím vytvořte jej znovu"
+
+#: ../../client/solo/main.py:50
+msgid "Cannot continue"
+msgstr "Nelze pokračovat"
+
+#: ../../client/solo/main.py:79
+msgid "Your hard drive is full! Your fault!"
+msgstr "Pevný disk je plný."
+
+#: ../../client/solo/main.py:88
+msgid "No more memory dude! Your fault!"
+msgstr "Došla paměť RAM."
 
 #: ../../client/solo/main.py:94
 #, fuzzy
@@ -2878,6 +2107,10 @@ msgstr "Ale můžete pomoci Equo stát se lepší aplikací."
 msgid "-- BUT, DO NOT SUBMIT THE SAME REPORT MORE THAN ONCE --"
 msgstr "-- I KDYŽ VÁS NECHCI NECHAT ODESLAT STEJNÉ HLÁŠENÍ VÍCEKRÁT --"
 
+#: ../../client/solo/main.py:111
+msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
+msgstr "Nyní zobrazím co se stalo. Žádný strach, jsem tu abych Vám pomáhal."
+
 #: ../../client/solo/main.py:148
 #, fuzzy
 msgid ""
@@ -2898,6 +2131,38 @@ msgstr ""
 "o Vašem hardware k mým stvořitelům, aby mě mohli opravit? (Vaše IP bude "
 "zaznamenána)"
 
+#: ../../client/solo/main.py:170
+msgid "Ok, ok ok ok... Sorry!"
+msgstr "Dobře, dobře... Promiňte!"
+
+#: ../../client/solo/main.py:176
+msgid ""
+"If you want to be contacted back (and actively supported), also answer the "
+"questions below:"
+msgstr ""
+"Pokud si přejete být kontaktováni (a získat aktivní podporu), odpovězte také "
+"na následující otázky:"
+
+#: ../../client/solo/main.py:183
+msgid "Your Full name:"
+msgstr "Vaše celé jméno:"
+
+#: ../../client/solo/main.py:184
+msgid "Your E-Mail address:"
+msgstr "Vaše e-mailová adresa:"
+
+#: ../../client/solo/main.py:185
+msgid "What you were doing:"
+msgstr "Co jste dělali:"
+
+#: ../../client/solo/main.py:207
+msgid ""
+"Thank you very much. The error has been reported and hopefully, the problem "
+"will be solved as soon as possible."
+msgstr ""
+"Děkuji. Chyba byla nahlášena a doufejme, že problém bude odstraněn co "
+"nejdříve."
+
 #: ../../client/solo/main.py:213
 #, fuzzy
 msgid ""
@@ -2905,6 +2170,14 @@ msgid ""
 msgstr ""
 "Uh. Nelze odeslat hlášení. Až budete chtít, zašlete následující soubor na "
 "lxnay@sabayon.org."
+
+#: ../../client/solo/main.py:233
+msgid "Entropy/Equo version mismatch"
+msgstr "Inkonzistence verzí Entropy a Equo"
+
+#: ../../client/solo/main.py:234
+msgid "it could make your system explode!"
+msgstr "může explodovat Váš systém."
 
 #: ../../client/solo/main.py:243
 msgid "Entropy is running off a Live System"
@@ -2926,14 +2199,29 @@ msgstr "Někdo přidal tyto balíčky"
 
 #: ../../client/solo/commands/pkg.py:73 ../../client/solo/commands/query.py:73
 #: ../../client/solo/commands/query.py:154
-#: ../../client/solo/commands/cache.py:61
 #: ../../client/solo/commands/security.py:69
-#: ../../client/solo/commands/ugc.py:72 ../../client/solo/commands/ugc.py:105
-#: ../../client/solo/commands/ugc.py:144 ../../client/solo/commands/repo.py:66
-#: ../../client/solo/commands/conf.py:76
-#: ../../client/solo/commands/rescue.py:72 ../../services/kernel-switcher:305
+#: ../../client/solo/commands/cache.py:61 ../../client/solo/commands/ugc.py:72
+#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:144
+#: ../../client/solo/commands/repo.py:66 ../../client/solo/commands/conf.py:76
+#: ../../client/solo/commands/rescue.py:72 ../../services/kernel-switcher:310
 msgid "available commands"
 msgstr "dostupné příkazy"
+
+#: ../../client/solo/commands/pkg.py:79
+#: ../../client/solo/commands/config.py:63
+#: ../../client/solo/commands/security.py:90
+#: ../../client/solo/commands/security.py:160
+#: ../../client/solo/commands/remove.py:67
+#: ../../client/solo/commands/deptest.py:61
+#: ../../client/solo/commands/source.py:62
+#: ../../client/solo/commands/libtest.py:61
+#: ../../client/solo/commands/install.py:70
+#: ../../client/solo/commands/upgrade.py:65
+#: ../../client/solo/commands/rescue.py:78
+#: ../../client/solo/commands/download.py:62
+#: ../../client/solo/commands/mask.py:49
+msgid "ask before making any changes"
+msgstr "dotázat se před provedením libovolných změn"
 
 #: ../../client/solo/commands/pkg.py:85
 #: ../../client/solo/commands/command.py:77
@@ -3130,6 +2418,10 @@ msgstr "Licence"
 msgid "list packages"
 msgstr "nezbytný balíček"
 
+#: ../../client/solo/commands/query.py:157
+msgid "list installed packages"
+msgstr "vypsat nainstalované balíčky"
+
 #: ../../client/solo/commands/query.py:160
 #, fuzzy
 msgid "only list packages installed by user"
@@ -3139,6 +2431,10 @@ msgstr "pouze balíčky nainstalované uživatelem"
 #, fuzzy
 msgid "only list packages installed from given repositories"
 msgstr "pouze balíčky nainstalované uživatelem"
+
+#: ../../client/solo/commands/query.py:171
+msgid "list available packages"
+msgstr "vypsat dostupné balíčky"
 
 #: ../../client/solo/commands/query.py:174
 #, fuzzy
@@ -3549,28 +2845,6 @@ msgstr "URL balíčků"
 msgid "show Repositories status"
 msgstr "zobrazit stav repozitářů"
 
-#: ../../client/solo/commands/cache.py:60
-msgid "manage cache"
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:64
-#, fuzzy
-msgid "clean Entropy Library Cache"
-msgstr "vyčistit vyrovnávací paměť Entropy"
-
-#: ../../client/solo/commands/cache.py:122
-msgid "Cleaning Entropy cache, please wait ..."
-msgstr "Čistím vyrovnávací paměť Entropy, čekejte prosím..."
-
-#: ../../client/solo/commands/cache.py:129
-msgid "Entropy cache cleaned."
-msgstr "Vyrovnávací paměť Entropy vyčištěna."
-
-#: ../../client/solo/commands/cache.py:140
-#, fuzzy
-msgid "manage Entropy Library Cache"
-msgstr "ovládá vyrovnávací paměť Entropy"
-
 #: ../../client/solo/commands/update.py:64
 #: ../../client/solo/commands/ugc.py:234
 #: ../../client/solo/commands/notice.py:57
@@ -3640,15 +2914,63 @@ msgstr "aktualizovat nastavené repozitáře"
 msgid "system security tools"
 msgstr "obsahuje nástroje systémové obnovy"
 
+#: ../../client/solo/commands/security.py:73
+msgid "verify installed files using stored checksums"
+msgstr "ověřit nainstalované soubory pomocí uložených kontrolních součtů"
+
+#: ../../client/solo/commands/security.py:77
+msgid "consider mtime instead of SHA256 (false positives ahead)"
+msgstr "brát v potaz mtime místo SHA256 (může způsobit falešnou detekci)"
+
+#: ../../client/solo/commands/security.py:81
+msgid "update hashes and mtime (useful after editing config files)"
+msgstr ""
+"aktualizovat otisky a mtime (užitečné po editaci konfiguračních souborů)"
+
+#: ../../client/solo/commands/security.py:85
+msgid "reinstall faulty packages"
+msgstr "přeinstalovat narušené balíčky"
+
+#: ../../client/solo/commands/security.py:96
+#: ../../client/solo/commands/security.py:166
+#: ../../client/solo/commands/install.py:89
+#: ../../client/solo/commands/upgrade.py:84
+msgid "just download packages"
+msgstr "pouze stáhnout balíčky"
+
+#: ../../client/solo/commands/security.py:110
+msgid "download the latest Security Advisories"
+msgstr "stáhnout nejnovější bezpečnostní doporučení"
+
 #: ../../client/solo/commands/security.py:114
 #, fuzzy
 msgid "force download"
 msgstr "Stažení zdrojového kódu"
 
+#: ../../client/solo/commands/security.py:123
+msgid "list all the available Security Advisories"
+msgstr "vypsat všechna dostupná bezpečnostní doporučení"
+
+#: ../../client/solo/commands/security.py:129
+msgid "list only affected"
+msgstr "vypsat pouze ovlivněné"
+
+#: ../../client/solo/commands/security.py:132
+msgid "list only unaffected"
+msgstr "vypsat pouze neovlivněné"
+
+#: ../../client/solo/commands/security.py:141
+msgid "show information about provided advisories identifiers"
+msgstr "zobrazit informace o poskytnutých doporučeních"
+
 #: ../../client/solo/commands/security.py:146
 #, fuzzy
 msgid "advistory indentifier"
 msgstr "Žádné platné identifikátory"
+
+#: ../../client/solo/commands/security.py:153
+msgid "automatically install all the available security updates"
+msgstr "automaticky instalovat všechny dostupné bezpečnostní aktualizace"
 
 #: ../../client/solo/commands/security.py:211
 #, fuzzy
@@ -3914,6 +3236,21 @@ msgstr "hledat mezi nainstalovanými balíčky"
 msgid "Searching"
 msgstr "Hledání"
 
+#: ../../client/solo/commands/search.py:214
+msgid "search packages in repositories"
+msgstr "vyhledat balíčky v repozitářích"
+
+#: ../../client/solo/commands/deptest.py:64
+#: ../../client/solo/commands/libtest.py:66
+#: ../../client/solo/commands/unused.py:65
+msgid "show less details (useful for scripting)"
+msgstr "zobrazit méně podrobností (užitečné pro skriptování)"
+
+#: ../../client/solo/commands/deptest.py:67
+#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:306
+msgid "just show what would be done"
+msgstr "pouze zobrazit co by se vykonalo"
+
 #: ../../client/solo/commands/deptest.py:102
 msgid "Running dependency test"
 msgstr "Spouštím test závislostí"
@@ -3941,6 +3278,10 @@ msgstr "Instaluji dostupné balíčky v"
 msgid "10 seconds"
 msgstr "10 sekund"
 
+#: ../../client/solo/commands/deptest.py:204
+msgid "look for unsatisfied dependencies"
+msgstr "vyhledat nesplněné závislosti"
+
 #: ../../client/solo/commands/command.py:66
 #, fuzzy
 msgid "not a valid directory"
@@ -3959,6 +3300,42 @@ msgstr "tento výstup"
 msgid "Acquiring Entropy Resources Lock, please wait..."
 msgstr "Získávám zámek zdrojů Entropy, čekejte prosím..."
 
+#: ../../client/solo/commands/command.py:322
+#: ../../client/solo/commands/command.py:352
+#: ../../services/kernel-switcher:155 ../../services/kernel-switcher:267
+msgid "Another Entropy is currently running."
+msgstr "Jiná Entropy již běží."
+
+#: ../../client/solo/commands/cache.py:60
+msgid "manage cache"
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:64
+#, fuzzy
+msgid "clean Entropy Library Cache"
+msgstr "vyčistit vyrovnávací paměť Entropy"
+
+#: ../../client/solo/commands/cache.py:67
+msgid "show more details"
+msgstr "zobrazit více detailů"
+
+#: ../../client/solo/commands/cache.py:70
+msgid "print results in a scriptable way"
+msgstr "vypíše výstup ve formátu vhodném pro skripty"
+
+#: ../../client/solo/commands/cache.py:122
+msgid "Cleaning Entropy cache, please wait ..."
+msgstr "Čistím vyrovnávací paměť Entropy, čekejte prosím..."
+
+#: ../../client/solo/commands/cache.py:129
+msgid "Entropy cache cleaned."
+msgstr "Vyrovnávací paměť Entropy vyčištěna."
+
+#: ../../client/solo/commands/cache.py:140
+#, fuzzy
+msgid "manage Entropy Library Cache"
+msgstr "ovládá vyrovnávací paměť Entropy"
+
 #: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1005
 #, fuzzy
 msgid "manage User Generated Content"
@@ -3976,6 +3353,10 @@ msgstr "přihlásit se k zadanému repozitáři"
 #, fuzzy
 msgid "repository name"
 msgstr "Název repozitáře"
+
+#: ../../client/solo/commands/ugc.py:80 ../../client/solo/commands/ugc.py:90
+msgid "force action"
+msgstr "vynutit činnost"
 
 #: ../../client/solo/commands/ugc.py:85
 #, fuzzy
@@ -4010,6 +3391,10 @@ msgstr "získat volbu pro zadaný klíč balíčku (např. x11-libs/qt)"
 #, fuzzy
 msgid "add a new document to the provided package name"
 msgstr "přidat nový dokument pro zadaný klíč balíčku (např x11-libs/qt)"
+
+#: ../../client/solo/commands/ugc.py:124
+msgid "remove documents from database using their identifiers"
+msgstr "odebrat dokumenty z databáze pomocí jejich identifikátorů"
 
 #: ../../client/solo/commands/ugc.py:130
 #, fuzzy
@@ -4266,6 +3651,14 @@ msgstr "již hlasováno"
 msgid "vote added, thank you!"
 msgstr "hlas přidán, děkuji!"
 
+#: ../../client/solo/commands/help.py:70
+msgid "Entropy Command Line Client, Equo"
+msgstr ""
+
+#: ../../client/solo/commands/help.py:97 ../../services/kernel-switcher:330
+msgid "this help"
+msgstr "nápověda"
+
 #: ../../client/solo/commands/repo.py:65
 #: ../../client/solo/commands/repo.py:639
 #, fuzzy
@@ -4297,6 +3690,14 @@ msgstr "Přidávám řetězec repozitáře"
 msgid "remove a repository"
 msgstr "odebrat repozitář"
 
+#: ../../client/solo/commands/repo.py:101
+msgid "list active repositories"
+msgstr "vypsat aktivní repozitáře"
+
+#: ../../client/solo/commands/repo.py:106
+msgid "reorder mirrors basing on response time"
+msgstr "seřadit zrcadla podle času odpovědi"
+
 #: ../../client/solo/commands/repo.py:112
 msgid "simulate execution"
 msgstr ""
@@ -4315,6 +3716,10 @@ msgstr "odebrat repozitář"
 #, fuzzy
 msgid "destination repository"
 msgstr "Vyhledávám v repozitáři"
+
+#: ../../client/solo/commands/repo.py:125
+msgid "also remove dependency conflicts during merge"
+msgstr "také odstranit konflikty závislostí při sloučení"
 
 #: ../../client/solo/commands/repo.py:218
 msgid "repository already enabled"
@@ -4470,6 +3875,40 @@ msgstr "Stažení zdrojového kódu"
 msgid "download packages source code"
 msgstr "stáhnout zdrojový kód atomů"
 
+#: ../../client/solo/commands/yell.py:34
+msgid "You should run equo --help"
+msgstr "Měli byste spustit equo --help"
+
+#: ../../client/solo/commands/yell.py:35
+msgid "You didn't run equo --help, did you?"
+msgstr "Vy jste nespustili equo --help, že?"
+
+#: ../../client/solo/commands/yell.py:36
+msgid "Did you even read equo --help??"
+msgstr "Už jste četli equo --help?"
+
+#: ../../client/solo/commands/yell.py:37
+msgid "I give up. Run that equo --help !!!!!!!"
+msgstr "Vzdávám se. Spusťte equo --help."
+
+#: ../../client/solo/commands/yell.py:38
+msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
+msgstr "Opravdu, prosím spusťte equo --help."
+
+#: ../../client/solo/commands/yell.py:39
+msgid "Illiteracy is a huge problem in this world"
+msgstr "Negramotnost je velkým problémem dneška"
+
+#: ../../client/solo/commands/yell.py:40
+msgid "Ok i give up, you are hopeless"
+msgstr "Dobrá, vzdávám se, není Vám pomoci"
+
+#: ../../client/solo/commands/yell.py:41 ../../client/solo/commands/yell.py:42
+#: ../../client/solo/commands/yell.py:43 ../../client/solo/commands/yell.py:44
+#: ../../client/solo/commands/yell.py:45 ../../client/solo/commands/yell.py:47
+msgid "Go to hell."
+msgstr "Jděte k čertu."
+
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
 msgstr ""
@@ -4477,6 +3916,14 @@ msgstr ""
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
 msgstr ""
+
+#: ../../client/solo/commands/libtest.py:77
+msgid "print broken files to stdout"
+msgstr "vypsat rozbité soubory na stdout"
+
+#: ../../client/solo/commands/libtest.py:82
+msgid "dump results to files"
+msgstr "vložit výsledky do souborů"
 
 #: ../../client/solo/commands/libtest.py:137
 #: ../../client/solo/commands/libtest.py:170
@@ -4495,6 +3942,10 @@ msgstr "Beze shody"
 msgid "Would you like to install them ?"
 msgstr "Přejete si je nainstalovat?"
 
+#: ../../client/solo/commands/libtest.py:246
+msgid "look for missing libraries"
+msgstr "vyhledat chybějící knihovny"
+
 #: ../../client/solo/commands/notice.py:153
 #: ../../client/solo/commands/conf.py:221
 #: ../../magneto/src/magneto/core/interfaces.py:175
@@ -4512,6 +3963,10 @@ msgstr "Odkaz"
 #: ../../client/solo/commands/notice.py:203
 msgid "Press Enter to continue"
 msgstr "Stiskněte enter pro pokračování"
+
+#: ../../client/solo/commands/notice.py:211
+msgid "repository notice board reader"
+msgstr "čtečka nástěnky oznámení repozitáře"
 
 #: ../../client/solo/commands/_manage.py:90
 msgid "Scanning configuration files to update"
@@ -4905,6 +4360,14 @@ msgstr "vrátí všechny dostupné shody"
 msgid "return matches found in every repository"
 msgstr "vrátí shody ze všech repozitářů"
 
+#: ../../client/solo/commands/match.py:113
+msgid "print repository information (w/--quiet)"
+msgstr "vypsat informace o repozitáři (s --quiet)"
+
+#: ../../client/solo/commands/match.py:117
+msgid "print description too (w/--quiet)"
+msgstr "vypsat také popisek (s --quiet)"
+
 #: ../../client/solo/commands/match.py:121
 msgid "print \":<slot>\" next to package names (w/--quiet)"
 msgstr ""
@@ -5055,6 +4518,10 @@ msgstr "Existuje více aktualizací k instalaci, znovu načítám Entropy"
 #: ../../client/solo/commands/upgrade.py:340
 msgid "upgrade the system"
 msgstr ""
+
+#: ../../client/solo/commands/rescue.py:89
+msgid "check installed packages repository for errors"
+msgstr "zkontrolovat chyby v repozitáři nainstalovaných balíčků"
 
 #: ../../client/solo/commands/rescue.py:96
 #, fuzzy
@@ -5282,6 +4749,10 @@ msgstr "Repozitář nainstalovaných balíčků"
 msgid "tools to rescue the running system"
 msgstr ""
 
+#: ../../client/solo/commands/cleanup.py:97
+msgid "remove downloaded packages and clean temp. directories"
+msgstr "odstranit stažené balíčky a vyčistit dočasné adresáře"
+
 #: ../../client/solo/commands/unused.py:70
 #, fuzzy
 msgid "sort packages by size"
@@ -5299,6 +4770,20 @@ msgid ""
 msgstr ""
 "Spouštím test nepoužívaných balíčků. Dávejte pozor, může obsahovat falešně "
 "pozitivní balíčky"
+
+#: ../../client/solo/commands/unused.py:162
+msgid "look for unused packages (pay attention)"
+msgstr "vyhledat nevyužité balíčky (dávejte pozor)"
+
+#: ../../client/solo/commands/download.py:140
+#, fuzzy
+msgid "Package download"
+msgstr "vyřazené stahování"
+
+#: ../../client/solo/commands/download.py:172
+#, fuzzy
+msgid "download packages, essentially"
+msgstr "pouze stáhnout balíčky"
 
 #: ../../client/solo/commands/hop.py:92
 msgid "Already on branch"
@@ -5321,23 +4806,9 @@ msgstr "Nelze přepnout na větev"
 msgid "upgrade the System to a new branch"
 msgstr "aktualizovat Vaši distribuci na nové vydání (větev)"
 
-#: ../../client/solo/commands/download.py:140
-#, fuzzy
-msgid "Package download"
-msgstr "vyřazené stahování"
-
-#: ../../client/solo/commands/download.py:172
-#, fuzzy
-msgid "download packages, essentially"
-msgstr "pouze stáhnout balíčky"
-
-#: ../../client/solo/commands/help.py:70
-msgid "Entropy Command Line Client, Equo"
-msgstr ""
-
-#: ../../client/solo/commands/help.py:97 ../../services/kernel-switcher:325
-msgid "this help"
-msgstr "nápověda"
+#: ../../client/solo/commands/mask.py:53
+msgid "only show what would be done"
+msgstr "pouze zobrazit co by se udělalo"
 
 #: ../../client/solo/commands/mask.py:125
 msgid "These are the packages that would be handled"
@@ -5350,6 +4821,14 @@ msgstr "Přejete si pokračovat?"
 #: ../../client/solo/commands/mask.py:174
 msgid "action not executed"
 msgstr "činnost nebyla vykonána"
+
+#: ../../client/solo/commands/mask.py:222
+msgid "mask one or more packages"
+msgstr "zamaskovat jeden a nebo více balíčků"
+
+#: ../../client/solo/commands/mask.py:229
+msgid "unmask one or more packages"
+msgstr "odmaskovat jeden a nebo více balíčků"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
@@ -5562,35 +5041,35 @@ msgstr "Nelze nalézt Vaše aktuálně spuštěné jádro."
 msgid "Try without --from-running."
 msgstr "Zkuste bez --from-running."
 
-#: ../../services/kernel-switcher:266
+#: ../../services/kernel-switcher:271
 msgid "No kernel packages found"
 msgstr "Nenalezen žádný balíček s jádrem"
 
-#: ../../services/kernel-switcher:287
+#: ../../services/kernel-switcher:292
 msgid "Sabayon Kernel Switcher"
 msgstr "Přepínač jader Sabayon"
 
-#: ../../services/kernel-switcher:294
+#: ../../services/kernel-switcher:299
 msgid "quiet mode"
 msgstr "tichý režim"
 
-#: ../../services/kernel-switcher:298
+#: ../../services/kernel-switcher:303
 msgid "ask confirmation"
 msgstr "vyžádat potvrzení"
 
-#: ../../services/kernel-switcher:308
+#: ../../services/kernel-switcher:313
 msgid "install a new or just another kernel"
 msgstr "nainstalovat nové a nebo další jádro"
 
-#: ../../services/kernel-switcher:313
+#: ../../services/kernel-switcher:318
 msgid "use 'uname -r' to determine the running kernel"
 msgstr "použít 'uname -r' pro zjištění běžícího jádra"
 
-#: ../../services/kernel-switcher:316
+#: ../../services/kernel-switcher:321
 msgid "the new kernel package dependency name"
 msgstr ""
 
-#: ../../services/kernel-switcher:320
+#: ../../services/kernel-switcher:325
 msgid "list kernels"
 msgstr "vypsat jádra"
 
@@ -5672,6 +5151,9 @@ msgstr "_Načíst správce balíčků"
 #~ msgid "Unhandled exception"
 #~ msgstr "Nezpracovaná výjimka"
 
+#~ msgid "You are not root"
+#~ msgstr "Nejste root"
+
 #~ msgid "You must be an administrator."
 #~ msgstr "Musíte být administrátor."
 
@@ -5689,6 +5171,9 @@ msgstr "_Načíst správce balíčků"
 
 #~ msgid "Installed packages database not available"
 #~ msgstr "Databáze nainstalovaných balíčků není dostupná"
+
+#~ msgid "is deprecated, please use"
+#~ msgstr "je zastaralý, použijte prosím"
 
 #~ msgid "Vacuum cleaning System Database"
 #~ msgstr "Luxuji systémovou databázi"
@@ -5895,6 +5380,181 @@ msgstr "_Načíst správce balíčků"
 
 #~ msgid "Compressed file does not exist"
 #~ msgstr "Komprimovaný soubor neexistuje"
+
+#~ msgid "Basic Options"
+#~ msgstr "Základní volby"
+
+#~ msgid "print version"
+#~ msgstr "vypsat verzi"
+
+#~ msgid "disable colorized output"
+#~ msgstr "vypnout barevný výstup"
+
+#~ msgid "force colorized output"
+#~ msgstr "vynutit barevný výstup"
+
+#~ msgid "print a bash completion script to stdout"
+#~ msgstr "vypsat skript pro doplňování bash na stdout"
+
+#~ msgid "Application Options"
+#~ msgstr "Možnosti aplikace"
+
+#~ msgid "force sync regardless repositories status"
+#~ msgstr "vynutit synchronizaci repozitáře bez ohledu na stav"
+
+#~ msgid "enable given repository"
+#~ msgstr "povolit zadaný repozitář"
+
+#~ msgid "disable given repository"
+#~ msgstr "zakázat zadaný repozitář"
+
+#~ msgid "add repository (pass repository string)"
+#~ msgstr "přidat repozitář (zadejte název repozitáře)"
+
+#~ msgid "update system with the latest available packages"
+#~ msgstr "aktualizovat systém s nejnovějšími dostupnými balíčky"
+
+#~ msgid "show more details about what is going on"
+#~ msgstr "zobrazit více podrobností o prováděné činnosti"
+
+#~ msgid "reinstall all the packages and their dependencies"
+#~ msgstr "přeinstalovat všechny balíčky a jejich závislosti"
+
+#~ msgid "same as --replay"
+#~ msgstr "stejné jako --replay"
+
+#~ msgid "resume previously interrupted operations"
+#~ msgstr "obnoví dříve přerušené operace"
+
+#~ msgid "used with --resume, makes the first package to be skipped"
+#~ msgstr "při použití s --resume přeskočí první balíček"
+
+#~ msgid "download multiple packages in parallel (default 3)"
+#~ msgstr "stáhnout více balíčků naráz (výchozí 3)"
+
+#~ msgid "security infrastructure functions"
+#~ msgstr "funkce bezpečnostní infrastruktury"
+
+#~ msgid "also list removed files"
+#~ msgstr "také vypsat odstraněné soubory"
+
+#~ msgid "force download even if already up-to-date"
+#~ msgstr "vynutit stažení i když je již aktuální"
+
+#~ msgid "just download packages without doing the install"
+#~ msgstr "pouze stáhnout balíčky bez provedení instalace"
+
+#~ msgid "do not pull in any dependency"
+#~ msgstr "nepřidávat žádné závislosti"
+
+#~ msgid "used with --resume, makes the first package in queue to be skipped"
+#~ msgstr "při použití s --resume přeskočí první balíček ve frontě"
+
+#~ msgid "remove downloaded packages after being used"
+#~ msgstr "odstranit stažené soubory po použití"
+
+#~ msgid "pull all the dependencies in, regardless their state"
+#~ msgstr "přidat všechny závislosti, bez ohledu na jejich stav"
+
+#~ msgid "calm down dependencies resolution algorithm (might be risky)"
+#~ msgstr "zklidní algoritmus výpočtu závislostí (může být riskantní)"
+
+#~ msgid "makes dependency rules stricter"
+#~ msgstr "zpřísní pravidla závislostí"
+
+#~ msgid "makes old configuration files to be removed"
+#~ msgstr "odstraní staré konfigurační soubory"
+
+#~ msgid "remove one or more packages"
+#~ msgstr "odebrat jeden, či více balíčků"
+
+#~ msgid "configuration files update tool"
+#~ msgstr "nástroj aktualizace konfiguračních souborů"
+
+#~ msgid "run the configuration files update function"
+#~ msgstr "spustit funkci aktualizace konfiguračních souborů"
+
+#~ msgid "do misc queries on repository and local databases"
+#~ msgstr "různé dotazy na repozitář a místní databáze"
+
+#~ msgid "search what packages depend on the provided atoms"
+#~ msgstr "vyhledat balíčky závisející na poskytnutých atomech"
+
+#~ msgid "search a package into the local database"
+#~ msgstr "vyhledat balíček v místní databázi"
+
+#~ msgid "list packages based on the chosen parameter below"
+#~ msgstr "vypsat balíčky podle níže vybraného parametru"
+
+#~ msgid "show the removal tree for the specified atoms"
+#~ msgstr "zobrazit strom odebrání pro určené atomy"
+
+#~ msgid "show atoms needing the provided libraries"
+#~ msgstr "zobrazit atomy vyžadující poskytnuté knihovny"
+
+#~ msgid "search available package sets"
+#~ msgstr "vyhledat dostupné sady balíčků"
+
+#~ msgid "!!! Use --verbose to get full help output"
+#~ msgstr "!!! Použijte --verbose pro úplnou nápovědu"
+
+#~ msgid "Extended Options"
+#~ msgstr "Rozšířené možnosti"
+
+#~ msgid "handles extended functionalities"
+#~ msgstr "ovládá rozšířenou funkcionalitu"
+
+#~ msgid ""
+#~ "make a smart package for the provided atoms (multiple packages into one "
+#~ "file)"
+#~ msgstr ""
+#~ "vyrobit chytrý balíček pro poskytnuté atomy (více balíčků do jednoho "
+#~ "souboru)"
+
+#~ msgid "save new packages into the specified directory"
+#~ msgstr "uložit nové balíčky do zadaného adresáře"
+
+#~ msgid "save new metadata into the specified directory"
+#~ msgstr "uložit nová metadata do zadaného adresáře"
+
+#~ msgid ""
+#~ "remove installed packages repository internal indexes to save disk space"
+#~ msgstr ""
+#~ "odstranit interní indexy repozitáře nainstalovaných balíčků pro úsporu "
+#~ "místa na disku"
+
+#~ msgid ""
+#~ "generate installed packages database using Source Package Manager "
+#~ "repositories"
+#~ msgstr ""
+#~ "generovat databázi nainstalovaných balíčků pomocí repozitářů správce "
+#~ "zdrojových balíčků"
+
+#~ msgid ""
+#~ "generate installed packages database using files on the system [last hope]"
+#~ msgstr ""
+#~ "vytvořit databázi instalovaných balíčků pomocí souborů v systému "
+#~ "[poslední naděje]"
+
+#~ msgid "makes Entropy aware of your Source Package Manager updated packages"
+#~ msgstr ""
+#~ "umožňuje Entropy vědět o Vašich balíčcích aktualizovaných pomocí správce "
+#~ "zdrojových balíčků"
+
+#~ msgid "backup the current Entropy installed packages database"
+#~ msgstr "zálohovat databázi instalovaných balíčků Entropy"
+
+#~ msgid "restore a previously backed up Entropy installed packages database"
+#~ msgstr "obnovit zálohovanou databázi instalovaných balíčků Entropy"
+
+#~ msgid "show system information"
+#~ msgstr "zobrazit informace o systému"
+
+#~ msgid "not enough parameters"
+#~ msgstr "nedostatek parametrů"
+
+#~ msgid "Of course you are on the Internet..."
+#~ msgstr "Samozřejmě jste na internetu..."
 
 #~ msgid "Configuration files scan complete."
 #~ msgstr "Prohledávání konfiguračních souborů dokončeno."

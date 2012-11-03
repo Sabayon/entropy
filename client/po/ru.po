@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-03 18:09+0100\n"
-"PO-Revision-Date: 2012-07-31 09:01+0000\n"
+"POT-Creation-Date: 2012-11-03 23:49+0100\n"
+"PO-Revision-Date: 2012-09-20 11:01+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Russian (http://www.transifex.com/projects/p/sabayon-entropy/"
 "language/ru/)\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../../lib/entropy/db/sqlite.py:1676
 msgid "Exporting database table"
@@ -48,11 +48,11 @@ msgstr "генерируются метаданные provided_libs, пожал�
 
 #: ../../lib/entropy/db/sql.py:5406
 msgid "Spm error occured"
-msgstr "Произошла ошибка Spm"
+msgstr ""
 
 #: ../../lib/entropy/db/sql.py:5419
 msgid "Spm Unique Identifier not found for"
-msgstr "Уникальный Идентификатор Spm не найден для"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1680 ../../lib/entropy/db/skel.py:2028
 #: ../../lib/entropy/client/interfaces/trigger.py:534
@@ -73,9 +73,8 @@ msgstr "это может занять время"
 
 #: ../../lib/entropy/db/skel.py:1702 ../../lib/entropy/db/skel.py:1728
 #: ../../lib/entropy/db/skel.py:1751
-#, fuzzy
 msgid "Entropy"
-msgstr "Запись API"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1703
 msgid "action"
@@ -340,9 +339,8 @@ msgid "Cannot stat path"
 msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3147
-#, fuzzy
 msgid "Cannot update Portage package metadata"
-msgstr "невозможно обновить информацию по наборам пакетов"
+msgstr ""
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3173
 msgid "SPM uid update error"
@@ -1379,9 +1377,8 @@ msgid "Cannot run External trigger for"
 msgstr "Невозможно запустить Внешний триггер для"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:515
-#, fuzzy
 msgid "Installing info"
-msgstr "Установка"
+msgstr ""
 
 #: ../../lib/entropy/client/interfaces/trigger.py:534
 msgid "post-install phase"
@@ -1862,8 +1859,8 @@ msgstr "Entropy требует Вашего внимания"
 msgid "Yes"
 msgstr "Да"
 
-#: ../../lib/entropy/output.py:747 ../../client/equo.py:714
-#: ../../client/solo/main.py:168 ../../client/solo/commands/pkg.py:253
+#: ../../lib/entropy/output.py:747 ../../client/solo/main.py:168
+#: ../../client/solo/commands/pkg.py:253
 #: ../../client/solo/commands/config.py:145
 #: ../../client/solo/commands/remove.py:381
 #: ../../client/solo/commands/remove.py:388
@@ -2063,792 +2060,6 @@ msgstr "Подсчет испорченных библиотек/исполня�
 msgid "Not prepared yet"
 msgstr "Ещё не подготовлено."
 
-#: ../../client/equo.py:48 ../../client/solo/commands/yell.py:34
-msgid "You should run equo --help"
-msgstr "Вы должны запустить equo --help"
-
-#: ../../client/equo.py:49 ../../client/solo/commands/yell.py:35
-msgid "You didn't run equo --help, did you?"
-msgstr "Вы не запустили equo --help, так ведь?"
-
-#: ../../client/equo.py:50 ../../client/solo/commands/yell.py:36
-msgid "Did you even read equo --help??"
-msgstr "Вы когда-нибудь читали equo --help??"
-
-#: ../../client/equo.py:51 ../../client/solo/commands/yell.py:37
-msgid "I give up. Run that equo --help !!!!!!!"
-msgstr "Я умываю руки. Запусти уже этот чёртов equo --help !!!!!!!"
-
-#: ../../client/equo.py:52 ../../client/solo/commands/yell.py:38
-msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
-msgstr "О, Боже. ЗАПУСТИ ЭТОТ ГРЁБАНЫЙ equo --help..."
-
-#: ../../client/equo.py:53 ../../client/solo/commands/yell.py:39
-msgid "Illiteracy is a huge problem in this world"
-msgstr "Невежество - путь к ереси."
-
-#: ../../client/equo.py:54 ../../client/solo/commands/yell.py:40
-msgid "Ok i give up, you are hopeless"
-msgstr "Окей, я сдаюсь. Ты неисправим."
-
-#: ../../client/equo.py:55 ../../client/solo/commands/yell.py:41
-#: ../../client/solo/commands/yell.py:42 ../../client/solo/commands/yell.py:43
-#: ../../client/solo/commands/yell.py:44 ../../client/solo/commands/yell.py:45
-#: ../../client/solo/commands/yell.py:47
-msgid "Go to hell."
-msgstr "Иди к чёрту."
-
-#: ../../client/equo.py:63
-msgid "Basic Options"
-msgstr "Основные опции"
-
-#: ../../client/equo.py:65
-msgid "this output"
-msgstr "выдает этот мануал"
-
-#: ../../client/equo.py:66
-msgid "print version"
-msgstr "отображает версию"
-
-#: ../../client/equo.py:67
-msgid "disable colorized output"
-msgstr "деактивирует цветное отображение"
-
-#: ../../client/equo.py:68
-msgid "force colorized output"
-msgstr ""
-
-#: ../../client/equo.py:69
-msgid "print a bash completion script to stdout"
-msgstr ""
-
-#: ../../client/equo.py:71
-msgid "Application Options"
-msgstr "Опции приложения"
-
-#: ../../client/equo.py:73
-msgid "update configured repositories"
-msgstr "обновить конфигурированные репозитории"
-
-#: ../../client/equo.py:74
-msgid "force sync regardless repositories status"
-msgstr "форсировать синхронизацию безотносительно к статусу репозитория"
-
-#: ../../client/equo.py:76
-msgid "manage your repositories"
-msgstr ""
-
-#: ../../client/equo.py:77
-msgid "enable given repository"
-msgstr ""
-
-#: ../../client/equo.py:78
-msgid "disable given repository"
-msgstr ""
-
-#: ../../client/equo.py:79
-msgid "add repository (pass repository string)"
-msgstr ""
-
-#: ../../client/equo.py:80
-msgid "remove repository"
-msgstr ""
-
-#: ../../client/equo.py:81 ../../client/solo/commands/repo.py:101
-msgid "list active repositories"
-msgstr ""
-
-#: ../../client/equo.py:82 ../../client/solo/commands/repo.py:106
-msgid "reorder mirrors basing on response time"
-msgstr ""
-
-#: ../../client/equo.py:83
-msgid "merge content of source repos to dest [for developers]"
-msgstr ""
-
-#: ../../client/equo.py:84 ../../client/solo/commands/repo.py:125
-msgid "also remove dependency conflicts during merge"
-msgstr ""
-
-#: ../../client/equo.py:85 ../../client/solo/commands/notice.py:211
-msgid "repository notice board reader"
-msgstr "просмотрщик доски уведомлений репозитория"
-
-#: ../../client/equo.py:86
-msgid "show respositories status"
-msgstr "показать статус репозиториев"
-
-#: ../../client/equo.py:88 ../../client/solo/commands/search.py:214
-msgid "search packages in repositories"
-msgstr "найти пакеты в репозиториях"
-
-#: ../../client/equo.py:89
-msgid "match a package in repositories"
-msgstr "провести подсчет по пакету в репозиториях"
-
-#: ../../client/equo.py:90
-msgid "return all the possible matches"
-msgstr "показать все возможные подсчеты"
-
-#: ../../client/equo.py:91
-msgid "match inside installed packages repository"
-msgstr ""
-
-#: ../../client/equo.py:92
-msgid "return matches from every repository"
-msgstr "показать подсчеты по каждому репозиторию"
-
-#: ../../client/equo.py:93 ../../client/solo/commands/match.py:113
-msgid "print repository information (w/--quiet)"
-msgstr "отображает информацию репозитория (с --quiet)"
-
-#: ../../client/equo.py:94 ../../client/solo/commands/match.py:117
-msgid "print description too (w/--quiet)"
-msgstr "показывает ещё и описание (с --quiet)"
-
-#: ../../client/equo.py:96
-msgid "upgrade your distribution to a new release (branch)"
-msgstr "обновить систему до новой версии (ветки)"
-
-#: ../../client/equo.py:98
-msgid "update system with the latest available packages"
-msgstr "обновить систему с самыми последними доступными пакетами"
-
-#: ../../client/equo.py:99 ../../client/equo.py:124 ../../client/equo.py:130
-#: ../../client/equo.py:147 ../../client/equo.py:154 ../../client/equo.py:162
-#: ../../client/equo.py:172 ../../client/equo.py:175 ../../client/equo.py:179
-#: ../../client/equo.py:184 ../../client/equo.py:195
-#: ../../client/solo/commands/pkg.py:79
-#: ../../client/solo/commands/config.py:63
-#: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:160
-#: ../../client/solo/commands/remove.py:67
-#: ../../client/solo/commands/deptest.py:61
-#: ../../client/solo/commands/source.py:62
-#: ../../client/solo/commands/libtest.py:61
-#: ../../client/solo/commands/install.py:70
-#: ../../client/solo/commands/upgrade.py:65
-#: ../../client/solo/commands/rescue.py:78
-#: ../../client/solo/commands/download.py:62
-#: ../../client/solo/commands/mask.py:49
-msgid "ask before making any changes"
-msgstr "спрашивать перед любыми изменениями"
-
-#: ../../client/equo.py:100 ../../client/equo.py:125
-#: ../../client/solo/commands/security.py:96
-#: ../../client/solo/commands/security.py:166
-#: ../../client/solo/commands/install.py:89
-#: ../../client/solo/commands/upgrade.py:84
-msgid "just download packages"
-msgstr "просто загрузить пакеты"
-
-#: ../../client/equo.py:101 ../../client/solo/commands/mask.py:53
-msgid "only show what would be done"
-msgstr "показывать только то, что будет сделано"
-
-#: ../../client/equo.py:102 ../../client/equo.py:141
-msgid "show more details about what is going on"
-msgstr "показывать больше деталей на тему того, что будет происходить"
-
-#: ../../client/equo.py:103
-msgid "reinstall all the packages and their dependencies"
-msgstr "переустановить все пакеты и их зависимости"
-
-#: ../../client/equo.py:104
-msgid "same as --replay"
-msgstr "то же, что и --replay"
-
-#: ../../client/equo.py:105 ../../client/equo.py:135 ../../client/equo.py:169
-msgid "resume previously interrupted operations"
-msgstr "принимает ранее отмененные операции"
-
-#: ../../client/equo.py:106
-msgid "used with --resume, makes the first package to be skipped"
-msgstr "при использовании с --resume пропускает первый пакет"
-
-#: ../../client/equo.py:107 ../../client/equo.py:143 ../../client/equo.py:158
-msgid "download multiple packages in parallel (default 3)"
-msgstr "скачать несколько пакетов параллельно (по умолчанию 3)"
-
-#: ../../client/equo.py:108 ../../client/equo.py:144 ../../client/equo.py:159
-msgid "download N packages in parallel (max 10)"
-msgstr "скачать N пакетов параллельно (максимум 10)"
-
-#: ../../client/equo.py:110
-msgid "security infrastructure functions"
-msgstr "функции инфраструктуры безопасности"
-
-#: ../../client/equo.py:111 ../../client/solo/commands/security.py:73
-msgid "verify installed files using stored checksums"
-msgstr ""
-
-#: ../../client/equo.py:112 ../../client/solo/commands/security.py:77
-msgid "consider mtime instead of SHA256 (false positives ahead)"
-msgstr ""
-
-#: ../../client/equo.py:113 ../../client/solo/commands/security.py:81
-msgid "update hashes and mtime (useful after editing config files)"
-msgstr ""
-
-#: ../../client/equo.py:114 ../../client/solo/commands/security.py:85
-msgid "reinstall faulty packages"
-msgstr ""
-
-#: ../../client/equo.py:115 ../../client/equo.py:127 ../../client/equo.py:183
-#: ../../client/equo.py:188 ../../client/equo.py:194
-#: ../../client/solo/commands/deptest.py:64
-#: ../../client/solo/commands/libtest.py:66
-#: ../../client/solo/commands/unused.py:65
-msgid "show less details (useful for scripting)"
-msgstr "показать меньше деталей (полезно для скриптинга)"
-
-#: ../../client/equo.py:116
-msgid "also list removed files"
-msgstr ""
-
-#: ../../client/equo.py:117 ../../client/solo/commands/security.py:110
-msgid "download the latest Security Advisories"
-msgstr "загружает последние уведомления о безопасности"
-
-#: ../../client/equo.py:118
-msgid "force download even if already up-to-date"
-msgstr ""
-
-#: ../../client/equo.py:119 ../../client/solo/commands/security.py:123
-msgid "list all the available Security Advisories"
-msgstr "выдаёт список всех доступных уведомлений о безопасности"
-
-#: ../../client/equo.py:120 ../../client/solo/commands/security.py:129
-msgid "list only affected"
-msgstr "показать только список уязвимого"
-
-#: ../../client/equo.py:121 ../../client/solo/commands/security.py:132
-msgid "list only unaffected"
-msgstr "показать только список неуязвимого"
-
-#: ../../client/equo.py:122 ../../client/solo/commands/security.py:141
-msgid "show information about provided advisories identifiers"
-msgstr "показать информацию о идентификаторах предоставленных уведомлений"
-
-#: ../../client/equo.py:123 ../../client/solo/commands/security.py:153
-msgid "automatically install all the available security updates"
-msgstr "автоматически установить все доступные обновления безопасности"
-
-#: ../../client/equo.py:126 ../../client/equo.py:131 ../../client/equo.py:148
-#: ../../client/equo.py:155 ../../client/equo.py:163 ../../client/equo.py:173
-#: ../../client/equo.py:176 ../../client/equo.py:180 ../../client/equo.py:185
-#: ../../client/equo.py:196 ../../client/solo/commands/deptest.py:67
-#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:301
-msgid "just show what would be done"
-msgstr "показывает только то, что будет сделано"
-
-#: ../../client/equo.py:129
-msgid "install atoms or binary packages"
-msgstr ""
-
-#: ../../client/equo.py:132 ../../client/equo.py:153
-msgid "just download packages without doing the install"
-msgstr "только загрузить пакеты без установки"
-
-#: ../../client/equo.py:133 ../../client/equo.py:149 ../../client/equo.py:156
-#: ../../client/equo.py:164
-msgid "do not pull in any dependency"
-msgstr "не относить к какой-либо зависимости"
-
-#: ../../client/equo.py:134
-msgid "also pull in build-time dependencies"
-msgstr ""
-
-#: ../../client/equo.py:136
-msgid "used with --resume, makes the first package in queue to be skipped"
-msgstr "при использовании с --resume пропускает первый пакет в очереди"
-
-#: ../../client/equo.py:137
-msgid "remove downloaded packages after being used"
-msgstr "удалить скачанные пакеты после использования"
-
-#: ../../client/equo.py:138
-msgid "pull all the dependencies in, regardless their state"
-msgstr "добавляет все зависимости, не принимая во внимание на их статус"
-
-#: ../../client/equo.py:139 ../../client/equo.py:150 ../../client/equo.py:157
-msgid "calm down dependencies resolution algorithm (might be risky)"
-msgstr ""
-
-#: ../../client/equo.py:140
-msgid "makes dependency rules stricter"
-msgstr "делает строже правила касательно зависимостей"
-
-#: ../../client/equo.py:142
-msgid "makes old configuration files to be removed"
-msgstr "отправляет на удаление старые файлы конфигурации"
-
-#: ../../client/equo.py:146
-msgid "download atoms source code"
-msgstr "скачать исходный код атомов"
-
-#: ../../client/equo.py:151
-msgid "save sources in current working directory"
-msgstr "сохранить исходники в текущей рабочей папке"
-
-#: ../../client/equo.py:161
-msgid "remove one or more packages"
-msgstr "удалить один или более пакетов"
-
-#: ../../client/equo.py:165
-msgid "also pull unused dependencies where reverse deps list is empty"
-msgstr ""
-
-#: ../../client/equo.py:166
-msgid "when used with --deep, helps the removal of virtual packages"
-msgstr ""
-
-#: ../../client/equo.py:167
-msgid "makes configuration files to be removed"
-msgstr "ставит конфигурационные файлы на удаление"
-
-#: ../../client/equo.py:168
-msgid "dangerous: forces system packages removal, do not use this!"
-msgstr ""
-
-#: ../../client/equo.py:171 ../../client/solo/commands/mask.py:222
-msgid "mask one or more packages"
-msgstr ""
-
-#: ../../client/equo.py:174 ../../client/solo/commands/mask.py:229
-msgid "unmask one or more packages"
-msgstr ""
-
-#: ../../client/equo.py:178
-msgid "configure one or more installed packages"
-msgstr "конфигурирует один или более установленных пакетов"
-
-#: ../../client/equo.py:182 ../../client/solo/commands/deptest.py:204
-msgid "look for unsatisfied dependencies"
-msgstr "ищет неудовлетворенные зависимости"
-
-#: ../../client/equo.py:187 ../../client/solo/commands/unused.py:162
-msgid "look for unused packages (pay attention)"
-msgstr "ищет неиспользуемые пакеты (обратите внимание)"
-
-#: ../../client/equo.py:189
-msgid "sort packages by disk size"
-msgstr "сортирует пакеты по размеру на диске"
-
-#: ../../client/equo.py:191 ../../client/solo/commands/libtest.py:246
-msgid "look for missing libraries"
-msgstr "ищет испорченные библиотеки"
-
-#: ../../client/equo.py:192 ../../client/solo/commands/libtest.py:82
-msgid "dump results to files"
-msgstr "записать результаты в файлы"
-
-#: ../../client/equo.py:193 ../../client/solo/commands/libtest.py:77
-msgid "print broken files to stdout"
-msgstr "записывает испорченные файлы в stdout"
-
-#: ../../client/equo.py:198
-msgid "configuration files update tool"
-msgstr "инструмент обновления конфигурационных файлов"
-
-#: ../../client/equo.py:199
-msgid "run the configuration files update function"
-msgstr "запускает функцию обновления конфигурационных файлов"
-
-#: ../../client/equo.py:201
-msgid "do misc queries on repository and local databases"
-msgstr "делает различные запросы к репозиторию и локальной базе данных"
-
-#: ../../client/equo.py:202
-msgid "search from what package a file belongs"
-msgstr "искать, какому пакету принадлежит файл"
-
-#: ../../client/equo.py:203
-msgid "show packages changelog"
-msgstr "показать лог изменений пакетов"
-
-#: ../../client/equo.py:204
-msgid "search what packages depend on the provided atoms"
-msgstr "искать пакеты, зависящие от предоставленных атомов"
-
-#: ../../client/equo.py:205
-msgid "search packages by description"
-msgstr "искать пакеты по описанию"
-
-#: ../../client/equo.py:206
-msgid "show files owned by the provided atoms"
-msgstr "показывает файлы, относящиеся к предоставленным атомам"
-
-#: ../../client/equo.py:207
-msgid "search a package into the local database"
-msgstr "искать пакет в локальной базе данных"
-
-#: ../../client/equo.py:208
-msgid "show packages owning the provided licenses"
-msgstr "показать пакеты с предоставленными лицензиями"
-
-#: ../../client/equo.py:209
-msgid "list packages based on the chosen parameter below"
-msgstr "показать пакеты, базирующиеся на выбранном параметре"
-
-#: ../../client/equo.py:210 ../../client/solo/commands/query.py:157
-msgid "list installed packages"
-msgstr "показать установленные пакеты"
-
-#: ../../client/equo.py:211
-msgid "only packages installed by user"
-msgstr ""
-
-#: ../../client/equo.py:212 ../../client/solo/commands/query.py:171
-msgid "list available packages"
-msgstr "показать доступные пакеты"
-
-#: ../../client/equo.py:213
-msgid "search packages able to handle given mimetypes"
-msgstr ""
-
-#: ../../client/equo.py:214 ../../client/equo.py:216
-msgid "search among installed packages"
-msgstr ""
-
-#: ../../client/equo.py:215
-msgid "associate given file paths to applications able to read them"
-msgstr ""
-
-#: ../../client/equo.py:217
-msgid "show runtime libraries needed by the provided atoms"
-msgstr ""
-"показывает библиотеки рабочего цикла, требуемые предоставленными атомами"
-
-#: ../../client/equo.py:218
-msgid "search files that do not belong to any package"
-msgstr "искать файлы, не принадлежащие ни к одному пакету"
-
-#: ../../client/equo.py:219
-msgid "show the removal tree for the specified atoms"
-msgstr "показать дерево удалений для выбранных атомов"
-
-#: ../../client/equo.py:220
-msgid "show atoms needing the provided libraries"
-msgstr "показывает атомы, требующие предоставленные библиотеки"
-
-#: ../../client/equo.py:221
-msgid "search available package sets"
-msgstr "поиск доступных наборов пакетов"
-
-#: ../../client/equo.py:222
-msgid "show packages owning the provided slot"
-msgstr "показать пакеты, принадлежащие указанному слоту"
-
-#: ../../client/equo.py:223
-msgid "show packages owning the provided tags"
-msgstr "показать пакеты, принадлежащие указанным тэгам"
-
-#: ../../client/equo.py:224
-msgid "show direct depdendencies tree for provided installable atoms"
-msgstr ""
-
-#: ../../client/equo.py:225 ../../client/equo.py:227
-msgid "include system packages, build deps and circularity information"
-msgstr ""
-
-#: ../../client/equo.py:226
-msgid "show reverse depdendencies tree for provided installed atoms"
-msgstr ""
-
-#: ../../client/equo.py:228 ../../client/equo.py:278
-#: ../../client/solo/commands/cache.py:67
-msgid "show more details"
-msgstr "показать больше деталей"
-
-#: ../../client/equo.py:229 ../../client/equo.py:279
-#: ../../client/solo/commands/cache.py:70
-msgid "print results in a scriptable way"
-msgstr "отображает результаты через скрипты"
-
-#: ../../client/equo.py:235
-msgid "!!! Use --verbose to get full help output"
-msgstr "!!! Используйте --verbose для полного вывода помощи"
-
-#: ../../client/equo.py:240
-msgid "Extended Options"
-msgstr "Расширенные Опции"
-
-#: ../../client/equo.py:242
-msgid "handles extended functionalities"
-msgstr "обслуживает расширенную функциональность"
-
-#: ../../client/equo.py:243
-msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
-"устанавливает smart-пакет для предоставленных атомов (множество пакетов в "
-"один файл)"
-
-#: ../../client/equo.py:244
-msgid "recreate an Entropy package from your System"
-msgstr "пересоздать пакет Entropy из Вашей системы"
-
-#: ../../client/equo.py:245 ../../client/equo.py:247 ../../client/equo.py:249
-msgid "save new packages into the specified directory"
-msgstr "сохранить новые пакеты в выбранную папку"
-
-#: ../../client/equo.py:246
-msgid ""
-"convert provided Source Package Manager package files into Entropy packages"
-msgstr ""
-
-#: ../../client/equo.py:248
-msgid "convert provided Entropy packages into Source Package Manager ones"
-msgstr ""
-
-#: ../../client/equo.py:250
-msgid "extract Entropy metadata from provided Entropy package files"
-msgstr ""
-
-#: ../../client/equo.py:251
-msgid "save new metadata into the specified directory"
-msgstr "сохранить новую метаинформацию в выбранную директорию"
-
-#: ../../client/equo.py:253
-msgid "contains System rescue tools"
-msgstr ""
-
-#: ../../client/equo.py:254 ../../client/solo/commands/rescue.py:89
-msgid "check installed packages repository for errors"
-msgstr ""
-
-#: ../../client/equo.py:255
-msgid ""
-"remove installed packages repository internal indexes to save disk space"
-msgstr ""
-
-#: ../../client/equo.py:256
-msgid ""
-"generate installed packages database using Source Package Manager "
-"repositories"
-msgstr ""
-
-#: ../../client/equo.py:257
-msgid ""
-"generate installed packages database using files on the system [last hope]"
-msgstr ""
-"генерирует базу данных установленных пакетов с использованием файлов системы "
-"[последняя надежда]"
-
-#: ../../client/equo.py:258
-msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
-msgstr ""
-
-#: ../../client/equo.py:259
-msgid "makes Entropy aware of your Source Package Manager updated packages"
-msgstr ""
-
-#: ../../client/equo.py:260
-msgid "backup the current Entropy installed packages database"
-msgstr ""
-"создать резервную копию текущей базы данных установленных пакетов Entropy"
-
-#: ../../client/equo.py:261
-msgid "restore a previously backed up Entropy installed packages database"
-msgstr ""
-"возвращает ранее зарезервированную копию базы данных установленных пакетов "
-"Entropy"
-
-#: ../../client/equo.py:263
-msgid "handles User Generated Content features"
-msgstr "обслуживает элементы содержимого, сгенерированного пользователем"
-
-#: ../../client/equo.py:264
-msgid "login against a specified repository"
-msgstr "залогиниться в определённый репозиторий"
-
-#: ../../client/equo.py:265
-msgid "logout from a specified repository"
-msgstr "разлогиниться из определённого репозитория"
-
-#: ../../client/equo.py:266 ../../client/solo/commands/ugc.py:80
-#: ../../client/solo/commands/ugc.py:90
-msgid "force action"
-msgstr "принудительно запустить действие"
-
-#: ../../client/equo.py:267
-msgid ""
-"manage package documents for the selected repository (comments, files, "
-"videos)"
-msgstr ""
-"управлять документами пакетов для выбранного репозитория (комментарии, "
-"файлы, видеоклипы)"
-
-#: ../../client/equo.py:268
-msgid ""
-"get available documents for the specified package key (example: x11-libs/qt)"
-msgstr ""
-"получить доступные документы по выбранному ключу пакета (пример: x11-libs/qt)"
-
-#: ../../client/equo.py:269
-msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr ""
-"добавить новый документ для выбранного ключа пакета (пример: x11-libs/qt)"
-
-#: ../../client/equo.py:270 ../../client/solo/commands/ugc.py:124
-msgid "remove documents from database using their identifiers"
-msgstr "удалить документы из базы данных, используя их наименования"
-
-#: ../../client/equo.py:271
-msgid "manage package votes for the selected repository"
-msgstr "управлять оценками пакетов для выбранного репозитория"
-
-#: ../../client/equo.py:272
-msgid "get vote for the specified package key (example: x11-libs/qt)"
-msgstr "получить голос для указанного ключа пакета (пример: x11-libs/qt)"
-
-#: ../../client/equo.py:273
-msgid "add vote for the specified package key (example: x11-libs/qt)"
-msgstr "добавить голос для выбранного ключа пакета (пример: x11-libs/qt)"
-
-#: ../../client/equo.py:276
-msgid "handles Entropy cache"
-msgstr "обслуживает кэш Entropy"
-
-#: ../../client/equo.py:277
-msgid "clean Entropy cache"
-msgstr "очистить кэш Entropy"
-
-#: ../../client/equo.py:281 ../../client/solo/commands/cleanup.py:97
-msgid "remove downloaded packages and clean temp. directories"
-msgstr "удалить загруженные пакеты и очистить временные директории"
-
-#: ../../client/equo.py:283
-msgid "show system information"
-msgstr "показать информацию системы"
-
-#: ../../client/equo.py:338
-msgid "is deprecated, please use"
-msgstr ""
-
-#: ../../client/equo.py:351
-msgid "You are not root"
-msgstr "Вы не root"
-
-#: ../../client/equo.py:364 ../../client/solo/commands/command.py:322
-#: ../../client/solo/commands/command.py:352
-#: ../../services/kernel-switcher:155 ../../services/kernel-switcher:262
-msgid "Another Entropy is currently running."
-msgstr ""
-
-#: ../../client/equo.py:583
-msgid "not enough parameters"
-msgstr "недостаточно параметров"
-
-#: ../../client/equo.py:633 ../../client/solo/main.py:40
-msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
-
-#: ../../client/equo.py:641 ../../client/solo/main.py:50
-msgid "Cannot continue"
-msgstr "Невозможно продолжить"
-
-#: ../../client/equo.py:670 ../../client/solo/main.py:79
-msgid "Your hard drive is full! Your fault!"
-msgstr ""
-
-#: ../../client/equo.py:676 ../../client/solo/main.py:88
-msgid "No more memory dude! Your fault!"
-msgstr ""
-
-#: ../../client/equo.py:681
-msgid ""
-"Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
-"Well, you know, shit happens."
-msgstr ""
-"Привет. Меня зовут БагРепортер. Мне очень неприятно об этом говорить, но, "
-"увы, Equo накрылся медным тазом. Ну и это... ты знаешь, дерьмо случается."
-
-#: ../../client/equo.py:682
-msgid ""
-"But there's something you could do to help Equo to be a better application."
-msgstr ""
-"Но при этом Вы могли бы кое-что сделать для того, чтобы Equo стал менее "
-"глючной программой."
-
-#: ../../client/equo.py:683
-msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
-msgstr ""
-"-- КАК МИНИМУМ ПОТОМУ, ЧТОБЫ Я НЕ ХОЧУ, ЧТОБЫ ТЕБЕ ПРИШЛОСЬ ПОСЫЛАТЬ ЭТОТ "
-"ЧЕРТОВ ОТЧЕТ ПО СТО РАЗ --"
-
-#: ../../client/equo.py:684 ../../client/solo/main.py:111
-msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
-msgstr ""
-"Теперь я покажу тебе, что случилось. Не паникуй, я здесь, чтобы помочь тебе. "
-
-#: ../../client/equo.py:693
-msgid ""
-"Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayon.org."
-msgstr ""
-"Оу... черт, я не могу больше записывать в /tmp. В общем, пожалуйста, "
-"скопируй эту ошибку и отправь на lxnay@sabayon.org. И не вешай нос, это всё "
-"ерунда."
-
-#: ../../client/equo.py:712
-msgid "Of course you are on the Internet..."
-msgstr "Ну и, конечно, ты в интернете..."
-
-#: ../../client/equo.py:713
-msgid ""
-"Erm... Can I send the error, along with some information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
-msgstr ""
-
-#: ../../client/equo.py:715 ../../client/solo/main.py:170
-msgid "Ok, ok ok ok... Sorry!"
-msgstr "Ну ладно, ладно, ладно, хорошо, ХОРОШО, ИЗВИНИ!"
-
-#: ../../client/equo.py:719 ../../client/solo/main.py:176
-msgid ""
-"If you want to be contacted back (and actively supported), also answer the "
-"questions below:"
-msgstr ""
-"Когда будешь связываться (и активно общаться с техподдержкой), ответь заодно "
-"на нижеуказанные вопросы:"
-
-#: ../../client/equo.py:721 ../../client/solo/main.py:183
-msgid "Your Full name:"
-msgstr "Ваше полное имя:"
-
-#: ../../client/equo.py:722 ../../client/solo/main.py:184
-msgid "Your E-Mail address:"
-msgstr "Ваш адрес E-Mail:"
-
-#: ../../client/equo.py:723 ../../client/solo/main.py:185
-msgid "What you were doing:"
-msgstr "Чего ж ты такого наделал:"
-
-#: ../../client/equo.py:742 ../../client/solo/main.py:207
-msgid ""
-"Thank you very much. The error has been reported and hopefully, the problem "
-"will be solved as soon as possible."
-msgstr ""
-"Спасибо тебе огромное. Данные об ошибке отправлены и, если всё будет "
-"нормально, проблема будет решена как можно раньше."
-
-#: ../../client/equo.py:744
-msgid ""
-"Ugh. Cannot send the report. When you want, mail the file below to "
-"lxnay@sabayon.org."
-msgstr ""
-
-#: ../../client/equo.py:763 ../../client/solo/main.py:233
-msgid "Entropy/Equo version mismatch"
-msgstr ""
-
-#: ../../client/equo.py:764 ../../client/solo/main.py:234
-msgid "it could make your system explode!"
-msgstr ""
-
 #: ../../client/solo/utils.py:534 ../../client/solo/commands/_manage.py:129
 msgid "When you wrote"
 msgstr "Как Вы написали"
@@ -2860,6 +2071,22 @@ msgstr "А ты думал (TM)"
 #: ../../client/solo/utils.py:537 ../../client/solo/commands/_manage.py:132
 msgid "one of these below?"
 msgstr "один из нижеуказанных?"
+
+#: ../../client/solo/main.py:40
+msgid "Installed packages repository corrupted. Please re-generate it"
+msgstr ""
+
+#: ../../client/solo/main.py:50
+msgid "Cannot continue"
+msgstr "Невозможно продолжить"
+
+#: ../../client/solo/main.py:79
+msgid "Your hard drive is full! Your fault!"
+msgstr ""
+
+#: ../../client/solo/main.py:88
+msgid "No more memory dude! Your fault!"
+msgstr ""
 
 #: ../../client/solo/main.py:94
 #, fuzzy
@@ -2885,6 +2112,11 @@ msgstr ""
 "-- КАК МИНИМУМ ПОТОМУ, ЧТОБЫ Я НЕ ХОЧУ, ЧТОБЫ ТЕБЕ ПРИШЛОСЬ ПОСЫЛАТЬ ЭТОТ "
 "ЧЕРТОВ ОТЧЕТ ПО СТО РАЗ --"
 
+#: ../../client/solo/main.py:111
+msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
+msgstr ""
+"Теперь я покажу тебе, что случилось. Не паникуй, я здесь, чтобы помочь тебе. "
+
 #: ../../client/solo/main.py:148
 #, fuzzy
 msgid ""
@@ -2902,6 +2134,38 @@ msgid ""
 "logged)"
 msgstr ""
 
+#: ../../client/solo/main.py:170
+msgid "Ok, ok ok ok... Sorry!"
+msgstr "Ну ладно, ладно, ладно, хорошо, ХОРОШО, ИЗВИНИ!"
+
+#: ../../client/solo/main.py:176
+msgid ""
+"If you want to be contacted back (and actively supported), also answer the "
+"questions below:"
+msgstr ""
+"Когда будешь связываться (и активно общаться с техподдержкой), ответь заодно "
+"на нижеуказанные вопросы:"
+
+#: ../../client/solo/main.py:183
+msgid "Your Full name:"
+msgstr "Ваше полное имя:"
+
+#: ../../client/solo/main.py:184
+msgid "Your E-Mail address:"
+msgstr "Ваш адрес E-Mail:"
+
+#: ../../client/solo/main.py:185
+msgid "What you were doing:"
+msgstr "Чего ж ты такого наделал:"
+
+#: ../../client/solo/main.py:207
+msgid ""
+"Thank you very much. The error has been reported and hopefully, the problem "
+"will be solved as soon as possible."
+msgstr ""
+"Спасибо тебе огромное. Данные об ошибке отправлены и, если всё будет "
+"нормально, проблема будет решена как можно раньше."
+
 #: ../../client/solo/main.py:213
 #, fuzzy
 msgid ""
@@ -2910,6 +2174,14 @@ msgstr ""
 "Оу... черт, я не могу больше записывать в /tmp. В общем, пожалуйста, "
 "скопируй эту ошибку и отправь на lxnay@sabayon.org. И не вешай нос, это всё "
 "ерунда."
+
+#: ../../client/solo/main.py:233
+msgid "Entropy/Equo version mismatch"
+msgstr ""
+
+#: ../../client/solo/main.py:234
+msgid "it could make your system explode!"
+msgstr ""
 
 #: ../../client/solo/main.py:243
 msgid "Entropy is running off a Live System"
@@ -2931,15 +2203,29 @@ msgstr "Кто-то добавил эти пакеты"
 
 #: ../../client/solo/commands/pkg.py:73 ../../client/solo/commands/query.py:73
 #: ../../client/solo/commands/query.py:154
-#: ../../client/solo/commands/cache.py:61
 #: ../../client/solo/commands/security.py:69
-#: ../../client/solo/commands/ugc.py:72 ../../client/solo/commands/ugc.py:105
-#: ../../client/solo/commands/ugc.py:144 ../../client/solo/commands/repo.py:66
-#: ../../client/solo/commands/conf.py:76
-#: ../../client/solo/commands/rescue.py:72 ../../services/kernel-switcher:305
-#, fuzzy
+#: ../../client/solo/commands/cache.py:61 ../../client/solo/commands/ugc.py:72
+#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:144
+#: ../../client/solo/commands/repo.py:66 ../../client/solo/commands/conf.py:76
+#: ../../client/solo/commands/rescue.py:72 ../../services/kernel-switcher:310
 msgid "available commands"
-msgstr "показать доступные пакеты"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:79
+#: ../../client/solo/commands/config.py:63
+#: ../../client/solo/commands/security.py:90
+#: ../../client/solo/commands/security.py:160
+#: ../../client/solo/commands/remove.py:67
+#: ../../client/solo/commands/deptest.py:61
+#: ../../client/solo/commands/source.py:62
+#: ../../client/solo/commands/libtest.py:61
+#: ../../client/solo/commands/install.py:70
+#: ../../client/solo/commands/upgrade.py:65
+#: ../../client/solo/commands/rescue.py:78
+#: ../../client/solo/commands/download.py:62
+#: ../../client/solo/commands/mask.py:49
+msgid "ask before making any changes"
+msgstr "спрашивать перед любыми изменениями"
 
 #: ../../client/solo/commands/pkg.py:85
 #: ../../client/solo/commands/command.py:77
@@ -3130,6 +2416,10 @@ msgstr "Лицензия"
 msgid "list packages"
 msgstr "жизненно важный пакет"
 
+#: ../../client/solo/commands/query.py:157
+msgid "list installed packages"
+msgstr "показать установленные пакеты"
+
 #: ../../client/solo/commands/query.py:160
 msgid "only list packages installed by user"
 msgstr ""
@@ -3138,6 +2428,10 @@ msgstr ""
 #, fuzzy
 msgid "only list packages installed from given repositories"
 msgstr "найти пакеты в репозиториях"
+
+#: ../../client/solo/commands/query.py:171
+msgid "list available packages"
+msgstr "показать доступные пакеты"
 
 #: ../../client/solo/commands/query.py:174
 #, fuzzy
@@ -3541,28 +2835,6 @@ msgstr "URL пакета"
 msgid "show Repositories status"
 msgstr "показать статус репозиториев"
 
-#: ../../client/solo/commands/cache.py:60
-msgid "manage cache"
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:64
-#, fuzzy
-msgid "clean Entropy Library Cache"
-msgstr "очистить кэш Entropy"
-
-#: ../../client/solo/commands/cache.py:122
-msgid "Cleaning Entropy cache, please wait ..."
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:129
-msgid "Entropy cache cleaned."
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:140
-#, fuzzy
-msgid "manage Entropy Library Cache"
-msgstr "обслуживает кэш Entropy"
-
 #: ../../client/solo/commands/update.py:64
 #: ../../client/solo/commands/ugc.py:234
 #: ../../client/solo/commands/notice.py:57
@@ -3632,15 +2904,62 @@ msgstr "обновить конфигурированные репозитори
 msgid "system security tools"
 msgstr "системные ключевые слова"
 
+#: ../../client/solo/commands/security.py:73
+msgid "verify installed files using stored checksums"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:77
+msgid "consider mtime instead of SHA256 (false positives ahead)"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:81
+msgid "update hashes and mtime (useful after editing config files)"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:85
+msgid "reinstall faulty packages"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:96
+#: ../../client/solo/commands/security.py:166
+#: ../../client/solo/commands/install.py:89
+#: ../../client/solo/commands/upgrade.py:84
+msgid "just download packages"
+msgstr "просто загрузить пакеты"
+
+#: ../../client/solo/commands/security.py:110
+msgid "download the latest Security Advisories"
+msgstr "загружает последние уведомления о безопасности"
+
 #: ../../client/solo/commands/security.py:114
 #, fuzzy
 msgid "force download"
 msgstr "отмененная загрузка"
 
+#: ../../client/solo/commands/security.py:123
+msgid "list all the available Security Advisories"
+msgstr "выдаёт список всех доступных уведомлений о безопасности"
+
+#: ../../client/solo/commands/security.py:129
+msgid "list only affected"
+msgstr "показать только список уязвимого"
+
+#: ../../client/solo/commands/security.py:132
+msgid "list only unaffected"
+msgstr "показать только список неуязвимого"
+
+#: ../../client/solo/commands/security.py:141
+msgid "show information about provided advisories identifiers"
+msgstr "показать информацию о идентификаторах предоставленных уведомлений"
+
 #: ../../client/solo/commands/security.py:146
 #, fuzzy
 msgid "advistory indentifier"
 msgstr "Нет корректных идентификаторов"
+
+#: ../../client/solo/commands/security.py:153
+msgid "automatically install all the available security updates"
+msgstr "автоматически установить все доступные обновления безопасности"
 
 #: ../../client/solo/commands/security.py:211
 #, fuzzy
@@ -3904,6 +3223,21 @@ msgstr "поиск доступных наборов пакетов"
 msgid "Searching"
 msgstr "Поиск"
 
+#: ../../client/solo/commands/search.py:214
+msgid "search packages in repositories"
+msgstr "найти пакеты в репозиториях"
+
+#: ../../client/solo/commands/deptest.py:64
+#: ../../client/solo/commands/libtest.py:66
+#: ../../client/solo/commands/unused.py:65
+msgid "show less details (useful for scripting)"
+msgstr "показать меньше деталей (полезно для скриптинга)"
+
+#: ../../client/solo/commands/deptest.py:67
+#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:306
+msgid "just show what would be done"
+msgstr "показывает только то, что будет сделано"
+
 #: ../../client/solo/commands/deptest.py:102
 msgid "Running dependency test"
 msgstr "Запуск теста зависимостей"
@@ -3931,6 +3265,10 @@ msgstr "Установка доступных пакетов в"
 msgid "10 seconds"
 msgstr "10 секунд"
 
+#: ../../client/solo/commands/deptest.py:204
+msgid "look for unsatisfied dependencies"
+msgstr "ищет неудовлетворенные зависимости"
+
 #: ../../client/solo/commands/command.py:66
 #, fuzzy
 msgid "not a valid directory"
@@ -3949,6 +3287,42 @@ msgstr "выдает этот мануал"
 msgid "Acquiring Entropy Resources Lock, please wait..."
 msgstr ""
 
+#: ../../client/solo/commands/command.py:322
+#: ../../client/solo/commands/command.py:352
+#: ../../services/kernel-switcher:155 ../../services/kernel-switcher:267
+msgid "Another Entropy is currently running."
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:60
+msgid "manage cache"
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:64
+#, fuzzy
+msgid "clean Entropy Library Cache"
+msgstr "очистить кэш Entropy"
+
+#: ../../client/solo/commands/cache.py:67
+msgid "show more details"
+msgstr "показать больше деталей"
+
+#: ../../client/solo/commands/cache.py:70
+msgid "print results in a scriptable way"
+msgstr "отображает результаты через скрипты"
+
+#: ../../client/solo/commands/cache.py:122
+msgid "Cleaning Entropy cache, please wait ..."
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:129
+msgid "Entropy cache cleaned."
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:140
+#, fuzzy
+msgid "manage Entropy Library Cache"
+msgstr "обслуживает кэш Entropy"
+
 #: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1005
 #, fuzzy
 msgid "manage User Generated Content"
@@ -3966,6 +3340,10 @@ msgstr "залогиниться в определённый репозитор�
 #, fuzzy
 msgid "repository name"
 msgstr "Имя репозитория"
+
+#: ../../client/solo/commands/ugc.py:80 ../../client/solo/commands/ugc.py:90
+msgid "force action"
+msgstr "принудительно запустить действие"
 
 #: ../../client/solo/commands/ugc.py:85
 #, fuzzy
@@ -4002,6 +3380,10 @@ msgstr "получить голос для указанного ключа па�
 msgid "add a new document to the provided package name"
 msgstr ""
 "добавить новый документ для выбранного ключа пакета (пример: x11-libs/qt)"
+
+#: ../../client/solo/commands/ugc.py:124
+msgid "remove documents from database using their identifiers"
+msgstr "удалить документы из базы данных, используя их наименования"
 
 #: ../../client/solo/commands/ugc.py:130
 #, fuzzy
@@ -4259,6 +3641,14 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
+#: ../../client/solo/commands/help.py:70
+msgid "Entropy Command Line Client, Equo"
+msgstr ""
+
+#: ../../client/solo/commands/help.py:97 ../../services/kernel-switcher:330
+msgid "this help"
+msgstr ""
+
 #: ../../client/solo/commands/repo.py:65
 #: ../../client/solo/commands/repo.py:639
 #, fuzzy
@@ -4290,6 +3680,14 @@ msgstr "репозиторий"
 msgid "remove a repository"
 msgstr "из репозитория"
 
+#: ../../client/solo/commands/repo.py:101
+msgid "list active repositories"
+msgstr ""
+
+#: ../../client/solo/commands/repo.py:106
+msgid "reorder mirrors basing on response time"
+msgstr ""
+
 #: ../../client/solo/commands/repo.py:112
 msgid "simulate execution"
 msgstr ""
@@ -4307,6 +3705,10 @@ msgstr "из репозитория"
 #, fuzzy
 msgid "destination repository"
 msgstr "Подсчет в репозитории"
+
+#: ../../client/solo/commands/repo.py:125
+msgid "also remove dependency conflicts during merge"
+msgstr ""
 
 #: ../../client/solo/commands/repo.py:218
 msgid "repository already enabled"
@@ -4462,6 +3864,40 @@ msgstr "отмененная загрузка"
 msgid "download packages source code"
 msgstr "скачать исходный код атомов"
 
+#: ../../client/solo/commands/yell.py:34
+msgid "You should run equo --help"
+msgstr "Вы должны запустить equo --help"
+
+#: ../../client/solo/commands/yell.py:35
+msgid "You didn't run equo --help, did you?"
+msgstr "Вы не запустили equo --help, так ведь?"
+
+#: ../../client/solo/commands/yell.py:36
+msgid "Did you even read equo --help??"
+msgstr "Вы когда-нибудь читали equo --help??"
+
+#: ../../client/solo/commands/yell.py:37
+msgid "I give up. Run that equo --help !!!!!!!"
+msgstr "Я умываю руки. Запусти уже этот чёртов equo --help !!!!!!!"
+
+#: ../../client/solo/commands/yell.py:38
+msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
+msgstr "О, Боже. ЗАПУСТИ ЭТОТ ГРЁБАНЫЙ equo --help..."
+
+#: ../../client/solo/commands/yell.py:39
+msgid "Illiteracy is a huge problem in this world"
+msgstr "Невежество - путь к ереси."
+
+#: ../../client/solo/commands/yell.py:40
+msgid "Ok i give up, you are hopeless"
+msgstr "Окей, я сдаюсь. Ты неисправим."
+
+#: ../../client/solo/commands/yell.py:41 ../../client/solo/commands/yell.py:42
+#: ../../client/solo/commands/yell.py:43 ../../client/solo/commands/yell.py:44
+#: ../../client/solo/commands/yell.py:45 ../../client/solo/commands/yell.py:47
+msgid "Go to hell."
+msgstr "Иди к чёрту."
+
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
 msgstr ""
@@ -4469,6 +3905,14 @@ msgstr ""
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
 msgstr ""
+
+#: ../../client/solo/commands/libtest.py:77
+msgid "print broken files to stdout"
+msgstr "записывает испорченные файлы в stdout"
+
+#: ../../client/solo/commands/libtest.py:82
+msgid "dump results to files"
+msgstr "записать результаты в файлы"
 
 #: ../../client/solo/commands/libtest.py:137
 #: ../../client/solo/commands/libtest.py:170
@@ -4487,6 +3931,10 @@ msgstr "Не подсчитано"
 msgid "Would you like to install them ?"
 msgstr "Вы желаете их инсталлировать ?"
 
+#: ../../client/solo/commands/libtest.py:246
+msgid "look for missing libraries"
+msgstr "ищет испорченные библиотеки"
+
 #: ../../client/solo/commands/notice.py:153
 #: ../../client/solo/commands/conf.py:221
 #: ../../magneto/src/magneto/core/interfaces.py:175
@@ -4504,6 +3952,10 @@ msgstr "Ссылка"
 #: ../../client/solo/commands/notice.py:203
 msgid "Press Enter to continue"
 msgstr "Нажмите Enter, чтобы продолжить"
+
+#: ../../client/solo/commands/notice.py:211
+msgid "repository notice board reader"
+msgstr "просмотрщик доски уведомлений репозитория"
 
 #: ../../client/solo/commands/_manage.py:90
 msgid "Scanning configuration files to update"
@@ -4898,6 +4350,14 @@ msgstr "показать все возможные подсчеты"
 msgid "return matches found in every repository"
 msgstr "показать подсчеты по каждому репозиторию"
 
+#: ../../client/solo/commands/match.py:113
+msgid "print repository information (w/--quiet)"
+msgstr "отображает информацию репозитория (с --quiet)"
+
+#: ../../client/solo/commands/match.py:117
+msgid "print description too (w/--quiet)"
+msgstr "показывает ещё и описание (с --quiet)"
+
 #: ../../client/solo/commands/match.py:121
 msgid "print \":<slot>\" next to package names (w/--quiet)"
 msgstr ""
@@ -5048,6 +4508,10 @@ msgstr ""
 
 #: ../../client/solo/commands/upgrade.py:340
 msgid "upgrade the system"
+msgstr ""
+
+#: ../../client/solo/commands/rescue.py:89
+msgid "check installed packages repository for errors"
 msgstr ""
 
 #: ../../client/solo/commands/rescue.py:96
@@ -5271,6 +4735,10 @@ msgstr "Инструмент восстановления базы данных 
 msgid "tools to rescue the running system"
 msgstr ""
 
+#: ../../client/solo/commands/cleanup.py:97
+msgid "remove downloaded packages and clean temp. directories"
+msgstr "удалить загруженные пакеты и очистить временные директории"
+
 #: ../../client/solo/commands/unused.py:70
 #, fuzzy
 msgid "sort packages by size"
@@ -5287,6 +4755,20 @@ msgid ""
 msgstr ""
 "Запуск теста неиспользуемых пакетов, обратите внимание, имеются ложные "
 "позитивы"
+
+#: ../../client/solo/commands/unused.py:162
+msgid "look for unused packages (pay attention)"
+msgstr "ищет неиспользуемые пакеты (обратите внимание)"
+
+#: ../../client/solo/commands/download.py:140
+#, fuzzy
+msgid "Package download"
+msgstr "отмененная загрузка"
+
+#: ../../client/solo/commands/download.py:172
+#, fuzzy
+msgid "download packages, essentially"
+msgstr "просто загрузить пакеты"
 
 #: ../../client/solo/commands/hop.py:92
 msgid "Already on branch"
@@ -5309,23 +4791,9 @@ msgstr "Невозможно переключить ветку"
 msgid "upgrade the System to a new branch"
 msgstr "обновить систему до новой версии (ветки)"
 
-#: ../../client/solo/commands/download.py:140
-#, fuzzy
-msgid "Package download"
-msgstr "отмененная загрузка"
-
-#: ../../client/solo/commands/download.py:172
-#, fuzzy
-msgid "download packages, essentially"
-msgstr "просто загрузить пакеты"
-
-#: ../../client/solo/commands/help.py:70
-msgid "Entropy Command Line Client, Equo"
-msgstr ""
-
-#: ../../client/solo/commands/help.py:97 ../../services/kernel-switcher:325
-msgid "this help"
-msgstr ""
+#: ../../client/solo/commands/mask.py:53
+msgid "only show what would be done"
+msgstr "показывать только то, что будет сделано"
 
 #: ../../client/solo/commands/mask.py:125
 msgid "These are the packages that would be handled"
@@ -5337,6 +4805,14 @@ msgstr ""
 
 #: ../../client/solo/commands/mask.py:174
 msgid "action not executed"
+msgstr ""
+
+#: ../../client/solo/commands/mask.py:222
+msgid "mask one or more packages"
+msgstr ""
+
+#: ../../client/solo/commands/mask.py:229
+msgid "unmask one or more packages"
 msgstr ""
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
@@ -5550,36 +5026,35 @@ msgstr ""
 msgid "Try without --from-running."
 msgstr ""
 
-#: ../../services/kernel-switcher:266
+#: ../../services/kernel-switcher:271
 msgid "No kernel packages found"
 msgstr ""
 
-#: ../../services/kernel-switcher:287
+#: ../../services/kernel-switcher:292
 msgid "Sabayon Kernel Switcher"
 msgstr ""
 
-#: ../../services/kernel-switcher:294
+#: ../../services/kernel-switcher:299
 msgid "quiet mode"
 msgstr ""
 
-#: ../../services/kernel-switcher:298
-#, fuzzy
+#: ../../services/kernel-switcher:303
 msgid "ask confirmation"
-msgstr "Фаза конфигурации"
-
-#: ../../services/kernel-switcher:308
-msgid "install a new or just another kernel"
 msgstr ""
 
 #: ../../services/kernel-switcher:313
+msgid "install a new or just another kernel"
+msgstr ""
+
+#: ../../services/kernel-switcher:318
 msgid "use 'uname -r' to determine the running kernel"
 msgstr ""
 
-#: ../../services/kernel-switcher:316
+#: ../../services/kernel-switcher:321
 msgid "the new kernel package dependency name"
 msgstr ""
 
-#: ../../services/kernel-switcher:320
+#: ../../services/kernel-switcher:325
 msgid "list kernels"
 msgstr ""
 
@@ -5594,18 +5069,6 @@ msgstr "Доступные обновления"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Загрузить пакетный менеджер"
-
-#~ msgid "ENTROPY"
-#~ msgstr "ENTROPY"
-
-#~ msgid "Cannot update Portage database to destination"
-#~ msgstr "Невозможно обновить базу данных портеджа по расположению"
-
-#~ msgid "No advisories provided"
-#~ msgstr "Уведомлений не предоставлено"
-
-#~ msgid "Advisory"
-#~ msgstr "Уведомление"
 
 #~ msgid "Malformed command"
 #~ msgstr "Испорченная команда"
@@ -5642,6 +5105,15 @@ msgstr "_Загрузить пакетный менеджер"
 
 #~ msgid "Unhandled exception"
 #~ msgstr "Непредвиденное исключение"
+
+#~ msgid "You are not root"
+#~ msgstr "Вы не root"
+
+#~ msgid "No advisories provided"
+#~ msgstr "Уведомлений не предоставлено"
+
+#~ msgid "Advisory"
+#~ msgstr "Уведомление"
 
 #~ msgid "Source Package Manager backend not available"
 #~ msgstr "backend пакетного менеджера источника недоступен"
@@ -5835,6 +5307,128 @@ msgstr "_Загрузить пакетный менеджер"
 
 #~ msgid "Compressed file does not exist"
 #~ msgstr "Сжатый файл отсутствует"
+
+#~ msgid "Basic Options"
+#~ msgstr "Основные опции"
+
+#~ msgid "print version"
+#~ msgstr "отображает версию"
+
+#~ msgid "disable colorized output"
+#~ msgstr "деактивирует цветное отображение"
+
+#~ msgid "Application Options"
+#~ msgstr "Опции приложения"
+
+#~ msgid "force sync regardless repositories status"
+#~ msgstr "форсировать синхронизацию безотносительно к статусу репозитория"
+
+#~ msgid "update system with the latest available packages"
+#~ msgstr "обновить систему с самыми последними доступными пакетами"
+
+#~ msgid "show more details about what is going on"
+#~ msgstr "показывать больше деталей на тему того, что будет происходить"
+
+#~ msgid "same as --replay"
+#~ msgstr "то же, что и --replay"
+
+#~ msgid "resume previously interrupted operations"
+#~ msgstr "принимает ранее отмененные операции"
+
+#~ msgid "used with --resume, makes the first package to be skipped"
+#~ msgstr "при использовании с --resume пропускает первый пакет"
+
+#~ msgid "download multiple packages in parallel (default 3)"
+#~ msgstr "скачать несколько пакетов параллельно (по умолчанию 3)"
+
+#~ msgid "security infrastructure functions"
+#~ msgstr "функции инфраструктуры безопасности"
+
+#~ msgid "just download packages without doing the install"
+#~ msgstr "только загрузить пакеты без установки"
+
+#~ msgid "do not pull in any dependency"
+#~ msgstr "не относить к какой-либо зависимости"
+
+#~ msgid "used with --resume, makes the first package in queue to be skipped"
+#~ msgstr "при использовании с --resume пропускает первый пакет в очереди"
+
+#~ msgid "remove downloaded packages after being used"
+#~ msgstr "удалить скачанные пакеты после использования"
+
+#~ msgid "pull all the dependencies in, regardless their state"
+#~ msgstr "добавляет все зависимости, не принимая во внимание на их статус"
+
+#~ msgid "makes dependency rules stricter"
+#~ msgstr "делает строже правила касательно зависимостей"
+
+#~ msgid "makes old configuration files to be removed"
+#~ msgstr "отправляет на удаление старые файлы конфигурации"
+
+#~ msgid "remove one or more packages"
+#~ msgstr "удалить один или более пакетов"
+
+#~ msgid "run the configuration files update function"
+#~ msgstr "запускает функцию обновления конфигурационных файлов"
+
+#~ msgid "do misc queries on repository and local databases"
+#~ msgstr "делает различные запросы к репозиторию и локальной базе данных"
+
+#~ msgid "search what packages depend on the provided atoms"
+#~ msgstr "искать пакеты, зависящие от предоставленных атомов"
+
+#~ msgid "search a package into the local database"
+#~ msgstr "искать пакет в локальной базе данных"
+
+#~ msgid "list packages based on the chosen parameter below"
+#~ msgstr "показать пакеты, базирующиеся на выбранном параметре"
+
+#~ msgid "show the removal tree for the specified atoms"
+#~ msgstr "показать дерево удалений для выбранных атомов"
+
+#~ msgid "show atoms needing the provided libraries"
+#~ msgstr "показывает атомы, требующие предоставленные библиотеки"
+
+#~ msgid "!!! Use --verbose to get full help output"
+#~ msgstr "!!! Используйте --verbose для полного вывода помощи"
+
+#~ msgid "Extended Options"
+#~ msgstr "Расширенные Опции"
+
+#~ msgid "handles extended functionalities"
+#~ msgstr "обслуживает расширенную функциональность"
+
+#~ msgid ""
+#~ "make a smart package for the provided atoms (multiple packages into one "
+#~ "file)"
+#~ msgstr ""
+#~ "устанавливает smart-пакет для предоставленных атомов (множество пакетов в "
+#~ "один файл)"
+
+#~ msgid "save new packages into the specified directory"
+#~ msgstr "сохранить новые пакеты в выбранную папку"
+
+#~ msgid "save new metadata into the specified directory"
+#~ msgstr "сохранить новую метаинформацию в выбранную директорию"
+
+#~ msgid ""
+#~ "generate installed packages database using files on the system [last hope]"
+#~ msgstr ""
+#~ "генерирует базу данных установленных пакетов с использованием файлов "
+#~ "системы [последняя надежда]"
+
+#~ msgid "backup the current Entropy installed packages database"
+#~ msgstr ""
+#~ "создать резервную копию текущей базы данных установленных пакетов Entropy"
+
+#~ msgid "show system information"
+#~ msgstr "показать информацию системы"
+
+#~ msgid "not enough parameters"
+#~ msgstr "недостаточно параметров"
+
+#~ msgid "Of course you are on the Internet..."
+#~ msgstr "Ну и, конечно, ты в интернете..."
 
 #~ msgid "Nothing to resume"
 #~ msgstr "Нечего подтверждать"
