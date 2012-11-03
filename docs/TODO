@@ -2,25 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    security
-        oscheck
-          --mtime
-          --assimilate
-          --reinstall
-          --quiet
-          --verbose
-        update
-          --force
-        list
-          --affected
-          --unaffected
-        info
-        install
-          --ask
-          --fetch
-          --pretend
-          --quiet
-
 
     drop "append_xpak()" in xpaktools
     equo unused -> add to "equo query unused"
