@@ -1,0 +1,147 @@
+EQUO(1)
+======
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo - The Ingenuous Entropy Package Manager.
+
+
+SYNOPSIS
+--------
+*equo* [command] [command options]
+
+
+INTRODUCTION
+------------
+Equo is the command-line frontend of the Entropy Package Manager Library.
+Installing, Removing and taking care of your system is easier than ever.
+There is nothing much left to say, just try it out yourself!
+
+USAGE
+-----
+Equo has a modular design, commands can be added and removed in a pluggable
+way. There are however a set of built-in commands that are shipped with
+the default Equo distribution.
+
+
+OPTIONS
+-------
+*--help*::
+    Show Equo Help, listing all the runtime available commands.
+
+
+COMMANDS
+--------
+*cache*::
+    manage Entropy Library Cache
+
+*cleanup*::
+    remove downloaded packages and clean temp. directories
+
+*conf*::
+    manage package file updates
+
+*config*::
+    configure installed packages
+
+*deptest [dt]*::
+    look for unsatisfied dependencies
+
+*download [fetch]*::
+    download packages, essentially
+
+*help [-h, --help]*::
+    this help
+
+*hop*::
+    upgrade the System to a new branch
+
+*install [i]*::
+    install or update packages or package files
+
+*libtest [lt]*::
+    look for missing libraries
+
+*lxnay*::
+    bow to lxnay
+
+*mask*::
+    mask one or more packages
+
+*match [m]*::
+    match packages in repositories
+
+*moo*::
+    moo at user
+
+*notice*::
+    repository notice board reader
+
+*pkg [smart]*::
+    execute advanced tasks on packages
+
+*query [q]*::
+    repository query tools
+
+*remove [rm]*::
+    remove packages from system
+
+*repo*::
+    manage repositories
+
+*rescue*::
+    tools to rescue the running system
+
+*search [s]*::
+    search packages in repositories
+
+*security [sec]*::
+    system security tools
+
+*source [src]*::
+    download packages source code
+
+*status [st, --info]*::
+    show Repositories status
+
+*ugc*::
+    manage User Generated Content
+
+*unmask*::
+    unmask one or more packages
+
+*unusedpackages [unused]*::
+    look for unused packages (pay attention)
+
+*update [up]*::
+    update repositories
+
+*upgrade [u]*::
+    upgrade the system
+
+*yell*::
+    yell at user
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo-cache(1), equo-cleanup(1), equo-conf(1), equo-config(1), equo-deptest(1)
+    equo-download(1), equo-hop(1), equo-install(1), equo-libtest(1), equo-mask(1)
+    equo-match(1), equo-notice(1), equo-pkg(1), equo-query(1), equo-remove(1)
+    equo-repo(1), equo-rescue(1), equo-search(1), equo-security(1), equo-source(1)
+    equo-status(1), equo-ugc(1), equo-unmask(1), equo-unusedpackages(1), equo-update(1)
+    equo-upgrade(1)
+    

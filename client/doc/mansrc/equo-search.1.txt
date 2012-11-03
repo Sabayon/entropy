@@ -1,0 +1,64 @@
+equo-search(1)
+==============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-search - search packages in repositories
+
+
+SYNOPSIS
+--------
+equo search [-h] [--quiet] [--verbose] [--installed | --available]
+            <string> [<string> ...]
+
+
+INTRODUCTION
+------------
+Search for packages.
+
+
+
+OPTIONS
+-------
+"equo search" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<string>*::
+    search keyword
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-q*::
+    quiet output, for scripting purposes
+
+*-v*::
+    verbose output
+
+*--installed*::
+    search among installed packages only
+
+*--available*::
+    search among available packages only
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

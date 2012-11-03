@@ -1,0 +1,69 @@
+equo-repo(1)
+============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-repo - manage repositories
+
+
+SYNOPSIS
+--------
+equo repo [-h] {enable,disable,add,remove,list,mirrorsort,merge} ...
+
+
+INTRODUCTION
+------------
+Manage Entropy Repositories.
+
+
+
+OPTIONS
+-------
+"equo repo" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*enable*::
+    enable repositories
+
+*disable*::
+    disable repositories
+
+*add*::
+    add a repository
+
+*remove*::
+    remove a repository
+
+*list*::
+    list active repositories
+
+*mirrorsort*::
+    reorder mirrors basing on response time
+
+*merge*::
+    merge content of source repository to destination
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

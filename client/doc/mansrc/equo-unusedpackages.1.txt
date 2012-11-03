@@ -1,0 +1,55 @@
+equo-unusedpackages(1)
+======================
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-unusedpackages - look for unused packages (pay attention)
+
+
+SYNOPSIS
+--------
+equo unusedpackages [-h] [--quiet] [--sortbysize] [--by-user]
+
+
+INTRODUCTION
+------------
+Report unused packages that could be removed.
+
+
+
+OPTIONS
+-------
+"equo unusedpackages" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--quiet*::
+    show less details (useful for scripting)
+
+*--sortbysize*::
+    sort packages by size
+
+*--by-user*::
+    include packages installed by user
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

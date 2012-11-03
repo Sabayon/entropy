@@ -1,0 +1,54 @@
+equo-update(1)
+==============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-update - update repositories
+
+
+SYNOPSIS
+--------
+equo update [-h] [--force] [<repo> [<repo> ...]]
+
+
+INTRODUCTION
+------------
+Update Entropy Repositories.
+
+
+
+OPTIONS
+-------
+"equo update" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--force*::
+    force update
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

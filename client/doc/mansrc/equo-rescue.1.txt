@@ -1,0 +1,69 @@
+equo-rescue(1)
+==============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-rescue - tools to rescue the running system
+
+
+SYNOPSIS
+--------
+equo rescue [-h] {check,vacuum,generate,spmuids,spmsync,backup,restore} ...
+
+
+INTRODUCTION
+------------
+Tools to rescue the running system.
+
+
+
+OPTIONS
+-------
+"equo rescue" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*check*::
+    check installed packages repository for errors
+
+*vacuum*::
+    compact the installed packages repository
+
+*generate*::
+    re-generate the installed packages repository using the Source Package Manager
+
+*spmuids*::
+    re-generate SPM<->Entropy package UIDs mapping
+
+*spmsync*::
+    update Entropy installed packages repository merging Source Package Manager changes
+
+*backup*::
+    create a backup of the installed packages repository
+
+*restore*::
+    restore a backup of the installed packages repository
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

@@ -24,8 +24,8 @@ from entropy.cli import print_package_info
 import entropy.dep
 import entropy.tools
 
-# equo modules
-from text_ui import install_packages
+# solo modules
+from solo.commands.install import SoloInstall
 
 APP_NAME = os.path.basename(sys.argv[0])
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
@@ -228,11 +228,16 @@ def _switch_kernel(nsargs):
         matches.append(kernel_match)
 
         opengl = _get_opengl_impl()
-        rc, other = install_packages(
-            etp_client,
-            atomsdata = matches,
-            check_critical_updates = False
-        )
+
+        install = SoloInstall([])
+        rc, _show_cfgupd = install._install_action(
+            etp_client, True, True,
+            etpUi['pretend'], etpUi['ask'], etpUi['verbose'],
+            etpUi['quiet'], False, False, False, False, False,
+            False, 1, [], package_matches=list(matches))
+        if _show_cfgupd:
+            install._show_config_files_update(etp_client)
+
         if (rc == 0) and (not etpUi['pretend']):
             _set_opengl_impl(opengl)
             if target_tag:

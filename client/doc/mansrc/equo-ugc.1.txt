@@ -1,0 +1,60 @@
+equo-ugc(1)
+===========
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-ugc - manage User Generated Content
+
+
+SYNOPSIS
+--------
+equo ugc [-h] {login,logout,documents,vote} ...
+
+
+INTRODUCTION
+------------
+Manage User Generate Content (votes, comments, files).
+
+
+
+OPTIONS
+-------
+"equo ugc" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*login*::
+    login against the given repository
+
+*logout*::
+    logout from the given repository
+
+*documents*::
+    manage package documents in the selected repository (comments, files, videos)
+
+*vote*::
+    manage package votes in the selected repository
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

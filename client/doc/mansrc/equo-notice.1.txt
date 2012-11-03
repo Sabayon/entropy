@@ -1,0 +1,51 @@
+equo-notice(1)
+==============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-notice - repository notice board reader
+
+
+SYNOPSIS
+--------
+equo notice [-h] <repo> [<repo> ...]
+
+
+INTRODUCTION
+------------
+Read Repository Notice Board.
+
+
+
+OPTIONS
+-------
+"equo notice" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<repo>*::
+    repository
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

@@ -2,18 +2,16 @@ Backlog (raw)
 
   1.0:
 
-
+  - solo branch:
     drop "append_xpak()" in xpaktools
     equo unused -> add to "equo query unused"
     move etpConst['install_sources'] to entropy.db
     test unicode with solo conf update (and others)
     memoization on spm scan of entropy.server
     solo.utils.show_you_meant !
-    - rework client/ code, as done with eit
-      - kernel-switcher is using text_ui
-      - drop entropy.cli (it is used by other stuff, what to do?)
-      - drop etpUi
-      - drop etpConst['errorstatus']
+    drop entropy.cli (it is used by other stuff, what to do?)
+    drop etpUi
+    drop etpConst['errorstatus']
 
     - preserved-libs registry:
       only drop old sonames when installed packages

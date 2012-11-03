@@ -1,0 +1,46 @@
+equo-cleanup(1)
+===============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-cleanup - remove downloaded packages and clean temp. directories
+
+
+SYNOPSIS
+--------
+equo cleanup [-h]
+
+
+INTRODUCTION
+------------
+Remove downloaded packages and clean temporary directories.
+
+
+
+OPTIONS
+-------
+"equo cleanup" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), equo-cache(1)
