@@ -1,6 +1,4 @@
 import os, errno, stat
-from entropy.const import etpUi
-etpUi['quiet'] = True
 from entropy.server.interfaces import Server
 
 srv = Server()

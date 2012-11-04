@@ -13,6 +13,8 @@ import fcntl
 from threading import Lock
 
 os.environ['ETP_GETTEXT_DOMAIN'] = "entropy-server"
+# this application does not like interactivity
+os.environ['ETP_NONITERACTIVE'] = "1"
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/lib')
@@ -24,7 +26,7 @@ sys.path.insert(0,'../client')
 
 # Entropy imports
 from entropy.exceptions import PermissionDenied
-from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
+from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_stringtype, const_setup_perms
 from entropy.output import print_info, print_error, print_warning, \
     purple, darkgreen, is_stdout_a_tty, getcolor
@@ -1455,10 +1457,6 @@ Matter Resources Lock file you can use to detect if matter is running:
         help="enforce Community Repository mode on Entropy Server",
         action="store_true")
 
-    parser.add_argument("--debug",
-        help="print debug output",
-        action="store_true")
-
     parser.add_argument("--gentle",
         help="do not run if staged packages are present in Entropy repository",
         action="store_true")
@@ -1500,13 +1498,6 @@ Matter Resources Lock file you can use to detect if matter is running:
     if nsargs.community:
         os.environ['ETP_COMMUNITY_MODE'] = "1"
 
-    if nsargs.debug:
-        print_warning(repr(nsargs))
-        # if just one, drop from argv, so that it doesn't interfere with
-        # entropy --debug support
-        if sys.argv.count("--debug") < 2:
-            etpUi['debug'] = False
-
     # parse spec files
     specs = []
     for spec_f in nsargs.spec:
@@ -1522,8 +1513,6 @@ Matter Resources Lock file you can use to detect if matter is running:
     entropy_server = None
     exit_st = 0
     cwd = os.getcwd()
-    # This application doesn't like implicit inteactivity
-    etpUi['interactive'] = False
 
     try:
         try:

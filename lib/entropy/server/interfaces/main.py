@@ -27,7 +27,7 @@ from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, etpUi, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
-    const_convert_to_rawstring
+    const_debug_enabled, const_convert_to_rawstring
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -5497,7 +5497,7 @@ class Server(Client):
                     count = (count, maxcount)
                 )
                 rc = 2
-                if etpUi['debug']:
+                if const_debug_enabled():
                     import pdb
                     pdb.set_trace()
 

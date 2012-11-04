@@ -18,7 +18,7 @@ import sys
 import tempfile
 
 from entropy.const import const_convert_to_unicode, etpConst, \
-    const_debug_write
+    const_debug_write, const_interactive_enabled
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
     darkred, readtext
@@ -42,7 +42,7 @@ class SoloManage(SoloCommand):
 
     def __init__(self, args):
         SoloCommand.__init__(self, args)
-        self._interactive = os.getenv("ETP_NONINTERACTIVE") is None
+        self._interactive = const_interactive_enabled()
         self._nsargs = None
 
     def man(self):

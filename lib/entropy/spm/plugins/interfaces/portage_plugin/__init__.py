@@ -26,8 +26,9 @@ import codecs
 import warnings
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
-    const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
-    const_setup_file, const_is_python3
+    const_convert_to_unicode, const_convert_to_rawstring, \
+    const_setup_perms, const_setup_file, const_is_python3, \
+    const_interactive_enabled, const_debug_enabled
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, purple, \
@@ -2071,7 +2072,7 @@ class PortagePlugin(SpmPlugin):
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
 
-        if etpUi['debug']:
+        if const_debug_enabled():
             self.__output.output(
                 "PortagePlugin<_portage_doebuild>, env: %s" % (
                     locals(),),
@@ -2109,7 +2110,7 @@ class PortagePlugin(SpmPlugin):
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
-                    debug = etpUi['debug']
+                    debug = const_debug_enabled()
                 )
             except:
                 logger.write(entropy.tools.get_traceback())
@@ -2598,7 +2599,7 @@ class PortagePlugin(SpmPlugin):
             package_paths.append(pkg_list)
         packages_data = [(pkg_list, False,) for pkg_list in package_paths]
         idpackages = entropy_server.add_packages_to_repository(repo,
-            packages_data, ask = etpUi['interactive'])
+            packages_data, ask = const_interactive_enabled())
 
         if not idpackages:
 

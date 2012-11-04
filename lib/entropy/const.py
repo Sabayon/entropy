@@ -198,9 +198,6 @@ etpUi = {
     'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
     'debug': False,
     'quiet': False,
-    'verbose': False,
-    'ask': False,
-    'pretend': False,
     'mute': False,
     'clean': False,
     'warn': True,
@@ -1604,6 +1601,15 @@ def const_debug_enabled():
     """
     return etpUi['debug']
 
+def const_interactive_enabled():
+    """
+    Return whether interactive mode is enabled.
+
+    @return: True, if interactive is enabled
+    @rtype: bool
+    """
+    return etpUi['interactive']
+
 _DEBUG_W_LOCK = threading.Lock()
 def const_debug_write(identifier, msg, force = False, stdout=None):
     """
@@ -1620,7 +1626,7 @@ def const_debug_write(identifier, msg, force = False, stdout=None):
     @rtype: None
     @return: None
     """
-    if etpUi['debug'] or force:
+    if const_debug_enabled() or force:
         if stdout is None:
             stdout = sys.stdout
         # XXX: hierarchy violation, but hey, we're debugging shit

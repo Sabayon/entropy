@@ -9,7 +9,6 @@
     B{Entropy Framework Security module}.
 
     This module contains Entropy GLSA-based Security interfaces.
-    
 
 """
 import os
@@ -23,9 +22,9 @@ import time
 import codecs
 
 from entropy.exceptions import EntropyException
-from entropy.const import etpConst, etpUi, const_setup_perms, \
+from entropy.const import etpConst, const_setup_perms, \
     const_debug_write, const_setup_file, const_convert_to_unicode, \
-    const_convert_to_rawstring, const_is_python3
+    const_convert_to_rawstring, const_is_python3, const_debug_enabled
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -616,7 +615,7 @@ class System:
             x.startswith("glsa-")])
         return xmls
 
-    def get_advisories_metadata(self, use_cache = True):
+    def get_advisories_metadata(self, use_cache = True, quiet = False):
         """
         Get security advisories metadata.
 
@@ -636,7 +635,7 @@ class System:
         for xml in xmls:
 
             count += 1
-            if not etpUi['quiet']:
+            if quiet:
                 cur_t = time.time()
                 if ((cur_t - t_up) > 1):
                     t_up = cur_t
@@ -2007,7 +2006,7 @@ class Repository:
             'stdout': subprocess.PIPE,
             'stdin': subprocess.PIPE,
         }
-        if (not etpUi['debug']) or stderr:
+        if not const_debug_enabled() or stderr:
             kwargs['stderr'] = subprocess.PIPE
         return kwargs
 

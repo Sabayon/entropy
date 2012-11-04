@@ -16,7 +16,7 @@ import tempfile
 import codecs
 
 from entropy.client.interfaces.client import Client
-from entropy.const import etpConst, const_isunicode, etpSys, etpUi, \
+from entropy.const import etpConst, const_isunicode, etpSys, \
     const_convert_to_rawstring
 from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
@@ -372,24 +372,12 @@ class Trigger:
             sb_dirs = [unpackdir, imagedir]
             sb_write = const_convert_to_rawstring(':'.join(sb_dirs),
                 from_enctype = "utf-8")
-            etp_mute = "0"
-            if etpUi['mute']:
-                etp_mute = "1"
-            etp_mute = const_convert_to_rawstring(etp_mute,
-                from_enctype = "utf-8")
-            etp_quiet = "0"
-            if etpUi['quiet']:
-                etp_quiet = "1"
-            etp_quiet = const_convert_to_rawstring(etp_quiet,
-                from_enctype = "utf-8")
 
             myenv = {
                 "ETP_API": etpSys['api'],
                 "ETP_STAGE": stage, # entropy trigger stage
                 "ETP_PHASE": self.__get_sh_stage(stage), # entropy trigger phase
                 "ETP_BRANCH": etp_branch,
-                "ETP_MUTE": etp_mute,
-                "ETP_QUIET": etp_quiet,
                 "CATEGORY": category, # package category
                 "PN": pn, # package name
                 "PV": pv, # package version

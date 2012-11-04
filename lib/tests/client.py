@@ -315,7 +315,7 @@ else:
 
         # this test might be considered controversial, for now, let's keep it
         # here, we use equo stuff to make sure it keeps working
-        import text_smart
+        from solo.commands.pkg import SoloPkg
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0
@@ -327,7 +327,11 @@ else:
         pkg_dir = tempfile.mkdtemp()
         inst_dir = tempfile.mkdtemp()
 
-        rc = text_smart.inflate_handler(self.Client, [pkg_path], pkg_dir)
+        s_pkg = SoloPkg(["inflate", pkg_path, "--savedir", pkg_dir])
+        func, func_args = s_pkg.parse()
+        # do not call func directly because the real method is
+        # wrapper around a lock call
+        rc = s_pkg._inflate(self.Client)
         self.assertTrue(rc == 0)
         self.assertTrue(os.listdir(pkg_dir))
 
