@@ -5,8 +5,6 @@ Backlog (raw)
   - solo branch:
     equo unused -> add to "equo query unused"
     move etpConst['install_sources'] to entropy.db
-    test unicode with solo conf update (and others)
-    memoization on spm scan of entropy.server
     solo.utils.show_you_meant !
     drop entropy.cli (it is used by other stuff, what to do?)
     drop etpUi
