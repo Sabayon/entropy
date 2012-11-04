@@ -14,10 +14,10 @@ import argparse
 
 from entropy.i18n import _
 from entropy.output import purple
-from entropy.cli import print_package_info
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
+from eit.utils import print_package_info
 
 
 class EitSearch(EitCommand):

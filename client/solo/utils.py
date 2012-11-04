@@ -643,7 +643,8 @@ def _revgraph_package(entropy_client, installed_pkg_id, package, dbconn,
     # ensure package availability in graph, initialize now
     graph.add(inst_item, set())
 
-    rev_pkgs_sorter = lambda x: dbconn.retrieveAtom(x)
+    def rev_pkgs_sorter(_pkg_id):
+        return dbconn.retrieveAtom(_pkg_id)
 
     while stack.is_filled():
 
@@ -651,7 +652,7 @@ def _revgraph_package(entropy_client, installed_pkg_id, package, dbconn,
         if item in stack_cache:
             continue
         stack_cache.add(item)
-        pkg_id, was_dep = item
+        pkg_id, _was_dep = item
 
         rev_deps = dbconn.retrieveReverseDependencies(pkg_id,
             exclude_deptypes = excluded_dep_types)
@@ -736,7 +737,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False,
         if item in stack_cache:
             continue
         stack_cache.add(item)
-        ((pkg_id, repo_id,), was_dep, dep_type) = item
+        ((pkg_id, repo_id,), _was_dep, dep_type) = item
 
         # deps
         repodb = entropy_intf.open_repository(repo_id)

@@ -3,9 +3,8 @@ Backlog (raw)
   1.0:
 
   - solo branch:
-    move etpConst['install_sources'] to entropy.db
-    drop entropy.cli (it is used by other stuff, what to do?)
-    drop etpUi
+    drop etpUi (anaconda uses etpUi['mute'])
+      fixup etpUi usage in lib/ !
 
     - preserved-libs registry:
       only drop old sonames when installed packages

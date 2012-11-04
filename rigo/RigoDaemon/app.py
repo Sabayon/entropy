@@ -70,13 +70,12 @@ from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
-from entropy.output import TextInterface, purple
+from entropy.output import TextInterface, purple, teal
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package
 from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
-from entropy.cli import get_entropy_webservice
 
 import entropy.tools
 import entropy.dep
@@ -95,6 +94,39 @@ if DAEMON_LOGGING:
     # redirect possible exception tracebacks to log file
     sys.stderr = DAEMON_LOG
     sys.stdout = DAEMON_LOG
+
+
+def get_entropy_webservice(entropy_client, repository_id, tx_cb = False):
+    """
+    Get Entropy Web Services service object (ClientWebService).
+
+    @param entropy_client: Entropy Client interface
+    @type entropy_client: entropy.client.interfaces.Client
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: the ClientWebService instance
+    @rtype: entropy.client.services.interfaces.ClientWebService
+    @raise WebService.UnsupportedService: if service is unsupported by
+        repository
+    """
+    def _transfer_callback(transfered, total, download):
+        if download:
+            action = _("Downloading")
+        else:
+            action = _("Uploading")
+
+        percent = 100
+        if (total > 0) and (transfered <= total):
+            percent = int(round((float(transfered)/total) * 100, 1))
+
+        msg = "[%s%s] %s ..." % (purple(str(percent)), "%", teal(action))
+        entropy_client.output(msg, back=True)
+
+    factory = entropy_client.WebServices()
+    webserv = factory.new(repository_id)
+    if tx_cb:
+        webserv._set_transfer_callback(_transfer_callback)
+    return webserv
 
 def write_output(message, debug=False):
     message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + message
