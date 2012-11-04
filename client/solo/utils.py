@@ -519,38 +519,6 @@ def print_package_info(package_id, entropy_client, entropy_repository,
 
     print_table(entropy_client, toc, cell_spacing = 3)
 
-def show_you_meant(entropy_client, package, from_installed):
-    """
-    Print Package "did you mean"-like message to stdout.
-    """
-    items = entropy_client.get_meant_packages(
-        package, from_installed = from_installed)
-    if not items:
-        return
-
-    items_cache = set()
-    mytxt = "%s %s %s %s %s" % (
-        bold("   ?"),
-        red(_("When you wrote")),
-        bold(package),
-        darkgreen(_("You Meant(tm)")),
-        red(_("one of these below?")),
-    )
-    entropy_client.output(mytxt)
-    for match in items:
-        if from_installed:
-            dbconn = entropy_client.installed_repository()
-            idpackage = match[0]
-        else:
-            dbconn = entropy_client.open_repository(match[1])
-            idpackage = match[0]
-        key, slot = dbconn.retrieveKeySlot(idpackage)
-        if (key, slot) not in items_cache:
-            entropy_client.output(
-                red("    # ")+blue(key)+":" + \
-                    brown(str(slot))+red(" ?"))
-        items_cache.add((key, slot))
-
 def revgraph_packages(packages, entropy_client, complete = False,
     repository_ids = None, quiet = False):
 

@@ -14,12 +14,16 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.output import darkgreen, teal, purple, print_error
+from entropy.const import const_convert_to_unicode
+from entropy.output import darkgreen, teal, purple, print_error, bold, \
+    brown
 from entropy.exceptions import PermissionDenied
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
+
+from solo.utils import enlightenatom
 
 class SoloCommand(object):
     """
@@ -365,3 +369,35 @@ class SoloCommand(object):
         Return a SystemSettings instance.
         """
         return SystemSettings()
+
+    def _show_did_you_mean(self, entropy_client, package, from_installed):
+        """
+        Show "Did you mean?" results for the given package name.
+        """
+        items = entropy_client.get_meant_packages(
+            package, from_installed=from_installed)
+        if not items:
+            return
+
+        mytxt = "%s %s %s %s %s" % (
+            bold(const_convert_to_unicode("   ?")),
+            teal(_("When you wrote")),
+            bold(const_convert_to_unicode(package)),
+            darkgreen(_("You Meant(tm)")),
+            teal(_("one of these below?")),
+        )
+        entropy_client.output(mytxt)
+
+        _cache = set()
+        for pkg_id, repo_id in items:
+            if from_installed:
+                repo = entropy_client.installed_repository()
+            else:
+                repo = entropy_client.open_repository(repo_id)
+
+            key_slot = repo.retrieveKeySlotAggregated(pkg_id)
+            if key_slot not in _cache:
+                entropy_client.output(
+                    enlightenatom(key_slot),
+                    header=brown("    # "))
+                _cache.add(key_slot)

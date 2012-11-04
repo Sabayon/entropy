@@ -19,7 +19,7 @@ from entropy.output import purple, teal, darkred, brown, red, \
 
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand
-from solo.utils import show_you_meant, enlightenatom
+from solo.utils import enlightenatom
 
 class SoloMaskUnmask(SoloCommand):
 
@@ -104,9 +104,9 @@ class SoloMaskUnmask(SoloCommand):
                 entropy_client.output(mytxt, level="warning", importance=1)
                 entropy_client.output("!!!", level="warning", importance=1)
                 if len(package) > 3:
-                    show_you_meant(
+                    self._show_did_you_mean(
                         entropy_client, package,
-                        from_installed = False)
+                        from_installed=False)
                     entropy_client.output("!!!", level="warning", importance=1)
                 continue
 
