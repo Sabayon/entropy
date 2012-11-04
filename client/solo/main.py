@@ -19,7 +19,8 @@ import pdb
 from entropy.i18n import _
 from entropy.output import print_error, print_warning, bold, purple, \
     teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface
-from entropy.const import etpConst, etpUi, const_convert_to_rawstring
+from entropy.const import etpConst, const_convert_to_rawstring, \
+    const_debug_enabled
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, PermissionDenied, FileNotFound, SPMError
 
@@ -63,7 +64,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(1)
 
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
-    if etpUi['debug']:
+    if const_debug_enabled():
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
         sys.stdin = sys.__stdin__
