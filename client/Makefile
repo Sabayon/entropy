@@ -25,7 +25,7 @@ install:
 
 	# copy zsh completion
 	install -d $(DESTDIR)$(PREFIX)/share/zsh/site-functions
-	install -m 644 _equo $(DESTDIR)$(PREFIX)/share/zsh/site-functions/
+	install -m 644 equo-completion.zsh $(DESTDIR)$(PREFIX)/share/zsh/site-functions/_equo
 
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
 
