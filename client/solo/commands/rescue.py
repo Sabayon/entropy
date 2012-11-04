@@ -614,12 +614,11 @@ Tools to rescue the running system.
             if atom:
                 atomkey = entropy.dep.dep_getkey(atom)
                 atomslot = inst_repo.retrieveSlot(package_id)
-                add = True
 
                 spm_slots = _spm_key_slot_map.get(atomkey)
                 if spm_slots is not None:
                     if atomslot in spm_slots:
-                        # do not ad to to_be_removed
+                        # do not add to to_be_removed
                         add = False
 
             if add:
