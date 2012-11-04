@@ -8,7 +8,6 @@ Backlog (raw)
     solo.utils.show_you_meant !
     drop entropy.cli (it is used by other stuff, what to do?)
     drop etpUi
-    drop etpConst['errorstatus']
 
     - preserved-libs registry:
       only drop old sonames when installed packages

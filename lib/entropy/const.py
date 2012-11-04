@@ -636,7 +636,6 @@ def const_default_settings(rootdir):
         'systemname': "Sabayon Linux",
         # Product identificator (standard, professional...)
         'product': "standard",
-        'errorstatus': default_etp_confdir+"/code",
         'systemroot': original_rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'entropygid': None,
