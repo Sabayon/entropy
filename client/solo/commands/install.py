@@ -300,7 +300,7 @@ Install or update packages or package files.
 
             old_info = ""
             if action != 0:
-                old_info = "   [%s|%s]" % (
+                old_info = "   [%s|%s" % (
                     blue(installed_ver),
                     darkred(const_convert_to_unicode(installed_rev)),)
 
