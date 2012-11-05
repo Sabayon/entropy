@@ -301,6 +301,9 @@ if __name__ == "__main__":
         _parser.add_argument("--quiet", "-q", action="store_true",
                             default=False,
                             help=_("quiet mode"))
+        _parser.add_argument("--verbose", "-v", action="store_true",
+                            default=False,
+                            help=_("verbose mode"))
         if not restricted:
             _parser.add_argument("--ask", "-a", action="store_true",
                                  default=False,
