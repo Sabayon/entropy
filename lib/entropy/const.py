@@ -197,7 +197,6 @@ if _more_keywords is not None:
 etpUi = {
     'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
     'debug': False,
-    'quiet': False,
     'mute': False,
     'clean': False,
     'warn': True,
