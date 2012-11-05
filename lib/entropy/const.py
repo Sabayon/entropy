@@ -198,7 +198,6 @@ etpUi = {
     'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
     'debug': False,
     'mute': False,
-    'clean': False,
 }
 if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
     etpUi['debug'] = True
