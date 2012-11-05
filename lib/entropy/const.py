@@ -199,7 +199,6 @@ etpUi = {
     'debug': False,
     'mute': False,
     'clean': False,
-    'warn': True,
 }
 if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
     etpUi['debug'] = True

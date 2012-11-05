@@ -4219,7 +4219,7 @@ class Server(Client):
             self._save_default_repository(repository_id)
 
         self._setup_community_repositories_settings()
-        if handle_uninitialized and etpUi['warn']:
+        if handle_uninitialized:
             self._handle_uninitialized_repository(repository_id)
 
     def _setup_community_repositories_settings(self):
