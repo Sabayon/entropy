@@ -18,10 +18,10 @@ import sys
 import tempfile
 
 from entropy.const import const_convert_to_unicode, etpConst, \
-    const_debug_write, const_interactive_enabled
+    const_debug_write
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
-    darkred, readtext
+    darkred, readtext, is_interactive
 from entropy.exceptions import EntropyPackageException, \
     DependenciesCollision, DependenciesNotFound
 from entropy.services.client import WebService
@@ -42,7 +42,7 @@ class SoloManage(SoloCommand):
 
     def __init__(self, args):
         SoloCommand.__init__(self, args)
-        self._interactive = const_interactive_enabled()
+        self._interactive = is_interactive()
         self._nsargs = None
 
     def man(self):

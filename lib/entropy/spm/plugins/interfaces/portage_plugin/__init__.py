@@ -28,11 +28,11 @@ import warnings
 from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
-    const_interactive_enabled, const_debug_enabled
+    const_debug_enabled
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
-    purple, red, bold, blue, getcolor, decolorize, is_mute
+    purple, red, bold, blue, getcolor, decolorize, is_mute, is_interactive
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile, ParallelTask
@@ -2599,7 +2599,7 @@ class PortagePlugin(SpmPlugin):
             package_paths.append(pkg_list)
         packages_data = [(pkg_list, False,) for pkg_list in package_paths]
         idpackages = entropy_server.add_packages_to_repository(repo,
-            packages_data, ask = const_interactive_enabled())
+            packages_data, ask = is_interactive())
 
         if not idpackages:
 

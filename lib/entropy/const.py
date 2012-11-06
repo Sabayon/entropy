@@ -196,12 +196,6 @@ if _more_keywords is not None:
 
 # debug mode flag, will be triggered by ETP_DEBUG env var.
 _DEBUG = os.getenv("ETP_DEBUG") is not None
-# interactive flag, this will go away at some point in future
-_INTERACTIVE = os.getenv("ETP_NONINTERACTIVE") is None
-
-etpUi = {
-    'interactive': _INTERACTIVE,
-}
 
 if _DEBUG and not _installed_sigquit:
     # install the dump signal function at
@@ -1596,15 +1590,6 @@ def const_debug_enabled():
     @rtype: bool
     """
     return _DEBUG
-
-def const_interactive_enabled():
-    """
-    Return whether interactive mode is enabled.
-
-    @return: True, if interactive is enabled
-    @rtype: bool
-    """
-    return etpUi['interactive']
 
 _DEBUG_W_LOCK = threading.Lock()
 def const_debug_write(identifier, msg, force = False, stdout=None):

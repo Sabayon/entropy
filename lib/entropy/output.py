@@ -162,6 +162,8 @@ codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 # mute flag, will mute any stdout/stderr output.
 _MUTE = os.getenv("ETP_MUTE") is not None
+# interactive flag, this will go away at some point in future
+_INTERACTIVE = os.getenv("ETP_NONINTERACTIVE") is None
 
 def is_mute():
     """
@@ -181,6 +183,15 @@ def set_mute(status):
     """
     global _MUTE
     _MUTE = bool(status)
+
+def is_interactive():
+    """
+    Return whether interactive mode is enabled.
+
+    @return: True, if interactive is enabled
+    @rtype: bool
+    """
+    return _INTERACTIVE
 
 def is_stdout_a_tty():
     """
