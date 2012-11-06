@@ -194,17 +194,17 @@ etpSys = {
 if _more_keywords is not None:
     etpSys['keywords'] |= _more_keywords
 
+# debug mode flag, will be triggered by ETP_DEBUG env var.
+_DEBUG = os.getenv("ETP_DEBUG") is not None
+
 etpUi = {
     'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
-    'debug': False,
     'mute': False,
 }
-if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
-    etpUi['debug'] = True
 if os.getenv('ETP_MUTE'):
     etpUi['mute'] = True
 
-if etpUi['debug'] and not _installed_sigquit:
+if _DEBUG and not _installed_sigquit:
     # install the dump signal function at
     # SIGQUIT anyway if --debug is enabled
     signal.signal(signal.SIGQUIT, dump_signal)
@@ -1596,7 +1596,7 @@ def const_debug_enabled():
     @return: True, if debug is enabled
     @rtype: bool
     """
-    return etpUi['debug']
+    return _DEBUG
 
 def const_interactive_enabled():
     """
