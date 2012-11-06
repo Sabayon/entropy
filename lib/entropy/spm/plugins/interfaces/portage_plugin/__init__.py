@@ -25,14 +25,14 @@ import time
 import codecs
 import warnings
 
-from entropy.const import etpConst, etpUi, const_get_stringtype, \
+from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
     const_interactive_enabled, const_debug_enabled
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
-from entropy.output import darkred, darkgreen, brown, darkblue, teal, purple, \
-    red, bold, blue, getcolor, decolorize
+from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
+    purple, red, bold, blue, getcolor, decolorize, is_mute
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile, ParallelTask
@@ -906,7 +906,7 @@ class PortagePlugin(SpmPlugin):
         env['ROOT'] = root
         emaint_exec = "/usr/sbin/emaint"
         args = (emaint_exec, "--fix", "moveinst")
-        if etpUi['mute']:
+        if is_mute():
             log = None
             try:
                 log = LogFile(
@@ -2088,7 +2088,7 @@ class PortagePlugin(SpmPlugin):
             splitter_out = None
             splitter_err = None
             try:
-                if etpUi['mute']:
+                if is_mute():
                     tmp_fd, tmp_file = tempfile.mkstemp(
                         prefix="entropy.spm.portage._portage_doebuild")
                     tmp_fw = os.fdopen(tmp_fd, "w")
@@ -2128,7 +2128,7 @@ class PortagePlugin(SpmPlugin):
                         splitter_err.close()
                     except OSError:
                         pass
-                if etpUi['mute']:
+                if is_mute():
                     tmp_fw.flush()
                     tmp_fw.close()
                     try:

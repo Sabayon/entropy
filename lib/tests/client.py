@@ -12,7 +12,8 @@ import time
 import tempfile
 from entropy.client.interfaces import Client
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst, etpUi, const_setup_entropy_pid
+from entropy.const import etpConst, const_setup_entropy_pid
+from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, EntropyPackageException
@@ -186,9 +187,9 @@ class EntropyClientTest(unittest.TestCase):
         self.assertNotEqual(
             self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
         def test_load():
-            etpUi['mute'] = True
+            set_mute(True)
             self.Client.open_repository(self.mem_repoid)
-            etpUi['mute'] = False
+            set_mute(False)
         self.assertRaises(RepositoryError, test_load)
 
     def test_package_repository(self):

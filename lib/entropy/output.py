@@ -159,6 +159,29 @@ codes["INFORM"] = codes["darkgreen"]
 codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
+
+# mute flag, will mute any stdout/stderr output.
+_MUTE = os.getenv("ETP_MUTE") is not None
+
+def is_mute():
+    """
+    Return whether writing to stderr/stdout is allowed.
+
+    @return: mute status
+    @rtype: bool
+    """
+    return _MUTE
+
+def set_mute(status):
+    """
+    Set mute status.
+
+    @param status: new mute status
+    @type status: bool
+    """
+    global _MUTE
+    _MUTE = bool(status)
+
 def is_stdout_a_tty():
     """
     Return whether current stdout is a TTY.
@@ -259,7 +282,7 @@ def colorize(color_key, text):
     @return: coloured text
     @rtype: string
     """
-    if etpUi['mute']:
+    if is_mute():
         return text
     global havecolor
     if havecolor:
@@ -480,7 +503,7 @@ def _std_write(msg, stderr = False):
 
 def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     stderr = False):
-    if etpUi['mute']:
+    if is_mute():
         return
     if not back:
         setcols()
@@ -559,7 +582,7 @@ def print_generic(*args, **kwargs):
     to write generic messages to stdout (not stderr, atm).
     NOTE: don't use this directly but rather subclass TextInterface class.
     """
-    if etpUi['mute']:
+    if is_mute():
         return
 
     stderr = kwargs.get('stderr', False)
@@ -581,7 +604,7 @@ def writechar(chars, stderr = False):
     @param chars: chars to write
     @type chars: string
     """
-    if etpUi['mute']:
+    if is_mute():
         return
     obj = sys.stdout
     if stderr:
@@ -700,7 +723,7 @@ class TextInterface(object):
         @rtype: None
         """
 
-        if etpUi['mute']:
+        if is_mute():
             return
 
         _flush_stdouterr()

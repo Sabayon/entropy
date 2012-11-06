@@ -7,8 +7,9 @@ import os
 import time
 import tempfile
 from entropy.client.interfaces import Client
-from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
+from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
+from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import ParallelTask
 from entropy.db import EntropyRepository
@@ -832,7 +833,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         del db_data['extra_download']
         self.assertEqual(data, db_data)
 
-        etpUi['mute'] = True
+        set_mute(True)
 
         # export
         fd, buf_file = tempfile.mkstemp()
@@ -850,7 +851,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         del new_db_data['original_repository']
         del new_db_data['extra_download']
         new_db.close()
-        etpUi['mute'] = False
+        set_mute(True)
         self.assertEqual(new_db_data, db_data)
         os.remove(buf_file)
         os.remove(new_db_path)

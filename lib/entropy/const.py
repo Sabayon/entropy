@@ -196,13 +196,12 @@ if _more_keywords is not None:
 
 # debug mode flag, will be triggered by ETP_DEBUG env var.
 _DEBUG = os.getenv("ETP_DEBUG") is not None
+# interactive flag, this will go away at some point in future
+_INTERACTIVE = os.getenv("ETP_NONINTERACTIVE") is None
 
 etpUi = {
-    'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
-    'mute': False,
+    'interactive': _INTERACTIVE,
 }
-if os.getenv('ETP_MUTE'):
-    etpUi['mute'] = True
 
 if _DEBUG and not _installed_sigquit:
     # install the dump signal function at

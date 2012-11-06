@@ -6,7 +6,7 @@ sys.path.insert(0, '../')
 import unittest
 import tests._misc as _misc
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
-from entropy.const import etpUi
+from entropy.output import set_mute
 import entropy.tools
 
 class FetchersTest(unittest.TestCase):
@@ -48,11 +48,11 @@ class FetchersTest(unittest.TestCase):
         path_to_save = os.path.join(os.path.dirname(self._random_file),
             "test_urlfetcher")
 
-        etpUi['mute'] = True
+        set_mute(True)
         fetcher = MultipleUrlFetcher([(file_path, path_to_save,)],
             show_speed = False, resume = False)
         rc = fetcher.download()
-        etpUi['mute'] = False
+        set_mute(False)
         self.assertEqual(rc.pop(1), ck_sum)
         os.remove(path_to_save)
 
