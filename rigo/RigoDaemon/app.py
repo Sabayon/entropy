@@ -42,7 +42,6 @@ from gi.repository import GLib, GObject, Gio
 
 DAEMON_LOGGING = False
 DAEMON_DEBUG = False
-# If place here, we won't trigger etpUi['debug']
 if "--debug" in sys.argv:
     sys.argv.remove("--debug")
     DAEMON_DEBUG = True
