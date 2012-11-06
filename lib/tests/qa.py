@@ -34,10 +34,6 @@ class QATest(unittest.TestCase):
             self.assertTrue(self.QA.entropy_package_checks(pkg))
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     entropy.tools.kill_threads()
     raise SystemExit(0)

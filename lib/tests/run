@@ -15,9 +15,6 @@ sys.path.insert(0,'../')
 from entropy.const import etpSys, etpUi
 import entropy.tools
 etpSys['unittest'] = True
-if "--debug" in sys.argv:
-    sys.argv.remove("--debug")
-    etpUi['debug'] = True
 
 from tests import db, client, server, misc, fetchers, tools, dep, i18n, spm, \
     qa, core, security, const

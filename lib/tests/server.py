@@ -164,10 +164,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(None, etpConst.get(const_key))
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     entropy.tools.kill_threads()
     raise SystemExit(0)

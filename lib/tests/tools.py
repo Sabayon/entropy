@@ -574,10 +574,6 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(path_perms, new_path_perms)
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     et.kill_threads()
     raise SystemExit(0)
