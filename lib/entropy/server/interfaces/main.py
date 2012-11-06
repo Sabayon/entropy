@@ -25,7 +25,7 @@ import codecs
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, etpUi, const_convert_to_unicode, \
+    const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
     const_debug_enabled, const_convert_to_rawstring
 from entropy.output import purple, red, darkgreen, \

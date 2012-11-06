@@ -12,7 +12,7 @@ sys.path.insert(0,'../../client')
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 # set unit testing mode
-from entropy.const import etpSys, etpUi
+from entropy.const import etpSys
 import entropy.tools
 etpSys['unittest'] = True
 

@@ -17,7 +17,7 @@ import errno
 import curses
 import subprocess
 
-from entropy.const import etpUi, const_convert_to_rawstring, \
+from entropy.const import const_convert_to_rawstring, \
     const_isstring, const_convert_to_unicode, const_isunicode, \
     const_is_python3
 from entropy.i18n import _
