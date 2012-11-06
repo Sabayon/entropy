@@ -13,19 +13,19 @@ import errno
 import codecs
 import argparse
 
-from entropy.const import etpUi, etpConst, const_convert_to_unicode, \
+from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
 from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
     red, nocolor, print_warning, print_error
 from entropy.exceptions import DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.client.interfaces import Client
-from entropy.cli import print_package_info
 import entropy.dep
 import entropy.tools
 
-# equo modules
-from text_ui import install_packages
+# solo modules
+from solo.commands.install import SoloInstall
+from solo.utils import print_package_info
 
 APP_NAME = os.path.basename(sys.argv[0])
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
@@ -118,11 +118,11 @@ def _guess_kernel_package_file(release_level):
 # removing and installing proprietary drivers might reset the selected
 # OpenGL implementation
 
-def _get_opengl_impl():
+def _get_opengl_impl(pretend):
     eselect_exec = "/usr/bin/eselect"
     sts = 1
     out = "xorg-x11"
-    if os.access(eselect_exec, os.X_OK) and not etpUi['pretend']:
+    if os.access(eselect_exec, os.X_OK) and not pretend:
         sts, xout = entropy.tools.getstatusoutput("%s opengl show" % (
             eselect_exec,))
         if sts == 0:
@@ -145,6 +145,10 @@ def _switch_kernel(nsargs):
 
     from_running = nsargs.from_running
     kernel_package = nsargs.kernel
+    pretend = nsargs.pretend
+    ask = nsargs.ask
+    verbose = nsargs.verbose
+    quiet = nsargs.quiet
 
     etp_client = None
     acquired = False
@@ -227,13 +231,18 @@ def _switch_kernel(nsargs):
         matches = [x for x in matches if x is not None]
         matches.append(kernel_match)
 
-        opengl = _get_opengl_impl()
-        rc, other = install_packages(
-            etp_client,
-            atomsdata = matches,
-            check_critical_updates = False
-        )
-        if (rc == 0) and (not etpUi['pretend']):
+        opengl = _get_opengl_impl(pretend)
+
+        install = SoloInstall([])
+        rc, _show_cfgupd = install._install_action(
+            etp_client, True, True,
+            pretend, ask, verbose,
+            quiet, False, False, False, False, False,
+            False, 1, [], package_matches=list(matches))
+        if _show_cfgupd:
+            install._show_config_files_update(etp_client)
+
+        if rc == 0 and not pretend:
             _set_opengl_impl(opengl)
             if target_tag:
                 # if target_tag is None, we are unable to set the symlink
@@ -271,8 +280,8 @@ def _list_kernels(nsargs):
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = etp_client.open_repository(pkg_repo)
             print_package_info(pkg_id, etp_client, repo,
-                show_repo_if_quiet = True, extended = etpUi['verbose'],
-                quiet = etpUi['quiet'])
+                show_repo_if_quiet = True, extended = nsargs.verbose,
+                quiet = nsargs.quiet)
 
         return 0
     finally:
@@ -292,6 +301,9 @@ if __name__ == "__main__":
         _parser.add_argument("--quiet", "-q", action="store_true",
                             default=False,
                             help=_("quiet mode"))
+        _parser.add_argument("--verbose", "-v", action="store_true",
+                            default=False,
+                            help=_("verbose mode"))
         if not restricted:
             _parser.add_argument("--ask", "-a", action="store_true",
                                  default=False,
@@ -332,10 +344,6 @@ if __name__ == "__main__":
     except IOError as err:
         parser.print_help()
         raise SystemExit(1)
-
-    etpUi['ask'] = getattr(nsargs, "ask", etpUi['ask'])
-    etpUi['quiet'] = getattr(nsargs, "quiet", etpUi['quiet'])
-    etpUi['pretend'] = getattr(nsargs, "pretend", etpUi['pretend'])
 
     try:
         rc = nsargs.func(nsargs)

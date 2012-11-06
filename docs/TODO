@@ -7,6 +7,10 @@ Backlog (raw)
     - rework client/ code, as done with eit
       - ditch etpUi
 
+    - preserved-libs registry:
+      only drop old sonames when installed packages
+      no longer need them
+
     - entropy.server: use rsync instead of plain scp?
 
     - conditional deps:

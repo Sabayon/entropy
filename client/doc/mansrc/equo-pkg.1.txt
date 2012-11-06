@@ -1,0 +1,60 @@
+equo-pkg(1)
+===========
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-pkg - execute advanced tasks on packages
+
+
+SYNOPSIS
+--------
+equo pkg [-h] {quickpkg,inflate,deflate,extract} ...
+
+
+INTRODUCTION
+------------
+Execute advanced tasks on Entropy packages and the running system.
+
+
+
+OPTIONS
+-------
+"equo pkg" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*quickpkg*::
+    generate packages from the installed system
+
+*inflate*::
+    transform SPM package files into Entropy ones
+
+*deflate*::
+    transform Entropy package files into SPM ones
+
+*extract*::
+    extract Entropy metadata from Entropy packages
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

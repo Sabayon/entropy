@@ -1,0 +1,172 @@
+#!/usr/bin/python
+import sys
+import os
+os.environ['LANGUAGE'] = "en_US.UTF-8"
+os.environ['LC_ALL'] = "en_US.UTF-8"
+os.environ['LANG'] = "en_US.UTF-8"
+import codecs
+
+sys.path.insert(0, "../")
+
+from solo.commands.descriptor import SoloCommandDescriptor
+
+MAN_HEADER="""\
+EQUO(1)
+======
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo - The Ingenuous Entropy Package Manager.
+
+
+SYNOPSIS
+--------
+*equo* [command] [command options]
+
+
+INTRODUCTION
+------------
+Equo is the command-line frontend of the Entropy Package Manager Library.
+Installing, Removing and taking care of your system is easier than ever.
+There is nothing much left to say, just try it out yourself!
+
+USAGE
+-----
+Equo has a modular design, commands can be added and removed in a pluggable
+way. There are however a set of built-in commands that are shipped with
+the default Equo distribution.
+
+
+OPTIONS
+-------
+*--help*::
+    Show Equo Help, listing all the runtime available commands.
+
+
+COMMANDS
+--------
+---commands---
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+---also_commands---
+"""
+
+SPLIT_MAN="""\
+%(name)s(1)
+%(title)s
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+%(name)s - %(description)s
+
+
+SYNOPSIS
+--------
+%(synopsis)s
+
+
+INTRODUCTION
+------------
+%(introduction)s
+
+
+OPTIONS
+-------
+%(options)s
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)%(seealso)s
+"""
+
+
+descriptors = SoloCommandDescriptor.obtain()
+descriptors.sort(key = lambda x: x.get_name())
+
+commands_txt = []
+see_also_txt = []
+split_mans = []
+for descriptor in descriptors:
+    klass = descriptor.get_class()
+    name = descriptor.get_name()
+    aliases = klass.ALIASES
+    aliases_str = ", ".join(aliases)
+    if aliases_str:
+        aliases_str = " [%s]" % (aliases_str,)
+    command_txt = "%s%s%s%s" % ("*", name, aliases_str, "*::")
+    desc = descriptor.get_description()
+    command_txt += "\n    %s\n" % (desc,)
+    commands_txt.append(command_txt)
+    try:
+        man = klass([]).man()
+    except NotImplementedError:
+        man = None
+    if man is not None:
+        man['name'] = "equo-" + man['name']
+        see_also_txt.append("%s(1)" % (man['name'],))
+        man['title'] = "="*(len(man['name']) + 3)
+        if not man.get("seealso"):
+            man['seealso'] = ""
+        else:
+            man['seealso'] = ", " + man['seealso']
+        man_txt = SPLIT_MAN % man
+        split_mans.append((man['name'], man_txt))
+
+if not see_also_txt:
+    see_also_txt.append("Nothing")
+man_txt = MAN_HEADER[:]
+man_txt = man_txt.replace("---commands---", "\n".join(commands_txt))
+
+see_also = ""
+orig_count = 5
+count = orig_count
+see_also_buf = []
+for entry in see_also_txt:
+    if count == 0:
+        count = orig_count
+        see_also += ", ".join(see_also_buf)
+        see_also += "\n    "
+        del see_also_buf[:]
+    count -= 1
+    see_also_buf.append(entry)
+if see_also_buf:
+    see_also += ", ".join(see_also_buf)
+    see_also += "\n    "
+
+man_txt = man_txt.replace("---also_commands---", "    " + see_also)
+sys.stdout.write("generating mansrc/equo.1.txt\n")
+with codecs.open("mansrc/equo.1.txt", "w", encoding="UTF-8") as man_f:
+    man_f.write(man_txt)
+
+for man_name, man_txt in split_mans:
+    sys.stdout.write("generating mansrc/%s.1.txt\n" % (man_name,))
+    with codecs.open("mansrc/%s.1.txt" % (man_name,), "w",
+         encoding="UTF-8") as man_f:
+         man_f.write(man_txt)

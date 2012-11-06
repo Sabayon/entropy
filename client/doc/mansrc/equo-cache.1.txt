@@ -1,0 +1,51 @@
+equo-cache(1)
+=============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-cache - manage Entropy Library Cache
+
+
+SYNOPSIS
+--------
+equo cache [-h] {clean} ...
+
+
+INTRODUCTION
+------------
+Manage Entropy Library Cache.
+
+
+
+OPTIONS
+-------
+"equo cache" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*clean*::
+    clean Entropy Library Cache
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

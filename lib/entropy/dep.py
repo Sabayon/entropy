@@ -716,7 +716,8 @@ def get_entropy_newer_version(versions):
     """
     return _generic_sorter(versions, entropy_compare_versions)
 
-def create_package_filename(category, name, version, package_tag, ext = None):
+def create_package_filename(category, name, version, package_tag,
+                            ext = None, revision = None):
     """
     Create package filename string.
 
@@ -742,6 +743,8 @@ def create_package_filename(category, name, version, package_tag, ext = None):
     package_name += package_tag
     if ext is None:
         ext = etpConst['packagesext']
+    if revision is not None:
+        package_name += "~%d" % (revision,)
     package_name += ext
     return package_name
 

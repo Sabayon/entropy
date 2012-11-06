@@ -18,10 +18,9 @@ from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, darkred, \
     bold, purple, blue
 
-from entropy.cli import print_table
-
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
+from eit.utils import print_table
 
 
 class EitStatus(EitCommand):
@@ -153,7 +152,7 @@ Show repository status (such as: *configured mirrors*,
         toc.append(("  %s:" % (darkgreen(_("unstaged packages")),),
                     str(unstaged_len),))
 
-        print_table(toc)
+        print_table(entropy_server, toc)
         del toc[:]
         entropy_server.output("")
 

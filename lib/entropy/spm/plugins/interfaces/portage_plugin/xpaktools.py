@@ -174,26 +174,6 @@ def suck_xpak(tbz2file, xpakpath):
         db.flush()
         db.close()
 
-def append_xpak(tbz2file, atom):
-    """
-    docstring_title
-
-    @param tbz2file: 
-    @type tbz2file: 
-    @param atom: 
-    @type atom: 
-    @return: 
-    @rtype: 
-    """
-    text = TextInterface()
-    spm = get_default_instance(text)
-    dbbuild = spm.get_installed_package_build_script_path(atom)
-    dbdir = os.path.dirname(dbbuild)
-    if os.path.isdir(dbdir):
-        tbz2 = xpak.tbz2(tbz2file)
-        tbz2.recompose(dbdir)
-    return tbz2file
-
 def aggregate_xpak(tbz2file, xpakfile):
     """
     Aggregate xpakfile content to tbz2file

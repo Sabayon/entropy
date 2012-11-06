@@ -1,0 +1,57 @@
+equo-unmask(1)
+==============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-unmask - unmask one or more packages
+
+
+SYNOPSIS
+--------
+equo unmask [-h] [--ask | --pretend] <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Unmask packages so that installation and update will be allowed.
+
+
+
+OPTIONS
+-------
+"equo unmask" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package name
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--ask*::
+    ask before making any changes
+
+*--pretend*::
+    only show what would be done
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), equo-mask(1)

@@ -317,10 +317,6 @@ class SpmTest(unittest.TestCase):
             del os.environ['ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE']
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     et.kill_threads()
     raise SystemExit(0)

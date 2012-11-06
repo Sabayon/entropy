@@ -13,10 +13,10 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.cli import revgraph_packages
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
+from eit.utils import revgraph_packages
 
 
 class EitRevgraph(EitCommand):

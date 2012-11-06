@@ -1,0 +1,70 @@
+equo-security(1)
+================
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-security - system security tools
+
+
+SYNOPSIS
+--------
+equo security [-h] [--verbose] [--quiet]
+              {oscheck,update,list,info,install} ...
+
+
+INTRODUCTION
+------------
+System security tools.
+
+
+
+OPTIONS
+-------
+"equo security" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-v*::
+    verbose output
+
+*-q*::
+    quiet output
+
+ACTION
+~~~~~~
+*oscheck*::
+    verify installed files using stored checksums
+
+*update*::
+    download the latest Security Advisories
+
+*list*::
+    list all the available Security Advisories
+
+*info*::
+    show information about provided advisories identifiers
+
+*install*::
+    automatically install all the available security updates
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

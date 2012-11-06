@@ -1,0 +1,84 @@
+equo-download(1)
+================
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-download - download packages, essentially
+
+
+SYNOPSIS
+--------
+equo download [-h] [--ask | --pretend] [--verbose] [--quiet] [--nodeps]
+              [--norecursive] [--deep] [--relaxed] [--bdeps]
+              [--multifetch {1,2,3,4,5,6,7,8,9,10}]
+              <package> [<package> ...]
+
+
+INTRODUCTION
+------------
+Download packages, essentially.
+
+
+
+OPTIONS
+-------
+"equo download" supports the following options which alters its behaviour.
+
+
+POSITIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~~~
+*<package>*::
+    package name
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--ask*::
+    ask before making any changes
+
+*--pretend*::
+    show what would be done
+
+*--verbose*::
+    verbose output
+
+*--quiet*::
+    quiet output
+
+*--nodeps*::
+    exclude package dependencies
+
+*--norecursive*::
+    do not calculate dependencies recursively
+
+*--deep*::
+    include dependencies no longer needed
+
+*--relaxed*::
+    calculate dependencies relaxing constraints
+
+*--bdeps*::
+    include build-time dependencies
+
+*--multifetch*::
+    download multiple packages in parallel (max 10)
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), equo-source(1)

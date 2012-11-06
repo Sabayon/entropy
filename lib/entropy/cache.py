@@ -20,8 +20,8 @@ import errno
 import sys
 import tempfile
 
-from entropy.const import etpConst, etpUi, const_debug_write, \
-    const_pid_exists, const_setup_perms
+from entropy.const import etpConst, const_debug_write, \
+    const_debug_enabled, const_pid_exists, const_setup_perms
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, ParallelTask, Lifo
 import time
@@ -192,7 +192,7 @@ class EntropyCacher(Singleton):
 
         while self.__alive or run_until_empty:
 
-            if etpUi['debug']:
+            if const_debug_enabled():
                 const_debug_write(__name__,
                     "EntropyCacher.__cacher: loop: %s, alive: %s, empty: %s" % (
                         _loop, self.__alive, run_until_empty,))
@@ -230,7 +230,7 @@ class EntropyCacher(Singleton):
                 if sync:
                     task.join()
 
-                if etpUi['debug']:
+                if const_debug_enabled():
                     const_debug_write(
                         __name__,
                         "EntropyCacher.__cacher [%s], writing %s objs" % (
@@ -377,12 +377,12 @@ class EntropyCacher(Singleton):
                 sys.stdout.write("!!! cannot cache object with key %s\n" % (
                     key,))
                 sys.stdout.flush()
-            #if etpUi['debug']:
+            #if const_debug_enabled():
             #   const_debug_write(__name__,
             #        "EntropyCacher.push, async push %s, into %s" % (
             #            key, cache_dir,))
         else:
-            #if etpUi['debug']:
+            #if const_debug_enabled():
             #    const_debug_write(__name__,
             #        "EntropyCacher.push, sync push %s, into %s" % (
             #            key, cache_dir,))

@@ -12,7 +12,8 @@ import time
 import tempfile
 from entropy.client.interfaces import Client
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst, etpUi, const_setup_entropy_pid
+from entropy.const import etpConst, const_setup_entropy_pid
+from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, EntropyPackageException
@@ -186,9 +187,9 @@ class EntropyClientTest(unittest.TestCase):
         self.assertNotEqual(
             self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
         def test_load():
-            etpUi['mute'] = True
+            set_mute(True)
             self.Client.open_repository(self.mem_repoid)
-            etpUi['mute'] = False
+            set_mute(False)
         self.assertRaises(RepositoryError, test_load)
 
     def test_package_repository(self):
@@ -315,7 +316,7 @@ else:
 
         # this test might be considered controversial, for now, let's keep it
         # here, we use equo stuff to make sure it keeps working
-        import text_smart
+        from solo.commands.pkg import SoloPkg
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0
@@ -327,7 +328,11 @@ else:
         pkg_dir = tempfile.mkdtemp()
         inst_dir = tempfile.mkdtemp()
 
-        rc = text_smart.inflate_handler(self.Client, [pkg_path], pkg_dir)
+        s_pkg = SoloPkg(["inflate", pkg_path, "--savedir", pkg_dir])
+        func, func_args = s_pkg.parse()
+        # do not call func directly because the real method is
+        # wrapper around a lock call
+        rc = s_pkg._inflate(self.Client)
         self.assertTrue(rc == 0)
         self.assertTrue(os.listdir(pkg_dir))
 
@@ -369,11 +374,6 @@ else:
 
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     entropy.tools.kill_threads()
     raise SystemExit(0)
-

@@ -13,11 +13,10 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.cli import graph_packages
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
-
+from eit.utils import graph_packages
 
 class EitGraph(EitCommand):
     """

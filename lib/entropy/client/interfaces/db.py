@@ -20,7 +20,8 @@ import codecs
 import errno
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
-    etpUi, const_set_nice_level, const_setup_file, const_convert_to_unicode
+    const_set_nice_level, const_setup_file, const_convert_to_unicode, \
+    const_debug_enabled
 from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
     bold, TextInterface
 from entropy.dump import dumpobj, loadobj
@@ -1778,8 +1779,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
             self._entropy.output(
                 mytxt, importance = 0, level = "info",
-                header = "  ", back = (not etpUi['verbose'])
-            )
+                header = "  ")
             try:
                 mydbconn.addPackage(
                     mydata, revision = mydata['revision'],
@@ -1787,7 +1787,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     formatted_content = True
                 )
             except (Error,) as err:
-                if etpUi['debug']:
+                if const_debug_enabled():
                     entropy.tools.print_traceback()
                 self._entropy.output("%s: %s" % (
                     blue(_("repository error while adding packages")),
@@ -1808,8 +1808,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 purple(str(myatom)),)
             self._entropy.output(
                 mytxt, importance = 0, level = "info",
-                header = "  ", back = (not etpUi['verbose'])
-            )
+                header = "  ")
             try:
                 mydbconn.removePackage(idpackage)
             except (Error,):

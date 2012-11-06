@@ -1,0 +1,61 @@
+equo-libtest(1)
+===============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-libtest - look for missing libraries
+
+
+SYNOPSIS
+--------
+equo libtest [-h] [--ask] [--quiet] [--pretend] [--listfiles] [--dump]
+
+
+INTRODUCTION
+------------
+Test system integrity by looking for missing libraries.
+
+
+
+OPTIONS
+-------
+"equo libtest" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*--ask*::
+    ask before making any changes
+
+*--quiet*::
+    show less details (useful for scripting)
+
+*--pretend*::
+    just show what would be done
+
+*--listfiles*::
+    print broken files to stdout
+
+*--dump*::
+    dump results to files
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1), equo-libtest(1)

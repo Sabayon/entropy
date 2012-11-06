@@ -25,13 +25,14 @@ import time
 import codecs
 import warnings
 
-from entropy.const import etpConst, etpUi, const_get_stringtype, \
-    const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
-    const_setup_file, const_is_python3
+from entropy.const import etpConst, const_get_stringtype, \
+    const_convert_to_unicode, const_convert_to_rawstring, \
+    const_setup_perms, const_setup_file, const_is_python3, \
+    const_debug_enabled
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
-from entropy.output import darkred, darkgreen, brown, darkblue, teal, purple, \
-    red, bold, blue, getcolor, decolorize
+from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
+    purple, red, bold, blue, getcolor, decolorize, is_mute, is_interactive
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile, ParallelTask
@@ -918,7 +919,7 @@ class PortagePlugin(SpmPlugin):
         env['ROOT'] = root
         emaint_exec = "/usr/sbin/emaint"
         args = (emaint_exec, "--fix", "moveinst")
-        if etpUi['mute']:
+        if is_mute():
             log = None
             try:
                 log = LogFile(
@@ -2089,7 +2090,7 @@ class PortagePlugin(SpmPlugin):
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
 
-        if etpUi['debug']:
+        if const_debug_enabled():
             self.__output.output(
                 "PortagePlugin<_portage_doebuild>, env: %s" % (
                     locals(),),
@@ -2105,7 +2106,7 @@ class PortagePlugin(SpmPlugin):
             splitter_out = None
             splitter_err = None
             try:
-                if etpUi['mute']:
+                if is_mute():
                     tmp_fd, tmp_file = tempfile.mkstemp(
                         prefix="entropy.spm.portage._portage_doebuild")
                     tmp_fw = os.fdopen(tmp_fd, "w")
@@ -2127,7 +2128,7 @@ class PortagePlugin(SpmPlugin):
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
-                    debug = etpUi['debug']
+                    debug = const_debug_enabled()
                 )
             except:
                 logger.write(entropy.tools.get_traceback())
@@ -2145,7 +2146,7 @@ class PortagePlugin(SpmPlugin):
                         splitter_err.close()
                     except OSError:
                         pass
-                if etpUi['mute']:
+                if is_mute():
                     tmp_fw.flush()
                     tmp_fw.close()
                     try:
@@ -2616,7 +2617,7 @@ class PortagePlugin(SpmPlugin):
             package_paths.append(pkg_list)
         packages_data = [(pkg_list, False,) for pkg_list in package_paths]
         idpackages = entropy_server.add_packages_to_repository(repo,
-            packages_data, ask = etpUi['interactive'])
+            packages_data, ask = is_interactive())
 
         if not idpackages:
 

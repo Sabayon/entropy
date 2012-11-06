@@ -10,7 +10,7 @@ from entropy.client.interfaces import Client
 from entropy.services.client import WebService
 from entropy.client.services.interfaces import Document, DocumentFactory, \
     DocumentList, ClientWebService
-from entropy.const import etpConst, etpUi, const_convert_to_rawstring, \
+from entropy.const import etpConst, const_convert_to_rawstring, \
     const_convert_to_unicode, const_get_stringtype
 import entropy.tools
 import tests._misc as _misc
@@ -125,10 +125,6 @@ class EntropyWebServicesTest(unittest.TestCase):
         test_repo.close()
 
 if __name__ == '__main__':
-    if "--debug" in sys.argv:
-        sys.argv.remove("--debug")
-        from entropy.const import etpUi
-        etpUi['debug'] = True
     unittest.main()
     entropy.tools.kill_threads()
     raise SystemExit(0)

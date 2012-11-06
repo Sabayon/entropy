@@ -25,9 +25,9 @@ import codecs
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, etpUi, const_convert_to_unicode, \
+    const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
-    const_convert_to_rawstring
+    const_debug_enabled, const_convert_to_rawstring
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -4219,7 +4219,7 @@ class Server(Client):
             self._save_default_repository(repository_id)
 
         self._setup_community_repositories_settings()
-        if handle_uninitialized and etpUi['warn']:
+        if handle_uninitialized:
             self._handle_uninitialized_repository(repository_id)
 
     def _setup_community_repositories_settings(self):
@@ -5497,7 +5497,7 @@ class Server(Client):
                     count = (count, maxcount)
                 )
                 rc = 2
-                if etpUi['debug']:
+                if const_debug_enabled():
                     import pdb
                     pdb.set_trace()
 
@@ -5962,7 +5962,22 @@ class Server(Client):
                 ordered_counters.add((data, server_repo))
         database_counters = ordered_counters
 
-        for (counter, idpackage,), xrepo in database_counters:
+        # do some memoization to speed up the scanning
+        _spm_key_slot_map = {}
+        for _spm_pkg, _spm_pkg_id in to_be_added:
+            key = entropy.dep.dep_getkey(_spm_pkg)
+            obj = _spm_key_slot_map.setdefault(key, set())
+            try:
+                slot = spm.get_installed_package_metadata(
+                    _spm_pkg, "SLOT")
+                # workaround for ebuilds without SLOT
+                if slot is None:
+                    slot = "0"
+                obj.add(slot)
+            except KeyError:
+                continue
+
+        for (counter, idpackage), xrepo in database_counters:
 
             if counter < 0:
                 continue # skip packages without valid counter
@@ -5982,26 +5997,13 @@ class Server(Client):
                 atomkey = entropy.dep.dep_getkey(atom)
                 atomtag = entropy.dep.dep_gettag(atom)
                 atomslot = dbconn.retrieveSlot(idpackage)
-
                 add = True
-                for spm_atom, spm_counter in to_be_added:
-                    try:
-                        addslot = self.Spm().get_installed_package_metadata(
-                            spm_atom, "SLOT")
-                    except KeyError:
-                        # wtf, not found, race condition? ignore
-                        add = False
-                        break
-                    addkey = entropy.dep.dep_getkey(spm_atom)
-                    # workaround for ebuilds not having slot
-                    if addslot is None:
-                        addslot = '0'
-                    # atomtag != None is for handling tagged pkgs correctly
-                    if (atomkey == addkey) and \
-                        ((str(atomslot) == str(addslot)) or (atomtag != None)):
-                        # do not add to to_be_removed
-                        add = False
-                        break
+
+                spm_slots = _spm_key_slot_map.get(atomkey, [])
+                # atomtag != None is for handling tagged pkgs correctly
+                if (atomslot in spm_slots) or (atomtag is not None):
+                    # do not add to to_be_removed
+                    add = False
 
                 if not add:
                     continue
@@ -6018,8 +6020,8 @@ class Server(Client):
                         key, slot = dbconn.retrieveKeySlot(idpackage)
                         slot = slot.split(",")[0]
                         try:
-                            trashed = self.Spm().match_installed_package(
-                                key+":"+slot)
+                            trashed = spm.match_installed_package(
+                                key + ":" + slot)
                         except KeyError:
                             trashed = True
                     except TypeError: # referred to retrieveKeySlot

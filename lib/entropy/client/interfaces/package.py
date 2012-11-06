@@ -18,9 +18,9 @@ import tempfile
 import time
 import codecs
 
-from entropy.const import etpConst, etpUi, const_setup_perms, \
+from entropy.const import etpConst, const_setup_perms, \
     const_isunicode, const_convert_to_unicode, const_debug_write, \
-    const_convert_to_rawstring, const_is_python3
+    const_debug_enabled, const_convert_to_rawstring, const_is_python3
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _, ngettext
 from entropy.output import brown, blue, bold, darkgreen, \
@@ -1174,7 +1174,7 @@ class Package:
         except NameError:
             raise
         except:
-            if etpUi['debug']:
+            if const_debug_enabled():
                 self._entropy.output(
                     "fetch_file:",
                     importance = 1,

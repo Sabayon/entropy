@@ -1,0 +1,114 @@
+equo-query(1)
+=============
+:man source:   eit {equoversion}
+:man manual:   eit {equoversion}
+
+
+NAME
+----
+equo-query - repository query tools
+
+
+SYNOPSIS
+--------
+equo query [-h] [--verbose] [--quiet]
+           
+           {belongs,changelog,revdeps,description,files,installed,license,list,mimetype,associate,needed,orphans,required,sets,slot,tags,revisions,graph,revgraph}
+           ...
+
+
+INTRODUCTION
+------------
+Repository query tools.
+
+
+
+OPTIONS
+-------
+"equo query" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+*-v*::
+    verbose output
+
+*-q*::
+    quiet output
+
+ACTION
+~~~~~~
+*belongs*::
+    resolve what package a file belongs to
+
+*changelog*::
+    show package changelog
+
+*revdeps*::
+    show reverse dependencies of package
+
+*description*::
+    search package by description
+
+*files*::
+    show files owned by package
+
+*installed*::
+    search installed packages
+
+*license*::
+    show packages using the given license
+
+*list*::
+    list packages
+
+*mimetype*::
+    show packages able to handle the given mimetype
+
+*associate*::
+    associate file to packages able to handle it
+
+*needed*::
+    show runtime libraries needed by the given package
+
+*orphans*::
+    search files not belonging to any packages
+
+*required*::
+    show packages requiring the given library name
+
+*sets*::
+    
+
+*slot*::
+    show packages owning the given slot
+
+*tags*::
+    show packages owning the given tag
+
+*revisions*::
+    show packages at the given revision
+
+*graph*::
+    show the direct dependencies graph for the given package
+
+*revgraph*::
+    show the inverse dependencies graph for the given package
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    eit(1)

@@ -23,7 +23,7 @@ import sys
 import threading
 import codecs
 
-from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
+from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_debug_write, const_is_python3
@@ -1848,8 +1848,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             try:
                 os.makedirs(etpConst['dumpstoragedir'])
             except IOError as e:
-                if e.errno == errno.EROFS: # readonly filesystem
-                    etpUi['pretend'] = True
+                if e.errno == errno.EROFS:
+                    # readonly filesystem
+                    # placeholder for possible future activities
+                    pass
                 return
             except OSError:
                 return
@@ -1877,7 +1879,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     etpConst['entropygid'])
             except IOError as e:
                 if e.errno == errno.EROFS: # readonly filesystem
-                    etpUi['pretend'] = True
+                    # readonly filesystem
+                    # placeholder for possible future activities
+                    pass
                 return
             except (OSError,) as e:
                 # unable to create the storage directory
@@ -1889,7 +1893,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             mtime_f = codecs.open(tosaveinto, "w", encoding=enc)
         except IOError as e: # unable to write?
             if e.errno == errno.EROFS: # readonly filesystem
-                etpUi['pretend'] = True
+                # readonly filesystem
+                # placeholder for possible future activities
+                pass
             return
         else:
             mtime_f.write(str(currmtime))
