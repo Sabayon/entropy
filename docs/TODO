@@ -2,10 +2,6 @@ Backlog (raw)
 
   1.0:
 
-  - solo branch:
-    drop etpUi (anaconda uses etpUi['mute'])
-      fixup etpUi usage in lib/ !
-
     - preserved-libs registry:
       only drop old sonames when installed packages
       no longer need them
