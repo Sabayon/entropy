@@ -1,7 +1,7 @@
 equo-query(1)
 =============
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -81,7 +81,7 @@ ACTION
     show packages requiring the given library name
 
 *sets*::
-    
+    search package sets
 
 *slot*::
     show packages owning the given slot
@@ -111,4 +111,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1)
+    equo(1)

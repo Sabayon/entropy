@@ -1,7 +1,7 @@
 equo-upgrade(1)
 ===============
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -32,16 +32,16 @@ OPTIONAL ARGUMENTS
 *--help*::
     show this help message and exit
 
-*--ask*::
+*-a*::
     ask before making any changes
 
-*--pretend*::
+*-p*::
     show what would be done
 
-*--verbose*::
+*-v*::
     verbose output
 
-*--quiet*::
+*-q*::
     quiet output
 
 *--fetch*::
@@ -84,4 +84,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1), equo-install(1)
+    equo(1), equo-install(1)

@@ -1,7 +1,7 @@
 EQUO(1)
 ======
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME

@@ -13,8 +13,8 @@ from solo.commands.descriptor import SoloCommandDescriptor
 MAN_HEADER="""\
 EQUO(1)
 ======
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -68,8 +68,8 @@ SEE ALSO
 SPLIT_MAN="""\
 %(name)s(1)
 %(title)s
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -103,7 +103,7 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1)%(seealso)s
+    equo(1)%(seealso)s
 """
 
 

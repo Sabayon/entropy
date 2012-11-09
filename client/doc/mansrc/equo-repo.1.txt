@@ -1,7 +1,7 @@
 equo-repo(1)
 ============
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -66,4 +66,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1)
+    equo(1)

@@ -1,7 +1,7 @@
 equo-libtest(1)
 ===============
-:man source:   eit {equoversion}
-:man manual:   eit {equoversion}
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
 
 
 NAME
@@ -30,13 +30,13 @@ OPTIONAL ARGUMENTS
 *--help*::
     show this help message and exit
 
-*--ask*::
+*-a*::
     ask before making any changes
 
-*--quiet*::
+*-q*::
     show less details (useful for scripting)
 
-*--pretend*::
+*-p*::
     just show what would be done
 
 *--listfiles*::
@@ -58,4 +58,4 @@ lxnay@sabayon.org.
 
 SEE ALSO
 --------
-    eit(1), equo-libtest(1)
+    equo(1), equo-libtest(1)
