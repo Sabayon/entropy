@@ -1,3 +1,488 @@
+commit d09e11ccb6522123212d6ddf70822f251346a201
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 22:34:26 2012 +0100
+
+    Release Entropy 146
+
+commit 87c59233cf34262416796be4ccc440e276d93e73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 09:20:17 2012 +0100
+
+    [client] update entropy.pot
+
+commit 8ada0d1730012c61db7404af02144cded428d566
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 09:18:54 2012 +0100
+
+    [equo] update man pages
+
+commit bff697e4d524e8932e879109aa3a8acc8d43e405
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 09:16:08 2012 +0100
+
+    [Solo*] fixup -q, -v, -p short options and bashcomp
+
+commit 9f8b9dd3106f4f0bfe325d6724a5df623f0f042f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 22:41:56 2012 +0100
+
+    [todo] update TODO
+
+commit 7aa9410527f80b39a89a785ef67ea25dc1721e5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 22:35:32 2012 +0100
+
+    [po] update entropy.pot
+
+commit d42003ba94031f447a88ca4017bcf590da66a901
+Merge: 022375f 659ad99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 22:35:01 2012 +0100
+
+    Merge remote-tracking branch 'origin/solo'
+    
+    Conflicts:
+    	client/po/bg.po
+    	client/po/ca.po
+    	client/po/cs.po
+    	client/po/da.po
+    	client/po/de.po
+    	client/po/entropy.pot
+    	client/po/es.po
+    	client/po/es_CL.po
+    	client/po/fr.po
+    	client/po/fr_CA.po
+    	client/po/it.po
+    	client/po/nl.po
+    	client/po/pl.po
+    	client/po/pt.po
+    	client/po/pt_BR.po
+    	client/po/ru.po
+    	client/po/sk.po
+    	client/po/sv.po
+    	client/po/uk.po
+    	client/po/zh_TW.po
+    	client/revision
+    	docs/ChangeLog
+    	docs/TODO
+    	lib/entropy/cache.py
+    	lib/entropy/client/interfaces/db.py
+    	lib/entropy/const.py
+    	lib/entropy/revision
+    	lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py
+    	server/revision
+
+commit 659ad992d558535b69e61b9d0881110d05aa887a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 21:55:11 2012 +0100
+
+    [todo] update TODO
+
+commit d1fa09ffb4784fbcd8f7dfbc6878f6b2458ec083
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 21:23:46 2012 +0100
+
+    [entropy.*] remove etpUi imports
+
+commit f713f65d2d056939327c892669bd60871ab6f7db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 21:22:23 2012 +0100
+
+    [entropy.const] etpUi is gone, const_interactive_enabled() moved to is_interactive()
+
+commit 0deb4464e70b5d34069994ae4169b281133624df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 21:16:16 2012 +0100
+
+    [entropy.const] kill etpUi['mute']
+
+commit 977ec75a01a65f9e89dc99c7d31e6479d6161423
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 20:51:00 2012 +0100
+
+    [entropy.const] drop any etpUi['debug'] reference
+
+commit f32ddb95e56e4043e41fe2d7ae83a87aedc4541d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 20:50:47 2012 +0100
+
+    [RigoDaemon] drop any reference to etpUi['debug']
+
+commit 2512df68ad4e485cd36ac100a8ff53c5cd854de7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 6 20:13:49 2012 +0100
+
+    [lib/] drop etpUi['debug']
+
+commit 15c6fc1b77f2661b7985080fb4144795b522bd0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 22:29:30 2012 +0100
+
+    [entropy.const] drop etpUi['clean']
+
+commit 9095f62f6ba14bf8507a6ffeccc2b2abf4842a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 22:27:46 2012 +0100
+
+    [entropy.const] drop etpUi['warn']
+
+commit aaf2b8eee8adf2d3cda26161e1f89019428b7e0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 21:40:44 2012 +0100
+
+    [entropy.const] kill etpUi['quiet']
+
+commit 7ff175dd249b1e09808a91edb0ecfe3bd2965cfd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 21:39:35 2012 +0100
+
+    [Solo] fixup "solo install" output
+
+commit 0245ba1c0ee43c404be25f0b6a276c03503d3497
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 5 21:39:02 2012 +0100
+
+    [kernel-switcher] add --verbose argparse argument
+
+commit df3c27deac5439a56923ee63d41d5905783e4d49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 22:36:54 2012 +0100
+
+    [entropy*] drop etpUi usage where possible
+
+commit ba4ca3f5765f1a237d17500059df452d47506ffa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 21:24:07 2012 +0100
+
+    [kernel-switcher] drop etpUi usage
+
+commit d2252e38731b73827adbbcf0f0ec5f6d351934a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 21:23:38 2012 +0100
+
+    [Solo] drop etpUi usage from solo.main
+
+commit 280a7067b32fbf6d2c9e6fcb0defe56c9f758cd9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 21:11:56 2012 +0100
+
+    [entropy.cli] drop module, move code to client/ and server/
+    
+    Even though it is a small code duplication, entropy.cli does make
+    much less sense.
+
+commit 7bd76063316ffd35b884ee0b233de63e5e0fb313
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 18:45:35 2012 +0100
+
+    [todo] update TODO
+
+commit 977bc60b218fc422a19ccfb4003b5958611f7896
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 18:43:42 2012 +0100
+
+    [Solo] get rid of solo.utils.show_you_meant, move _show_did_you_mean to SoloCommand
+
+commit b07beb1dcdb43163590c04605e9dfb621957c835
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 18:35:19 2012 +0100
+
+    [entropy.const] drop etpConst['errorstatus']
+
+commit db5a6dcfdbdf04228c12faeebec15d16f30e8fa3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 18:33:58 2012 +0100
+
+    [todo] update TODO
+
+commit 49803e21b32c268add85fd778287473fc376fd74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 18:27:02 2012 +0100
+
+    [entropy.server] reduce computational complexity of scan_package_changes() by using memoization
+
+commit cda4577291ceedc9a131a746f19c15538c62b00f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 15:22:08 2012 +0100
+
+    [Solo] do not set "add" twice
+
+commit 26b7d9cb54e79dfe1935cb9f12bd8bca52f956f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 10:36:55 2012 +0100
+
+    [entropy.spm] PortagePlugin, xpaktools: drop append_xpak()
+
+commit df13dbdd2ba86ec045ce75f853fe0f45430f0f12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 4 10:33:37 2012 +0100
+
+    [client] rename _equo to equo-completion.zsh
+
+commit 341b7ab67fc5b7cf6adfe1e38381ecf850682278
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 23:58:57 2012 +0100
+
+    [equo] update .po files, add tr and hr
+
+commit 9e08b701131b4186a537aa3df984dc43d893e15d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 23:57:25 2012 +0100
+
+    [equo] migrate to Solo, drop old and crufty code, peace and love
+
+commit c9a1d6988dab91cc477751323f563d53f0a452ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 17:46:00 2012 +0100
+
+    [Solo] implement the "solo security" command
+
+commit d16578394f100ded237f8c6b6bcb2246743666ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 17:45:17 2012 +0100
+
+    [Solo] move _setup_verbose_quiet_parser to SoloCommand
+
+commit 66f5e4024f18416ffaad65f4e4e27793640cea30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 3 12:15:19 2012 +0100
+
+    [Solo] add "--showslot" (show package slot) support to "equo match"
+
+commit 631b7df3b947576fd099e79ac98a318357a43eea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 2 18:44:19 2012 +0100
+
+    [Solo] implement the "solo libtest" command
+
+commit c8ebc02890a72c131d670d2388f13cfc11d08cf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 2 18:39:57 2012 +0100
+
+    [entropy.qa] add silent= keyword to test_shared_objects()
+
+commit 93a1f18aa00a83f8f063d6c26ec6f95a896e6d7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 2 18:00:45 2012 +0100
+
+    [Solo] SoloDeptest: inherit SoloInstall and use _install_action() directly
+
+commit 3d87c3a9f4296eca65598ed5ab90937dbbe35315
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 1 22:11:10 2012 +0100
+
+    [Solo] implement the "solo upgrade" command
+
+commit 9d100c8b940de1dfbd71e48a626d45c6f816e3aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 1 22:09:55 2012 +0100
+
+    [Solo] decouple argparse arguments handling from packages removal code
+
+commit 6c985a0bab3c88c86bcaed7c2cb8538912339b55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 1 22:08:58 2012 +0100
+
+    [Solo] add package_matches keyword argument to _install_action()
+
+commit 9dc1a6e6b90c17ae25d6a5cd4dcb933552bebe11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 1 22:07:43 2012 +0100
+
+    [Solo] add __EQUO_LOCKS_BLOCKING__ env variable handling hack.
+    
+    This hack is used by "equo upgrade" respawn (through execvp()) code.
+
+commit aaff2b2d622454f204aa01926ec5552ed41eeec3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 31 22:56:08 2012 +0100
+
+    [Solo] implement the "solo deptest" command.
+
+commit 2b92149911aae84410f70c4e44240b545dc09cf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 31 22:54:52 2012 +0100
+
+    [Solo] fix indentation in solo.commands.install
+
+commit 683740f6f262c7094b0bd8032a112c02736f2829
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 31 22:44:46 2012 +0100
+
+    [Solo] move argparse related code outside _install_action()
+
+commit cfa8ac309b5327849fc6d684665bd1fa991321e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 31 08:24:25 2012 +0100
+
+    [Solo] implement the "solo install" command
+
+commit 42327854cfe1bdecc09b16cd947b441b84d9867b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 30 21:51:11 2012 +0100
+
+    [Solo] use enumerate() in solo.commands.remove where possible
+
+commit 6065baf13b627ab286a72679ccc14e657a0a4978
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 30 21:08:03 2012 +0100
+
+    [Solo] move _show_removal_info back to solo.commands.remove
+
+commit b3c1c6adf3de539906f8edd6912baf351115b002
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 30 21:07:19 2012 +0100
+
+    [Solo] fix code style in solo.commands.download
+
+commit 7bded74e186214f51360592a324d08038b289df5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 29 19:59:32 2012 +0100
+
+    [Solo] fix typo in string
+
+commit df35f2318ab61a2b434025fa6be6bb4cab7bfe62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 29 19:21:09 2012 +0100
+
+    [Solo] use enumerate()'s start argument
+
+commit f292378c1859b75ddd564bd6ed4c88f80e32822a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 26 11:55:26 2012 +0200
+
+    [todo] update TODO
+
+commit 7f7f7a2e875641a86738513ed9862b17b8fe5c8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 26 11:54:48 2012 +0200
+
+    [Solo] implement the "solo config" command.
+
+commit c3ae7f28ef98f7b9cc239ed27c283fbd2f46c7cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 26 11:54:15 2012 +0200
+
+    [Solo] move _match_packages() from solo.commands.remove to solo.commands._manage
+
+commit 0a3602a806ea5ef66fd471876e87ea21a213ef55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 22:45:53 2012 +0200
+
+    [todo] update TODO
+
+commit beddd67eaca2d834acbc09f2798393c2abaa47e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 22:45:15 2012 +0200
+
+    [Solo] implement the "solo download" command.
+
+commit f6f80e55102c4cd423286fa84b2fd1b48ee84b4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 22:44:55 2012 +0200
+
+    [Solo] more code for "solo.commands._manage", woot
+
+commit 04f93dd41f0bcd3e20e0916c16411d5b6f021934
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 09:37:04 2012 +0200
+
+    [todo] update TODO
+
+commit 4cddddfbe55a4177fcad8f72587d00e67b827338
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 09:36:16 2012 +0200
+
+    [Solo] implement the "solo source" command.
+
+commit bfc6ba19e69b63883a482df9c998e1619363274c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 25 09:35:51 2012 +0200
+
+    [Solo] migrate more general purpose functions from text_ui to _manage
+
+commit 124fc14e13a959dabe59d1389137a68ed8791400
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 24 00:09:04 2012 +0200
+
+    [Solo] implement the "solo remove" command, keep common code into the _manage module
+
+commit 022375fd7d5ef0162fe8f027d1bbc8e8dc559a75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 22 19:50:43 2012 +0200
+
+    [services] ignore ENOENT errors in entropy-pkgdelta-generator
+
+commit bdcac865b98038386996c7eaed156bf6498cd1ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 21 19:08:32 2012 +0200
+
+    [Solo] fix undefined reference in "solo status"
+
+commit dccf747e516c42951fc314cc4cad1aca8b1088e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 21 17:52:00 2012 +0200
+
+    [Solo] generate self._commands dict before calling _hierarchical_bashcomp()
+
+commit 8aaf088a26a6a8d88473689b5bb5c885eeb7f6d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 21 17:33:55 2012 +0200
+
+    [Solo] move common "hierarchical" bashcomp code to SoloCommand
+
+commit 19d6dfc6636faffa0ee9ef24ea129983291c9538
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 21 17:22:01 2012 +0200
+
+    [Solo] improve bash completion for "solo rescue spmsync"
+
+commit 0f02c112a41c0b98d2471ae29c0c08b7747cca93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 21 11:19:51 2012 +0200
+
+    [Solo] implement the "solo rescue" command
+
+commit 70bc4db1f288c83fad0645c3b9935840b6b60f84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 18 21:23:29 2012 +0200
+
+    [entropy.spm] PortagePlugin: strip /* from SLOT metadata
+    
+    When generating Entropy metadata out of Portage xpak information,
+    strip /* from SLOT (a.k.a. the sub-slots part).
+    At the same time, rework get_installed_package_metadata() to return
+    stripped SLOT information to upper layers.
+    
+    Sub-slots have little meaning for Entropy packages, since rebuilds are
+    not its business and soname bumps are already properly detected at
+    dependencies calculation time. However, implementing this feature in
+    future might have sense, for some currently unknown reasons.
+
+commit 2951b0486cab84de1282ddec9c4310995aa0a68d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 17 23:32:53 2012 +0200
+
+    [entropy.spm] PortagePlugin: promote kill_slot to class protected method
+
+commit ba0252c152c9b32639d888d63bcea7e9d07b67d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 17 23:01:08 2012 +0200
+
+    [entropy.spm] PortagePlugin: kill /* from dependency slot substring
+
+commit 9c083b3aed3bf2013675e297d454556b6d30fab7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 17 22:01:42 2012 +0200
+
+    [entropy.spm] PortagePlugin: add support for EAPI5 slot operator dependencies
+
+commit 6df8ff642d174cc621fc5b2ec6d806ecb146f950
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 21:53:40 2012 +0200
+
+    Tagging Entropy version 145
+
 commit a27d922cb4a31e774b12092bc304a7bd02076837
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 30 21:53:40 2012 +0200
@@ -17,6 +502,123 @@ Date:   Sun Sep 30 21:33:09 2012 +0200
     missing that file (because it does not get created through "emerge -B").
     The net result is that Portage vdb metadata for Entropy injected packages was
     incomplete.
+
+commit 1b1bfcafa2b821e94bcb0d3cb3c088f8dc001f1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 19:00:58 2012 +0200
+
+    [Solo] implement the "solo {smart,pkg}" command.
+
+commit 4bcb12656e5580704ac1c475cf9c867829297654
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 19:00:37 2012 +0200
+
+    [Solo] add _argparse_is_valid_entropy_package()
+
+commit e23f4c809fc4b6e9b1a15dd88089cf0b692a1c52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 18:59:59 2012 +0200
+
+    [Solo] check against broken symlinks in _argparse_is_valid_directory
+
+commit 44e8d71550064305d4841b2a1902c80c3299832a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 18:57:20 2012 +0200
+
+    [entropy.dep] create_package_filename: add revision keyword argument
+
+commit 12221f6e2ee7412be3d12a93683b4ef7ea95ff75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 09:40:17 2012 +0200
+
+    [Solo] try parsing arguments even when superuser access is required
+    
+    This makes possible to print possible parser error messages without
+    requiring superuser credentials.
+
+commit 865813734b5d362617442f2df76173c633938706
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 09:39:40 2012 +0200
+
+    [Solo] implement argparse directory path validation function
+
+commit 0c21af7bfb97a50545fb202829cb8c01946e99dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 09:05:09 2012 +0200
+
+    [Solo] remove unused class instance variable _real_command
+
+commit 2c81bcda28c33c905a54355d61a7e39fbd8b5ede
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 30 08:51:26 2012 +0200
+
+    [Solo] improve bash completion for "solo query"
+
+commit 5073ac86e17b3eb4df27dfde2196d4b75e4671be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 14:43:40 2012 +0200
+
+    [Solo] implement the "solo query" command
+
+commit 06ef0b2658e07e2f0ea4aa29cc41dbf5d9928f2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 14:42:58 2012 +0200
+
+    [Solo] fix typo in SoloUnused
+
+commit 058fed099fbe73b75229be73b7cb822283d96b81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 14:38:31 2012 +0200
+
+    [Solo] complete solo.utils porting from entropy.cli
+
+commit 234d8d443677ba9d9a31806e540de91f11c066f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 29 14:37:56 2012 +0200
+
+    [Solo] SoloSearch: expose internal switches on the constructor
+
+commit 300a45fd484bcbee65960593e8011a22a77170fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 28 11:31:52 2012 +0200
+
+    [Solo] print_table: use Entropy.output() instead of direct print_generic() calls
+
+commit d50752bbf926a964ffc89898ddc1be228c068662
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 26 11:23:43 2012 +0200
+
+    [Solo] implement the "solo ugc" command
+
+commit 2e277cfd0ad4bc45db6ea3245b9418f47adfd711
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 25 16:12:37 2012 +0200
+
+    [Solo] port get_entropy_webservice from entropy.cli
+
+commit 5936056a4cc8b187e5a5a603d2f58ddede6fbd2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 25 16:12:03 2012 +0200
+
+    [Solo] fix "colorful" argparse module. Make it work with longer strings
+
+commit 594bff963032bca0252789f4b580ff951d9aee0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 24 16:58:54 2012 +0200
+
+    [Solo] implement the "solo unused" command.
+
+commit 3a8b5d67f9443bb783f8920612485e627e4c6a2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 13:01:58 2012 +0200
+
+    [todo] update TODO
+
+commit 47b82a8146863e6ec7159705acdd2d2a609ebb9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 23 13:01:33 2012 +0200
+
+    [Solo] implement the "solo conf" command
 
 commit 8f04abbc634a26fe0c969b10653b73ddf18c012f
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -166,6 +768,84 @@ Date:   Sat Sep 15 12:50:53 2012 +0200
 
     [entropy.misc] drop EntropyGeoIP, no longer used
 
+commit e5e1b6a0b6aa769df41dfeb5517848226b22a37d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 20:05:10 2012 +0200
+
+    [Solo] implement "solo hop" command.
+
+commit 5b06094e5406421cf35826a296a205933b37dc21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 19:37:42 2012 +0200
+
+    [todo] update TODO
+
+commit 65f993fa713ff113d166655ea7b7749934e43af6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 19:37:10 2012 +0200
+
+    [Solo] warn user about Entropy Library and Solo version mismatch
+
+commit 25e7edcab04aba888dfe5de64a364769fc9bd746
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 19:36:51 2012 +0200
+
+    [Solo] add "Running on Live System" warning
+
+commit 0ded19abfa36d0298f26e18eb5ee90be3a3d419b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 19:02:03 2012 +0200
+
+    [Solo] implement "solo cache" command.
+
+commit 376a44ac198bf3e82a601032491e6793cc3b9baa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 19:01:13 2012 +0200
+
+    [Solo] allow commands pass-through if "--help" is in argv
+
+commit 2fe2cfe6ea3cb48a4e2e52303cc5aba356bc5975
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 18:37:21 2012 +0200
+
+    [Solo] add "solo --info" alias of "solo status"
+
+commit eb2cd8428cfa04e41f8828ae2b2cab10fe3fc27c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 16:40:11 2012 +0200
+
+    [Solo] implement "solo cleanup" command
+
+commit 7a4ce72172586a014d7740d5a4715cba61cf9a39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 12 16:27:11 2012 +0200
+
+    [Solo] implement "solo mask" and "solo unmask" commands
+
+commit 2183f4d848d1004e01638c97c539a72c9f2033d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 11 23:07:49 2012 +0200
+
+    [Solo] improve bash completion of "solo search"
+
+commit a5f0108ec96b2531bb0c27b373bfe601a6f8dea2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 11 23:07:08 2012 +0200
+
+    [Solo] improve bash completion of "solo match"
+
+commit e72457560e23049f0612d41d7de72d599c22ab76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 11 20:20:42 2012 +0200
+
+    [todo] update TODO
+
+commit 88dde368f32152dc3268eb9ee2b4465bbb325964
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 10 14:47:13 2012 +0200
+
+    [todo] update TODO
+
 commit e04138541b6b0a741df9ad1ac09265f3afa6d123
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 9 18:41:48 2012 +0200
@@ -206,6 +886,235 @@ Date:   Sun Sep 9 17:31:47 2012 +0200
     functions in another process.
     It seems that entropy.dump.dumpobj() is efficient enough nowadays to
     have it running in the same process anyway.
+
+commit fff4d677611fd8ca5077e947eecb79d41e1b6505
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 9 09:45:23 2012 +0200
+
+    [todo] update TODO
+
+commit b47ddb87f8cbe75716b4a9587075aef227d4277e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 9 09:45:14 2012 +0200
+
+    [Solo] implement "solo match" command
+
+commit cb79d91cd5e45bc8ad1ed0418fbd1d00b3954989
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 21:34:43 2012 +0200
+
+    [Solo] implement "solo search" command
+
+commit 316ef31dcdabe3127290ae51cd2eef3a4f14e73a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:57:08 2012 +0200
+
+    [entropy.const] do not alter etpConst['systemroot'] variable
+
+commit 6ddc4c2f144a72453d92adb21a68f53434143883
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:56:44 2012 +0200
+
+    [tests] fix Entropy Client tests (add affected_infofiles metadata)
+
+commit 9d1dd2f5b37eb0f9026eaa649ff8c9ce6565aa4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:34:05 2012 +0200
+
+    [entropy.const] move Entropy Resources Lock path to /var/lib/entropy
+    
+    This commit moves the Entropy Resources Lock from:
+    > /var/lib/entropy/client/database/<arch>/.using_resources
+    to a simpler:
+    > /var/lib/entropy/.using_resources
+    
+    The main reason for the move is to make such path more consistent across
+    architectures.
+
+commit a659ac2f6614c4a9b06a272030e2d6a945bc4982
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 8 16:28:31 2012 +0200
+
+    [entropy.const] remove hardcoded slashes, rewrite paths using os.path.join()
+
+commit e11493ffe2e7d5d6b2d4aef9f73c5926d5bacc69
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:04:43 2012 +0200
+
+    Tagging Entropy version 141
+
+commit f675c5fdae5012117a0fcf0edccd3f74d950c8c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:04:42 2012 +0200
+
+    Release Entropy 141
+
+commit 6f00e50faacdc84a3475718e5e5f37f40e690e03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:03:51 2012 +0200
+
+    [client] update entropy.pot
+
+commit 6654c83550dcd96beb790d2dd92c3f0728d7a005
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 6 20:01:17 2012 +0200
+
+    [entropy.client.trigger] implement support for automagic /usr/share/info/*/dir update
+
+commit b0bbf2762c43a71e696225e7d6b2b14b7cb65699
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 3 19:25:02 2012 +0200
+
+    Tagging Entropy version 140
+
+commit af338e75640767ee7432713320b97f439c8dea33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 3 19:25:01 2012 +0200
+
+    Release Entropy 140
+
+commit 97aeed94be64effc1030273593c7f72fb8592a03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 3 19:17:13 2012 +0200
+
+    [Rigo] always validate repositories after update
+    
+    On a fresh install, with no downloaded repositories, users were forced
+    to restart Rigo in order to have the search function fully functional.
+    If a local repository is configured but not downloaded (thus, not
+    available) the same bug happens.
+    
+    It turned out to be Entropy._enabled_repos, returned by Entropy.repositories()
+    which didn't get re-initialized after a repository update. This commit adds
+    a _validate_repositories() call inside _repositories_updated_signal().
+
+commit 8df69644623b873b888bdeef5ff9367bf39ae33f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 21:03:19 2012 +0200
+
+    [Rigo] Application: escape _("N/A")
+    
+    Application.get_markup() and Application.get_extended_markup() must
+    always return bytestring (decoded) data to make Gtk3 libs and code
+    happy. It happened that _("N/A") was returned without passing through
+    prepare_markup() or escape_markup(). This commit fixes it.
+
+commit c9ed841e752b39255e68cb03354a06273aba330b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 20:56:30 2012 +0200
+
+    [Rigo] RigoServiceController: convert app_name=_("Application") to rawstring
+    
+    If app_name is unicode decoded, the following code will fail (in pl_PL):
+    
+      >>> prepare_markup(_("<b>%s</b>, internal error")) % (_("Application"),)
+    
+    with a nice UnicodeDecodeError due to implicit bytestring decode.
+    prepare_markup() output is bytestring, _() output is unicode.
+    Thanks to Enlik for reporting.
+
+commit 6c96c7608e3414bd8d7d168404adc2f481878993
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Sep 2 20:49:31 2012 +0200
+
+    [magneto,rigo] modernize .desktop files
+
+commit 79d98239bfaf52671e83ab3482219b2625bfaed2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 17:21:41 2012 +0200
+
+    Tagging Entropy version 139
+
+commit ef9258b4ced3949f251a4333633dcd244239913e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 17:21:40 2012 +0200
+
+    Release Entropy 139
+
+commit d9bfa7f11f7c443ab622211e6a02dc5c3b32dca6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 17:00:03 2012 +0200
+
+    [RigoDaemon] half the timer frequency and add some randomization in _auto_repositories_update()
+    
+    When sabayon-weekly is updated, the web service is hit by a huge amount of
+    requests. This commits add a bit more entropy on the execution of
+    _auto_repositories_update() (random between 30mins to 2 hours) and reduces
+    the timer frequency to 8hrs (from 4).
+
+commit 65a1949c0c7f3a380ddec7149e91f9383e6c015d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:24:17 2012 +0200
+
+    Tagging Entropy version 138
+
+commit ec425094cd13c13adaeb6edade2b1313953d5305
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:24:16 2012 +0200
+
+    Release Entropy 138
+
+commit c4b9a0df28e944c5972bcd56aee653bef0e1e683
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 15:18:11 2012 +0200
+
+    [entropy.dump] do not use os.fdopen() in dumpobj()
+    
+    It has been observed that using os.fdopen() below in multi-threaded
+    scenarios is causing EBADF (thus OSError). There is probably a racen
+    condition down in the stack or mkstemp() itself is not guaranteed against
+    concurrent access. For now, just consume one more file descriptor and
+    avoid the race completely.
+
+commit 86d790648d0cf5c528f05b5cbe91461396513ded
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 31 21:31:46 2012 +0200
+
+    [docs] update TODO
+
+commit d166690c35c54196c8eb5ba4dc0f42910612c6bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 29 16:40:38 2012 +0200
+
+    [eit.commands.lock] validate repository_id in "eit lock" and "eit unlock"
+
+commit 1001bc30c6ff29092123afd545c953735c724fee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:47:00 2012 +0200
+
+    [entropy.spm] __source_env_get_var: fix typo in tmp file prefix string
+
+commit 814ff4664d7f1e59a9245547fea1b02848e8fa73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:37:52 2012 +0200
+
+    Tagging Entropy version 137
+
+commit 178e2c62cdd0350c79240e58553dc592bb934ad3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:37:50 2012 +0200
+
+    Release Entropy 137
+
+commit 20253ca99d692bf77be569519479470cb048c39b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 11:32:42 2012 +0200
+
+    [entropy.spm] __source_env_get_var: avoid deadlocking due to stdout buffer full
+    
+    Using subprocess.PIPE and Popen.wait() causes the child process to
+    block in case of write (stdout) buffer full. Rewrite the whole
+    function to use simple a simple fd via mkstemp(). This way, even
+    if the env variable is very long, the process won't hang.
+    
+    This issue has been observed in dev-texlive/texlive-latexextra-2012's
+    SRC_URI, which is more than 131k chars long!
+
+commit 1aee2a437133f3353dd85d472150894464820d2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 10:15:36 2012 +0200
+
+    [eit] handle OnlineMirrorError more nicely.
 
 commit 446432c64de934e29b233e01ea5222b3a8a12a59
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -321,6 +1230,24 @@ Date:   Sun Sep 2 20:49:31 2012 +0200
 
     [magneto,rigo] modernize .desktop files
 
+commit 5cae81b092090d26627df0aaf114b8689857fa66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 20:48:40 2012 +0200
+
+    [todo] update TODO
+
+commit 6c51486a651f0f3bbd867203eb73295a34a6bd20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 20:27:00 2012 +0200
+
+    [Solo] implement "solo notice" command
+
+commit 453d639ae0d3325870e56653f81a6942061fe699
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 20:26:46 2012 +0200
+
+    [Solo] fix typo in module title
+
 commit 32fa18f638f01f9f04f265a89c3539478df7988f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 2 17:21:41 2012 +0200
@@ -343,6 +1270,18 @@ Date:   Sun Sep 2 17:00:03 2012 +0200
     requests. This commits add a bit more entropy on the execution of
     _auto_repositories_update() (random between 30mins to 2 hours) and reduces
     the timer frequency to 8hrs (from 4).
+
+commit a2ca90a239474df703d6c6836b1f349b63f7eb08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 2 16:54:14 2012 +0200
+
+    [todo] write my own random things in the TODO
+
+commit b5768185c36578ca6451b6e0f50baf0aad385505
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 1 21:05:01 2012 +0200
+
+    [Solo] complete implementation of "solo repo" command
 
 commit c332d1a6f855abbd92fc631bbd7e03942e391ae1
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -368,6 +1307,18 @@ Date:   Sat Sep 1 15:18:11 2012 +0200
     concurrent access. For now, just consume one more file descriptor and
     avoid the race completely.
 
+commit 72eda95f8269a80d09fa626f3a79a4c037d5c6a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 31 22:17:10 2012 +0200
+
+    [Solo] add incomplete "solo repo" command module
+
+commit 732fd4f7bf65ceabf5226c48ba9c839049417b7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 31 22:16:37 2012 +0200
+
+    [Solo] fix ALLOW_UNPRIVILEGED handling
+
 commit 0c0ac3261f45d21a88fab67a9340b43304ef2fde
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Aug 31 21:31:46 2012 +0200
@@ -379,6 +1330,12 @@ Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 29 16:40:38 2012 +0200
 
     [eit.commands.lock] validate repository_id in "eit lock" and "eit unlock"
+
+commit e3e135247538b39166d398a96f3c9f59358531a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 27 20:42:14 2012 +0200
+
+    [solo.commands.status] new command "solo status" implemented
 
 commit 32104fe63cc0481d4cafbd14cdfc468e27c3443c
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -417,6 +1374,136 @@ Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Aug 27 10:15:36 2012 +0200
 
     [eit] handle OnlineMirrorError more nicely.
+
+commit b3b047be0df11badcf017bfb460beec986f40a10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 26 16:18:02 2012 +0200
+
+    [solo.commands.update] use gi.introspection if available
+    
+    Use the gobject-introspection GLib libraries instead of the old
+    ones if they are available, for the communication with RigoDaemon
+    in case of unprivileged repository update requests.
+
+commit 2041dc52db4d8928d05f6be6de537c7f38b5bab9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 24 16:16:17 2012 +0200
+
+    Tagging Entropy version 136
+
+commit f173b5850fcd108b2e59f68ae423ee2d32176156
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 24 16:16:15 2012 +0200
+
+    Release Entropy 136
+
+commit 79c567afb57c6d78d39d9f1cd0497f3988a98ea9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 11:28:49 2012 +0200
+
+    [entropy.server.db] when download is complete, unlock all the mirrors
+    
+    Unlocking just the working one causes the others to be left in
+    locked status until a manual unlock is issued.
+
+commit d1475cff318e3d71c01d1500cc843febb4a98b6f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 11:05:17 2012 +0200
+
+    [eit.commands.reset] subclass EitPull rather than EitPush
+
+commit ebc4ec7b08821f6687cc68f14ff5cbd3f163cc8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 23 09:29:21 2012 +0200
+
+    [entropy.spm] look for modinfo inside /usr/bin
+    
+    After more than 10 years people still change paths like this.
+    :-/
+
+commit 9dd85491f091c1eee6ba069c1c7fb02be3ed32c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:43 2012 +0200
+
+    Tagging Entropy version 135
+
+commit 5b8de80fb49b4af518c581e7eee5d8b731c1867b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:41 2012 +0200
+
+    Release Entropy 135
+
+commit 97e6fe31e814d7bc09d982d9885806fd123f428b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:43:11 2012 +0200
+
+    [entropy.services] fix string format arguments
+
+commit aebc0571f37ec2e3fe2c2bc340e2aa0d02905afa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:42:25 2012 +0200
+
+    [entropy.client.interfaces.db] fix undefined reference to TIMEOUT_FETCH_ERROR
+
+commit 9e725b510c0d7109b37ab2895815abcedb7129c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:42:05 2012 +0200
+
+    [entropy.misc] fix undefined reference to class object
+
+commit 23ec7006f4fefcb3ab3f2abe78a0748e8d7d8390
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:41:27 2012 +0200
+
+    [entropy.spm] PortagePlugin: explicitly save err object
+
+commit 699bf4fe512f8fbdde8566175b9ccb4bbd1df580
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 17:41:01 2012 +0200
+
+    [entropy.db.sql] move methods used by _addPackage() into class
+
+commit 4cfe4306fe4b272429a98a237d66c0f913140abc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:19:35 2012 +0200
+
+    Tagging Entropy version 134
+
+commit 3cf0a0cee2f3b7cb921695123b4da383c823b0b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:19:34 2012 +0200
+
+    Release Entropy 134
+
+commit 76edd9f0a3f10c1ee1ae57b2e62c28574a0c7efe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 13:09:54 2012 +0200
+
+    [entropy.client.package] filter out splitdebug paths if splitdebug is disabled
+    
+    If splitdebug was previously enabled for a package, and its
+    files were installed, when splitdebug is turned off Package kept
+    printing collision messages about /usr/lib/debug files.
+    This happened because packages contain /usr/lib/debug paths in
+    their content metadata (even those with separate splitdebug tarballs)
+    and this wasn't cleared out before installed packages repository
+    metadata update. Thus, during the cleanup step, these paths popped out
+    generating invalid warnings.
+
+commit e17de72db8c5a2e94cff56926b7d34158f96af68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 22 12:07:56 2012 +0200
+
+    [entropy.spm] ensure that Portage vdb cache is always invalidated
+    
+    It happened that assign_uid_to_installed_package() did not explicitly
+    invalidate the Portage vdb cache and, while this is used inside
+    add_installed_package(), which did invalidate the vdb cache on its own
+    already, it is also called directly by entropy.client.interfaces.package
+    code.
+    Moreover, root= value wasn't properly handled throughout the execution
+    of add_installed_package(), which may have caused cache invalidation
+    issues described above.
 
 commit c3c5e9e97dcc47d83a781fded9e48e3fe1be93f1
 Author: Fabio Erculiani <lxnay@sabayon.org>
@@ -538,6 +1625,45 @@ Date:   Wed Aug 22 12:07:56 2012 +0200
     of add_installed_package(), which may have caused cache invalidation
     issues described above.
 
+commit 8f7ed7a6443c618314c055665be32ebea2df085c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 21:02:50 2012 +0200
+
+    [Solo] add "solo update" command, the first real code port
+
+commit c7972c851996c6021b113d8972d21a98c748d397
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 21:01:59 2012 +0200
+
+    [Solo] fixup code imports, add helper functions, migrate more code over
+
+commit 3becb6a2151d5c835c99ddc401e8cef8d1a885c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 10:46:56 2012 +0200
+
+    [entropy.*] don't use magic constants for UrlFetcher errors
+
+commit 4567857b904f4ee26d9d9a0bfb0c150c7790de1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 10:28:16 2012 +0200
+
+    [entropy.fetchers] UrlFetcher: expose generic error codes via class property
+
+commit 28c61591cdb4abe94deaf4c4fa0db4fcf04aa3dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 21 09:31:15 2012 +0200
+
+    [entropy.fetchers] MultipleUrlFetcher: join() threads explicitly
+    
+    This avoids a potentially infinite loop if one of the threads dies
+    unexpectedly.
+
+commit 82ae020c40d4074fab49f50df790873dbef842a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 20 16:30:57 2012 +0200
+
+    [repo] remove empty README file
+
 commit fc8ed7329de0cc25597f177f4aab55d12b2c3124
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 21 10:46:56 2012 +0200
@@ -564,6 +1690,15 @@ Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Aug 20 16:30:57 2012 +0200
 
     [repo] remove empty README file
+
+commit 1582de0fffda356703671abfc80d49697ada8767
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 19 11:02:32 2012 +0200
+
+    [Solo] First commit, equo rewrite has just begun
+    
+    "Solo" is just a codename, to avoid name clashing while the code
+    is ported over.
 
 commit 2e6b176c833f91a3003ae787bb9085285affc17d
 Author: Fabio Erculiani <lxnay@sabayon.org>
