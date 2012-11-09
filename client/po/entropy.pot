@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#: ../../client/solo/commands/query.py:238
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-06 22:35+0100\n"
+"POT-Creation-Date: 2012-11-09 09:19+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -290,7 +289,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:3973
 #: ../../lib/entropy/client/interfaces/package.py:3993
 #: ../../lib/entropy/client/interfaces/trigger.py:74
-#: ../../lib/entropy/security.py:659 ../../client/solo/commands/rescue.py:198
+#: ../../lib/entropy/security.py:659 ../../client/solo/commands/rescue.py:200
 msgid "Error"
 msgstr ""
 
@@ -352,12 +351,12 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/db.py:487
 #: ../../lib/entropy/client/interfaces/db.py:593
 #: ../../lib/entropy/client/interfaces/db.py:1902 ../../lib/entropy/qa.py:802
-#: ../../client/solo/commands/install.py:456
-#: ../../client/solo/commands/install.py:459
-#: ../../client/solo/commands/install.py:466
-#: ../../client/solo/commands/install.py:469
-#: ../../client/solo/commands/rescue.py:305
-#: ../../client/solo/commands/rescue.py:316 ../../services/kernel-switcher:140
+#: ../../client/solo/commands/install.py:480
+#: ../../client/solo/commands/install.py:483
+#: ../../client/solo/commands/install.py:490
+#: ../../client/solo/commands/install.py:493
+#: ../../client/solo/commands/rescue.py:307
+#: ../../client/solo/commands/rescue.py:318 ../../services/kernel-switcher:140
 msgid "Attention"
 msgstr ""
 
@@ -516,7 +515,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/cache.py:106
 #: ../../lib/entropy/client/interfaces/methods.py:100
 #: ../../lib/entropy/client/interfaces/methods.py:125
-#: ../../client/solo/commands/upgrade.py:254
+#: ../../client/solo/commands/upgrade.py:278
 msgid "Repository"
 msgstr ""
 
@@ -1657,30 +1656,30 @@ msgstr ""
 #: ../../lib/entropy/output.py:781 ../../lib/entropy/output.py:1026
 #: ../../client/solo/commands/ugc.py:650 ../../client/solo/commands/ugc.py:760
 #: ../../client/solo/commands/ugc.py:783 ../../client/solo/commands/ugc.py:964
-#: ../../client/solo/commands/upgrade.py:249
-#: ../../client/solo/commands/upgrade.py:277
-#: ../../client/solo/commands/rescue.py:654
-#: ../../client/solo/commands/rescue.py:659
-#: ../../client/solo/commands/rescue.py:699
+#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/upgrade.py:301
+#: ../../client/solo/commands/rescue.py:656
+#: ../../client/solo/commands/rescue.py:661
+#: ../../client/solo/commands/rescue.py:701
 msgid "Yes"
 msgstr ""
 
 #: ../../lib/entropy/output.py:781 ../../client/solo/main.py:169
 #: ../../client/solo/commands/pkg.py:253
-#: ../../client/solo/commands/config.py:145
-#: ../../client/solo/commands/remove.py:381
-#: ../../client/solo/commands/remove.py:388
-#: ../../client/solo/commands/remove.py:433
-#: ../../client/solo/commands/deptest.py:180
-#: ../../client/solo/commands/libtest.py:220
+#: ../../client/solo/commands/config.py:149
+#: ../../client/solo/commands/remove.py:398
+#: ../../client/solo/commands/remove.py:405
+#: ../../client/solo/commands/remove.py:450
+#: ../../client/solo/commands/deptest.py:182
+#: ../../client/solo/commands/libtest.py:223
 #: ../../client/solo/commands/_manage.py:242
 #: ../../client/solo/commands/conf.py:391
 #: ../../client/solo/commands/conf.py:446
-#: ../../client/solo/commands/install.py:517
-#: ../../client/solo/commands/upgrade.py:249
-#: ../../client/solo/commands/rescue.py:326
-#: ../../client/solo/commands/rescue.py:330
-#: ../../client/solo/commands/rescue.py:337
+#: ../../client/solo/commands/install.py:541
+#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/rescue.py:328
+#: ../../client/solo/commands/rescue.py:332
+#: ../../client/solo/commands/rescue.py:339
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
 msgstr ""
@@ -1887,7 +1886,7 @@ msgstr ""
 msgid "Uploading"
 msgstr ""
 
-#: ../../client/solo/utils.py:277 ../../client/solo/commands/rescue.py:233
+#: ../../client/solo/utils.py:277 ../../client/solo/commands/rescue.py:235
 msgid "corrupted"
 msgstr ""
 
@@ -1966,7 +1965,7 @@ msgstr ""
 msgid "Homepage"
 msgstr ""
 
-#: ../../client/solo/utils.py:447 ../../client/solo/commands/security.py:220
+#: ../../client/solo/utils.py:447 ../../client/solo/commands/security.py:224
 #: ../../client/solo/commands/ugc.py:621
 msgid "Description"
 msgstr ""
@@ -2018,11 +2017,11 @@ msgid "Reverse graphing installed package"
 msgstr ""
 
 #: ../../client/solo/utils.py:551 ../../client/solo/utils.py:710
-#: ../../client/solo/commands/config.py:112
-#: ../../client/solo/commands/remove.py:362
-#: ../../client/solo/commands/source.py:134
-#: ../../client/solo/commands/install.py:492
-#: ../../client/solo/commands/download.py:136
+#: ../../client/solo/commands/config.py:116
+#: ../../client/solo/commands/remove.py:379
+#: ../../client/solo/commands/source.py:153
+#: ../../client/solo/commands/install.py:516
+#: ../../client/solo/commands/download.py:153
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
 msgstr ""
@@ -2166,7 +2165,7 @@ msgstr ""
 #: ../../client/solo/commands/pkg.py:79
 #: ../../client/solo/commands/config.py:63
 #: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:160
+#: ../../client/solo/commands/security.py:162
 #: ../../client/solo/commands/remove.py:67
 #: ../../client/solo/commands/deptest.py:61
 #: ../../client/solo/commands/source.py:62
@@ -2227,9 +2226,9 @@ msgid "This is the list of packages that would be considered"
 msgstr ""
 
 #: ../../client/solo/commands/pkg.py:252
-#: ../../client/solo/commands/config.py:144
+#: ../../client/solo/commands/config.py:148
 #: ../../client/solo/commands/_manage.py:241
-#: ../../client/solo/commands/install.py:516
+#: ../../client/solo/commands/install.py:540
 msgid "Would you like to continue ?"
 msgstr ""
 
@@ -2394,6 +2393,10 @@ msgstr ""
 msgid "library name (example: libdl.so.2)"
 msgstr ""
 
+#: ../../client/solo/commands/query.py:238
+msgid "search package sets"
+msgstr ""
+
 #: ../../client/solo/commands/query.py:241
 msgid "set name"
 msgstr ""
@@ -2509,7 +2512,7 @@ msgid "Reverse Dependencies Search"
 msgstr ""
 
 #: ../../client/solo/commands/query.py:559
-#: ../../client/solo/commands/libtest.py:195
+#: ../../client/solo/commands/libtest.py:198
 msgid "Matched"
 msgstr ""
 
@@ -2640,59 +2643,59 @@ msgstr ""
 msgid "Revision Search"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:68
+#: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
-#: ../../client/solo/commands/security.py:163
-#: ../../client/solo/commands/remove.py:72
-#: ../../client/solo/commands/source.py:67
-#: ../../client/solo/commands/install.py:75
-#: ../../client/solo/commands/upgrade.py:70
-#: ../../client/solo/commands/rescue.py:85
-#: ../../client/solo/commands/download.py:67
+#: ../../client/solo/commands/security.py:165
+#: ../../client/solo/commands/remove.py:74
+#: ../../client/solo/commands/source.py:69
+#: ../../client/solo/commands/install.py:77
+#: ../../client/solo/commands/upgrade.py:72
+#: ../../client/solo/commands/rescue.py:86
+#: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:74
-#: ../../client/solo/commands/remove.py:78
+#: ../../client/solo/commands/config.py:76
+#: ../../client/solo/commands/remove.py:81
 #: ../../client/solo/commands/search.py:76
 #: ../../client/solo/commands/command.py:90
-#: ../../client/solo/commands/source.py:73
+#: ../../client/solo/commands/source.py:76
 #: ../../client/solo/commands/match.py:89
-#: ../../client/solo/commands/install.py:81
-#: ../../client/solo/commands/upgrade.py:76
-#: ../../client/solo/commands/download.py:73
+#: ../../client/solo/commands/install.py:84
+#: ../../client/solo/commands/upgrade.py:79
+#: ../../client/solo/commands/download.py:76
 msgid "verbose output"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:122
+#: ../../client/solo/commands/config.py:126
 #: ../../client/solo/commands/status.py:130
 #: ../../client/solo/commands/status.py:137
 #: ../../client/solo/commands/status.py:144
-#: ../../client/solo/commands/remove.py:203
-#: ../../client/solo/commands/remove.py:267
+#: ../../client/solo/commands/remove.py:220
+#: ../../client/solo/commands/remove.py:284
 #: ../../client/solo/commands/_manage.py:153
 #: ../../client/solo/commands/_manage.py:164
-#: ../../client/solo/commands/install.py:238
-#: ../../client/solo/commands/install.py:264
-#: ../../client/solo/commands/install.py:350
+#: ../../client/solo/commands/install.py:262
+#: ../../client/solo/commands/install.py:288
+#: ../../client/solo/commands/install.py:374
 msgid "Not available"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:126
+#: ../../client/solo/commands/config.py:130
 msgid "installed from"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:137
-#: ../../client/solo/commands/remove.py:290
+#: ../../client/solo/commands/config.py:141
+#: ../../client/solo/commands/remove.py:307
 #: ../../client/solo/commands/_manage.py:230
 msgid "Packages involved"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:161
+#: ../../client/solo/commands/config.py:165
 msgid "configure"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:183
+#: ../../client/solo/commands/config.py:187
 msgid "configure installed packages"
 msgstr ""
 
@@ -2778,7 +2781,7 @@ msgstr ""
 
 #. title
 #: ../../client/solo/commands/update.py:287
-#: ../../client/solo/commands/security.py:215
+#: ../../client/solo/commands/security.py:219
 #: ../../client/solo/commands/ugc.py:355 ../../client/solo/commands/ugc.py:614
 #: ../../client/solo/commands/notice.py:146
 #: ../../client/solo/commands/notice.py:183
@@ -2790,7 +2793,7 @@ msgid "update repositories"
 msgstr ""
 
 #: ../../client/solo/commands/security.py:68
-#: ../../client/solo/commands/security.py:627
+#: ../../client/solo/commands/security.py:631
 msgid "system security tools"
 msgstr ""
 
@@ -2811,149 +2814,149 @@ msgid "reinstall faulty packages"
 msgstr ""
 
 #: ../../client/solo/commands/security.py:96
-#: ../../client/solo/commands/security.py:166
-#: ../../client/solo/commands/install.py:89
-#: ../../client/solo/commands/upgrade.py:84
+#: ../../client/solo/commands/security.py:168
+#: ../../client/solo/commands/install.py:98
+#: ../../client/solo/commands/upgrade.py:93
 msgid "just download packages"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:110
+#: ../../client/solo/commands/security.py:112
 msgid "download the latest Security Advisories"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:114
+#: ../../client/solo/commands/security.py:116
 msgid "force download"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:123
+#: ../../client/solo/commands/security.py:125
 msgid "list all the available Security Advisories"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:129
+#: ../../client/solo/commands/security.py:131
 msgid "list only affected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:132
+#: ../../client/solo/commands/security.py:134
 msgid "list only unaffected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:141
+#: ../../client/solo/commands/security.py:143
 msgid "show information about provided advisories identifiers"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:146
+#: ../../client/solo/commands/security.py:148
 msgid "advistory indentifier"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:153
+#: ../../client/solo/commands/security.py:155
 msgid "automatically install all the available security updates"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:211
+#: ../../client/solo/commands/security.py:215
 msgid "Advisory Identifier"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:243
+#: ../../client/solo/commands/security.py:247
 msgid "Background"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:250
+#: ../../client/solo/commands/security.py:254
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:256
+#: ../../client/solo/commands/security.py:260
 msgid "Impact"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:263
+#: ../../client/solo/commands/security.py:267
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:268
+#: ../../client/solo/commands/security.py:272
 msgid "Revised"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:273
+#: ../../client/solo/commands/security.py:277
 msgid "Announced"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:278
+#: ../../client/solo/commands/security.py:282
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:285
+#: ../../client/solo/commands/security.py:289
 msgid "References"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:291
+#: ../../client/solo/commands/security.py:295
 msgid "Upstream bugs"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:297
+#: ../../client/solo/commands/security.py:301
 msgid "Affected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:305
+#: ../../client/solo/commands/security.py:309
 msgid "vulnerable versions"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:308
+#: ../../client/solo/commands/security.py:312
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:313
+#: ../../client/solo/commands/security.py:317
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:320
+#: ../../client/solo/commands/security.py:324
 msgid "Resolution"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:347
+#: ../../client/solo/commands/security.py:351
 msgid "Checking system files"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:375
+#: ../../client/solo/commands/security.py:379
 msgid "no checksum information"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:424
+#: ../../client/solo/commands/security.py:428
 msgid "found altered files"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:443
+#: ../../client/solo/commands/security.py:447
 msgid "assimilated new hashes and mtime"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:454
+#: ../../client/solo/commands/security.py:458
 msgid "unavailable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:461
+#: ../../client/solo/commands/security.py:465
 msgid "No altered files found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:487
+#: ../../client/solo/commands/security.py:491
 msgid "Altered files have been found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:491
+#: ../../client/solo/commands/security.py:495
 msgid "Packages have been reinstalled successfully"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:523
+#: ../../client/solo/commands/security.py:527
 msgid "No advisories available or applicable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:566
+#: ../../client/solo/commands/security.py:570
 msgid "Advisory does not exist"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:592
+#: ../../client/solo/commands/security.py:596
 msgid "Calculating security updates"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:611
+#: ../../client/solo/commands/security.py:615
 msgid "All the available updates have been already installed"
 msgstr ""
 
@@ -2965,116 +2968,116 @@ msgstr ""
 msgid "bow to lxnay"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:82
-#: ../../client/solo/commands/source.py:81
-#: ../../client/solo/commands/install.py:98
-#: ../../client/solo/commands/upgrade.py:93
-#: ../../client/solo/commands/download.py:81
+#: ../../client/solo/commands/remove.py:88
+#: ../../client/solo/commands/source.py:90
+#: ../../client/solo/commands/install.py:110
+#: ../../client/solo/commands/upgrade.py:105
+#: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:86
-#: ../../client/solo/commands/source.py:85
-#: ../../client/solo/commands/install.py:102
-#: ../../client/solo/commands/upgrade.py:97
-#: ../../client/solo/commands/download.py:85
+#: ../../client/solo/commands/remove.py:94
+#: ../../client/solo/commands/source.py:96
+#: ../../client/solo/commands/install.py:116
+#: ../../client/solo/commands/upgrade.py:111
+#: ../../client/solo/commands/download.py:95
 msgid "do not calculate dependencies recursively"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:90
-#: ../../client/solo/commands/source.py:90
-#: ../../client/solo/commands/install.py:106
-#: ../../client/solo/commands/upgrade.py:101
-#: ../../client/solo/commands/download.py:90
+#: ../../client/solo/commands/remove.py:100
+#: ../../client/solo/commands/source.py:102
+#: ../../client/solo/commands/install.py:122
+#: ../../client/solo/commands/upgrade.py:117
+#: ../../client/solo/commands/download.py:101
 msgid "include dependencies no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:94
-#: ../../client/solo/commands/install.py:110
-#: ../../client/solo/commands/upgrade.py:105
+#: ../../client/solo/commands/remove.py:106
+#: ../../client/solo/commands/install.py:128
+#: ../../client/solo/commands/upgrade.py:123
 msgid "when used with --deep, include virtual packages"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:98
-#: ../../client/solo/commands/install.py:114
-#: ../../client/solo/commands/upgrade.py:109
+#: ../../client/solo/commands/remove.py:112
+#: ../../client/solo/commands/install.py:134
+#: ../../client/solo/commands/upgrade.py:129
 msgid "remove package configuration files no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:102
+#: ../../client/solo/commands/remove.py:118
 msgid "force system packages removal (dangerous!)"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:156
+#: ../../client/solo/commands/remove.py:173
 msgid "removal"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:172
-#: ../../client/solo/commands/source.py:153
-#: ../../client/solo/commands/download.py:155
+#: ../../client/solo/commands/remove.py:189
+#: ../../client/solo/commands/source.py:172
+#: ../../client/solo/commands/download.py:172
 msgid "All done"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:184
+#: ../../client/solo/commands/remove.py:201
 msgid "These are the packages that should be MANUALLY removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:190
-#: ../../client/solo/commands/install.py:330
+#: ../../client/solo/commands/remove.py:207
+#: ../../client/solo/commands/install.py:354
 msgid "These are the packages that would be removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:240
+#: ../../client/solo/commands/remove.py:257
 msgid "These are the chosen packages"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:253
+#: ../../client/solo/commands/remove.py:270
 msgid "vital package"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:254
+#: ../../client/solo/commands/remove.py:271
 msgid "Removal forbidden"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:304
+#: ../../client/solo/commands/remove.py:321
 msgid "Packages that would be removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:334
-#: ../../client/solo/commands/install.py:421
+#: ../../client/solo/commands/remove.py:351
+#: ../../client/solo/commands/install.py:445
 msgid "Freed disk space"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:341
+#: ../../client/solo/commands/remove.py:358
 msgid "Total bandwidth wasted"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:371
-#: ../../client/solo/commands/rescue.py:629
+#: ../../client/solo/commands/remove.py:388
+#: ../../client/solo/commands/rescue.py:631
 msgid "Nothing to do"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:378
+#: ../../client/solo/commands/remove.py:395
 msgid "Would you like to calculate dependencies ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:385
+#: ../../client/solo/commands/remove.py:402
 msgid "Would you like to remove them now ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:406
+#: ../../client/solo/commands/remove.py:423
 msgid "Ouch!"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:407
+#: ../../client/solo/commands/remove.py:424
 msgid "the following system packages were pulled in"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:431
+#: ../../client/solo/commands/remove.py:448
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:446
+#: ../../client/solo/commands/remove.py:463
 msgid "remove packages from system"
 msgstr ""
 
@@ -3104,43 +3107,43 @@ msgid "search packages in repositories"
 msgstr ""
 
 #: ../../client/solo/commands/deptest.py:64
-#: ../../client/solo/commands/libtest.py:66
+#: ../../client/solo/commands/libtest.py:67
 #: ../../client/solo/commands/unused.py:65
 msgid "show less details (useful for scripting)"
 msgstr ""
 
 #: ../../client/solo/commands/deptest.py:67
-#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:313
+#: ../../client/solo/commands/libtest.py:74 ../../services/kernel-switcher:313
 msgid "just show what would be done"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:102
+#: ../../client/solo/commands/deptest.py:104
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:157
+#: ../../client/solo/commands/deptest.py:159
 msgid "These are the dependencies not found"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:167
+#: ../../client/solo/commands/deptest.py:169
 msgid "Needed by"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:178
+#: ../../client/solo/commands/deptest.py:180
 msgid "Would you like to install the packages ?"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:185
-#: ../../client/solo/commands/libtest.py:224
+#: ../../client/solo/commands/deptest.py:187
+#: ../../client/solo/commands/libtest.py:227
 msgid "Installing available packages in"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:186
-#: ../../client/solo/commands/libtest.py:225
+#: ../../client/solo/commands/deptest.py:188
+#: ../../client/solo/commands/libtest.py:228
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:204
+#: ../../client/solo/commands/deptest.py:206
 msgid "look for unsatisfied dependencies"
 msgstr ""
 
@@ -3149,10 +3152,10 @@ msgid "not a valid directory"
 msgstr ""
 
 #: ../../client/solo/commands/command.py:93
-#: ../../client/solo/commands/source.py:77
-#: ../../client/solo/commands/install.py:85
-#: ../../client/solo/commands/upgrade.py:80
-#: ../../client/solo/commands/download.py:77
+#: ../../client/solo/commands/source.py:83
+#: ../../client/solo/commands/install.py:91
+#: ../../client/solo/commands/upgrade.py:86
+#: ../../client/solo/commands/download.py:83
 msgid "quiet output"
 msgstr ""
 
@@ -3687,31 +3690,31 @@ msgstr ""
 msgid "done merging packages"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:94
-#: ../../client/solo/commands/download.py:94
+#: ../../client/solo/commands/source.py:108
+#: ../../client/solo/commands/download.py:107
 msgid "calculate dependencies relaxing constraints"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:98
-#: ../../client/solo/commands/install.py:94
-#: ../../client/solo/commands/upgrade.py:89
-#: ../../client/solo/commands/download.py:98
+#: ../../client/solo/commands/source.py:114
+#: ../../client/solo/commands/install.py:104
+#: ../../client/solo/commands/upgrade.py:99
+#: ../../client/solo/commands/download.py:113
 msgid "include build-time dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:102
+#: ../../client/solo/commands/source.py:120
 msgid "save files into the current working directory"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:138
+#: ../../client/solo/commands/source.py:157
 msgid "Source code download"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:175
+#: ../../client/solo/commands/source.py:194
 msgid "sources download"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:197
+#: ../../client/solo/commands/source.py:216
 msgid "download packages source code"
 msgstr ""
 
@@ -3757,32 +3760,32 @@ msgstr ""
 msgid "yell at user"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:77
+#: ../../client/solo/commands/libtest.py:80
 msgid "print broken files to stdout"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:82
+#: ../../client/solo/commands/libtest.py:85
 msgid "dump results to files"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:137
-#: ../../client/solo/commands/libtest.py:170
+#: ../../client/solo/commands/libtest.py:140
+#: ../../client/solo/commands/libtest.py:173
 msgid "System is healthy"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:176
+#: ../../client/solo/commands/libtest.py:179
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:182
+#: ../../client/solo/commands/libtest.py:185
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:218
+#: ../../client/solo/commands/libtest.py:221
 msgid "Would you like to install them ?"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:246
+#: ../../client/solo/commands/libtest.py:249
 msgid "look for missing libraries"
 msgstr ""
 
@@ -3907,7 +3910,7 @@ msgstr ""
 
 #: ../../client/solo/commands/_manage.py:416
 #: ../../client/solo/commands/_manage.py:783
-#: ../../client/solo/commands/install.py:355
+#: ../../client/solo/commands/install.py:379
 msgid "from"
 msgstr ""
 
@@ -4203,330 +4206,330 @@ msgstr ""
 msgid "match packages in repositories"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:119
-#: ../../client/solo/commands/upgrade.py:114
+#: ../../client/solo/commands/install.py:140
+#: ../../client/solo/commands/upgrade.py:135
 msgid "relax dependencies constraints during calculation"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:124
-#: ../../client/solo/commands/upgrade.py:119
-#: ../../client/solo/commands/download.py:104
+#: ../../client/solo/commands/install.py:147
+#: ../../client/solo/commands/upgrade.py:142
+#: ../../client/solo/commands/download.py:120
 msgid "download multiple packages in parallel (max 10)"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:183
+#: ../../client/solo/commands/install.py:207
 msgid "These are the packages that would be installed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:331
+#: ../../client/solo/commands/install.py:355
 msgid "conflicting/substituted"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:366
+#: ../../client/solo/commands/install.py:390
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:371
+#: ../../client/solo/commands/install.py:395
 msgid "Packages needing to be removed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:378
+#: ../../client/solo/commands/install.py:402
 msgid "Packages needing to be installed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:385
+#: ../../client/solo/commands/install.py:409
 msgid "Packages needing to be reinstalled"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:392
+#: ../../client/solo/commands/install.py:416
 msgid "Packages needing to be updated"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:399
+#: ../../client/solo/commands/install.py:423
 msgid "Packages needing to be downgraded"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:412
+#: ../../client/solo/commands/install.py:436
 msgid "Download size"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:419
+#: ../../client/solo/commands/install.py:443
 msgid "Used disk space"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:435
+#: ../../client/solo/commands/install.py:459
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:437
+#: ../../client/solo/commands/install.py:461
 msgid "of free space"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:451
+#: ../../client/solo/commands/install.py:475
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:549
+#: ../../client/solo/commands/install.py:573
 msgid "Download complete"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:578
+#: ../../client/solo/commands/install.py:602
 msgid "install"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:600
+#: ../../client/solo/commands/install.py:624
 msgid "Installation complete"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:609
+#: ../../client/solo/commands/install.py:633
 msgid "install or update packages or package files"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:166
+#: ../../client/solo/commands/upgrade.py:190
 msgid "Calculating System Updates"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:177
+#: ../../client/solo/commands/upgrade.py:201
 msgid "Packages matching update"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:183
+#: ../../client/solo/commands/upgrade.py:207
 msgid "Packages matching not available"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:189
+#: ../../client/solo/commands/upgrade.py:213
 msgid "Packages matching already up to date"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:212
+#: ../../client/solo/commands/upgrade.py:236
 msgid "Nothing to update"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:226
+#: ../../client/solo/commands/upgrade.py:250
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:231
+#: ../../client/solo/commands/upgrade.py:255
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:249
+#: ../../client/solo/commands/upgrade.py:273
 msgid "Selective"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:257
+#: ../../client/solo/commands/upgrade.py:281
 msgid "Would you like to remove them?"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:276
+#: ../../client/solo/commands/upgrade.py:300
 msgid "Remove this?"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:292
+#: ../../client/solo/commands/upgrade.py:316
 msgid "Nothing to remove"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:321
+#: ../../client/solo/commands/upgrade.py:345
 msgid "There are more updates to install, reloading Entropy"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:340
+#: ../../client/solo/commands/upgrade.py:364
 msgid "upgrade the system"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:89
+#: ../../client/solo/commands/rescue.py:91
 msgid "check installed packages repository for errors"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:96
+#: ../../client/solo/commands/rescue.py:98
 msgid "compact the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:102
+#: ../../client/solo/commands/rescue.py:104
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:109
+#: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:115
+#: ../../client/solo/commands/rescue.py:117
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:126
+#: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:132
+#: ../../client/solo/commands/rescue.py:134
 msgid "restore a backup of the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:171
+#: ../../client/solo/commands/rescue.py:173
 msgid "Repository error"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:179
-#: ../../client/solo/commands/rescue.py:232
-#: ../../client/solo/commands/rescue.py:241
+#: ../../client/solo/commands/rescue.py:181
+#: ../../client/solo/commands/rescue.py:234
+#: ../../client/solo/commands/rescue.py:243
 msgid "Sanity Check"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:180
+#: ../../client/solo/commands/rescue.py:182
 msgid "installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:186
+#: ../../client/solo/commands/rescue.py:188
 msgid "Scanning..."
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:222
+#: ../../client/solo/commands/rescue.py:224
 msgid "Error checking package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:242
+#: ../../client/solo/commands/rescue.py:244
 msgid "passed"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:264
+#: ../../client/solo/commands/rescue.py:266
 msgid "Compacting the Installed Packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:277
+#: ../../client/solo/commands/rescue.py:279
 msgid "Compaction complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:306
+#: ../../client/solo/commands/rescue.py:308
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:317
+#: ../../client/solo/commands/rescue.py:319
 msgid "I am not joking, this is quite disruptive"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:325
+#: ../../client/solo/commands/rescue.py:327
 msgid "Understood ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:329
+#: ../../client/solo/commands/rescue.py:331
 msgid "Really ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:334
+#: ../../client/solo/commands/rescue.py:336
 msgid "This is your last chance"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:335
+#: ../../client/solo/commands/rescue.py:337
 msgid "Ok?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:352
-#: ../../client/solo/commands/rescue.py:375
+#: ../../client/solo/commands/rescue.py:354
+#: ../../client/solo/commands/rescue.py:377
 msgid "Cannot read metadata"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:383
+#: ../../client/solo/commands/rescue.py:385
 msgid "Creating a backup of the current repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:395
+#: ../../client/solo/commands/rescue.py:397
 msgid "Cannot backup the repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:412
+#: ../../client/solo/commands/rescue.py:414
 msgid "Cannot delete old repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:422
+#: ../../client/solo/commands/rescue.py:424
 msgid "Initializing a new repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:433
+#: ../../client/solo/commands/rescue.py:435
 msgid "Repository initialized, generating metadata"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:463
-#: ../../client/solo/commands/rescue.py:725
+#: ../../client/solo/commands/rescue.py:465
+#: ../../client/solo/commands/rescue.py:727
 msgid "Invalid package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:476
-#: ../../client/solo/commands/rescue.py:739
+#: ../../client/solo/commands/rescue.py:478
+#: ../../client/solo/commands/rescue.py:741
 msgid "Metadata generation error"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:519
+#: ../../client/solo/commands/rescue.py:521
 msgid "Indexing metadata, please wait..."
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:524
+#: ../../client/solo/commands/rescue.py:526
 msgid "Repository metadata generation complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:539
+#: ../../client/solo/commands/rescue.py:541
 msgid "Scanning Source Package Manager repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:553
+#: ../../client/solo/commands/rescue.py:555
 msgid "Cannot find package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:565
+#: ../../client/solo/commands/rescue.py:567
 msgid "Scanning Entropy repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:636
+#: ../../client/solo/commands/rescue.py:638
 msgid "These packages were removed"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:658
-#: ../../client/solo/commands/rescue.py:698
+#: ../../client/solo/commands/rescue.py:660
+#: ../../client/solo/commands/rescue.py:700
 msgid "Continue ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:677
+#: ../../client/solo/commands/rescue.py:679
 msgid "Removal complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:684
+#: ../../client/solo/commands/rescue.py:686
 msgid "These packages were added"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:781
+#: ../../client/solo/commands/rescue.py:783
 msgid "Update complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:793
+#: ../../client/solo/commands/rescue.py:795
 msgid "Re-generating packages mapping"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:802
+#: ../../client/solo/commands/rescue.py:804
 msgid "Packages mapping re-generated"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:830
+#: ../../client/solo/commands/rescue.py:832
 msgid "No backups found"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:852
+#: ../../client/solo/commands/rescue.py:854
 msgid "Select the repository to restore"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:859
+#: ../../client/solo/commands/rescue.py:861
 msgid "Entropy Installed Packages Repository backups"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:884
+#: ../../client/solo/commands/rescue.py:886
 msgid "tools to rescue the running system"
 msgstr ""
 
@@ -4551,11 +4554,11 @@ msgstr ""
 msgid "look for unused packages (pay attention)"
 msgstr ""
 
-#: ../../client/solo/commands/download.py:140
+#: ../../client/solo/commands/download.py:157
 msgid "Package download"
 msgstr ""
 
-#: ../../client/solo/commands/download.py:172
+#: ../../client/solo/commands/download.py:189
 msgid "download packages, essentially"
 msgstr ""
 
