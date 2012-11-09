@@ -59,7 +59,7 @@ Match package names.
         Overridden from SoloCommand.
         """
         args = [
-            "--quiet", "--verbose",
+            "--quiet", "-q", "--verbose", "-v",
             "--installed", "--available",
             "--multimatch", "--multirepo",
             "--showrepo", "--showslot"]

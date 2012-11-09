@@ -73,17 +73,19 @@ Tools to rescue the running system.
 
         def _add_ask_to_parser(p, _cmd_dict):
             p.add_argument(
-                "--ask", action="store_true",
+                "--ask", "-a", action="store_true",
                 default=False,
                 help=_("ask before making any changes"))
             _cmd_dict["--ask"] = {}
+            _cmd_dict["-a"] = {}
 
         def _add_pretend_to_parser(p, _cmd_dict):
             p.add_argument(
-                "--pretend", action="store_true",
+                "--pretend", "-p", action="store_true",
                 default=False,
                 help=_("show what would be done"))
             _cmd_dict["--pretend"] = {}
+            _cmd_dict["-p"] = {}
 
         check_parser = subparsers.add_parser(
             "check", help=_("check installed packages "

@@ -56,21 +56,24 @@ Test system integrity by looking for missing libraries.
             prog="%s %s" % (sys.argv[0], SoloLibtest.NAME))
 
         _commands = []
-        parser.add_argument("--ask", action="store_true",
+        parser.add_argument("--ask", "-a", action="store_true",
                             default=False,
                             help=_("ask before making any changes"))
         _commands.append("--ask")
+        _commands.append("-a")
 
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
                             default=False,
                             help=_("show less details "
                                    "(useful for scripting)"))
         _commands.append("--quiet")
+        _commands.append("-q")
 
-        parser.add_argument("--pretend", action="store_true",
+        parser.add_argument("--pretend", "-p", action="store_true",
                             default=False,
                             help=_("just show what would be done"))
         _commands.append("--pretend")
+        _commands.append("-p")
 
         parser.add_argument("--listfiles", action="store_true",
                             default=False,

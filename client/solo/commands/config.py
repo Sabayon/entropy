@@ -58,20 +58,24 @@ Configure installed packages (calling pkg_config() hook).
 
         mg_group = parser.add_mutually_exclusive_group()
         mg_group.add_argument(
-            "--ask", action="store_true",
+            "--ask", "-a", action="store_true",
             default=False,
             help=_("ask before making any changes"))
         _commands["--ask"] = {}
+        _commands["-a"] = {}
         mg_group.add_argument(
-            "--pretend", action="store_true",
+            "--pretend", "-p", action="store_true",
             default=False,
             help=_("show what would be done"))
         _commands["--pretend"] = {}
+        _commands["-p"] = {}
 
         parser.add_argument(
-            "--verbose", action="store_true",
+            "--verbose", "-v", action="store_true",
             default=False,
             help=_("verbose output"))
+        _commands["--verbose"] = {}
+        _commands["-v"] = {}
 
         self._commands = _commands
         return parser

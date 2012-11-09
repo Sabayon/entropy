@@ -63,10 +63,10 @@ Manage Entropy Library Cache.
         clean_parser = subparsers.add_parser(
             "clean", help=_("clean Entropy Library Cache"))
         clean_parser.add_argument(
-            "--verbose", action="store_true", default=False,
+            "--verbose", "-v", action="store_true", default=False,
             help=_("show more details"))
         clean_parser.add_argument(
-            "--quiet", action="store_true", default=False,
+            "--quiet", "-q", action="store_true", default=False,
             help=_("print results in a scriptable way"))
 
         clean_parser.set_defaults(func=self._clean)
@@ -110,7 +110,7 @@ Manage Entropy Library Cache.
             outcome += self._commands
 
         elif command == "enable":
-            outcome += ["--verbose", "--quiet"]
+            outcome += ["--verbose", "-v", "--quiet", "-q"]
 
         return self._bashcomp(sys.stdout, last_arg, outcome)
 

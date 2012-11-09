@@ -44,11 +44,11 @@ class SoloMaskUnmask(SoloCommand):
                             metavar="<package>", help=_("package name"))
 
         group = parser.add_mutually_exclusive_group()
-        group.add_argument("--ask", action="store_true",
+        group.add_argument("--ask", "-a", action="store_true",
                            default=self._ask,
                            help=_('ask before making any changes'))
 
-        group.add_argument("--pretend", action="store_true",
+        group.add_argument("--pretend", "-p", action="store_true",
                            default=self._pretend,
                            help=_('only show what would be done'))
 
@@ -58,7 +58,7 @@ class SoloMaskUnmask(SoloCommand):
         """
         Overridden from SoloCommand.
         """
-        args = ["--ask", "--pretend"]
+        args = ["--ask", "-a", "--pretend", "-p"]
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)
 

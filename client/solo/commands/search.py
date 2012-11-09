@@ -109,7 +109,7 @@ Search for packages.
         Overridden from SoloCommand.
         """
         args = [
-            "--quiet", "--verbose",
+            "--quiet", "-q", "--verbose", "-v",
             "--installed", "--available"]
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)

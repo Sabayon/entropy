@@ -86,10 +86,10 @@ System security tools.
 
         mg_group = oscheck_parser.add_mutually_exclusive_group()
         mg_group.add_argument(
-            "--ask", action="store_true", default=False,
+            "--ask", "-a", action="store_true", default=False,
             help=_("ask before making any changes"))
         mg_group.add_argument(
-            "--pretend", action="store_true", default=False,
+            "--pretend", "-p", action="store_true", default=False,
             help=_("show what would be done"))
         oscheck_parser.add_argument(
             "--fetch", action="store_true", default=False,
@@ -101,7 +101,9 @@ System security tools.
             "--assimilate": {},
             "--reinstall": {},
             "--pretend": {},
+            "-p": {},
             "--ask": {},
+            "-a": {},
             "--fetch": {},
         }
 
@@ -156,10 +158,10 @@ System security tools.
 
         mg_group = install_parser.add_mutually_exclusive_group()
         mg_group.add_argument(
-            "--ask", action="store_true", default=False,
+            "--ask", "-a", action="store_true", default=False,
             help=_("ask before making any changes"))
         mg_group.add_argument(
-            "--pretend", action="store_true", default=False,
+            "--pretend", "-p", action="store_true", default=False,
             help=_("show what would be done"))
         install_parser.add_argument(
             "--fetch", action="store_true", default=False,
@@ -168,8 +170,10 @@ System security tools.
         install_parser.set_defaults(func=self._install)
         _commands["install"] = {
             "--ask": {},
+            "-a": {},
             "--fetch": {},
             "--pretend": {},
+            "-p": {},
         }
 
         self._commands = _commands
@@ -194,7 +198,7 @@ System security tools.
         Overridden from SoloCommand.
         """
         self._get_parser() # this will generate self._commands
-        outcome = ["--quiet", "--verbose"]
+        outcome = ["--quiet", "-q", "--verbose", "-v"]
         return self._hierarchical_bashcomp(
             last_arg, outcome, self._commands)
 

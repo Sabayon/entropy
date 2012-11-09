@@ -56,13 +56,13 @@ Test system integrity by checking installed packages dependencies.
             formatter_class=argparse.RawDescriptionHelpFormatter,
             prog="%s %s" % (sys.argv[0], SoloDeptest.NAME))
 
-        parser.add_argument("--ask", action="store_true",
+        parser.add_argument("--ask", "-a", action="store_true",
                             default=self._ask,
                             help=_("ask before making any changes"))
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
                             default=self._quiet,
                             help=_("show less details (useful for scripting)"))
-        parser.add_argument("--pretend", action="store_true",
+        parser.add_argument("--pretend", "-p", action="store_true",
                             default=self._pretend,
                             help=_("just show what would be done"))
 
@@ -91,7 +91,9 @@ Test system integrity by checking installed packages dependencies.
         """
         entropy_client = self._entropy_bashcomp()
         repos = entropy_client.repositories()
-        outcome = ["--force"] + repos
+        outcome = ["--force", "--ask", "-a",
+                   "--quiet", "-q", "--pretend", "-p"]
+        outcome += repos
         return self._bashcomp(sys.stdout, last_arg, outcome)
 
     def _test(self, entropy_client):

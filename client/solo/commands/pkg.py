@@ -74,7 +74,7 @@ Execute advanced tasks on Entropy packages and the running system.
 
         def _add_ask_to_parser(p):
             p.add_argument(
-                "--ask", action="store_true",
+                "--ask", "-a", action="store_true",
                 default=self._ask,
                 help=_("ask before making any changes"))
 

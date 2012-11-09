@@ -57,49 +57,68 @@ Download source code of packages.
 
         mg_group = parser.add_mutually_exclusive_group()
         mg_group.add_argument(
-            "--ask", action="store_true",
+            "--ask", "-a", action="store_true",
             default=False,
             help=_("ask before making any changes"))
         _commands["--ask"] = {}
+        _commands["-a"] = {}
+
         mg_group.add_argument(
-            "--pretend", action="store_true",
+            "--pretend", "-p", action="store_true",
             default=False,
             help=_("show what would be done"))
         _commands["--pretend"] = {}
+        _commands["-p"] = {}
 
         parser.add_argument(
-            "--verbose", action="store_true",
+            "--verbose", "-v", action="store_true",
             default=False,
             help=_("verbose output"))
+        _commands["--verbose"] = {}
+        _commands["-v"] = {}
+
         parser.add_argument(
-            "--quiet", action="store_true",
+            "--quiet", "-q", action="store_true",
             default=False,
             help=_("quiet output"))
+        _commands["--quiet"] = {}
+        _commands["-q"] = {}
+
         parser.add_argument(
             "--nodeps", action="store_true",
             default=False,
             help=_("exclude package dependencies"))
+        _commands["--nodeps"] = {}
+
         parser.add_argument(
             "--norecursive", action="store_true",
             default=False,
             help=_("do not calculate dependencies recursively"))
+        _commands["--norecursive"] = {}
 
         parser.add_argument(
             "--deep", action="store_true",
             default=False,
             help=_("include dependencies no longer needed"))
+        _commands["--deep"] = {}
+
         parser.add_argument(
             "--relaxed", action="store_true",
             default=False,
             help=_("calculate dependencies relaxing constraints"))
+        _commands["--relaxed"] = {}
+
         parser.add_argument(
             "--bdeps", action="store_true",
             default=False,
             help=_("include build-time dependencies"))
+        _commands["--bdeps"] = {}
+
         parser.add_argument(
             "--savehere", action="store_true",
             default=False,
             help=_("save files into the current working directory"))
+        _commands["--savehere"] = {}
 
         self._commands = _commands
         return parser

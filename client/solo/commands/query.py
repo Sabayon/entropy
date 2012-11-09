@@ -235,7 +235,7 @@ Repository query tools.
 
         sets_parser = subparsers.add_parser(
             "sets",
-            help=_(""))
+            help=_("search package sets"))
         sets_parser.add_argument(
             "sets", nargs='*', metavar="<set>",
             help=_("set name"))
@@ -330,7 +330,7 @@ Repository query tools.
         Overridden from SoloCommand.
         """
         self._get_parser() # this will generate self._commands
-        outcome = ["--quiet", "--verbose"]
+        outcome = ["--quiet", "-q", "--verbose", "-v"]
         return self._hierarchical_bashcomp(
             last_arg, outcome, self._commands)
 
