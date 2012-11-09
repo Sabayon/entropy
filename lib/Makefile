@@ -1,6 +1,7 @@
 PKGNAME = entropy
 SUBDIRS = 
 PREFIX = /usr
+VARDIR = /var
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
 DESTDIR = 
