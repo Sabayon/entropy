@@ -1,3 +1,27 @@
+commit 6d5762e9850c9e4520814532720b7a494946a8d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 10 16:29:58 2012 +0100
+
+    Release Entropy 147
+
+commit ce80af4eb5ff2cdbc49b9127369280158668cccb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 10 16:28:44 2012 +0100
+
+    [Solo] fix undefined reference "exit_st"
+
+commit d5c1593f102b37b1dde914951523044b6c4ecb18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 22:43:55 2012 +0100
+
+    [entropy/Makefile] add missing variable: VARDIR
+
+commit 35f2be382e30bff41b1fcd0915375723424c6995
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 9 22:34:27 2012 +0100
+
+    Tagging Entropy version 146
+
 commit d09e11ccb6522123212d6ddf70822f251346a201
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 9 22:34:26 2012 +0100
