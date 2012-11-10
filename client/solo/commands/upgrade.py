@@ -218,6 +218,7 @@ Upgrade the system.
         client_settings = entropy_client.ClientSettings()
         misc_settings = client_settings['misc']
         old_cprotect = misc_settings['collisionprotect']
+        exit_st = 0
 
         try:
             misc_settings['collisionprotect'] = 1
