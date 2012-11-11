@@ -155,14 +155,22 @@ def enlightenatom(atom):
     clean_atom = entropy.dep.remove_entropy_revision(atom)
     clean_atom = entropy.dep.remove_tag(clean_atom)
     only_cpv = entropy.dep.dep_getcpv(clean_atom)
-    operator = clean_atom[:len(clean_atom)-len(only_cpv)]
-    cat, name, pv, rev = entropy.dep.catpkgsplit(only_cpv)
+    cpv_split = entropy.dep.catpkgsplit(only_cpv)
+    if cpv_split is None:
+        cat, name = only_cpv.split("/", 1)
+        pv = ""
+        rev = "r0"
+        operator = ""
+    else:
+        operator = clean_atom[:len(clean_atom)-len(only_cpv)]
+        cat, name, pv, rev = cpv_split
+        pv = "-" + pv
     if rev == "r0":
         rev = ''
     else:
         rev = '-%s' % (rev,)
     return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
-        darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
+        darkgreen(name), purple(pv), purple(rev), brown(entropy_tag),
         teal(entropy_rev),)
 
 def show_dependencies_legend(entropy_client, indent = '',
