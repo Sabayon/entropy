@@ -384,7 +384,7 @@ Manage User Generate Content (votes, comments, files).
         if vote is None:
             vote = _("no votes")
         else:
-            vote = const_convert_to_unicode(vote)
+            vote = const_convert_to_unicode("%.2f" % (vote,))
         entropy_client.output(" %s [%s] %s: %s" % (
                 bold(const_convert_to_unicode("@@")),
                 purple(pkgkey),
@@ -957,7 +957,7 @@ Manage User Generate Content (votes, comments, files).
         entropy_client.output(
             "%s: %s" % (
                 darkred(_("Vote")),
-                blue(str(vote)),
+                blue(const_convert_to_unicode(vote)),
                 ),
             header="  "
         )
