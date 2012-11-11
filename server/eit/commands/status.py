@@ -196,7 +196,7 @@ Show repository status (such as: *configured mirrors*,
             toc.append(("   %s:" % (bold(_("switch injected")),),
                         darkgreen(pkg_atom)))
 
-        print_table(toc)
+        print_table(entropy_server, toc)
         return 0
 
 EitCommandDescriptor.register(
