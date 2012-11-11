@@ -922,11 +922,12 @@ class PackageBuilder(object):
 
                 if (not allow_new_useflags) and new_flags:
                     print_warning("ouch: %s wants these new USE flags: %s" % (
-                        p.cpv+"::"+p.repo, " ".join(sorted(new_flags)),))
+                        pkg.cpv+"::"+pkg.repo, " ".join(sorted(new_flags)),))
                     use_flags_give_up = True
                 if (not allow_removed_useflags) and removed_flags:
                     print_warning("ouch: %s has these USE flags removed: %s" % (
-                        p.cpv+"::"+p.repo, " ".join(sorted(removed_flags)),))
+                        pkg.cpv+"::"+pkg.repo,
+                        " ".join(sorted(removed_flags)),))
                     use_flags_give_up = True
 
         if use_flags_give_up:
