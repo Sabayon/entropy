@@ -136,6 +136,8 @@ Manage User Generate Content (votes, comments, files).
             "vote",
             help=_("manage package votes in "
                    "the selected repository"))
+        vote_parser.add_argument(
+            "repo", help=_("repository name"))
         vote_d = {}
         _commands["vote"] = vote_d
 
