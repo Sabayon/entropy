@@ -145,7 +145,7 @@ System security tools.
         self._setup_verbose_quiet_parser(info_parser)
         info_parser.add_argument(
             "ids", nargs='+',
-            metavar="<id>", help=_("advistory indentifier"))
+            metavar="<id>", help=_("advisory indentifier"))
         info_parser.set_defaults(func=self._info)
         _commands["info"] = {}
 

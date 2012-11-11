@@ -995,7 +995,7 @@ Repository query tools.
 
         if not quiet:
             entropy_client.output(
-                darkgreen(_("Needed Packages Search")),
+                darkgreen(_("Needed Libraries Search")),
                 header=darkred(" @@ "))
 
         for package in packages:
