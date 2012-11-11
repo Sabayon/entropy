@@ -1,3 +1,27 @@
+commit 8194608d2de3ca914ae904f0f11ba04bff605625
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 09:41:15 2012 +0100
+
+    Release Entropy 148
+
+commit eadf576359d15f8ec3e6cb47b986de859b8731fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 09:39:25 2012 +0100
+
+    [matter] fix Portage import paths due to upstream changes
+
+commit c5fb8d1f9975b088db1b692f029ec2189b3a59d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 09:32:11 2012 +0100
+
+    [matter] fix undefined variable "p" issue
+
+commit c00c961625def1ed01482932703c13b52183a428
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 10 16:29:59 2012 +0100
+
+    Tagging Entropy version 147
+
 commit 6d5762e9850c9e4520814532720b7a494946a8d2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 10 16:29:58 2012 +0100
