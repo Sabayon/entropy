@@ -43,9 +43,18 @@ os.environ['CMAKE_NO_COLOR'] = "yes"
 
 from _emerge.depgraph import backtrack_depgraph
 from _emerge.actions import load_emerge_config
+try:
+    from _emerge.actions import validate_ebuild_environment
+except ImportError:
+    # older portage versions
+    from _emerge.main import validate_ebuild_environment
+try:
+    from _emerge.post_emerge import post_emerge
+except ImportError:
+    # older portage versions
+    from _emerge.main import post_emerge
 from _emerge.create_depgraph_params import create_depgraph_params
-from _emerge.main import parse_opts, post_emerge, \
-    validate_ebuild_environment
+from _emerge.main import parse_opts
 from _emerge.stdout_spinner import stdout_spinner
 from _emerge.Scheduler import Scheduler
 from _emerge.clear_caches import clear_caches
