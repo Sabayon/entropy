@@ -1,3 +1,45 @@
+commit 4001e0f4b283c77fd165f863ee540d4d57bef8e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 12 12:30:41 2012 +0100
+
+    Release Entropy 149
+
+commit 09f3669842793dcc9c47aa7161363a2f29aef51c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 23:55:31 2012 +0100
+
+    [Solo] make enlightenatom() work with package keys
+
+commit b7d7006505d03dec9ffe4b7a88d88ac08fcec0e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 21:30:24 2012 +0100
+
+    [equo] fix ugc vote float (or int) to string conversion
+
+commit 7f99aa787daa02e6e9df9d4f4c2eae90b4510174
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 21:14:47 2012 +0100
+
+    [equo] fix "equo ugc vote" command, add missing positional argument
+
+commit 6670438445d1c3d64512fc128d08bb02f24a0002
+Author: Sławomir Nizio <slawomir.nizio@sabayon.org>
+Date:   Sun Nov 11 19:00:31 2012 +0100
+
+    [Solo] fix typo, improve message
+
+commit 45314881e7112d44184c00bf46508b45850d2204
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 14:01:38 2012 +0100
+
+    [eit] fix print_table() usage in "eit status"
+
+commit 04daf0210d767bdcc48880bc0f9e5d78c3a16680
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 11 09:41:16 2012 +0100
+
+    Tagging Entropy version 148
+
 commit 8194608d2de3ca914ae904f0f11ba04bff605625
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 11 09:41:15 2012 +0100
