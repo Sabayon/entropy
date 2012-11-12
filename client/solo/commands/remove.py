@@ -414,7 +414,7 @@ Remove previously installed packages from system.
                     empty = empty,
                     system_packages = system_packages_check)
             except DependenciesNotRemovable as err:
-                non_rm_pkg_ids = sorted(
+                non_rm_pkg_names = sorted(
                     [inst_repo.retrieveAtom(x[0]) for x in err.value])
                 # otherwise we need to deny the request
                 entropy_client.output("", level="error")
@@ -425,8 +425,7 @@ Remove previously installed packages from system.
                                 " were pulled in")),
                         ),
                     level="error", importance=1)
-                for pkg_in in non_rm_pkg_ids:
-                    pkg_name = inst_repo.retrieveAtom(pkg_in)
+                for pkg_name in non_rm_pkg_names:
                     entropy_client.output(
                         teal(pkg_name),
                         header=purple("    # "),
