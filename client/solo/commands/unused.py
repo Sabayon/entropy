@@ -60,10 +60,11 @@ Report unused packages that could be removed.
             formatter_class=argparse.RawDescriptionHelpFormatter,
             prog="%s %s" % (sys.argv[0], SoloUnused.NAME))
 
-        parser.add_argument("--quiet", action="store_true",
+        parser.add_argument("--quiet", "-q", action="store_true",
                             default=self._quiet,
                             help=_("show less details (useful for scripting)"))
         _commands.append("--quiet")
+        _commands.append("-q")
 
         parser.add_argument("--sortbysize", action="store_true",
                             default=self._sortbysize,
