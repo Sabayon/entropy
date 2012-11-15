@@ -18,7 +18,8 @@ import pdb
 
 from entropy.i18n import _
 from entropy.output import print_error, print_warning, bold, purple, \
-    teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface
+    teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface, \
+    is_stdout_a_tty, nocolor
 from entropy.const import etpConst, const_convert_to_rawstring, \
     const_debug_enabled
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
@@ -248,6 +249,13 @@ def warn_live_system():
     print_warning("")
 
 def main():
+
+    is_color = "--color" in sys.argv
+    if is_color:
+        sys.argv.remove("--color")
+
+    if not is_color and not is_stdout_a_tty():
+        nocolor()
 
     warn_version_mismatch()
 

@@ -71,6 +71,11 @@ class SoloHelp(SoloCommand):
             epilog="http://www.sabayon.org",
             formatter_class=ColorfulFormatter)
 
+        # filtered out in solo.main. Will never get here
+        parser.add_argument(
+            "--color", action="store_true",
+            default=None, help=_("force colored output"))
+
         descriptors = SoloCommandDescriptor.obtain()
         descriptors.sort(key = lambda x: x.get_name())
         group = parser.add_argument_group("command", "available commands")
