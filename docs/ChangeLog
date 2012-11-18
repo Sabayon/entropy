@@ -1,3 +1,41 @@
+commit dc27835fd8faa8d76f8ac77269a9bf62b9abd7ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 18 19:58:54 2012 +0100
+
+    Release Entropy 150
+
+commit a9755d67ce1751158edc5c86026485c63aa18894
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 18 19:54:32 2012 +0100
+
+    [equo] fix "equo conf update" interactive merge
+    
+    subprocess.call() arguments were generated before mkstemp()
+
+commit 29b8f266ccc8be88d1810ebedc71ad67693576be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 15 21:05:52 2012 +0100
+
+    [equo] fix tty colored output handling, re-add --color
+
+commit 281c9b5bcf6a609d6320b21678b35ca95d32e58c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 15 21:05:25 2012 +0100
+
+    [equo] add "-q" argument support to "equo unused"
+
+commit 25ee44ea79e9030550714c949993e10345be798c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 12 23:30:01 2012 +0100
+
+    [equo] fix DependenciesNotRemovable handling in "equo remove"
+
+commit 04e30cc3d344a688bac6f40e85fea14baea83fc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 12 12:30:42 2012 +0100
+
+    Tagging Entropy version 149
+
 commit 4001e0f4b283c77fd165f863ee540d4d57bef8e3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Nov 12 12:30:41 2012 +0100
