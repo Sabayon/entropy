@@ -501,10 +501,11 @@ Manage package file updates.
 
     def _interactive_merge_diff(self, source, destination):
         tmp_fd, tmp_path = None, None
-        args = ("/usr/bin/sdiff", "-o", tmp_path, source, destination)
         try:
             tmp_fd, tmp_path = tempfile.mkstemp(
                 suffix="equo.conf.intmerge")
+            args = ("/usr/bin/sdiff", "-o", tmp_path,
+                    source, destination)
             rc = subprocess.call(args)
         except OSError as err:
             if err.errno != errno.ENOENT:
