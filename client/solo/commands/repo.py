@@ -100,6 +100,10 @@ Manage Entropy Repositories.
         list_parser = subparsers.add_parser("list",
             help=_("list active repositories"))
         list_parser.set_defaults(func=self._list)
+        list_parser.add_argument(
+            "--quiet", "-q", action="store_true",
+            default=False,
+            help=_('quiet output, for scripting purposes'))
         _commands.append("list")
 
         mirrorsort_parser = subparsers.add_parser("mirrorsort",
@@ -460,6 +464,7 @@ Manage Entropy Repositories.
         available_repos = settings['repositories']['available']
         default_repo = settings['repositories']['default_repository']
         repositories = entropy_client.repositories()
+        quiet = self._nsargs.quiet
 
         for repository in repositories:
             repo_data = available_repos.get(repository)
@@ -469,14 +474,18 @@ Manage Entropy Repositories.
             if repo_data is not None:
                 desc = repo_data.get('description', desc)
 
-            repo_str = "  "
-            if repository == default_repo:
-                repo_str = purple("* ")
-            entropy_client.output(
-                "%s%s\n    %s" % (
-                    repo_str, darkgreen(repository),
-                    brown(desc),),
-                level="generic")
+            if quiet:
+                entropy_client.output(
+                    repository, level="generic")
+            else:
+                repo_str = "  "
+                if repository == default_repo:
+                    repo_str = purple("* ")
+                entropy_client.output(
+                    "%s%s\n    %s" % (
+                        repo_str, darkgreen(repository),
+                        brown(desc),),
+                    level="generic")
 
         return 0
 
