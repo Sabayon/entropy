@@ -436,7 +436,7 @@ class SoloManage(SoloCommand):
 
         final_package_names = []
         for package in self._scan_packages_expand_tag(
-            entropy_client, packages):
+            entropy_client, package_names):
 
             # clear masking reasons
             match = entropy_client.atom_match(package)
