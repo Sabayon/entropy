@@ -1,3 +1,27 @@
+commit 922bf6e0a7ea23aea65ad84b814aabb8d91bb3ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 23 22:58:43 2012 +0100
+
+    Release Entropy 151
+
+commit 4f5832040e72192e1dba7158b4cbf35fc877ae6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 23 22:57:36 2012 +0100
+
+    [equo] fix package set and package from repo string matching
+
+commit 2e9840e5b03f0e16da6062da2061abaf4cb9e0b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 20 21:17:31 2012 +0100
+
+    [equo] add --quiet support to "equo repo list"
+
+commit 0c8de888f8adf2285463d0122ebfaf6d057b4dd4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 18 19:58:54 2012 +0100
+
+    Tagging Entropy version 150
+
 commit dc27835fd8faa8d76f8ac77269a9bf62b9abd7ac
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 18 19:58:54 2012 +0100
