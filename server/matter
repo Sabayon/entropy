@@ -62,6 +62,7 @@ from _emerge.unmerge import unmerge
 from _emerge.Blocker import Blocker
 
 import portage.versions
+import portage.dep
 import portage
 
 
@@ -355,6 +356,11 @@ class MatterSpec(GenericSpecFunctions):
                 'default': "no",
             },
             'spm-repository-change': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+                'default': "no",
+            },
+            'spm-repository-change-if-upstreamed': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
@@ -970,23 +976,52 @@ class PackageBuilder(object):
         changing_repo_pkgs = []
         for pkg in real_queue:
             wanted_repo = pkg.repo
-            inst_atom = portage.best(vardb.match(pkg.slot_atom))
+            pkg_slot = pkg.slot_atom
+            inst_atom = portage.best(vardb.match(pkg_slot))
             current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
             if current_repo:
                 if current_repo != wanted_repo:
                     changing_repo_pkgs.append(
-                        (pkg.cpv, current_repo, wanted_repo))
+                        (pkg.cpv, pkg_slot, current_repo, wanted_repo))
 
         if changing_repo_pkgs:
             print_warning("")
             print_warning(
                 "Attention, packages are moving across SPM repositories:")
-            for pkg_atom, current_repo, wanted_repo in changing_repo_pkgs:
-                print_warning("  %s [%s->%s]" % (pkg_atom,
-                    current_repo, wanted_repo,))
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                print_warning("  %s:%s [%s->%s]" % (pkg_atom, pkg_slot,
+                    c_repo, w_repo,))
             print_warning("")
 
         allow_spm_repo_change = self._params['spm-repository-change'] == "yes"
+        allow_spm_repo_change_if_upstreamed = \
+            self._params['spm-repository-change-if-upstreamed'] == "yes"
+        if (not allow_spm_repo_change) and allow_spm_repo_change_if_upstreamed:
+            print_info("SPM repository change allowed if the original "
+                       "repository does no longer contain current packages.")
+
+            # check if source repository still contains the package
+            # in this case, set allow_spm_repo_change to True
+            _allow = True
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                pkg_key = portage.dep.dep_getkey("=%s" % (pkg_atom,))
+                pkg_target = "%s:%s::%s" % (
+                    pkg_key, pkg_slot, c_repo)
+                pkg_match = portdb.xmatch("bestmatch-visible", pkg_target)
+                if pkg_match:
+                    # package still available in source repo
+                    _allow = False
+                    print_warning("  %s:%s, still in repo: %s" % (
+                        pkg_atom, pkg_slot, c_repo,))
+                    # do not break, print all the list
+                    # break
+
+            if _allow:
+                print_info(
+                    "current packages are no longer in their "
+                    "original repository, SPM repository change allowed.")
+                allow_spm_repo_change = True
+
         if changing_repo_pkgs and (not allow_spm_repo_change):
             print_warning(
                 "cannot continue due to unmet SPM repository change constraint")

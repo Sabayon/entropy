@@ -14,6 +14,13 @@ repository: community0
 # Default is: no
 spm-repository-change: yes
 
+# In case of Source Package Manager repository change, allow
+# execution if the original repository does not contain
+# the package anymore?
+# Valid values are either "yes" or "no"
+# Default is: no
+spm-repository-change-if-upstreamed: yes
+
 # Allow compiling package even if it's not actually installed on system?
 # Valid values are either "yes" or "no"
 # Default is: no
