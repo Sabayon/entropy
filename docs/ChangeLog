@@ -1,3 +1,90 @@
+commit 6576830df5d109188fd01cbeafafa09f5444a55f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 20:04:58 2012 +0100
+
+    Release Entropy 152
+
+commit 6f8682af3c0fba4f8789b5984b0c074d44971a81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 19:28:56 2012 +0100
+
+    [equo] add new command "equo query updates"
+    
+    This command can be used in update-motd scripts for generating system
+    update status information.
+
+commit 0f20b74aaebaf234053af41dbe6840ac1981691a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 19:28:31 2012 +0100
+
+    [entropy.client.interfaces.dep] add "quiet" keyword arg to calculate_updates()
+
+commit 3d04b69b7dcdab456df15ee428fcc15fe3e68dfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 19:03:41 2012 +0100
+
+    [equo] trivial: remove unused import
+
+commit 0685cd41329b69ef0985b9fb859be94a76270c46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 18:59:38 2012 +0100
+
+    [equo] add "equo version (or --version)" command
+
+commit afb6d4e2c9400dafc91e9038910f923a37c7c0d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 18:51:28 2012 +0100
+
+    [equo] write license text to file in binary mode, don't use codecs.open()
+
+commit db91ce20b43a9c723d374c2ad1bde8ba8892fd6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 18:33:21 2012 +0100
+
+    [entropy.db] catch idiotic "no transaction is active" sqlite3 OperationalError
+
+commit 2ff854789cd62118135a412aeb29ee32988a054a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 18:13:46 2012 +0100
+
+    [equo] update all the supported translations
+
+commit fda0450aaf40dfc1cad48905eed3a71a816154c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 18:13:30 2012 +0100
+
+    [equo] add Romanian translation
+
+commit 48c387093256c51bb2b43f4326e7ca824b797907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 12:50:49 2012 +0100
+
+    [matter] use portage.dep.dep_getkey for SPM package atoms
+
+commit 7743050d6925c193a0357e230e1496f0546b97b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 12:44:05 2012 +0100
+
+    [matter] add support for "spm-repository-change-if-upstreamed"
+    
+    If SPM repository changes are not allowed when a package needs to be bumped,
+    the package won't be bumped/recompiled.
+    However, there is a case in where the SPM repo change constraint loses its
+    importance, and it's when the current SPM repository no longer contains the
+    target package (thus, changes have been upstreamed or they're just not needed
+    anymore).
+    Using "spm-repository-change-if-upstreamed: yes" makes possible to ignore
+    SPM repo changes in this case.
+    
+    The default behaviour does not change, spm-repository-change-if-upstreamed is
+    disabled by default (== no as default config value).
+
+commit 996231c08d497c8aba903209254bad906cd3c75b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 23 22:58:44 2012 +0100
+
+    Tagging Entropy version 151
+
 commit 922bf6e0a7ea23aea65ad84b814aabb8d91bb3ac
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 23 22:58:43 2012 +0100
