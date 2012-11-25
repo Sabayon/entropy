@@ -1187,7 +1187,7 @@ class PackageBuilder(object):
             item_txt = atom
 
             # this is a spm atom
-            spm_key = entropy.dep.dep_getkey(atom)
+            spm_key = portage.dep.dep_getkey("=%s" % (atom,))
             try:
                 spm_slot = spm.get_installed_package_metadata(
                     atom, "SLOT")
