@@ -30,7 +30,7 @@ OPTIONAL ARGUMENTS
 *--help*::
     show this help message and exit
 
-*--quiet*::
+*-q*::
     show less details (useful for scripting)
 
 *--sortbysize*::

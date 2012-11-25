@@ -122,6 +122,9 @@ COMMANDS
 *upgrade [u]*::
     upgrade the system
 
+*version [--version]*::
+    show equo version
+
 *yell*::
     yell at user
 

@@ -13,7 +13,7 @@ SYNOPSIS
 --------
 equo query [-h] [--verbose] [--quiet]
            
-           {belongs,changelog,revdeps,description,files,installed,license,list,mimetype,associate,needed,orphans,required,sets,slot,tags,revisions,graph,revgraph}
+           {belongs,changelog,revdeps,description,files,installed,license,list,mimetype,associate,needed,orphans,required,sets,slot,tags,revisions,graph,revgraph,updates}
            ...
 
 
@@ -97,6 +97,9 @@ ACTION
 
 *revgraph*::
     show the inverse dependencies graph for the given package
+
+*updates*::
+    show the number of updates available
 
 
 
