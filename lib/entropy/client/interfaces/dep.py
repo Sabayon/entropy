@@ -2552,7 +2552,7 @@ class CalculatorsMixin:
         return sec_updates
 
     def calculate_updates(self, empty = False, use_cache = True,
-        critical_updates = True):
+        critical_updates = True, quiet = False):
 
         """
         Calculate package updates. By default, this method also handles critical
@@ -2568,6 +2568,8 @@ class CalculatorsMixin:
         @keyword critical_updates: if False, disable critical updates check
             priority.
         @type critical_updates: bool
+        @keyword quiet: do not print any status info if True
+        @type quiet: bool
         @return: tuple composed by (list of package matches (updates),
             list of installed package identifiers (removal), list of
             package names already up-to-date (fine), list of package names
@@ -2613,26 +2615,25 @@ class CalculatorsMixin:
             raise SystemDatabaseError("installed packages repository is broken")
 
         maxlen = len(idpackages)
-        count = 0
         mytxt = _("Calculating updates")
         last_avg = 0
-        for idpackage in idpackages:
+        for count, idpackage in enumerate(idpackages, 1):
 
-            count += 1
             avg = int(float(count)/maxlen*100)
             if (avg%10 == 9 and avg != last_avg) or \
                     (count == maxlen) or (count == 1):
                 last_avg = avg
-                self.output(
-                    mytxt,
-                    importance = 0,
-                    level = "info",
-                    back = True,
-                    header = ":: ",
-                    count = (count, maxlen),
-                    percent = True,
-                    footer = " ::"
-                )
+                if not quiet:
+                    self.output(
+                        mytxt,
+                        importance = 0,
+                        level = "info",
+                        back = True,
+                        header = ":: ",
+                        count = (count, maxlen),
+                        percent = True,
+                        footer = " ::"
+                    )
 
             try:
                 cl_pkgkey, cl_slot, cl_version, \
