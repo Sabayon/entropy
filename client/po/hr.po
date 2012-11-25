@@ -1,25 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Ivica  Kolić <ikoli@yahoo.com>, 2012.
-#: ../../client/solo/commands/query.py:238
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-06 22:12+0100\n"
-"PO-Revision-Date: 2012-11-03 23:59+0000\n"
+"POT-Creation-Date: 2012-11-09 09:19+0100\n"
+"PO-Revision-Date: 2012-11-09 09:18+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-entropy/"
-"language/hr/)\n"
-"Language: hr\n"
+"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-entropy/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: ../../lib/entropy/db/sqlite.py:1676
 msgid "Exporting database table"
@@ -27,7 +24,7 @@ msgstr ""
 
 #: ../../lib/entropy/db/sqlite.py:1716
 msgid "Database Export complete."
-msgstr ""
+msgstr "Izvoz baze podataka završen."
 
 #: ../../lib/entropy/db/sqlite.py:2094 ../../lib/entropy/db/sqlite.py:2198
 #: ../../lib/entropy/db/sqlite.py:2309 ../../lib/entropy/db/sqlite.py:2322
@@ -111,7 +108,7 @@ msgid "Syncing current database"
 msgstr "Sinkroniziram trenutnu bazu podataka"
 
 #: ../../lib/entropy/db/skel.py:3801
-#: ../../lib/entropy/client/interfaces/db.py:299
+#: ../../lib/entropy/client/interfaces/db.py:296
 msgid "please wait"
 msgstr "molim pričekajte"
 
@@ -253,8 +250,8 @@ msgstr "nije nađeno"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2364
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2456
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2528
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3179
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4821
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3155
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4797
 #: ../../lib/entropy/client/interfaces/trigger.py:280
 msgid "QA"
 msgstr ""
@@ -292,7 +289,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:3973
 #: ../../lib/entropy/client/interfaces/package.py:3993
 #: ../../lib/entropy/client/interfaces/trigger.py:74
-#: ../../lib/entropy/security.py:659 ../../client/solo/commands/rescue.py:198
+#: ../../lib/entropy/security.py:659 ../../client/solo/commands/rescue.py:200
 msgid "Error"
 msgstr "Greška"
 
@@ -302,7 +299,7 @@ msgstr "paket nije dostupan u sustavu"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2593
 msgid "repackaging"
-msgstr ""
+msgstr "prepakiranje"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2606
 msgid "Cannot complete quickpkg for atom"
@@ -333,91 +330,91 @@ msgstr "Sinkroniziram sa"
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3180
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3156
 msgid "Cannot update Portage package metadata"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3206
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3182
 msgid "SPM uid update error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3275
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3251
 msgid "Cannot update SPM installed pkgs file"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3368
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3344
 msgid "Portage world file is corrupted"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3422
-#: ../../lib/entropy/client/interfaces/db.py:387
-#: ../../lib/entropy/client/interfaces/db.py:490
-#: ../../lib/entropy/client/interfaces/db.py:596
-#: ../../lib/entropy/client/interfaces/db.py:1905 ../../lib/entropy/qa.py:802
-#: ../../client/solo/commands/install.py:456
-#: ../../client/solo/commands/install.py:459
-#: ../../client/solo/commands/install.py:466
-#: ../../client/solo/commands/install.py:469
-#: ../../client/solo/commands/rescue.py:305
-#: ../../client/solo/commands/rescue.py:316 ../../services/kernel-switcher:140
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3398
+#: ../../lib/entropy/client/interfaces/db.py:384
+#: ../../lib/entropy/client/interfaces/db.py:487
+#: ../../lib/entropy/client/interfaces/db.py:593
+#: ../../lib/entropy/client/interfaces/db.py:1902 ../../lib/entropy/qa.py:802
+#: ../../client/solo/commands/install.py:480
+#: ../../client/solo/commands/install.py:483
+#: ../../client/solo/commands/install.py:490
+#: ../../client/solo/commands/install.py:493
+#: ../../client/solo/commands/rescue.py:307
+#: ../../client/solo/commands/rescue.py:318 ../../services/kernel-switcher:140
 msgid "Attention"
 msgstr "Pozor"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3423
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3399
 msgid "preserved libraries have been found on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3558
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3708
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3534
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3684
 msgid "does not exist"
 msgstr "ne postoji"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3558
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3534
 msgid "Overwriting"
-msgstr ""
+msgstr "Prepisujem preko"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3604
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3580
 msgid "variable differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3604
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3693
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3580
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3669
 msgid "Updating"
 msgstr "Ažuriram"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3619
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 msgid "updating critical variables"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3693
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3669
 msgid "differs"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3708
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3684
 msgid "Reverting"
-msgstr ""
+msgstr "Vraćam"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3723
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3699
 msgid "Skipping configuration files update, you are not root."
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3984
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3960
 msgid "Error calculating dependencies"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4543
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4519
 msgid "not supported"
 msgstr "nije podržano"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4544
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4520
 msgid "Probably Portage API has changed"
 msgstr "Vjerojatno se Portage API promjenio"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4665
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4641
 msgid "IOError while reading"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4822
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4798
 msgid "illegal Entropy package tag in ebuild"
 msgstr ""
 
@@ -518,14 +515,14 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/cache.py:106
 #: ../../lib/entropy/client/interfaces/methods.py:100
 #: ../../lib/entropy/client/interfaces/methods.py:125
-#: ../../client/solo/commands/upgrade.py:254
+#: ../../client/solo/commands/upgrade.py:278
 msgid "Repository"
 msgstr "Repozitorij"
 
 #: ../../lib/entropy/client/interfaces/cache.py:107
 #: ../../lib/entropy/client/interfaces/methods.py:126
 msgid "is corrupted"
-msgstr ""
+msgstr "je oštećen"
 
 #: ../../lib/entropy/client/interfaces/cache.py:108
 msgid "Cannot calculate the checksum"
@@ -557,7 +554,7 @@ msgstr "Repozitorij %s još nije preuzet."
 
 #: ../../lib/entropy/client/interfaces/methods.py:1089
 msgid "System database not found or corrupted"
-msgstr ""
+msgstr "Baza podataka sustava nije nađena ili je oštećena"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1090
 msgid "running in safe mode using temporary, empty repository"
@@ -573,7 +570,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/methods.py:1299
 #: ../../lib/entropy/client/interfaces/methods.py:1357
-#: ../../lib/entropy/const.py:683
+#: ../../lib/entropy/const.py:674
 msgid "All fine"
 msgstr "Sve je u redu"
 
@@ -618,318 +615,316 @@ msgstr "Brzina zrcala"
 msgid "not a valid method"
 msgstr "nije valjana metoda"
 
-#: ../../lib/entropy/client/interfaces/db.py:297
+#: ../../lib/entropy/client/interfaces/db.py:294
 msgid "Injecting downloaded dump"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:388
-#, fuzzy
+#: ../../lib/entropy/client/interfaces/db.py:385
 msgid "repository is not available at the following URL:"
-msgstr "repozitorij nije dostupan"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:399
+#: ../../lib/entropy/client/interfaces/db.py:396
 msgid "Looking for an alternate route using package mirrors"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:411
-#, fuzzy
+#: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Checking repository URL"
-msgstr "Provjeravam preuzeti repozitorij"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:432
-#, fuzzy
+#: ../../lib/entropy/client/interfaces/db.py:429
 msgid "Found repository at URL"
-msgstr "URL repozitorija"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:444
+#: ../../lib/entropy/client/interfaces/db.py:441
 msgid "Unable to find alternate repository mirrors. Sorry."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:460
+#: ../../lib/entropy/client/interfaces/db.py:457
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
 msgstr "URL repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:468
+#: ../../lib/entropy/client/interfaces/db.py:465
 msgid "Repository local path"
 msgstr "Lokalna putanja repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:476
+#: ../../lib/entropy/client/interfaces/db.py:473
 msgid "Repository API"
 msgstr "API repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:491
+#: ../../lib/entropy/client/interfaces/db.py:488
 msgid "Repository is being updated"
 msgstr "Repozitorij je ažuriran"
 
-#: ../../lib/entropy/client/interfaces/db.py:492
+#: ../../lib/entropy/client/interfaces/db.py:489
 msgid "Try again in a few minutes"
 msgstr "Pokušaj ponovno za nekoliko minuta"
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:553
+#: ../../lib/entropy/client/interfaces/db.py:550
 msgid "Downloading repository"
 msgstr "Preuzimam repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:597
+#: ../../lib/entropy/client/interfaces/db.py:594
 msgid "unable to download the repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:617
+#: ../../lib/entropy/client/interfaces/db.py:614
 msgid "Downloading checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:642
+#: ../../lib/entropy/client/interfaces/db.py:639
 msgid "Cannot fetch checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:643
-#: ../../lib/entropy/client/interfaces/db.py:1219
+#: ../../lib/entropy/client/interfaces/db.py:640
+#: ../../lib/entropy/client/interfaces/db.py:1216
 msgid "Cannot verify repository integrity"
-msgstr ""
+msgstr "Ne mogu potvrditi integritet repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:734
+#: ../../lib/entropy/client/interfaces/db.py:731
 msgid "Unpacking database to"
 msgstr "Rapakiravam bazu podataka u"
 
-#: ../../lib/entropy/client/interfaces/db.py:751
+#: ../../lib/entropy/client/interfaces/db.py:748
 msgid "Cannot unpack compressed package"
 msgstr "Ne mogu raspakirati komprimirani paket"
 
-#: ../../lib/entropy/client/interfaces/db.py:752
+#: ../../lib/entropy/client/interfaces/db.py:749
 msgid "Skipping repository"
 msgstr "Preskačem repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:786
+#: ../../lib/entropy/client/interfaces/db.py:783
 msgid "Repository is invalid"
 msgstr "Repozitorij je neispravan"
 
-#: ../../lib/entropy/client/interfaces/db.py:810
+#: ../../lib/entropy/client/interfaces/db.py:807
 msgid "Indexing Repository metadata"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1026
+#: ../../lib/entropy/client/interfaces/db.py:1023
 msgid "Downloading repository metafile"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1036
+#: ../../lib/entropy/client/interfaces/db.py:1033
 msgid "Downloading GPG signature of repository metafile"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1046
+#: ../../lib/entropy/client/interfaces/db.py:1043
 msgid "Downloading Notice Board"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1072
+#: ../../lib/entropy/client/interfaces/db.py:1069
 msgid "unpacked meta file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1078
+#: ../../lib/entropy/client/interfaces/db.py:1075
 msgid "removed meta file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1095
+#: ../../lib/entropy/client/interfaces/db.py:1092
 msgid "not available, it's ok"
 msgstr "nije dostupno, uredu je"
 
-#: ../../lib/entropy/client/interfaces/db.py:1099
+#: ../../lib/entropy/client/interfaces/db.py:1096
 msgid "not available, not very ok!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1112
+#: ../../lib/entropy/client/interfaces/db.py:1109
 msgid "available, w00t!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1130
+#: ../../lib/entropy/client/interfaces/db.py:1127
 msgid "cannot be unpacked, not very ok!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1181
+#: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "Repository revision"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1204
+#: ../../lib/entropy/client/interfaces/db.py:1201
 msgid "Checking downloaded repository"
 msgstr "Provjeravam preuzeti repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:1218
+#: ../../lib/entropy/client/interfaces/db.py:1215
 msgid "Cannot open digest"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1229
-#: ../../lib/entropy/client/interfaces/db.py:1240
+#: ../../lib/entropy/client/interfaces/db.py:1226
+#: ../../lib/entropy/client/interfaces/db.py:1237
 msgid "Downloaded repository status"
 msgstr "Status preuzetog repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:1230
+#: ../../lib/entropy/client/interfaces/db.py:1227
 msgid "OK"
 msgstr "U redu"
 
-#: ../../lib/entropy/client/interfaces/db.py:1241
+#: ../../lib/entropy/client/interfaces/db.py:1238
 msgid "ERROR"
 msgstr "GREŠKA"
 
-#: ../../lib/entropy/client/interfaces/db.py:1250
+#: ../../lib/entropy/client/interfaces/db.py:1247
 msgid "An error occured while checking repository integrity"
-msgstr ""
+msgstr "Došlo je do greške prilikom provjere integriteta repozitorija"
 
-#: ../../lib/entropy/client/interfaces/db.py:1251
+#: ../../lib/entropy/client/interfaces/db.py:1248
 msgid "Giving up"
 msgstr "Odustajem"
 
-#: ../../lib/entropy/client/interfaces/db.py:1273
+#: ../../lib/entropy/client/interfaces/db.py:1270
 #: ../../lib/entropy/security.py:284
-msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgid ""
+"Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1292
+#: ../../lib/entropy/client/interfaces/db.py:1289
 msgid "This repository suports GPG-signed packages"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1299
+#: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1333
+#: ../../lib/entropy/client/interfaces/db.py:1330
 #: ../../lib/entropy/security.py:323
 msgid "GPG key changed for"
 msgstr "GPG ključ promjenjen za"
 
-#: ../../lib/entropy/client/interfaces/db.py:1353
+#: ../../lib/entropy/client/interfaces/db.py:1350
 #: ../../lib/entropy/security.py:342
 msgid "GPG key already installed for"
 msgstr "GPG ključ je već instaliran za"
 
-#: ../../lib/entropy/client/interfaces/db.py:1366
+#: ../../lib/entropy/client/interfaces/db.py:1363
 msgid "GPG key EXPIRED for repository"
 msgstr "GPG ključ je ISTEKAO za repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:1378
+#: ../../lib/entropy/client/interfaces/db.py:1375
 msgid "Installing GPG key for repository"
 msgstr "Instaliram GPG ključ za repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:1396
-#: ../../lib/entropy/client/interfaces/db.py:1428
+#: ../../lib/entropy/client/interfaces/db.py:1393
+#: ../../lib/entropy/client/interfaces/db.py:1425
 #: ../../lib/entropy/security.py:380
 msgid "Error during GPG key installation"
 msgstr "Greška tijekom instalacije GPG ključa"
 
-#: ../../lib/entropy/client/interfaces/db.py:1406
+#: ../../lib/entropy/client/interfaces/db.py:1403
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1440
+#: ../../lib/entropy/client/interfaces/db.py:1437
 msgid "Successfully installed GPG key for repository"
 msgstr "Uspješno je instaliran GPG ključ za repozitorij"
 
-#: ../../lib/entropy/client/interfaces/db.py:1449
+#: ../../lib/entropy/client/interfaces/db.py:1446
 #: ../../lib/entropy/security.py:400
 msgid "Fingerprint"
 msgstr "Otisak prsta"
 
-#: ../../lib/entropy/client/interfaces/db.py:1489
+#: ../../lib/entropy/client/interfaces/db.py:1486
 msgid "Verifying GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1503
+#: ../../lib/entropy/client/interfaces/db.py:1500
 msgid "Verified GPG signature of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1513
+#: ../../lib/entropy/client/interfaces/db.py:1510
 #: ../../lib/entropy/security.py:425
 msgid "Error during GPG verification of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1522
+#: ../../lib/entropy/client/interfaces/db.py:1519
 #: ../../lib/entropy/security.py:434
 msgid "It could mean a potential security risk"
 msgstr "Može značiti potencijalni sigurnosni rizik"
 
-#: ../../lib/entropy/client/interfaces/db.py:1577
+#: ../../lib/entropy/client/interfaces/db.py:1574
 msgid "Web Service"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1578
+#: ../../lib/entropy/client/interfaces/db.py:1575
 msgid "skipping differential sync"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1579
+#: ../../lib/entropy/client/interfaces/db.py:1576
 msgid "threshold"
 msgstr "donja granica"
 
-#: ../../lib/entropy/client/interfaces/db.py:1613
+#: ../../lib/entropy/client/interfaces/db.py:1610
 msgid "Web Service communication error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1633
+#: ../../lib/entropy/client/interfaces/db.py:1630
 msgid "Web Service data error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1649
+#: ../../lib/entropy/client/interfaces/db.py:1646
 msgid "Local status"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1681
+#: ../../lib/entropy/client/interfaces/db.py:1678
 msgid "Fetching segments"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1717
-#: ../../lib/entropy/client/interfaces/db.py:1736
-#: ../../lib/entropy/client/interfaces/db.py:1753
+#: ../../lib/entropy/client/interfaces/db.py:1714
+#: ../../lib/entropy/client/interfaces/db.py:1733
+#: ../../lib/entropy/client/interfaces/db.py:1750
 msgid "Web Service status"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1718
+#: ../../lib/entropy/client/interfaces/db.py:1715
 msgid "cannot fetch repository metadata"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1737
+#: ../../lib/entropy/client/interfaces/db.py:1734
 msgid "cannot update treeupdates data"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1754
+#: ../../lib/entropy/client/interfaces/db.py:1751
 msgid "cannot update package sets data"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1770
+#: ../../lib/entropy/client/interfaces/db.py:1767
 msgid "Fetch error on segment while adding"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1796
+#: ../../lib/entropy/client/interfaces/db.py:1793
 msgid "repository error while adding packages"
 msgstr "greška repozitorija prilikom dodavanja paketa"
 
-#: ../../lib/entropy/client/interfaces/db.py:1819
+#: ../../lib/entropy/client/interfaces/db.py:1816
 msgid "repository error while removing packages"
 msgstr "greška repozitorija prilikom uklanjanja paketa"
 
-#: ../../lib/entropy/client/interfaces/db.py:1835
+#: ../../lib/entropy/client/interfaces/db.py:1832
 msgid "Repository checksum doesn't match remote."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1838
+#: ../../lib/entropy/client/interfaces/db.py:1835
 msgid "local"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/db.py:1843
+#: ../../lib/entropy/client/interfaces/db.py:1840
 msgid "remote"
-msgstr ""
+msgstr "udaljeno"
 
-#: ../../lib/entropy/client/interfaces/db.py:1906
+#: ../../lib/entropy/client/interfaces/db.py:1903
 msgid "repository is already up to date"
 msgstr "repozitorij je već ažuriran"
 
-#: ../../lib/entropy/client/interfaces/db.py:2110
+#: ../../lib/entropy/client/interfaces/db.py:2107
 msgid "Configuration files update error, not critical, continuing"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:373
 msgid "Already prepared"
-msgstr ""
+msgstr "Već spreman"
 
 #: ../../lib/entropy/client/interfaces/package.py:378
 msgid "Not yet prepared"
-msgstr ""
+msgstr "NIje još spreman"
 
 #: ../../lib/entropy/client/interfaces/package.py:610
 #: ../../lib/entropy/client/interfaces/package.py:1281
@@ -953,7 +948,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package.py:1339
 #: ../../lib/entropy/client/interfaces/package.py:3417
 msgid "second"
-msgstr ""
+msgstr "sekunda"
 
 #: ../../lib/entropy/client/interfaces/package.py:684
 #: ../../lib/entropy/client/interfaces/package.py:1355
@@ -999,7 +994,7 @@ msgstr "Uspješno preuzeto od"
 #: ../../lib/entropy/client/interfaces/package.py:1338
 #: ../../lib/entropy/client/interfaces/package.py:3417
 msgid "at"
-msgstr ""
+msgstr "u"
 
 #: ../../lib/entropy/client/interfaces/package.py:1361
 #: ../../lib/entropy/client/interfaces/package.py:3438
@@ -1016,7 +1011,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:1382
 msgid "timeout, giving up"
-msgstr ""
+msgstr "istek vremena, odustajem"
 
 #: ../../lib/entropy/client/interfaces/package.py:1487
 msgid "Package signature verification error for"
@@ -1177,7 +1172,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:3325
 msgid "cannot overwrite"
-msgstr ""
+msgstr "ne mogu prepisati"
 
 #: ../../lib/entropy/client/interfaces/package.py:3398
 #: ../../lib/entropy/client/interfaces/package.py:3461
@@ -1203,7 +1198,7 @@ msgstr[2] "arhiva"
 
 #: ../../lib/entropy/client/interfaces/package.py:3527
 msgid "Some packages cannot be fetched"
-msgstr ""
+msgstr "Neki paketi ne mogu biti dohvaćeni"
 
 #: ../../lib/entropy/client/interfaces/package.py:3528
 msgid "Try to update your repositories and retry"
@@ -1303,11 +1298,11 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/package.py:4022
 msgid "Fetch not available"
-msgstr ""
+msgstr "Dohvaćanje nije dostupno"
 
 #: ../../lib/entropy/client/interfaces/package.py:4029
 msgid "Fetching"
-msgstr ""
+msgstr "Dohvaćam"
 
 #: ../../lib/entropy/client/interfaces/package.py:4037
 msgid "Multi Fetching"
@@ -1325,7 +1320,7 @@ msgstr[2] "paketa"
 
 #: ../../lib/entropy/client/interfaces/package.py:4044
 msgid "Fetching sources"
-msgstr ""
+msgstr "Dohvaćam izvore"
 
 #: ../../lib/entropy/client/interfaces/package.py:4050
 msgid "Verifying"
@@ -1429,9 +1424,9 @@ msgstr[2] ""
 #: ../../lib/entropy/client/interfaces/repository.py:196
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "datoteka paketa koja se ne može ukloniti"
+msgstr[1] "datoteke paketa koje se ne mogu ukloniti"
+msgstr[2] "datoteke paketa koje se ne mogu ukloniti"
 
 #: ../../lib/entropy/client/interfaces/repository.py:209
 msgid "Packages are stored in"
@@ -1588,75 +1583,75 @@ msgstr ""
 msgid "installing"
 msgstr "instaliram"
 
-#: ../../lib/entropy/const.py:661
+#: ../../lib/entropy/const.py:652
 msgid "Runtime dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:662
+#: ../../lib/entropy/const.py:653
 msgid "Post dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:663
+#: ../../lib/entropy/const.py:654
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:664
+#: ../../lib/entropy/const.py:655
 msgid "Build dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:684
+#: ../../lib/entropy/const.py:675
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../lib/entropy/const.py:716
+#: ../../lib/entropy/const.py:707
 msgid "reason not available"
 msgstr "razlog nije dostupan"
 
-#: ../../lib/entropy/const.py:717
+#: ../../lib/entropy/const.py:708
 msgid "user package.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:718
+#: ../../lib/entropy/const.py:709
 msgid "system keywords"
 msgstr "ključne riječi sustava"
 
-#: ../../lib/entropy/const.py:719
+#: ../../lib/entropy/const.py:710
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:720
+#: ../../lib/entropy/const.py:711
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:721
+#: ../../lib/entropy/const.py:712
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:722
+#: ../../lib/entropy/const.py:713
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:723
+#: ../../lib/entropy/const.py:714
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../lib/entropy/const.py:724
+#: ../../lib/entropy/const.py:715
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:725
+#: ../../lib/entropy/const.py:716
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../lib/entropy/const.py:726
+#: ../../lib/entropy/const.py:717
 msgid "user license.mask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:727
+#: ../../lib/entropy/const.py:718
 msgid "user live unmask"
 msgstr ""
 
-#: ../../lib/entropy/const.py:728
+#: ../../lib/entropy/const.py:719
 msgid "user live mask"
 msgstr ""
 
@@ -1667,30 +1662,30 @@ msgstr "Entropy treba vašu pažnju"
 #: ../../lib/entropy/output.py:781 ../../lib/entropy/output.py:1026
 #: ../../client/solo/commands/ugc.py:650 ../../client/solo/commands/ugc.py:760
 #: ../../client/solo/commands/ugc.py:783 ../../client/solo/commands/ugc.py:964
-#: ../../client/solo/commands/upgrade.py:249
-#: ../../client/solo/commands/upgrade.py:277
-#: ../../client/solo/commands/rescue.py:654
-#: ../../client/solo/commands/rescue.py:659
-#: ../../client/solo/commands/rescue.py:699
+#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/upgrade.py:301
+#: ../../client/solo/commands/rescue.py:656
+#: ../../client/solo/commands/rescue.py:661
+#: ../../client/solo/commands/rescue.py:701
 msgid "Yes"
 msgstr "Da"
 
 #: ../../lib/entropy/output.py:781 ../../client/solo/main.py:169
 #: ../../client/solo/commands/pkg.py:253
-#: ../../client/solo/commands/config.py:145
-#: ../../client/solo/commands/remove.py:381
-#: ../../client/solo/commands/remove.py:388
-#: ../../client/solo/commands/remove.py:433
-#: ../../client/solo/commands/deptest.py:180
-#: ../../client/solo/commands/libtest.py:220
+#: ../../client/solo/commands/config.py:149
+#: ../../client/solo/commands/remove.py:398
+#: ../../client/solo/commands/remove.py:405
+#: ../../client/solo/commands/remove.py:450
+#: ../../client/solo/commands/deptest.py:182
+#: ../../client/solo/commands/libtest.py:223
 #: ../../client/solo/commands/_manage.py:242
 #: ../../client/solo/commands/conf.py:391
 #: ../../client/solo/commands/conf.py:446
-#: ../../client/solo/commands/install.py:517
-#: ../../client/solo/commands/upgrade.py:249
-#: ../../client/solo/commands/rescue.py:326
-#: ../../client/solo/commands/rescue.py:330
-#: ../../client/solo/commands/rescue.py:337
+#: ../../client/solo/commands/install.py:541
+#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/rescue.py:328
+#: ../../client/solo/commands/rescue.py:332
+#: ../../client/solo/commands/rescue.py:339
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
 msgstr "Ne"
@@ -1897,7 +1892,7 @@ msgstr ""
 msgid "Uploading"
 msgstr ""
 
-#: ../../client/solo/utils.py:277 ../../client/solo/commands/rescue.py:233
+#: ../../client/solo/utils.py:277 ../../client/solo/commands/rescue.py:235
 msgid "corrupted"
 msgstr ""
 
@@ -1976,7 +1971,7 @@ msgstr "Sukobi"
 msgid "Homepage"
 msgstr "Početna stranica"
 
-#: ../../client/solo/utils.py:447 ../../client/solo/commands/security.py:220
+#: ../../client/solo/utils.py:447 ../../client/solo/commands/security.py:224
 #: ../../client/solo/commands/ugc.py:621
 msgid "Description"
 msgstr "Opis"
@@ -2028,11 +2023,11 @@ msgid "Reverse graphing installed package"
 msgstr ""
 
 #: ../../client/solo/utils.py:551 ../../client/solo/utils.py:710
-#: ../../client/solo/commands/config.py:112
-#: ../../client/solo/commands/remove.py:362
-#: ../../client/solo/commands/source.py:134
-#: ../../client/solo/commands/install.py:492
-#: ../../client/solo/commands/download.py:136
+#: ../../client/solo/commands/config.py:116
+#: ../../client/solo/commands/remove.py:379
+#: ../../client/solo/commands/source.py:153
+#: ../../client/solo/commands/install.py:516
+#: ../../client/solo/commands/download.py:153
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
 msgstr "Nijedan paket nije nađen"
@@ -2101,8 +2096,7 @@ msgstr ""
 #: ../../client/solo/main.py:164
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be "
-"logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be logged)"
 msgstr ""
 
 #: ../../client/solo/main.py:171
@@ -2135,7 +2129,8 @@ msgstr ""
 
 #: ../../client/solo/main.py:214
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to "
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/solo/main.py:234
@@ -2176,7 +2171,7 @@ msgstr ""
 #: ../../client/solo/commands/pkg.py:79
 #: ../../client/solo/commands/config.py:63
 #: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:160
+#: ../../client/solo/commands/security.py:162
 #: ../../client/solo/commands/remove.py:67
 #: ../../client/solo/commands/deptest.py:61
 #: ../../client/solo/commands/source.py:62
@@ -2237,9 +2232,9 @@ msgid "This is the list of packages that would be considered"
 msgstr ""
 
 #: ../../client/solo/commands/pkg.py:252
-#: ../../client/solo/commands/config.py:144
+#: ../../client/solo/commands/config.py:148
 #: ../../client/solo/commands/_manage.py:241
-#: ../../client/solo/commands/install.py:516
+#: ../../client/solo/commands/install.py:540
 msgid "Would you like to continue ?"
 msgstr "Želite li nastaviti?"
 
@@ -2404,6 +2399,10 @@ msgstr ""
 msgid "library name (example: libdl.so.2)"
 msgstr ""
 
+#: ../../client/solo/commands/query.py:238
+msgid "search package sets"
+msgstr ""
+
 #: ../../client/solo/commands/query.py:241
 msgid "set name"
 msgstr ""
@@ -2520,7 +2519,7 @@ msgid "Reverse Dependencies Search"
 msgstr ""
 
 #: ../../client/solo/commands/query.py:559
-#: ../../client/solo/commands/libtest.py:195
+#: ../../client/solo/commands/libtest.py:198
 msgid "Matched"
 msgstr ""
 
@@ -2651,59 +2650,59 @@ msgstr ""
 msgid "Revision Search"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:68
+#: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
-#: ../../client/solo/commands/security.py:163
-#: ../../client/solo/commands/remove.py:72
-#: ../../client/solo/commands/source.py:67
-#: ../../client/solo/commands/install.py:75
-#: ../../client/solo/commands/upgrade.py:70
-#: ../../client/solo/commands/rescue.py:85
-#: ../../client/solo/commands/download.py:67
+#: ../../client/solo/commands/security.py:165
+#: ../../client/solo/commands/remove.py:74
+#: ../../client/solo/commands/source.py:69
+#: ../../client/solo/commands/install.py:77
+#: ../../client/solo/commands/upgrade.py:72
+#: ../../client/solo/commands/rescue.py:86
+#: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:74
-#: ../../client/solo/commands/remove.py:78
+#: ../../client/solo/commands/config.py:76
+#: ../../client/solo/commands/remove.py:81
 #: ../../client/solo/commands/search.py:76
 #: ../../client/solo/commands/command.py:90
-#: ../../client/solo/commands/source.py:73
+#: ../../client/solo/commands/source.py:76
 #: ../../client/solo/commands/match.py:89
-#: ../../client/solo/commands/install.py:81
-#: ../../client/solo/commands/upgrade.py:76
-#: ../../client/solo/commands/download.py:73
+#: ../../client/solo/commands/install.py:84
+#: ../../client/solo/commands/upgrade.py:79
+#: ../../client/solo/commands/download.py:76
 msgid "verbose output"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:122
+#: ../../client/solo/commands/config.py:126
 #: ../../client/solo/commands/status.py:130
 #: ../../client/solo/commands/status.py:137
 #: ../../client/solo/commands/status.py:144
-#: ../../client/solo/commands/remove.py:203
-#: ../../client/solo/commands/remove.py:267
+#: ../../client/solo/commands/remove.py:220
+#: ../../client/solo/commands/remove.py:284
 #: ../../client/solo/commands/_manage.py:153
 #: ../../client/solo/commands/_manage.py:164
-#: ../../client/solo/commands/install.py:238
-#: ../../client/solo/commands/install.py:264
-#: ../../client/solo/commands/install.py:350
+#: ../../client/solo/commands/install.py:262
+#: ../../client/solo/commands/install.py:288
+#: ../../client/solo/commands/install.py:374
 msgid "Not available"
 msgstr "Nije dostupno"
 
-#: ../../client/solo/commands/config.py:126
+#: ../../client/solo/commands/config.py:130
 msgid "installed from"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:137
-#: ../../client/solo/commands/remove.py:290
+#: ../../client/solo/commands/config.py:141
+#: ../../client/solo/commands/remove.py:307
 #: ../../client/solo/commands/_manage.py:230
 msgid "Packages involved"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:161
+#: ../../client/solo/commands/config.py:165
 msgid "configure"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:183
+#: ../../client/solo/commands/config.py:187
 msgid "configure installed packages"
 msgstr ""
 
@@ -2789,7 +2788,7 @@ msgstr ""
 
 #. title
 #: ../../client/solo/commands/update.py:287
-#: ../../client/solo/commands/security.py:215
+#: ../../client/solo/commands/security.py:219
 #: ../../client/solo/commands/ugc.py:355 ../../client/solo/commands/ugc.py:614
 #: ../../client/solo/commands/notice.py:146
 #: ../../client/solo/commands/notice.py:183
@@ -2801,7 +2800,7 @@ msgid "update repositories"
 msgstr ""
 
 #: ../../client/solo/commands/security.py:68
-#: ../../client/solo/commands/security.py:627
+#: ../../client/solo/commands/security.py:631
 msgid "system security tools"
 msgstr ""
 
@@ -2822,149 +2821,149 @@ msgid "reinstall faulty packages"
 msgstr ""
 
 #: ../../client/solo/commands/security.py:96
-#: ../../client/solo/commands/security.py:166
-#: ../../client/solo/commands/install.py:89
-#: ../../client/solo/commands/upgrade.py:84
+#: ../../client/solo/commands/security.py:168
+#: ../../client/solo/commands/install.py:98
+#: ../../client/solo/commands/upgrade.py:93
 msgid "just download packages"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:110
+#: ../../client/solo/commands/security.py:112
 msgid "download the latest Security Advisories"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:114
+#: ../../client/solo/commands/security.py:116
 msgid "force download"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:123
+#: ../../client/solo/commands/security.py:125
 msgid "list all the available Security Advisories"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:129
+#: ../../client/solo/commands/security.py:131
 msgid "list only affected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:132
+#: ../../client/solo/commands/security.py:134
 msgid "list only unaffected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:141
+#: ../../client/solo/commands/security.py:143
 msgid "show information about provided advisories identifiers"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:146
+#: ../../client/solo/commands/security.py:148
 msgid "advistory indentifier"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:153
+#: ../../client/solo/commands/security.py:155
 msgid "automatically install all the available security updates"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:211
+#: ../../client/solo/commands/security.py:215
 msgid "Advisory Identifier"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:243
+#: ../../client/solo/commands/security.py:247
 msgid "Background"
 msgstr "Pozadina"
 
-#: ../../client/solo/commands/security.py:250
+#: ../../client/solo/commands/security.py:254
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:256
+#: ../../client/solo/commands/security.py:260
 msgid "Impact"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:263
+#: ../../client/solo/commands/security.py:267
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:268
+#: ../../client/solo/commands/security.py:272
 msgid "Revised"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:273
+#: ../../client/solo/commands/security.py:277
 msgid "Announced"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:278
+#: ../../client/solo/commands/security.py:282
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:285
+#: ../../client/solo/commands/security.py:289
 msgid "References"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:291
+#: ../../client/solo/commands/security.py:295
 msgid "Upstream bugs"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:297
+#: ../../client/solo/commands/security.py:301
 msgid "Affected"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:305
+#: ../../client/solo/commands/security.py:309
 msgid "vulnerable versions"
 msgstr "ranjive verzije"
 
-#: ../../client/solo/commands/security.py:308
+#: ../../client/solo/commands/security.py:312
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:313
+#: ../../client/solo/commands/security.py:317
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:320
+#: ../../client/solo/commands/security.py:324
 msgid "Resolution"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:347
+#: ../../client/solo/commands/security.py:351
 msgid "Checking system files"
 msgstr "Provjeravam datoteke sustava"
 
-#: ../../client/solo/commands/security.py:375
+#: ../../client/solo/commands/security.py:379
 msgid "no checksum information"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:424
+#: ../../client/solo/commands/security.py:428
 msgid "found altered files"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:443
+#: ../../client/solo/commands/security.py:447
 msgid "assimilated new hashes and mtime"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:454
+#: ../../client/solo/commands/security.py:458
 msgid "unavailable"
 msgstr "nedostupno"
 
-#: ../../client/solo/commands/security.py:461
+#: ../../client/solo/commands/security.py:465
 msgid "No altered files found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:487
+#: ../../client/solo/commands/security.py:491
 msgid "Altered files have been found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:491
+#: ../../client/solo/commands/security.py:495
 msgid "Packages have been reinstalled successfully"
 msgstr "Paketi su uspješno ponovno instalirani"
 
-#: ../../client/solo/commands/security.py:523
+#: ../../client/solo/commands/security.py:527
 msgid "No advisories available or applicable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:566
+#: ../../client/solo/commands/security.py:570
 msgid "Advisory does not exist"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:592
+#: ../../client/solo/commands/security.py:596
 msgid "Calculating security updates"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:611
+#: ../../client/solo/commands/security.py:615
 msgid "All the available updates have been already installed"
 msgstr "Sva dostupna ažuriranja su već instalirana"
 
@@ -2976,116 +2975,116 @@ msgstr ""
 msgid "bow to lxnay"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:82
-#: ../../client/solo/commands/source.py:81
-#: ../../client/solo/commands/install.py:98
-#: ../../client/solo/commands/upgrade.py:93
-#: ../../client/solo/commands/download.py:81
+#: ../../client/solo/commands/remove.py:88
+#: ../../client/solo/commands/source.py:90
+#: ../../client/solo/commands/install.py:110
+#: ../../client/solo/commands/upgrade.py:105
+#: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:86
-#: ../../client/solo/commands/source.py:85
-#: ../../client/solo/commands/install.py:102
-#: ../../client/solo/commands/upgrade.py:97
-#: ../../client/solo/commands/download.py:85
+#: ../../client/solo/commands/remove.py:94
+#: ../../client/solo/commands/source.py:96
+#: ../../client/solo/commands/install.py:116
+#: ../../client/solo/commands/upgrade.py:111
+#: ../../client/solo/commands/download.py:95
 msgid "do not calculate dependencies recursively"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:90
-#: ../../client/solo/commands/source.py:90
-#: ../../client/solo/commands/install.py:106
-#: ../../client/solo/commands/upgrade.py:101
-#: ../../client/solo/commands/download.py:90
+#: ../../client/solo/commands/remove.py:100
+#: ../../client/solo/commands/source.py:102
+#: ../../client/solo/commands/install.py:122
+#: ../../client/solo/commands/upgrade.py:117
+#: ../../client/solo/commands/download.py:101
 msgid "include dependencies no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:94
-#: ../../client/solo/commands/install.py:110
-#: ../../client/solo/commands/upgrade.py:105
+#: ../../client/solo/commands/remove.py:106
+#: ../../client/solo/commands/install.py:128
+#: ../../client/solo/commands/upgrade.py:123
 msgid "when used with --deep, include virtual packages"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:98
-#: ../../client/solo/commands/install.py:114
-#: ../../client/solo/commands/upgrade.py:109
+#: ../../client/solo/commands/remove.py:112
+#: ../../client/solo/commands/install.py:134
+#: ../../client/solo/commands/upgrade.py:129
 msgid "remove package configuration files no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:102
+#: ../../client/solo/commands/remove.py:118
 msgid "force system packages removal (dangerous!)"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:156
+#: ../../client/solo/commands/remove.py:173
 msgid "removal"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:172
-#: ../../client/solo/commands/source.py:153
-#: ../../client/solo/commands/download.py:155
+#: ../../client/solo/commands/remove.py:189
+#: ../../client/solo/commands/source.py:172
+#: ../../client/solo/commands/download.py:172
 msgid "All done"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:184
+#: ../../client/solo/commands/remove.py:201
 msgid "These are the packages that should be MANUALLY removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:190
-#: ../../client/solo/commands/install.py:330
+#: ../../client/solo/commands/remove.py:207
+#: ../../client/solo/commands/install.py:354
 msgid "These are the packages that would be removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:240
+#: ../../client/solo/commands/remove.py:257
 msgid "These are the chosen packages"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:253
+#: ../../client/solo/commands/remove.py:270
 msgid "vital package"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:254
+#: ../../client/solo/commands/remove.py:271
 msgid "Removal forbidden"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:304
+#: ../../client/solo/commands/remove.py:321
 msgid "Packages that would be removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:334
-#: ../../client/solo/commands/install.py:421
+#: ../../client/solo/commands/remove.py:351
+#: ../../client/solo/commands/install.py:445
 msgid "Freed disk space"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:341
+#: ../../client/solo/commands/remove.py:358
 msgid "Total bandwidth wasted"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:371
-#: ../../client/solo/commands/rescue.py:629
+#: ../../client/solo/commands/remove.py:388
+#: ../../client/solo/commands/rescue.py:631
 msgid "Nothing to do"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:378
+#: ../../client/solo/commands/remove.py:395
 msgid "Would you like to calculate dependencies ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:385
+#: ../../client/solo/commands/remove.py:402
 msgid "Would you like to remove them now ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:406
+#: ../../client/solo/commands/remove.py:423
 msgid "Ouch!"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:407
+#: ../../client/solo/commands/remove.py:424
 msgid "the following system packages were pulled in"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:431
+#: ../../client/solo/commands/remove.py:448
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:446
+#: ../../client/solo/commands/remove.py:463
 msgid "remove packages from system"
 msgstr ""
 
@@ -3115,43 +3114,43 @@ msgid "search packages in repositories"
 msgstr ""
 
 #: ../../client/solo/commands/deptest.py:64
-#: ../../client/solo/commands/libtest.py:66
+#: ../../client/solo/commands/libtest.py:67
 #: ../../client/solo/commands/unused.py:65
 msgid "show less details (useful for scripting)"
 msgstr ""
 
 #: ../../client/solo/commands/deptest.py:67
-#: ../../client/solo/commands/libtest.py:72 ../../services/kernel-switcher:313
+#: ../../client/solo/commands/libtest.py:74 ../../services/kernel-switcher:313
 msgid "just show what would be done"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:102
+#: ../../client/solo/commands/deptest.py:104
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:157
+#: ../../client/solo/commands/deptest.py:159
 msgid "These are the dependencies not found"
 msgstr "Ove zavisnosti nisu nađene"
 
-#: ../../client/solo/commands/deptest.py:167
+#: ../../client/solo/commands/deptest.py:169
 msgid "Needed by"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:178
+#: ../../client/solo/commands/deptest.py:180
 msgid "Would you like to install the packages ?"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:185
-#: ../../client/solo/commands/libtest.py:224
+#: ../../client/solo/commands/deptest.py:187
+#: ../../client/solo/commands/libtest.py:227
 msgid "Installing available packages in"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:186
-#: ../../client/solo/commands/libtest.py:225
+#: ../../client/solo/commands/deptest.py:188
+#: ../../client/solo/commands/libtest.py:228
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:204
+#: ../../client/solo/commands/deptest.py:206
 msgid "look for unsatisfied dependencies"
 msgstr ""
 
@@ -3160,10 +3159,10 @@ msgid "not a valid directory"
 msgstr ""
 
 #: ../../client/solo/commands/command.py:93
-#: ../../client/solo/commands/source.py:77
-#: ../../client/solo/commands/install.py:85
-#: ../../client/solo/commands/upgrade.py:80
-#: ../../client/solo/commands/download.py:77
+#: ../../client/solo/commands/source.py:83
+#: ../../client/solo/commands/install.py:91
+#: ../../client/solo/commands/upgrade.py:86
+#: ../../client/solo/commands/download.py:83
 msgid "quiet output"
 msgstr ""
 
@@ -3242,7 +3241,8 @@ msgstr ""
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, videos)"
+"manage package documents in the selected repository (comments, files, "
+"videos)"
 msgstr ""
 
 #: ../../client/solo/commands/ugc.py:104
@@ -3698,31 +3698,31 @@ msgstr ""
 msgid "done merging packages"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:94
-#: ../../client/solo/commands/download.py:94
+#: ../../client/solo/commands/source.py:108
+#: ../../client/solo/commands/download.py:107
 msgid "calculate dependencies relaxing constraints"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:98
-#: ../../client/solo/commands/install.py:94
-#: ../../client/solo/commands/upgrade.py:89
-#: ../../client/solo/commands/download.py:98
+#: ../../client/solo/commands/source.py:114
+#: ../../client/solo/commands/install.py:104
+#: ../../client/solo/commands/upgrade.py:99
+#: ../../client/solo/commands/download.py:113
 msgid "include build-time dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:102
+#: ../../client/solo/commands/source.py:120
 msgid "save files into the current working directory"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:138
+#: ../../client/solo/commands/source.py:157
 msgid "Source code download"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:175
+#: ../../client/solo/commands/source.py:194
 msgid "sources download"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:197
+#: ../../client/solo/commands/source.py:216
 msgid "download packages source code"
 msgstr ""
 
@@ -3768,32 +3768,32 @@ msgstr ""
 msgid "yell at user"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:77
+#: ../../client/solo/commands/libtest.py:80
 msgid "print broken files to stdout"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:82
+#: ../../client/solo/commands/libtest.py:85
 msgid "dump results to files"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:137
-#: ../../client/solo/commands/libtest.py:170
+#: ../../client/solo/commands/libtest.py:140
+#: ../../client/solo/commands/libtest.py:173
 msgid "System is healthy"
 msgstr "Sustav je zdrav"
 
-#: ../../client/solo/commands/libtest.py:176
+#: ../../client/solo/commands/libtest.py:179
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:182
+#: ../../client/solo/commands/libtest.py:185
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:218
+#: ../../client/solo/commands/libtest.py:221
 msgid "Would you like to install them ?"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:246
+#: ../../client/solo/commands/libtest.py:249
 msgid "look for missing libraries"
 msgstr ""
 
@@ -3919,7 +3919,7 @@ msgstr ""
 
 #: ../../client/solo/commands/_manage.py:416
 #: ../../client/solo/commands/_manage.py:783
-#: ../../client/solo/commands/install.py:355
+#: ../../client/solo/commands/install.py:379
 msgid "from"
 msgstr "od"
 
@@ -4215,330 +4215,330 @@ msgstr ""
 msgid "match packages in repositories"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:119
-#: ../../client/solo/commands/upgrade.py:114
+#: ../../client/solo/commands/install.py:140
+#: ../../client/solo/commands/upgrade.py:135
 msgid "relax dependencies constraints during calculation"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:124
-#: ../../client/solo/commands/upgrade.py:119
-#: ../../client/solo/commands/download.py:104
+#: ../../client/solo/commands/install.py:147
+#: ../../client/solo/commands/upgrade.py:142
+#: ../../client/solo/commands/download.py:120
 msgid "download multiple packages in parallel (max 10)"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:183
+#: ../../client/solo/commands/install.py:207
 msgid "These are the packages that would be installed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:331
+#: ../../client/solo/commands/install.py:355
 msgid "conflicting/substituted"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:366
+#: ../../client/solo/commands/install.py:390
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:371
+#: ../../client/solo/commands/install.py:395
 msgid "Packages needing to be removed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:378
+#: ../../client/solo/commands/install.py:402
 msgid "Packages needing to be installed"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:385
+#: ../../client/solo/commands/install.py:409
 msgid "Packages needing to be reinstalled"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:392
+#: ../../client/solo/commands/install.py:416
 msgid "Packages needing to be updated"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:399
+#: ../../client/solo/commands/install.py:423
 msgid "Packages needing to be downgraded"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:412
+#: ../../client/solo/commands/install.py:436
 msgid "Download size"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:419
+#: ../../client/solo/commands/install.py:443
 msgid "Used disk space"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:435
+#: ../../client/solo/commands/install.py:459
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:437
+#: ../../client/solo/commands/install.py:461
 msgid "of free space"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:451
+#: ../../client/solo/commands/install.py:475
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:549
+#: ../../client/solo/commands/install.py:573
 msgid "Download complete"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:578
+#: ../../client/solo/commands/install.py:602
 msgid "install"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:600
+#: ../../client/solo/commands/install.py:624
 msgid "Installation complete"
 msgstr ""
 
-#: ../../client/solo/commands/install.py:609
+#: ../../client/solo/commands/install.py:633
 msgid "install or update packages or package files"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:166
+#: ../../client/solo/commands/upgrade.py:190
 msgid "Calculating System Updates"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:177
+#: ../../client/solo/commands/upgrade.py:201
 msgid "Packages matching update"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:183
+#: ../../client/solo/commands/upgrade.py:207
 msgid "Packages matching not available"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:189
+#: ../../client/solo/commands/upgrade.py:213
 msgid "Packages matching already up to date"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:212
+#: ../../client/solo/commands/upgrade.py:236
 msgid "Nothing to update"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:226
+#: ../../client/solo/commands/upgrade.py:250
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:231
+#: ../../client/solo/commands/upgrade.py:255
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:249
+#: ../../client/solo/commands/upgrade.py:273
 msgid "Selective"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:257
+#: ../../client/solo/commands/upgrade.py:281
 msgid "Would you like to remove them?"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:276
+#: ../../client/solo/commands/upgrade.py:300
 msgid "Remove this?"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:292
+#: ../../client/solo/commands/upgrade.py:316
 msgid "Nothing to remove"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:321
+#: ../../client/solo/commands/upgrade.py:345
 msgid "There are more updates to install, reloading Entropy"
 msgstr ""
 
-#: ../../client/solo/commands/upgrade.py:340
+#: ../../client/solo/commands/upgrade.py:364
 msgid "upgrade the system"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:89
+#: ../../client/solo/commands/rescue.py:91
 msgid "check installed packages repository for errors"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:96
+#: ../../client/solo/commands/rescue.py:98
 msgid "compact the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:102
+#: ../../client/solo/commands/rescue.py:104
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:109
+#: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:115
+#: ../../client/solo/commands/rescue.py:117
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:126
+#: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:132
+#: ../../client/solo/commands/rescue.py:134
 msgid "restore a backup of the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:171
+#: ../../client/solo/commands/rescue.py:173
 msgid "Repository error"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:179
-#: ../../client/solo/commands/rescue.py:232
-#: ../../client/solo/commands/rescue.py:241
+#: ../../client/solo/commands/rescue.py:181
+#: ../../client/solo/commands/rescue.py:234
+#: ../../client/solo/commands/rescue.py:243
 msgid "Sanity Check"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:180
+#: ../../client/solo/commands/rescue.py:182
 msgid "installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:186
+#: ../../client/solo/commands/rescue.py:188
 msgid "Scanning..."
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:222
+#: ../../client/solo/commands/rescue.py:224
 msgid "Error checking package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:242
+#: ../../client/solo/commands/rescue.py:244
 msgid "passed"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:264
+#: ../../client/solo/commands/rescue.py:266
 msgid "Compacting the Installed Packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:277
+#: ../../client/solo/commands/rescue.py:279
 msgid "Compaction complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:306
+#: ../../client/solo/commands/rescue.py:308
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:317
+#: ../../client/solo/commands/rescue.py:319
 msgid "I am not joking, this is quite disruptive"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:325
+#: ../../client/solo/commands/rescue.py:327
 msgid "Understood ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:329
+#: ../../client/solo/commands/rescue.py:331
 msgid "Really ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:334
+#: ../../client/solo/commands/rescue.py:336
 msgid "This is your last chance"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:335
+#: ../../client/solo/commands/rescue.py:337
 msgid "Ok?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:352
-#: ../../client/solo/commands/rescue.py:375
+#: ../../client/solo/commands/rescue.py:354
+#: ../../client/solo/commands/rescue.py:377
 msgid "Cannot read metadata"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:383
+#: ../../client/solo/commands/rescue.py:385
 msgid "Creating a backup of the current repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:395
+#: ../../client/solo/commands/rescue.py:397
 msgid "Cannot backup the repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:412
+#: ../../client/solo/commands/rescue.py:414
 msgid "Cannot delete old repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:422
+#: ../../client/solo/commands/rescue.py:424
 msgid "Initializing a new repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:433
+#: ../../client/solo/commands/rescue.py:435
 msgid "Repository initialized, generating metadata"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:463
-#: ../../client/solo/commands/rescue.py:725
+#: ../../client/solo/commands/rescue.py:465
+#: ../../client/solo/commands/rescue.py:727
 msgid "Invalid package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:476
-#: ../../client/solo/commands/rescue.py:739
+#: ../../client/solo/commands/rescue.py:478
+#: ../../client/solo/commands/rescue.py:741
 msgid "Metadata generation error"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:519
+#: ../../client/solo/commands/rescue.py:521
 msgid "Indexing metadata, please wait..."
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:524
+#: ../../client/solo/commands/rescue.py:526
 msgid "Repository metadata generation complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:539
+#: ../../client/solo/commands/rescue.py:541
 msgid "Scanning Source Package Manager repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:553
+#: ../../client/solo/commands/rescue.py:555
 msgid "Cannot find package"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:565
+#: ../../client/solo/commands/rescue.py:567
 msgid "Scanning Entropy repository"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:636
+#: ../../client/solo/commands/rescue.py:638
 msgid "These packages were removed"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:658
-#: ../../client/solo/commands/rescue.py:698
+#: ../../client/solo/commands/rescue.py:660
+#: ../../client/solo/commands/rescue.py:700
 msgid "Continue ?"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:677
+#: ../../client/solo/commands/rescue.py:679
 msgid "Removal complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:684
+#: ../../client/solo/commands/rescue.py:686
 msgid "These packages were added"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:781
+#: ../../client/solo/commands/rescue.py:783
 msgid "Update complete"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:793
+#: ../../client/solo/commands/rescue.py:795
 msgid "Re-generating packages mapping"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:802
+#: ../../client/solo/commands/rescue.py:804
 msgid "Packages mapping re-generated"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:830
+#: ../../client/solo/commands/rescue.py:832
 msgid "No backups found"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:852
+#: ../../client/solo/commands/rescue.py:854
 msgid "Select the repository to restore"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:859
+#: ../../client/solo/commands/rescue.py:861
 msgid "Entropy Installed Packages Repository backups"
 msgstr ""
 
-#: ../../client/solo/commands/rescue.py:884
+#: ../../client/solo/commands/rescue.py:886
 msgid "tools to rescue the running system"
 msgstr ""
 
@@ -4563,11 +4563,11 @@ msgstr ""
 msgid "look for unused packages (pay attention)"
 msgstr ""
 
-#: ../../client/solo/commands/download.py:140
+#: ../../client/solo/commands/download.py:157
 msgid "Package download"
 msgstr ""
 
-#: ../../client/solo/commands/download.py:172
+#: ../../client/solo/commands/download.py:189
 msgid "download packages, essentially"
 msgstr ""
 
