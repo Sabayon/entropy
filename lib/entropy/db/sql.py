@@ -989,7 +989,14 @@ class EntropySQLRepository(EntropyRepositoryBase):
             # database file are opened and used before data is actually written
             # to disk, causing a tricky race condition hard to exploit.
             # So, FIRST commit changes, then call plugins.
-            self._connection().commit()
+            try:
+                self._connection().commit()
+            except OperationalError as err:
+                # catch stupid sqlite3 error
+                # 'cannot commit - no transaction is active'
+                # and ignore.
+                if str(err.message).find("no transaction is active") == -1:
+                    raise
 
         super(EntropySQLRepository, self).commit(
             force = force, no_plugins = no_plugins)
