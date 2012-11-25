@@ -747,8 +747,8 @@ class SoloManage(SoloCommand):
             repo = entropy_client.open_repository(repository_id)
             text = repo.retrieveLicenseText(license_name)
             tmp_fd, tmp_path = tempfile.mkstemp()
-            enc = etpConst['conf_raw_encoding']
-            with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
+            # text is binary string, do not use codecs.open()
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(text)
             return tmp_path
 
