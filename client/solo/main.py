@@ -13,7 +13,6 @@ import os
 import sys
 import errno
 import tempfile
-import argparse
 import pdb
 
 from entropy.i18n import _
