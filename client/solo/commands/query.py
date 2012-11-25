@@ -307,6 +307,13 @@ Repository query tools.
             "--complete": {},
         }
 
+        updates_parser = subparsers.add_parser(
+            "updates",
+            help=_("show the number of updates available"))
+        self._setup_verbose_quiet_parser(updates_parser)
+        updates_parser.set_defaults(func=self._updates)
+        _commands["updates"] = {}
+
 
         self._commands = _commands
         return parser
@@ -1529,6 +1536,42 @@ Repository query tools.
         return revgraph_packages(
             packages, entropy_client,
             complete=complete, quiet=quiet)
+
+    def _updates(self, entropy_client):
+        """
+        Solo Query Updates command.
+        """
+        quiet = self._nsargs.quiet
+        verbose = self._nsargs.verbose
+
+        if not quiet:
+            entropy_client.output(
+                brown(_("Available Updates")),
+                header=darkred(" @@ "))
+
+        update, remove, fine, _spm_fine = \
+            entropy_client.calculate_updates(quiet=quiet)
+
+        if quiet:
+            entropy_client.output(
+                "%d" % (len(update),),
+                level="generic")
+            return 0
+
+        toc = []
+        toc.append((
+            darkgreen(_("Packages to update:")),
+            bold(const_convert_to_unicode(len(update)))))
+        toc.append((
+            darkred(_("Packages to remove:")),
+            bold(const_convert_to_unicode(len(remove)))))
+        if verbose:
+            toc.append((
+                blue(_("Packages already up-to-date:")),
+                bold(const_convert_to_unicode(len(fine)))))
+        print_table(entropy_client, toc)
+
+        return 0
 
 
 SoloCommandDescriptor.register(
