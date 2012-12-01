@@ -5,20 +5,21 @@
 # Translators:
 #   <Danielbygmarsh@gmail.com>, 2012.
 #   <niclasoverby@gmail.com>, 2012.
+# Niclas Overby <niclasoverby@gmail.com>, 2012.
 # Tim Lauridsen <tla@rasmil.dk>, 2005.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-08-03 14:30+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-11-27 21:25+0000\n"
+"Last-Translator: Niclas Overby <niclasoverby@gmail.com>\n"
 "Language-Team: Danish (http://www.transifex.com/projects/p/sabayon-rigo/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: da\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
 msgid "Not authorized"
@@ -133,7 +134,7 @@ msgstr "Held og lykke!"
 
 #: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr ""
+msgstr "Programarkivs-indstillinger <b>kunne ikke</b> blive ændret. Undskyld."
 
 #: ../rigo/controllers/daemon.py:629
 #, python-format
@@ -231,19 +232,19 @@ msgstr[1] "Der er <b>%i</b> opdateringer mere"
 
 #: ../rigo/controllers/daemon.py:1109
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Tillykke, spejle er blevet <b>optimeret</b>!"
 
 #: ../rigo/controllers/daemon.py:1113
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Spejle blev <b>ikke optimeret</b>, undskyld!"
 
 #: ../rigo/controllers/daemon.py:1519
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "Spejle vil blive optimeret i <b>baggrunden</b>..."
 
 #: ../rigo/controllers/daemon.py:1523
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Spejle optimering er <b>ikke tilgængelig</b> lige nu"
 
 #: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -316,7 +317,7 @@ msgstr "<b>Programhåndtering</b> i gang..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr ""
+msgstr "Aktivitet"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
@@ -329,15 +330,15 @@ msgstr "<b>Systemopgradering</b> i gang..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr ""
+msgstr "Sort på Hvidt"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr ""
+msgstr "Hvidt på Sort"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Vis <b>Programhåndtering</b> Fremskridt</i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:283
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:79
@@ -577,19 +578,19 @@ msgstr "Vis (hvis der er nogen) en liste over uafklarede konfigurationsfil opdat
 
 #: ../rigo/ui/gtk3/controllers/applications.py:729
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Vis Installerede Programmer"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:730
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Gennemse de aktuelt Installerede Programmer."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Optimer Download Hastighed"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Benchmark download spejle til at optimere download-hastigheden ved installation af programmer."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -864,31 +865,31 @@ msgstr "Det er <b>meget</b> vigtigt altid at læse dem."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1052
 msgid "Stop annoying me"
-msgstr "Stop med at irritere mig"
+msgstr "Stop med at forstyrre mig"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1100
 msgid "You are about to rename a Repository"
-msgstr ""
+msgstr "Du er ved at omdøbe en Programarkiv"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1104
 msgid "_Rename"
-msgstr ""
+msgstr "_Omdøb"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1119
 msgid "Repository name"
-msgstr ""
+msgstr "Programarkiv navn"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1151
 msgid "<b>Invalid</b> Repository name!"
-msgstr ""
+msgstr "<b>Ugyldig</b> Programarkiv navn!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1161
 msgid "Repository rename <b>not allowed</b>!"
-msgstr ""
+msgstr "Programarkiv omdøbning <b>er ikke tilladt</b>!"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
 msgid "Show"
-msgstr ""
+msgstr "Vis"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
@@ -916,135 +917,135 @@ msgstr "<i>Find <b>Programmer</b> med lethed</i>"
 
 #: ../rigo_app.py:101
 msgid "Hey hey hey!"
-msgstr ""
+msgstr "Hey hey hey!"
 
 #: ../rigo_app.py:102
 msgid "Rigo is working, are you sure?"
-msgstr ""
+msgstr "Rigo arbejder, er du sikker?"
 
 #: ../rigo_app.py:145
 msgid "Search"
-msgstr ""
+msgstr "Søg"
 
 #: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
-msgstr ""
+msgstr "Rigo Program Browser"
 
 #: ../rigo_app.py:154
 msgid "Working Hard"
-msgstr ""
+msgstr "Arbejder Hårdt"
 
 #: ../rigo_app.py:157
 msgid "Wake Up"
-msgstr ""
+msgstr "Vågn Op"
 
 #: ../rigo_app.py:160
 msgid "Important Stuff"
-msgstr ""
+msgstr "Vigtigt Stuff"
 
 #: ../rigo_app.py:163
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Nyt Stuff"
 
 #: ../rigo_app.py:166
 msgid "Repository Stuff"
-msgstr ""
+msgstr "Programarkiv Stuff"
 
 #: ../rigo_app.py:419
 msgid "Activity Interruption"
-msgstr ""
+msgstr "Aktivitetsafbrydelse"
 
 #: ../rigo_app.py:421
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
+msgstr "Er du ikke på, at du vil afbryde den igangværende Aktivitet? Afbrydelsen vil ske hurtigst muligt men ikke nødvendigvis med det samme."
 
 #: ../rigo_app.py:446
 msgid "Repositories update error"
-msgstr ""
+msgstr "Fejl ved Opdatering af Programarkiver"
 
 #: ../rigo_app.py:450
 msgid "Repositories updated <b>successfully</b>!"
-msgstr ""
+msgstr "Programarkiver opdateret <b>succesfuldt</b>!"
 
 #: ../rigo_app.py:468
 msgid "Application Management Error"
-msgstr ""
+msgstr "Programhåndteringsfejl"
 
 #: ../rigo_app.py:469
 msgid "please check the management log"
-msgstr ""
+msgstr "tjek venligst management loggen"
 
 #: ../rigo_app.py:472
 msgid "System Upgrade Error"
-msgstr ""
+msgstr "System Opgraderingsfejl"
 
 #: ../rigo_app.py:473
 msgid "please check the upgrade log"
-msgstr ""
+msgstr "tjek venligst opgraderingsloggen"
 
 #: ../rigo_app.py:477
 msgid "Applications managed <b>successfully</b>!"
-msgstr ""
+msgstr "Programmer blev håndteret <b>succesfuldt</b>!"
 
 #: ../rigo_app.py:479
 msgid "System Upgraded <b>successfully</b>!"
-msgstr ""
+msgstr "System Opgraderet <b>succesfuldt</b>!"
 
 #: ../rigo_app.py:717
 msgid "You are not authorized to run Rigo"
-msgstr ""
+msgstr "Du er ikke autoriseret til at køre Rigo"
 
 #: ../rigo_app.py:725 ../rigo_app.py:736 ../rigo_app.py:754 ../rigo_app.py:809
 #: ../rigo_app.py:820 ../rigo_app.py:848
 msgid "Rigo"
-msgstr ""
+msgstr "Rigo"
 
 #: ../rigo_app.py:726
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "RigoDaemon tjenesten er ikke tilgængelig"
 
 #: ../rigo_app.py:738
 msgid "API mismatch, please update Rigo and RigoDaemon"
-msgstr ""
+msgstr "API uoverensstemmelse, opdater venligst Rigo og RigoDaemon"
 
 #: ../rigo_app.py:755
 msgid "Another Application Manager is active"
-msgstr ""
+msgstr "En anden Programhåndtering er aktiv"
 
 #: ../rigo_app.py:772
 msgid "Background Service is currently not available"
-msgstr ""
+msgstr "Baggrundtjenesten er i øjeblikket ikke tilgængelig"
 
 #: ../rigo_app.py:802
 msgid "Background Service is currently busy"
-msgstr ""
+msgstr "Baggrundstjenesten er optaget i øjeblikket"
 
 #: ../rigo_app.py:804
 msgid "Background Service is incompatible with Rigo"
-msgstr ""
+msgstr "Baggrundstjenesten er inkompatibel med Rigo"
 
 #: ../rigo_app.py:816
 msgid "Background Service is currently unavailable"
-msgstr ""
+msgstr "Baggrundstjenesten er ikke tilgængelig i øjeblikket"
 
 #: ../rigo_app.py:876
 msgid "Happy St. Valentine <3 <3 !"
-msgstr ""
+msgstr "Glædelig St. Valentinsdag <3 <3 !"
 
 #: ../rigo_app.py:878
 msgid "Merry Xmas \\o/ !"
-msgstr ""
+msgstr "Glædelig Jul \\o/ !"
 
 #: ../rigo_app.py:880
 msgid "<=|=< (this is optimistically a fish)"
-msgstr ""
+msgstr "<=|=< (optimistisk er dette en fisk)"
 
 #: ../rigo_app.py:885
 msgid "Woot, thanks"
-msgstr ""
+msgstr "Wow, tak"
 
 #: ../data/ui/gtk3/rigo.ui.h:2
 msgid "_Write a <b>comment</b>"
-msgstr ""
+msgstr "_Skriv en <b>kommentar</b>"

@@ -12,14 +12,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-08-03 14:30+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-08-19 18:54+0000\n"
+"Last-Translator: dmfkun <dmfkun@gmail.com>\n"
 "Language-Team: Romanian (http://www.transifex.com/projects/p/sabayon-rigo/language/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ro\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1))\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
 msgid "Not authorized"
@@ -234,19 +234,19 @@ msgstr[2] "Sunt mai multe actualizari pentru <b>%i</b>"
 
 #: ../rigo/controllers/daemon.py:1109
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Felicitări, oglinzile au fost <b>optimizate</b>!"
 
 #: ../rigo/controllers/daemon.py:1113
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Ups, oglinzile nu au fost <b>optimizate</b>, scuze!"
 
 #: ../rigo/controllers/daemon.py:1519
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "Oglinzile vor fi actualizate în <b>fundal</b>..."
 
 #: ../rigo/controllers/daemon.py:1523
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Optimizarea oglinzilor <b>nu este disponibilă</b> în acest moment"
 
 #: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -319,7 +319,7 @@ msgstr "<b>Administrarea Aplicatiilor</b> in curs de desfasurare..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr ""
+msgstr "Activitate"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
@@ -582,19 +582,19 @@ msgstr "Arata (daca este vreouna) lista unor actualizari de configuratii ale fis
 
 #: ../rigo/ui/gtk3/controllers/applications.py:729
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Afișează aplicațiile instalate"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:730
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Răsfoiește aplicațiile instalate curent."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Optimizează viteza de descărcare"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Testați oglinzile de descărcare pentru a îmbunătații viteza de instalare a aplicațiilor."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -935,7 +935,7 @@ msgstr "Rigo functioneaza, esti sigur ?"
 
 #: ../rigo_app.py:145
 msgid "Search"
-msgstr ""
+msgstr "Caută"
 
 #: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
@@ -943,23 +943,23 @@ msgstr "Browserul Aplicatii Rigo"
 
 #: ../rigo_app.py:154
 msgid "Working Hard"
-msgstr ""
+msgstr "Muncind din greu"
 
 #: ../rigo_app.py:157
 msgid "Wake Up"
-msgstr ""
+msgstr "Trezirea"
 
 #: ../rigo_app.py:160
 msgid "Important Stuff"
-msgstr ""
+msgstr "Chestii importante"
 
 #: ../rigo_app.py:163
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Cele mai noi chestii"
 
 #: ../rigo_app.py:166
 msgid "Repository Stuff"
-msgstr ""
+msgstr "Chestii despre repositoriu"
 
 #: ../rigo_app.py:419
 msgid "Activity Interruption"

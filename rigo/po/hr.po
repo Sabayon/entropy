@@ -3,205 +3,204 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011.
-# Danilo Riffo <danriffo@gmail.com>, 2012.
-#   <the_neo_2@hotmail.com>, 2012.
+# Ivica  Kolić <ikoli@yahoo.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-08-08 15:29+0000\n"
-"Last-Translator: Danilo Riffo <danriffo@gmail.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/sabayon-rigo/language/es/)\n"
+"PO-Revision-Date: 2012-10-23 17:22+0000\n"
+"Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
+"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
 msgid "Not authorized"
-msgstr "No autorizado "
+msgstr "Nije autorizirano"
 
 #: ../RigoDaemon/app.py:1191
 msgid "No repositories configured"
-msgstr "Repositorios no configurados"
+msgstr "Repozitoriji nisu konfigurirani"
 
 #: ../RigoDaemon/app.py:1196
 msgid "Unhandled Exception"
-msgstr "Excepción no controlada"
+msgstr ""
 
 #: ../RigoDaemon/app.py:1726
 msgid "Application Removal"
-msgstr "Eliminar aplicación "
+msgstr "Uklanjanje programa"
 
 #: ../RigoDaemon/app.py:2032
 msgid "Application download"
-msgstr "Descargar aplicación "
+msgstr "Preuzimanje programa"
 
 #: ../RigoDaemon/app.py:2132
 msgid "Application Install"
-msgstr "Instalar aplicación "
+msgstr "Instalacija programa"
 
 #: ../rigo/models/configupdate.py:101
 msgid "Cannot save configuration file"
-msgstr "No ha sido posible guardar el archivo de configuración"
+msgstr "Ne mogu spremiti konfiguracijsku datoteku"
 
 #: ../rigo/models/configupdate.py:300
 msgid "Destination"
-msgstr "Destino"
+msgstr "Odredište"
 
 #: ../rigo/models/configupdate.py:303
 msgid "Applications"
-msgstr "Aplicaciones"
+msgstr "Programi"
 
 #: ../rigo/models/application.py:881 ../rigo/models/application.py:1253
 #: ../rigo/models/application.py:1297 ../rigo/models/application.py:1329
 #: ../rigo/models/application.py:1399
 msgid "N/A"
-msgstr "N/D"
+msgstr ""
 
 #: ../rigo/models/application.py:1261 ../rigo/models/application.py:1320
 msgid "No description"
-msgstr "Sin descripción"
+msgstr "Nema opisa"
 
 #: ../rigo/models/application.py:1334
 msgid "Installed"
-msgstr "Instalado"
+msgstr "Instalirano"
 
 #: ../rigo/models/application.py:1340
 #, python-format
 msgid "<b>%s</b> is installed"
-msgstr "<b>%s</b> está instalado"
+msgstr "<b>%s</b> ije instaliran"
 
 #: ../rigo/models/application.py:1342
 msgid "from"
-msgstr "desde"
+msgstr "od"
 
 #: ../rigo/models/application.py:1376
 msgid "License"
-msgstr "Licencia"
+msgstr "Dozvola"
 
 #: ../rigo/models/application.py:1387
 msgid "Required space"
-msgstr "Espacio requerido"
+msgstr "Zahtjevani prostor"
 
 #: ../rigo/models/application.py:1394
 msgid "Download size"
-msgstr "Tamaño de la descarga"
+msgstr "Veličina preuzimanja"
 
 #: ../rigo/models/application.py:1401
 msgid "Checksum"
-msgstr "Comprobación de suma"
+msgstr ""
 
 #: ../rigo/models/application.py:1412
 msgid "USE flags"
-msgstr "Parámetros USE"
+msgstr ""
 
 #: ../rigo/models/application.py:1416
 msgid "No use flags"
-msgstr "Sin banderas USE"
+msgstr ""
 
 #: ../rigo/models/application.py:1434
 msgid "Runtime dependencies"
-msgstr "Dependencias de ejecución"
+msgstr ""
 
 #: ../rigo/models/application.py:1435
 msgid "Build dependencies"
-msgstr "Dependencias de compilación"
+msgstr ""
 
 #: ../rigo/models/application.py:1436
 msgid "Post dependencies"
-msgstr "Post-dependencias"
+msgstr ""
 
 #: ../rigo/models/application.py:1437
 msgid "Staff dependencies"
-msgstr "Dependencias de grupo"
+msgstr ""
 
 #: ../rigo/models/application.py:1459
 msgid "Click here for more details"
-msgstr "Click aquí para mas detalles"
+msgstr "Kliknite ovdje za više pojedinosti"
 
 #: ../rigo/models/application.py:1718
 msgid "Application not found"
-msgstr "Aplicación no encontrada"
+msgstr "Program nije nađen"
 
 #: ../rigo/controllers/daemon.py:81
 msgid "Good luck!"
-msgstr "¡Buena suerte!"
+msgstr "Sretno!"
 
 #: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr "Las opciones del Repositorio <b>no pudieron</b> ser cambiadas. Discúlpame."
+msgstr "Postavke repozitorija  <b>ne mogu</b> se promjeniti. Žao nam je."
 
 #: ../rigo/controllers/daemon.py:629
 #, python-format
 msgid "<b>%s</b> action enqueued"
-msgstr "<b>%s</b> acción en cola"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:633
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] ", <b>%i</b> aplicación en la cola..."
-msgstr[1] ", <b>%i</b> aplicaciones en la cola..."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/controllers/daemon.py:734 ../rigo_app.py:151
 msgid "Application"
-msgstr "Aplicación"
+msgstr "Program"
 
 #: ../rigo/controllers/daemon.py:737
 msgid "An <b>unknown error</b> occurred"
-msgstr "Ocurrio un <b>error desconocido</b> "
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:739
 #, python-format
 msgid "<b>%s</b> download failed"
-msgstr "Falló la descarga de <b>%s</b>"
+msgstr "<b>%s</b> neuspjelo preuzimanje"
 
 #: ../rigo/controllers/daemon.py:742
 #, python-format
 msgid "<b>%s</b> install failed"
-msgstr "Falló la instalación de <b>%s</b>"
+msgstr "<b>%s</b> neuspjela instalacija"
 
 #: ../rigo/controllers/daemon.py:745
 #, python-format
 msgid "<b>%s</b> removal failed"
-msgstr "Falló la eliminación de <b>%s</b>"
+msgstr "<b>%s</b> neuspjelo uklanjanje"
 
 #: ../rigo/controllers/daemon.py:749
 #, python-format
 msgid "<b>%s</b>, not authorized"
-msgstr "<b>%s</b>, no autorizado"
+msgstr "<b>%s</b>, nije autorizirano"
 
 #: ../rigo/controllers/daemon.py:752
 #, python-format
 msgid "<b>%s</b>, internal error"
-msgstr "<b>%s</b>, error interno"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:757
 #, python-format
 msgid "<b>%s</b> dependencies not found"
-msgstr "Dependencias no encontradas para <b>%s</b>"
+msgstr "<b>%s</b> zavisnosti nisu nađene"
 
 #: ../rigo/controllers/daemon.py:762
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
-msgstr "<b>%s</b> error de colisión de dependencias"
+msgstr "<b>%s</b> greška sudaranja zavisnosti"
 
 #: ../rigo/controllers/daemon.py:767
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
-msgstr "<b>%s</b> error de dependencias no eliminables"
+msgstr "<b>%s</b> greška neuklonjivosti zavisnosti"
 
 #: ../rigo/controllers/daemon.py:772
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr "Disco lleno, no podrás descargar o desempaquetar Aplicaciones"
+msgstr "Disk je pun, ne mogu preuzeti ni raspakirati programe"
 
 #: ../rigo/controllers/daemon.py:776
 msgid "An error occurred"
-msgstr "Ha ocurrido un error"
+msgstr "Došlo je do greške"
 
 #: ../rigo/controllers/daemon.py:781
 #: ../rigo/ui/gtk3/controllers/application.py:411
@@ -209,569 +208,575 @@ msgstr "Ha ocurrido un error"
 #: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:456
 #: ../rigo_app.py:485
 msgid "Ok, thanks"
-msgstr "Ok, gracias"
+msgstr "U redu, hvala"
 
 #: ../rigo/controllers/daemon.py:782
 #: ../rigo/ui/gtk3/controllers/notifications.py:228
 #: ../rigo/ui/gtk3/controllers/notifications.py:244
 #: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:486
 msgid "Show me"
-msgstr "Muéstrame"
+msgstr "Pokaži mi"
 
 #: ../rigo/controllers/daemon.py:884
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr "La <b>Actualización del Sistema</b> está siendo <i>reiniciada</i>"
+msgstr "<b>Nadogradnja sustava</b> Aktivnost je<i>ponovno pokrenuta</i>"
 
 #: ../rigo/controllers/daemon.py:885
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
-msgstr[0] "Hay <b>%i</b> actualización más"
-msgstr[1] "Hay <b>%i</b> actualizaciones más"
+msgstr[0] "Ima <b>%i</b> još dopuna"
+msgstr[1] "Ima <b>%i</b> još dopune"
+msgstr[2] "Ima <b>%i</b> još dopuna"
 
 #: ../rigo/controllers/daemon.py:1109
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr "¡Felicitaciones, los mirrors han sido <b>optimizados</b>!"
+msgstr "Čestitamo, zrcala su <b>optimizirana</b>!"
 
 #: ../rigo/controllers/daemon.py:1113
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr "¡Ouch!, los mirrors <b>no han sido optimizados</b>, disculpa."
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:1519
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr "Los mirrors serán optimizados en <b>segundo plano</b>..."
+msgstr "Zrcala će biti optimizirana u  <b>pozadini</b>..."
 
 #: ../rigo/controllers/daemon.py:1523
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr "La optimización de mirros <b>no está disponible</b> en este momento"
+msgstr "Optimizacija zrcala b>nije dostupna</b> trenutno"
 
 #: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
-msgstr "Esperando por <b>RigoDaemon</b>, por favor espera..."
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:2003 ../rigo/controllers/daemon.py:2665
 #: ../rigo/controllers/daemon.py:2892
 msgid "Another activity is currently in progress"
-msgstr "Otra actividad está actualmente en proceso "
+msgstr "Druga aktivnost je trenutno u tijeku"
 
 #: ../rigo/controllers/daemon.py:2006 ../rigo/controllers/daemon.py:2669
 #: ../rigo/controllers/daemon.py:2896
 msgid "K thanks"
-msgstr "Ok, gracias"
+msgstr "K hvala"
 
 #: ../rigo/controllers/daemon.py:2145
 msgid "Yes, thanks"
-msgstr "Si, gracias"
+msgstr "Da, hvala"
 
 #: ../rigo/controllers/daemon.py:2146
 msgid "No, sorry"
-msgstr "No, lo lamento"
+msgstr "Ne, žalim"
 
 #: ../rigo/controllers/daemon.py:2163
 msgid "Ok then"
-msgstr "Ok entonces"
+msgstr "U redu onda"
 
 #: ../rigo/controllers/daemon.py:2239
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr "<b>%s</b>\nes parte del Sistema Base and <b>no puede</b> ser eliminado "
+msgstr "<b>%s</b>⏎ je dio Osnovnog sustava i <b>ne može</b> biti uklonjen"
 
 #: ../rigo/controllers/daemon.py:2292
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
-msgstr "<b>%s</b>\nno puede ser instalado en este momento, ya que existen dependencias <b>no encontradas/enmascaradas</b> o dependecias con <b>conflictos</b>"
+msgstr ""
 
 #: ../rigo/controllers/daemon.py:2354
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr "Instalar <b>%s</b> causaría la eliminación de las siguientes aplicaciones: %s"
+msgstr "Instaliranje <b>%s</b> će uzrokovati uklanjanje slijedećih programa: %s"
 
 #: ../rigo/controllers/daemon.py:2541
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
-msgstr "Error de instalación del paquete: <i>%s</i>"
+msgstr "Greška instalacije paketa: <i>%s</i>"
 
 #: ../rigo/controllers/daemon.py:2546
 msgid "Okay"
-msgstr "Ok"
+msgstr "U redu"
 
 #: ../rigo/controllers/daemon.py:2812
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr "<b>Actualización del Sistema</b> ha comenzado, es hora de tomar café"
+msgstr "<b>Nadogradnja sustava</b> je započela, skuhajte kavu"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
-msgstr "Actualizando los repositorios en <b>progreso</b>..."
+msgstr "Ažuriranje repozitorija je u <b>tijeku</b>..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:236
 msgid "<b>Application Management</b> in progress..."
-msgstr "<b>Administración de Aplicaciones</b> en progreso..."
+msgstr "<b>Upravljanje programima</b> u tijeku..."
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr "Actividad"
+msgstr "Aktivnost"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
 msgid "Interrupt"
-msgstr "Interrumpir"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:254
 msgid "<b>System Upgrade</b> in progress..."
-msgstr "<b>Actualización de Sistema</b> en progreso..."
+msgstr "<b>Nadogradnja sustava je </b> u tijeku..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr "Negro sobre Blanco"
+msgstr "Crno na bijelom"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr "Blanco sobre Negro"
+msgstr "Bijelo na crnom"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr "<i>Mostrar el progreso del <b>Manejo de Aplicaciones</b></i>"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/work.py:283
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:79
 msgid "Installing"
-msgstr "Instalando"
+msgstr "Instaliram"
 
 #: ../rigo/ui/gtk3/controllers/work.py:285
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:80
 msgid "Removing"
-msgstr "Eliminando"
+msgstr "Uklanjam"
 
 #: ../rigo/ui/gtk3/controllers/work.py:293
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
-msgstr[0] ", y <b>%d</b> <i>más en cola</i>"
-msgstr[1] ", y <b>%d</b> <i>más en cola</i>"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
-msgstr "No es posible <b>editar</b> el archivo de configuración"
+msgstr "Ne mogu <b>urediti</b> konfiguracijsku datoteku"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr "No es posible <b>mostrar</b> las diferencias entre los archivos de configuración"
+msgstr "Ne mogu <b>pokazati</b> razliku konfiguracijskih datoteka"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr "No ha sido posible <b>unir</b> el archivo de configuración"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
-msgstr "No ha sido posible <b>descartar</b> el archivo de configuración"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:172
 msgid "Clean Entropy Web Service Session"
-msgstr "Limpiar la sesión del Servicio Web de Entropy"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr "Descartar cualquier credencial de conexión registrada usada para enviar votos y comentarios. "
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr "Conectado como <b>%s</b>! Que tal si das tu <b>voto</b>?"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
-msgstr "_Votar ahora"
+msgstr "_Glasuj sada"
 
 #: ../rigo/ui/gtk3/controllers/application.py:321
 #: ../rigo/ui/gtk3/controllers/application.py:357
 #: ../rigo/ui/gtk3/controllers/application.py:521
 #: ../rigo/ui/gtk3/controllers/application.py:646
 msgid "_Later"
-msgstr "_Luego"
+msgstr "_Poslije"
 
 #: ../rigo/ui/gtk3/controllers/application.py:329
 msgid "Login failed. Your <b>vote</b> hasn't been added"
-msgstr "El inicio de sesión ha fallado. Tu <b>voto</b> no ha sido contado"
+msgstr "Neuspjela prijava. Vaš <b>glas</b> nije dodan"
 
 #: ../rigo/ui/gtk3/controllers/application.py:332
 #: ../rigo/ui/gtk3/controllers/application.py:657
 #: ../rigo/ui/gtk3/widgets/comments.py:98
 msgid "_Ok, thanks"
-msgstr "_Ok, gracias"
+msgstr "_Uredu, hvala"
 
 #: ../rigo/ui/gtk3/controllers/application.py:339
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] "¿Calificar <b>%s</b> como <b>%s</b>, con <b>%d</b> estrella?"
-msgstr[1] "¿Calificar <b>%s</b> como <b>%s</b>, con <b>%d</b> estrellas?"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
 msgid "_Ok, cool!"
-msgstr "_Ok, ¡bien!"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:355
 #: ../rigo/ui/gtk3/controllers/application.py:519
 msgid "_No, logout!"
-msgstr "_No, ¡cerrar sesión!"
+msgstr "_Ne, odjavi"
 
 #: ../rigo/ui/gtk3/controllers/application.py:393
 msgid "Your vote has been added!"
-msgstr "¡Tu voto ha sido contado!"
+msgstr "Vaš glas je dodan!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:396
 #: ../rigo/ui/gtk3/controllers/application.py:572
 msgid "Ok, great!"
-msgstr "Ok, ¡grandioso!"
+msgstr "U redu, sjajno!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:403
 msgid "You already voted this <b>Application</b>"
-msgstr "Ya has votado por esta <b>Aplicación</b>"
+msgstr "Već ste glaasli za ovaj  <b>program</b>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:408
 #, python-format
 msgid "Vote error: <i>%s</i>"
-msgstr "Error en la votación: <i>%s</i>"
+msgstr "Greška glasanja: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
-msgstr "Los Servicios Web de Entropy no están disponibles para el repositorio"
+msgstr "Entropy web servisi nisu dostupni za ovaj repozitorij"
 
 #: ../rigo/ui/gtk3/controllers/application.py:506
 #, python-format
 msgid "You are about to add a <b>comment</b> as <b>%s</b>."
-msgstr "Estás a punto de agregar un <b>comentario</b> como <b>%s</b>."
+msgstr "Dodati ćete <b>komentar</b> kao <b>%s</b>."
 
 #: ../rigo/ui/gtk3/controllers/application.py:569
 msgid "Your comment has been submitted!"
-msgstr "¡Tu comentario ha sido enviado!"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:578
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr "Ha ocurrido un error al enviar el comentario: <i>%s</i>"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:639
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>comment</b>?"
-msgstr "¡Sesión iniciada como <b>%s</b>! ¿Qué tal si <b>votas</b>?"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:645
 msgid "_Send now"
-msgstr "_Enviar ahora"
+msgstr "_Pošalji sada"
 
 #: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
-msgstr "No ha sido posible iniciar sesión. Tu <b>comentario</b> no ha sido recibido"
+msgstr "Neuspjela prijava.Vaš <b>komentar</b> nije dodan"
 
 #: ../rigo/ui/gtk3/controllers/application.py:677
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
-msgstr "<i>¡Aún no hay <b>comentarios</b> para esta aplicación!</i>"
+msgstr "<i>Nema <b>komentara</b> za ovaj program!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:726
 msgid "Older comments"
-msgstr "Comentarios antiguos"
+msgstr "Stariji komentari"
 
 #: ../rigo/ui/gtk3/controllers/application.py:733
 msgid "Loading older comments..."
-msgstr "Cargando comentarios antiguos..."
+msgstr "Učitavam starije kometare"
 
 #: ../rigo/ui/gtk3/controllers/application.py:777
 msgid "<i>No <b>images</b> for this Application, yet!</i>"
-msgstr "<i>¡Aún no hay <b>imágenes</b> para esta aplicación!</i>"
+msgstr "<i>Nema <b>slika</b> za ovaj program!</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:785
 msgid "Older images"
-msgstr "Imágenes antiguas"
+msgstr "Starije slike"
 
 #: ../rigo/ui/gtk3/controllers/application.py:791
 msgid "Loading older images..."
-msgstr "Cargando imágenes antiguas..."
+msgstr "Učitavam starije slike..."
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:78
 msgid "Update"
-msgstr "Actualizar"
+msgstr "Ažuriraj"
 
 #: ../rigo/ui/gtk3/controllers/application.py:874
 msgid "Reinstall"
-msgstr "Reinstalar"
+msgstr "Ponovno instaliraj"
 
 #: ../rigo/ui/gtk3/controllers/application.py:884
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:77
 msgid "Remove"
-msgstr "Eliminar"
+msgstr "Ukloni"
 
 #: ../rigo/ui/gtk3/controllers/application.py:894
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:76
 msgid "Install"
-msgstr "Instalar"
+msgstr "Instaliraj"
 
 #: ../rigo/ui/gtk3/controllers/application.py:909
 msgid "Not available"
-msgstr "No disponible"
+msgstr "Nije dostupno"
 
 #: ../rigo/ui/gtk3/controllers/application.py:911
 msgid "Never downloaded"
-msgstr "Nunca descargado"
+msgstr "Nikad preuzeto"
 
 #: ../rigo/ui/gtk3/controllers/application.py:915
 msgid "downloads"
-msgstr "descargas"
+msgstr "preuzimanja"
 
 #: ../rigo/ui/gtk3/controllers/application.py:963
 msgid "Want to add images, etc?"
-msgstr "¿Quieres añadir imágenes, etc?"
+msgstr "Želite dodati slike, itd?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:965
 msgid "click here!"
-msgstr "¡haz click aquí!"
+msgstr "klikni ovdje!"
 
 #: ../rigo/ui/gtk3/controllers/application.py:976
 msgid "Loading comments..."
-msgstr "Cargando comentarios..."
+msgstr "Učitavam komentare..."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:246
 #: ../rigo/ui/gtk3/controllers/applications.py:307
 #, python-format
 msgid "Application <b>%s</b> not found"
-msgstr "La aplicación <b>%s</b> no ha sido encontrada"
+msgstr "Program <b>%s</b> nije pronađen"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:539
 msgid "Nothing found for"
-msgstr "Nada encontrado para"
+msgstr "Ništa nije nađeno za"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:549
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
-msgstr "¿has querido decir <a href=\"%s\">%s</a>?"
+msgstr "jeste li mislili <a href=\"%s\">%s</a>?"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:581
 msgid "Not found"
-msgstr "No encontrado"
+msgstr "NIje nađeno"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:708
 msgid "Update repositories"
-msgstr "Actualizar los repositorios"
+msgstr "Ažuriraj repozitorije"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:709
 msgid "Force the update of the available repositories."
-msgstr "Forzar la actualización de los repositorios"
+msgstr "Prisili ažuriranje dostupnih repozitorija"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:719
 msgid "Show Configuration File Updates"
-msgstr "Mostrar las actualizaciones para Archivos de Configuración"
+msgstr "Pokaži ažuriranja kofiguracijske datoteke"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:720
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr "Mostrar (si es que la hay) la lista de actualizaciones de archivos de configuración pendientes."
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:729
 msgid "Show Installed Applications"
-msgstr "Mostrar Aplicaciones Instaladas"
+msgstr "Pokaži instalirane programe"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:730
 msgid "Browse through the currently Installed Applications."
-msgstr "Navegar las Aplicaciones actualmente Instaladas"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Optimize Download Speed"
-msgstr "Optimizar la Velocidad de Descarga"
+msgstr "Optimiziraj brzinu preuzimanja"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr "Realizar Benchmark a los mirrors de descarga para acelerar la instalación de Aplicaciones"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
 msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
-msgstr[0] "%(nr_ratings)i valoración"
-msgstr[1] "%(nr_ratings)i valoraciones"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
-msgstr "Sugerencia: Haz click en una estrella para calificar esta aplicación"
+msgstr ""
 
 #. unrated caption
 #: ../rigo/ui/gtk3/widgets/stars.py:501
 msgid "Awful"
-msgstr "Feo"
+msgstr ""
 
 #. 1 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:502
 msgid "Poor"
-msgstr "Pobre"
+msgstr ""
 
 #. 2 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:503
 msgid "Adequate"
-msgstr "Adecuado"
+msgstr ""
 
 #. 3 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:504
 msgid "Good"
-msgstr "Bueno"
+msgstr "Dobro"
 
 #. 4 star rating
 #: ../rigo/ui/gtk3/widgets/stars.py:505
 msgid "Excellent"
-msgstr "Excelente"
+msgstr "Izvrsno"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:91
 msgid "Cannot remove comment"
-msgstr "No ha sido posible eliminar el comentario"
+msgstr "Ne mogu ukloniti komentar"
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
-msgstr "eliminar"
+msgstr "ukoni"
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
 msgid "Run"
-msgstr "Ejecutar"
+msgstr "Pokreni"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:173
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
-msgstr[0] "Hay <b>%d</b> actualización"
-msgstr[1] "Hay <b>%d</b> actualizaciones"
+msgstr[0] "Postoji<b>%d</b> ažuriranje"
+msgstr[1] "Postoje<b>%d</b> ažuriranja"
+msgstr[2] "Postoji<b>%d</b> ažuriranja"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:179
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
-msgstr[0] "y <b>%d</b> actualización de seguridad"
-msgstr[1] "y <b>%d</b> actualizaciones de seguridad"
+msgstr[0] "i<b>%d</b> sigurnosno ažuriranje"
+msgstr[1] "i<b>%d</b> sigurnosna ažuriranja"
+msgstr[2] "i<b>%d</b> sigurnosnih ažuriranja"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:185
 msgid "What to do?"
-msgstr "¿Qué debo hacer?"
+msgstr "Što učiniti?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:189
 msgid "Updates available, how about installing them?"
-msgstr "Hay actualizaciones disponibles, ¿qué tal si las instalamos?"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:192
 msgid "_Update System"
-msgstr "_Actualizar sistema"
+msgstr "_Ažuriraj sustav"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "_Show"
-msgstr "_Mostrar"
+msgstr "_Pokaži"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 msgid "_Ignore"
-msgstr "_Ignorar"
+msgstr "_Zanemari"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:224
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr "La lista de Aplicaiones disponibles es antigua, ¿<b>la actualizamos</b>?"
+msgstr "Lista dostupnih programa je stara,  <b>ažuriraj sada</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:227
 msgid "Repositories should be downloaded, <b>update now</b>?"
-msgstr "Los repositorios deben ser descargados, ¿<b>lo hacemos</b>?"
+msgstr "Treba preuzeti repozitorije, <b>ažuriraj sada</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:230
 msgid "I dunno dude, I'd say Yes"
-msgstr "No sé...  yo diría que SÍ"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:233
 msgid "_Yes, why not?"
-msgstr "_Sí, ¿porqué no?"
+msgstr "_Da, zašto ne?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:234
 msgid "_No, thanks"
-msgstr "_No, gracias"
+msgstr "_Ne, hvala"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:274
 msgid "You need to login to Entropy Web Services"
-msgstr "Necesitas iniciar sesión en los Sevicios Web de Entropy"
+msgstr "Morate se prijaviti na Entropy web servise"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:278
 msgid "_Login"
-msgstr "_Conectarse"
+msgstr "_Prijava"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:279
 msgid "Register"
-msgstr "Registrarse"
+msgstr "Registracija"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:284
 #: ../rigo/ui/gtk3/widgets/notifications.py:1109
 msgid "_Cancel"
-msgstr "_Cancelar"
+msgstr "_Otkaži"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:295
 msgid "Username"
-msgstr "Nombre de Usuario"
+msgstr "Korisničko ime"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:305
 msgid "Password"
-msgstr "Contraseña"
+msgstr "Lozinka"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:338
 msgid "Login <b>error</b>!"
-msgstr "Conexión <b>error</b>!"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:392
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr "No ha sido posible conectar a los Servicios Web de Entropy, ¿estás conectado a <b>internet</b>?"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:396
 msgid "Don't ask me..."
-msgstr "No me preguntes..."
+msgstr "Ne pitaj me..."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:399
 msgid "_Of course not"
-msgstr "_Por supuesto que no"
+msgstr "_Naravno ne"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:407
 msgid "A watched pot never boils"
-msgstr "El que espera desespera"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:466
 #, python-format
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr "Es necesario que <b>revises</b> y <b>aceptes</b> las siguientes licencias antes de continuar: %s"
+msgstr "Morate <b>pregledati</b> i <b>prihvatiti</b> slijedeće licence prije nego što nastavite: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:471
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr "La aplicación <b>%s</b> o una de sus dependencias está distribuida bajo las siguientes licencias: %s"
+msgstr "<b>%s</b> Program ili jedna njegova zavisnost distribuirani su sa slijedećim licencama: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:489
 msgid "Make sure to review all the licenses"
-msgstr "Asegúrate de revisar todas las licencias "
+msgstr "Budite sigurni da ste pregledali sve licence"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:493
 #: ../rigo/ui/gtk3/widgets/notifications.py:786
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:99
 msgid "Accept"
-msgstr "Aceptar"
+msgstr "Prihvati"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:494
 msgid "Accept forever"
-msgstr "Aceptar siempre"
+msgstr "Prihvati zauvijek"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:496
 #: ../rigo/ui/gtk3/widgets/notifications.py:787
 msgid "Decline"
-msgstr "Rechazar"
+msgstr "Odbij"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
@@ -779,222 +784,225 @@ msgstr "Rechazar"
 #: ../rigo/ui/gtk3/widgets/notifications.py:623
 #: ../rigo/ui/gtk3/widgets/notifications.py:1053
 msgid "Close"
-msgstr "Cerrar"
+msgstr "Zatvori"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:640
 msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr "En tu <b>Sistema</b> se han encontrado <b>Aplicaciones</b> que ya no son mantenidas por esta distribución. Algunas de ellas pueden requerir <b>revisión manual</b> antes de ser eliminadas. Haz click en las Aplicaciones para ver opciones."
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:648
 msgid "Manual review"
-msgstr "Revisión manual"
+msgstr "Ručni pregled"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:652
 msgid "Safe to drop"
-msgstr "Su eliminación es segura"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:755
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr "La Aplicación <b>%s</b> requiere la instalación de las siguientes Aplicaciones: %s"
+msgstr "<b>%s</b>Program zahtjeva instalaciju slijedećih programa: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:769
 msgid "Show full list"
-msgstr "Mostrar lista completa"
+msgstr "Pokaži cijelu listu"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:829
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr "La Aplicación <b>%s</b> requiere la eliminación de las siguientes Aplicaciones: %s"
+msgstr "<b>%s</b> Program zahtjeva uklanjanje slijedećih programa: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:876
 msgid "Confirm"
-msgstr "Confirmar"
+msgstr "Potvrdi"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:877
 msgid "Undo"
-msgstr "Deshacer"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:938
 #, python-format
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] "La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> segundo"
-msgstr[1] "La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> segundos"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:984
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
-msgstr[0] "Hay <b>%d</b> actualización para archivo de configuración"
-msgstr[1] "Hay <b>%d</b> actualizaciones para archivos de configuración"
+msgstr[0] "Postoji<b>%d</b> ažuriranje konfiguracijske datoteke"
+msgstr[1] "Postoje<b>%d</b> ažuriranja konfiguracijske datoteke"
+msgstr[2] "Postoje<b>%d</b> ažuriranja konfiguracijske datoteke"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:990
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "Es en <b>extremo</b> importante la actualización de estos archivos de configuración previo <b>reinicio</b> del Sistema."
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1001
 #: ../rigo/ui/gtk3/widgets/notifications.py:1051
 msgid "Let me see"
-msgstr "Permitirme ver"
+msgstr "Da vidim"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1002
 msgid "Happily ignore"
-msgstr "Ignorar"
+msgstr "Sretno zanemari"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1035
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
-msgstr[0] "Hay <b>%d</b> noticia del repositorio"
-msgstr[1] "Hay <b>%d</b> noticias del repositorio"
+msgstr[0] "Postoji <b>%d</b> obavijest iz repozitorija"
+msgstr[1] "Postoje <b>%d</b> obavijesti iz repozitorija"
+msgstr[2] "Postoje <b>%d</b> obavijesti iz repozitorija"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1041
 msgid "It is <b>extremely</b> important to always read them."
-msgstr "Es <b>extremadamente</b> importante leerlas"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1052
 msgid "Stop annoying me"
-msgstr "Deja de fastidiarme "
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1100
 msgid "You are about to rename a Repository"
-msgstr "Estás a un paso de renombrar un Repositorio"
+msgstr "Preimenovati ćete repozitorij"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1104
 msgid "_Rename"
-msgstr "_Renombrar"
+msgstr "_Preimenuj"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1119
 msgid "Repository name"
-msgstr "Nombre del Repositorio"
+msgstr "Ime repozitorija"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1151
 msgid "<b>Invalid</b> Repository name!"
-msgstr "¡Nombre del repositorio <b>inválido</b>!"
+msgstr "<b>neispravno</b> ime repozitorija!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1161
 msgid "Repository rename <b>not allowed</b>!"
-msgstr "¡<b>No está permitido</b> renombrar el Repositorio!"
+msgstr "Preimenovanje repozitorija <b>nije dozvoljeno</b>!"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
 msgid "Show"
-msgstr "Mostrar"
+msgstr "Pokaži"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
-msgstr "Editar"
+msgstr "Uredi"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:93
 msgid "Difference"
-msgstr "Diferencia"
+msgstr "Razlika"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:105
 msgid "Discard"
-msgstr "Descartar"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
-msgstr "Palabras clave"
+msgstr "Ključne riječi"
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:71
 msgid "More Info"
-msgstr "Más información"
+msgstr "Više informacija"
 
 #: ../rigo/ui/gtk3/widgets/welcome.py:39
 msgid "<i>Browse <b>Applications</b> with ease</i>"
-msgstr "<i>Navegar <b>Aplicaciones</b> con facilidad</i>"
+msgstr "<i>Pregledajte <b>programe</b> lakoćom</i>"
 
 #: ../rigo_app.py:101
 msgid "Hey hey hey!"
-msgstr "Hey hey hey!"
+msgstr ""
 
 #: ../rigo_app.py:102
 msgid "Rigo is working, are you sure?"
-msgstr "Rigo está trabajando, ¿estás seguro?"
+msgstr "Rigo radi, jeste li sigurni?"
 
 #: ../rigo_app.py:145
 msgid "Search"
-msgstr "Buscar"
+msgstr "Traži"
 
 #: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
-msgstr "Navegador de Aplicaciones Rigo"
+msgstr "Rigo preglednik programa"
 
 #: ../rigo_app.py:154
 msgid "Working Hard"
-msgstr "Trabajando Duro..."
+msgstr "Vrijedno radim"
 
 #: ../rigo_app.py:157
 msgid "Wake Up"
-msgstr "Despertar"
+msgstr "Probudi se"
 
 #: ../rigo_app.py:160
 msgid "Important Stuff"
-msgstr "Cosas Importantes"
+msgstr ""
 
 #: ../rigo_app.py:163
 msgid "Breaking Stuff"
-msgstr "Cosas Rotas"
+msgstr ""
 
 #: ../rigo_app.py:166
 msgid "Repository Stuff"
-msgstr "Cosas del Repositorio"
+msgstr ""
 
 #: ../rigo_app.py:419
 msgid "Activity Interruption"
-msgstr "Interrupción de la Actividad"
+msgstr ""
 
 #: ../rigo_app.py:421
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr "¿Estás seguro de querer interrumpir la Actividad actual? Ésto ocurrirá tan pronto como sea posible, pero no necesariamente de inmediato."
+msgstr ""
 
 #: ../rigo_app.py:446
 msgid "Repositories update error"
-msgstr "Error de actualización de Repositorios"
+msgstr "Greška ažuriranja repozitorija"
 
 #: ../rigo_app.py:450
 msgid "Repositories updated <b>successfully</b>!"
-msgstr "Repositorios actualizados <b>satisfactoriamente</b>"
+msgstr "Repozitoriji su ažurirani <b>uspješno</b>!"
 
 #: ../rigo_app.py:468
 msgid "Application Management Error"
-msgstr "Error del Administrador de Aplicaciones"
+msgstr "Greška upravljanja programima"
 
 #: ../rigo_app.py:469
 msgid "please check the management log"
-msgstr "por favor revisa el log del administrador"
+msgstr ""
 
 #: ../rigo_app.py:472
 msgid "System Upgrade Error"
-msgstr "Error de Actualización del Sistema"
+msgstr "Greška nadogradnje sustava"
 
 #: ../rigo_app.py:473
 msgid "please check the upgrade log"
-msgstr "por favor revisa el log de actualización"
+msgstr ""
 
 #: ../rigo_app.py:477
 msgid "Applications managed <b>successfully</b>!"
-msgstr "¡Aplicaciones administradas <b>correctamente</b>!"
+msgstr ""
 
 #: ../rigo_app.py:479
 msgid "System Upgraded <b>successfully</b>!"
-msgstr "¡Sistema Actualizado <b>satisfactoriamente</b>!"
+msgstr "Sustav je nadograđen <b>uspješno</b>!"
 
 #: ../rigo_app.py:717
 msgid "You are not authorized to run Rigo"
-msgstr "No estás autorizado para ejecutar Rigo"
+msgstr "Niste autorizirani da pokrenete Rigo"
 
 #: ../rigo_app.py:725 ../rigo_app.py:736 ../rigo_app.py:754 ../rigo_app.py:809
 #: ../rigo_app.py:820 ../rigo_app.py:848
@@ -1003,48 +1011,48 @@ msgstr "Rigo"
 
 #: ../rigo_app.py:726
 msgid "RigoDaemon service is not available"
-msgstr "El servicio RigoDaemon no está disponible"
+msgstr ""
 
 #: ../rigo_app.py:738
 msgid "API mismatch, please update Rigo and RigoDaemon"
-msgstr "APIs distintas, por favor actualiza Rigo y RigoDaemon"
+msgstr ""
 
 #: ../rigo_app.py:755
 msgid "Another Application Manager is active"
-msgstr "Otro Gestor de Aplicaciones se encuentra activo"
+msgstr "Aktivan je još jedan Upravitelj programima"
 
 #: ../rigo_app.py:772
 msgid "Background Service is currently not available"
-msgstr "El servicio en segundo plano no se encuentra disponible"
+msgstr "Pozadinski servis trenutno nije dostupan"
 
 #: ../rigo_app.py:802
 msgid "Background Service is currently busy"
-msgstr "El servicio en segundo plano se encuentra ocupado"
+msgstr ""
 
 #: ../rigo_app.py:804
 msgid "Background Service is incompatible with Rigo"
-msgstr "El servicio en segundo plano es incompatibe con Rigo"
+msgstr ""
 
 #: ../rigo_app.py:816
 msgid "Background Service is currently unavailable"
-msgstr "El servicio en segundo plano no se encuentra disponible"
+msgstr "Pozadinski servis trenutno je nedostupan"
 
 #: ../rigo_app.py:876
 msgid "Happy St. Valentine <3 <3 !"
-msgstr "¡Feliz San Valentín <3 <3!"
+msgstr "Sretno Valentinovo <3 <3 !"
 
 #: ../rigo_app.py:878
 msgid "Merry Xmas \\o/ !"
-msgstr "¡Feliz Navidad \\o/!"
+msgstr "Čestit Božić \\o/ !"
 
 #: ../rigo_app.py:880
 msgid "<=|=< (this is optimistically a fish)"
-msgstr "<=|=< (siendo optimistas, esto es un pez)"
+msgstr ""
 
 #: ../rigo_app.py:885
 msgid "Woot, thanks"
-msgstr "Wow, gracias"
+msgstr ""
 
 #: ../data/ui/gtk3/rigo.ui.h:2
 msgid "_Write a <b>comment</b>"
-msgstr "_Escribir <b>comentario</b>"
+msgstr "_Napiši <b>komentar</b>"

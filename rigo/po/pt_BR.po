@@ -13,14 +13,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-08-03 14:31+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2012-10-24 14:03+0000\n"
+"Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-rigo/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: pt_BR\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
 msgid "Not authorized"
@@ -146,8 +146,8 @@ msgstr " A ação <b>%s</b>está na fila"
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
-msgstr[0] "A Aplicação <b>%i</b> está longe na fila..."
-msgstr[1] "As Aplicações <b>%i</b> estão longe na fila..."
+msgstr[0] "A Aplicação <b>%i</b> está na fila, mas longe..."
+msgstr[1] "As Aplicações <b>%i</b> estão na fila, mas longe..."
 
 #: ../rigo/controllers/daemon.py:734 ../rigo_app.py:151
 msgid "Application"
@@ -233,19 +233,19 @@ msgstr[1] "Existem mais <b>%i</b> atualizações a fazer"
 
 #: ../rigo/controllers/daemon.py:1109
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Parabéns, todos os espelhos foram <b>otimizados</b>!"
 
 #: ../rigo/controllers/daemon.py:1113
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Puxa, que chato! Os espelhos <b>não otimizaram</b>!"
 
 #: ../rigo/controllers/daemon.py:1519
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "Os Espelhos serão otimizados em <b>segundo plano</b>."
 
 #: ../rigo/controllers/daemon.py:1523
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Otimização dos espelhos <b>não está</b>disponível, nmeste momento"
 
 #: ../rigo/controllers/daemon.py:1932
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -318,7 +318,7 @@ msgstr "<b>Manuseio do Aplicativo</b> está em andamento..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr ""
+msgstr "Atividade"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
@@ -331,11 +331,11 @@ msgstr "<b>Atualização do Sistema</b> em andamento..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr ""
+msgstr "Preto no Branco"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr ""
+msgstr "Branco no Preto"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
@@ -555,7 +555,7 @@ msgstr "Nada encontrado para"
 #: ../rigo/ui/gtk3/controllers/applications.py:549
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
-msgstr "A URL correta é <a href=\"%s\">%s</a>?"
+msgstr "Voce quiz dizer  <a href=\"%s\">%s</a>?"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:581
 msgid "Not found"
@@ -579,19 +579,19 @@ msgstr "Mostra a lista das atualizações pendentes nos arquivos de configuraç�
 
 #: ../rigo/ui/gtk3/controllers/applications.py:729
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Mostra os Aplicativos instalados"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:730
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Navegue entre os Aplicativos instalados."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Otimize velocidade de download"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Cálculo de velocidade dos Espelhos, para acelerar a instalação dos Aplicativos."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -842,7 +842,7 @@ msgstr[1] "Existem <b>%d</b> arquivos de configuração para atualizar "
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr "É <b>extremamente</b> importante atualizar esses arquivos de configuração antes de <b>resetar</b> o Sistema. Obs: se você usar também Portage, NÂO atualize mais o <i>Client.conf</i>"
+msgstr "É <b>extremamente</b> importante atualizar esses arquivos de configuração antes de <b>resetar</b> o Sistema. Obs: se você usa também Portage, NTP etc.. NÂO atualize mais os arquivos correspondentes"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1001
 #: ../rigo/ui/gtk3/widgets/notifications.py:1051
@@ -862,7 +862,7 @@ msgstr[1] "Existem <b>%d</b> notícias dos repositórios"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1041
 msgid "It is <b>extremely</b> important to always read them."
-msgstr "É <b>extremamente</b> importante que todos as leiam."
+msgstr "É <b>importante</b> que todos as leiam."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1052
 msgid "Stop annoying me"
@@ -890,7 +890,7 @@ msgstr "<b>Não foi possível</b>renomear o Repositório"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:62
 msgid "Show"
-msgstr ""
+msgstr "Mostra"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:87
 msgid "Edit"
@@ -922,35 +922,35 @@ msgstr "Êi!"
 
 #: ../rigo_app.py:102
 msgid "Rigo is working, are you sure?"
-msgstr "Rigo está em execução, você tem certeza?"
+msgstr "Rigo está executando, quer mesmo sair?"
 
 #: ../rigo_app.py:145
 msgid "Search"
-msgstr ""
+msgstr "Busca"
 
 #: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
-msgstr "Navegador da Aplicação Rigo"
+msgstr "Navegador de Aplicativos Rigo"
 
 #: ../rigo_app.py:154
 msgid "Working Hard"
-msgstr ""
+msgstr "Trabalhando Muito..."
 
 #: ../rigo_app.py:157
 msgid "Wake Up"
-msgstr ""
+msgstr "Levantando"
 
 #: ../rigo_app.py:160
 msgid "Important Stuff"
-msgstr ""
+msgstr "Uma coisa importante"
 
 #: ../rigo_app.py:163
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Algo quebrado"
 
 #: ../rigo_app.py:166
 msgid "Repository Stuff"
-msgstr ""
+msgstr "Dados nos repositórios"
 
 #: ../rigo_app.py:419
 msgid "Activity Interruption"
@@ -1025,7 +1025,7 @@ msgstr "Serviço de plano de fundo está ocupado"
 
 #: ../rigo_app.py:804
 msgid "Background Service is incompatible with Rigo"
-msgstr "Serviço de plano de fundo é incompatível com Rigo"
+msgstr "Serviço em segundo plano incompatível com o Rigo"
 
 #: ../rigo_app.py:816
 msgid "Background Service is currently unavailable"
