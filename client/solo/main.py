@@ -20,7 +20,7 @@ from entropy.output import print_error, print_warning, bold, purple, \
     teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface, \
     is_stdout_a_tty, nocolor
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    const_debug_enabled
+    const_convert_to_unicode, const_debug_enabled
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, PermissionDenied, FileNotFound, SPMError
 
@@ -272,6 +272,17 @@ def main():
             args_map[alias] = klass
 
     args = sys.argv[1:]
+    # convert args to unicode, to avoid passing
+    # raw string stuff down to entropy layers
+    def _to_unicode(arg):
+        try:
+            return const_convert_to_unicode(
+                arg, enctype=etpConst['conf_encoding'])
+        except UnicodeDecodeError:
+            print_error("invalid argument: %s" % (arg,))
+            raise SystemExit(1)
+    args = list(map(_to_unicode, args))
+
     is_bashcomp = False
     if "--bashcomp" in args:
         is_bashcomp = True
