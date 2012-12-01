@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-11-09 09:19+0100\n"
-"PO-Revision-Date: 2012-11-18 10:43+0000\n"
+"PO-Revision-Date: 2012-11-30 08:50+0000\n"
 "Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
 "Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-entropy/language/cs/)\n"
 "MIME-Version: 1.0\n"
@@ -308,7 +308,7 @@ msgstr "Nelze dokončit quickpg pro atom"
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2608
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2803
 msgid "do it manually"
-msgstr ""
+msgstr "udělat to ručně"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2626
 msgid "package files rebuild did not run properly"
@@ -617,7 +617,7 @@ msgstr "neplatná metoda"
 
 #: ../../lib/entropy/client/interfaces/db.py:294
 msgid "Injecting downloaded dump"
-msgstr ""
+msgstr "Vkládám stažená data"
 
 #: ../../lib/entropy/client/interfaces/db.py:385
 msgid "repository is not available at the following URL:"
@@ -880,7 +880,7 @@ msgstr "Nelze stáhnout metadata repozitáře"
 
 #: ../../lib/entropy/client/interfaces/db.py:1734
 msgid "cannot update treeupdates data"
-msgstr ""
+msgstr "nelze aktualizovat data treeupdates"
 
 #: ../../lib/entropy/client/interfaces/db.py:1751
 msgid "cannot update package sets data"
@@ -1633,7 +1633,7 @@ msgstr "uživatelský package.keywords"
 
 #: ../../lib/entropy/const.py:714
 msgid "completely masked (by keyword?)"
-msgstr ""
+msgstr "zcela maskován (přes klíčové slovo?)"
 
 #: ../../lib/entropy/const.py:715
 msgid "repository general packages.db.mask"
