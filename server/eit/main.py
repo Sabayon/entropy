@@ -14,6 +14,7 @@ import sys
 import argparse
 
 from entropy.i18n import _
+from entropy.const import etpConst, const_convert_to_unicode
 from entropy.output import print_error
 import entropy.tools
 
@@ -60,6 +61,17 @@ def main():
             args_map[alias] = klass
 
     args = sys.argv[1:]
+    # convert args to unicode, to avoid passing
+    # raw string stuff down to entropy layers
+    def _to_unicode(arg):
+        try:
+            return const_convert_to_unicode(
+                arg, enctype=etpConst['conf_encoding'])
+        except UnicodeDecodeError:
+            print_error("invalid argument: %s" % (arg,))
+            raise SystemExit(1)
+    args = list(map(_to_unicode, args))
+
     is_bashcomp = False
     if "--bashcomp" in args:
         is_bashcomp = True
@@ -104,4 +116,3 @@ def main():
     else:
         print_error(_("superuser access required"))
         raise SystemExit(1)
-
