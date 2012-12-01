@@ -1,3 +1,67 @@
+commit 8e42f387ea54dbdd86f9566b827981799352da15
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:26:21 2012 +0100
+
+    Release Entropy 153
+
+commit 943e91f74dcf28d0ff3ce71b785f04248ec08159
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:16:26 2012 +0100
+
+    [eit] convert all the sys.argv elements to unicode in main()
+    
+    This avoids potential issues with entropy.db and other entropy.server
+    components.
+
+commit ea7a559f45f2c80162e44b5bcc73250a49c8f830
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:15:37 2012 +0100
+
+    [equo] convert all the sys.argv elements to unicode in main()
+    
+    This avoids potential issues with entropy.db and other entropy.client
+    components.
+
+commit 1d20a3e358a613651c9ed6ec105e54e9d40c076b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 13:56:05 2012 +0100
+
+    [matter] move post-graph filters execution to a separate method
+
+commit 79c63fef14435157520d2c978fb4a6c63207fcc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 13:31:20 2012 +0100
+
+    [matter] implement support for package dependencies grouping
+    
+    Previously, each package in the particle was analyzed on its own and
+    spawning portage against multiple packages was not possible.
+    This commit introduces the ability to aggregate packages in particles
+    in "groups", so that they can be considered together in the same
+    portage merge transaction.
+    
+    The previously exported environment variable MATTER_PACKAGE_NAME has
+    been renamed into MATTER_PACKAGE_NAMES and contains a space separated
+    list of package dependencies that are in the merge transaction.
+
+commit e85b5117328c8320d880f13d1fb7e3b5fcf5d166
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 09:06:10 2012 +0100
+
+    [matter] some PEP8 related cleanup
+
+commit 5ce930fc8dbfa0f2464ebdb0cacf7936fb8488bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 21:24:42 2012 +0100
+
+    [equo] update man pages
+
+commit 4d77e96f58ae257bfc4a794fed1fc93c0fb5d147
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 25 20:04:59 2012 +0100
+
+    Tagging Entropy version 152
+
 commit 6576830df5d109188fd01cbeafafa09f5444a55f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 25 20:04:58 2012 +0100
