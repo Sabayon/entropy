@@ -59,13 +59,13 @@ removed-useflags: yes
 # Package pre execution script hook, executed for each package
 # Valid value is path to executable file
 # Env vars:
-# MATTER_PACKAGE_NAME       = name of the package that would be built
+# MATTER_PACKAGE_NAMES       = list of package names that would be built
 # pkgpre: /home/fabio/repos/entropy/services/matter_examples/pkgpre.sh
 
 # Package build post execution script hook, executed for each package
 # Valid value is path to executable file
 # Env vars:
-# MATTER_PACKAGE_NAME       = name of the package that would be built
+# MATTER_PACKAGE_NAMES       = list of package names that would be built
 # To the pkgpost hook, is given one argv parameter, corresponding to the
 # build exit status, which is 0 for no issues, != 0 for issue.
 # If pkgpost hook returns != 0 exit status, this will replace the exit status
@@ -74,9 +74,9 @@ removed-useflags: yes
 # pkgpost: /home/fabio/repos/entropy/services/matter_examples/pkgpost.sh
 
 # Env vars:
-# MATTER_PACKAGE_NAME       = name of the package that would be built. It does
-# not reflect the name of the failing package, because it could be just a
-# dependency of it.
+# MATTER_PACKAGE_NAMES       = list of package names that would be built. It
+# does not reflect the name of the failing packages, because they could be
+# just dependencies.
 # MATTER_PORTAGE_FAILED_PACKAGE_NAME = exact name (atom, CPV) of the failing
 # package, the one that triggered the buildfail hook.
 # MATTER_PORTAGE_REPOSITORY = Portage repository from where the package

@@ -3,7 +3,20 @@
 # List of packages required to be built.
 # Comma separated, example: app-foo/bar, bar-baz/foo
 # Mandatory, cannot be empty
-packages: sys-libs/zlib, asd-foo/foo, x11-drivers/ati-drivers, app-office/libreoffice::sabayon
+# This will build an Entropy package group (no commas between package deps!)
+packages:
+	app-misc/magneto-loader
+	app-admin/rigo
+	app-admin/sulfur
+	app-admin/equo
+	kde-misc/magneto-kde
+	sys-apps/entropy
+	sys-apps/magneto-core
+	sys-apps/entropy-server
+	sys-apps/rigo-daemon
+	x11-misc/magneto-gtk
+	x11-misc/magneto-gtk3
+
 
 # Entropy repository where to commit packages
 # Mandatory, cannot be empty
@@ -49,7 +62,7 @@ keep-going: yes
 # Allow new USE flags?
 # Valid values are either "yes" or "no"
 # Default is: no
-new-useflags: yes
+new-useflags: no
 
 # Allow removed USE flags?
 # Valid values are either "yes" or "no"
@@ -75,8 +88,8 @@ removed-useflags: yes
 
 # Env vars:
 # MATTER_PACKAGE_NAMES       = list of package names that would be built. It
-# does not reflect the name of the failing packages, because it could be just a
-# dependency of them.
+# does not reflect the name of the failing packages, because they could be
+# just dependencies.
 # MATTER_PORTAGE_FAILED_PACKAGE_NAME = exact name (atom, CPV) of the failing
 # package, the one that triggered the buildfail hook.
 # MATTER_PORTAGE_REPOSITORY = Portage repository from where the package
