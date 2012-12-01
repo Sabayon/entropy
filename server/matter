@@ -859,6 +859,176 @@ class PackageBuilder(object):
                 best_visible, package,))
         return best_visible
 
+    def _post_graph_filters(self, graph, vardb, portdb):
+        """
+        Execute post-graph generation (dependencies calculation)
+        filters against the package dependencies to see if they're
+        eligible for building.
+        """
+        # list of _emerge.Package.Package objects
+        package_queue = graph.altlist()
+
+        # filter out blockers
+        real_queue = [x for x in package_queue if not isinstance(
+                x, Blocker)]
+        # filter out broken or corrupted objects
+        real_queue = [x for x in real_queue if x.cpv]
+
+        # package_queue can also contain _emerge.Blocker.Blocker objects
+        # not exposing .cpv field (but just .cp).
+        dep_list = []
+        for pobj in package_queue:
+            if isinstance(pobj, Blocker):
+                # blocker, list full atom
+                dep_list.append("!" + pobj.atom)
+                continue
+            cpv = pobj.cpv
+            repo = pobj.repo
+            if repo:
+                repo = "::" + repo
+            if cpv:
+                dep_list.append(cpv+repo)
+            else:
+                print_warning(
+                    "attention, %s has broken cpv: '%s', ignoring" % (
+                        pobj, cpv,))
+
+        # calculate dependencies, if --dependencies is not enabled
+        # because we have to validate it
+        if (self._params['dependencies'] == "no") \
+                and (len(package_queue) > 1):
+            deps = "\n  ".join(dep_list)
+            print_warning("dependencies pulled in:")
+            print_warning(deps)
+            print_warning("but 'dependencies: no' in config, aborting")
+            return None
+
+        # inspect use flags changes
+        allow_new_useflags = self._params['new-useflags'] == "yes"
+        allow_removed_useflags = \
+            self._params['removed-useflags'] == "yes"
+
+        use_flags_give_up = False
+        if (not allow_new_useflags) or (not allow_removed_useflags):
+            # checking for use flag changes
+            for pkg in real_queue:
+                # frozenset
+                enabled_flags = pkg.use.enabled
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                if not inst_atom:
+                    # new package, ignore check
+                    continue
+                installed_flags = frozenset(
+                    vardb.aux_get(inst_atom, ["USE"])[0].split())
+
+                new_flags = enabled_flags - installed_flags
+                removed_flags = installed_flags - enabled_flags
+
+                if (not allow_new_useflags) and new_flags:
+                    print_warning(
+                        "ouch: %s wants these new USE flags: %s" % (
+                            pkg.cpv+"::"+pkg.repo,
+                            " ".join(sorted(new_flags)),))
+                    use_flags_give_up = True
+                if (not allow_removed_useflags) and removed_flags:
+                    print_warning(
+                        "ouch: %s has these USE flags removed: %s" % (
+                            pkg.cpv+"::"+pkg.repo,
+                        " ".join(sorted(removed_flags)),))
+                    use_flags_give_up = True
+
+        if use_flags_give_up:
+            print_warning("cannot continue due to unmet "
+                          "USE flags constraint")
+            return None
+
+        allow_downgrade = self._params['downgrade'] == "yes"
+        # check the whole queue against downgrade directive
+        if not allow_downgrade:
+            allow_downgrade_give_ups = []
+            for pkg in real_queue:
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                cmp_res = -1
+                if inst_atom:
+                    # -1 if inst_atom is older than pkg.cpv
+                    # 1 if inst_atom is newer than pkg.cpv
+                    # 0 if they are equal
+                    cmp_res = portage.versions.pkgcmp(
+                        portage.versions.pkgsplit(inst_atom),
+                        portage.versions.pkgsplit(pkg.cpv))
+                if cmp_res > 0:
+                    allow_downgrade_give_ups.append((inst_atom, pkg.cpv))
+
+            if allow_downgrade_give_ups:
+                print_warning(
+                    "cannot continue due to package "
+                    "downgrade not allowed for:")
+                for inst_atom, avail_atom in allow_downgrade_give_ups:
+                    print_warning("  installed: %s | wanted: %s" % (
+                        inst_atom, avail_atom,))
+                return None
+
+        changing_repo_pkgs = []
+        for pkg in real_queue:
+            wanted_repo = pkg.repo
+            pkg_slot = pkg.slot_atom
+            inst_atom = portage.best(vardb.match(pkg_slot))
+            current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
+            if current_repo:
+                if current_repo != wanted_repo:
+                    changing_repo_pkgs.append(
+                        (pkg.cpv, pkg_slot, current_repo, wanted_repo))
+
+        if changing_repo_pkgs:
+            print_warning("")
+            print_warning(
+                "Attention, packages are moving across SPM repositories:")
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                print_warning("  %s:%s [%s->%s]" % (pkg_atom, pkg_slot,
+                    c_repo, w_repo,))
+            print_warning("")
+
+        allow_spm_repo_change = self._params['spm-repository-change'] \
+            == "yes"
+        allow_spm_repo_change_if_ups = \
+            self._params['spm-repository-change-if-upstreamed'] == "yes"
+
+        if (not allow_spm_repo_change) and allow_spm_repo_change_if_ups:
+            print_info("SPM repository change allowed if the original "
+                       "repository does no longer contain "
+                       "current packages.")
+
+            # check if source repository still contains the package
+            # in this case, set allow_spm_repo_change to True
+            _allow = True
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                pkg_key = portage.dep.dep_getkey("=%s" % (pkg_atom,))
+                pkg_target = "%s:%s::%s" % (
+                    pkg_key, pkg_slot, c_repo)
+                pkg_match = portdb.xmatch("bestmatch-visible", pkg_target)
+                if pkg_match:
+                    # package still available in source repo
+                    _allow = False
+                    print_warning("  %s:%s, still in repo: %s" % (
+                        pkg_atom, pkg_slot, c_repo,))
+                    # do not break, print all the list
+                    # break
+
+            if _allow:
+                print_info(
+                    "current packages are no longer in their "
+                    "original repository, SPM repository change allowed.")
+                allow_spm_repo_change = True
+
+        if changing_repo_pkgs and (not allow_spm_repo_change):
+            print_warning(
+                "cannot continue due to unmet SPM repository "
+                "change constraint")
+            return None
+
+        print_info("USE flags constraints are met for all "
+                   "the queued packages")
+        return dep_list, real_queue
 
     def _run_builder(self, dirs_cleanup_queue):
         """
@@ -952,157 +1122,12 @@ class PackageBuilder(object):
             return 0
         print_info("dependency graph generated successfully")
 
-        # list of _emerge.Package.Package objects
-        package_queue = graph.altlist()
-        # filter out blockers
-        real_queue = [x for x in package_queue if not isinstance(x, Blocker)]
-        # filter out broken or corrupted objects
-        real_queue = [x for x in real_queue if x.cpv]
-
-        # package_queue can also contain _emerge.Blocker.Blocker objects
-        # not exposing .cpv field (but just .cp).
-        dep_list = []
-        for pobj in package_queue:
-            if isinstance(pobj, Blocker):
-                # blocker, list full atom
-                dep_list.append("!" + pobj.atom)
-                continue
-            cpv = pobj.cpv
-            repo = pobj.repo
-            if repo:
-                repo = "::" + repo
-            if cpv:
-                dep_list.append(cpv+repo)
-            else:
-                print_warning(
-                    "attention, %s has broken cpv: '%s', ignoring" % (
-                        pobj, cpv,))
-
-        # calculate dependencies, if --dependencies is not enabled
-        # because we have to validate it
-        if (self._params['dependencies'] == "no") \
-                and (len(package_queue) > 1):
-            deps = "\n  ".join(dep_list)
-            print_warning("dependencies pulled in:")
-            print_warning(deps)
-            print_warning("but 'dependencies: no' in config, aborting")
+        f_data = self._post_graph_filters(graph, vardb, portdb)
+        if f_data is None:
+            # post-graph filters not passed, giving up
             return 0
+        dep_list, real_queue = f_data
 
-        # inspect use flags changes
-        allow_new_useflags = self._params['new-useflags'] == "yes"
-        allow_removed_useflags = \
-            self._params['removed-useflags'] == "yes"
-
-        use_flags_give_up = False
-        if (not allow_new_useflags) or (not allow_removed_useflags):
-            # checking for use flag changes
-            for pkg in real_queue:
-                # frozenset
-                enabled_flags = pkg.use.enabled
-                inst_atom = portage.best(vardb.match(pkg.slot_atom))
-                if not inst_atom:
-                    # new package, ignore check
-                    continue
-                installed_flags = frozenset(
-                    vardb.aux_get(inst_atom, ["USE"])[0].split())
-
-                new_flags = enabled_flags - installed_flags
-                removed_flags = installed_flags - enabled_flags
-
-                if (not allow_new_useflags) and new_flags:
-                    print_warning("ouch: %s wants these new USE flags: %s" % (
-                        pkg.cpv+"::"+pkg.repo, " ".join(sorted(new_flags)),))
-                    use_flags_give_up = True
-                if (not allow_removed_useflags) and removed_flags:
-                    print_warning("ouch: %s has these USE flags removed: %s" % (
-                        pkg.cpv+"::"+pkg.repo,
-                        " ".join(sorted(removed_flags)),))
-                    use_flags_give_up = True
-
-        if use_flags_give_up:
-            print_warning("cannot continue due to unmet USE flags constraint")
-            return 0
-
-        allow_downgrade = self._params['downgrade'] == "yes"
-        # check the whole queue against downgrade directive
-        if not allow_downgrade:
-            allow_downgrade_give_ups = []
-            for pkg in real_queue:
-                inst_atom = portage.best(vardb.match(pkg.slot_atom))
-                cmp_res = -1
-                if inst_atom:
-                    # -1 if inst_atom is older than pkg.cpv
-                    # 1 if inst_atom is newer than pkg.cpv
-                    # 0 if they are equal
-                    cmp_res = portage.versions.pkgcmp(
-                        portage.versions.pkgsplit(inst_atom),
-                        portage.versions.pkgsplit(pkg.cpv))
-                if cmp_res > 0:
-                    allow_downgrade_give_ups.append((inst_atom, pkg.cpv))
-
-            if allow_downgrade_give_ups:
-                print_warning(
-                    "cannot continue due to package downgrade not allowed for:")
-                for inst_atom, avail_atom in allow_downgrade_give_ups:
-                    print_warning("  installed: %s | wanted: %s" % (
-                        inst_atom, avail_atom,))
-                return 0
-
-        changing_repo_pkgs = []
-        for pkg in real_queue:
-            wanted_repo = pkg.repo
-            pkg_slot = pkg.slot_atom
-            inst_atom = portage.best(vardb.match(pkg_slot))
-            current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
-            if current_repo:
-                if current_repo != wanted_repo:
-                    changing_repo_pkgs.append(
-                        (pkg.cpv, pkg_slot, current_repo, wanted_repo))
-
-        if changing_repo_pkgs:
-            print_warning("")
-            print_warning(
-                "Attention, packages are moving across SPM repositories:")
-            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
-                print_warning("  %s:%s [%s->%s]" % (pkg_atom, pkg_slot,
-                    c_repo, w_repo,))
-            print_warning("")
-
-        allow_spm_repo_change = self._params['spm-repository-change'] == "yes"
-        allow_spm_repo_change_if_upstreamed = \
-            self._params['spm-repository-change-if-upstreamed'] == "yes"
-        if (not allow_spm_repo_change) and allow_spm_repo_change_if_upstreamed:
-            print_info("SPM repository change allowed if the original "
-                       "repository does no longer contain current packages.")
-
-            # check if source repository still contains the package
-            # in this case, set allow_spm_repo_change to True
-            _allow = True
-            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
-                pkg_key = portage.dep.dep_getkey("=%s" % (pkg_atom,))
-                pkg_target = "%s:%s::%s" % (
-                    pkg_key, pkg_slot, c_repo)
-                pkg_match = portdb.xmatch("bestmatch-visible", pkg_target)
-                if pkg_match:
-                    # package still available in source repo
-                    _allow = False
-                    print_warning("  %s:%s, still in repo: %s" % (
-                        pkg_atom, pkg_slot, c_repo,))
-                    # do not break, print all the list
-                    # break
-
-            if _allow:
-                print_info(
-                    "current packages are no longer in their "
-                    "original repository, SPM repository change allowed.")
-                allow_spm_repo_change = True
-
-        if changing_repo_pkgs and (not allow_spm_repo_change):
-            print_warning(
-                "cannot continue due to unmet SPM repository change constraint")
-            return 0
-
-        print_info("USE flags constraints are met for all the queued packages")
         print_info("about to build the following packages:")
         for dep in dep_list:
             print_info("  %s" % (dep,))
