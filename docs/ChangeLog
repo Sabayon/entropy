@@ -1,3 +1,33 @@
+commit 3b27f40c205007a8fffd5fb260f00009ca02d551
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 2 09:23:46 2012 +0100
+
+    Release Entropy 154
+
+commit 5b5812f6125c7f69a45db913df20eb30a93ec2e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 2 09:22:52 2012 +0100
+
+    [matter] fix typo in changing repo detection code
+
+commit a39e44f93c026d2e27c5bc6e6165743acac5491d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:29:41 2012 +0100
+
+    [rigo] update translations, add tr and hr
+
+commit 9c67b9dfa1f41d0ac9053fa612be9b43b53d16bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:28:28 2012 +0100
+
+    [client] update translations
+
+commit 18038cf46942df58c951794896f3d60b94c34fa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 1 19:26:22 2012 +0100
+
+    Tagging Entropy version 153
+
 commit 8e42f387ea54dbdd86f9566b827981799352da15
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Dec 1 19:26:21 2012 +0100
