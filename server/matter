@@ -971,13 +971,12 @@ class PackageBuilder(object):
         changing_repo_pkgs = []
         for pkg in real_queue:
             wanted_repo = pkg.repo
-            pkg_slot = pkg.slot_atom
-            inst_atom = portage.best(vardb.match(pkg_slot))
+            inst_atom = portage.best(vardb.match(pkg.slot_atom))
             current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
             if current_repo:
                 if current_repo != wanted_repo:
                     changing_repo_pkgs.append(
-                        (pkg.cpv, pkg_slot, current_repo, wanted_repo))
+                        (pkg.cpv, pkg.slot, current_repo, wanted_repo))
 
         if changing_repo_pkgs:
             print_warning("")
