@@ -1013,7 +1013,7 @@ class PackageBuilder(object):
                     # do not break, print all the list
                     # break
 
-            if _allow:
+            if _allow and changing_repo_pkgs:
                 print_info(
                     "current packages are no longer in their "
                     "original repository, SPM repository change allowed.")
