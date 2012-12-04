@@ -1124,10 +1124,7 @@ class PortagePlugin(SpmPlugin):
         # kernel dependencies.
         kmod_pfx = "/lib/modules"
         kmox_sfx = ".ko"
-        modinfo_path = "/sbin/modinfo"
-        if not os.path.lexists(modinfo_path):
-            # try and hope for /usr/bin
-            modinfo_path = "/usr/bin/modinfo"
+
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
         content = [x for x in content if x.endswith(kmox_sfx)]
         enc = etpConst['conf_encoding']
@@ -1137,6 +1134,16 @@ class PortagePlugin(SpmPlugin):
             return
 
         def read_kern_vermagic(ko_path):
+
+            # apparently upstream is idiot 100% tested
+            modinfo_path = None
+            for _path in ("/sbin", "/usr/bin", "/bin"):
+                modinfo_path = os.path.join(_path, "modinfo")
+                if os.path.lexists(modinfo_path):
+                    break
+            if modinfo_path is None:
+                warnings.warn("Something is wrong, no modinfo on the system")
+                return
 
             tmp_fd, tmp_file = tempfile.mkstemp(
                 prefix="entropy.spm.portage._add_kernel_dependency_to_pkg")
