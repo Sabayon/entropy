@@ -40,6 +40,7 @@ Match package names.
         self._quiet = False
         self._verbose = False
         self._installed = False
+        self._injected = False
         self._available = False
         self._multimatch = False
         self._multirepo = False
@@ -60,7 +61,7 @@ Match package names.
         """
         args = [
             "--quiet", "-q", "--verbose", "-v",
-            "--installed", "--available",
+            "--installed", "--injected", "--available",
             "--multimatch", "--multirepo",
             "--showrepo", "--showslot"]
         args.sort()
@@ -87,6 +88,10 @@ Match package names.
         parser.add_argument("--verbose", "-v", action="store_true",
                             default=self._verbose,
                             help=_('verbose output'))
+
+        parser.add_argument("--injected", action="store_true",
+                            default=self._injected,
+                            help=_('return only injected packages '))
 
         group = parser.add_mutually_exclusive_group()
         group.add_argument("--installed", action="store_true",
@@ -170,14 +175,25 @@ Match package names.
                 multi_repo = self._multirepo,
                 mask_filter = False)
 
+        # filter functions
+        is_injected = lambda (x, y): entropy_client.open_repository(
+            y).isInjected(x)
+
+        _matches = []
         if match[1] != 1:
             if not self._multimatch:
                 if self._multirepo:
-                    matches += match[0]
+                    _matches += match[0]
                 else:
-                    matches += [match]
+                    _matches += [match]
             else:
-                matches += match[0]
+                _matches += match[0]
+
+        # apply filters
+        if self._injected:
+            _matches = filter(is_injected, _matches)
+
+        matches.extend(_matches)
 
         key_sorter = lambda x: \
             entropy_client.open_repository(x[1]).retrieveAtom(x[0])
