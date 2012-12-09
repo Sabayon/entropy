@@ -948,8 +948,9 @@ class CalculatorsMixin:
 
         return new_packages
 
-    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
-        elements_cache):
+    def __generate_dependency_tree_inst_hooks(self, installed_match,
+                                              pkg_match, build_deps,
+                                              elements_cache):
 
         if const_debug_enabled():
             inst_atom = self._installed_repository.retrieveAtom(
@@ -979,7 +980,7 @@ class CalculatorsMixin:
                     after_pkgs, before_pkgs,))
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
-            installed_match, elements_cache)
+            installed_match[0], build_deps, elements_cache)
         if const_debug_enabled():
             const_debug_write(__name__,
             "__generate_dependency_tree_inst_hooks "
@@ -1258,7 +1259,8 @@ class CalculatorsMixin:
                 # - inverse dependencies check
                 children_matches, after_pkgs, before_pkgs, inverse_deps = \
                     self.__generate_dependency_tree_inst_hooks(
-                        (cm_idpackage, cm_result), pkg_match, elements_cache)
+                        (cm_idpackage, cm_result), pkg_match,
+                        build_deps, elements_cache)
                 # this is fine this way, these are strong inverse deps
                 # and their order is already written in stone
                 for inv_match in inverse_deps:
@@ -1390,42 +1392,46 @@ class CalculatorsMixin:
 
         return new_match
 
-    def _lookup_inverse_dependencies(self, match, clientmatch, elements_cache):
-
-        cmpstat = self.get_package_action(match)
+    def _lookup_inverse_dependencies(self, match, installed_package_id,
+                                     build_deps, elements_cache):
+        """
+        Lookup inverse dependencies and return them as a list of package
+        matches.
+        """
+        cmpstat = self.get_package_action(
+            match, installed_package_id = installed_package_id)
         if cmpstat == 0:
             return set()
 
         keyslots_cache = set()
         match_cache = {}
         results = set()
+        inst_repo = self._installed_repository
 
-        # TODO: future build deps support
-        include_build_deps = False
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        if not include_build_deps:
+        excluded_dep_types = (
+            etpConst['dependency_type_ids']['bdepend_id'],)
+        if build_deps:
             excluded_dep_types = None
 
-        cdb_rdeps = self._installed_repository.retrieveDependencies
-        cdb_rks = self._installed_repository.retrieveKeySlot
-        gpa = self.get_package_action
-        mydepends = \
-            self._installed_repository.retrieveReverseDependencies(
-                clientmatch[0], exclude_deptypes = excluded_dep_types)
+        reverse_deps = inst_repo.retrieveReverseDependencies(
+            installed_package_id, exclude_deptypes = excluded_dep_types)
 
-        for idpackage in mydepends:
-            try:
-                key, slot = cdb_rks(idpackage)
-            except TypeError:
+        for inst_package_id in reverse_deps:
+
+            key_slot = inst_repo.retrieveKeySlotAggregated(
+                inst_package_id)
+            if key_slot is None:
+                continue
+            if key_slot in keyslots_cache:
                 continue
 
-            if (key, slot) in keyslots_cache:
-                continue
-            keyslots_cache.add((key, slot))
+            keyslots_cache.add(key_slot)
 
             # grab its deps
-            mydeps = cdb_rdeps(idpackage)
+            mydeps = inst_repo.retrieveDependencies(
+                inst_package_id, exclude_deptypes = excluded_dep_types)
             found = False
+
             for mydep in mydeps:
                 mymatch = match_cache.get(mydep, 0)
                 if mymatch == 0:
@@ -1436,27 +1442,30 @@ class CalculatorsMixin:
                     break
 
             if not found:
-                mymatch = self.atom_match(key, match_slot = slot)
+                mymatch = self.atom_match(key_slot)
                 if mymatch[0] == -1:
                     continue
-                cmpstat = gpa(mymatch)
+                cmpstat = self.get_package_action(mymatch)
                 if cmpstat == 0:
                     continue
+
                 # this will take a life, also check if we haven't already
                 # pulled this match in.
                 # This happens because the reverse dependency string is
                 # too much generic and could pull in conflicting packages.
-                # NOTE: this is a hack and real weighted graph would be required
-                mymatches, rc = self.atom_match(key, match_slot = slot,
-                    multi_match = True, multi_repo = True)
+                # NOTE: this is a hack and real weighted graph
+                # would be required
+                mymatches, rc = self.atom_match(
+                    key_slot, multi_match = True,
+                    multi_repo = True)
                 got_it = mymatches & elements_cache
                 if got_it:
                     if const_debug_enabled():
-                        atom = self.open_repository(mymatch[1]).retrieveAtom(
-                            mymatch[0])
+                        atom = self.open_repository(
+                            mymatch[1]).retrieveAtom(mymatch[0])
                         const_debug_write(__name__,
-                        "_lookup_inverse_dependencies, "
-                        "ignoring %s, %s -- because already pulled in as: %s" % (
+                        "_lookup_inverse_dependencies, ignoring "
+                        "%s, %s -- because already pulled in as: %s" % (
                             atom, mymatch, got_it,))
                     # yeah, pulled in, ignore
                     continue
@@ -1774,20 +1783,22 @@ class CalculatorsMixin:
                         needed, elfclass, package_match,))
 
         matches = set()
-        for idpackage, repo in found_matches:
+        for _package_id, _repository_id in found_matches:
+            _match = _package_id, _repository_id
 
-            cmpstat = self.get_package_action((idpackage, repo))
+            cmpstat = self.get_package_action(_match)
             if cmpstat == 0:
                 continue
 
             if const_debug_enabled():
-                atom = self.open_repository(repo).retrieveAtom(idpackage)
+                atom = self.open_repository(
+                    _repository_id).retrieveAtom(_package_id)
                 const_debug_write(
                     __name__,
                     "_lookup_library_breakages_available, "
                     "adding repo atom => %s" % (atom,))
 
-            matches.add((idpackage, repo))
+            matches.add(_match)
 
         return matches
 
