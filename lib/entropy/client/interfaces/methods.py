@@ -2479,29 +2479,35 @@ class MiscMixin:
 
 class MatchMixin:
 
-    def get_package_action(self, package_match):
+    def get_package_action(self, package_match, installed_package_id = None):
         """
         For given package match, return an action value representing the
-        current status of the package: either "upgradable" (return status: 2),
-        "installable" (return status: 1), "reinstallable" (return status: 0),
+        current status of the package: either "upgradable"
+        (return status: 2), "installable" (return status: 1),
+        "reinstallable" (return status: 0),
         "downgradable" (return status -1).
 
-        @param package_match: entropy package match (package_id, repository_id)
+        @param package_match: entropy package match
+            (package_id, repository_id)
         @type package_match: tuple
+        @keyword installed_package_id: if set, it will speed up the lookup
+        @type installed_package_id: int
         @return: package status
         @rtype: int
         """
+        inst_repo = self._installed_repository
         pkg_id, pkg_repo = package_match
         dbconn = self.open_repository(pkg_repo)
-        pkgkey, pkgslot = dbconn.retrieveKeySlot(pkg_id)
-        results = self._installed_repository.searchKeySlot(pkgkey, pkgslot)
-        if not results:
-            return 1
 
-        installed_idpackage = sorted(results)[-1]
+        if installed_package_id is None:
+            pkgkey, pkgslot = dbconn.retrieveKeySlot(pkg_id)
+            results = inst_repo.searchKeySlot(pkgkey, pkgslot)
+            if not results:
+                return 1
+            installed_package_id = sorted(results)[-1]
+
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
-        ver_data = \
-            self._installed_repository.getVersioningData(installed_idpackage)
+        ver_data = inst_repo.getVersioningData(installed_package_id)
         if ver_data is None:
             # installed idpackage is not available, race condition, probably
             return 1
@@ -2513,8 +2519,7 @@ class MatchMixin:
             # check digest, if it differs, we should mark pkg as update
             # we don't want users to think that they are "reinstalling" stuff
             # because it will just confuse them
-            inst_digest = self._installed_repository.retrieveDigest(
-                installed_idpackage)
+            inst_digest = inst_repo.retrieveDigest(installed_package_id)
             repo_digest = dbconn.retrieveDigest(pkg_id)
             if inst_digest != repo_digest:
                 return 2
