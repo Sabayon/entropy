@@ -472,13 +472,14 @@ class CalculatorsMixin:
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None, match_repo = None):
 
+        inst_repo = self._installed_repository
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         if self.xcache:
             c_data = sorted(dependencies)
-            client_checksum = self._installed_repository.checksum()
+            client_checksum = inst_repo.checksum()
             c_hash = "%s|%s|%s|%s|%s|%s" % (c_data, deep_deps,
                 client_checksum, relaxed_deps, ignore_spm_downgrades,
                 match_repo)
@@ -538,7 +539,7 @@ class CalculatorsMixin:
 
         def _is_matching_tag(c_ids, pkg_dep, tag):
             for c_id in c_ids:
-                c_slot = self._installed_repository.retrieveSlot(c_id)
+                c_slot = inst_repo.retrieveSlot(c_id)
                 # pkg_dep already contains the tag part
                 a_id, a_repo_id = self.atom_match(pkg_dep,
                     match_slot = c_slot, match_repo = match_repo)
@@ -564,13 +565,14 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage, rc = self._installed_repository.atomMatch(
+                idpackage, rc = inst_repo.atomMatch(
                     dependency[1:])
                 if idpackage != -1:
                     if const_debug_enabled():
-                        const_debug_write(__name__,
-                        "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
-                            dependency,))
+                        const_debug_write(
+                            __name__,
+                            "_get_unsatisfied_dependencies conflict not "
+                            "found on system for => %s" % (dependency,))
                         const_debug_write(__name__, "...")
                     unsatisfied.add(dependency)
                     push_to_cache(dependency, True)
@@ -581,7 +583,7 @@ class CalculatorsMixin:
                 push_to_cache(dependency, False)
                 continue
 
-            c_ids, c_rc = self._installed_repository.atomMatch(dependency,
+            c_ids, c_rc = inst_repo.atomMatch(dependency,
                 multiMatch = True)
             if c_rc != 0:
 
@@ -599,7 +601,7 @@ class CalculatorsMixin:
                         for a_tag in av_tags:
                             a_dep_tag = i_key + \
                                 etpConst['entropytagprefix'] + a_tag
-                            c_ids, c_rc = self._installed_repository.atomMatch(
+                            c_ids, c_rc = inst_repo.atomMatch(
                                 a_dep_tag, multiMatch = True)
                             if c_rc != 0:
                                 continue
@@ -613,9 +615,11 @@ class CalculatorsMixin:
                                 best_tag
 
                 if const_debug_enabled():
-                    const_debug_write(__name__,
-                    "_get_unsatisfied_dependencies not satisfied on system for => %s" % (
-                        dependency,))
+                    const_debug_write(
+                        __name__,
+                        "_get_unsatisfied_dependencies not "
+                        "satisfied on system for => %s" % (
+                            dependency,))
                     const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
                 push_to_cache(dependency, True)
@@ -626,16 +630,18 @@ class CalculatorsMixin:
                 # the installed dep.
                 deps = dependency[:-1].split(etpConst['entropyordepsep'])
                 for dep in deps:
-                    or_c_ids, or_c_rc = self._installed_repository.atomMatch(
+                    or_c_ids, or_c_rc = inst_repo.atomMatch(
                         dep, multiMatch = True)
                     if or_c_rc != 0:
                         continue
                     common_c_ids = c_ids & or_c_ids
                     if common_c_ids:
                         if const_debug_enabled():
-                            const_debug_write(__name__,
-                            "_get_unsatisfied_dependencies, or dependency, selected => %s, from: %s" % (
-                                dep, deps,))
+                            const_debug_write(
+                                __name__,
+                                "_get_unsatisfied_dependencies, "
+                                "or dependency, selected => %s, from: %s" % (
+                                    dep, deps,))
                         # found it, rewrite dependency and c_ids
                         dependency = dep
                         c_ids = or_c_ids
@@ -654,9 +660,11 @@ class CalculatorsMixin:
             # matches something in installed packages repo.
             if (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
                 if const_debug_enabled():
-                    const_debug_write(__name__,
-                    "_get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
-                        dependency,))
+                    const_debug_write(
+                        __name__,
+                        "_get_unsatisfied_dependencies "
+                        "(force unsat) SATISFIED => %s" % (
+                            dependency,))
                     const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
@@ -668,12 +676,15 @@ class CalculatorsMixin:
                 provide_stop = False
                 for c_id in c_ids:
                     # optimize speed with a trick
-                    _provide = dict(self._installed_repository.retrieveProvide(c_id))
+                    _provide = dict(
+                        inst_repo.retrieveProvide(c_id))
                     if dependency in _provide:
                         if const_debug_enabled():
-                            const_debug_write(__name__,
-                            "_get_unsatisfied_dependencies old-style provide, satisfied => %s" % (
-                                dependency,))
+                            const_debug_write(
+                                __name__,
+                                "_get_unsatisfied_dependencies old-style "
+                                "provide, satisfied => %s" % (
+                                    dependency,))
                             const_debug_write(__name__, "...")
                         push_to_cache(dependency, False)
                         provide_stop = True
@@ -716,11 +727,11 @@ class CalculatorsMixin:
             if len(available_slots) > 1:
                 # more than one slot available
                 # pick the best one by calling atomMatch() without multiMatch
-                c_id, c_rc = self._installed_repository.atomMatch(
+                c_id, c_rc = inst_repo.atomMatch(
                     dependency)
                 installed_slot = None
                 if c_id != -1:
-                    installed_slot = self._installed_repository.retrieveSlot(
+                    installed_slot = inst_repo.retrieveSlot(
                             c_id)
                 if installed_slot in available_slots:
                     # restrict my matching to installed_slot, rewrite
@@ -767,9 +778,11 @@ class CalculatorsMixin:
             except (InterfaceError, TypeError,):
                 # package entry is broken
                 if const_debug_enabled():
-                    const_debug_write(__name__,
-                    "_get_unsatisfied_dependencies repository entry broken for match => %s" % (
-                        (r_id, r_repo),))
+                    const_debug_write(
+                        __name__,
+                        "_get_unsatisfied_dependencies repository "
+                        "entry broken for match => %s" % (
+                            (r_id, r_repo),))
                     const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
                 push_to_cache(dependency, True)
@@ -779,9 +792,9 @@ class CalculatorsMixin:
             for c_id in c_ids:
                 try:
                     installed_ver, installed_tag, installed_rev = \
-                        self._installed_repository.getVersioningData(c_id)
+                        inst_repo.getVersioningData(c_id)
                     # note: read rationale below
-                    installed_digest = self._installed_repository.retrieveDigest(
+                    installed_digest = inst_repo.retrieveDigest(
                         c_id)
                 except TypeError: # corrupted entry?
                     installed_ver = "0"
@@ -890,9 +903,11 @@ class CalculatorsMixin:
 
             # if we get here it means that there are no matching packages
             if const_debug_enabled():
-                const_debug_write(__name__,
-                "_get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
-                    deep_deps, dependency,))
+                const_debug_write(
+                    __name__,
+                    "_get_unsatisfied_dependencies NOT SATISFIED "
+                    "(not cached, deep: %s) => %s" % (
+                        deep_deps, dependency,))
                 const_debug_write(__name__, "...")
 
             unsatisfied.add(dependency)
