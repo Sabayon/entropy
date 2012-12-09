@@ -14,7 +14,8 @@ import copy
 import hashlib
 
 from entropy.const import etpConst, const_debug_write, const_isstring, \
-    const_isnumber, const_convert_to_rawstring, const_debug_enabled
+    const_isnumber, const_convert_to_rawstring, const_convert_to_unicode, \
+    const_debug_enabled
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
@@ -204,7 +205,9 @@ class CalculatorsMixin:
     def atom_match(self, atom, match_slot = None, mask_filter = True,
             multi_match = False, multi_repo = False, match_repo = None,
             extended_results = False, use_cache = True):
-
+        """
+        Match one or more packages inside all the available repositories.
+        """
         # support match in repository from shell
         # atom@repo1,repo2,repo3
         atom, repos = entropy.dep.dep_get_match_in_repos(atom)
@@ -967,7 +970,7 @@ class CalculatorsMixin:
                 broken_children_matches,))
 
         after_pkgs, before_pkgs = self._lookup_library_breakages(
-            pkg_match, installed_match)
+            pkg_match, installed_match[0])
         if const_debug_enabled():
             const_debug_write(__name__,
                 "__generate_dependency_tree_inst_hooks "
@@ -1473,6 +1476,8 @@ class CalculatorsMixin:
         Look for packages that would break if package match
         at "match" would be installed and the current version
         at "installed_package_id" replaced.
+        This method looks at what a package provides in terms of
+        libraries.
 
         @param match: the package match that would be installed
         @type match: tuple
@@ -1547,6 +1552,10 @@ class CalculatorsMixin:
             # not against myself. it can happen...
             # this is faster than key+slot lookup
             if (package_id, repository_id) == match:
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_drops, not adding myself. "
+                    "match %s is the same." % (match,))
                 continue
 
             # not against the same key+slot
@@ -1581,49 +1590,61 @@ class CalculatorsMixin:
 
         return broken_matches
 
-    def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage,
-        client_idpackage):
+    def __get_library_breakages(self, package_match, installed_package_id):
 
-        soname = ".so"
-        repo_needed = match_db.retrieveNeeded(match_idpackage,
+        package_id, repository_id = package_match
+        repo = self.open_repository(repository_id)
+
+        repo_needed = repo.retrieveNeeded(package_id,
             extended = True, formatted = True)
-        client_needed = self._installed_repository.retrieveNeeded(
-            client_idpackage, extended = True, formatted = True)
+        installed_needed = self._installed_repository.retrieveNeeded(
+            installed_package_id, extended = True, formatted = True)
 
-        repo_split = [x.split(soname)[0] for x in repo_needed]
-        client_split = [x.split(soname)[0] for x in client_needed]
+        # intersect the two dicts and find the libraries that
+        # have not changed. We assume that a pkg cannot link
+        # the same SONAME with two different elf classes.
+        # but that is what retrieveNeeded() assumes as well
+        common_libs = set(repo_needed) & set(installed_needed)
+        # assume that we can in-place change these two dicts
+        for common_lib in common_libs:
+            repo_needed.pop(common_lib, None)
+            installed_needed.pop(common_lib, None)
 
-        client_lib_dumps = set() # was client_side
+        soname = const_convert_to_unicode(".so")
+        repo_split = dict(
+            (x, x.split(soname)[0]) for x in repo_needed)
+        installed_split = dict(
+            (x, x.split(soname)[0]) for x in installed_needed)
+
+        inst_lib_dumps = set() # was installed_side
         repo_lib_dumps = set() # was repo_side
         # ^^ library dumps using repository NEEDED metadata
-        lib_removes = set()
 
-        for lib in client_needed:
-            if lib in repo_needed:
-                continue
-            lib_name = lib.split(soname)[0]
-            if lib_name in repo_split:
-                client_lib_dumps.add(lib)
-            else:
-                lib_removes.add(lib)
+        for lib, lib_name in installed_split.items():
+            if lib_name in repo_split.values():
+                # (library name, elf class)
+                inst_lib_dumps.add((lib, installed_needed[lib]))
 
-        for lib in repo_needed:
-            if lib in client_needed:
-                continue
-            lib_name = lib.split(soname)[0]
-            if lib_name in client_split:
-                repo_lib_dumps.add(lib)
+        for lib, lib_name in repo_split.items():
+            if lib_name in installed_split.values():
+                repo_lib_dumps.add((lib, repo_needed[lib]))
 
-        return repo_needed, lib_removes, client_lib_dumps, repo_lib_dumps
+        return inst_lib_dumps, repo_lib_dumps
 
-    def _lookup_library_breakages(self, match, clientmatch):
+    def _lookup_library_breakages(self, match, installed_package_id):
+        """
+        Lookup packages that need to be bumped because "match" is being
+        installed and "installed_package_id" removed.
 
+        This method uses ELF NEEDED package metadata in order to accomplish
+        this task.
+        """
         # there is no need to update this cache when "match"
         # will be installed, because at that point
-        # clientmatch[0] will differ.
-        hash_str = "%s|%s|r2" % (
+        # installed_package_id will differ.
+        hash_str = "%s|%s|r3" % (
             match,
-            clientmatch,
+            installed_package_id,
         )
         sha = hashlib.sha1()
         sha.update(const_convert_to_rawstring(repr(hash_str)))
@@ -1635,40 +1656,46 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        matchdb = self.open_repository(match[1])
-        reponeeded, lib_removes, client_side, repo_side = \
-            self.__get_lib_breaks_client_and_repo_side(matchdb,
-                match[0], clientmatch[0])
+        client_side, repo_side = self.__get_library_breakages(
+            match, installed_package_id)
 
-        # all the packages in client_side should be pulled in and updated
-        client_idpackages = set()
-        for needed in client_side:
-            client_idpackages |= self._installed_repository.searchNeeded(needed)
+        matches = self._lookup_library_breakages_available(
+            match, repo_side)
+        installed_matches = self._lookup_library_breakages_installed(
+            installed_package_id, client_side)
 
-        client_keyslots = set()
-        def mymf(idpackage):
-            if idpackage == clientmatch[0]:
-                return 0
-            ks = self._installed_repository.retrieveKeySlot(idpackage)
-            if ks is None:
-                return 0
-            return ks
-        client_keyslots = set([x for x in map(mymf, client_idpackages) \
-            if x != 0])
+        # filter out myself
+        installed_matches.discard(match)
+        # drop items in repo_patches from installed_matches
+        installed_matches -= matches
 
-        # all the packages in repo_side should be pulled in too
-        repodata = {}
-        for needed in repo_side:
-            repodata[needed] = reponeeded[needed]
-        del repo_side, reponeeded
+        if self.xcache:
+            self._cacher.push(c_hash, (installed_matches, matches))
 
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        repo_dependencies = matchdb.retrieveDependencies(match[0],
-            exclude_deptypes = excluded_dep_types)
+        return installed_matches, matches
+
+    def _lookup_library_breakages_available(self, package_match,
+                                            bumped_needed_libs):
+        """
+        Generate a list of package matches that should be bumped
+        if the given libraries were installed.
+        The returned list is composed by packages which are providing
+        the new libraries.
+
+        We assume that a repository is in a consistent state and
+        packages requiring libfoo.so.1 have been dropped alltogether.
+        """
+        package_id, repository_id = package_match
+        excluded_dep_types = (
+            etpConst['dependency_type_ids']['bdepend_id'],)
 
         matched_deps = set()
-        matched_repos = set()
-        for dependency in repo_dependencies:
+        virtual_cat = EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY
+
+        repo = self.open_repository(repository_id)
+        dependencies = repo.retrieveDependencies(
+            package_id, exclude_deptypes = excluded_dep_types)
+        for dependency in dependencies:
             depmatch = self.atom_match(dependency)
             if depmatch[0] == -1:
                 continue
@@ -1677,7 +1704,8 @@ class CalculatorsMixin:
             dep_pkg_id, dep_repo = depmatch
             dep_db = self.open_repository(dep_repo)
             depcat = dep_db.retrieveCategory(dep_pkg_id)
-            if depcat == EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY:
+
+            if depcat == virtual_cat:
                 # in this case, we must go down one level in order to catch
                 # the real, underlying dependencies. Otherwise, the
                 # condition "if x in matched_deps" below will fail.
@@ -1691,75 +1719,133 @@ class CalculatorsMixin:
                     virtualmatch = self.atom_match(virtual_dependency)
                     if virtualmatch[0] == -1:
                         continue
-                    matched_repos.add(virtualmatch[1])
                     matched_deps.add(virtualmatch)
 
-            matched_repos.add(dep_repo)
             matched_deps.add(depmatch)
 
-        matched_repos = [x for x in \
-            self._settings['repositories']['order'] if x in matched_repos]
         found_matches = set()
+        for needed, elfclass in bumped_needed_libs:
 
-        for needed in repodata:
-            for myrepo in matched_repos:
-                mydbc = self.open_repository(myrepo)
-                solved_needed = mydbc.resolveNeeded(needed,
-                    repodata[needed])
-                found = False
-                for idpackage in solved_needed:
-                    x = (idpackage, myrepo)
-                    if match == x:
+            solved_neededs = []
+            found = False
+            for myrepo in self._settings['repositories']['order']:
+
+                solved_needed = self.open_repository(
+                    myrepo).resolveNeeded(
+                    needed, elfclass = elfclass)
+                if solved_needed:
+                    solved_neededs.append((myrepo, solved_needed))
+
+                for repo_pkg_id in solved_needed:
+                    repo_pkg_match = (repo_pkg_id, myrepo)
+
+                    if package_match == repo_pkg_match:
                         # myself? no!
                         continue
-                    if x in matched_deps:
-                        found_matches.add(x)
+
+                    if repo_pkg_match in matched_deps:
+                        found_matches.add(repo_pkg_match)
                         found = True
                         break
+
                 if found:
                     break
 
-        # these should be pulled in before
-        repo_matches = set()
-        # these can be pulled in after
-        client_matches = set()
+            if not found and solved_neededs:
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_breakages_available, QA BUG, "
+                    "no (%s, %s) needed dependency for %s" % (
+                        needed, elfclass, package_match,))
+                # it looks like the needed library is
+                # not in one of the dependencies, even though
+                # this is a repo bug (QA QA QA!), we should
+                # really make sure that the user is not left
+                # without a broken package. grab the last
+                # package matched (ouch for randomness).
+                needed_repo_id, solved_needed = solved_neededs[0]
+                solved_needed = sorted(solved_needed) # less random
+                found_matches.add((solved_needed[-1], needed_repo_id))
+            elif not found:
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_breakages_available, HUGE QA BUG, "
+                    "no (%s, %s) needed dependency for %s" % (
+                        needed, elfclass, package_match,))
 
+        matches = set()
         for idpackage, repo in found_matches:
+
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
+
             if const_debug_enabled():
                 atom = self.open_repository(repo).retrieveAtom(idpackage)
-                const_debug_write(__name__,
-                    "_lookup_library_breakages, "
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_breakages_available, "
                     "adding repo atom => %s" % (atom,))
 
-            repo_matches.add((idpackage, repo))
+            matches.add((idpackage, repo))
 
-        for key, slot in client_keyslots:
-            idpackage, repo = self.atom_match(key, match_slot = slot)
-            if idpackage == -1:
+        return matches
+
+    def _lookup_library_breakages_installed(self,
+            installed_package_id, bumped_needed_libs):
+        """
+        Generate a list of package matches that should be bumped
+        if the given libraries were removed.
+
+        For instance: a package needs libfoo.so.2 while
+        its installed version needs libfoo.so.1. This method will
+        produce a list of updatable package matches that were
+        relying on libfoo.so.1.
+        We assume that a repository is in a consistent state and
+        packages requiring libfoo.so.1 have been dropped alltogether.
+        """
+        inst_repo = self._installed_repository
+
+        # all the packages in bumped_needed_libs should be
+        # pulled in and updated
+        installed_package_ids = set()
+        for needed, elfclass in bumped_needed_libs:
+            installed_package_ids |= inst_repo.searchNeeded(
+                needed, elfclass = elfclass)
+        # drop myself
+        installed_package_ids.discard(installed_package_id)
+
+        inst_keyslots = {}
+        for inst_package_id in installed_package_ids:
+            keyslot = inst_repo.retrieveKeySlotAggregated(inst_package_id)
+            if keyslot is not None:
+                inst_keyslots[keyslot] = inst_package_id
+
+        # these can be pulled in after
+        installed_matches = set()
+        for keyslot, inst_package_id in inst_keyslots.items():
+
+            package_id, repository_id = self.atom_match(keyslot)
+            if package_id == -1:
                 continue
-            if (idpackage, repo) == match:
-                # myself? NO!
-                continue
-            cmpstat = self.get_package_action((idpackage, repo))
+            pkg_match = package_id, repository_id
+
+            cmpstat = self.get_package_action(
+                pkg_match, installed_package_id = inst_package_id)
             if cmpstat == 0:
                 continue
+
             if const_debug_enabled():
-                atom = self.open_repository(repo).retrieveAtom(idpackage)
-                const_debug_write(__name__,
+                atom = self.open_repository(
+                    repository_id).retrieveAtom(package_id)
+                const_debug_write(
+                    __name__,
                     "_lookup_library_breakages, "
-                    "adding client atom => %s" % (atom,))
-            client_matches.add((idpackage, repo))
+                    "adding client atom => %s (%s)" % (atom, pkg_match))
 
-        # drop items in repo_patches from client_matches
-        client_matches -= repo_matches
+            installed_matches.add(pkg_match)
 
-        if self.xcache:
-            self._cacher.push(c_hash, (client_matches, repo_matches))
-
-        return client_matches, repo_matches
+        return installed_matches
 
     DISABLE_ASAP_SCHEDULING = os.getenv("ETP_DISABLE_ASAP_SCHEDULING")
 
