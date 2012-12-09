@@ -705,8 +705,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
-             CalculatorsMixin, RepositoryMixin, MiscMixin, \
-                 MatchMixin, NoticeBoardMixin):
+             CalculatorsMixin, RepositoryMixin, MiscMixin,
+             MatchMixin, NoticeBoardMixin):
 
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
