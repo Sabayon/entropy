@@ -1515,6 +1515,10 @@ class CalculatorsMixin:
         if not inst_package_ids:
             return set()
 
+        # this is used to filter out "match" from broken_matches
+        # in the for loop below
+        match_keyslot = None
+
         broken_matches = set()
         for inst_package_id in inst_package_ids:
 
@@ -1546,9 +1550,18 @@ class CalculatorsMixin:
                 continue
 
             # not against the same key+slot
-            avail_keyslot = self.open_repository(repository_id
-                ).retrieveKeySlotAggregated(package_id)
-            if keyslot == avail_keyslot:
+            if match_keyslot is None:
+                match_keyslot = match_repo.retrieveKeySlotAggregated(
+                    match_repo_id)
+                # assuming that a repeatedly None value does not hurt
+            if keyslot == match_keyslot:
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_drops, not adding myself. "
+                    "keyslot %s is the same for %s and %s" % (
+                        keyslot, match,
+                        (package_id, repository_id),)
+                    )
                 continue
 
             if const_debug_enabled():
