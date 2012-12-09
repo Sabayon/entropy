@@ -959,7 +959,7 @@ class CalculatorsMixin:
 
         # these are inverse dependencies
         broken_children_matches = self._lookup_library_drops(pkg_match,
-            installed_match)
+            installed_match[0])
         if const_debug_enabled():
             const_debug_write(__name__,
             "__generate_dependency_tree_inst_hooks "
@@ -1468,54 +1468,98 @@ class CalculatorsMixin:
 
         return results
 
-    def _lookup_library_drops(self, match, client_match):
+    def _lookup_library_drops(self, match, installed_package_id):
+        """
+        Look for packages that would break if package match
+        at "match" would be installed and the current version
+        at "installed_package_id" replaced.
 
-        match_id, match_repo = match
-        match_db = self.open_repository(match_repo)
-        repo_libs = match_db.retrieveProvidedLibraries(match_id)
+        @param match: the package match that would be installed
+        @type match: tuple
+        @param installed_package_id: the installed package identifier
+          that would be replaced
+        @type installed_package_id: int
+        @return: package matches that should be updated as well
+        @rtype: set
+        """
+        match_package_id, match_repo_id = match
 
-        client_libs = self._installed_repository.retrieveProvidedLibraries(
-            client_match[0])
+        inst_repo = self._installed_repository
+        match_repo = self.open_repository(match_repo_id)
+        repo_libs = match_repo.retrieveProvidedLibraries(match_package_id)
+
+        # compute a list of sonames that are going to be dropped
+        client_libs = inst_repo.retrieveProvidedLibraries(
+            installed_package_id)
         removed_libs = [x for x in client_libs if x not in repo_libs]
 
-        idpackages = set()
+        if not removed_libs:
+            if const_debug_enabled():
+                inst_atom = inst_repo.retrieveAtom(installed_package_id)
+                atom = match_repo.retrieveAtom(match_package_id)
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_drops, "
+                    "no libraries would be removed for: "
+                    "[%s] and [%s] (%s -> %s)" % (
+                        match, installed_package_id,
+                        atom, inst_atom))
+            return set()
+
+        # look for installed packages needing these to-be-dropped
+        # sonames
+        inst_package_ids = set()
         for lib, path, elf in removed_libs:
-            idpackages |= self._installed_repository.searchNeeded(lib,
+            inst_package_ids |= inst_repo.searchNeeded(lib,
                 elfclass = elf)
+        if not inst_package_ids:
+            return set()
 
         broken_matches = set()
-        for c_idpackage in idpackages:
+        for inst_package_id in inst_package_ids:
 
-            keyslot = self._installed_repository.retrieveKeySlotAggregated(
-                c_idpackage)
+            # is this package available in repos?
+            # maybe it's been dropped upstream...
+            keyslot = inst_repo.retrieveKeySlotAggregated(
+                inst_package_id)
             if keyslot is None:
                 continue
-            idpackage, repo = self.atom_match(keyslot)
-            if idpackage == -1:
+            package_id, repository_id = self.atom_match(keyslot)
+            if package_id == -1:
                 continue
 
-            cmpstat = self.get_package_action((idpackage, repo))
+            # do we already have the latest version installed?
+            cmpstat = self.get_package_action(
+                (package_id, repository_id),
+                installed_package_id = inst_package_id)
             if cmpstat == 0:
+                const_debug_write(
+                    __name__,
+                    "_lookup_library_drops, "
+                    "a package would break but no updates are available. "
+                    "(%s, %s)" % (keyslot, match,))
                 continue
 
-            # not against myself
-            if (idpackage, repo) == match:
+            # not against myself. it can happen...
+            # this is faster than key+slot lookup
+            if (package_id, repository_id) == match:
                 continue
 
             # not against the same key+slot
-            avail_keyslot = self.open_repository(repo
-                ).retrieveKeySlotAggregated(idpackage)
+            avail_keyslot = self.open_repository(repository_id
+                ).retrieveKeySlotAggregated(package_id)
             if keyslot == avail_keyslot:
                 continue
 
             if const_debug_enabled():
-                atom = self.open_repository(repo).retrieveAtom(idpackage)
+                atom = self.open_repository(repository_id).retrieveAtom(
+                    package_id)
                 const_debug_write(__name__,
                 "_lookup_library_drops, "
                 "adding broken library link package => %s, pulling: %s" % (
                     keyslot, atom,))
 
-            broken_matches.add((idpackage, repo))
+            broken_matches.add((package_id, repository_id))
 
         if const_debug_enabled() and broken_matches:
             const_debug_write(__name__,
