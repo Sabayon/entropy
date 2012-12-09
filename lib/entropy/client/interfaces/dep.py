@@ -95,7 +95,8 @@ class CalculatorsMixin:
             else:
                 dbconn = self.open_repository(repo)
                 pkg_info[repo]['versiontag'] = dbconn.retrieveTag(results[repo])
-                pkg_info[repo]['revision'] = dbconn.retrieveRevision(results[repo])
+                pkg_info[repo]['revision'] = dbconn.retrieveRevision(
+                    results[repo])
                 version = dbconn.retrieveVersion(results[repo])
             pkg_info[repo]['version'] = version
             ver_info[version] = repo
@@ -104,7 +105,8 @@ class CalculatorsMixin:
             versions.add(version)
 
         newer_ver = entropy.dep.get_newer_version(list(versions))[0]
-        # if no duplicates are found or newer version is not in duplicates we're done
+        # if no duplicates are found or newer version is not in
+        # duplicates we're done
         if (not version_duplicates) or (newer_ver not in version_duplicates):
             reponame = ver_info.get(newer_ver)
             return (results[reponame], reponame)
@@ -327,7 +329,7 @@ class CalculatorsMixin:
         if multi_match:
 
             if dbpkginfo[1] == 1:
-                dbpkginfo = (set(), 1)
+                dbpkginfo = set(), 1
             else: # can be "0" or a string, but 1 means failure
                 if multi_repo:
                     data = set()
@@ -358,10 +360,12 @@ class CalculatorsMixin:
                         extendedResults = extended_results
                     )
                     if extended_results:
-                        dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) \
-                            for x in query_data]), 0)
+                        dbpkginfo = (
+                            set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) \
+                                     for x in query_data]), 0)
                     else:
-                        dbpkginfo = (set([(x, dbpkginfo[1]) for x in query_data]), 0)
+                        dbpkginfo = (
+                            set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
         if self.xcache and use_cache:
             self._cacher.push(c_hash, dbpkginfo)
