@@ -1441,9 +1441,9 @@ def matter_main(entropy_server, nsargs, cwd, specs):
             not_installed = []
             not_merged = []
             tainted_repositories = set()
-            preserved_libs_error = False
             spec_count = 0
             tot_spec = len(specs)
+            preserved_libs = False
 
             for spec in specs:
 
@@ -1467,14 +1467,12 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                     preserved_libs = \
                         PackageBuilder.check_preserved_libraries(emerge_config)
 
-                    if preserved_libs:
-                        preserved_libs_error = True
-                        if not nsargs.disable_preserved_libs:
-                            # abort, library breakages detected
-                            exit_st = 1
-                            print_error(
-                                "preserved libraries detected, aborting")
-                            break
+                    if preserved_libs and not nsargs.disable_preserved_libs:
+                        # abort, library breakages detected
+                        exit_st = 1
+                        print_error(
+                            "preserved libraries detected, aborting")
+                        break
 
                     # ignore _rc, we may have built pkgs even if _rc != 0
                     built_packages = builder.get_built_packages()
@@ -1500,7 +1498,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                 # run it unconditionally
                 PackageBuilder.post_build(emerge_config)
 
-                if preserved_libs_error and not nsargs.disable_preserved_libs:
+                if preserved_libs and not nsargs.disable_preserved_libs:
                     # completely abort
                     break
 
@@ -1519,10 +1517,10 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                             break
 
             if tainted_repositories and nsargs.push and nsargs.commit:
-                if preserved_libs_error and nsargs.disable_preserved_libs:
+                if preserved_libs and nsargs.disable_preserved_libs:
                     # cannot push anyway
                     print_warning("Preserved libraries detected, cannot push !")
-                elif not preserved_libs_error:
+                elif not preserved_libs:
                     for repository in tainted_repositories:
                         _rc = PackageBuilder.push(
                             entropy_server, repository)
@@ -1541,7 +1539,7 @@ def matter_main(entropy_server, nsargs, cwd, specs):
             print_info("Packages not installed:\n  %s" % (
                 "\n  ".join(sorted(not_installed)),))
             print_info("Preserved libs: %s" % (
-                preserved_libs_error,))
+                preserved_libs,))
             print_info("")
 
     if nsargs.post:
