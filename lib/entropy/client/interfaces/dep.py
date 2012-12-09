@@ -1386,7 +1386,8 @@ class CalculatorsMixin:
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
 
-        action = self.get_package_action(new_match)
+        action = self.get_package_action(
+            new_match, installed_package_id = client_idpackage)
         if (action == 0) and (not deep_deps):
             return
 
@@ -1445,7 +1446,8 @@ class CalculatorsMixin:
                 mymatch = self.atom_match(key_slot)
                 if mymatch[0] == -1:
                     continue
-                cmpstat = self.get_package_action(mymatch)
+                cmpstat = self.get_package_action(
+                    mymatch, installed_package_id = inst_package_id)
                 if cmpstat == 0:
                     continue
 
