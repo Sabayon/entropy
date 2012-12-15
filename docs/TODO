@@ -2,11 +2,11 @@ Backlog (raw)
 
   1.0:
 
+    - entropy.client.interfaces.dep refactoring
+
     - preserved-libs registry:
       only drop old sonames when installed packages
       no longer need them
-
-    - entropy.server: use rsync instead of plain scp?
 
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
