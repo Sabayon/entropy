@@ -584,6 +584,12 @@ class UrlFetcher(TextInterface):
                 self.__status = UrlFetcher.TIMEOUT_FETCH_ERROR
                 do_return = True
 
+            except socket.error:
+                # connection reset by peer?
+                self.__urllib_close(True)
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
+                do_return = True
+
             except ValueError: # malformed, unsupported URL? raised by urllib
                 self.__urllib_close(True)
                 self.__status = UrlFetcher.GENERIC_FETCH_ERROR
@@ -683,14 +689,23 @@ class UrlFetcher(TextInterface):
                     self.__abort_check_func()
                 if self.__thread_stop_func != None:
                     self.__thread_stop_func()
+
             except KeyboardInterrupt:
                 self.__urllib_close(False)
                 raise
+
             except socket.timeout:
                 self.__urllib_close(False)
                 self.__status = UrlFetcher.TIMEOUT_FETCH_ERROR
                 return self.__status
-            except:
+
+            except socket.error:
+                # connection reset by peer?
+                self.__urllib_close(False)
+                self.__status = UrlFetcher.GENERIC_FETCH_ERROR
+                return self.__status
+
+            except Exception:
                 # python 2.4 timeouts go here
                 self.__urllib_close(True)
                 self.__status = UrlFetcher.GENERIC_FETCH_ERROR
