@@ -1,3 +1,124 @@
+commit 224da38b28f0644ab4e80e6f966024f6af05d5f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 18:42:22 2012 +0100
+
+    Release Entropy 155
+
+commit bf4dee312a1389e9a95f5b8f4189feb852abbe7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 18:09:30 2012 +0100
+
+    [server] new tool for detecting package updates and upstream removals
+
+commit c5b8986015b625907fc65eef6ea716a517d70e91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 15 12:18:24 2012 +0100
+
+    [todo] update TODO
+
+commit 69cb8f53a336607713f673777baa3e4fd7c64bad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 22:46:12 2012 +0100
+
+    [entropy.client.interfaces.dep] optimize get_package_action() usage
+
+commit 0352e97519dc9f13fb3ce3675fb0b2cc5d378a66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 22:29:35 2012 +0100
+
+    [entropy.client.interfaces.dep] cleanup _lookup_inverse_dependencies, add build deps support
+
+commit a33972ce27be7fe68f05e992bfd5e158be6bb1c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 21:54:40 2012 +0100
+
+    [matter] make sure to compute preserved_libs status on each run
+
+commit 409430de992c67df575821368d769515e5fd4a59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 21:40:13 2012 +0100
+
+    [entropy.client.interfaces.dep] refactor _lookup_library_breakages()
+    
+    Optimize code, introduce weird bugs, make the code easier to read,
+    all this kind of stuff.
+    Also, make sure we never leave a system with unsatisfied soname dependencies
+    if possible.
+
+commit c5f6dc8d469c32af346f2fc555e13a8db1166574
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 19:18:35 2012 +0100
+
+    [entropy.client] don't need a trailing \
+
+commit 72aaaa4f3e2db3f830708cfec6067a56dd408d1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 12:22:13 2012 +0100
+
+    [entropy.client.interfaces.dep] fix a key+slot matching bug in _lookup_library_drops
+    
+    _lookup_library_drops was matching a key + slot string against the wrong
+    package and the result was that all the broken package matches were ignored
+
+commit 11d81f976b562c6d7d0ade4b9099eea1dfb60c20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 11:46:23 2012 +0100
+
+    [entropy.client.interfaces.dep] cleanup _lookup_library_drops, add documentation
+
+commit 681e967bf3b351890425b5d40013ad1ea0364e7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 11:41:03 2012 +0100
+
+    [entropy.client] extend get_package_action() with installed_package_id
+    
+    This allows some lookup speed improvements in case that such data is
+    already available in the caller.
+
+commit 69a337c5e4350cc01b10289e727306a40ad3d460
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 10:59:37 2012 +0100
+
+    [entropy.client.interfaces.dep] more code style related cleanups
+
+commit 051dde18cc8b3737b7797ed25946aeb87ac62a93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 9 10:49:48 2012 +0100
+
+    [entropy.client.interfaces.dep] minor code style fixes
+
+commit f2cf417979bcd2d4b5954a175f7c82385f8a0256
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 8 12:57:44 2012 +0100
+
+    [equo] implement the "--injected" switch for "equo match"
+
+commit 74f774e796c13e9981ea8931c14867d47381522e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 4 20:21:54 2012 +0100
+
+    [matter] save one weird print to stdout
+
+commit cc8b0b4143974a5325322292ce3bd0844404cfeb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 4 20:21:05 2012 +0100
+
+    [entropy.spm] PortagePlugin: guess modinfo in /sbin, /usr/bin, /bin
+    
+    Upstream is idiot
+
+commit 4b38e262cd4d4a028a35ec946efefe7396f61510
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 3 00:56:05 2012 +0100
+
+    [Rigo] provide emblem-system icon by default, fixes bug #3822
+
+commit 73242009bae65ab8600e7ac57fed4d03983a3faf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 2 09:23:46 2012 +0100
+
+    Tagging Entropy version 154
+
 commit 3b27f40c205007a8fffd5fb260f00009ca02d551
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Dec 2 09:23:46 2012 +0100
