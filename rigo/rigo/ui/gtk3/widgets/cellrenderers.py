@@ -211,12 +211,13 @@ class CellRendererAppView(Gtk.CellRendererText):
         # and nr-reviews in parenthesis to the right of the title
         nreviews_int = stats.downloads_total
         nreviews = stats.downloads_total_markup
+        size = app.get_details().humansize
         if nreviews_int < 0:
             s = "..."
         else:
             s = nreviews
 
-        layout.set_markup("<small>%s</small>" % s, -1)
+        layout.set_markup("<small>%s\n%s</small>" % (s, size), -1)
 
         y += ypad + self.STAR_SIZE
 

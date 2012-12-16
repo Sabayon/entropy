@@ -1780,6 +1780,31 @@ class AppDetails(object):
             self._entropy.rwsem().reader_release()
 
     @property
+    def disksize(self):
+        """
+        Return the disk size in bytes.
+        """
+        self._entropy.rwsem().reader_acquire()
+        try:
+            repo = self._entropy.open_repository(self._repo_id)
+            return repo.retrieveOnDiskSize(self._pkg_id)
+        finally:
+            self._entropy.rwsem().reader_release()
+
+    @property
+    def humansize(self):
+        """
+        Return the download size in human understandable way.
+        """
+        if self._app.is_installed_app():
+            size = self.disksize
+        else:
+            size = self.downsize
+        if size is None:
+            size = 0
+        return escape_markup(entropy.tools.bytes_into_human(size))
+
+    @property
     def name(self):
         """
         Return the name of the application, this will always
