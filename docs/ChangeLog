@@ -1,3 +1,33 @@
+commit f4aef3c97d51e622f0e2567678db007dd850e5b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:17:10 2012 +0100
+
+    Release Entropy 156
+
+commit c2ebf35c6c83fa80b2ab0e8f096374a714a39fb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:16:51 2012 +0100
+
+    [antimatter] catch KeyboardInterrupt
+
+commit 1f756bba07ba10b3ad32ee280221300bb4484aa2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:12:49 2012 +0100
+
+    [antimatter] fix help message about --upgrade
+
+commit 709d197818f96c23eb522e32eefb35a4fc1c7935
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:10:29 2012 +0100
+
+    [antimatter] fixup typos in updates calculation
+
+commit f9ff1051716e6c4b40eaca2ff128ac1337a603c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 18:42:22 2012 +0100
+
+    Tagging Entropy version 155
+
 commit 224da38b28f0644ab4e80e6f966024f6af05d5f7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Dec 16 18:42:22 2012 +0100
