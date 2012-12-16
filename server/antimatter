@@ -386,8 +386,7 @@ if __name__ == "__main__":
                           "upstream dropped)")
     mg_group.add_argument("--upgrade", "-u", action="store_true",
                           default=False,
-                          help="list packages that would be upgraded "
-                          "(default action)")
+                          help="list packages that would be upgraded")
     mg_group.add_argument("--downgrade", "-d", action="store_true",
                           default=False,
                           help="list packages that would be downgraded")
