@@ -406,7 +406,11 @@ if __name__ == "__main__":
         print_error("Error, invalid regexp: %s" % (err,))
         raise SystemExit(1)
 
-    antimatter = AntiMatter(nsargs)
-    antimatter.scan().notify()
+    try:
+        antimatter = AntiMatter(nsargs)
+        antimatter.scan().notify()
+    except KeyboardInterrupt:
+        print_error("Interrupted.")
+        raise SystemExit(1)
 
     raise SystemExit(0)
