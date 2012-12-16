@@ -302,7 +302,7 @@ class AntiMatter(object):
 
             key_slot = "%s:%s" % (atom.cp, atom.slot)
 
-            best_visible = portage.best(vardb.match(key_slot))
+            best_visible = portage.best(portdb.match(key_slot))
 
             if not best_visible:
                 # dropped upstream
@@ -385,7 +385,7 @@ if __name__ == "__main__":
                           help="list dead packages only (those which "
                           "upstream dropped)")
     mg_group.add_argument("--upgrade", "-u", action="store_true",
-                          default=True,
+                          default=False,
                           help="list packages that would be upgraded "
                           "(default action)")
     mg_group.add_argument("--downgrade", "-d", action="store_true",
