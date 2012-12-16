@@ -182,11 +182,13 @@ Update Entropy Repositories.
                 dbus_interface = "org.sabayon.Rigo")
             accepted = False
             try:
-                accepted = iface.update_repositories(
-                    self._repositories, self._force)
+                if self._repositories:
+                    accepted = iface.update_repositories(
+                        self._repositories, self._force)
             except dbus.exceptions.DBusException as err:
                 bail_out(err)
                 return 1
+
             if accepted:
                 info_txt = _("Have a nice day")
                 entropy_client.output(
