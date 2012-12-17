@@ -242,7 +242,7 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
         """
         Overridden from BaseAntiMatterResult
         """
-        print_generic("<dl class='result'>")
+        print_generic("<ul class='result'>")
         for package in self._result:
 
             if self._extended:
@@ -260,12 +260,15 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
                     to_ver = cgi.escape(avail.version)
 
                 name = """\
-  <dt class='rt'>%s:%s</dt>
-  <dd class='rd'>
+  <li>
+  <span class='rt'>%s:%s</span>
+  &nbsp;&nbsp;
+  [<span class='rd'>
     <span class='frompkg'>%s</span>
     %s
     <span class='topkg'>%s</span>
-  </dd>""" % (
+  </span>]
+  </li>""" % (
                     cgi.escape(cp),
                     cgi.escape(slot),
                     cgi.escape(from_ver),
@@ -273,15 +276,15 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
                     cgi.escape(to_ver))
 
             elif self._verbose:
-                name = "<dt class='rt'>%s</dt>" % (
+                name = "<li class='rt'>%s</li>" % (
                     cgi.escape(package.target()),)
             else:
-                name = "<dt class='rt'>%s</dt>" % (
+                name = "<li class='rt'>%s</li>" % (
                     cgi.escape(package.keyslot()),)
 
             print_generic(name)
 
-        print_generic("</dl>")
+        print_generic("</ul>")
 
 
 class AntiMatter(object):
