@@ -65,14 +65,13 @@ class AntiMatterPackage(object):
         """
         Return the package key:slot string.
         """
-        target = self.target()
-        return target.cp
+        return self.target().cp
 
     def slot(self):
         """
         Return the package slot.
         """
-        return self._installed.slot
+        return self.target().slot
 
     def keyslot(self):
         """
