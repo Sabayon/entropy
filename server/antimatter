@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import argparse
+import cgi
 import functools
 import sys
 import os
@@ -215,6 +216,74 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
                 print_info(name)
 
 
+class HtmlAntiMatterResult(BaseAntiMatterResult):
+    """
+    BaseAntiMatterResult subclass that prints the results
+    to stdout in HTML format.
+    """
+
+    def __init__(self, result, quiet, verbose, extended):
+        """
+        Constructor.
+
+        @param result: list of AntiMatterPackage objects
+        @type result: list
+        @param quiet: quiet output enabled
+        @type quiet: bool
+        @param verbose: verbose output enabled
+        @type verbose: bool
+        @param extended: extended output (useful for reports)
+        @type extended: bool
+        """
+        super(HtmlAntiMatterResult, self).__init__(
+            result, quiet, verbose, extended)
+
+    def notify(self):
+        """
+        Overridden from BaseAntiMatterResult
+        """
+        print_generic("<dl class='result'>")
+        for package in self._result:
+
+            if self._extended:
+                cp = package.key()
+                slot = package.slot()
+
+                from_ver = "x"
+                inst = package.installed()
+                if inst is not None:
+                    from_ver = cgi.escape(inst.version)
+
+                to_ver = "x"
+                avail = package.available()
+                if avail is not None:
+                    to_ver = cgi.escape(avail.version)
+
+                name = """\
+  <dt class='rt'>%s:%s</dt>
+  <dd class='rd'>
+    <span class='frompkg'>%s</span>
+    %s
+    <span class='topkg'>%s</span>
+  </dd>""" % (
+                    cgi.escape(cp),
+                    cgi.escape(slot),
+                    cgi.escape(from_ver),
+                    cgi.escape("->"),
+                    cgi.escape(to_ver))
+
+            elif self._verbose:
+                name = "<dt class='rt'>%s</dt>" % (
+                    cgi.escape(package.target()),)
+            else:
+                name = "<dt class='rt'>%s</dt>" % (
+                    cgi.escape(package.keyslot()),)
+
+            print_generic(name)
+
+        print_generic("</dl>")
+
+
 class AntiMatter(object):
     """
     AntiMatter is a package update scanner that uses
@@ -389,9 +458,13 @@ class AntiMatter(object):
                     functools.partial(_regex_filter, regex),
                     result))
 
-        return StdoutAntiMatterResult(
-            result, self._nsargs.quiet, self._nsargs.verbose,
-            self._nsargs.extended)
+        klass = StdoutAntiMatterResult
+        if self._nsargs.html:
+            klass = HtmlAntiMatterResult
+
+        return klass(result, self._nsargs.quiet,
+                     self._nsargs.verbose,
+                     self._nsargs.extended)
 
 
 if __name__ == "__main__":
@@ -410,6 +483,8 @@ if __name__ == "__main__":
                         default=False, help="extended output")
     parser.add_argument("--quiet", "-q", action="store_true",
                         default=False, help="quiet output")
+    parser.add_argument("--html", "-t", action="store_true",
+                        default=False, help="prints in html format")
 
     parser.add_argument("--filter", "-f", dest="filters",
                         action="append", default=[],
