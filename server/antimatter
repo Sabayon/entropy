@@ -20,7 +20,8 @@ sys.path.insert(0, '../client')
 
 # Entropy imports
 from entropy.output import print_info, print_error, print_warning, \
-    print_generic
+    print_generic, is_stdout_a_tty, nocolor, darkgreen, teal, \
+    purple, brown
 
 # Portage imports
 os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
@@ -59,6 +60,13 @@ class AntiMatterPackage(object):
         self._installed = installed
         self._available = available
         self._status = status
+
+    def key(self):
+        """
+        Return the package key:slot string.
+        """
+        target = self.target()
+        return target.cp
 
     def slot(self):
         """
@@ -122,7 +130,7 @@ class BaseAntiMatterResult(object):
     method.
     """
 
-    def __init__(self, result, quiet, verbose):
+    def __init__(self, result, quiet, verbose, extended):
         """
         Constructor.
 
@@ -132,10 +140,13 @@ class BaseAntiMatterResult(object):
         @type quiet: bool
         @param verbose: verbose output enabled (print the full version)
         @type verbose: bool
+        @param extended: extended output (useful for reports)
+        @type extended: bool
         """
         self._result = result
         self._quiet = quiet
         self._verbose = verbose
+        self._extended = extended
 
     def notify(self):
         """
@@ -152,7 +163,7 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
     to stdout.
     """
 
-    def __init__(self, result, quiet, verbose):
+    def __init__(self, result, quiet, verbose, extended):
         """
         Constructor.
 
@@ -162,24 +173,47 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
         @type quiet: bool
         @param verbose: verbose output enabled
         @type verbose: bool
+        @param extended: extended output (useful for reports)
+        @type extended: bool
         """
         super(StdoutAntiMatterResult, self).__init__(
-            result, quiet, verbose)
+            result, quiet, verbose, extended)
 
     def notify(self):
         """
         Overridden from BaseAntiMatterResult
         """
         for package in self._result:
-            if self._verbose:
-                target = package.target()
+
+            if self._extended:
+                cp = package.key()
+                slot = package.slot()
+
+                from_ver = "x"
+                inst = package.installed()
+                if inst is not None:
+                    from_ver = inst.version
+
+                to_ver = "x"
+                avail = package.available()
+                if avail is not None:
+                    to_ver = avail.version
+
+                name = "%s:%s  [%s->%s]" % (
+                    darkgreen(cp),
+                    brown(slot),
+                    teal(from_ver),
+                    purple(to_ver))
+
+            elif self._verbose:
+                name = package.target()
             else:
-                target = package.keyslot()
+                name = package.keyslot()
 
             if self._quiet:
-                print_generic(target)
+                print_generic(name)
             else:
-                print_info(target)
+                print_info(name)
 
 
 class AntiMatter(object):
@@ -357,10 +391,15 @@ class AntiMatter(object):
                     result))
 
         return StdoutAntiMatterResult(
-            result, self._nsargs.quiet, self._nsargs.verbose)
+            result, self._nsargs.quiet, self._nsargs.verbose,
+            self._nsargs.extended)
 
 
 if __name__ == "__main__":
+
+    # disable color if standard output is not a TTY
+    if not is_stdout_a_tty():
+        nocolor()
 
     parser = argparse.ArgumentParser(
         description='Automated package updates scanner',
@@ -368,6 +407,8 @@ if __name__ == "__main__":
 
     parser.add_argument("--verbose", "-v", action="store_true",
                         default=False, help="verbose output")
+    parser.add_argument("--extended", "-x", action="store_true",
+                        default=False, help="extended output")
     parser.add_argument("--quiet", "-q", action="store_true",
                         default=False, help="quiet output")
 
