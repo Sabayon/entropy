@@ -1,3 +1,75 @@
+commit ce64433a6c76330d1748e51adf4244d9ecc8d375
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 18 19:58:31 2012 +0100
+
+    Release Entropy 157
+
+commit d5b46cda2b7d85d639300363fe0c8f06bd37393c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 18 09:08:32 2012 +0100
+
+    [antimatter] properly format title for new packages as well
+
+commit b8affca48bfcea81530813e7967ba5bdb4007089
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 18 08:50:46 2012 +0100
+
+    [antimatter] rework BaseAntiMatterResult parameters, extend the HtmlAntiMatterResult class
+
+commit e1107512c3bdee5a11b94e93d64d2678f011d6b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 18 00:27:19 2012 +0100
+
+    [antimatter] use <ul> and <li> instead of <dl> and friends
+
+commit 83c3c143d80f966f2a6da083af0556a53b8738a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 17 23:38:01 2012 +0100
+
+    [antimatter] implement html output through a --html switch
+
+commit 3ebdc3302b706130946603ebf515d4d8a3b51b94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 17 23:37:20 2012 +0100
+
+    [antimatter] use target() object for key() and slot()
+
+commit ac28e25e3e74aa8b428c5d0519fbc5324eabe316
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 17 22:18:16 2012 +0100
+
+    [antimatter] add --extended switch, and colorize output a bit
+
+commit ec4c84294f2cb51f281950f1038264abbf9543cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Dec 17 00:32:27 2012 +0100
+
+    [Rigo] add download/disk size info in the search element list, fixes bug 3852
+
+commit c5249488a61052d6214a87c39c478e57b6cc2c01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 22:12:39 2012 +0100
+
+    [equo] fix "equo update" through dbus, properly populate the repositories list
+
+commit 6553cd398f6068e79da13a19ffb001bf1c40a5ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 20:04:22 2012 +0100
+
+    [entropy.fetchers] catch socket.error exception (can be raised with "Connection reset by peer")
+
+commit 2113b201ad623990137f4f97ccbbc8aa405f076f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:59:56 2012 +0100
+
+    [equo] do not allow update through dbus if no repo is configured
+
+commit 57333299f871c9f852311b3d08d804164bec55b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 16 19:17:10 2012 +0100
+
+    Tagging Entropy version 156
+
 commit f4aef3c97d51e622f0e2567678db007dd850e5b2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Dec 16 19:17:10 2012 +0100
