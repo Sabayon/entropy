@@ -235,6 +235,8 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
             txt = txt % ("upgradable",)
         elif self._nsargs.downgrade:
             txt = txt % ("downgradable",)
+        elif self._nsargs.new:
+            txt = txt % ("new",)
         print_generic(txt)
 
         print_generic("<ul class='result'>")
