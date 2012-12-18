@@ -130,23 +130,17 @@ class BaseAntiMatterResult(object):
     method.
     """
 
-    def __init__(self, result, quiet, verbose, extended):
+    def __init__(self, result, nsargs):
         """
         Constructor.
 
         @param result: list of AntiMatterPackage objects
         @type result: list
-        @param quiet: quiet output enabled (print one item per line)
-        @type quiet: bool
-        @param verbose: verbose output enabled (print the full version)
-        @type verbose: bool
-        @param extended: extended output (useful for reports)
-        @type extended: bool
+        @param nsargs: ArgumentParser namespace object
+        @type nsargs: argparse.Namespace
         """
         self._result = result
-        self._quiet = quiet
-        self._verbose = verbose
-        self._extended = extended
+        self._nsargs = nsargs
 
     def notify(self):
         """
@@ -163,21 +157,17 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
     to stdout.
     """
 
-    def __init__(self, result, quiet, verbose, extended):
+    def __init__(self, result, nsargs):
         """
         Constructor.
 
         @param result: list of AntiMatterPackage objects
         @type result: list
-        @param quiet: quiet output enabled
-        @type quiet: bool
-        @param verbose: verbose output enabled
-        @type verbose: bool
-        @param extended: extended output (useful for reports)
-        @type extended: bool
+        @param nsargs: ArgumentParser namespace object
+        @type nsargs: argparse.Namespace
         """
         super(StdoutAntiMatterResult, self).__init__(
-            result, quiet, verbose, extended)
+            result, nsargs)
 
     def notify(self):
         """
@@ -185,7 +175,7 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
         """
         for package in self._result:
 
-            if self._extended:
+            if self._nsargs.extended:
                 cp = package.key()
                 slot = package.slot()
 
@@ -205,12 +195,12 @@ class StdoutAntiMatterResult(BaseAntiMatterResult):
                     teal(from_ver),
                     purple(to_ver))
 
-            elif self._verbose:
+            elif self._nsargs.verbose:
                 name = package.target()
             else:
                 name = package.keyslot()
 
-            if self._quiet:
+            if self._nsargs.quiet:
                 print_generic(name)
             else:
                 print_info(name)
@@ -222,30 +212,35 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
     to stdout in HTML format.
     """
 
-    def __init__(self, result, quiet, verbose, extended):
+    def __init__(self, result, nsargs):
         """
         Constructor.
 
         @param result: list of AntiMatterPackage objects
         @type result: list
-        @param quiet: quiet output enabled
-        @type quiet: bool
-        @param verbose: verbose output enabled
-        @type verbose: bool
-        @param extended: extended output (useful for reports)
-        @type extended: bool
+        @param nsargs: ArgumentParser namespace object
+        @type nsargs: argparse.Namespace
         """
         super(HtmlAntiMatterResult, self).__init__(
-            result, quiet, verbose, extended)
+            result, nsargs)
 
     def notify(self):
         """
         Overridden from BaseAntiMatterResult
         """
+        txt = "<h3>" + str(len(self._result)) + " packages are %s</h3>"
+        if self._nsargs.extinguished:
+            txt = txt % ("extinguished",)
+        elif self._nsargs.upgrade:
+            txt = txt % ("upgradable",)
+        elif self._nsargs.downgrade:
+            txt = txt % ("downgradable",)
+        print_generic(txt)
+
         print_generic("<ul class='result'>")
         for package in self._result:
 
-            if self._extended:
+            if self._nsargs.extended:
                 cp = package.key()
                 slot = package.slot()
 
@@ -275,7 +270,7 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
                     cgi.escape("->"),
                     cgi.escape(to_ver))
 
-            elif self._verbose:
+            elif self._nsargs.verbose:
                 name = "<li class='rt'>%s</li>" % (
                     cgi.escape(package.target()),)
             else:
@@ -465,9 +460,7 @@ class AntiMatter(object):
         if self._nsargs.html:
             klass = HtmlAntiMatterResult
 
-        return klass(result, self._nsargs.quiet,
-                     self._nsargs.verbose,
-                     self._nsargs.extended)
+        return klass(result, self._nsargs)
 
 
 if __name__ == "__main__":
