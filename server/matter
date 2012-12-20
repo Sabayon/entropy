@@ -66,28 +66,6 @@ import portage.dep
 import portage
 
 
-def exec_cmd(args, env = None):
-    """
-    Execute a command with given environment.
-    """
-    pid = os.fork()
-    if pid == 0:
-        try:
-            if env is not None:
-                os.execvpe(args[0], args, env)
-            else:
-                os.execvp(args[0], args)
-        except Exception:
-            entropy.tools.print_traceback()
-            os._exit(1)
-    else:
-        try:
-            _rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
-        except KeyboardInterrupt:
-            exit_st = 1
-            os.kill(pid, signal.SIGTERM)
-        return exit_st
-
 def mkstemp():
     """
     Create temporary file into matter temporary directory.
@@ -676,7 +654,7 @@ class PackageBuilder(object):
             hook_name = os.path.join(cwd, hook_name)
 
         print_info("spawning pre hook: %s" % (hook_name,))
-        return exec_cmd([hook_name],
+        return subprocess.call([hook_name],
             env = PackageBuilder._build_standard_environment())
 
     @staticmethod
@@ -690,7 +668,7 @@ class PackageBuilder(object):
             hook_name, exit_st,))
         env = PackageBuilder._build_standard_environment()
         env["MATTER_EXIT_STATUS"] = str(exit_st)
-        return exec_cmd([hook_name], env = env)
+        return subprocess.call([hook_name], env = env)
 
     def _build_execution_header_output(self):
         """
@@ -754,7 +732,7 @@ class PackageBuilder(object):
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
-                exit_st = exec_cmd([tmp_path], env = std_env)
+                exit_st = subprocess.call([tmp_path], env = std_env)
                 if exit_st != 0:
                     return exit_st
             finally:
@@ -780,7 +758,7 @@ class PackageBuilder(object):
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
-                post_exit_st = exec_cmd([tmp_path, str(exit_st)],
+                post_exit_st = subprocess.call([tmp_path, str(exit_st)],
                     env = std_env)
                 if post_exit_st != 0:
                     return post_exit_st
@@ -1195,7 +1173,7 @@ class PackageBuilder(object):
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
-                exit_st = exec_cmd([tmp_path], env = std_env)
+                exit_st = subprocess.call([tmp_path], env = std_env)
                 if exit_st != 0:
                     return exit_st
             finally:
@@ -1225,13 +1203,13 @@ class PackageBuilder(object):
         """
         sync_cmd = PackageBuilder.PORTAGE_SYNC_CMD
         std_env = PackageBuilder._build_standard_environment()
-        exit_st = exec_cmd(sync_cmd, env = std_env)
+        exit_st = subprocess.call(sync_cmd, env = std_env)
         if exit_st != 0:
             return exit_st
 
         # overlays update
         overlay_cmd = PackageBuilder.OVERLAYS_SYNC_CMD
-        return exec_cmd(overlay_cmd, env = std_env)
+        return subprocess.call(overlay_cmd, env = std_env)
 
     @staticmethod
     def check_preserved_libraries(emerge_config):
