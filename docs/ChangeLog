@@ -1,3 +1,57 @@
+commit 51f80944ff5d9cad935354d6ae795abb46379ef7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 00:54:31 2012 +0100
+
+    Release Entropy 158
+
+commit f9c96661588faa6dd1b18b6f63ea5b93d2001467
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 00:45:45 2012 +0100
+
+    [entropy.output] drop old cruft
+
+commit ef679bf2e79c7a68b52ee5acec73e0a8e56d2a63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 00:45:23 2012 +0100
+
+    [server] update POTFILES.in
+
+commit cd12e89f84a6adf1ab7e581ba850f4a7b51e2874
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 00:44:04 2012 +0100
+
+    [matter] split and clean matter, make the Entropy dependency optional
+
+commit dad36a9a80fbfec6242bd82f234f9d462dc458a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 20 21:41:20 2012 +0100
+
+    [antimatter] rename antimatter to antimatter.py
+
+commit ff029d38177031091da828a433d1d4c57dad0a51
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 20 21:40:49 2012 +0100
+
+    [matter] rename matter to matter.py
+
+commit e4ef3979a2950ce2a49bf0b418c056c68c39f10f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 20 10:01:56 2012 +0100
+
+    [matter] add "stable" parameter support to particles
+
+commit e17928e4bf7d85074d2ecff9592ab472221c41cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 20 09:13:19 2012 +0100
+
+    [matter] use subprocess.call() instead of a custom os.spawnvpe()
+
+commit 44ad78e33b3147fd9a71034343abd1d9c414b2b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 18 19:58:31 2012 +0100
+
+    Tagging Entropy version 157
+
 commit ce64433a6c76330d1748e51adf4244d9ecc8d375
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 18 19:58:31 2012 +0100
