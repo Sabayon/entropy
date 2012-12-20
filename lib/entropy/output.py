@@ -86,15 +86,12 @@ g_attr["bg_cyan"]      = 46
 g_attr["bg_white"]     = 47
 g_attr["bg_default"]   = 49
 
-
 # make_seq("blue", "black", "normal")
 def color(fg, bg="default", attr=["normal"]):
         mystr = esc_seq[:] + "%02d" % g_attr[fg]
         for x in [bg]+attr:
                 mystr += ";%02d" % g_attr[x]
         return mystr+"m"
-
-
 
 codes = {}
 codes["reset"]     = esc_seq + "39;49;00m"
@@ -146,18 +143,6 @@ codes["darkteal"]   = codes["turquoise"]
 codes["darkyellow"] = codes["brown"]
 codes["fuscia"]     = codes["fuchsia"]
 codes["white"]      = codes["bold"]
-
-# Colors from /sbin/functions.sh
-codes["GOOD"]       = codes["green"]
-codes["WARN"]       = codes["yellow"]
-codes["BAD"]        = codes["red"]
-codes["HILITE"]     = codes["teal"]
-codes["BRACKET"]    = codes["blue"]
-
-# Portage functions
-codes["INFORM"] = codes["darkgreen"]
-codes["UNMERGE_WARN"] = codes["red"]
-codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 
 # mute flag, will mute any stdout/stderr output.
