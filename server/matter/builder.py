@@ -1,0 +1,692 @@
+# -*- coding: utf-8 -*-
+"""
+
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
+
+    B{Matter TinderBox Toolkit}.
+
+"""
+import os
+import shlex
+import shutil
+import subprocess
+import tempfile
+
+from matter.utils import mkstemp, mkdtemp, print_traceback
+from matter.output import is_stdout_a_tty, print_info, print_warning, \
+    print_error, getcolor, darkgreen, purple
+
+from _emerge.depgraph import backtrack_depgraph
+from _emerge.actions import load_emerge_config
+try:
+    from _emerge.actions import validate_ebuild_environment
+except ImportError:
+    # older portage versions
+    from _emerge.main import validate_ebuild_environment
+try:
+    from _emerge.post_emerge import post_emerge
+except ImportError:
+    # older portage versions
+    from _emerge.main import post_emerge
+from _emerge.create_depgraph_params import create_depgraph_params
+from _emerge.main import parse_opts
+from _emerge.stdout_spinner import stdout_spinner
+from _emerge.Scheduler import Scheduler
+from _emerge.clear_caches import clear_caches
+from _emerge.unmerge import unmerge
+from _emerge.Blocker import Blocker
+
+import portage.versions
+import portage.dep
+import portage
+
+
+class PackageBuilder(object):
+    """
+    Portage Package builder class
+    """
+
+    DEFAULT_PORTAGE_SYNC_CMD = "emerge --sync"
+    PORTAGE_SYNC_CMD = shlex.split(os.getenv("MATTER_PORTAGE_SYNC_CMD",
+        DEFAULT_PORTAGE_SYNC_CMD))
+
+    DEFAULT_OVERLAYS_SYNC_CMD = "layman -S"
+    OVERLAYS_SYNC_CMD = shlex.split(os.getenv("MATTER_OVERLAYS_SYNC_CMD",
+        DEFAULT_OVERLAYS_SYNC_CMD))
+
+    DEFAULT_PORTAGE_BUILD_ARGS = "--verbose --nospinner"
+    PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
+        DEFAULT_PORTAGE_BUILD_ARGS).split()
+
+    PORTAGE_BUILTIN_ARGS = ["--accept-properties=-interactive"]
+
+    def __init__(self, emerge_config, packages, params,
+        spec_number, tot_spec, pkg_number, tot_pkgs):
+        self._emerge_config = emerge_config
+        self._packages = packages
+        self._params = params
+        self._spec_number = spec_number
+        self._tot_spec = tot_spec
+        self._pkg_number = pkg_number
+        self._tot_pkgs = tot_pkgs
+        self._built_packages = []
+        self._not_found_packages = []
+        self._not_installed_packages = []
+        self._not_merged_packages = []
+
+    @classmethod
+    def _build_standard_environment(cls, repository=None):
+        env = os.environ.copy()
+        if repository is not None:
+            env["MATTER_REPOSITORY_ID"] = repository
+        return env
+
+    @classmethod
+    def setup(cls, executable_hook_f, cwd):
+
+        # ignore exit status
+        subprocess.call(["env-update"])
+
+        hook_name = executable_hook_f.name
+        if not hook_name.endswith("/"):
+            # complete with current directory
+            hook_name = os.path.join(cwd, hook_name)
+
+        print_info("spawning pre hook: %s" % (hook_name,))
+        return subprocess.call([hook_name],
+            env = PackageBuilder._build_standard_environment())
+
+    @classmethod
+    def teardown(cls, executable_hook_f, cwd, exit_st):
+        hook_name = executable_hook_f.name
+        if not hook_name.endswith("/"):
+            # complete with current directory
+            hook_name = os.path.join(cwd, hook_name)
+
+        print_info("spawning post hook: %s, passing exit status: %d" % (
+            hook_name, exit_st,))
+        env = PackageBuilder._build_standard_environment()
+        env["MATTER_EXIT_STATUS"] = str(exit_st)
+        return subprocess.call([hook_name], env = env)
+
+    def _build_execution_header_output(self):
+        """
+        Return a string used as stdout/stderr header text.
+        """
+        my_str = "{%s of %s particles | %s of %s packages} " % (
+            darkgreen(str(self._spec_number)),
+            purple(str(self._tot_spec)),
+            darkgreen(str(self._pkg_number)),
+            purple(str(self._tot_pkgs)),)
+        return my_str
+
+    def get_built_packages(self):
+        """
+        Return the list of successfully built packages.
+        """
+        return self._built_packages
+
+    def get_not_found_packages(self):
+        """
+        Return the list of packages that haven't been found in Portage.
+        """
+        return self._not_found_packages
+
+    def get_not_installed_packages(self):
+        """
+        Return the list of packages that haven't been found on the System.
+        """
+        return self._not_installed_packages
+
+    def get_not_merged_packages(self):
+        """
+        Return the list of packages that haven't been able to compile.
+        """
+        return self._not_merged_packages
+
+    def run(self):
+        """
+        Execute Package building action.
+        """
+        header = self._build_execution_header_output()
+        print_info(
+            header + "spawning package build: %s" % (
+                " ".join(self._packages),))
+
+        std_env = PackageBuilder._build_standard_environment(
+            repository=self._params["repository"])
+
+        matter_package_names = " ".join(self._packages)
+        std_env["MATTER_PACKAGE_NAMES"] = matter_package_names
+        print_info("MATTER_PACKAGE_NAMES = %s" % (matter_package_names,))
+
+        # run pkgpre, if any
+        pkgpre = self._params["pkgpre"]
+        if pkgpre is not None:
+            print_info("spawning --pkgpre: %s" % (pkgpre,))
+            tmp_fd, tmp_path = mkstemp()
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                with open(pkgpre, "rb") as pkgpre_f:
+                    tmp_f.write(pkgpre_f.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                exit_st = subprocess.call([tmp_path], env = std_env)
+                if exit_st != 0:
+                    return exit_st
+            finally:
+                os.remove(tmp_path)
+
+        dirs_cleanup = []
+        exit_st = self._run_builder(dirs_cleanup)
+
+        print_info("builder terminated, exit status: %d" % (exit_st,))
+
+        # cleanup temporary directories registered on the queue
+        for tmp_dir in dirs_cleanup:
+            self.__cleanup_dir(tmp_dir)
+
+        # run pkgpost, if any
+        pkgpost = self._params["pkgpost"]
+        if pkgpost is not None:
+            print_info("spawning --pkgpost: %s" % (pkgpost,))
+            tmp_fd, tmp_path = mkstemp()
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                with open(pkgpost, "rb") as pkgpost_f:
+                    tmp_f.write(pkgpost_f.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                post_exit_st = subprocess.call([tmp_path, str(exit_st)],
+                    env = std_env)
+                if post_exit_st != 0:
+                    return post_exit_st
+            finally:
+                os.remove(tmp_path)
+
+        return exit_st
+
+    def __cleanup_dir(self, tmp_dir):
+        if os.path.isdir(tmp_dir) \
+            and (not os.path.islink(tmp_dir)):
+            shutil.rmtree(tmp_dir, True)
+
+    def _pre_graph_filters(self, package, portdb, vardb):
+        """
+        Execute basic, pre-graph generation (dependencies calculation)
+        filters against the package dependency to see if it's eligible
+        for the graph.
+        """
+        allow_rebuild = self._params['rebuild'] == "yes"
+        allow_not_installed = self._params['not-installed'] == "yes"
+        allow_downgrade = self._params['downgrade'] == "yes"
+
+        best_visible = portdb.xmatch("bestmatch-visible", package)
+        if not best_visible:
+            # package not found, return error
+            print_error("cannot match: %s, ignoring this one" % (package,))
+            self._not_found_packages.append(package)
+            return None
+
+        print_info("matched: %s for %s" % (best_visible, package,))
+        # now determine what's the installed version.
+        best_installed = portage.best(vardb.match(package))
+        if (not best_installed) and (not allow_not_installed):
+            # package not installed
+            print_error("package not installed: %s, ignoring this one" % (
+                package,))
+            self._not_installed_packages.append(package)
+            return None
+
+        if (not best_installed) and allow_not_installed:
+            print_warning(
+                "package not installed: "
+                "%s, but 'not-installed: yes' provided" % (package,))
+
+        cmp_res = -1
+        if best_installed:
+            print_info("found installed: %s for %s" % (
+                    best_installed, package,))
+            # now compare
+            # -1 if best_installed is older than best_visible
+            # 1 if best_installed is newer than best_visible
+            # 0 if they are equal
+            cmp_res = portage.versions.pkgcmp(
+                portage.versions.pkgsplit(best_installed),
+                portage.versions.pkgsplit(best_visible))
+
+        is_rebuild = cmp_res == 0
+
+        if (cmp_res == 1) and (not allow_downgrade):
+            # downgrade in action and downgrade not allowed, aborting!
+            print_warning(
+                "package: %s, would be downgraded, %s to %s, ignoring" % (
+                    package, best_installed, best_visible,))
+            return None
+
+        if is_rebuild and (not allow_rebuild):
+            # rebuild in action and rebuild not allowed, aborting!
+            print_warning(
+                "package: %s, would be rebuilt to %s, ignoring" % (
+                    package, best_visible,))
+            return None
+
+        # at this point we can go ahead accepting package in queue
+        print_info("package: %s [%s], accepted in queue" % (
+                best_visible, package,))
+        return best_visible
+
+    def _post_graph_filters(self, graph, vardb, portdb):
+        """
+        Execute post-graph generation (dependencies calculation)
+        filters against the package dependencies to see if they're
+        eligible for building.
+        """
+        # list of _emerge.Package.Package objects
+        package_queue = graph.altlist()
+
+        # filter out blockers
+        real_queue = [x for x in package_queue if not isinstance(
+                x, Blocker)]
+        # filter out broken or corrupted objects
+        real_queue = [x for x in real_queue if x.cpv]
+
+        # package_queue can also contain _emerge.Blocker.Blocker objects
+        # not exposing .cpv field (but just .cp).
+        dep_list = []
+        for pobj in package_queue:
+            if isinstance(pobj, Blocker):
+                # blocker, list full atom
+                dep_list.append("!" + pobj.atom)
+                continue
+            cpv = pobj.cpv
+            repo = pobj.repo
+            if repo:
+                repo = "::" + repo
+            if cpv:
+                dep_list.append(cpv+repo)
+            else:
+                print_warning(
+                    "attention, %s has broken cpv: '%s', ignoring" % (
+                        pobj, cpv,))
+
+        # calculate dependencies, if --dependencies is not enabled
+        # because we have to validate it
+        if (self._params['dependencies'] == "no") \
+                and (len(package_queue) > 1):
+            deps = "\n  ".join(dep_list)
+            print_warning("dependencies pulled in:")
+            print_warning(deps)
+            print_warning("but 'dependencies: no' in config, aborting")
+            return None
+
+        # inspect use flags changes
+        allow_new_useflags = self._params['new-useflags'] == "yes"
+        allow_removed_useflags = \
+            self._params['removed-useflags'] == "yes"
+
+        use_flags_give_up = False
+        if (not allow_new_useflags) or (not allow_removed_useflags):
+            # checking for use flag changes
+            for pkg in real_queue:
+                # frozenset
+                enabled_flags = pkg.use.enabled
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                if not inst_atom:
+                    # new package, ignore check
+                    continue
+                installed_flags = frozenset(
+                    vardb.aux_get(inst_atom, ["USE"])[0].split())
+
+                new_flags = enabled_flags - installed_flags
+                removed_flags = installed_flags - enabled_flags
+
+                if (not allow_new_useflags) and new_flags:
+                    print_warning(
+                        "ouch: %s wants these new USE flags: %s" % (
+                            pkg.cpv+"::"+pkg.repo,
+                            " ".join(sorted(new_flags)),))
+                    use_flags_give_up = True
+                if (not allow_removed_useflags) and removed_flags:
+                    print_warning(
+                        "ouch: %s has these USE flags removed: %s" % (
+                            pkg.cpv+"::"+pkg.repo,
+                        " ".join(sorted(removed_flags)),))
+                    use_flags_give_up = True
+
+        if use_flags_give_up:
+            print_warning("cannot continue due to unmet "
+                          "USE flags constraint")
+            return None
+
+        allow_downgrade = self._params['downgrade'] == "yes"
+        # check the whole queue against downgrade directive
+        if not allow_downgrade:
+            allow_downgrade_give_ups = []
+            for pkg in real_queue:
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                cmp_res = -1
+                if inst_atom:
+                    # -1 if inst_atom is older than pkg.cpv
+                    # 1 if inst_atom is newer than pkg.cpv
+                    # 0 if they are equal
+                    cmp_res = portage.versions.pkgcmp(
+                        portage.versions.pkgsplit(inst_atom),
+                        portage.versions.pkgsplit(pkg.cpv))
+                if cmp_res > 0:
+                    allow_downgrade_give_ups.append((inst_atom, pkg.cpv))
+
+            if allow_downgrade_give_ups:
+                print_warning(
+                    "cannot continue due to package "
+                    "downgrade not allowed for:")
+                for inst_atom, avail_atom in allow_downgrade_give_ups:
+                    print_warning("  installed: %s | wanted: %s" % (
+                        inst_atom, avail_atom,))
+                return None
+
+        changing_repo_pkgs = []
+        for pkg in real_queue:
+            wanted_repo = pkg.repo
+            inst_atom = portage.best(vardb.match(pkg.slot_atom))
+            current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
+            if current_repo:
+                if current_repo != wanted_repo:
+                    changing_repo_pkgs.append(
+                        (pkg.cpv, pkg.slot, current_repo, wanted_repo))
+
+        if changing_repo_pkgs:
+            print_warning("")
+            print_warning(
+                "Attention, packages are moving across SPM repositories:")
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                print_warning("  %s:%s [%s->%s]" % (pkg_atom, pkg_slot,
+                    c_repo, w_repo,))
+            print_warning("")
+
+        allow_spm_repo_change = self._params['spm-repository-change'] \
+            == "yes"
+        allow_spm_repo_change_if_ups = \
+            self._params['spm-repository-change-if-upstreamed'] == "yes"
+
+        if (not allow_spm_repo_change) and allow_spm_repo_change_if_ups:
+            print_info("SPM repository change allowed if the original "
+                       "repository does no longer contain "
+                       "current packages.")
+
+            # check if source repository still contains the package
+            # in this case, set allow_spm_repo_change to True
+            _allow = True
+            for pkg_atom, pkg_slot, c_repo, w_repo in changing_repo_pkgs:
+                pkg_key = portage.dep.dep_getkey("=%s" % (pkg_atom,))
+                pkg_target = "%s:%s::%s" % (
+                    pkg_key, pkg_slot, c_repo)
+                pkg_match = portdb.xmatch("bestmatch-visible", pkg_target)
+                if pkg_match:
+                    # package still available in source repo
+                    _allow = False
+                    print_warning("  %s:%s, still in repo: %s" % (
+                        pkg_atom, pkg_slot, c_repo,))
+                    # do not break, print all the list
+                    # break
+
+            if _allow and changing_repo_pkgs:
+                print_info(
+                    "current packages are no longer in their "
+                    "original repository, SPM repository change allowed.")
+                allow_spm_repo_change = True
+
+        if changing_repo_pkgs and (not allow_spm_repo_change):
+            print_warning(
+                "cannot continue due to unmet SPM repository "
+                "change constraint")
+            return None
+
+        print_info("USE flags constraints are met for all "
+                   "the queued packages")
+        return dep_list, real_queue
+
+    def _setup_keywords(self, settings):
+        """
+        Setup ACCEPT_KEYWORDS for package.
+        """
+        # setup stable keywords if needed
+        force_stable_keywords = self._params["stable"] == "yes"
+        inherit_keywords = self._params["stable"] == "inherit"
+
+        settings.unlock()
+        arch = settings["ARCH"][:]
+        orig_key = "ACCEPT_KEYWORDS_MATTER"
+        orig_keywords = settings.get(orig_key)
+
+        if orig_keywords is None:
+            orig_keywords = settings["ACCEPT_KEYWORDS"][:]
+            settings[orig_key] = orig_keywords
+            settings.backup_changes(orig_key)
+
+        if force_stable_keywords:
+            keywords = arch
+        elif inherit_keywords:
+            keywords = orig_keywords
+        else:
+            keywords = "%s ~%s" % (arch, arch)
+
+        settings.unlock()
+        settings["ACCEPT_KEYWORDS"] = keywords
+        settings.backup_changes("ACCEPT_KEYWORDS")
+        settings.lock()
+
+    def _run_builder(self, dirs_cleanup_queue):
+        """
+        This method is called by _run and executes the whole package build
+        logic, including constraints validation given by argv parameters.
+        NOTE: negative errors indicate warnings that can be skipped.
+        """
+        if self._packages:
+            first_package = self._packages[0]
+        else:
+            first_package = "_empty_"
+
+        log_dir = mkdtemp(prefix="matter_build.",
+            suffix="." + first_package.replace("/", "_").lstrip("<>=~"))
+        dirs_cleanup_queue.append(log_dir)
+
+        emerge_settings, emerge_trees, mtimedb = self._emerge_config
+
+        # Setup stable/unstable keywords, must be done on
+        # emerge_settings bacause the reference is spread everywhere
+        # in emerge_trees.
+        # This is not thread-safe, but Portage isn't either, so
+        # who cares!
+        self._setup_keywords(emerge_settings)
+
+        settings = portage.config(clone=emerge_settings)
+
+        portdb = emerge_trees[settings["ROOT"]]["porttree"].dbapi
+        if not portdb.frozen:
+            portdb.freeze()
+        vardb = emerge_trees[settings["ROOT"]]["vartree"].dbapi
+        vardb.settings.unlock()
+        vardb.settings["PORT_LOGDIR"] = log_dir
+        vardb.settings.backup_changes("PORT_LOGDIR")
+        vardb.settings.lock()
+
+        # Load the most current variables from /etc/profile.env, which
+        # has been re-generated by the env-update call in _run()
+        settings.unlock()
+        settings.reload()
+        settings.regenerate()
+        settings.lock()
+
+        packages = []
+        # execute basic, pre-graph generation filters against each
+        # package dependency in self._packages.
+        # This is just fast pruning of obvious obviousness.
+        for package in self._packages:
+            best_visible = self._pre_graph_filters(
+                package, portdb, vardb)
+            if best_visible is not None:
+                packages.append((package, best_visible))
+
+        if not packages:
+            print_warning("No remaining packages in queue, aborting.")
+            return 0
+
+        # at this point we can go ahead building packages
+        print_info("starting to build:")
+        for package, best_visible in packages:
+            print_info(": %s -> %s" % (
+                    package, best_visible,))
+
+        if not getcolor():
+            portage.output.nocolor()
+
+        # non interactive properties, this is not really required
+        # accept-properties just sets os.environ...
+        build_args = []
+        build_args += PackageBuilder.PORTAGE_BUILD_ARGS
+        build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
+        build_args += ["=" + best_v for _x, best_v in packages]
+        myaction, myopts, myfiles = parse_opts(build_args)
+
+        if "--pretend" in myopts:
+            print_warning("cannot use --pretend emerge argument, you idiot")
+            del myopts["--pretend"]
+        if "--ask" in myopts:
+            print_warning("cannot use --ask emerge argument, you idiot")
+            del myopts["--ask"]
+        spinner = stdout_spinner()
+        if "--quiet" in myopts:
+            spinner.update = spinner.update_basic
+        elif "--nospinner" in myopts:
+            spinner.update = spinner.update_basic
+        if settings.get("TERM") == "dumb" or not is_stdout_a_tty():
+            spinner.update = spinner.update_basic
+
+        print_info("emerge args: %s" % (" ".join(build_args),))
+
+        params = create_depgraph_params(myopts, myaction)
+        success, graph, favorites = backtrack_depgraph(settings,
+            emerge_trees, myopts, params, myaction, myfiles, spinner)
+
+        if not success:
+            # print issues to stdout and give up
+            print_warning("dependencies calculation failed, aborting")
+            graph.display_problems()
+            return 0
+        print_info("dependency graph generated successfully")
+
+        f_data = self._post_graph_filters(graph, vardb, portdb)
+        if f_data is None:
+            # post-graph filters not passed, giving up
+            return 0
+        dep_list, real_queue = f_data
+
+        print_info("about to build the following packages:")
+        for dep in dep_list:
+            print_info("  %s" % (dep,))
+
+        # re-calling action_build(), deps are re-calculated though
+        validate_ebuild_environment(emerge_trees)
+        mergetask = Scheduler(settings, emerge_trees, mtimedb,
+            myopts, spinner, favorites=favorites,
+            graph_config=graph.schedulerGraph())
+        del graph
+        clear_caches(emerge_trees)
+        retval = mergetask.merge()
+
+        not_merged = []
+        real_queue_map = dict((pkg.cpv, pkg) for pkg in real_queue)
+        failed_package = None
+        if retval != 0:
+            merge_list = mtimedb.get("resume", {}).get("mergelist")
+            for _merge_type, _merge_root, merge_atom, _merge_act in merge_list:
+                if failed_package is None:
+                    # we consider the first encountered package the one
+                    # that failed. It makes sense since packages are built
+                    # serially as of today.
+                    # Also, the package object must be available in our
+                    # package queue, so grab it from there.
+                    failed_package = real_queue_map.get(merge_atom)
+                not_merged.append(merge_atom)
+                self._not_merged_packages.append(merge_atom)
+
+        for pkg in real_queue:
+            cpv = pkg.cpv
+            if not cpv:
+                print_warning("package: %s, has broken cpv: '%s', ignoring" % (
+                        pkg, cpv,))
+            elif cpv not in not_merged:
+                # add to build queue
+                print_info("package: %s, successfully built" % (cpv,))
+                self._built_packages.append(cpv)
+
+        post_emerge(myaction, myopts, myfiles, settings["ROOT"],
+            emerge_trees, mtimedb, retval)
+
+        subprocess.call(["env-update"])
+
+        if failed_package is not None:
+            print_warning("failed package: %s::%s" % (failed_package.cpv,
+                failed_package.repo,))
+
+        if self._params['buildfail'] and (failed_package is not None):
+
+            std_env = PackageBuilder._build_standard_environment(
+                repository=self._params["repository"])
+            std_env["MATTER_PACKAGE_NAMES"] = " ".join(self._packages)
+            std_env["MATTER_PORTAGE_FAILED_PACKAGE_NAME"] = failed_package.cpv
+            std_env["MATTER_PORTAGE_REPOSITORY"] = failed_package.repo
+            # call pkgfail hook if defined
+            std_env["MATTER_PORTAGE_BUILD_LOG_DIR"] = os.path.join(log_dir,
+                "build")
+
+            buildfail = self._params['buildfail']
+            print_info("spawning buildfail: %s" % (buildfail,))
+            tmp_fd, tmp_path = mkstemp()
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                with open(buildfail, "rb") as buildfail_f:
+                    tmp_f.write(buildfail_f.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                exit_st = subprocess.call([tmp_path], env = std_env)
+                if exit_st != 0:
+                    return exit_st
+            finally:
+                os.remove(tmp_path)
+
+        print_info("portage spawned, return value: %d" % (retval,))
+        return retval
+
+    @classmethod
+    def post_build(cls, emerge_config):
+        """
+        Execute Portage post-build tasks.
+        """
+        emerge_settings, emerge_trees, mtimedb = emerge_config
+        if "yes" == emerge_settings.get("AUTOCLEAN"):
+            print_info("executing post-build operations, please wait...")
+            builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
+            _action, opts, _files = parse_opts(
+                PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args)
+            unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
+                opts, "clean", [], mtimedb["ldpath"], autoclean=1)
+
+    @classmethod
+    def sync(cls):
+        """
+        Execute Portage and Overlays sync
+        """
+        sync_cmd = PackageBuilder.PORTAGE_SYNC_CMD
+        std_env = PackageBuilder._build_standard_environment()
+        exit_st = subprocess.call(sync_cmd, env = std_env)
+        if exit_st != 0:
+            return exit_st
+
+        # overlays update
+        overlay_cmd = PackageBuilder.OVERLAYS_SYNC_CMD
+        return subprocess.call(overlay_cmd, env = std_env)
