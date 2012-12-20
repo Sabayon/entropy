@@ -17,10 +17,17 @@ packages:
 	x11-misc/magneto-gtk
 	x11-misc/magneto-gtk3
 
-
 # Entropy repository where to commit packages
 # Mandatory, cannot be empty
 repository: community0
+
+# Enforce stable or unstable packages on emerge.
+# yes = only stable packages are accepted
+# no  = both stable and unstable packages are accepted
+# inherit = inherit portage make.conf.* settings for ACCEPT_KEYWORDS
+# Valid values are either "yes" or "no", "inherit"
+# Default is: inherit
+stable: inherit
 
 # Allow Source Package Manager (Portage) repository change?
 # Valid values are either "yes" or "no"

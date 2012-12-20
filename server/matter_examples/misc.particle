@@ -5,6 +5,14 @@
 # Mandatory, cannot be empty
 packages: sys-libs/zlib, asd-foo/foo, x11-drivers/ati-drivers, app-office/libreoffice::sabayon
 
+# Enforce stable or unstable packages on emerge.
+# yes = only stable packages are accepted
+# no  = both stable and unstable packages are accepted
+# inherit = inherit portage make.conf.* settings for ACCEPT_KEYWORDS
+# Valid values are either "yes" or "no", "inherit"
+# Default is: inherit
+stable: inherit
+
 # Entropy repository where to commit packages
 # Mandatory, cannot be empty
 repository: community0

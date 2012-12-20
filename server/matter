@@ -258,6 +258,9 @@ class GenericSpecFunctions(object):
     def valid_yes_no(self, x):
         return x in ("yes", "no")
 
+    def valid_yes_no_inherit(self, x):
+        return x in ("yes", "no", "inherit")
+
     def valid_path_string(self, x):
         try:
             os.path.split(x)
@@ -379,6 +382,11 @@ class MatterSpec(GenericSpecFunctions):
             'repository': {
                 'cb': self.ne_string,
                 've': self.ve_string_stripper,
+            },
+            'stable': {
+                'cb': self.valid_yes_no_inherit,
+                've': self.ve_string_stripper,
+                'default': "inherit",
             },
         }
 
@@ -1007,6 +1015,36 @@ class PackageBuilder(object):
                    "the queued packages")
         return dep_list, real_queue
 
+    def _setup_keywords(self, settings):
+        """
+        Setup ACCEPT_KEYWORDS for package.
+        """
+        # setup stable keywords if needed
+        force_stable_keywords = self._params["stable"] == "yes"
+        inherit_keywords = self._params["stable"] == "inherit"
+
+        settings.unlock()
+        arch = settings["ARCH"][:]
+        orig_key = "ACCEPT_KEYWORDS_MATTER"
+        orig_keywords = settings.get(orig_key)
+
+        if orig_keywords is None:
+            orig_keywords = settings["ACCEPT_KEYWORDS"][:]
+            settings[orig_key] = orig_keywords
+            settings.backup_changes(orig_key)
+
+        if force_stable_keywords:
+            keywords = arch
+        elif inherit_keywords:
+            keywords = orig_keywords
+        else:
+            keywords = "%s ~%s" % (arch, arch)
+
+        settings.unlock()
+        settings["ACCEPT_KEYWORDS"] = keywords
+        settings.backup_changes("ACCEPT_KEYWORDS")
+        settings.lock()
+
     def _run_builder(self, dirs_cleanup_queue):
         """
         This method is called by _run and executes the whole package build
@@ -1023,6 +1061,14 @@ class PackageBuilder(object):
         dirs_cleanup_queue.append(log_dir)
 
         emerge_settings, emerge_trees, mtimedb = self._emerge_config
+
+        # Setup stable/unstable keywords, must be done on
+        # emerge_settings bacause the reference is spread everywhere
+        # in emerge_trees.
+        # This is not thread-safe, but Portage isn't either, so
+        # who cares!
+        self._setup_keywords(emerge_settings)
+
         settings = portage.config(clone=emerge_settings)
 
         portdb = emerge_trees[settings["ROOT"]]["porttree"].dbapi
