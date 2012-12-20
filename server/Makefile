@@ -19,7 +19,7 @@ install:
 	cp eit $(DESTDIR)$(LIBDIR)/entropy/server/ -Ra
 	install -m 755 eit.py $(DESTDIR)$(BINDIR)/eit
 	install -m 755 matter.py $(DESTDIR)$(PREFIX)/sbin/matter
-	install -m 755 antimatter $(DESTDIR)$(PREFIX)/sbin
+	install -m 755 antimatter.py $(DESTDIR)$(PREFIX)/sbin/antimatter
 
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
 
