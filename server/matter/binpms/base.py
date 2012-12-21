@@ -13,6 +13,7 @@
 
 """
 import os
+import subprocess
 
 # default mandatory features
 os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
@@ -67,7 +68,7 @@ class BaseBinaryPMS(object):
 
     available_pms = []
     DEFAULT = True
-    NAME = "base"
+    NAME = "portage"
 
 
     @staticmethod
@@ -182,6 +183,16 @@ class BaseBinaryPMS(object):
         """
         Commit packages to the BinaryPMS repository.
         """
+        pkgdir = os.path.join("/usr/matter", repository, "packages")
+        env = os.environ.copy()
+        env["PKGDIR"] = pkgdir
+        exit_st = subprocess.call(
+            ["quickpkg", "--include-config=y"] + [
+                "=" + x for x in packages], env=env)
+        if exit_st != 0:
+            raise BaseBinaryPMS.RepositoryCommitError(
+                "cannot commit packages, exit status: %d" % (
+                    exit_st,))
 
     def push(self, repository):
         """
