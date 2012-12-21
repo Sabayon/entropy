@@ -21,7 +21,7 @@ from matter.builder import PackageBuilder
 from matter.lock import MatterResourceLock
 from matter.output import purple, darkgreen, print_info, \
     print_warning, print_error
-from matter.spec import SpecParser
+from matter.spec import SpecParser, MatterSpec
 
 
 def matter_main(binary_pms, nsargs, cwd, specs):
@@ -179,20 +179,32 @@ def main():
     for thing in os.listdir(pms_dir):
         if thing.startswith("__init__.py"):
             continue
+
         thing = os.path.join(pms_dir, thing)
         if not os.path.isfile(thing):
             continue
         if not thing.endswith(".py"):
             continue
+
         name = os.path.basename(thing)
         name = name.rstrip(".py")
         package = "matter.binpms.%s" % (name,)
+
         try:
             importlib.import_module(package)  # they will then register
         except ImportError as err:
             pass
-
     avail_binpms = BaseBinaryPMS.available_pms
+
+    matter_spec = MatterSpec()
+    parser_data = matter_spec.parser_data_path()
+    matter_spec_params = ""
+    for spec_key in sorted(parser_data.keys()):
+        par = parser_data[spec_key]
+        matter_spec_params += "%s: %s\n" % (
+            purple(spec_key),
+            darkgreen(par.get("desc", "N/A")),)
+
     _env_vars_help = """\
 
 Environment variables for Package Builder module:
@@ -211,6 +223,9 @@ Environment variables passed to --post executables:
 Matter Resources Lock file you can use to detect if matter is running:
 %s (--blocking switch makes it acquire in blocking mode)
 
+Matter .spec file supported parameters:
+%s
+
 Available Binary PMSs:
 %s
 """ % (
@@ -223,6 +238,7 @@ Available Binary PMSs:
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_BUILD_ARGS),
         purple("MATTER_EXIT_STATUS"),
         darkgreen(MatterResourceLock.LOCK_FILE_PATH),
+        matter_spec_params,
         "\n".join(
         ["%s: %s" % (purple(k.NAME), darkgreen(k.__name__)) \
              for k in avail_binpms]),)

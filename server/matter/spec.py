@@ -130,75 +130,104 @@ class MatterSpec(GenericSpecFunctions):
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow dependencies to be pulled in? (yes/no)",
             },
             'downgrade': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow package downgrades? (yes/no)",
             },
             'keep-going': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Make possible to continue if one \n\t"
+                "or more packages fail to build? (yes/no)",
             },
             'new-useflags': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow new USE flags? (yes/no)",
             },
             'removed-useflags': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow removed USE flags? (yes/no)",
             },
             'rebuild': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow package rebuilds? (yes/no)",
             },
             'spm-repository-change': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow Source Package Manager (Portage) \n\t"
+                "repository change? (yes/no)",
             },
             'spm-repository-change-if-upstreamed': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "In case of Source Package Manager \n\trepository "
+                "changes, allow execution if the original repository "
+                "\n\tdoes not contain the package anymore? (yes/no)",
             },
             'not-installed': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
                 'default': "no",
+                'desc': "Allow compiling packages even if they "
+                "are not \n\tactually installed on the System? (yes/no)",
             },
             'pkgpre': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
                 'default': None,
+                'desc': "Package pre execution script hook path, "
+                "executed \n\tfor each package (also see example files)",
             },
             'pkgpost': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
                 'default': None,
+                'desc': "Package build post execution script hook path, "
+                "executed \n\tfor each package (also see example files)",
             },
             'buildfail': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,
                 'default': None,
+                'desc': "Package build failure execution script hook "
+                "path, \n\texecuted for each failing package (also see "
+                "example files)",
             },
             'packages': {
                 'cb': self.always_valid,
                 've': self.valid_comma_sep_list_list,
                 'mod': lambda l_l: [x for x in l_l if x],
+                'desc': "List of packages to scrape, separated by "
+                "comma. \n\tIf you want to let Portage consider a group "
+                "of packages, \n\tjust separate them with spaces/tabs but "
+                "no commas",
             },
             'repository': {
                 'cb': self.ne_string,
                 've': self.ve_string_stripper,
+                'desc': "Binary Package Manager repository in where "
+                "newly built \n\tpackages will be put and pushed to",
             },
             'stable': {
                 'cb': self.valid_yes_no_inherit,
                 've': self.ve_string_stripper,
                 'default': "inherit",
+                'desc': "Only accept Portage stable packages (no "
+                "unstable keywords)",
             },
         }
 
