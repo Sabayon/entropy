@@ -96,7 +96,7 @@ class PackageBuilder(object):
         subprocess.call(["env-update"])
 
         hook_name = executable_hook_f.name
-        if not hook_name.endswith("/"):
+        if not hook_name.startswith("/"):
             # complete with current directory
             hook_name = os.path.join(cwd, hook_name)
 
@@ -107,7 +107,7 @@ class PackageBuilder(object):
     @classmethod
     def teardown(cls, executable_hook_f, cwd, exit_st):
         hook_name = executable_hook_f.name
-        if not hook_name.endswith("/"):
+        if not hook_name.startswith("/"):
             # complete with current directory
             hook_name = os.path.join(cwd, hook_name)
 
