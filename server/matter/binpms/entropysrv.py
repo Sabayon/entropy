@@ -118,10 +118,25 @@ class EntropyBinaryPMS(BaseBinaryPMS):
     class RepositoryPushError(BaseBinaryPMS.RepositoryPushError):
         """ Raised when a repository push fails. """
 
-    def __init__(self, nsargs):
-        if nsargs.community:
+    @staticmethod
+    def extend_parser(parser):
+        """
+        Extend Matter ArgumentParser with extra arguments specific
+        to this class.
+        """
+        group = parser.add_argument_group("Entropy Binary PMS")
+        group.add_argument(
+            "--entropy-community",
+            help="enable Community Repository mode",
+            action="store_true")
+
+    def __init__(self, cwd, nsargs):
+        """
+        Constructor.
+        """
+        if nsargs.entropy_community:
             os.environ['ETP_COMMUNITY_MODE'] = "1"
-        super(EntropyBinaryPMS, self).__init__(nsargs)
+        super(EntropyBinaryPMS, self).__init__(cwd, nsargs)
         try:
             self._entropy = Server()
         except PermissionDenied as err:

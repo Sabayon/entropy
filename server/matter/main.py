@@ -274,12 +274,6 @@ Available Binary PMSs:
         action="store_true")
 
     parser.add_argument(
-        "--community",
-        help="enforce Community Repository mode on Binary PMS, "
-        "if this has any particular meaning.",
-        action="store_true")
-
-    parser.add_argument(
         "--gentle",
         help="increase the system validation checks, be extremely "
         "careful wrt the current system status.",
@@ -309,6 +303,10 @@ Available Binary PMSs:
         dest="disable_preserved_libs", default=False,
         help="disable prerserved libraries check.",
         action="store_true")
+
+    # extend parser arguments
+    for k in avail_binpms:
+        k.extend_parser(parser)
 
     try:
         nsargs = parser.parse_args(sys.argv[1:])
@@ -350,7 +348,7 @@ Available Binary PMSs:
     cwd = os.getcwd()
     try:
         try:
-            binary_pms = klass(nsargs)
+            binary_pms = klass(cwd, nsargs)
         except BaseBinaryPMS.BinaryPMSLoadError as err:
             # repository not available or not configured
             print_error("Cannot load Binary Package Manager: %s" % (err,))

@@ -74,6 +74,26 @@ class BaseBinaryPMS(object):
         """
         BaseBinaryPMS.available_pms.append(klass)
 
+    @staticmethod
+    def extend_parser(parser):
+        """
+        Extend Matter ArgumentParser with extra arguments specific
+        to this class.
+        """
+    @staticmethod
+    def extend_parser(parser):
+        """
+        Extend Matter ArgumentParser with extra arguments specific
+        to this class.
+        """
+        group = parser.add_argument_group("Portage Binary PMS")
+        group.add_argument(
+            "--portage-pkgpush", metavar="<exec>", type=file,
+            help="executable called during the binary packages "
+            "push phase, it takes the committed packages directory "
+            "path as first argument (a custom PKGDIR, see Portage "
+            "documentation on that)", default=None)
+
     class BasePMSError(Exception):
         """ Base exception for all the BaseBinaryPMS exceptions. """
 
@@ -92,16 +112,25 @@ class BaseBinaryPMS(object):
     class RepositoryPushError(BasePMSError):
         """ Raised when a repository push fails. """
 
-    def __init__(self, nsargs):
+    def __init__(self, cwd, nsargs):
         """
         Constructor.
 
+        @param cwd: currently working directory path
+        @type cwd: string
         @param nsargs: ArgumentParser's parsed arguments
         @type nsargs: ArgumentParser
         """
+        self._cwd = cwd
         self._nsargs = nsargs
         from _emerge.actions import load_emerge_config
         self._cfg_loader = load_emerge_config
+
+    def _build_pkgdir(self, repository):
+        """
+        Build the repository PKGDIR environment variable.
+        """
+        return os.path.join("/usr/matter", repository, "packages")
 
     def get_resource_lock(self, blocking):
         """
@@ -178,7 +207,7 @@ class BaseBinaryPMS(object):
         """
         Commit packages to the BinaryPMS repository.
         """
-        pkgdir = os.path.join("/usr/matter", repository, "packages")
+        pkgdir = self._build_pkgdir(repository)
         env = os.environ.copy()
         env["PKGDIR"] = pkgdir
         exit_st = subprocess.call(
@@ -194,6 +223,25 @@ class BaseBinaryPMS(object):
         Push all the packages built by PackageBuilder to the
         given repository.
         """
+        pkgpush_f = self._nsargs.portage_pkgpush
+        if pkgpush_f is None:
+            return
+
+        hook_name = pkgpush_f.name
+        if not hook_name.startswith("/"):
+            # complete with current directory
+            hook_name = os.path.join(self._cwd, hook_name)
+
+        pkgdir = self._build_pkgdir(repository)
+        env = os.environ.copy()
+        env["PKGDIR"] = pkgdir
+
+        exit_st = subprocess.call(
+            [hook_name, pkgdir], env=env)
+        if exit_st != 0:
+            raise BaseBinaryPMS.RepositoryPushError(
+                "cannot push packages, exit status: %d" % (
+                    exit_st,))
 
 
 BaseBinaryPMS.register(BaseBinaryPMS)
