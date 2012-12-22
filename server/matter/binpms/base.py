@@ -80,12 +80,6 @@ class BaseBinaryPMS(object):
         Extend Matter ArgumentParser with extra arguments specific
         to this class.
         """
-    @staticmethod
-    def extend_parser(parser):
-        """
-        Extend Matter ArgumentParser with extra arguments specific
-        to this class.
-        """
         group = parser.add_argument_group("Portage Binary PMS")
         group.add_argument(
             "--portage-pkgpush", metavar="<exec>", type=file,
