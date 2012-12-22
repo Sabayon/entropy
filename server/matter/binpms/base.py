@@ -15,11 +15,6 @@
 import os
 import subprocess
 
-# default mandatory features
-os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
-os.environ['FEATURES'] = "split-log"
-os.environ['CMAKE_NO_COLOR'] = "yes"
-
 
 class BaseBinaryResourceLock(object):
     """

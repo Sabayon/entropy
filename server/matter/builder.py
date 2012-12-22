@@ -19,6 +19,11 @@ from matter.utils import mkstemp, mkdtemp, print_traceback
 from matter.output import is_stdout_a_tty, print_info, print_warning, \
     print_error, getcolor, darkgreen, purple
 
+# default mandatory features
+os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
+os.environ['FEATURES'] = "split-log"
+os.environ['CMAKE_NO_COLOR'] = "yes"
+
 from _emerge.depgraph import backtrack_depgraph
 from _emerge.actions import load_emerge_config
 try:
