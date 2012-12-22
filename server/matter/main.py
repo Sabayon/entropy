@@ -28,7 +28,6 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     """
     Main application code run after all the resources setup.
     """
-    exit_st = 0
 
     try:
         binary_pms.validate_system()
@@ -39,133 +38,134 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     print_info("matter loaded, starting to scan particles, pid: %s" % (
         os.getpid(),))
 
+    def _teardown(_exit_st):
+        if nsargs.post:
+            _rc = PackageBuilder.teardown(
+                nsargs.post, cwd, _exit_st)
+            if _exit_st == 0 and _rc != 0:
+                _exit_st = _rc
+        return _exit_st
+
     # setup
     if nsargs.pre:
         _rc = PackageBuilder.setup(nsargs.pre, cwd)
         if _rc != 0:
-            exit_st = _rc
+            raise SystemExit(_teardown(_rc))
 
-    if exit_st == 0:
+    # sync portage
+    if nsargs.sync:
+        _rc = PackageBuilder.sync()
+        if _rc != 0:
+            raise SystemExit(_teardown(_rc))
 
-        if nsargs.sync:
-            _rc = PackageBuilder.sync()
-            if _rc != 0:
+    exit_st = 0
+    completed = []
+    not_found = []
+    not_installed = []
+    not_merged = []
+    tainted_repositories = set()
+    spec_count = 0
+    tot_spec = len(specs)
+    preserved_libs = False
+    emerge_config = binary_pms.load_emerge_config()
+
+    for spec in specs:
+
+        spec_count += 1
+        keep_going = spec["keep-going"] == "yes"
+        local_completed = []
+
+        tot_pkgs = len(spec['packages'])
+        for pkg_count, packages in enumerate(spec['packages'], 1):
+
+            builder = PackageBuilder(
+                emerge_config, packages,
+                spec, spec_count, tot_spec, pkg_count, tot_pkgs)
+            _rc = builder.run()
+
+            not_found.extend(builder.get_not_found_packages())
+            not_installed.extend(
+                builder.get_not_installed_packages())
+            not_merged.extend(
+                builder.get_not_merged_packages())
+            preserved_libs = binary_pms.check_preserved_libraries(
+                emerge_config)
+
+            if preserved_libs and not nsargs.disable_preserved_libs:
+                # abort, library breakages detected
+                exit_st = 1
+                print_error(
+                    "preserved libraries detected, aborting")
+                break
+
+            # ignore _rc, we may have built pkgs even if _rc != 0
+            built_packages = builder.get_built_packages()
+            if built_packages:
+                print_info("built packages, in queue: %s" % (
+                        " ".join(built_packages),))
+                local_completed.extend(
+                    [x for x in built_packages \
+                         if x not in local_completed])
+                tainted_repositories.add(spec['repository'])
+
+            # make some room
+            print_info("")
+            if _rc < 0:
+                # ignore warning and go ahead
+                continue
+            else:
                 exit_st = _rc
-
-        if exit_st == 0:
-            completed = []
-            not_found = []
-            not_installed = []
-            not_merged = []
-            tainted_repositories = set()
-            spec_count = 0
-            tot_spec = len(specs)
-            preserved_libs = False
-            emerge_config = binary_pms.load_emerge_config()
-
-            for spec in specs:
-
-                spec_count += 1
-                keep_going = spec["keep-going"] == "yes"
-                local_completed = []
-
-                tot_pkgs = len(spec['packages'])
-                for pkg_count, packages in enumerate(spec['packages'], 1):
-
-                    builder = PackageBuilder(
-                        emerge_config, packages, spec, spec_count,
-                        tot_spec, pkg_count, tot_pkgs)
-                    _rc = builder.run()
-
-                    not_found.extend(builder.get_not_found_packages())
-                    not_installed.extend(
-                        builder.get_not_installed_packages())
-                    not_merged.extend(
-                        builder.get_not_merged_packages())
-                    preserved_libs = binary_pms.check_preserved_libraries(
-                        emerge_config)
-
-                    if preserved_libs and not nsargs.disable_preserved_libs:
-                        # abort, library breakages detected
-                        exit_st = 1
-                        print_error(
-                            "preserved libraries detected, aborting")
-                        break
-
-                    # ignore _rc, we may have built pkgs even if _rc != 0
-                    built_packages = builder.get_built_packages()
-                    if built_packages:
-                        print_info("built packages, in queue: %s" % (
-                                " ".join(built_packages),))
-                        local_completed.extend(
-                            [x for x in built_packages \
-                                 if x not in local_completed])
-                        tainted_repositories.add(spec['repository'])
-
-                    # make some room
-                    print_info("")
-                    if _rc < 0:
-                        # ignore warning and go ahead
-                        continue
-                    else:
-                        exit_st = _rc
-                        if not keep_going:
-                            break
-
-                # call post-build cleanup operations,
-                # run it unconditionally
-                PackageBuilder.post_build(emerge_config)
-
-                if preserved_libs and not nsargs.disable_preserved_libs:
-                    # completely abort
+                if not keep_going:
                     break
 
-                completed.extend([x for x in local_completed \
-                    if x not in completed])
-                # portage calls setcwd()
-                os.chdir(cwd)
+        # call post-build cleanup operations,
+        # run it unconditionally
+        PackageBuilder.post_build(emerge_config)
 
-                if local_completed and nsargs.commit:
-                    _rc = binary_pms.commit(
-                        spec['repository'],
-                        local_completed)
-                    if exit_st == 0 and _rc != 0:
-                        exit_st = _rc
-                        if not keep_going:
-                            break
+        if preserved_libs and not nsargs.disable_preserved_libs:
+            # completely abort
+            break
 
-            if tainted_repositories and nsargs.push and nsargs.commit:
-                if preserved_libs and nsargs.disable_preserved_libs:
-                    # cannot push anyway
-                    print_warning("Preserved libraries detected, cannot push !")
-                elif not preserved_libs:
-                    for repository in tainted_repositories:
-                        _rc = binary_pms.push(repository)
-                        if exit_st == 0 and _rc != 0:
-                            exit_st = _rc
+        completed.extend([x for x in local_completed \
+            if x not in completed])
+        # portage calls setcwd()
+        os.chdir(cwd)
 
-            # print summary
-            print_info("")
-            print_info("Summary")
-            print_info("Packages built:\n  %s" % (
-                "\n  ".join(sorted(completed)),))
-            print_info("Packages not built:\n  %s" % (
-                "\n  ".join(sorted(not_merged)),))
-            print_info("Packages not found:\n  %s" % (
-                "\n  ".join(sorted(not_found)),))
-            print_info("Packages not installed:\n  %s" % (
-                "\n  ".join(sorted(not_installed)),))
-            print_info("Preserved libs: %s" % (
-                preserved_libs,))
-            print_info("")
+        if local_completed and nsargs.commit:
+            _rc = binary_pms.commit(
+                spec['repository'],
+                local_completed)
+            if exit_st == 0 and _rc != 0:
+                exit_st = _rc
+                if not keep_going:
+                    break
 
-    if nsargs.post:
-        _rc = PackageBuilder.teardown(nsargs.post, cwd,
-            exit_st)
-        if exit_st == 0 and _rc != 0:
-            exit_st = _rc
+    if tainted_repositories and nsargs.push and nsargs.commit:
+        if preserved_libs and nsargs.disable_preserved_libs:
+            # cannot push anyway
+            print_warning("Preserved libraries detected, cannot push !")
+        elif not preserved_libs:
+            for repository in tainted_repositories:
+                _rc = binary_pms.push(repository)
+                if exit_st == 0 and _rc != 0:
+                    exit_st = _rc
 
-    raise SystemExit(exit_st)
+    # print summary
+    print_info("")
+    print_info("Summary")
+    print_info("Packages built:\n  %s" % (
+        "\n  ".join(sorted(completed)),))
+    print_info("Packages not built:\n  %s" % (
+        "\n  ".join(sorted(not_merged)),))
+    print_info("Packages not found:\n  %s" % (
+        "\n  ".join(sorted(not_found)),))
+    print_info("Packages not installed:\n  %s" % (
+        "\n  ".join(sorted(not_installed)),))
+    print_info("Preserved libs: %s" % (
+        preserved_libs,))
+    print_info("")
+
+    raise SystemExit(_teardown(exit_st))
 
 
 def main():
