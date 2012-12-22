@@ -4623,14 +4623,14 @@ class PortagePlugin(SpmPlugin):
         ldpaths = entropy.tools.collect_linker_paths()
         for obj, ftype in content.items():
 
-            if ftype == "dir":
+            if ftype != "obj":
                 continue
             obj_dir, obj_name = os.path.split(obj)
 
             if obj_dir not in ldpaths:
                 continue
 
-            unpack_obj = os.path.join(pkg_dir, obj[1:])
+            unpack_obj = os.path.join(pkg_dir, obj.lstrip("/"))
             try:
                 os.stat(unpack_obj)
             except OSError:
