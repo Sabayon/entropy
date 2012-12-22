@@ -1411,18 +1411,6 @@ class PortagePlugin(SpmPlugin):
             data['keywords'].insert(0, "**")
 
         data['keywords'] = set(data['keywords'])
-        needed_elf_file = os.path.join(meta_dir,
-            PortagePlugin.xpak_entries['needed.elf.2'])
-        needed_file = os.path.join(meta_dir,
-            PortagePlugin.xpak_entries['needed'])
-
-        if os.path.isfile(needed_elf_file):
-            data['needed'] = self._extract_pkg_metadata_needed_elf_2(
-                needed_elf_file)
-        else:
-            # fallback to old NEEDED file, no need to check if it exists
-            data['needed'] = self._extract_pkg_metadata_needed(
-                needed_file)
 
         content_file = os.path.join(meta_dir,
             PortagePlugin.xpak_entries['contents'])
@@ -1453,6 +1441,25 @@ class PortagePlugin(SpmPlugin):
                     if y == "obj"])
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
             pkg_dir, data['content'])
+
+        needed_elf_file = os.path.join(meta_dir,
+            PortagePlugin.xpak_entries['needed.elf.2'])
+        needed_file = os.path.join(meta_dir,
+            PortagePlugin.xpak_entries['needed'])
+
+        if os.path.isfile(needed_elf_file):
+            data['needed'] = self._extract_pkg_metadata_needed_elf_2(
+                needed_elf_file)
+        elif os.path.isfile(needed_file):
+            # fallback to old NEEDED file
+            data['needed'] = self._extract_pkg_metadata_needed(
+                needed_file)
+        else:
+            # some PMS like pkgcore don't generate NEEDED.ELF.2
+            # generate one ourselves if possible. May generate
+            # a slighly different (more complete?) content.
+            data['needed'] = self._generate_needed_elf_2(
+                pkg_dir, data['content'])
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
@@ -4562,6 +4569,41 @@ class PortagePlugin(SpmPlugin):
                         pkg_content[item_rel] = obj_t
 
         return pkg_content
+
+    def _generate_needed_elf_2(self, pkg_dir, content):
+        """
+        Generate NEEDED.ELF.2 metadata by scraping the package
+        content directly.
+        """
+        pkg_needed = set()
+        for obj, ftype in content.items():
+
+            if ftype != "obj":
+                continue
+            obj_dir, obj_name = os.path.split(obj)
+
+            unpack_obj = os.path.join(pkg_dir, obj.lstrip("/"))
+            try:
+                os.stat(unpack_obj)
+            except OSError:
+                continue
+
+            try:
+                if not entropy.tools.is_elf_file(unpack_obj):
+                    continue
+                elf_class = entropy.tools.read_elf_class(unpack_obj)
+            except IOError as err:
+                self.__output.output("%s: %s => %s" % (
+                    _("IOError while reading"), unpack_obj, repr(err),),
+                    level = "warning")
+                continue
+
+            needed_libs = entropy.tools.read_elf_dynamic_libraries(
+                unpack_obj)
+            for lib in needed_libs:
+                pkg_needed.add((lib, elf_class))
+
+        return tuple(sorted(pkg_needed))
 
     def _extract_pkg_metadata_needed_elf_2(self, needed_file):
 
