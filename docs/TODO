@@ -21,7 +21,4 @@ Backlog (raw)
       (to SystemSettings || Client || Server as static methods)
 
   long long term:
-
-    - pkgcore spm plugin
-        NEEDED is missing
     - python 3.x support -> more tests
