@@ -133,17 +133,22 @@ class EntropyRepositoryTest(unittest.TestCase):
         )
 
     def test_needed(self):
-        test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage = self.test_db.addPackage(data)
-        db_data = self.test_db.getPackageData(idpackage)
-        del db_data['original_repository']
-        del db_data['extra_download']
-        self.assertEqual(data, db_data)
-        db_needed = self.test_db.retrieveNeeded(idpackage, extended = True)
-        self.assertEqual(db_needed, data['needed'])
-        db_needed = self.test_db.retrieveNeeded(idpackage)
-        self.assertEqual(db_needed, tuple((lib for lib, elf_c in data['needed'])))
+        test_pkg1 = _misc.get_test_package()
+        test_pkg2 = _misc.get_test_package4()
+        for test_pkg in (test_pkg1, test_pkg2):
+            data = self.Spm.extract_package_metadata(test_pkg)
+            idpackage = self.test_db.addPackage(data)
+            db_data = self.test_db.getPackageData(idpackage)
+            del db_data['original_repository']
+            del db_data['extra_download']
+            self.assertEqual(data, db_data)
+            db_needed = self.test_db.retrieveNeeded(
+                idpackage, extended = True)
+            self.assertEqual(db_needed, data['needed'])
+            db_needed = self.test_db.retrieveNeeded(idpackage)
+            self.assertEqual(
+                db_needed,
+                tuple((lib for lib, elf_c in data['needed'])))
 
     def test_dependencies(self):
         test_pkg = _misc.get_test_package3()
