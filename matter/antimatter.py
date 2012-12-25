@@ -384,46 +384,57 @@ class AntiMatter(object):
         vardb, portdb = self._get_dbs()
         result = []
 
-        cpv_all = vardb.cpv_all()
-        cpv_all.sort()
-        for count, package in enumerate(cpv_all):
+        vardb.lock()
+        try:
+            cpv_all = vardb.cpv_all()
+            cpv_all.sort()
+            for count, package in enumerate(cpv_all):
 
-            count_str = "[%s of %s]" % (
-                count, len(cpv_all),)
+                count_str = "[%s of %s]" % (
+                    count, len(cpv_all),)
 
-            slot, repo = vardb.aux_get(package, ["SLOT", "repository"])
+                try:
+                    slot, repo = vardb.aux_get(
+                        package, ["SLOT", "repository"])
+                except KeyError:
+                    # package vanished, can still
+                    # happen even if locked?
+                    continue
 
-            atom = portage.dep.Atom(
-                "=%s:%s::%s" % (package, slot, repo),
-                allow_wildcard=True,
-                allow_repo=True)
+                atom = portage.dep.Atom(
+                    "=%s:%s::%s" % (package, slot, repo),
+                    allow_wildcard=True,
+                    allow_repo=True)
 
-            if self._nsargs.verbose:
-                print_warning("%s :: %s" % (count_str, atom),
-                              back=True)
-
-            key_slot = "%s:%s" % (atom.cp, atom.slot)
-
-            best_visible = portage.best(portdb.match(key_slot))
-
-            if not best_visible:
-                # dropped upstream
-                pkg = AntiMatterPackage(
-                    vardb, portdb, atom, None, -1)
-                result.append(pkg)
                 if self._nsargs.verbose:
-                    print_error(
-                        "  %s no longer upstream or masked" % (key_slot,))
-                continue
+                    print_warning("%s :: %s" % (count_str, atom),
+                                  back=True)
 
-            cmp_res = portage.versions.pkgcmp(
-                portage.versions.pkgsplit(best_visible),
-                portage.versions.pkgsplit(package))
+                key_slot = "%s:%s" % (atom.cp, atom.slot)
 
-            pkg = AntiMatterPackage(
-                vardb, portdb, atom,
-                best_visible, cmp_res)
-            result.append(pkg)
+                best_visible = portage.best(portdb.match(key_slot))
+
+                if not best_visible:
+                    # dropped upstream
+                    pkg = AntiMatterPackage(
+                        vardb, portdb, atom, None, -1)
+                    result.append(pkg)
+                    if self._nsargs.verbose:
+                        print_error(
+                            "  %s no longer upstream or masked" % (key_slot,))
+                    continue
+
+                cmp_res = portage.versions.pkgcmp(
+                    portage.versions.pkgsplit(best_visible),
+                    portage.versions.pkgsplit(package))
+
+                pkg = AntiMatterPackage(
+                    vardb, portdb, atom,
+                    best_visible, cmp_res)
+                result.append(pkg)
+        finally:
+            vardb.unlock()
+
 
         if cpv_all and self._nsargs.verbose:
             print_generic("")
