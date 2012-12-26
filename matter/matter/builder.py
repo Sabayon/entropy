@@ -220,6 +220,20 @@ class PackageBuilder(object):
             and (not os.path.islink(tmp_dir)):
             shutil.rmtree(tmp_dir, True)
 
+    def _get_sets_mod(self):
+        """
+        Return a portage.sets module object.
+        """
+        try:
+            import portage._sets as sets
+        except ImportError:
+            try:
+                # older portage, <= 2.2_rc67
+                import portage.sets as sets
+            except ImportError:
+                sets = None
+        return sets
+
     def _pre_graph_filters(self, package, portdb, vardb):
         """
         Execute basic, pre-graph generation (dependencies calculation)
@@ -532,15 +546,35 @@ class PackageBuilder(object):
         settings.regenerate()
         settings.lock()
 
+        sets = self._get_sets_mod()  # can be None
+        sets_conf = None
+        if sets is not None:
+            sets_conf = sets.load_default_config(
+                settings, emerge_trees[settings["ROOT"]])
+
         packages = []
         # execute basic, pre-graph generation filters against each
         # package dependency in self._packages.
         # This is just fast pruning of obvious obviousness.
         for package in self._packages:
-            best_visible = self._pre_graph_filters(
-                package, portdb, vardb)
-            if best_visible is not None:
-                packages.append((package, best_visible))
+            expanded_pkgs = []
+
+            # package sets support
+            if package.startswith("@") and sets_conf:
+                try:
+                    set_pkgs = sets_conf.getSetAtoms(package[1:])
+                    expanded_pkgs.extend(sorted(set_pkgs))
+                except sets.PackageSetNotFound:
+                    # make it fail, add set directly
+                    expanded_pkgs.append(package)
+            else:
+                expanded_pkgs.append(package)
+
+            for exp_pkg in expanded_pkgs:
+                best_visible = self._pre_graph_filters(
+                    exp_pkg, portdb, vardb)
+                if best_visible is not None:
+                    packages.append((exp_pkg, best_visible))
 
         if not packages:
             print_warning("No remaining packages in queue, aborting.")
