@@ -1,3 +1,39 @@
+commit 3d904689e3bebc69bda83d87721ed9e79b25314b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 21:00:15 2012 +0100
+
+    Release Entropy 160
+
+commit 6f05b640c2daa9f2eac77170a1c27a1b3bd1b705
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 20:58:21 2012 +0100
+
+    [matter] add Portage package sets support
+
+commit 35c59553800a76850fdeaa7d86d97aab8158c35f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 20:42:17 2012 +0100
+
+    [matter] properly catch portage.exception.InvalidAtom in _pre_graph_filters()
+
+commit bb052e992f08ae88681c38770a58ff6d42da792f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 19:32:36 2012 +0100
+
+    [equo] when running with args: "equo --bashcomp", do not call args.pop(0) if args is empty
+
+commit 329da2587f69e5d722fbeeeabdece09181c2e9cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 19:17:13 2012 +0100
+
+    [equo] fix UnicodeEncodeError as per bug #3873
+
+commit 04342cd901a98c6c5a45f725246c22b9978548f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 19:02:00 2012 +0100
+
+    Tagging Entropy version 159
+
 commit e935acf577aea6f855c19500cf6b1f250779b585
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 26 19:01:59 2012 +0100
