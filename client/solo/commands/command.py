@@ -14,7 +14,8 @@ import sys
 import argparse
 
 from entropy.i18n import _
-from entropy.const import const_convert_to_unicode
+from entropy.const import const_convert_to_unicode, \
+    const_convert_to_rawstring
 from entropy.output import darkgreen, teal, purple, print_error, bold, \
     brown
 from entropy.exceptions import PermissionDenied
@@ -68,6 +69,10 @@ class SoloCommand(object):
             # cope with broken symlinks
             return string
         msg = "%s: %s" % (_("not a valid directory"), string)
+
+        # see bug 3873, requires raw string
+        msg = const_convert_to_rawstring(
+            msg, from_enctype="utf-8")
         raise argparse.ArgumentTypeError(msg)
 
     def _argparse_is_valid_entropy_package(self, string):

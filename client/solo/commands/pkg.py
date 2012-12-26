@@ -16,7 +16,7 @@ import tempfile
 import shutil
 
 from entropy.const import etpConst, const_setup_directory, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_convert_to_rawstring
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, purple, darkred, blue
 
@@ -81,9 +81,12 @@ Execute advanced tasks on Entropy packages and the running system.
         def _argparse_easygoing_valid_entropy_path(string):
             if os.path.isfile(string) and os.path.exists(string):
                 return string
+            # see bug 3873, requires raw string
             msg = "%s: %s" % (
                 _("not a valid Entropy package file"),
                 string)
+            msg = const_convert_to_rawstring(
+                msg, from_enctype="utf-8")
             raise argparse.ArgumentTypeError(msg)
 
         quickpkg_parser = subparsers.add_parser(
