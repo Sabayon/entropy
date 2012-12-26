@@ -46,6 +46,7 @@ from _emerge.Blocker import Blocker
 
 import portage.versions
 import portage.dep
+import portage.exception
 import portage
 
 
@@ -229,7 +230,12 @@ class PackageBuilder(object):
         allow_not_installed = self._params['not-installed'] == "yes"
         allow_downgrade = self._params['downgrade'] == "yes"
 
-        best_visible = portdb.xmatch("bestmatch-visible", package)
+        try:
+            best_visible = portdb.xmatch("bestmatch-visible", package)
+        except portage.exception.InvalidAtom:
+            print_error("cannot match: %s, invalid atom" % (package,))
+            best_visible = None
+
         if not best_visible:
             # package not found, return error
             print_error("cannot match: %s, ignoring this one" % (package,))
