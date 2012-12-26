@@ -1,3 +1,101 @@
+commit e935acf577aea6f855c19500cf6b1f250779b585
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 19:01:59 2012 +0100
+
+    Release Entropy 159
+
+commit 3556f9ab5bf3ec1f7b24eb928875fe15051f2be0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 19:00:53 2012 +0100
+
+    [matter] rework Makefile, move entropy and portage plugins to separate targets
+
+commit 5ef47e4d0c334407bafc3d2c6cd8d54eb26a4d45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 26 00:10:33 2012 +0100
+
+    [antimatter] lock/unlock vardb while scanning
+
+commit 424b81aaf1c0bd057bb24ae9e18bfe4f8f4303de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 21:10:52 2012 +0100
+
+    [matter] move matter to its own directory, get ready to split it off
+
+commit caf8ecbf45355fb6cc52a74846d35b93137d1012
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 12:53:22 2012 +0100
+
+    [todo] update TODO
+
+commit a10303c810781743b01bce8cec87b373b2d4922b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 12:52:32 2012 +0100
+
+    [entropy.spm] PortagePlugin: generated NEEDED.ELF.2 metadata if it's not available
+    
+    This makes possible to use (untested) pkgcore server-side
+
+commit 139990a749bcd469f9113ce0c39630a6a9f0545e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 12:47:32 2012 +0100
+
+    [entropy.spm] _extract_pkg_metadata_provided_libs: only scan "obj" entries
+
+commit 7473ff1c0447b9bebd4a40de9e07bc3111be7e0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 12:46:53 2012 +0100
+
+    [tests] db: extend test_needed with another test pkg
+
+commit d595e234ed8007c08de101c120d90198be8436db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 09:55:26 2012 +0100
+
+    [matter] drop duplicate static method
+
+commit 5959b44e17cc32a0315ba568471b12b812c98679
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 09:42:18 2012 +0100
+
+    [matter] make possible to extend ArgumentParser params, implement Portage binpkgs push
+
+commit 6339cffc0cad8d293607e29b19a39f1e2ed86023
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 09:41:24 2012 +0100
+
+    [matter] fix typo in setup() and teardown() PackageBuilder methods
+
+commit 752ea1e1a37a86666cbf74eec680d1c1b382a6dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 09:17:47 2012 +0100
+
+    [matter] move Portage source PMS specific env setup back to PackageBuilder
+
+commit bf5beacb5b69cc56380e6123993f8289aed823ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 22 09:13:42 2012 +0100
+
+    [matter] cleanup matter.main code a bit
+
+commit 761d8ffb337d5ecd31f89bb0ebaee04bc453d478
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 22:15:07 2012 +0100
+
+    [matter] implement Portage package commit in BaseBinaryPMS
+
+commit 0fec4c54d34e19f39b368fad53434357ccec6355
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 09:27:43 2012 +0100
+
+    [matter] document .spec file parameters in matter --help
+
+commit bfd24f9560bf4161eeb27bb215aca15c45fe87c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 21 00:54:32 2012 +0100
+
+    Tagging Entropy version 158
+
 commit 51f80944ff5d9cad935354d6ae795abb46379ef7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Dec 21 00:54:31 2012 +0100
