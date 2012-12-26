@@ -291,7 +291,8 @@ def main():
         # argv -> equo --bashcomp equo repo
         # and we need to drop --bashcomp and
         # argv[2]
-        args.pop(0)
+        if args:
+            args.pop(0)
 
     cmd = None
     last_arg = None
