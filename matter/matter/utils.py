@@ -38,6 +38,8 @@ def mkstemp(prefix=None, suffix=None):
     """
     if prefix is None:
         prefix = "matter"
+    if suffix is None:
+        suffix = ""
     tmp_dir = MATTER_TMPDIR
     if not os.path.isdir(tmp_dir):
         try:
