@@ -20,7 +20,7 @@ from matter.binpms.base import BaseBinaryPMS, BaseBinaryResourceLock
 from matter.builder import PackageBuilder
 from matter.lock import MatterResourceLock
 from matter.output import purple, darkgreen, print_info, \
-    print_warning, print_error
+    print_warning, print_error, is_stdout_a_tty, nocolor
 from matter.spec import SpecParser, MatterSpec
 
 
@@ -172,6 +172,10 @@ def main():
     """
     Main App.
     """
+
+    # disable color if standard output is not a TTY
+    if not is_stdout_a_tty():
+        nocolor()
 
     # Load Binary PMS modules
     import matter.binpms as _pms
