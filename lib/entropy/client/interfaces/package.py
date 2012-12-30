@@ -3247,9 +3247,14 @@ class Package:
             etpConst['system_settings_plugins_ids']['client_plugin']
         client_settings = self._settings[sys_set_plg_id]
         misc_settings = client_settings['misc']
+        encoded_protectskip = [
+            # this comes from a config file, so it's utf-8 encoded
+            const_convert_to_rawstring(
+                x, from_enctype = etpConst['conf_encoding'])
+            for x in misc_settings['configprotectskip']]
 
         # check if protection is disabled for this element
-        if tofile in misc_settings['configprotectskip']:
+        if tofile in encoded_protectskip:
             self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
