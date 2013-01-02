@@ -493,7 +493,7 @@ class PackageBuilder(object):
             settings.backup_changes(orig_key)
 
         if force_stable_keywords:
-            keywords = arch
+            keywords = "%s -~%s" % (arch, arch)
         elif inherit_keywords:
             keywords = orig_keywords
         else:
