@@ -1,3 +1,21 @@
+commit 024f42093bcf183fe96fdaa5b1a5fc46b4be29dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 5 12:43:36 2013 +0000
+
+    Release Entropy 163
+
+commit dda574e080b69428bf08273db64f832100fda3d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 5 12:36:01 2013 +0000
+
+    [matter] add soft-blocker parameter support
+
+commit 0288622c7ce7b25172a240baf9bd4f4e2791c4e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 2 18:33:23 2013 +0000
+
+    Tagging Entropy version 162
+
 commit 66360b99122b7b91d46c1b30d90cd8fb0b0dda57
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jan 2 18:33:23 2013 +0000
