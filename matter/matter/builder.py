@@ -313,6 +313,16 @@ class PackageBuilder(object):
         # list of _emerge.Package.Package objects
         package_queue = graph.altlist()
 
+        allow_soft_blocker = self._params['soft-blocker'] == "yes"
+        if not allow_soft_blocker:
+            blockers = [x for x in package_queue if isinstance(x, Blocker)]
+            if blockers:
+                # sorry, we're not allowed to have soft-blockers
+            print_warning("the following soft-blockers were found:")
+            print_warning("\n  ".join([x.atom for x in blockers]))
+            print_warning("but 'soft-blocker: no' in config, aborting")
+            return None
+
         # filter out blockers
         real_queue = [x for x in package_queue if not isinstance(
                 x, Blocker)]
