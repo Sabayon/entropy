@@ -22,6 +22,27 @@ from matter.lock import MatterResourceLock
 from matter.output import purple, darkgreen, print_info, \
     print_warning, print_error, is_stdout_a_tty, nocolor
 from matter.spec import SpecParser, MatterSpec
+from matter.utils import print_exception
+
+
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
+
+def handle_exception(exc_class, exc_instance, exc_tb):
+
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+
+    if exc_class is KeyboardInterrupt:
+        raise SystemExit(1)
+
+    # always slap exception data (including stack content)
+    print_exception(tb_data = exc_tb)
 
 
 def matter_main(binary_pms, nsargs, cwd, specs):
@@ -172,6 +193,7 @@ def main():
     """
     Main App.
     """
+    install_exception_handler()
 
     # disable color if standard output is not a TTY
     if not is_stdout_a_tty():
