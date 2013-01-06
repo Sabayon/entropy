@@ -15,8 +15,6 @@ import sys
 import tempfile
 import traceback
 
-from matter.output import print_generic
-
 
 MATTER_TMPDIR = os.getenv("MATTER_TMPDIR", "/var/tmp/matter")
 _ENCODING = "UTF-8"
@@ -72,9 +70,11 @@ def print_exception(silent=False, tb_data=None, all_frame_data=False):
     #if not returndata: print
     for frame in stack:
         if not silent:
-            print_generic("")
-            print_generic("Frame %s in %s at line %s" % (frame.f_code.co_name,
-                frame.f_code.co_filename, frame.f_lineno))
+            sys.stderr.write("\n")
+            sys.stderr.write(
+                "Frame %s in %s at line %s\n" % (
+                    frame.f_code.co_name,
+                    frame.f_code.co_filename, frame.f_lineno))
         data.append("Frame %s in %s at line %s\n" % (frame.f_code.co_name,
             frame.f_code.co_filename, frame.f_lineno))
 
