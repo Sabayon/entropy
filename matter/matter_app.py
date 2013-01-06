@@ -12,6 +12,7 @@
 """
 import sys
 sys.path.insert(0, "/usr/lib/matter")
+sys.path.insert(0, "./")
 
 from matter.main import main
 
