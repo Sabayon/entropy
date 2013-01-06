@@ -55,7 +55,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     # sync portage
     if nsargs.sync:
         _rc = PackageBuilder.sync()
-        if _rc != 0:
+        if _rc != 0 and not nsargs.sync_best_effort:
             raise SystemExit(_teardown(_rc))
 
     exit_st = 0
@@ -300,6 +300,12 @@ Available Binary PMSs:
     parser.add_argument(
         "--sync",
         help="sync Portage tree, and attached overlays, before starting.",
+        action="store_true")
+
+    parser.add_argument(
+        "--sync-best-effort", default=False,
+        help="sync Portage tree and attached overlays, as --sync, but do "
+        "not exit if sync fails.",
         action="store_true")
 
     parser.add_argument(
