@@ -17,7 +17,7 @@ install:
 	install -m 644 matter/binpms/__init__.py \
 		$(MATTERDIR)/matter/binpms/
 
-	install -m 755 matter.py $(DESTDIR)$(SBINDIR)/matter
+	install -m 755 matter_app.py $(DESTDIR)$(SBINDIR)/matter
 	install -m 755 antimatter.py $(DESTDIR)$(SBINDIR)/antimatter
 
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
