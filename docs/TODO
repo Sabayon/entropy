@@ -2,12 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.client.interfaces.dep refactoring
-
-    - preserved-libs registry:
-      only drop old sonames when installed packages
-      no longer need them
-
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
       Test package generation and entropy client behaviour
