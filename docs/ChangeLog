@@ -1,3 +1,60 @@
+commit ca40d783b1d2b5c56681696613cbf517eaefed02
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 17:19:56 2013 +0000
+
+    Release Entropy 165
+
+commit 4e1caa7b5bf391b81db4e576c8fbf446dc2969c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 17:19:08 2013 +0000
+
+    [todo] update TODO
+
+commit 1cc776e25ed1220fbf9dbff5f0d4d8f25bf348e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 17:17:41 2013 +0000
+
+    [matter.builder] correctly handle Portage package uninstalls
+    
+    Package uninstalls were accounted as built packages, fooling the
+    entropysrv plugin.
+
+commit 5cc95a03a6c8eb1711a2999e2b594fe7dd189514
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 17:17:09 2013 +0000
+
+    [matter] allow local, in-git execution for debugging purposes
+
+commit 746c2d2d530669c21e41d9e81b46004b7a26f8f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 16:58:22 2013 +0000
+
+    [matter.utils] avoid circular module dependency with matter.output
+
+commit 8950893039530e671394d70b65f5d40b15cd548a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 16:56:30 2013 +0000
+
+    [matter] rename matter.py to matter_app.py to avoid name clashing
+
+commit afccc337ccf87f0085dce8ec8a372a55e6a8d1a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 16:37:11 2013 +0000
+
+    [matter] add exception handler that also prints local variables in the stack
+
+commit 8d110732d3de274fbe6e82e6a520c8ae121f5092
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 09:54:12 2013 +0000
+
+    [matter] add support for --sync-best-effort
+
+commit aaa0074e7dc2b71811f1653f49d1c8dfa6c11c1c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 5 12:49:50 2013 +0000
+
+    Tagging Entropy version 164
+
 commit 7f26af3710ca44e1e6460e9f5a738dfce1078831
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 5 12:49:50 2013 +0000
