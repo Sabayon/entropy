@@ -79,6 +79,7 @@ class PackageBuilder(object):
         self._pkg_number = pkg_number
         self._tot_pkgs = tot_pkgs
         self._built_packages = []
+        self._uninstalled_packages = []
         self._not_found_packages = []
         self._not_installed_packages = []
         self._not_merged_packages = []
@@ -134,6 +135,12 @@ class PackageBuilder(object):
         Return the list of successfully built packages.
         """
         return self._built_packages
+
+    def get_uninstalled_packages(self):
+        """
+        Return the list of successfully uninstalled packages.
+        """
+        return self._uninstalled_packages
 
     def get_not_found_packages(self):
         """
@@ -335,7 +342,7 @@ class PackageBuilder(object):
         for pobj in package_queue:
             if isinstance(pobj, Blocker):
                 # blocker, list full atom
-                dep_list.append("!" + pobj.atom)
+                dep_list.append(pobj.atom)
                 continue
             cpv = pobj.cpv
             repo = pobj.repo
@@ -482,7 +489,7 @@ class PackageBuilder(object):
 
         print_info("USE flags constraints are met for all "
                    "the queued packages")
-        return dep_list, real_queue
+        return real_queue
 
     def _setup_keywords(self, settings):
         """
@@ -634,15 +641,21 @@ class PackageBuilder(object):
             return 0
         print_info("dependency graph generated successfully")
 
-        f_data = self._post_graph_filters(graph, vardb, portdb)
-        if f_data is None:
+        real_queue = self._post_graph_filters(graph, vardb, portdb)
+        if real_queue is None:
             # post-graph filters not passed, giving up
             return 0
-        dep_list, real_queue = f_data
 
-        print_info("about to build the following packages:")
-        for dep in dep_list:
-            print_info("  %s" % (dep,))
+        merge_queue = [x for x in real_queue if x.operation == "merge"]
+        unmerge_queue = [x for x in real_queue if x.operation == "uninstall"]
+        if merge_queue:
+            print_info("about to build the following packages:")
+            for pkg in merge_queue:
+                print_info("  %s" % (pkg.cpv,))
+        if unmerge_queue:
+            print_info("about to uninstall the following packages:")
+            for pkg in unmerge_queue:
+                print_info("  %s" % (pkg.cpv,))
 
         # re-calling action_build(), deps are re-calculated though
         validate_ebuild_environment(emerge_trees)
@@ -675,9 +688,14 @@ class PackageBuilder(object):
                 print_warning("package: %s, has broken cpv: '%s', ignoring" % (
                         pkg, cpv,))
             elif cpv not in not_merged:
-                # add to build queue
-                print_info("package: %s, successfully built" % (cpv,))
-                self._built_packages.append(cpv)
+                if pkg.operation == "merge":
+                    # add to build queue
+                    print_info("package: %s, successfully built" % (cpv,))
+                    self._built_packages.append(cpv)
+                else:
+                    # add to uninstall queue
+                    print_info("package: %s, successfully uninstalled" % (cpv,))
+                    self._uninstalled_packages.append(cpv)
 
         post_emerge(myaction, myopts, myfiles, settings["ROOT"],
             emerge_trees, mtimedb, retval)
