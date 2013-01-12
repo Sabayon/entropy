@@ -1,3 +1,47 @@
+commit 04419d0a0aebd043f38ceb72438165e6a0ae4ef1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 14:00:12 2013 +0000
+
+    Release Entropy 166
+
+commit 17a32a6041b7939eb2935a409ed209a8ffaa2451
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 13:59:49 2013 +0000
+
+    [entropy.server] small code cleanup
+
+commit d6b7a21314fdaa53563b399aa25feb34a817066e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 13:57:03 2013 +0000
+
+    [entropy.server] make sure to not overwrite old package files, always bump package revision
+    
+    See bug #3904
+
+commit 9f5f0d1c9561562402c9279595ff1e2812f3d35f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 13:03:56 2013 +0000
+
+    [entropy.server] cleanup whitespaces
+
+commit 3ec775c5a9d30187e96889f27f3a8299174be935
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 13:03:34 2013 +0000
+
+    [entropy.server] split _move_packages() in order to ease debugging
+
+commit fd1d3a6e2bfaaebcdc28188b7fd5471e7f71693b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 12:01:36 2013 +0000
+
+    [magneto] stop nagging user about the availability of the dbus service
+
+commit 18e9641e0cf5d1b480a17af60e556bc3d52d2f9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 6 17:19:57 2013 +0000
+
+    Tagging Entropy version 165
+
 commit ca40d783b1d2b5c56681696613cbf517eaefed02
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 6 17:19:56 2013 +0000
