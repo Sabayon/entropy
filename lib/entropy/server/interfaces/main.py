@@ -2655,8 +2655,8 @@ class Server(Client):
         my_matches = [(x, from_repository_id) for x in package_ids]
 
         # avoid setting __default__ as default server repo
-        if etpConst['clientserverrepoid'] in (to_repository_id, 
-            from_repository_id):
+        if etpConst['clientserverrepoid'] in (to_repository_id,
+                                              from_repository_id):
             self.output(
                 "%s: %s" % (
                     blue(_("Cannot touch system repository")),
@@ -4470,7 +4470,7 @@ class Server(Client):
                         level = "info",
                         header = brown(" * ")
                     )
-                    dbstatus = self.Mirrors.mirrors_status(repo) 
+                    dbstatus = self.Mirrors.mirrors_status(repo)
                     for db_uri, db_st1, db_st2 in dbstatus:
                         db_st1_info = darkgreen(_("Unlocked"))
                         if db_st1:
