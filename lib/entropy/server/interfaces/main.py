@@ -2409,9 +2409,19 @@ class Server(Client):
         dbconn = self.open_server_repository(repo, read_only = False,
             no_upload = True)
         from_repository_id = dbconn.name
-
         match_atom = dbconn.retrieveAtom(package_id)
         package_rel_path = dbconn.retrieveDownloadURL(package_id)
+
+        def _package_injector_check_license(pkg_data):
+            licenses = pkg_data['license'].split()
+            return self._is_pkg_free(to_repository_id, licenses)
+
+        def _package_injector_check_restricted(pkg_data):
+            pkgatom = entropy.dep.create_package_atom_string(
+                pkg_data['category'], pkg_data['name'], pkg_data['version'],
+                pkg_data['versiontag'])
+            return self._is_pkg_restricted(to_repository_id, pkgatom,
+                pkg_data['slot'])
 
         self.output(
             "[%s=>%s|%s] %s: %s" % (
@@ -2448,21 +2458,33 @@ class Server(Client):
             )
             return None
 
+        # determine the maximum revision for package, this avoids
+        # overwriting tbz2s already on mirrors, see bug #3904.
+        def _get_rev(rev_repo_id):
+            repo = self.open_repository(rev_repo_id)
+            pkg_ids = repo.getPackageIds(match_atom)
+            revs = [-1] # so that revs is not empty
+            revs += [repo.retrieveRevision(x) for x in pkg_ids]
+            return max(revs)
+
+        # given that we look into the current repo as well, this
+        # cannot be -1
+        max_rev = max([_get_rev(x) for x in self.repositories()])
+        assert max_rev != -1, "max_rev cannot be -1"
+        # increase by one and we have the new target revision we must use
+        new_package_revision = max_rev + 1
+
+        to_package_rel_path = entropy.dep.create_package_filename(
+            dbconn.retrieveCategory(package_id),
+            dbconn.retrieveName(package_id),
+            dbconn.retrieveVersion(package_id),
+            dbconn.retrieveTag(package_id),
+            revision = new_package_revision)
+
         # we need to ask SpmPlugin to re-extract metadata from pkg file
         # and grab the new "download" metadatum value using our
         # license check callback. It has to be done here because
         # we need the new path.
-
-        def _package_injector_check_license(pkg_data):
-            licenses = pkg_data['license'].split()
-            return self._is_pkg_free(to_repository_id, licenses)
-
-        def _package_injector_check_restricted(pkg_data):
-            pkgatom = entropy.dep.create_package_atom_string(
-                pkg_data['category'], pkg_data['name'], pkg_data['version'],
-                pkg_data['versiontag'])
-            return self._is_pkg_restricted(to_repository_id, pkgatom,
-                pkg_data['slot'])
 
         # check if pkg is restricted
         # and check if pkg is free, we must do this step in any case
@@ -2474,20 +2496,20 @@ class Server(Client):
         # the logic.
         updated_package_rel_path = os.path.join(
             os.path.dirname(tmp_data['download']),
-            os.path.basename(package_rel_path))
+            os.path.basename(to_package_rel_path))
         del tmp_data
 
         to_file = self.complete_local_upload_package_path(
             updated_package_rel_path, to_repository_id)
 
-        if new_tag != None:
+        if new_tag is not None:
 
-            match_category = dbconn.retrieveCategory(package_id)
-            match_name = dbconn.retrieveName(package_id)
-            match_version = dbconn.retrieveVersion(package_id)
             tagged_package_filename = \
                 entropy.dep.create_package_filename(
-                    match_category, match_name, match_version, new_tag)
+                    dbconn.retrieveCategory(package_id),
+                    dbconn.retrieveName(package_id),
+                    dbconn.retrieveVersion(package_id),
+                    new_tag, revision = new_package_revision)
 
             to_file = self.complete_local_upload_package_path(
                 updated_package_rel_path, to_repository_id)
@@ -2556,6 +2578,8 @@ class Server(Client):
         # need to set back data['download'], because pkg path might got
         # changed, due to license re-validation
         data['download'] = updated_package_rel_path
+        # force our own revision, to avoid file name collisions
+        data['revision'] = new_package_revision
 
         # GPG
         # before inserting new pkg, drop GPG signature and re-sign
@@ -2604,7 +2628,9 @@ class Server(Client):
             back = True
         )
         data['original_repository'] = to_repository_id
-        new_package_id = todbconn.handlePackage(data)
+        # force our own revision, to avoid file name collisions
+        new_package_id = todbconn.handlePackage(
+            data, forcedRevision = new_package_revision)
         del data
         todbconn.commit()
 
