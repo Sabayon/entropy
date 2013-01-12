@@ -2387,6 +2387,261 @@ class Server(Client):
             to_repository_id, ask = ask, pull_deps = pull_dependencies,
             do_copy = True)
 
+    def _move_package(self, package_match, todbconn, new_tag, do_copy):
+        """
+        Move a single package from a repository to another.
+
+        @param package_match: the package match to move
+        @type package_match: tuple
+        @param todbconn: the destination EntropyRepository object
+        @type todbconn: EntropyRepository
+        @param new_tag: a package tag to set on the new package
+        @type new_tag: string or None
+        @param do_copy: execute copy instead of move
+        @type do_copy: bool
+        @return: the new package id inside the destination repository or None.
+        @rtype: int or None
+        """
+        branch = self._settings['repositories']['branch']
+        package_id, repo = package_match
+        to_repository_id = todbconn.name
+
+        dbconn = self.open_server_repository(repo, read_only = False,
+            no_upload = True)
+        from_repository_id = dbconn.name
+
+        match_atom = dbconn.retrieveAtom(package_id)
+        package_rel_path = dbconn.retrieveDownloadURL(package_id)
+
+        self.output(
+            "[%s=>%s|%s] %s: %s" % (
+                darkgreen(repo),
+                darkred(to_repository_id),
+                brown(branch),
+                blue(_("switching")),
+                darkgreen(match_atom),
+            ),
+            importance = 0,
+            level = "info",
+            header = red(" @@ "),
+            back = True
+        )
+        # move binary file
+        from_file = self.complete_local_package_path(package_rel_path,
+            repo)
+        if not os.path.isfile(from_file):
+            from_file = self.complete_local_upload_package_path(
+                package_rel_path, repo)
+        if not os.path.isfile(from_file):
+            self.output(
+                "[%s=>%s|%s] %s: %s -> %s" % (
+                    darkgreen(repo),
+                    darkred(to_repository_id),
+                    brown(branch),
+                    bold(_("cannot switch, package not found, skipping")),
+                    darkgreen(match_atom),
+                    red(from_file),
+                ),
+                importance = 1,
+                level = "warning",
+                header = darkred(" !!! ")
+            )
+            return None
+
+        # we need to ask SpmPlugin to re-extract metadata from pkg file
+        # and grab the new "download" metadatum value using our
+        # license check callback. It has to be done here because
+        # we need the new path.
+
+        def _package_injector_check_license(pkg_data):
+            licenses = pkg_data['license'].split()
+            return self._is_pkg_free(to_repository_id, licenses)
+
+        def _package_injector_check_restricted(pkg_data):
+            pkgatom = entropy.dep.create_package_atom_string(
+                pkg_data['category'], pkg_data['name'], pkg_data['version'],
+                pkg_data['versiontag'])
+            return self._is_pkg_restricted(to_repository_id, pkgatom,
+                pkg_data['slot'])
+
+        # check if pkg is restricted
+        # and check if pkg is free, we must do this step in any case
+        # NOTE: it sucks!
+        tmp_data = self.Spm().extract_package_metadata(from_file,
+            license_callback = _package_injector_check_license,
+            restricted_callback = _package_injector_check_restricted)
+        # NOTE: since ~0.tbz2 << revision is lost, we need to trick
+        # the logic.
+        updated_package_rel_path = os.path.join(
+            os.path.dirname(tmp_data['download']),
+            os.path.basename(package_rel_path))
+        del tmp_data
+
+        to_file = self.complete_local_upload_package_path(
+            updated_package_rel_path, to_repository_id)
+
+        if new_tag != None:
+
+            match_category = dbconn.retrieveCategory(package_id)
+            match_name = dbconn.retrieveName(package_id)
+            match_version = dbconn.retrieveVersion(package_id)
+            tagged_package_filename = \
+                entropy.dep.create_package_filename(
+                    match_category, match_name, match_version, new_tag)
+
+            to_file = self.complete_local_upload_package_path(
+                updated_package_rel_path, to_repository_id)
+            # directly move to correct place, tag changed, so file name
+            to_file = os.path.join(os.path.dirname(to_file),
+                tagged_package_filename)
+
+        self._ensure_dir_path(os.path.dirname(to_file))
+
+        copy_data = [
+            (from_file, to_file,),
+            (from_file + etpConst['packagesexpirationfileext'],
+                to_file + etpConst['packagesexpirationfileext'],)
+        ]
+        extra_downloads = dbconn.retrieveExtraDownload(package_id)
+        for extra_download in extra_downloads:
+            # just need the first entry, "download"
+            extra_rel = extra_download['download']
+
+            from_extra = self.complete_local_package_path(extra_rel,
+                repo)
+            if not os.path.isfile(from_extra):
+                from_extra = self.complete_local_upload_package_path(
+                    extra_rel, repo)
+
+            to_extra = self.complete_local_upload_package_path(
+                extra_rel, to_repository_id)
+
+            copy_data.append((from_extra, to_extra))
+
+        for from_item, to_item in copy_data:
+            self.output(
+                "[%s=>%s|%s] %s: %s" % (
+                    darkgreen(repo),
+                    darkred(to_repository_id),
+                    brown(branch),
+                    blue(_("moving file")),
+                    darkgreen(os.path.basename(from_item)),
+                ),
+                importance = 0,
+                level = "info",
+                header = red(" @@ "),
+                back = True
+            )
+            if os.path.isfile(from_item):
+                shutil.copy2(from_item, to_item)
+
+        self.output(
+            "[%s=>%s|%s] %s: %s" % (
+                darkgreen(repo),
+                darkred(to_repository_id),
+                brown(branch),
+                blue(_("loading data from source repository")),
+                darkgreen(repo),
+            ),
+            importance = 0,
+            level = "info",
+            header = red(" @@ "),
+            back = True
+        )
+        # install package into destination db
+        data = dbconn.getPackageData(package_id)
+        if new_tag != None:
+            data['versiontag'] = new_tag
+
+        # need to set back data['download'], because pkg path might got
+        # changed, due to license re-validation
+        data['download'] = updated_package_rel_path
+
+        # GPG
+        # before inserting new pkg, drop GPG signature and re-sign
+        old_gpg = copy.copy(data['signatures']['gpg'])
+        data['signatures']['gpg'] = None
+        for extra_download in data['extra_download']:
+            extra_download['gpg'] = None
+        try:
+            repo_sec = RepositorySecurity()
+        except RepositorySecurity.GPGError as err:
+            if old_gpg:
+                self.output(
+                    "[%s] %s %s: %s." % (
+                        darkgreen(to_repository_id),
+                        darkred(_("GPG key was available in")),
+                        bold(from_repository_id),
+                        err,
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = bold(" !!! ")
+                )
+            repo_sec = None
+
+        if repo_sec is not None:
+            data['signatures']['gpg'] = self._get_gpg_signature(repo_sec,
+                to_repository_id, to_file)
+
+            for extra_download in data['extra_download']:
+                to_extra = self.complete_local_upload_package_path(
+                    extra_download['download'], to_repository_id)
+                extra_download['gpg'] = self._get_gpg_signature(repo_sec,
+                    to_repository_id, to_extra)
+
+        self.output(
+            "[%s=>%s|%s] %s: %s" % (
+                darkgreen(repo),
+                darkred(to_repository_id),
+                brown(branch),
+                blue(_("injecting data to destination repository")),
+                darkgreen(to_repository_id),
+            ),
+            importance = 0,
+            level = "info",
+            header = red(" @@ "),
+            back = True
+        )
+        data['original_repository'] = to_repository_id
+        new_package_id = todbconn.handlePackage(data)
+        del data
+        todbconn.commit()
+
+        if not do_copy:
+            self.output(
+                "[%s=>%s|%s] %s: %s" % (
+                    darkgreen(repo),
+                    darkred(to_repository_id),
+                    brown(branch),
+                    blue(_("removing entry from source repository")),
+                    darkgreen(repo),
+                ),
+                importance = 0,
+                level = "info",
+                header = red(" @@ "),
+                back = True
+            )
+
+            # remove package from old db
+            dbconn.removePackage(package_id)
+            dbconn.clean()
+            dbconn.commit()
+
+        self.output(
+            "[%s=>%s|%s] %s: %s" % (
+                darkgreen(repo),
+                darkred(to_repository_id),
+                brown(branch),
+                blue(_("successfully handled atom")),
+                darkgreen(match_atom),
+            ),
+            importance = 0,
+            level = "info",
+            header = blue(" @@ ")
+        )
+        return new_package_id
+
     def _move_packages(self, package_ids, from_repository_id, to_repository_id,
         ask = True, do_copy = False, new_tag = None, pull_deps = False):
         """
@@ -2546,243 +2801,13 @@ class Server(Client):
                 return switched
 
         package_ids_added = set()
-        for idpackage, repo in my_matches:
-
-            dbconn = self.open_server_repository(repo, read_only = False,
-                no_upload = True)
-
-            match_atom = dbconn.retrieveAtom(idpackage)
-            package_rel_path = dbconn.retrieveDownloadURL(idpackage)
-
-            self.output(
-                "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
-                    darkred(to_repository_id),
-                    brown(branch),
-                    blue(_("switching")),
-                    darkgreen(match_atom),
-                ),
-                importance = 0,
-                level = "info",
-                header = red(" @@ "),
-                back = True
-            )
-            # move binary file
-            from_file = self.complete_local_package_path(package_rel_path,
-                repo)
-            if not os.path.isfile(from_file):
-                from_file = self.complete_local_upload_package_path(
-                    package_rel_path, repo)
-            if not os.path.isfile(from_file):
-                self.output(
-                    "[%s=>%s|%s] %s: %s -> %s" % (
-                        darkgreen(repo),
-                        darkred(to_repository_id),
-                        brown(branch),
-                        bold(_("cannot switch, package not found, skipping")),
-                        darkgreen(match_atom),
-                        red(from_file),
-                    ),
-                    importance = 1,
-                    level = "warning",
-                    header = darkred(" !!! ")
-                )
-                continue
-
-            # we need to ask SpmPlugin to re-extract metadata from pkg file
-            # and grab the new "download" metadatum value using our
-            # license check callback. It has to be done here because
-            # we need the new path.
-
-            def _package_injector_check_license(pkg_data):
-                licenses = pkg_data['license'].split()
-                return self._is_pkg_free(to_repository_id, licenses)
-
-            def _package_injector_check_restricted(pkg_data):
-                pkgatom = entropy.dep.create_package_atom_string(
-                    pkg_data['category'], pkg_data['name'], pkg_data['version'],
-                    pkg_data['versiontag'])
-                return self._is_pkg_restricted(to_repository_id, pkgatom,
-                    pkg_data['slot'])
-
-            # check if pkg is restricted
-            # and check if pkg is free, we must do this step in any case
-            # NOTE: it sucks!
-            tmp_data = self.Spm().extract_package_metadata(from_file,
-                license_callback = _package_injector_check_license,
-                restricted_callback = _package_injector_check_restricted)
-            # NOTE: since ~0.tbz2 << revision is lost, we need to trick
-            # the logic.
-            updated_package_rel_path = os.path.join(
-                os.path.dirname(tmp_data['download']),
-                os.path.basename(package_rel_path))
-            del tmp_data
-
-            to_file = self.complete_local_upload_package_path(
-                updated_package_rel_path, to_repository_id)
-
-            if new_tag != None:
-
-                match_category = dbconn.retrieveCategory(idpackage)
-                match_name = dbconn.retrieveName(idpackage)
-                match_version = dbconn.retrieveVersion(idpackage)
-                tagged_package_filename = \
-                    entropy.dep.create_package_filename(
-                        match_category, match_name, match_version, new_tag)
-
-                to_file = self.complete_local_upload_package_path(
-                    updated_package_rel_path, to_repository_id)
-                # directly move to correct place, tag changed, so file name
-                to_file = os.path.join(os.path.dirname(to_file),
-                    tagged_package_filename)
-
-            self._ensure_dir_path(os.path.dirname(to_file))
-
-            copy_data = [
-                (from_file, to_file,),
-                (from_file + etpConst['packagesexpirationfileext'],
-                    to_file + etpConst['packagesexpirationfileext'],)
-            ]
-            extra_downloads = dbconn.retrieveExtraDownload(idpackage)
-            for extra_download in extra_downloads:
-                # just need the first entry, "download"
-                extra_rel = extra_download['download']
-
-                from_extra = self.complete_local_package_path(extra_rel,
-                    repo)
-                if not os.path.isfile(from_extra):
-                    from_extra = self.complete_local_upload_package_path(
-                        extra_rel, repo)
-
-                to_extra = self.complete_local_upload_package_path(
-                    extra_rel, to_repository_id)
-
-                copy_data.append((from_extra, to_extra))
-
-            for from_item, to_item in copy_data:
-                self.output(
-                    "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repository_id),
-                        brown(branch),
-                        blue(_("moving file")),
-                        darkgreen(os.path.basename(from_item)),
-                    ),
-                    importance = 0,
-                    level = "info",
-                    header = red(" @@ "),
-                    back = True
-                )
-                if os.path.isfile(from_item):
-                    shutil.copy2(from_item, to_item)
-
-            self.output(
-                "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
-                    darkred(to_repository_id),
-                    brown(branch),
-                    blue(_("loading data from source repository")),
-                    darkgreen(repo),
-                ),
-                importance = 0,
-                level = "info",
-                header = red(" @@ "),
-                back = True
-            )
-            # install package into destination db
-            data = dbconn.getPackageData(idpackage)
-            if new_tag != None:
-                data['versiontag'] = new_tag
-
-            # need to set back data['download'], because pkg path might got
-            # changed, due to license re-validation
-            data['download'] = updated_package_rel_path
-
-            # GPG
-            # before inserting new pkg, drop GPG signature and re-sign
-            old_gpg = copy.copy(data['signatures']['gpg'])
-            data['signatures']['gpg'] = None
-            for extra_download in data['extra_download']:
-                extra_download['gpg'] = None
-            try:
-                repo_sec = RepositorySecurity()
-            except RepositorySecurity.GPGError as err:
-                if old_gpg:
-                    self.output(
-                        "[%s] %s %s: %s." % (
-                            darkgreen(to_repository_id),
-                            darkred(_("GPG key was available in")),
-                            bold(from_repository_id),
-                            err,
-                        ),
-                        importance = 1,
-                        level = "warning",
-                        header = bold(" !!! ")
-                    )
-                repo_sec = None
-
-            if repo_sec is not None:
-                data['signatures']['gpg'] = self._get_gpg_signature(repo_sec,
-                    to_repository_id, to_file)
-
-                for extra_download in data['extra_download']:
-                    to_extra = self.complete_local_upload_package_path(
-                        extra_download['download'], to_repository_id)
-                    extra_download['gpg'] = self._get_gpg_signature(repo_sec,
-                        to_repository_id, to_extra)
-
-            self.output(
-                "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
-                    darkred(to_repository_id),
-                    brown(branch),
-                    blue(_("injecting data to destination repository")),
-                    darkgreen(to_repository_id),
-                ),
-                importance = 0,
-                level = "info",
-                header = red(" @@ "),
-                back = True
-            )
-            data['original_repository'] = to_repository_id
-            new_idpackage = todbconn.handlePackage(data)
-            del data
-            todbconn.commit()
-            package_ids_added.add(new_idpackage)
-
-            if not do_copy:
-                self.output(
-                    "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repository_id),
-                        brown(branch),
-                        blue(_("removing entry from source repository")),
-                        darkgreen(repo),
-                    ),
-                    importance = 0,
-                    level = "info",
-                    header = red(" @@ "),
-                    back = True
-                )
-
-                # remove package from old db
-                dbconn.removePackage(idpackage)
-                dbconn.clean()
-                dbconn.commit()
-
-            self.output(
-                "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
-                    darkred(to_repository_id),
-                    brown(branch),
-                    blue(_("successfully handled atom")),
-                    darkgreen(match_atom),
-                ),
-                importance = 0,
-                level = "info",
-                header = blue(" @@ ")
-            )
-            switched.add(idpackage)
+        for s_package_id, s_repository_id in my_matches:
+            new_package_id = self._move_package(
+                (s_package_id, s_repository_id), todbconn,
+                new_tag, do_copy)
+            if new_package_id is not None:
+                switched.add(s_package_id)
+                package_ids_added.add(new_package_id)
 
         todbconn = self.open_server_repository(to_repository_id,
             read_only = False, no_upload = True)
