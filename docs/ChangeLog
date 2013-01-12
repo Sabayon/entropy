@@ -1,3 +1,21 @@
+commit c2829066e213031a75f93b11301067da8246113c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 14:37:03 2013 +0000
+
+    Release Entropy 167
+
+commit fb1dd2fb960adc9ff46aeb8fe7dbd67b06b219a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 14:33:30 2013 +0000
+
+    [entropy.client] fix repository database download using the rsync:// protocol
+
+commit 7b120b4b63878f17a3ad5829e9ee5953672e0259
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 14:00:12 2013 +0000
+
+    Tagging Entropy version 166
+
 commit 04419d0a0aebd043f38ceb72438165e6a0ae4ef1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 12 14:00:12 2013 +0000
