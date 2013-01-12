@@ -148,6 +148,11 @@ class AvailablePackagesRepositoryUpdater(object):
     """
     WEBSERV_CACHE_ID = 'webserv_repo/segment_'
 
+    FETCH_ERRORS = (
+        UrlFetcher.GENERIC_FETCH_WARN,
+        UrlFetcher.TIMEOUT_FETCH_ERROR,
+        UrlFetcher.GENERIC_FETCH_ERROR)
+
     def __init__(self, entropy_client, repository_id, force, gpg):
         self.__force = force
         self.__big_sock_timeout = 20
@@ -957,11 +962,6 @@ class AvailablePackagesRepositoryUpdater(object):
 
         try:
 
-            fetch_errors = (
-                UrlFetcher.GENERIC_FETCH_WARN,
-                UrlFetcher.TIMEOUT_FETCH_ERROR,
-                UrlFetcher.GENERIC_FETCH_ERROR)
-
             fetcher = self._entropy._url_fetcher(
                 url,
                 temp_filepath,
@@ -970,7 +970,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
 
             rc = fetcher.download()
-            if rc in fetch_errors:
+            if rc in self.FETCH_ERRORS:
                 return False
             try:
                 os.rename(temp_filepath, filepath)
@@ -1868,19 +1868,42 @@ class AvailablePackagesRepositoryUpdater(object):
             _repo_uri = self._repo_uri
         sep = const_convert_to_unicode("/")
         url = _repo_uri + sep + etpConst['etpdatabaserevisionfile']
-        status = entropy.tools.get_remote_data(url,
-            timeout = self.__big_sock_timeout)
-        if status:
-            status = status[0].strip()
-            try:
-                status = int(status)
-            except ValueError:
-                status = -1
-        else:
-            status = -1
 
-        self._last_rev = status
-        return status
+        tmp_fd, tmp_path = None, None
+        rev = "-1"
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix = "AvailableEntropyRepository.remote_revision")
+            fetcher = self._entropy._url_fetcher(
+                url, tmp_path, resume = False)
+            fetch_rc = fetcher.download()
+            if fetch_rc not in self.FETCH_ERRORS:
+                with codecs.open(tmp_path, "r") as tmp_f:
+                    rev = tmp_f.readline().strip()
+        except (IOError, OSError):
+            # ignore any errors, especially read ones
+            pass
+        finally:
+            if tmp_fd is not None:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+
+        # try to convert rev into integer now
+        try:
+            rev = int(rev)
+        except ValueError:
+            # corrupted data
+            rev = -1
+
+        self._last_rev = rev
+        return rev
 
     def update(self):
 
