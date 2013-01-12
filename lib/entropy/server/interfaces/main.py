@@ -9,18 +9,18 @@
     B{Entropy Package Manager Server Main Interfaces}.
 
 """
-import sys
-import os
-import shutil
+import codecs
 import copy
-import tempfile
-import time
-import re
 import errno
 import hashlib
-import subprocess
+import os
+import re
+import shutil
 import stat
-import codecs
+import subprocess
+import sys
+import tempfile
+import time
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError, RepositoryError
@@ -5125,8 +5125,10 @@ class Server(Client):
         destination_paths.reverse()
         return idpackage, destination_paths
 
-    # this function changes the final repository package filename
     def _setup_repository_package_filename(self, dbconn, idpackage):
+        """
+        Setup a new repository file name using current package metadata.
+        """
 
         downloadurl = dbconn.retrieveDownloadURL(idpackage)
         packagerev = dbconn.retrieveRevision(idpackage)
