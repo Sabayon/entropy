@@ -91,7 +91,6 @@ class Magneto(MagnetoCore):
         if not self._dbus_service_available:
             gobject.timeout_add(30000, self.show_service_not_available)
         else:
-            gobject.timeout_add(30000, self.show_service_available)
             self.__do_first_check()
 
         # Notice Window instance

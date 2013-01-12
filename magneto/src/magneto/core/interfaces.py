@@ -313,15 +313,6 @@ class MagnetoCore(MagnetoCoreUI):
             urgency = "critical"
         )
 
-    def show_service_available(self):
-        self.show_alert(
-            _("Sabayon updates service loaded"),
-            "%s: %s." % (
-                _("Entropy DBus service loaded"),
-                _("your Sabayon will notify you once updates are available"),
-            )
-        )
-
     def new_updates_signal(self, update_atoms):
         if not config.settings['APPLET_ENABLED']:
             return
