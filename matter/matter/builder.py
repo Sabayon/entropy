@@ -70,7 +70,7 @@ class PackageBuilder(object):
     PORTAGE_BUILTIN_ARGS = ["--accept-properties=-interactive"]
 
     def __init__(self, emerge_config, packages, params,
-        spec_number, tot_spec, pkg_number, tot_pkgs):
+        spec_number, tot_spec, pkg_number, tot_pkgs, pretend):
         self._emerge_config = emerge_config
         self._packages = packages
         self._params = params
@@ -78,6 +78,7 @@ class PackageBuilder(object):
         self._tot_spec = tot_spec
         self._pkg_number = pkg_number
         self._tot_pkgs = tot_pkgs
+        self._pretend = pretend
         self._built_packages = []
         self._uninstalled_packages = []
         self._not_found_packages = []
@@ -611,12 +612,11 @@ class PackageBuilder(object):
         build_args = []
         build_args += PackageBuilder.PORTAGE_BUILD_ARGS
         build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
+        if self._pretend and "--pretend" not in myopts:
+            build_args.append("--pretend")
         build_args += ["=" + best_v for _x, best_v in packages]
         myaction, myopts, myfiles = parse_opts(build_args)
 
-        if "--pretend" in myopts:
-            print_warning("cannot use --pretend emerge argument, you idiot")
-            del myopts["--pretend"]
         if "--ask" in myopts:
             print_warning("cannot use --ask emerge argument, you idiot")
             del myopts["--ask"]

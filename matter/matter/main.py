@@ -101,7 +101,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
 
             builder = PackageBuilder(
                 emerge_config, packages,
-                spec, spec_count, tot_spec, pkg_count, tot_pkgs)
+                spec, spec_count, tot_spec, pkg_count, tot_pkgs,
+                nsargs.pretend)
             _rc = builder.run()
 
             not_found.extend(builder.get_not_found_packages())
@@ -334,6 +335,12 @@ Available Binary PMSs:
         "--disable-preserved-libs",
         dest="disable_preserved_libs", default=False,
         help="disable prerserved libraries check.",
+        action="store_true")
+
+    parser.add_argument(
+        "--pretend",
+        dest="pretend", default=False,
+        help="show what would be done without alterint the current system.",
         action="store_true")
 
     # extend parser arguments
