@@ -17,7 +17,7 @@ import tempfile
 
 from matter.utils import mkstemp, mkdtemp, print_traceback
 from matter.output import is_stdout_a_tty, print_info, print_warning, \
-    print_error, getcolor, darkgreen, purple
+    print_error, getcolor, darkgreen, purple, brown
 
 # default mandatory features
 os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
@@ -25,7 +25,6 @@ os.environ['FEATURES'] = "split-log"
 os.environ['CMAKE_NO_COLOR'] = "yes"
 
 from _emerge.depgraph import backtrack_depgraph
-from _emerge.actions import load_emerge_config
 try:
     from _emerge.actions import validate_ebuild_environment
 except ImportError:
@@ -124,11 +123,12 @@ class PackageBuilder(object):
         """
         Return a string used as stdout/stderr header text.
         """
-        my_str = "{%s of %s particles | %s of %s packages} " % (
+        my_str = "{%s of %s particles | %s of %s packages | %s} " % (
             darkgreen(str(self._spec_number)),
             purple(str(self._tot_spec)),
             darkgreen(str(self._pkg_number)),
-            purple(str(self._tot_pkgs)),)
+            purple(str(self._tot_pkgs)),
+            brown(self._params["__name__"]),)  # file name
         return my_str
 
     def get_built_packages(self):

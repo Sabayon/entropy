@@ -415,7 +415,10 @@ class SpecParser:
         self._validate_parse(mydict)
         self._extend_parse(mydict)
         self._mod_parse(mydict)
-        return mydict.copy()
+        data = mydict.copy()
+        # add file name if possible
+        data["__name__"] = self.file_object.name
+        return data
 
     def _extend_parse(self, mydata):
         """
