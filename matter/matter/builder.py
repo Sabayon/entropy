@@ -612,8 +612,6 @@ class PackageBuilder(object):
         build_args = []
         build_args += PackageBuilder.PORTAGE_BUILD_ARGS
         build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
-        if self._pretend and "--pretend" not in build_args:
-            build_args.append("--pretend")
         build_args += ["=" + best_v for _x, best_v in packages]
         myaction, myopts, myfiles = parse_opts(build_args)
 
@@ -656,6 +654,10 @@ class PackageBuilder(object):
             print_info("about to uninstall the following packages:")
             for pkg in unmerge_queue:
                 print_info("  %s" % (pkg.cpv,))
+
+        if self._pretend:
+            print_info("portage spawned with --pretend, done!")
+            return 0
 
         # re-calling action_build(), deps are re-calculated though
         validate_ebuild_environment(emerge_trees)
