@@ -84,6 +84,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     not_found = []
     not_installed = []
     not_merged = []
+    uninstalled = []
     tainted_repositories = set()
     spec_count = 0
     tot_spec = len(specs)
@@ -110,6 +111,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_not_installed_packages())
             not_merged.extend(
                 builder.get_not_merged_packages())
+            uninstalled.extend(
+                builder.get_uninstalled_packages())
             preserved_libs = binary_pms.check_preserved_libraries(
                 emerge_config)
 
@@ -183,6 +186,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         "\n  ".join(sorted(not_found)),))
     print_info("Packages not installed:\n  %s" % (
         "\n  ".join(sorted(not_installed)),))
+    print_info("Packages uninstalled:\n  %s" % (
+        "\n  ".join(sorted(uninstalled)),))
     print_info("Preserved libs: %s" % (
         preserved_libs,))
     print_info("")
