@@ -3942,6 +3942,133 @@ class Server(Client):
 
         return deps_not_satisfied
 
+    def drained_dependencies_test(self, repository_ids):
+        """
+        Test repositories against missing dependencies taking into
+        consideration the possibility of repositories being drained
+        and their content merged into the repositories before them.
+        So, if you have 3 repositories, say: main, limbo, hell, this
+        method will test:
+        - hell drained and merged into main and limbo
+        - limbo and hell drained and merged into main
+
+        @param repository_ids: ordered list of repository identifiers
+            to test, like the output of Server.repositories()
+        @type repository_ids: list
+        @return: list (set) of unsatisfied dependencies
+        @rtype: set
+        """
+        repos = reversed(repository_ids)
+        missing_dependencies = set()
+        cases = []
+        for case in reversed(range(len(repos) - 1)):
+            cases.append((repos[0:case+1], repos[case+1:]))
+
+        spm = self.Spm()
+        for merged, drained in cases:
+
+            mytxt = "%s..." % (
+                teal(_("Calculating dependencies")),)
+            self.output(
+                mytxt,
+                importance = 2,
+                level = "info",
+                header = brown(" @@ ")
+            )
+            mytxt = "%s: %s" % (
+                blue(_("merged repositories")),
+                ", ".join([darkgreen(x) for x in merged]))
+            self.output(
+                mytxt,
+                header = "   "
+            )
+            mytxt = "%s: %s" % (
+                blue(_("drained repositories")),
+                ", ".join([purple(x) for x in merged]))
+            self.output(
+                mytxt,
+                header = "   "
+            )
+
+            deps_cache = set()  # used for memoization
+            for repository_id in merged:
+
+                repo = self.open_server_repository(
+                    repository_id, read_only = True,
+                    no_upload = True, do_treeupdates = False)
+
+                package_ids = repo.listAllPackageIds()
+                total = len(package_ids)
+                for count, package_id in enumerate(package_ids, 1):
+
+                    mytxt = "%s: %s" % (
+                        darkgreen(_("checking repository")),
+                        purple(repository_id))
+                    self.output(mytxt, header = blue(" :: "),
+                                count = (count, total),
+                                back = True)
+
+                    xdeps = repo.retrieveDependencies(package_id)
+                    xdeps = [x for x in xdeps if x not in deps_cache]
+                    deps_cache.update(xdeps)
+
+                    for dependency in xdeps:
+
+                        # need to check inside merged.
+                        pkg_id, pkg_repo = self.atom_match(
+                            dependency, match_repo=merged)
+                        if pkg_id == -1:
+                            # potentially broken candidate, but this is
+                            # detected by typical dep testing.
+                            continue
+
+                        pkg_keyslot = self.open_repository(
+                            pkg_repo).retrieveKeySlotAggregated(pkg_id)
+                        # match keyslot inside drained, if there is something
+                        # we check with dependency.
+                        drained_pkg_id, drained_repo = self.atom_match(
+                            pkg_keyslot, match_repo=drained)
+                        if drained_pkg_id == -1:
+                            # nothing, all good
+                            continue
+
+                        # then match with dependency.
+                        drained_pkg_id, drained_repo = self.atom_match(
+                            dependency, match_repo=drained)
+                        if drained_pkg_id != -1:
+                            # all good then, we are still able to match
+                            # a dependency there.
+                            continue
+
+                        # in this case, we need to check if the top level
+                        # package match (package_id, repository_id) is going
+                        # away. If it does, then there is no need to worry.
+                        package_keyslot = repo.retrieveKeySlotAggregated(
+                            package_id)
+                        pkg_id, repo_id = self.atom_match(
+                            package_keyslot, match_repo=drained)
+                        if pkg_id != -1:
+                            continue
+
+                        # check if the package is still installed on the system
+                        package_atom = spm.convert_from_entropy_package_name(
+                            repo.retrieveAtom(package_id))
+                        inst_matches = spm.match_installed_package(
+                            package_atom)
+                        if not inst_matches:
+                            continue
+
+                        atom = repo.retrieveAtom(package_id)
+                        mytxt = "[%s] %s, %s: %s" % (
+                            brown(repository_id),
+                            teal(atom),
+                            darkgreen(_("missing dependency")),
+                            blue(dependency))
+                        self.output(mytxt, header = "- ")
+                        missing_dependencies.add(dependency)
+
+        return missing_dependencies
+
     def extended_dependencies_test(self, repository_ids):
         """
         Test repository against missing dependencies.
@@ -3965,6 +4092,12 @@ class Server(Client):
             # self-contained
             unsatisfied_deps |= self.dependencies_test(base_repository_id,
                 match_repo = [base_repository_id])
+
+        # test draining and merging as well, since we don't want
+        # to get surprises when stuff is moved.
+        unsatisfied_deps |= self.drained_dependencies_test(
+            self.repositories())
+
         return unsatisfied_deps
 
     def dependencies_test(self, repository_id, match_repo = None):
