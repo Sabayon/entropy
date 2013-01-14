@@ -4077,8 +4077,6 @@ class Server(Client):
                             darkgreen(dependency),
                             header = "   - ")
 
-        self.output("")
-
         return missing_dependencies
 
     def extended_dependencies_test(self, repository_ids):
