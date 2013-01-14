@@ -3958,7 +3958,7 @@ class Server(Client):
         @return: list (set) of unsatisfied dependencies
         @rtype: set
         """
-        repos = reversed(repository_ids)
+        repos = list(reversed(repository_ids))
         missing_dependencies = set()
         cases = []
         for case in reversed(range(len(repos) - 1)):
