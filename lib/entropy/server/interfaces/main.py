@@ -4004,7 +4004,7 @@ class Server(Client):
                     mytxt = "%s: %s" % (
                         darkgreen(_("checking repository")),
                         purple(repository_id))
-                    self.output(mytxt, header = blue(" :: "),
+                    self.output(mytxt, header = blue("::"),
                                 count = (count, total),
                                 back = True)
 
@@ -4064,8 +4064,10 @@ class Server(Client):
                             teal(atom),
                             darkgreen(_("missing dependency")),
                             blue(dependency))
-                        self.output(mytxt, header = "- ")
+                        self.output(mytxt, header = "  -")
                         missing_dependencies.add(dependency)
+
+                self.output("")
 
         return missing_dependencies
 
