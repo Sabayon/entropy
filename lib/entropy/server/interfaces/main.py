@@ -3999,7 +3999,7 @@ class Server(Client):
 
                 package_ids = repo.listAllPackageIds()
                 total = len(package_ids)
-                missing = set()
+                missing = {}
                 for count, package_id in enumerate(package_ids, 1):
 
                     if count in (0, total) or count % 150 == 0:
@@ -4060,9 +4060,10 @@ class Server(Client):
                         if not inst_matches:
                             continue
                         # missing dependency!
-                        missing.add(dependency)
+                        obj = missing.setdefault(package_id, set())
+                        obj.add(dependency)
 
-                if missing:
+                for package_id, dependencies in missing.items():
                     atom = repo.retrieveAtom(package_id)
                     mytxt = "[%s] %s, %s:" % (
                         brown(repository_id),
@@ -4070,12 +4071,11 @@ class Server(Client):
                         darkgreen(_("missing dependencies")))
                     self.output(mytxt, header = " @@ ")
 
-                for dependency in sorted(missing):
-                    self.output(
-                        darkgreen(dependency),
-                        header = "   - ")
-
-                missing_dependencies |= missing
+                    missing_dependencies |= dependencies
+                    for dependency in sorted(dependencies):
+                        self.output(
+                            darkgreen(dependency),
+                            header = "   - ")
 
         self.output("")
 
