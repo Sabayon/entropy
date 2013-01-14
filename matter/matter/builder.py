@@ -492,35 +492,32 @@ class PackageBuilder(object):
                    "the queued packages")
         return real_queue
 
-    def _setup_keywords(self, settings):
+    def _setup_keywords(self, portdb, settings):
         """
         Setup ACCEPT_KEYWORDS for package.
         """
         # setup stable keywords if needed
         force_stable_keywords = self._params["stable"] == "yes"
         inherit_keywords = self._params["stable"] == "inherit"
-
-        settings.unlock()
         arch = settings["ARCH"][:]
-        orig_key = "ACCEPT_KEYWORDS_MATTER"
-        orig_keywords = settings.get(orig_key)
 
-        if orig_keywords is None:
-            orig_keywords = settings["ACCEPT_KEYWORDS"][:]
-            settings[orig_key] = orig_keywords
-            settings.backup_changes(orig_key)
+        # reset match cache, or the new keywords setting
+        # won't be considered
+        portdb.melt()  # this unfreezes and clears xcache
 
+        keywords = None
         if force_stable_keywords:
-            keywords = "%s -~%s" % (arch, arch)
+            keywords = "%s" % (arch,)
         elif inherit_keywords:
-            keywords = orig_keywords
+            pass # don't do anything
         else:
             keywords = "%s ~%s" % (arch, arch)
 
-        settings.unlock()
-        settings["ACCEPT_KEYWORDS"] = keywords
-        settings.backup_changes("ACCEPT_KEYWORDS")
-        settings.lock()
+        if keywords is not None:
+            settings.unlock()
+            # do not backup.
+            settings["ACCEPT_KEYWORDS"] = keywords
+            settings.lock()
 
     def _run_builder(self, dirs_cleanup_queue):
         """
@@ -539,16 +536,25 @@ class PackageBuilder(object):
 
         emerge_settings, emerge_trees, mtimedb = self._emerge_config
 
+        # reset settings to original state, variables will be reconfigured
+        # while others may remain saved due to backup_changes().
+        # This is needed for _setup_keywords() to function properly.
+        emerge_settings.unlock()
+        emerge_settings.reset()
+        emerge_settings.lock()
+
         # Setup stable/unstable keywords, must be done on
         # emerge_settings bacause the reference is spread everywhere
         # in emerge_trees.
         # This is not thread-safe, but Portage isn't either, so
         # who cares!
-        self._setup_keywords(emerge_settings)
+        # ACCEPT_KEYWORDS is not saved and reset every time by the
+        # reset() call above.
+        portdb = emerge_trees[emerge_settings["ROOT"]]["porttree"].dbapi
+        self._setup_keywords(portdb, emerge_settings)
 
         settings = portage.config(clone=emerge_settings)
 
-        portdb = emerge_trees[settings["ROOT"]]["porttree"].dbapi
         if not portdb.frozen:
             portdb.freeze()
         vardb = emerge_trees[settings["ROOT"]]["vartree"].dbapi
