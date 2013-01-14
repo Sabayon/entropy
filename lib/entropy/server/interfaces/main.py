@@ -4061,12 +4061,13 @@ class Server(Client):
                         # missing dependency!
                         missing.add(dependency)
 
-                atom = repo.retrieveAtom(package_id)
-                mytxt = "[%s] %s, %s:" % (
-                    brown(repository_id),
-                    teal(atom),
-                    darkgreen(_("missing dependencies")))
-                self.output(mytxt, header = " @@ ")
+                if missing:
+                    atom = repo.retrieveAtom(package_id)
+                    mytxt = "[%s] %s, %s:" % (
+                        brown(repository_id),
+                        teal(atom),
+                        darkgreen(_("missing dependencies")))
+                    self.output(mytxt, header = " @@ ")
 
                 for dependency in sorted(missing):
                     self.output(
