@@ -1,3 +1,57 @@
+commit 7d9e76db1cff00432b27f3dbb38df00c2303107d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 14 00:50:27 2013 +0000
+
+    Release Entropy 168
+
+commit e9aad1ce3905a639fe6fea6d41ec94f1a0da68bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 14 00:32:36 2013 +0000
+
+    [matter] fixup ACCEPT_KEYWORDS handling, broken due to weirdo and whacky Portage API
+
+commit 27e1755f70146f91bcd3d5e89468f13452717583
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 23:36:14 2013 +0000
+
+    [matter] print particle file name together with particle execution status
+
+commit 326a52a3e021ebe197cc0e03dc7086b2b41fab9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 23:02:17 2013 +0000
+
+    [matter] fix --pretend behaviour. Matter is required to return after dep calculation.
+
+commit ef7a892d36d230910fe6a597983cc45b848c6085
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 20:14:08 2013 +0000
+
+    [matter] fix handling of --pretend in build_args, myopts is not available at that stage
+
+commit 6d87079e1081f08003c8f28dddfb335c6204d7ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 20:12:49 2013 +0000
+
+    [matter] show the list of uninstalled packages at the end of the execution
+
+commit f242eb4c1f9907b99e577d3e32fb1db367fb523c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 20:09:41 2013 +0000
+
+    [matter] add --pretend flag, makes possible to run matter in pretend mode directly
+
+commit fb9d47bdb80997e08dadf549f39d7b75898d9c77
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 13 19:43:15 2013 +0000
+
+    [matter] return exit_st out of matter_main() and main() instead of raising SystemExit
+
+commit db74c9f5df44126556063b8ceb5dfa3519386b97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 12 14:37:03 2013 +0000
+
+    Tagging Entropy version 167
+
 commit c2829066e213031a75f93b11301067da8246113c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 12 14:37:03 2013 +0000
