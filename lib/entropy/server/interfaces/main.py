@@ -4076,7 +4076,7 @@ class Server(Client):
 
                 missing_dependencies |= missing
 
-            self.output("")
+        self.output("")
 
         return missing_dependencies
 
