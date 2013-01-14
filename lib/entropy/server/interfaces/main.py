@@ -3976,15 +3976,15 @@ class Server(Client):
                 header = brown(" @@ ")
             )
             mytxt = "%s: %s" % (
-                blue(_("merged repositories")),
+                blue(_("if these repositories were merged")),
                 ", ".join([darkgreen(x) for x in merged]))
             self.output(
                 mytxt,
                 header = "   "
             )
             mytxt = "%s: %s" % (
-                blue(_("drained repositories")),
-                ", ".join([purple(x) for x in merged]))
+                blue(_("and if these repositories were drained")),
+                ", ".join([purple(x) for x in drained]))
             self.output(
                 mytxt,
                 header = "   "
@@ -4002,12 +4002,13 @@ class Server(Client):
                 missing = set()
                 for count, package_id in enumerate(package_ids, 1):
 
-                    mytxt = "%s: %s" % (
-                        darkgreen(_("checking repository")),
-                        purple(repository_id))
-                    self.output(mytxt, header = blue("::"),
-                                count = (count, total),
-                                back = True)
+                    if count in (0, total) or count % 150 == 0:
+                        mytxt = "%s: %s" % (
+                            darkgreen(_("checking repository")),
+                            purple(repository_id))
+                        self.output(mytxt, header = blue("::"),
+                                    count = (count, total),
+                                    back = True)
 
                     xdeps = repo.retrieveDependencies(package_id)
                     xdeps = [x for x in xdeps if x not in deps_cache]
