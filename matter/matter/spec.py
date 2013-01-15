@@ -192,6 +192,13 @@ class MatterSpec(GenericSpecFunctions):
                 'desc': "Allow soft-blockers in the merge queue?\n "
                 "Packages will be unmerged if yes. (yes/no)",
             },
+            'unmerge': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+                'default': "yes",
+                'desc': "Allow package unmerges due to Portage\n "
+                "soft-blockers resolution. (yes/no)",
+            },
             'pkgpre': {
                 'cb': self.not_none,
                 've': self.ve_string_open_file_read,

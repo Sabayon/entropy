@@ -39,6 +39,11 @@ not-installed: no
 # Default is: yes
 soft-blocker: yes
 
+# Allow package unmerges in the merge queue? Packages will be unmerged if yes.
+# Valid values are either "yes" or "no"
+# Default is: yes
+unmerge: yes
+
 # Allow dependencies to be pulled in?
 # Valid values are either "yes" or "no"
 # Default is: no

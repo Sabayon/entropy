@@ -366,6 +366,16 @@ class PackageBuilder(object):
             print_warning("but 'dependencies: no' in config, aborting")
             return None
 
+        # protect against unwanted package unmerges
+        if self._params['unmerge'] == "no":
+            unmerges = [x for x in real_queue if x.operation == "uninstall"]
+            if unmerges:
+                deps = "\n  ".join([x.cpv for x in unmerges])
+                print_warning("found package unmerges:")
+                print_warning(deps)
+                print_warning("but 'unmerge: no' in config, aborting")
+                return None
+
         # inspect use flags changes
         allow_new_useflags = self._params['new-useflags'] == "yes"
         allow_removed_useflags = \
