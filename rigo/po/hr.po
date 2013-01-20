@@ -1,44 +1,55 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Ivica  Kolić <ikoli@yahoo.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-03 16:30+0200\n"
-"PO-Revision-Date: 2012-10-23 17:22+0000\n"
+"POT-Creation-Date: 2012-12-01 19:28+0100\n"
+"PO-Revision-Date: 2012-12-15 01:18+0000\n"
 "Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
-"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/language/hr/)\n"
+"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/"
+"language/hr/)\n"
+"Language: hr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: hr\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-#: ../RigoDaemon/app.py:1155 ../rigo_app.py:716
+#: ../RigoDaemon/app.py:113
+#, fuzzy
+msgid "Downloading"
+msgstr "Veličina preuzimanja"
+
+#: ../RigoDaemon/app.py:115
+msgid "Uploading"
+msgstr ""
+
+#: ../RigoDaemon/app.py:1213 ../rigo_app.py:760
 msgid "Not authorized"
 msgstr "Nije autorizirano"
 
-#: ../RigoDaemon/app.py:1191
+#: ../RigoDaemon/app.py:1249
 msgid "No repositories configured"
 msgstr "Repozitoriji nisu konfigurirani"
 
-#: ../RigoDaemon/app.py:1196
+#: ../RigoDaemon/app.py:1254
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1726
+#: ../RigoDaemon/app.py:1784
 msgid "Application Removal"
 msgstr "Uklanjanje programa"
 
-#: ../RigoDaemon/app.py:2032
+#: ../RigoDaemon/app.py:2090
 msgid "Application download"
 msgstr "Preuzimanje programa"
 
-#: ../RigoDaemon/app.py:2132
+#: ../RigoDaemon/app.py:2190
 msgid "Application Install"
 msgstr "Instalacija programa"
 
@@ -146,7 +157,7 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../rigo/controllers/daemon.py:734 ../rigo_app.py:151
+#: ../rigo/controllers/daemon.py:734 ../rigo_app.py:158
 msgid "Application"
 msgstr "Program"
 
@@ -205,15 +216,15 @@ msgstr "Došlo je do greške"
 #: ../rigo/controllers/daemon.py:781
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:456
-#: ../rigo_app.py:485
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:485
+#: ../rigo_app.py:514
 msgid "Ok, thanks"
 msgstr "U redu, hvala"
 
 #: ../rigo/controllers/daemon.py:782
 #: ../rigo/ui/gtk3/controllers/notifications.py:228
 #: ../rigo/ui/gtk3/controllers/notifications.py:244
-#: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:486
+#: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:515
 msgid "Show me"
 msgstr "Pokaži mi"
 
@@ -229,79 +240,81 @@ msgstr[0] "Ima <b>%i</b> još dopuna"
 msgstr[1] "Ima <b>%i</b> još dopune"
 msgstr[2] "Ima <b>%i</b> još dopuna"
 
-#: ../rigo/controllers/daemon.py:1109
+#: ../rigo/controllers/daemon.py:1119
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
 msgstr "Čestitamo, zrcala su <b>optimizirana</b>!"
 
-#: ../rigo/controllers/daemon.py:1113
+#: ../rigo/controllers/daemon.py:1123
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:1519
+#: ../rigo/controllers/daemon.py:1529
 msgid "Mirrors will be optimized in <b>background</b>..."
 msgstr "Zrcala će biti optimizirana u  <b>pozadini</b>..."
 
-#: ../rigo/controllers/daemon.py:1523
+#: ../rigo/controllers/daemon.py:1533
 msgid "Mirrors optimization <b>not available</b> at this time"
 msgstr "Optimizacija zrcala b>nije dostupna</b> trenutno"
 
-#: ../rigo/controllers/daemon.py:1932
+#: ../rigo/controllers/daemon.py:1953
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:2003 ../rigo/controllers/daemon.py:2665
-#: ../rigo/controllers/daemon.py:2892
+#: ../rigo/controllers/daemon.py:2024 ../rigo/controllers/daemon.py:2686
+#: ../rigo/controllers/daemon.py:2913
 msgid "Another activity is currently in progress"
 msgstr "Druga aktivnost je trenutno u tijeku"
 
-#: ../rigo/controllers/daemon.py:2006 ../rigo/controllers/daemon.py:2669
-#: ../rigo/controllers/daemon.py:2896
+#: ../rigo/controllers/daemon.py:2027 ../rigo/controllers/daemon.py:2690
+#: ../rigo/controllers/daemon.py:2917
 msgid "K thanks"
 msgstr "K hvala"
 
-#: ../rigo/controllers/daemon.py:2145
+#: ../rigo/controllers/daemon.py:2166
 msgid "Yes, thanks"
 msgstr "Da, hvala"
 
-#: ../rigo/controllers/daemon.py:2146
+#: ../rigo/controllers/daemon.py:2167
 msgid "No, sorry"
 msgstr "Ne, žalim"
 
-#: ../rigo/controllers/daemon.py:2163
+#: ../rigo/controllers/daemon.py:2184
 msgid "Ok then"
 msgstr "U redu onda"
 
-#: ../rigo/controllers/daemon.py:2239
+#: ../rigo/controllers/daemon.py:2260
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
 msgstr "<b>%s</b>⏎ je dio Osnovnog sustava i <b>ne može</b> biti uklonjen"
 
-#: ../rigo/controllers/daemon.py:2292
+#: ../rigo/controllers/daemon.py:2313
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies "
+"or dependency <b>conflict</b>"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:2354
+#: ../rigo/controllers/daemon.py:2375
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr "Instaliranje <b>%s</b> će uzrokovati uklanjanje slijedećih programa: %s"
+msgstr ""
+"Instaliranje <b>%s</b> će uzrokovati uklanjanje slijedećih programa: %s"
 
-#: ../rigo/controllers/daemon.py:2541
+#: ../rigo/controllers/daemon.py:2562
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
 msgstr "Greška instalacije paketa: <i>%s</i>"
 
-#: ../rigo/controllers/daemon.py:2546
+#: ../rigo/controllers/daemon.py:2567
 msgid "Okay"
 msgstr "U redu"
 
-#: ../rigo/controllers/daemon.py:2812
+#: ../rigo/controllers/daemon.py:2833
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr "<b>Nadogradnja sustava</b> je započela, skuhajte kavu"
 
@@ -321,7 +334,7 @@ msgstr "Aktivnost"
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
 msgid "Interrupt"
-msgstr ""
+msgstr "Prekini"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:254
 msgid "<b>System Upgrade</b> in progress..."
@@ -367,7 +380,7 @@ msgstr "Ne mogu <b>pokazati</b> razliku konfiguracijskih datoteka"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
-msgstr ""
+msgstr "Ne mogu <spojiti> konfiguracijsku datoteku"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:154
 msgid "Cannot <b>discard</b> configuration file"
@@ -542,54 +555,54 @@ msgstr "klikni ovdje!"
 msgid "Loading comments..."
 msgstr "Učitavam komentare..."
 
-#: ../rigo/ui/gtk3/controllers/applications.py:246
-#: ../rigo/ui/gtk3/controllers/applications.py:307
+#: ../rigo/ui/gtk3/controllers/applications.py:253
+#: ../rigo/ui/gtk3/controllers/applications.py:314
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr "Program <b>%s</b> nije pronađen"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:539
+#: ../rigo/ui/gtk3/controllers/applications.py:552
 msgid "Nothing found for"
 msgstr "Ništa nije nađeno za"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:549
+#: ../rigo/ui/gtk3/controllers/applications.py:562
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr "jeste li mislili <a href=\"%s\">%s</a>?"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:581
+#: ../rigo/ui/gtk3/controllers/applications.py:594
 msgid "Not found"
 msgstr "NIje nađeno"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:708
+#: ../rigo/ui/gtk3/controllers/applications.py:721
 msgid "Update repositories"
 msgstr "Ažuriraj repozitorije"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:709
+#: ../rigo/ui/gtk3/controllers/applications.py:722
 msgid "Force the update of the available repositories."
 msgstr "Prisili ažuriranje dostupnih repozitorija"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:719
+#: ../rigo/ui/gtk3/controllers/applications.py:732
 msgid "Show Configuration File Updates"
 msgstr "Pokaži ažuriranja kofiguracijske datoteke"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:720
+#: ../rigo/ui/gtk3/controllers/applications.py:733
 msgid "Show (if any) the list of pending configuration file updates."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:729
+#: ../rigo/ui/gtk3/controllers/applications.py:742
 msgid "Show Installed Applications"
 msgstr "Pokaži instalirane programe"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:730
+#: ../rigo/ui/gtk3/controllers/applications.py:743
 msgid "Browse through the currently Installed Applications."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:742
+#: ../rigo/ui/gtk3/controllers/applications.py:755
 msgid "Optimize Download Speed"
 msgstr "Optimiziraj brzinu preuzimanja"
 
-#: ../rigo/ui/gtk3/controllers/applications.py:743
+#: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Benchmark the download mirrors to speed up Application installation."
 msgstr ""
 
@@ -638,7 +651,7 @@ msgstr "Ne mogu ukloniti komentar"
 msgid "remove"
 msgstr "ukoni"
 
-#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:47
+#: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
 msgid "Run"
 msgstr "Pokreni"
 
@@ -750,14 +763,18 @@ msgstr ""
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr "Morate <b>pregledati</b> i <b>prihvatiti</b> slijedeće licence prije nego što nastavite: %s"
+msgstr ""
+"Morate <b>pregledati</b> i <b>prihvatiti</b> slijedeće licence prije nego "
+"što nastavite: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:471
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr "<b>%s</b> Program ili jedna njegova zavisnost distribuirani su sa slijedećim licencama: %s"
+msgstr ""
+"<b>%s</b> Program ili jedna njegova zavisnost distribuirani su sa slijedećim "
+"licencama: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:489
 msgid "Make sure to review all the licenses"
@@ -788,8 +805,8 @@ msgstr "Zatvori"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:640
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have"
-" been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have "
+"been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
 msgstr ""
 
@@ -872,7 +889,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1052
 msgid "Stop annoying me"
-msgstr ""
+msgstr "Prestani mi dosađivati"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1100
 msgid "You are about to rename a Repository"
@@ -922,134 +939,141 @@ msgstr "Više informacija"
 msgid "<i>Browse <b>Applications</b> with ease</i>"
 msgstr "<i>Pregledajte <b>programe</b> lakoćom</i>"
 
-#: ../rigo_app.py:101
+#: ../rigo_app.py:105
 msgid "Hey hey hey!"
 msgstr ""
 
-#: ../rigo_app.py:102
+#: ../rigo_app.py:106
 msgid "Rigo is working, are you sure?"
 msgstr "Rigo radi, jeste li sigurni?"
 
-#: ../rigo_app.py:145
+#: ../rigo_app.py:152
 msgid "Search"
 msgstr "Traži"
 
-#: ../rigo_app.py:148 ../rigo_app.py:827 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:155 ../rigo_app.py:871 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Rigo preglednik programa"
 
-#: ../rigo_app.py:154
+#: ../rigo_app.py:161
 msgid "Working Hard"
 msgstr "Vrijedno radim"
 
-#: ../rigo_app.py:157
+#: ../rigo_app.py:164
 msgid "Wake Up"
 msgstr "Probudi se"
 
-#: ../rigo_app.py:160
+#: ../rigo_app.py:167
 msgid "Important Stuff"
 msgstr ""
 
-#: ../rigo_app.py:163
+#: ../rigo_app.py:170
 msgid "Breaking Stuff"
 msgstr ""
 
-#: ../rigo_app.py:166
+#: ../rigo_app.py:173
 msgid "Repository Stuff"
 msgstr ""
 
-#: ../rigo_app.py:419
-msgid "Activity Interruption"
-msgstr ""
+#: ../rigo_app.py:176
+#, fuzzy
+msgid "Application Groups"
+msgstr "Programi"
 
-#: ../rigo_app.py:421
+#: ../rigo_app.py:448
+msgid "Activity Interruption"
+msgstr "Prekid aktivnosti"
+
+#: ../rigo_app.py:450
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
 msgstr ""
+"Jeste li sigurni da želite prekinuti tekuću aktivnost?Do prekida će doći što "
+"je moguće prije, vjerojatno ne odmah."
 
-#: ../rigo_app.py:446
+#: ../rigo_app.py:475
 msgid "Repositories update error"
 msgstr "Greška ažuriranja repozitorija"
 
-#: ../rigo_app.py:450
+#: ../rigo_app.py:479
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Repozitoriji su ažurirani <b>uspješno</b>!"
 
-#: ../rigo_app.py:468
+#: ../rigo_app.py:497
 msgid "Application Management Error"
 msgstr "Greška upravljanja programima"
 
-#: ../rigo_app.py:469
+#: ../rigo_app.py:498
 msgid "please check the management log"
 msgstr ""
 
-#: ../rigo_app.py:472
+#: ../rigo_app.py:501
 msgid "System Upgrade Error"
 msgstr "Greška nadogradnje sustava"
 
-#: ../rigo_app.py:473
+#: ../rigo_app.py:502
 msgid "please check the upgrade log"
 msgstr ""
 
-#: ../rigo_app.py:477
+#: ../rigo_app.py:506
 msgid "Applications managed <b>successfully</b>!"
 msgstr ""
 
-#: ../rigo_app.py:479
+#: ../rigo_app.py:508
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "Sustav je nadograđen <b>uspješno</b>!"
 
-#: ../rigo_app.py:717
+#: ../rigo_app.py:761
 msgid "You are not authorized to run Rigo"
 msgstr "Niste autorizirani da pokrenete Rigo"
 
-#: ../rigo_app.py:725 ../rigo_app.py:736 ../rigo_app.py:754 ../rigo_app.py:809
-#: ../rigo_app.py:820 ../rigo_app.py:848
+#: ../rigo_app.py:769 ../rigo_app.py:780 ../rigo_app.py:798 ../rigo_app.py:853
+#: ../rigo_app.py:864 ../rigo_app.py:892
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:726
+#: ../rigo_app.py:770
 msgid "RigoDaemon service is not available"
 msgstr ""
 
-#: ../rigo_app.py:738
+#: ../rigo_app.py:782
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr ""
 
-#: ../rigo_app.py:755
+#: ../rigo_app.py:799
 msgid "Another Application Manager is active"
 msgstr "Aktivan je još jedan Upravitelj programima"
 
-#: ../rigo_app.py:772
+#: ../rigo_app.py:816
 msgid "Background Service is currently not available"
 msgstr "Pozadinski servis trenutno nije dostupan"
 
-#: ../rigo_app.py:802
+#: ../rigo_app.py:846
 msgid "Background Service is currently busy"
 msgstr ""
 
-#: ../rigo_app.py:804
+#: ../rigo_app.py:848
 msgid "Background Service is incompatible with Rigo"
-msgstr ""
+msgstr "Pozadinski servis nije kompatibilan sa Rigo"
 
-#: ../rigo_app.py:816
+#: ../rigo_app.py:860
 msgid "Background Service is currently unavailable"
 msgstr "Pozadinski servis trenutno je nedostupan"
 
-#: ../rigo_app.py:876
+#: ../rigo_app.py:921
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Sretno Valentinovo <3 <3 !"
 
-#: ../rigo_app.py:878
+#: ../rigo_app.py:923
 msgid "Merry Xmas \\o/ !"
 msgstr "Čestit Božić \\o/ !"
 
-#: ../rigo_app.py:880
+#: ../rigo_app.py:925
 msgid "<=|=< (this is optimistically a fish)"
 msgstr ""
 
-#: ../rigo_app.py:885
+#: ../rigo_app.py:930
 msgid "Woot, thanks"
 msgstr ""
 
