@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 #   <slawomir.nizio@sabayon.org>, 2012.
 msgid ""
@@ -12,11 +12,12 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pl\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -916,7 +917,9 @@ msgstr "Uwaga"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "wszystkie stare pakiety w konfliktującym zakresie będą usunięte z położenia docelowego, chyba że zostały wstrzyknięte"
+msgstr ""
+"wszystkie stare pakiety w konfliktującym zakresie będą usunięte z położenia "
+"docelowego, chyba że zostały wstrzyknięte"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1507,9 +1510,9 @@ msgstr[1] "elementów"
 msgstr[2] "elementów"
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Koniecznie sprawdź zaimportowany klucz i ustaw odpowiedni poziom zaufania"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Koniecznie sprawdź zaimportowany klucz i ustaw odpowiedni poziom zaufania"
 
 #: ../../lib/entropy/security.py:318
 msgid "GPG key changed for"
@@ -1876,7 +1879,8 @@ msgstr "pakeity z dalszymi zależnościami (węzły)"
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "pakiety już określone na wyższych poziomach jako zależność (zapętlenie)"
+msgstr ""
+"pakiety już określone na wyższych poziomach jako zależność (zapętlenie)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
@@ -2044,7 +2048,8 @@ msgstr "Zbieranie uszkodzonych plików wykonywalnych"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "nie przejmuj się bibliotekami, które są tutaj pokazane, ale nie później."
+msgstr ""
+"nie przejmuj się bibliotekami, które są tutaj pokazane, ale nie później."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -2340,7 +2345,9 @@ msgstr "Inny klient Entropy jest już uruchomiony."
 #: ../../server/eit/commands/graph.py:53
 #: ../../server/eit/commands/revgraph.py:54
 msgid "show system packages, build deps, circular deps"
-msgstr "pokaż pakiety systemowe, zależności do zbudowania elementu, zapętlone zależności"
+msgstr ""
+"pokaż pakiety systemowe, zależności do zbudowania elementu, zapętlone "
+"zależności"
 
 #: ../../server/eit/commands/graph.py:104
 msgid "show dependency graph for packages"

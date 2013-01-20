@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 msgid ""
 msgstr ""
@@ -11,11 +11,12 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -787,7 +788,8 @@ msgstr "репозиторій не налаштовано"
 
 #: ../../lib/entropy/server/interfaces/main.py:1306
 msgid "protected repository id, can't use this, sorry dude..."
-msgstr "ID захищеного репозиторію, його неможливо використовувати, звиняйте, куме..."
+msgstr ""
+"ID захищеного репозиторію, його неможливо використовувати, звиняйте, куме..."
 
 #: ../../lib/entropy/server/interfaces/main.py:1675
 msgid "invalid repository revision"
@@ -915,7 +917,9 @@ msgstr "Зауваження"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "всі старі пакунки з конфліктуючими можливостями будуть видалені зрепозиторію призначення ще перед додаванням"
+msgstr ""
+"всі старі пакунки з конфліктуючими можливостями будуть видалені зрепозиторію "
+"призначення ще перед додаванням"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1506,8 +1510,7 @@ msgstr[1] ""
 msgstr[2] ""
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318
@@ -1647,7 +1650,8 @@ msgstr "Все чудово"
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
+msgstr ""
+"Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"

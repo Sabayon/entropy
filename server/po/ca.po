@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 #   <rcalvoi@yahoo.com>, 2012.
 # Roger Calvó <rcalvoi@yahoo.com>, 2008, 2009, 2010, 2011.
@@ -13,11 +13,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:53+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: ca\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ca\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -59,7 +59,8 @@ msgstr "No s'ha trobat un Identificador Únic Spm per a "
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr "s'està actualitzant la disposició de metadades del repositori, espereu!"
+msgstr ""
+"s'està actualitzant la disposició de metadades del repositori, espereu!"
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
@@ -650,7 +651,8 @@ msgstr "No n'hi ha cap de configurat"
 
 #: ../../lib/entropy/server/interfaces/db.py:1172
 msgid "creating compressed repository dump + checksum"
-msgstr "s'està creant el bolcat del repositori comprimit i la suma de verificació"
+msgstr ""
+"s'està creant el bolcat del repositori comprimit i la suma de verificació"
 
 #: ../../lib/entropy/server/interfaces/db.py:1179
 #: ../../lib/entropy/server/interfaces/db.py:1227
@@ -916,7 +918,9 @@ msgstr "Nota"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "tots els paquets antics amb scope en conflicte s'eliminaran del repositori destí, a menys que s'injectin"
+msgstr ""
+"tots els paquets antics amb scope en conflicte s'eliminaran del repositori "
+"destí, a menys que s'injectin"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1506,9 +1510,10 @@ msgstr[0] "element"
 msgstr[1] "elements"
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de confiança apropiat"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Assegureu-vos de comprovar la clau importada i establiu-ne el nivell de "
+"confiança apropiat"
 
 #: ../../lib/entropy/security.py:318
 msgid "GPG key changed for"
@@ -1619,7 +1624,9 @@ msgstr "el servei GPG no està disponible"
 
 #: ../../lib/entropy/security.py:1217
 msgid "digest verification failed, try again later"
-msgstr "la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més tard"
+msgstr ""
+"la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més "
+"tard"
 
 #: ../../lib/entropy/security.py:1229
 msgid "installing"
@@ -1647,7 +1654,9 @@ msgstr "Tot és correcte"
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "El repositori del client està malmès. Si us plau, restaureu una còpia de seguretat."
+msgstr ""
+"El repositori del client està malmès. Si us plau, restaureu una còpia de "
+"seguretat."
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"
@@ -2043,7 +2052,9 @@ msgstr "S'estan recollint els executables trencats"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "no us preocupeu per les llibreries que es mostren aquí, però que no apareixen després."
+msgstr ""
+"no us preocupeu per les llibreries que es mostren aquí, però que no "
+"apareixen després."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -2087,7 +2098,8 @@ msgstr "aboca els resultats en un fitxer"
 
 #: ../../server/eit/commands/test.py:60
 msgid "library linking test (using repository metadata)"
-msgstr "comprovació d'enllaços de llibreries (usant les metadades del repositori)"
+msgstr ""
+"comprovació d'enllaços de llibreries (usant les metadades del repositori)"
 
 #: ../../server/eit/commands/test.py:63
 msgid "excluded soname"
@@ -2339,7 +2351,8 @@ msgstr "S'està executant una altra instància d'Entropy."
 #: ../../server/eit/commands/graph.py:53
 #: ../../server/eit/commands/revgraph.py:54
 msgid "show system packages, build deps, circular deps"
-msgstr "mostra els paquets del sistema, dependències de construcció i circulars"
+msgstr ""
+"mostra els paquets del sistema, dependències de construcció i circulars"
 
 #: ../../server/eit/commands/graph.py:104
 msgid "show dependency graph for packages"
@@ -2781,7 +2794,8 @@ msgstr "expirat des de fa quants dies"
 
 #: ../../server/eit/commands/cleanup.py:127
 msgid "Removing unavailable packages overriding defaults"
-msgstr "S'estan eliminant paquets no disponibles substituint els predeterminats"
+msgstr ""
+"S'estan eliminant paquets no disponibles substituint els predeterminats"
 
 #: ../../server/eit/commands/cleanup.py:131
 msgid "Users with older repositories will have to update"

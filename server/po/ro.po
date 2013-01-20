@@ -3,241 +3,242 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Parhan <dyingmuppet@sabayon.org>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 19:46+0200\n"
-"PO-Revision-Date: 2012-04-18 17:53+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: nl\n"
+"PO-Revision-Date: 2012-04-18 17:50+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Romanian (http://www.transifex.com/projects/p/sabayon-entropy-"
+"server/language/ro/)\n"
+"Language: ro\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
+"2:1));\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
-msgstr "Synchroniseren van huidige database"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5098
 msgid "please wait"
-msgstr "een moment geduld A.U.B."
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5113
 msgid "Removing entry"
-msgstr "Verwijderen van ingang"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5132
 msgid "Adding entry"
-msgstr "Toevoegen van ingang"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5209
 msgid "Exporting database table"
-msgstr "Database tabel exporteren"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5249
 msgid "Database Export complete."
-msgstr "Database export voltooid."
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5897 ../../lib/entropy/db/__init__.py:5910
 #: ../../lib/entropy/db/__init__.py:5986 ../../lib/entropy/db/__init__.py:6085
 #: ../../lib/entropy/db/__init__.py:6192 ../../lib/entropy/db/__init__.py:6205
 msgid "ATTENTION"
-msgstr "ATTENTIE"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5898
 msgid "Spm error occured"
-msgstr "SPM fout"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5911
 msgid "Spm Unique Identifier not found for"
-msgstr "Spm Unieke Herkenning niet gevonden voor"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr "updaten van repositorie metadata overzicht, even geduld!"
+msgstr ""
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
-msgstr "genereren van provided_libs metadata, even geduld!"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1639 ../../lib/entropy/db/skel.py:1986
 msgid "SPM"
-msgstr "SPM"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1640
 msgid "Running packages metadata update"
-msgstr "Draaien van pakketten metadata update"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1641
 msgid "it could take a while"
-msgstr "Het kan even duren"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1661 ../../lib/entropy/db/skel.py:1686
 #: ../../lib/entropy/db/skel.py:1709
 msgid "ENTROPY"
-msgstr "ENTROPY"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1662
 msgid "action"
-msgstr "actie"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1687
 msgid "package move actions complete"
-msgstr "pakket verplaats acties zijn voltooid"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1701
 msgid "WARNING"
-msgstr "WAARSCHUWING"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1702
 msgid "Cannot run SPM cleanup, error"
-msgstr "Kan SPM opruiming niet starten, fout"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1710
 msgid "package moves completed successfully"
-msgstr "pakket verplaatsen succesvol voltooid"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1987
 msgid "Moving old entry"
-msgstr "Verplaatsen van oude ingang"
+msgstr ""
 
 #: ../../lib/entropy/db/skel.py:1989
 msgid "to"
-msgstr "naar"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:90
 msgid "verifying upload (if supported)"
-msgstr "upload verifieren (wanneer ondersteund)"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:113
 #: ../../lib/entropy/server/transceivers.py:131
 #: ../../lib/entropy/server/transceivers.py:146
 msgid "digest verification"
-msgstr "'digest' verificatie"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:115
 msgid "so far, so good!"
-msgstr "tot zo ver, alles OK!"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:133
 msgid "malformed md5 provided to function"
-msgstr "misvormde md5 gegeven aan functie"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:148
 msgid "remote md5 is invalid"
-msgstr "externe md5 is ongeldig"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:264
 msgid "successful"
-msgstr "succesvol"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:282
 msgid "failed, retrying"
-msgstr "gefaald, opnieuw proberen"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:302
 #: ../../lib/entropy/server/interfaces/mirrors.py:1849
 #: ../../lib/entropy/server/interfaces/mirrors.py:1871
 #: ../../lib/entropy/server/interfaces/db.py:1106
 msgid "error"
-msgstr "fout"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:316
 msgid "not critical"
-msgstr "Niet kritisch"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:318
 msgid "continuing"
-msgstr "verder gaan"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:414
 msgid "connecting to mirror"
-msgstr "verbinden met spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:425
 msgid "setting directory to"
-msgstr "veranderen van map naar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:59
 msgid "Entropy Server Mirrors Interface loaded"
-msgstr "Entropy Server Spiegels Omgeving geladen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:67
 msgid "repository mirror"
-msgstr "repositorie spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:76
 msgid "packages mirror"
-msgstr "pakketten spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:114
 msgid "looking for file in mirror"
-msgstr "Bestanden opzoeken in spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:201
 #: ../../lib/entropy/server/interfaces/mirrors.py:286
 msgid "unlocking"
-msgstr "ontgrendelen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:203
 #: ../../lib/entropy/server/interfaces/mirrors.py:288
 #: ../../lib/entropy/server/interfaces/mirrors.py:849
 #: ../../lib/entropy/server/interfaces/mirrors.py:869
 msgid "locking"
-msgstr "vergrendelen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:209
 msgid "mirror"
-msgstr "spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:294
 msgid "mirror for download"
-msgstr "spiegel voor download"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:326
 msgid "mirror already locked for download"
-msgstr "spiegel is al afgesloten voor download"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:339
 msgid "mirror already unlocked for download"
-msgstr "spiegel is al vrijgegeven voor download"
+msgstr ""
 
 #. locking/unlocking mirror1 for download
 #: ../../lib/entropy/server/interfaces/mirrors.py:387
 msgid "for download"
-msgstr "voor download"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:402
 msgid "mirror successfully locked"
-msgstr "spiegel succesvol vergrendeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:416
 msgid "mirror not locked"
-msgstr "spiegel niet vergrendeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:464
 msgid "mirror successfully unlocked"
-msgstr "spiegel succesvol vrijgemaakt"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:483
 msgid "unlock error"
-msgstr "deblokkeer fout"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:485
 msgid "mirror not unlocked"
-msgstr "spiegel niet vergrendeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:522
 msgid "connecting to download package"
-msgstr "verbinden om pakket te downloaden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:544
 msgid "downloading package"
-msgstr "pakket wordt gedownload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:563
 #: ../../lib/entropy/server/interfaces/mirrors.py:582
@@ -251,140 +252,140 @@ msgid "package"
 msgid_plural "packages"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:565
 msgid "does not exist"
-msgstr "bestaat niet"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:584
 msgid "is not listed in the repository !"
-msgstr "staat niet in de lijst van de repositorie!"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:598
 msgid "verifying checksum of package"
-msgstr "verifieren van controlesom van het pakket"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:616
 msgid "downloaded successfully"
-msgstr "succesvol gedownload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:631
 msgid "checksum does not match. re-downloading..."
-msgstr "controlesom komt niet overeen. opnieuw downloaden..."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:648
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr ""
-"blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:710
 msgid "mirror hasn't valid repository revision file"
-msgstr "spiegel heeft geen geldig database revisie bestand"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:729
 msgid "unable to download repository revision"
-msgstr "onmogelijk de repositorie revisie te downloaden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:743
 msgid "mirror doesn't have valid revision file"
-msgstr "spiegel heeft geen geldig revisie bestand"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:850
 msgid "mirror already locked"
-msgstr "spiegel is reeds vergrendeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:851
 msgid "waiting up to 2 minutes before giving up"
-msgstr "wacht nog 2 minuten voor opgeven"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:870
 msgid "mirror unlocked"
-msgstr "spiegel vrijgemaakt"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:933
 msgid "Local statistics"
-msgstr "Lokale statistieken"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:941
 msgid "upload directory"
-msgstr "upload map"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:943
 #: ../../lib/entropy/server/interfaces/mirrors.py:954
 msgid "files ready"
-msgstr "bestanden gereed"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:952
 msgid "packages directory"
-msgstr "pakketten map"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:973
 #: ../../lib/entropy/server/interfaces/db.py:1398
 #: ../../lib/entropy/server/interfaces/db.py:1418
 msgid "upload"
-msgstr "upload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:989
 #: ../../lib/entropy/server/interfaces/db.py:689
 #: ../../lib/entropy/server/interfaces/main.py:3546
 #: ../../lib/entropy/server/interfaces/main.py:4458
 msgid "download"
-msgstr "download"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1003
 msgid "copy"
-msgstr "kopie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1017
 #: ../../lib/entropy/server/interfaces/mirrors.py:2131
 #: ../../lib/entropy/server/interfaces/main.py:2487
 #: ../../server/eit/commands/status.py:190
 msgid "remove"
-msgstr "verwijder"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1028
 msgid "Packages to be removed"
-msgstr "Pakketten voor verwijdering"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1037
 msgid "Packages to be moved locally"
-msgstr "Pakketten die lokaal verplaatst worden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1046
 msgid "Packages to be uploaded"
-msgstr "Pakketten die worden geupload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1056
 msgid "Total removal size"
-msgstr "Totale grootte van verwijdering"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1068
 msgid "Total upload size"
-msgstr "Totale grootte van upload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1077
 msgid "Total download size"
-msgstr "Totale grootte van download"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1131
 msgid "Remote statistics for"
-msgstr "Externe statistieken voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1145
 msgid "remote packages"
-msgstr "externe pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1147
 msgid "files stored"
-msgstr "bestanden opgeslagen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1155
 msgid "Calculating queues"
-msgstr "Bereken queues"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1381
 msgid "removing package+hash"
-msgstr "pakket+hash worden verwijderd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1398
 #: ../../lib/entropy/server/interfaces/mirrors.py:1553
@@ -409,20 +410,20 @@ msgstr "pakket+hash worden verwijderd"
 #: ../../lib/entropy/server/interfaces/db.py:1820
 #: ../../lib/entropy/server/interfaces/db.py:1834
 msgid "sync"
-msgstr "sync"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1400
 #: ../../lib/entropy/server/interfaces/main.py:2962
 msgid "removal complete"
-msgstr "verwijderen compleet"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1422
 msgid "copying file+hash to repository"
-msgstr "kopieren van bestand+hash naar repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1480
 msgid "upload errors"
-msgstr "upload fouten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1482
 #: ../../lib/entropy/server/interfaces/mirrors.py:1557
@@ -431,61 +432,61 @@ msgstr "upload fouten"
 #: ../../lib/entropy/server/interfaces/db.py:1582
 #: ../../lib/entropy/server/interfaces/main.py:2227
 msgid "reason"
-msgstr "reden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1494
 msgid "upload completed successfully"
-msgstr "upload met succes voltooid"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1555
 #: ../../lib/entropy/server/interfaces/main.py:2226
 msgid "download errors"
-msgstr "download fouten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1571
 #: ../../lib/entropy/server/interfaces/main.py:2244
 msgid "download completed successfully"
-msgstr "download met succes voltooid"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1592
 msgid "QA checking package file"
-msgstr "VA checken van pakket bestand"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1612
 msgid "faulty package file, please fix"
-msgstr "foutief pakket bestand, repareren aub"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1667
 msgid "starting packages sync"
-msgstr "starten van pakketten sync"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1694
 msgid "packages sync"
-msgstr "pakketten sync"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1712
 msgid "socket error"
-msgstr "socket fout"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1714
 msgid "on"
-msgstr "aan"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1730
 msgid "nothing to do on"
-msgstr "Niets te doen voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1741
 msgid "Expanding queues"
-msgstr "Uitbreidende wachtrijen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1761
 msgid "nothing to sync for"
-msgstr "niets te synchroniseren voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1778
 msgid "Would you like to run the steps above ?"
-msgstr "Wilt u de gegeven stappen volgen ?"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1779
 #: ../../lib/entropy/server/interfaces/mirrors.py:2145
@@ -506,43 +507,43 @@ msgstr "Wilt u de gegeven stappen volgen ?"
 #: ../../server/eit/commands/deps.py:217 ../../server/eit/commands/key.py:167
 #: ../../server/eit/commands/key.py:264
 msgid "No"
-msgstr "Nee"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1828
 msgid "keyboard interrupt !"
-msgstr "toetsenbord onderbreking !"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1847
 msgid "you must package them again"
-msgstr "Je moet ze opnieuw inpakken"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1869
 msgid "exception caught"
-msgstr "exceptie opgevangen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1896
 msgid "at least one mirror synced properly!"
-msgstr "op z'n minst is een spiegel juist gesynchroniseerd! "
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2025
 msgid "tidy"
-msgstr "geordend"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2027
 msgid "collecting expired packages"
-msgstr "verzamelen van verlopen pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2041
 msgid "collecting expired packages in the selected branches"
-msgstr "verzamelen van verlopen pakketten in de geselecteerde branche's"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2110
 msgid "nothing to remove on this branch"
-msgstr "Niets te verwijderen in deze branche"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2121
 msgid "these are the expired packages"
-msgstr "dit zijn de verlopen pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2144
 #: ../../lib/entropy/server/interfaces/main.py:2135
@@ -552,81 +553,81 @@ msgstr "dit zijn de verlopen pakketten"
 #: ../../server/eit/commands/remove.py:124
 #: ../../server/eit/commands/branch.py:155
 msgid "Would you like to continue ?"
-msgstr "Wilt u doorgaan ?"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2174
 msgid "removing packages remotely"
-msgstr "verwijderen van pakketten op afstand"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2206
 msgid "remove errors"
-msgstr "verwijder fouten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2220
 msgid "removing packages locally"
-msgstr "verwijderen van lokale pakketten"
+msgstr ""
 
 #. this means that user is asking to remove dep_pattern
 #: ../../lib/entropy/server/interfaces/mirrors.py:2252
 #: ../../lib/entropy/server/interfaces/main.py:6159
 #: ../../lib/entropy/server/interfaces/main.py:6261
 msgid "removed"
-msgstr "verwijderd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2279
 msgid "downloading notice board from mirrors to"
-msgstr "Downloaden van notitie bord vanaf spiegels naar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2306
 msgid "notice board downloaded successfully from"
-msgstr "notitie bord is succesvol gedownload vanaf"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2339
 msgid "removing notice board from"
-msgstr "verwijderen van notitie bord uit"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2368
 msgid "notice board removal failed on"
-msgstr "notitie bord verwijdering mislukt op"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2379
 msgid "notice board removal success"
-msgstr "notitie bord verwijdering succesvol"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2404
 msgid "uploading notice board from"
-msgstr "uploaden van notitie bord vanaf"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2431
 msgid "notice board upload failed on"
-msgstr "notitie bord upload gefaald op"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2442
 msgid "notice board upload success"
-msgstr "notitie bord upload succesvol"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:334
 #: ../../lib/entropy/server/interfaces/main.py:3380
 msgid "Keys for repository are expired"
-msgstr "Sleutels voor repositorie verlopen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:690
 msgid "preparing to download repository from mirror"
-msgstr "voorbereiden van download repositorie van spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:699
 msgid "download path"
-msgstr "download pad"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:735
 #: ../../lib/entropy/server/interfaces/db.py:800
 #: ../../lib/entropy/server/interfaces/db.py:1569
 msgid "errors"
-msgstr "fouten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:736
 msgid "failed to download from mirror"
-msgstr "download vanaf spiegel gefaald"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:801
 msgid "failed to unpack"
@@ -634,79 +635,79 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1105
 msgid "Troubles with treeupdates"
-msgstr "Problemen met boomupdates"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1108
 msgid "Bumping old data back"
-msgstr "Terug zetten van de oude gegevens"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1122
 msgid "configured package sets"
-msgstr "geconfigureerde pakket sets"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1132
 msgid "None configured"
-msgstr "Niets geconfigureerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1172
 msgid "creating compressed repository dump + checksum"
-msgstr "gecomprimeerde database dump + controlesom creeren"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1179
 #: ../../lib/entropy/server/interfaces/db.py:1227
 #: ../../lib/entropy/server/interfaces/db.py:1281
 msgid "repository path"
-msgstr "repositorie pad"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1186
 msgid "dump light"
-msgstr "dump licht"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1195
 msgid "dump light checksum"
-msgstr "dump lichte controlesom"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1204
 #: ../../lib/entropy/server/interfaces/db.py:1260
 msgid "opener"
-msgstr "opener"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1219
 msgid "compressing repository + checksum"
-msgstr "comprimeren van repositorie + controlesom"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1234
 msgid "compressed repository path"
-msgstr "gecomprimeerd repositorie pad"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1243
 msgid "repository checksum"
-msgstr "repositorie controlesom"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1252
 msgid "compressed checksum"
-msgstr "gecomprimeerde controlesom"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1274
 msgid "preparing uncompressed repository for the upload"
-msgstr "voorbereiden van gedecomprimeerde repositorie voor de upload"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1399
 msgid "disabled EAPI"
-msgstr "Uitgeschakelde EAPI"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1419
 msgid "preparing to upload repository to mirror"
-msgstr "Bezig met het uploaden van repositorie naar spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1570
 msgid "upload failed, locking and continuing"
-msgstr "upload gefaald, blokkeren en doorgaan"
+msgstr ""
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1639
 msgid "repository already in sync"
-msgstr "repositorie is reeds gesynchroniseerd"
+msgstr ""
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1652
@@ -716,11 +717,11 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/db.py:1670
 #: ../../lib/entropy/server/interfaces/db.py:1821
 msgid "repository sync failed"
-msgstr "repositorie synchronisatie mislukt"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1671
 msgid "download issues"
-msgstr "download problemen"
+msgstr ""
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/db.py:1684
@@ -731,23 +732,23 @@ msgstr ""
 #: ../../lib/entropy/server/interfaces/db.py:1759
 #: ../../lib/entropy/server/interfaces/db.py:1776
 msgid "repository sync forbidden"
-msgstr "repositorie synchronisatie verboden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1735
 msgid "missing package sets"
-msgstr "ontbrekende pakket sets"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1760
 msgid "dependencies test reported errors"
-msgstr "afhankelijkheden test heeft fouten gerapporteerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1795
 msgid "these packages haven't been removed yet"
-msgstr "deze pakketten zijn nog niet verwijderd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1822
 msgid "upload issues"
-msgstr "upload problemen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:1835
 msgid "repository sync completed"
@@ -755,48 +756,48 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:156
 msgid "mirrors have not been unlocked. Sync them."
-msgstr "Spiegels zijn niet gedeblokkeerd. Synchroniseer ze."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:247
 msgid "cannot store updates RSS cache"
-msgstr "kan RSS cache updates niet opslaan"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:399
 msgid "INJECT"
-msgstr "INJECTEREN"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:401
 msgid "has been injected"
-msgstr "is geinjecteerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:402
 msgid "quickpkg manually to update embedded db"
-msgstr "gebruik quickpkg handmatig om de embedded db te updaten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:403
 msgid "Repository updated anyway"
-msgstr "Repositorie alsnog geupdate"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1174
 msgid "package has no keyword set, it will be masked !"
-msgstr "Pakket heeft geen sleutelwoord, het wordt gemaskeerd!"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1300
 #: ../../lib/entropy/server/interfaces/main.py:4206
 msgid "repository not configured"
-msgstr "repositorie niet geconfigureerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1306
 msgid "protected repository id, can't use this, sorry dude..."
-msgstr "beveiligde repositorie ID, kan deze niet gebruiken, sorry gast..."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1675
 msgid "invalid repository revision"
-msgstr "ongeldige repositorie herziening"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1677
 msgid "defaulting to 0"
-msgstr "terugzetten naar 0"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1777
 #: ../../lib/entropy/server/interfaces/main.py:4456
@@ -820,28 +821,28 @@ msgstr "terugzetten naar 0"
 #: ../../server/eit/commands/key.py:73 ../../server/eit/commands/key.py:79
 #: ../../server/eit/commands/key.py:91 ../../server/eit/commands/key.py:100
 msgid "repository"
-msgstr "repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1778
 msgid "syncing package sets"
-msgstr "synchroniseren van pakketten sets"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1822
 #: ../../lib/entropy/qa.py:788
 msgid "Attention"
-msgstr "Attentie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1823
 msgid "cannot match"
-msgstr "Kan niet overeenkomen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1927
 msgid "initializing repository"
-msgstr "Initialiseren van repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1937
 msgid "do you really want to initialize this repository ?"
-msgstr "Wilt u de deze repositorie initialiseren ?"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:1962
 #: ../../server/eit/commands/commit.py:389
@@ -854,474 +855,472 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2004
 msgid "Invalid tag specified"
-msgstr "Geen geldige tag opgegeven"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2050
 msgid "flushing back selected packages from branches"
-msgstr "terug spoelen van geselecteerde pakketten van branches"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2076
 msgid "nothing to do"
-msgstr "niets te doen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2100
 msgid "these are the packages that will be flushed"
-msgstr "Dit zijn de pakketten die worden doorgespoeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2185
 msgid "checking package hash"
-msgstr "Nagaan van pakket hash"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2204
 msgid "hash does not match for"
-msgstr "hash komt niet overeen voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2214
 msgid "wrong md5"
-msgstr "verkeerde md5"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2258
 msgid "error downloading packages from mirrors"
-msgstr "fout tijdens het downloaden van pakketten van spiegels"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2273
 msgid "working on branch"
-msgstr "werkend op branche"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2289
 msgid "updating package"
-msgstr "updaten van pakket"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2327
 msgid "package flushed"
-msgstr "pakket doorgespoeld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2407
 msgid "Cannot touch system repository"
-msgstr "Kan de systeem repositorie niet raken"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2422
 msgid "Preparing to move selected packages to"
-msgstr "Voorbereiden van verplaatsen van geselecteerde pakketten naar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2424
 msgid "Preparing to copy selected packages to"
-msgstr "Voorbereiden van kopieren van geselecteerde pakketten naar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2436
 msgid "Note"
-msgstr "Notitie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2437
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
 msgstr ""
-"alle oude pakketten met conflicterende scope zullen worden verwijderd van de "
-"bestemming repo tenzij geinjecteerd"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
-msgstr "Nieuwe tag"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2519
 msgid "reverse dependency"
-msgstr "Tegengestelde afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2530
 msgid "dependency"
-msgstr "Afhankelijkheid"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2562
 msgid "switching"
-msgstr "Veranderen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2582
 msgid "cannot switch, package not found, skipping"
-msgstr "Kan niet wisselen, pakket niet gevonden, overslaan"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2668
 msgid "moving file"
-msgstr "Bestand verplaatsen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2684
 msgid "loading data from source repository"
-msgstr "laden van data vanaf source repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2714
 msgid "GPG key was available in"
-msgstr "GPG sleutel was niet beschikbaar in"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2739
 msgid "injecting data to destination repository"
-msgstr "injecteren van data naar de repositorie locatie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2759
 msgid "removing entry from source repository"
-msgstr "verwijderen van invoer uit de source repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2777
 msgid "successfully handled atom"
-msgstr "succesvol behandeld atoom"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2804
 msgid "Injecting entropy metadata into built packages"
-msgstr "Injecteren van entropy metadata in de gebouwde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2820
 msgid "JFYI, GPG infrastructure failed to load"
-msgstr "Voor de duidelijkheid, GPG infrastructuur laden is mislukt"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2874
 msgid "injecting entropy metadata"
-msgstr "injecteren van Entropy metadata"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2922
 msgid "injection complete"
-msgstr "invoeren compleet"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2949
 msgid "removing package"
-msgstr "Pakket verwijderen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2974
 #: ../../lib/entropy/server/interfaces/main.py:3177
 msgid "Integrity verification of the selected packages"
-msgstr "Integriteit verificatie van de geselecteerde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2989
 #: ../../lib/entropy/server/interfaces/main.py:3188
 msgid "All the packages in repository will be checked."
-msgstr "Alle pakketten in de repositorie zullen worden gecheckt."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:2996
 msgid "This is the list of the packages that would be checked"
-msgstr "De volgende pakketten zullen worden gecheckt."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3030
 msgid "Working on mirror"
-msgstr "Werken op spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3057
 msgid "checking hash"
-msgstr "checken van hash"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3072
 msgid "digest verification of"
-msgstr "'digest' controle voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3074
 msgid "not supported"
-msgstr "niet ondersteund"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3092
 msgid "NOT healthy"
-msgstr "NIET gezond"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3105
 #: ../../lib/entropy/server/interfaces/main.py:3245
 msgid "This is the list of broken packages"
-msgstr "Dit is de lijst met gebroken pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3114
 msgid "Mirror"
-msgstr "Spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3133
 #: ../../server/eit/commands/commit.py:425
 msgid "Statistics"
-msgstr "Statistieken"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3142
 msgid "Number of checked packages"
-msgstr "Aantal gecheckte pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3152
 msgid "Number of healthy packages"
-msgstr "Aantal gezonde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3162
 msgid "Number of broken packages"
-msgstr "Aantal beschadigde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3176
 #: ../../lib/entropy/server/interfaces/main.py:3333
 msgid "local"
-msgstr "lokaal"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3213
 msgid "checking status of"
-msgstr "checken status van"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3235
 msgid "is corrupted, stored checksum"
-msgstr "is corrupt, controlesom opgeslagen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3272
 msgid "checked packages"
-msgstr "Gecontroleerde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3282
 msgid "healthy packages"
-msgstr "gezonde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3292
 #: ../../lib/entropy/server/interfaces/main.py:3474
 msgid "broken packages"
-msgstr "beschadigde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3302
 #: ../../lib/entropy/server/interfaces/main.py:3484
 msgid "downloaded packages"
-msgstr "gedownloade pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3312
 #: ../../lib/entropy/server/interfaces/main.py:3494
 msgid "failed downloads"
-msgstr "gefaalde downloads"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3334
 msgid "GPG signing packages for repository"
-msgstr "GPG ondertekend pakketten voor de repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3346
 msgid "All the missing packages in repository will be downloaded."
-msgstr "Alle missende pakketten in de repositorie worden gedownload."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3362
 #: ../../server/eit/commands/key.py:141
 msgid "GnuPG not available"
-msgstr "GnuPG niet beschikbaar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3388
 msgid "Keys not available for"
-msgstr "Sleutels niet beschikbaar voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3419
 msgid "signing package"
-msgstr "pakket ondertekenen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3434
 msgid "Unknown error signing package"
-msgstr "Onbekende fout tijdens ondertekenen van pakket"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3464
 msgid "signed packages"
-msgstr "ondertekende pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3523
 msgid "available"
-msgstr "Beschikbaar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3535
 msgid "upload/ignored"
-msgstr "upload/genegeerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3570
 msgid "Starting to download missing files"
-msgstr "Start downloaden van missende bestanden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3581
 msgid "Searching missing/broken files on another mirror"
-msgstr "Aan het zoeken naar missend of beschadigde bestanden op andere spiegel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3602
 msgid "Binary packages downloaded successfully."
-msgstr "Binaire pakketten zijn succesvol gedownload."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3611
 msgid "These are the packages that cannot be found online"
-msgstr "De volgende pakketten kunnen niet online worden gevonden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3627
 msgid "They won't be checked"
-msgstr "Ze zullen niet worden gechecked"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3641
 msgid "Please setup your branch to"
-msgstr "Zet a.u.b. uw branche naar"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3643
 msgid "and retry"
-msgstr "en herhaal"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3653
 msgid "Copying repository (if not exists)"
-msgstr "Kopieren van database (als deze niet bestaat)"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3686
 msgid "Switching packages"
-msgstr "Wisselen van pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3721
 msgid "Ignoring"
-msgstr "negeren"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3723
 msgid "already in branch"
-msgstr "Al reeds in branche"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3757
 msgid "migration loop completed"
-msgstr "migratie loop compleet"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3775
 msgid "Running orphaned SPM packages test"
-msgstr "Uitvoeren van wees SPM pakketten test"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3791
 msgid "Scanning package"
-msgstr "Pakket scannen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3817
 msgid "not found anymore"
-msgstr "niet meer gevonden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3829
 #: ../../lib/entropy/server/interfaces/main.py:4105
 msgid "Packages string"
-msgstr "Pakketten string"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3860
 msgid "Checking"
-msgstr "Controleren"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3925
 msgid "Running dependencies test"
-msgstr "Uitvoeren van afhankelijkheden test"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3957
 msgid "These are the dependencies not found"
-msgstr "Deze afhankelijkheden zijn niet gevonden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3964
 msgid "Needed by"
-msgstr "Nodig voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3982
 msgid "by repo"
-msgstr "bij repo"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:3992
 msgid "Every dependency is satisfied. It's all fine."
-msgstr "Alle afhankelijkheden zijn voldaan. Alles zit goed."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4018
 msgid "Broken and matched packages list"
-msgstr "Beschadigde en overeenkomende pakketten lijst"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4020
 #: ../../lib/entropy/qa.py:643
 msgid "Dumping results into these files"
-msgstr "Resultaten worden gedumpt in deze bestanden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4046
 msgid "System is healthy"
-msgstr "Systeem is gezond"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4055
 msgid "Matching libraries with Spm, please wait"
-msgstr "Vergelijken van bibliotheken met Spm, even geduld"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4069
 msgid "These are the matched packages"
-msgstr "Dit zijn de overeenkomende pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4114
 msgid "No matched packages"
-msgstr "Geen overeenkomende pakketten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4232
 msgid "Your default repository is not initialized"
-msgstr "Je standaard repositorie is niet geinstalleerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4244
 msgid "Do you want to initialize your default repository ?"
-msgstr "Wilt u de standaard repositorie initialiseren ?"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4247
 msgid "Continuing with an uninitialized repository"
-msgstr "Doorgaan met een niet geinitialiseerde repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4415
 msgid "Entropy repository is already locked by you :-)"
-msgstr "Entropy repositorie is reeds geblokkeerd door jouw :-)"
+msgstr ""
 
 #. check if the database is locked REMOTELY
 #: ../../lib/entropy/server/interfaces/main.py:4422
 msgid "Locking and Syncing Entropy repository"
-msgstr "Blokkeren en Synchroniseren van Entropy repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4436
 msgid "Mirrors status table"
-msgstr "spiegels status tabel"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4445
 #: ../../lib/entropy/server/interfaces/main.py:4448
 #: ../../server/eit/commands/lock.py:162 ../../server/eit/commands/lock.py:177
 msgid "Unlocked"
-msgstr "Vrijgemaakt"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4447
 #: ../../lib/entropy/server/interfaces/main.py:4450
 #: ../../server/eit/commands/lock.py:159 ../../server/eit/commands/lock.py:174
 msgid "Locked"
-msgstr "geblokkeerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4467
 msgid "cannot lock mirror"
-msgstr "kan spiegel niet blokkeren"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4717
 msgid "Repository is corrupted!"
-msgstr "Repositorie is corrupt!"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4731
 msgid "indexing repository"
-msgstr "indexeren van repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4767
 msgid "Initializing an empty repository"
-msgstr "Initialiseren van een lege repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4780
 msgid "Entropy repository file"
-msgstr "Entropy repositorie bestand"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4782
 msgid "successfully initialized"
-msgstr "succesvol geinstalleerd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4865
 #: ../../lib/entropy/server/interfaces/main.py:5617
 msgid "adding package"
-msgstr "pakket toevoegen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:4999
 msgid "added package"
-msgstr "toegevoegd pakket"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5001
 msgid "rev"
-msgstr "rev"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5015
 msgid "manual dependencies for"
-msgstr "handmatige afhankelijkheden voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5096
 msgid "these are the missing dependencies"
-msgstr "Deze afhankelijkheden zijn niet gevonden"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5254
 msgid "no missing dependencies !"
-msgstr "geen missende afhankelijkheden!"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5269
 #: ../../server/eit/commands/pkgmove.py:273
 #: ../../server/eit/commands/notice.py:193
 msgid "Do you agree?"
-msgstr "Weet u het zeker?"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5271
 #: ../../lib/entropy/server/interfaces/main.py:5277
@@ -1338,7 +1337,7 @@ msgstr "Weet u het zeker?"
 #: ../../server/eit/commands/commit.py:297
 #: ../../server/eit/commands/commit.py:318
 msgid "Yes"
-msgstr "Ja"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5271
 #: ../../server/eit/commands/pkgmove.py:252
@@ -1385,168 +1384,168 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5649
 msgid "Exception caught, closing tasks"
-msgstr "Uitzondering Opgetreden, opdrachten worden afgesloten"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5742
 msgid "server-side repository"
-msgstr "server-zijde repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5745
 msgid "community repository"
-msgstr "communiteit repositorie"
+msgstr ""
 
 #. ..on repository: <repository_name>
 #: ../../lib/entropy/server/interfaces/main.py:5747
 msgid "Entropy Server Interface Instance on repository"
-msgstr "Entropy Server Omgeving Instantie op de repositorie"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5758
 msgid "current branch"
-msgstr "huidige branche"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5760
 #: ../../server/eit/commands/deps.py:110
 msgid "type"
-msgstr "type"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5769
 msgid "Currently configured repositories"
-msgstr "Huidig geconfigureerde repositories"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5805
 msgid "GPG key expired"
-msgstr "GPG sleutel verlopen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5807
 msgid "please frigging fix"
-msgstr "repareer a.u.b."
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5818
 msgid "GPG got unexpected error"
-msgstr "GPG heeft een overwachte fout"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5820
 msgid "skipping"
-msgstr "overslaan"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:5837
 #: ../../lib/entropy/server/interfaces/main.py:5851
 msgid "config files"
-msgstr "Config bestanden"
+msgstr ""
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/main.py:5838
 msgid "checking system"
-msgstr "checken van systeem"
+msgstr ""
 
 #. something short please
 #: ../../lib/entropy/server/interfaces/main.py:5852
 msgid "there are configuration files not updated yet"
-msgstr "er zijn nog nieuwe configuratie bestanden niet geupdate"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6144
 msgid "found available dep_rewrites for this package"
-msgstr "beschikbare dep_rewrites gevonden voor dit pakket"
+msgstr ""
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
 #: ../../lib/entropy/server/interfaces/main.py:6156
 msgid "added"
-msgstr "toegevoegd"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6250
 msgid "replaced"
-msgstr "vervangen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6272
 #: ../../lib/entropy/server/interfaces/main.py:6286
 msgid "No dependency rewrite made for"
-msgstr "Geen afhankelijkheden herschrijving gedaan voor"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6358
 #: ../../lib/entropy/server/interfaces/main.py:6378
 #: ../../lib/entropy/server/interfaces/main.py:6390
 msgid "sets"
-msgstr "sets"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6359
 msgid "updating package sets"
-msgstr "updaten van pakket sets"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6379
 msgid "adding package set"
-msgstr "pakket set toevoegen"
+msgstr ""
 
 #: ../../lib/entropy/server/interfaces/main.py:6391
 msgid "removing package set"
-msgstr "Pakket set verwijderen"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:764
 msgid "infinite"
-msgstr "oneindig"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:836
 msgid "[F]"
-msgstr "[B]"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:837 ../../lib/entropy/fetchers.py:1186
 msgid "ETA"
-msgstr "ETA"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:838 ../../lib/entropy/fetchers.py:1187
 msgid "sec"
-msgstr "sec"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:1068
 msgid "Aggregated download"
-msgstr "Geaggregeerde download"
+msgstr ""
 
 #: ../../lib/entropy/fetchers.py:1070
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
+msgstr[2] ""
 
 #: ../../lib/entropy/security.py:279
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
-"Controleer de geimporteerde sleutel en stel een geldig vertrouwens level in"
 
 #: ../../lib/entropy/security.py:318
 msgid "GPG key changed for"
-msgstr "GPG sleuten verandert voor"
+msgstr ""
 
 #: ../../lib/entropy/security.py:337
 msgid "GPG key already installed for"
-msgstr "GPG sleutel reeds geinstalleerd voor"
+msgstr ""
 
 #: ../../lib/entropy/security.py:350
 msgid "GPG key EXPIRED for URL"
-msgstr "GPG sleutel verlopen voor URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:361
 msgid "Installing GPG key for URL"
-msgstr "Installeren van GPG sleutel voor URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:375
 msgid "Error during GPG key installation"
-msgstr "Fout tijdens de GPG sleutel installatie"
+msgstr ""
 
 #: ../../lib/entropy/security.py:386
 msgid "Successfully installed GPG key for URL"
-msgstr "Succesvol geinstalleerd van GPG sleutel voor URL"
+msgstr ""
 
 #: ../../lib/entropy/security.py:395
 msgid "Fingerprint"
-msgstr "Vingerafdruk"
+msgstr ""
 
 #: ../../lib/entropy/security.py:420
 msgid "Error during GPG verification of"
-msgstr "Fout tijdens GPG verificatie van"
+msgstr ""
 
 #: ../../lib/entropy/security.py:429
 msgid "It could mean a potential security risk"
-msgstr "Dit kan een potentieel veiligheid risico zijn"
+msgstr ""
 
 #: ../../lib/entropy/security.py:440 ../../lib/entropy/security.py:1015
 #: ../../lib/entropy/security.py:1030 ../../lib/entropy/security.py:1037
@@ -1556,418 +1555,416 @@ msgstr "Dit kan een potentieel veiligheid risico zijn"
 #: ../../lib/entropy/security.py:1167 ../../lib/entropy/security.py:1188
 #: ../../lib/entropy/security.py:1216 ../../lib/entropy/security.py:1228
 msgid "Security Advisories"
-msgstr "Beveiligings Adviesen"
+msgstr ""
 
 #: ../../lib/entropy/security.py:441
 msgid "GPG key verification successful"
-msgstr "GPG sleutel verificatie succesvol"
+msgstr ""
 
 #: ../../lib/entropy/security.py:654 ../../server/eit/commands/pull.py:168
 #: ../../server/eit/commands/push.py:249
 msgid "Error"
-msgstr "Fout"
+msgstr ""
 
 #: ../../lib/entropy/security.py:657
 msgid "Warning"
-msgstr "Waarschuwing"
+msgstr ""
 
 #: ../../lib/entropy/security.py:659
 msgid "advisory broken"
-msgstr "defecte 'advisory'"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1016
 msgid "getting latest advisories"
-msgstr "laatste adviezen binnen halen"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1031
 msgid "updated successfully"
-msgstr "succesvol bijgewerkt"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1038
 msgid "already up to date"
-msgstr "is reeds bijgewerkt."
+msgstr ""
 
 #: ../../lib/entropy/security.py:1080
 msgid "cannot download checksum, sorry"
-msgstr "Kan controlesom niet downloaden, sorry"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1103
 msgid "unable to download advisories, sorry"
-msgstr "onmogelijk adviezen te downloaden, sorry"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1115
 msgid "Verifying checksum"
-msgstr "Controleren van controlesom"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1132
 msgid "cannot open packages, sorry"
-msgstr "kan pakketten niet openen"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1144
 msgid "cannot read the checksum, sorry"
-msgstr "Kan controlesom niet lezen, helaas"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1156
 msgid "digest verification failed, sorry"
-msgstr "'digest' verificatie mislukt"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1168
 msgid "verification successful"
-msgstr "verificatie succesvol"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1189
 msgid "GPG service not available"
-msgstr "GPG service niet beschikbaar"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1217
 msgid "digest verification failed, try again later"
-msgstr "digest verificatie mislukt, probeer het later opnieuw"
+msgstr ""
 
 #: ../../lib/entropy/security.py:1229
 msgid "installing"
-msgstr "installeren"
+msgstr ""
 
 #: ../../lib/entropy/const.py:636
 msgid "Runtime dependency"
-msgstr "Opstart afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/const.py:637
 msgid "Post dependency"
-msgstr "Afhankelijkheid"
+msgstr ""
 
 #: ../../lib/entropy/const.py:638
 msgid "Manually added (by staff) dependency"
-msgstr "Handmatig toegevoegde (door staff) afhankelijkheid"
+msgstr ""
 
 #: ../../lib/entropy/const.py:639
 msgid "Build dependency"
-msgstr "Afhankelijkheid"
+msgstr ""
 
 #: ../../lib/entropy/const.py:658
 msgid "All fine"
-msgstr "Alles is goed"
+msgstr ""
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "Corrupte Client Repositorie. Herstel aub een back-up."
+msgstr ""
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"
-msgstr "reden niet beschikbaar"
+msgstr ""
 
 #: ../../lib/entropy/const.py:692
 msgid "user package.mask"
-msgstr "gebruikers package.mask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:693
 msgid "system keywords"
-msgstr "systeem sleutelwoorden"
+msgstr ""
 
 #: ../../lib/entropy/const.py:694
 msgid "user package.unmask"
-msgstr "gebruikers package.unmask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:695
 msgid "user repo package.keywords (all packages)"
-msgstr "gebruikers repo package.keywords (alle pakketten)"
+msgstr ""
 
 #: ../../lib/entropy/const.py:696
 msgid "user repo package.keywords"
-msgstr "gebruikers repo package.keywords"
+msgstr ""
 
 #: ../../lib/entropy/const.py:697
 msgid "user package.keywords"
-msgstr "gebruikers package.keywords"
+msgstr ""
 
 #: ../../lib/entropy/const.py:698
 msgid "completely masked (by keyword?)"
-msgstr "volledig afgeschermd (op sleutelwoord?)"
+msgstr ""
 
 #: ../../lib/entropy/const.py:699
 msgid "repository general packages.db.mask"
-msgstr "repositorie generale packages.db.mask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:700
 msgid "repository general packages.db.keywords"
-msgstr "repositorie generale packages.db.keywords"
+msgstr ""
 
 #: ../../lib/entropy/const.py:701
 msgid "user license.mask"
-msgstr "gebruikers license.mask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:702
 msgid "user live unmask"
-msgstr "gebruikers live unmask"
+msgstr ""
 
 #: ../../lib/entropy/const.py:703
 msgid "user live mask"
-msgstr "gebruikers live mask"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:43
 msgid "Cleaning"
-msgstr "Opruimen"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:44
 msgid "directory"
-msgstr "map"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:50
 msgid "Cleaned"
-msgstr "Opgeruimd"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:50
 msgid "files and directories"
-msgstr "bestanden en mappen"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:357
 msgid "Downloading"
-msgstr "Downloaden"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:359
 msgid "Uploading"
-msgstr "Uploaden"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:393
 msgid "corrupted"
-msgstr "is corrupt"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:431
 msgid "Not installed"
-msgstr "niet geinstalleerd"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:432 ../../lib/entropy/cli.py:433
 #: ../../lib/entropy/cli.py:680 ../../server/eit/commands/deps.py:89
 #: ../../server/eit/commands/key.py:327 ../../server/eit/commands/key.py:331
 msgid "N/A"
-msgstr "N/B"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:457
 msgid "Package"
-msgstr "Pakket"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:459
 msgid "branch"
-msgstr "branche"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:466
 msgid "Category"
-msgstr "Categorie"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:468
 msgid "Name"
-msgstr "Naam"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:484
 msgid "Masked"
-msgstr "Afgeschermd"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:487
 msgid "Available"
-msgstr "Beschikbaar"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:489 ../../lib/entropy/cli.py:497
 msgid "Installed"
-msgstr "Geinstalleerd"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:492 ../../lib/entropy/cli.py:498
 msgid "version"
-msgstr "versie"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:493 ../../lib/entropy/cli.py:500
 msgid "revision"
-msgstr "Herziening"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:503
 msgid "Slot"
-msgstr "Slot"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:519
 msgid "Size"
-msgstr "Grootte"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:521
 msgid "Download"
-msgstr "Download"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:523
 msgid "Checksum"
-msgstr "Controlesom"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:528 ../../server/eit/commands/deps.py:202
 msgid "Dependencies"
-msgstr "Afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:537 ../../lib/entropy/cli.py:775
 msgid "Legend"
-msgstr "Legenda"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:545
 msgid "Conflicts"
-msgstr "Conflicten"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:550
 msgid "Homepage"
-msgstr "Website"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:560 ../../server/eit/commands/key.py:334
 msgid "Description"
-msgstr "Omschrijving"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:569
 msgid "USE flags"
-msgstr "USE flags"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:589
 msgid "CHOST"
-msgstr "CHOST"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:591
 msgid "CFLAGS"
-msgstr "CFLAGS"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:593
 msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:597
 msgid "Sources"
-msgstr "Broncode"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:602
 msgid "Entry API"
-msgstr "Entry API"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:604
 msgid "Compiled with"
-msgstr "gecompileerd met"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:609
 msgid "Keywords"
-msgstr "Keywords"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:624
 msgid "Created"
-msgstr "Aangemaakt"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:630
 msgid "License"
-msgstr "Licentie"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:707
 msgid "Reverse graphing installed package"
-msgstr "Dit zijn de geinstalleerde pakketten"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:719 ../../lib/entropy/cli.py:878
 #: ../../server/eit/commands/remove.py:99
 #: ../../server/eit/commands/deps.py:147
 msgid "No packages found"
-msgstr "Geen pakketten gevonden"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:778
 msgid "packages passed as arguments"
-msgstr "pakketten doorgevoerd als argumenten"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:781
 msgid "packages with no further dependencies"
-msgstr "pakketten zonder enige verdere afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:784
 msgid "packages with further dependencies (node)"
-msgstr "pakketten met verdere afhankelijkheden (knooppunt)"
+msgstr ""
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
 msgstr ""
-"pakketten die al ingevoerd zijn als afhankelijkheden in hogere lagen "
-"(circulair)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
-msgstr "Graphische"
+msgstr ""
 
 #: ../../lib/entropy/output.py:604
 msgid "Entropy needs your attention"
-msgstr "Entropy vraagt om uw aandacht"
+msgstr ""
 
 #: ../../lib/entropy/output.py:757
 msgid "Entropy got a question for you"
-msgstr "Entropy heeft een vraag voor u"
+msgstr ""
 
 #: ../../lib/entropy/output.py:771
 msgid "Interrupted"
-msgstr "Onderbroken"
+msgstr ""
 
 #: ../../lib/entropy/output.py:833 ../../lib/entropy/output.py:837
 msgid "Selected number"
-msgstr "Geselecteerd nummer"
+msgstr ""
 
 #: ../../lib/entropy/output.py:854
 msgid "Please select an option"
-msgstr "selecteer een optie"
+msgstr ""
 
 #: ../../lib/entropy/output.py:856
 msgid "Discard all"
-msgstr "Alles afwijzen"
+msgstr ""
 
 #: ../../lib/entropy/output.py:857
 msgid "Confirm"
-msgstr "Bevestigen"
+msgstr ""
 
 #: ../../lib/entropy/output.py:858
 msgid "Add item"
-msgstr "Item toevoegen"
+msgstr ""
 
 #: ../../lib/entropy/output.py:859
 msgid "Edit item"
-msgstr "Item bewerken"
+msgstr ""
 
 #: ../../lib/entropy/output.py:860
 msgid "Remove item"
-msgstr "Verwijder item"
+msgstr ""
 
 #: ../../lib/entropy/output.py:861
 msgid "Show current list"
-msgstr "geef huidige lijst weer"
+msgstr ""
 
 #: ../../lib/entropy/output.py:865
 msgid "Your choice (type a number and press enter):"
-msgstr "Jouw keuze (typ een nummer en druk op enter):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:897
 msgid "You don't have typed a number."
-msgstr "Je hebt geen nummer gegeven."
+msgstr ""
 
 #: ../../lib/entropy/output.py:900
 msgid "Invalid action."
-msgstr "Ongeldige actie."
+msgstr ""
 
 #: ../../lib/entropy/output.py:910
 msgid "String to add (-1 to go back):"
-msgstr "Invoer om toe te voegen (-1 om terug te gaan):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:920
 msgid "Invalid string."
-msgstr "Ongeldige invoer."
+msgstr ""
 
 #: ../../lib/entropy/output.py:928
 msgid "Element number to edit (-1 to go back):"
-msgstr "Nummer van element om te bewerken (-1 om terug te gaan):"
+msgstr ""
 
 #: ../../lib/entropy/output.py:939
 msgid "old"
-msgstr "oud"
+msgstr ""
 
 #: ../../lib/entropy/output.py:939
 msgid "new value:"
-msgstr "nieuwe waarde:"
+msgstr ""
 
 #: ../../lib/entropy/output.py:947 ../../lib/entropy/output.py:965
 msgid "Invalid element."
-msgstr "Ongeldig element."
+msgstr ""
 
 #: ../../lib/entropy/output.py:956
 msgid "Element number to remove (-1 to go back):"
-msgstr "Nummer van element om te verwijderen (-1 om terug te gaan):"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:161
 msgid "Searching for broken reverse dependencies"
@@ -1975,35 +1972,35 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:178
 msgid "scanning for broken reverse dependencies"
-msgstr "Scannen voor gebroken tegengestelde afhankelijken"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:219
 msgid "broken libraries detected"
-msgstr "gebroken bibliotheken gevonden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:230
 msgid "needs"
-msgstr "benodigdheden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:274
 msgid "Searching for missing Runtime dependencies"
-msgstr "Aan het zoeken naar ontbrekende Runtime afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:281
 msgid "scanning"
-msgstr "Scannen"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:299 ../../lib/entropy/qa.py:580
 msgid "no packages"
-msgstr "geen pakketten"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:351
 msgid "blacklisted dependencies !!!"
-msgstr "uitgesloten afhankelijkheden !!!"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:389
 msgid "is potentially missing these dependencies"
-msgstr "mist waarschijnlijk de volgende afhankelijkheden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:519
 msgid "determining missing libraries"
@@ -2023,49 +2020,47 @@ msgstr ""
 
 #: ../../lib/entropy/qa.py:625
 msgid "Libraries test"
-msgstr "Bibliotheken test"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:640
 msgid "Broken symbols packages list"
-msgstr "beschadigde symbool pakketten lijst"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:641
 msgid "Broken executables list"
-msgstr "Beschadigde uitvoerbestanden lijst"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:721
 msgid "discarding directory"
-msgstr "afwijzen van map"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:723
 msgid "because it's symlinked on"
-msgstr "omdat hij gekoppeld is aan"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:783
 msgid "Collecting broken executables"
-msgstr "Opzoeken van beschadigde opstartbestanden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
-"maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
-"later."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
-msgstr "Scannen van bibliotheken"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:915
 msgid "various broken symbols"
-msgstr "meerdere gebroken symbolen"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:954
 msgid "Matching broken libraries/executables"
-msgstr "vergelijken van gebroken bibliotheken/opstartbestanden"
+msgstr ""
 
 #: ../../lib/entropy/qa.py:1656
 msgid "Not prepared yet"
-msgstr "Nog niet voorbereid"
+msgstr ""
 
 #: ../../server/eit/main.py:101
 msgid "superuser access required"
@@ -2134,11 +2129,11 @@ msgstr ""
 #: ../../server/eit/commands/query.py:252
 #: ../../server/eit/commands/files.py:92 ../../server/eit/commands/cp.py:154
 msgid "Not matched"
-msgstr "Niet overeenkomend"
+msgstr ""
 
 #: ../../server/eit/commands/test.py:164
 msgid "Invalid repository"
-msgstr "Ongeldige repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/test.py:188
 msgid "run QA tests"
@@ -2260,7 +2255,7 @@ msgstr ""
 
 #: ../../server/eit/commands/list.py:95
 msgid "not available"
-msgstr "niet beschikbaar"
+msgstr ""
 
 #: ../../server/eit/commands/list.py:139
 msgid "No packages"
@@ -2288,7 +2283,7 @@ msgstr ""
 
 #: ../../server/eit/commands/mv.py:85
 msgid "move packages from a repository to another"
-msgstr "verplaats pakketten van de ene repositorie naar een ander"
+msgstr ""
 
 #: ../../server/eit/commands/log.py:74
 msgid "log is not available"
@@ -2312,11 +2307,11 @@ msgstr ""
 
 #: ../../server/eit/commands/remove.py:51
 msgid "do not include reverse dependencies"
-msgstr "voer geen tegengestelde afhankelijkheden door"
+msgstr ""
 
 #: ../../server/eit/commands/remove.py:109
 msgid "These are the packages that would be removed"
-msgstr "Volgende pakketten worden verwijderd"
+msgstr ""
 
 #: ../../server/eit/commands/remove.py:138
 msgid "remove packages from repository"
@@ -2331,16 +2326,16 @@ msgstr ""
 #: ../../server/eit/commands/search.py:115
 #: ../../server/eit/commands/match.py:101
 msgid "Nothing found"
-msgstr "Niets gevonden"
+msgstr ""
 
 #: ../../server/eit/commands/search.py:124
 msgid "search packages in repositories"
-msgstr "zoek naar pakketten in repositories"
+msgstr ""
 
 #: ../../server/eit/commands/command.py:173
 #: ../../server/eit/commands/command.py:203
 msgid "Another Entropy is currently running."
-msgstr "Een ander Entropy proces draait nog."
+msgstr ""
 
 #: ../../server/eit/commands/graph.py:53
 #: ../../server/eit/commands/revgraph.py:54
@@ -2422,7 +2417,7 @@ msgstr ""
 
 #: ../../server/eit/commands/remote.py:165
 msgid "Configuration file"
-msgstr "Configuratiebestand"
+msgstr ""
 
 #: ../../server/eit/commands/remote.py:170
 msgid "Please initialize the repository using"
@@ -2442,7 +2437,7 @@ msgstr ""
 
 #: ../../server/eit/commands/help.py:90
 msgid "this help"
-msgstr "deze hulp"
+msgstr ""
 
 #: ../../server/eit/commands/pull.py:68
 msgid "pull all the repositories"
@@ -2451,7 +2446,7 @@ msgstr ""
 #: ../../server/eit/commands/pull.py:178 ../../server/eit/commands/pull.py:189
 #: ../../server/eit/commands/push.py:268 ../../server/eit/commands/push.py:300
 msgid "Aborting !"
-msgstr "Afbreken !"
+msgstr ""
 
 #: ../../server/eit/commands/pull.py:197 ../../server/eit/commands/push.py:306
 msgid "Should I cleanup old packages on mirrors ?"
@@ -2475,7 +2470,7 @@ msgstr ""
 
 #: ../../server/eit/commands/init.py:115
 msgid "Entropy repository has been initialized"
-msgstr "Entropy repositorie is geinitialiseerd"
+msgstr ""
 
 #: ../../server/eit/commands/init.py:125
 msgid "initialize repository (erasing all its content)"
@@ -2491,7 +2486,7 @@ msgstr ""
 
 #: ../../server/eit/commands/push.py:197
 msgid "Commit message"
-msgstr "Verstuur bericht"
+msgstr ""
 
 #: ../../server/eit/commands/push.py:199
 msgid "Enter the commit message"
@@ -2503,7 +2498,7 @@ msgstr ""
 
 #: ../../server/eit/commands/push.py:228
 msgid "Host"
-msgstr "Host"
+msgstr ""
 
 #: ../../server/eit/commands/push.py:231
 msgid "Remote"
@@ -2577,7 +2572,7 @@ msgstr ""
 #: ../../server/eit/commands/notice.py:326
 #: ../../server/eit/commands/notice.py:361
 msgid "Title"
-msgstr "Titel"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:181
 msgid "no URL"
@@ -2591,27 +2586,27 @@ msgstr ""
 #: ../../server/eit/commands/notice.py:247
 #: ../../server/eit/commands/notice.py:298
 msgid "Notice board not available"
-msgstr "Notitie bord is niet beschikbaar"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:257
 msgid "Choose the one you want to remove"
-msgstr "Kies degene die je wilt verwijderen"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:265
 msgid "Are you sure you want to remove this?"
-msgstr "Weet je zeker dat je deze wilt verwijderen?"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:344
 msgid "Press Enter to continue"
-msgstr "Druk op Enter om door te gaan"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:369
 msgid "Exit/Commit"
-msgstr "Sluiten/Indienen"
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:376
 msgid "Choose one by typing its identifier"
-msgstr "Kies a.u.b. een door het identificatie nummer te typen."
+msgstr ""
 
 #: ../../server/eit/commands/notice.py:392
 msgid "manage repository notice-board"
@@ -2643,15 +2638,15 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:157
 msgid "Cannot match"
-msgstr "Komt niet overeen"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:177
 msgid "No valid packages to repackage."
-msgstr "Er zijn geen geldige pakketten om opnieuw te verpakken."
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:183
 msgid "Scanning..."
-msgstr "Scannen..."
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:206
 msgid "Invalid package"
@@ -2679,7 +2674,7 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:263
 msgid "expired"
-msgstr "verlopen"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:270
 msgid "Select packages for removal"
@@ -2687,7 +2682,7 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:277
 msgid "Remove this package?"
-msgstr "Dit pakket verwijderen?"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:284
 msgid "These would be removed from repository"
@@ -2695,7 +2690,7 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:293
 msgid "Would you like to remove them now ?"
-msgstr "Wilt u ze nu verwijderen ?"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:309
 msgid "Select packages to add"
@@ -2703,7 +2698,7 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:317
 msgid "Add this package?"
-msgstr "Dit pakket toevoegen?"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:325
 msgid "These would be added or updated"
@@ -2711,31 +2706,31 @@ msgstr ""
 
 #: ../../server/eit/commands/commit.py:358
 msgid "warning"
-msgstr "Waarschuwing"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:365
 msgid "Would you like to package them now ?"
-msgstr "Wil je ze nu inpakken ?"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:366
 msgid "inside"
-msgstr "binnenin"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:379
 msgid "Compressing packages"
-msgstr "Pakketten comprimeren"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:404
 msgid "Ignoring broken Spm entry, please recompile it"
-msgstr "Negeren van gebroken Spm ingang, hercompileer a.u.b."
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:411
 msgid "Nothing to do, check later."
-msgstr "Niets te doen, controleer later."
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:426
 msgid "Entries handled"
-msgstr "Invoer behandeld"
+msgstr ""
 
 #: ../../server/eit/commands/commit.py:436
 msgid "commit changes to repository"
@@ -2845,15 +2840,15 @@ msgstr ""
 
 #: ../../server/eit/commands/status.py:134
 msgid "local revision"
-msgstr "Herziening"
+msgstr ""
 
 #: ../../server/eit/commands/status.py:141
 msgid "stored packages"
-msgstr "opgeslagen pakketten"
+msgstr ""
 
 #: ../../server/eit/commands/status.py:146
 msgid "upload packages"
-msgstr "upload pakketten"
+msgstr ""
 
 #: ../../server/eit/commands/status.py:153
 msgid "unstaged packages"
@@ -2877,35 +2872,35 @@ msgstr ""
 
 #: ../../server/eit/commands/deps.py:102
 msgid "package dependencies"
-msgstr "pakket afhankelijkheden"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:117
 msgid "No dependencies"
-msgstr "Geen afhankelijkheden"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:143
 msgid "not found"
-msgstr "niet gevonden"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:175
 msgid "Dependency type"
-msgstr "Afhankelijkheden type"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:181
 msgid "Select a dependency type for"
-msgstr "Selecteer een afhankelijkheid type voor"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:206
 msgid "Dependencies editor"
-msgstr "Afhankelijkheden editor"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:216
 msgid "Confirm ?"
-msgstr "Bevestigen"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:240
 msgid "dependencies updated successfully"
-msgstr "afhankelijkheden succesvol geupdate"
+msgstr ""
 
 #: ../../server/eit/commands/deps.py:251
 msgid "edit dependencies for packages in repository"
@@ -2921,7 +2916,7 @@ msgstr ""
 
 #: ../../server/eit/commands/cp.py:141
 msgid "repository not available"
-msgstr "repositorie is niet beschikbaar"
+msgstr ""
 
 #: ../../server/eit/commands/cp.py:162
 msgid "Considering all the packages"
@@ -2929,7 +2924,7 @@ msgstr ""
 
 #: ../../server/eit/commands/cp.py:186
 msgid "copy packages from a repository to another"
-msgstr "kopieer pakketten van de ene repositorie naar de andere"
+msgstr ""
 
 #: ../../server/eit/commands/revgraph.py:106
 msgid "show reverse dependency graph for packages"
@@ -2953,7 +2948,7 @@ msgstr ""
 
 #: ../../server/eit/commands/key.py:77
 msgid "import keypair, bind to given repository"
-msgstr "importeer sleutel paar, en koppen die met de gegeven repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:82 ../../server/eit/commands/key.py:103
 msgid "private key path"
@@ -2973,43 +2968,43 @@ msgstr ""
 
 #: ../../server/eit/commands/key.py:131
 msgid "GPG interface loaded, home directory"
-msgstr "GPG omgeving geladen, thuis map"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:156
 msgid "Creating keys for repository"
-msgstr "Creeer sleutels voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:160
 msgid "Another key already exists for repository"
-msgstr "Een ander sleutel bestaat al voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:166
 msgid "Would you like to continue?"
-msgstr "Wilt u doorgaan ?"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:184
 msgid "Insert e-mail"
-msgstr "Voer e-mail in"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:186
 msgid "Insert expiration days (0=no expiration)"
-msgstr "Voer verloop tijd in dagen in (0= geen verloop tijd)"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:188
 msgid "Insert passphrase (empty=no passphrase)"
-msgstr "Voer wachtzin in (leeg=geen wachtzin)"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:192
 msgid "Repository GPG keypair creation"
-msgstr "Repositorie GPG sleutel paar creatie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:208
 msgid "Produced GPG key with fingerprint"
-msgstr "GPG sleutel gemaakt met vingerafdruk"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:214
 msgid "Now you should sign all the packages in it"
-msgstr "Nu moet je alle pakketten erin ondertekenen"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:221
 msgid "Generate a revoke key and store it in a safe place"
@@ -3021,47 +3016,47 @@ msgstr ""
 
 #: ../../server/eit/commands/key.py:252
 msgid "Deleting keys for repository"
-msgstr "Verwijder sleutels van repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:256
 msgid "No keys available for given repository"
-msgstr "Geen sleutels beschikbaar voor gegeven repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:263
 msgid "Are you really sure?"
-msgstr "Weet je het zeker?"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:271 ../../server/eit/commands/key.py:305
 msgid "Keys metadata not available for"
-msgstr "Sleutel metadata niet beschikbaar voor"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:285
 msgid "Deleted GPG key with fingerprint"
-msgstr "GPG sleutel verwijderd met vingerafdruk"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:313
 msgid "GPG information for repository"
-msgstr "GPG informatie voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:335
 msgid "Public key identifier"
-msgstr "Publieke sleutel herkenning"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:336
 msgid "Public key fingerprint"
-msgstr "Publieke sleutel vingerafdruk"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:337
 msgid "Key size"
-msgstr "Sleutel grootte"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:338
 msgid "Creation date"
-msgstr "Aanmaakdatum"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:339
 msgid "Expires on"
-msgstr "Verloopt op"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:376
 msgid "Importing keypair"
@@ -3073,7 +3068,7 @@ msgstr ""
 
 #: ../../server/eit/commands/key.py:395
 msgid "Imported GPG key with fingerprint"
-msgstr "Geimporteerde GPG sleutel met vingerafdruk"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:401
 msgid "Now sign all the packages in it"
@@ -3081,27 +3076,27 @@ msgstr ""
 
 #: ../../server/eit/commands/key.py:444
 msgid "Exporting private key for repository"
-msgstr "Exporteren van prive sleutel voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:448
 msgid "Exporting public key for repository"
-msgstr "Exporteren van publieke sleutel voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:453
 msgid "No keypair available for repository"
-msgstr "Geen sleutelpaar voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:461
 msgid "Keypair is EXPIRED for repository"
-msgstr "Sleutel VERLOPEN voor deze repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:482
 msgid "Unable to export GPG key for repository"
-msgstr "Onmogelijk de GPG sleutel te exporteren voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:491
 msgid "Exported GPG key for repository"
-msgstr "Geexporteerde GPG sleutel voor repositorie"
+msgstr ""
 
 #: ../../server/eit/commands/key.py:504
 msgid "manage repository GPG keys"

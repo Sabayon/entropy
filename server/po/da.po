@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Tim Lauridsen <tla@rasmil.dk>, 2005.
 msgid ""
@@ -12,11 +12,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: da\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: da\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -1505,8 +1505,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318

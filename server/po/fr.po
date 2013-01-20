@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 #   <dudumomo@gmail.com>, 2012.
 msgid ""
@@ -12,11 +12,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:53+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -915,7 +915,9 @@ msgstr "Note"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "tous les vieux paquets à portée conflictuelle seront supprimés du dépôt de destination à moins d'être injectés"
+msgstr ""
+"tous les vieux paquets à portée conflictuelle seront supprimés du dépôt de "
+"destination à moins d'être injectés"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1505,8 +1507,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318

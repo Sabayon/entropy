@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011.
 # Danilo Riffo <danriffo@gmail.com>, 2012.
@@ -13,11 +13,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -59,7 +59,8 @@ msgstr "Identificador Único para el SPM no encontrado para"
 
 #: ../../lib/entropy/db/__init__.py:5988 ../../lib/entropy/db/__init__.py:6087
 msgid "updating repository metadata layout, please wait!"
-msgstr "actualizando la disposición de metadatos del repositorio, ¡espera por favor!"
+msgstr ""
+"actualizando la disposición de metadatos del repositorio, ¡espera por favor!"
 
 #: ../../lib/entropy/db/__init__.py:6193
 msgid "generating provided_libs metadata, please wait!"
@@ -1219,7 +1220,9 @@ msgstr "El sistema está en buen estado"
 
 #: ../../lib/entropy/server/interfaces/main.py:4055
 msgid "Matching libraries with Spm, please wait"
-msgstr "Haciendo coincidir bibliotecas con el Administrador de Paquetes Fuente, espera por favor"
+msgstr ""
+"Haciendo coincidir bibliotecas con el Administrador de Paquetes Fuente, "
+"espera por favor"
 
 #: ../../lib/entropy/server/interfaces/main.py:4069
 msgid "These are the matched packages"
@@ -1506,8 +1509,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
 #: ../../lib/entropy/security.py:318
@@ -1647,7 +1649,9 @@ msgstr "Todo bien"
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "El Repositorio Cliente está Corrupto. Por favor, restaura una copia de seguridad."
+msgstr ""
+"El Repositorio Cliente está Corrupto. Por favor, restaura una copia de "
+"seguridad."
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"
@@ -2043,7 +2047,9 @@ msgstr "Recopilando los ejecutables rotos"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "no te preocupes por las bibliotecas que se muestren aquí pero que no aparezcan después."
+msgstr ""
+"no te preocupes por las bibliotecas que se muestren aquí pero que no "
+"aparezcan después."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -2721,7 +2727,9 @@ msgstr "Comprimiendo paquetes"
 
 #: ../../server/eit/commands/commit.py:404
 msgid "Ignoring broken Spm entry, please recompile it"
-msgstr "Ignorando la entrada del Administrador de Paquetes Fuente rota, recompílalo por favor"
+msgstr ""
+"Ignorando la entrada del Administrador de Paquetes Fuente rota, recompílalo "
+"por favor"
 
 #: ../../server/eit/commands/commit.py:411
 msgid "Nothing to do, check later."

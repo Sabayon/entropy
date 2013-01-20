@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 #   <albfneto@fcfrp.usp.br>, 2012.
 msgid ""
@@ -12,11 +12,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:53+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: pt\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: pt\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -915,7 +915,9 @@ msgstr "Nota"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "todos pacotes antigos com escopo de conflito vão ser removidos do repositório destinatário à menos que injetados"
+msgstr ""
+"todos pacotes antigos com escopo de conflito vão ser removidos do "
+"repositório destinatário à menos que injetados"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1505,8 +1507,7 @@ msgstr[0] "ítem"
 msgstr[1] "ítens"
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr "Verifique a chave importada e regule o nível adequado"
 
 #: ../../lib/entropy/security.py:318
@@ -1646,7 +1647,8 @@ msgstr "Tudo certo"
 
 #: ../../lib/entropy/const.py:659
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr "Repositório de Cliente Corrompido. Por favor restaure uma cópia de segurança."
+msgstr ""
+"Repositório de Cliente Corrompido. Por favor restaure uma cópia de segurança."
 
 #: ../../lib/entropy/const.py:691
 msgid "reason not available"
@@ -1874,7 +1876,8 @@ msgstr "pacotes com dependências complementares (nó)"
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "pacotes colocados como dependências em níveis mais altos (circularidade)"
+msgstr ""
+"pacotes colocados como dependências em níveis mais altos (circularidade)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
@@ -2042,7 +2045,8 @@ msgstr "Coletando executáveis quebrados"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "não se preocupe com bibliotecas que são mostradas aqui mas não o são depois."
+msgstr ""
+"não se preocupe com bibliotecas que são mostradas aqui mas não o são depois."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
@@ -2338,7 +2342,8 @@ msgstr "Outra instância do Entropy está em execução. "
 #: ../../server/eit/commands/graph.py:53
 #: ../../server/eit/commands/revgraph.py:54
 msgid "show system packages, build deps, circular deps"
-msgstr "mostra pacotes de sistema, monta dependências e dependências circulares"
+msgstr ""
+"mostra pacotes de sistema, monta dependências e dependências circulares"
 
 #: ../../server/eit/commands/graph.py:104
 msgid "show dependency graph for packages"
@@ -2780,7 +2785,9 @@ msgstr "É velho, expirou a vários dias"
 
 #: ../../server/eit/commands/cleanup.py:127
 msgid "Removing unavailable packages overriding defaults"
-msgstr "Removendo pacotes indisponíveis e sobrescrevendo os padrões do Entropy. Obs.: Isto não é bom!"
+msgstr ""
+"Removendo pacotes indisponíveis e sobrescrevendo os padrões do Entropy. "
+"Obs.: Isto não é bom!"
 
 #: ../../server/eit/commands/cleanup.py:131
 msgid "Users with older repositories will have to update"

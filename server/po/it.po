@@ -1,21 +1,23 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
+#   <belcocco@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-18 19:46+0200\n"
-"PO-Revision-Date: 2012-04-18 17:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Italian (http://www.transifex.net/projects/p/sabayon-entropy-server/language/it/)\n"
+"PO-Revision-Date: 2012-11-18 21:40+0000\n"
+"Last-Translator: belcocco <belcocco@gmail.com>\n"
+"Language-Team: Italian (http://www.transifex.com/projects/p/sabayon-entropy-"
+"server/language/it/)\n"
+"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: it\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -248,8 +250,8 @@ msgstr "scaricamemento database"
 #: ../../server/eit/commands/branch.py:147
 msgid "package"
 msgid_plural "packages"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "pacchetto"
+msgstr[1] "pacchetti"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:565
 msgid "does not exist"
@@ -273,7 +275,8 @@ msgstr "firma non combaciante. riscaricamento..."
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:648
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr "sembra corrotto. Prendi in considerazione di ripacchettizzarlo. Mi arrendo!"
+msgstr ""
+"sembra corrotto. Prendi in considerazione di ripacchettizzarlo. Mi arrendo!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:710
 msgid "mirror hasn't valid repository revision file"
@@ -710,6 +713,8 @@ msgstr "repository già sincronizzate"
 #: ../../lib/entropy/server/interfaces/db.py:1652
 msgid "remote repository newer than local, please pull."
 msgstr ""
+"il repository remoto è più recente di quello locale, si prega di usare il "
+"comando pull."
 
 #: ../../lib/entropy/server/interfaces/db.py:1670
 #: ../../lib/entropy/server/interfaces/db.py:1821
@@ -724,6 +729,8 @@ msgstr "problemi di download"
 #: ../../lib/entropy/server/interfaces/db.py:1684
 msgid "local repository newer than remote, please push."
 msgstr ""
+"il repository locale è più recente di quello remoto, si prega di usare il "
+"comando push."
 
 #: ../../lib/entropy/server/interfaces/db.py:1734
 #: ../../lib/entropy/server/interfaces/db.py:1759
@@ -749,7 +756,7 @@ msgstr "problemi di upload"
 
 #: ../../lib/entropy/server/interfaces/db.py:1835
 msgid "repository sync completed"
-msgstr ""
+msgstr "Comando sync su repository completato"
 
 #: ../../lib/entropy/server/interfaces/main.py:156
 msgid "mirrors have not been unlocked. Sync them."
@@ -844,11 +851,11 @@ msgstr "vuoi davvero inizializzare questa repository ?"
 #: ../../lib/entropy/server/interfaces/main.py:1962
 #: ../../server/eit/commands/commit.py:389
 msgid "Cannot create store directory"
-msgstr ""
+msgstr "Impossibile creare una directory per il caricamento"
 
 #: ../../lib/entropy/server/interfaces/main.py:1975
 msgid "Cannot create upload directory"
-msgstr ""
+msgstr "Impossibile creare una directory per il trasferimento"
 
 #: ../../lib/entropy/server/interfaces/main.py:2004
 msgid "Invalid tag specified"
@@ -914,7 +921,9 @@ msgstr "Note"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "tutti i pacchetti vecchi con scope in conflitto saranno rimossi dalla destinazione a meno che non siano iniettati"
+msgstr ""
+"tutti i pacchetti vecchi con scope in conflitto saranno rimossi dalla "
+"destinazione a meno che non siano iniettati"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1500,13 +1509,14 @@ msgstr "Download aggregato"
 #: ../../lib/entropy/fetchers.py:1070
 msgid "item"
 msgid_plural "items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "elemento"
+msgstr[1] "elementi"
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Accertati di verificare le chiavi importate ed impostare un livello di trust appropriato"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Accertati di verificare le chiavi importate ed impostare un livello di trust "
+"appropriato"
 
 #: ../../lib/entropy/security.py:318
 msgid "GPG key changed for"
@@ -1873,7 +1883,8 @@ msgstr "pacchetti con ulteriori dipendenze (nodo)"
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "pacchetti già inclusi come dipendenze in livelli più alti (circolarità)"
+msgstr ""
+"pacchetti già inclusi come dipendenze in livelli più alti (circolarità)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
@@ -2260,7 +2271,7 @@ msgstr "Nessun pacchetto"
 
 #: ../../server/eit/commands/list.py:147
 msgid "show repository content (packages)"
-msgstr ""
+msgstr "mostra il contenuto del repository (pacchetti)"
 
 #: ../../server/eit/commands/mv.py:40 ../../server/eit/commands/cp.py:50
 msgid "source repository"
@@ -2300,7 +2311,7 @@ msgstr "nome pacchetto"
 
 #: ../../server/eit/commands/remove.py:48
 msgid "remove from given repository"
-msgstr ""
+msgstr "rimuovere dal repository dato"
 
 #: ../../server/eit/commands/remove.py:51
 msgid "do not include reverse dependencies"
@@ -2370,47 +2381,47 @@ msgstr "azioni disponibili"
 
 #: ../../server/eit/commands/remote.py:51
 msgid "list repositories"
-msgstr ""
+msgstr "lista dei repository"
 
 #: ../../server/eit/commands/remote.py:55
 msgid "add repository"
-msgstr ""
+msgstr "aggiungere un repository"
 
 #: ../../server/eit/commands/remote.py:57
 msgid "repository id"
-msgstr ""
+msgstr "repository id"
 
 #: ../../server/eit/commands/remote.py:60
 msgid "repository description"
-msgstr ""
+msgstr "descrizione del repository"
 
 #: ../../server/eit/commands/remote.py:62
 msgid "repository uri"
-msgstr ""
+msgstr "url del repository"
 
 #: ../../server/eit/commands/remote.py:101
 msgid "Invalid repository name"
-msgstr ""
+msgstr "nome del repository non valido"
 
 #: ../../server/eit/commands/remote.py:107
 msgid "Repository already available"
-msgstr ""
+msgstr "il repository è già disponibile"
 
 #: ../../server/eit/commands/remote.py:120
 msgid "Invalid URI"
-msgstr ""
+msgstr "URL non valido"
 
 #: ../../server/eit/commands/remote.py:135
 msgid "Cannot read configuration file"
-msgstr ""
+msgstr "Impossibile leggere il file di configurazione"
 
 #: ../../server/eit/commands/remote.py:151
 msgid "no description"
-msgstr ""
+msgstr "nessuna descrizione disponibile"
 
 #: ../../server/eit/commands/remote.py:154
 msgid "Adding repository"
-msgstr ""
+msgstr "aggiunta di repository"
 
 #: ../../server/eit/commands/remote.py:165
 msgid "Configuration file"
@@ -2418,15 +2429,15 @@ msgstr "File di configurazione"
 
 #: ../../server/eit/commands/remote.py:170
 msgid "Please initialize the repository using"
-msgstr ""
+msgstr "Per favore inizializzare il repository in uso"
 
 #: ../../server/eit/commands/remote.py:214
 msgid "packages"
-msgstr ""
+msgstr "pacchetti"
 
 #: ../../server/eit/commands/remote.py:224
 msgid "manage repositories"
-msgstr ""
+msgstr "gestire i repository"
 
 #: ../../server/eit/commands/help.py:65
 msgid "Entropy Infrastructure Toolkit"
@@ -2438,7 +2449,7 @@ msgstr "questo help"
 
 #: ../../server/eit/commands/pull.py:68
 msgid "pull all the repositories"
-msgstr ""
+msgstr "estrarre tutti i repository"
 
 #: ../../server/eit/commands/pull.py:178 ../../server/eit/commands/pull.py:189
 #: ../../server/eit/commands/push.py:268 ../../server/eit/commands/push.py:300
@@ -2451,7 +2462,7 @@ msgstr "Devo pulire i vecchi pacchetti sui mirrors ?"
 
 #: ../../server/eit/commands/pull.py:213
 msgid "pull repository packages and metadata"
-msgstr ""
+msgstr "estrarre dal repository pacchetti e metadati "
 
 #: ../../server/eit/commands/bump.py:47
 msgid "sync with remote repository"
@@ -2507,39 +2518,39 @@ msgstr "Locale"
 
 #: ../../server/eit/commands/push.py:321
 msgid "push repository packages and metadata"
-msgstr ""
+msgstr "inserire nel repository pacchetti e metadati "
 
 #: ../../server/eit/commands/pkgmove.py:185
 msgid "invalid line (time field)"
-msgstr ""
+msgstr "linea non valida (campo time)"
 
 #: ../../server/eit/commands/pkgmove.py:193
 msgid "invalid line (empty)"
-msgstr ""
+msgstr "linea non valida (vuota)"
 
 #: ../../server/eit/commands/pkgmove.py:203
 msgid "invalid line (incomplete)"
-msgstr ""
+msgstr "linea non valida (incompleta)"
 
 #: ../../server/eit/commands/pkgmove.py:213
 #: ../../server/eit/commands/pkgmove.py:229
 #: ../../server/eit/commands/pkgmove.py:245
 msgid "invalid line"
-msgstr ""
+msgstr "linea non valida"
 
 #: ../../server/eit/commands/pkgmove.py:219
 #: ../../server/eit/commands/pkgmove.py:235
 msgid "invalid line (copy)"
-msgstr ""
+msgstr "linea non valida (copia)"
 
 #: ../../server/eit/commands/pkgmove.py:251
 msgid "Invalid syntax, what to do ?"
-msgstr ""
+msgstr "sintassi non valida, cosa faccio?"
 
 #: ../../server/eit/commands/pkgmove.py:252
 #: ../../server/eit/commands/pkgmove.py:253
 msgid "Abort"
-msgstr ""
+msgstr "Abortisci"
 
 #: ../../server/eit/commands/pkgmove.py:322
 msgid "edit automatic package moves for repository"

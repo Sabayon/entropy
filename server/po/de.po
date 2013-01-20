@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 #   <dicker_karl@web.de>, 2012.
 #   <dirk@deimeke.net>, 2012.
@@ -15,11 +15,11 @@ msgstr ""
 "PO-Revision-Date: 2012-04-18 17:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: de\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/__init__.py:5097
 msgid "Syncing current database"
@@ -277,7 +277,8 @@ msgstr "Prüfsumme stimmt nicht überein. Erneuter Download..."
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:648
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr "scheint fehlerhaft zu sein. Ziehe in Erwägung, es neu zu bauen. Ich gebe auf!"
+msgstr ""
+"scheint fehlerhaft zu sein. Ziehe in Erwägung, es neu zu bauen. Ich gebe auf!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:710
 msgid "mirror hasn't valid repository revision file"
@@ -773,7 +774,9 @@ msgstr "wurde eingespeist"
 
 #: ../../lib/entropy/server/interfaces/main.py:402
 msgid "quickpkg manually to update embedded db"
-msgstr "Du musst quickpkg manuell ausführen um die eingebettete Datenbank zu aktualisieren"
+msgstr ""
+"Du musst quickpkg manuell ausführen um die eingebettete Datenbank zu "
+"aktualisieren"
 
 #: ../../lib/entropy/server/interfaces/main.py:403
 msgid "Repository updated anyway"
@@ -790,7 +793,8 @@ msgstr "Repositorium nicht konfiguriert"
 
 #: ../../lib/entropy/server/interfaces/main.py:1306
 msgid "protected repository id, can't use this, sorry dude..."
-msgstr "geschützte Repositoriums-ID, kann sie nicht verwenden, sorry Kumpel ..."
+msgstr ""
+"geschützte Repositoriums-ID, kann sie nicht verwenden, sorry Kumpel ..."
 
 #: ../../lib/entropy/server/interfaces/main.py:1675
 msgid "invalid repository revision"
@@ -918,7 +922,9 @@ msgstr "Hinweis"
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
-msgstr "alle alten Pakete im Konfliktbereich werden vom Zielrepositorium entfernt, sofern nicht eingespeist"
+msgstr ""
+"alle alten Pakete im Konfliktbereich werden vom Zielrepositorium entfernt, "
+"sofern nicht eingespeist"
 
 #: ../../lib/entropy/server/interfaces/main.py:2447
 msgid "new tag"
@@ -1442,7 +1448,8 @@ msgstr "überprüfe System"
 #. something short please
 #: ../../lib/entropy/server/interfaces/main.py:5852
 msgid "there are configuration files not updated yet"
-msgstr "es existieren noch Konfigurationsdateien, die aktualisiert werden müssen"
+msgstr ""
+"es existieren noch Konfigurationsdateien, die aktualisiert werden müssen"
 
 #: ../../lib/entropy/server/interfaces/main.py:6144
 msgid "found available dep_rewrites for this package"
@@ -1508,9 +1515,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../../lib/entropy/security.py:279
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Stelle sicher den importierten Schlüssel zu verifizieren und setze einen entsprechenden Vertrauenslevel"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Stelle sicher den importierten Schlüssel zu verifizieren und setze einen "
+"entsprechenden Vertrauenslevel"
 
 #: ../../lib/entropy/security.py:318
 msgid "GPG key changed for"
@@ -1621,7 +1629,8 @@ msgstr "GPG-Dienst nicht verfügbar"
 
 #: ../../lib/entropy/security.py:1217
 msgid "digest verification failed, try again later"
-msgstr "Verzeichnisüberprüfung nicht erfolgreich, versuche es später noch einmal"
+msgstr ""
+"Verzeichnisüberprüfung nicht erfolgreich, versuche es später noch einmal"
 
 #: ../../lib/entropy/security.py:1229
 msgid "installing"
@@ -1877,7 +1886,9 @@ msgstr "Pakete ohne weitere Abhängigkeiten (Knoten)"
 
 #: ../../lib/entropy/cli.py:787
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr "Pakete wurden bereits hereingeholt als Abhängigkeit auf einem höheren Level (zirkulär)"
+msgstr ""
+"Pakete wurden bereits hereingeholt als Abhängigkeit auf einem höheren Level "
+"(zirkulär)"
 
 #: ../../lib/entropy/cli.py:866
 msgid "Graphing"
@@ -2045,7 +2056,9 @@ msgstr "Suche nach beschädigten ausführbaren Dateien"
 
 #: ../../lib/entropy/qa.py:789
 msgid "don't worry about libraries that are shown here but not later."
-msgstr "Programmbibliotheken die nur hier erscheinen (und später nicht mehr) können ignoriert werden."
+msgstr ""
+"Programmbibliotheken die nur hier erscheinen (und später nicht mehr) können "
+"ignoriert werden."
 
 #: ../../lib/entropy/qa.py:809
 msgid "Scanning libraries"
