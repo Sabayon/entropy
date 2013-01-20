@@ -1,39 +1,40 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# 
+#
 # Translators:
 # Patrik Karlsson <patrik@trixon.se>, 2010.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-11-09 09:19+0100\n"
-"PO-Revision-Date: 2012-11-09 09:18+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Swedish (http://www.transifex.com/projects/p/sabayon-entropy/language/sv/)\n"
+"POT-Creation-Date: 2013-01-20 11:59+0000\n"
+"PO-Revision-Date: 2012-12-30 09:22+0000\n"
+"Last-Translator: Peruvian_Torch <peruvian.torch550@gmail.com>\n"
+"Language-Team: Swedish (http://www.transifex.com/projects/p/sabayon-entropy/"
+"language/sv/)\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../../lib/entropy/db/sqlite.py:1676
 msgid "Exporting database table"
-msgstr ""
+msgstr "Exporterar databas tabell"
 
 #: ../../lib/entropy/db/sqlite.py:1716
 msgid "Database Export complete."
-msgstr ""
+msgstr "Exportering av databasen är slutförd"
 
 #: ../../lib/entropy/db/sqlite.py:2094 ../../lib/entropy/db/sqlite.py:2198
 #: ../../lib/entropy/db/sqlite.py:2309 ../../lib/entropy/db/sqlite.py:2322
-#: ../../lib/entropy/db/sql.py:5405 ../../lib/entropy/db/sql.py:5418
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2625
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2763
+#: ../../lib/entropy/db/sql.py:5412 ../../lib/entropy/db/sql.py:5425
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2639
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2777
 #: ../../lib/entropy/client/interfaces/client.py:949
 msgid "ATTENTION"
-msgstr "ATTENTION"
+msgstr "VAR UPPMÄRKSAM"
 
 #: ../../lib/entropy/db/sqlite.py:2096 ../../lib/entropy/db/sqlite.py:2200
 msgid "updating repository metadata layout, please wait!"
@@ -41,15 +42,15 @@ msgstr "uppdaterar layout för förrådets metadata, vänligen vänta!"
 
 #: ../../lib/entropy/db/sqlite.py:2310
 msgid "generating provided_libs metadata, please wait!"
-msgstr ""
+msgstr "Genererar tillhandahållna_libs metadata, var god vänta"
 
-#: ../../lib/entropy/db/sql.py:5406
+#: ../../lib/entropy/db/sql.py:5413
 msgid "Spm error occured"
-msgstr ""
+msgstr "SPM fel har uppstått"
 
-#: ../../lib/entropy/db/sql.py:5419
+#: ../../lib/entropy/db/sql.py:5426
 msgid "Spm Unique Identifier not found for"
-msgstr ""
+msgstr "SPMs unika identifierare hittas inte för"
 
 #: ../../lib/entropy/db/skel.py:1680 ../../lib/entropy/db/skel.py:2028
 #: ../../lib/entropy/client/interfaces/trigger.py:522
@@ -62,42 +63,42 @@ msgstr "SPM"
 
 #: ../../lib/entropy/db/skel.py:1681
 msgid "Running packages metadata update"
-msgstr ""
+msgstr "Uppdatering av paktens metadata körs"
 
 #: ../../lib/entropy/db/skel.py:1682
 msgid "it could take a while"
-msgstr ""
+msgstr "detta kan ta ett tag"
 
 #: ../../lib/entropy/db/skel.py:1702 ../../lib/entropy/db/skel.py:1728
 #: ../../lib/entropy/db/skel.py:1751
 msgid "Entropy"
-msgstr ""
+msgstr "Entropy"
 
 #: ../../lib/entropy/db/skel.py:1703
 msgid "action"
-msgstr ""
+msgstr "åtgärd"
 
 #: ../../lib/entropy/db/skel.py:1729
 msgid "package move actions complete"
-msgstr ""
+msgstr "dom valda paketen har flyttats"
 
 #: ../../lib/entropy/db/skel.py:1743
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2605
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2800
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2619
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2814
 msgid "WARNING"
-msgstr ""
+msgstr "VARNING"
 
 #: ../../lib/entropy/db/skel.py:1744
 msgid "Cannot run SPM cleanup, error"
-msgstr ""
+msgstr "Kan inte utföra SPM rensing, försök igen"
 
 #: ../../lib/entropy/db/skel.py:1752
 msgid "package moves completed successfully"
-msgstr ""
+msgstr "Paketflytten avslutades felfritt"
 
 #: ../../lib/entropy/db/skel.py:2029
 msgid "Moving old entry"
-msgstr ""
+msgstr "Flyttar gammal post"
 
 #: ../../lib/entropy/db/skel.py:2031
 msgid "to"
@@ -105,10 +106,10 @@ msgstr "till"
 
 #: ../../lib/entropy/db/skel.py:3800
 msgid "Syncing current database"
-msgstr ""
+msgstr "Synkroniserar nuvarande databas"
 
 #: ../../lib/entropy/db/skel.py:3801
-#: ../../lib/entropy/client/interfaces/db.py:296
+#: ../../lib/entropy/client/interfaces/db.py:301
 msgid "please wait"
 msgstr "vänligen vänta"
 
@@ -118,31 +119,31 @@ msgstr "Tar bort post"
 
 #: ../../lib/entropy/db/skel.py:3835
 msgid "Adding entry"
-msgstr ""
+msgstr "Lägger till post"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:248
 msgid "Accessibility"
-msgstr ""
+msgstr "Tillgänglighet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:250
 msgid "Accessibility applications"
-msgstr ""
+msgstr "Program för tillgänglighet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:254
 msgid "Office"
-msgstr ""
+msgstr "Kontor"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:255
 msgid "Applications used in office environments"
-msgstr ""
+msgstr "Program som används i kontorsmiljö"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:261
 msgid "Development"
-msgstr ""
+msgstr "Uveckling"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:262
 msgid "Applications or system libraries"
-msgstr ""
+msgstr "Program eller systembilbliotek"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:266
 msgid "System"
@@ -150,55 +151,55 @@ msgstr "System"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:267
 msgid "System applications or libraries"
-msgstr ""
+msgstr "Systemprogram eller bilbliotek"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:271
 msgid "Games"
-msgstr ""
+msgstr "Spel"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:272
 msgid "Games, enjoy your spare time"
-msgstr ""
+msgstr "Spel, njut av dina lediga tid"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:276
 msgid "GNOME Desktop"
-msgstr ""
+msgstr "GNOME-Skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:278
 msgid "Applications and libraries for the GNOME Desktop"
-msgstr ""
+msgstr "Program och bibliotek för GNOME-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:282
 msgid "KDE Desktop"
-msgstr ""
+msgstr "KDE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:284
 msgid "Applications and libraries for the KDE Desktop"
-msgstr ""
+msgstr "Program och bibliotek för KDE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:288
 msgid "XFCE Desktop"
-msgstr ""
+msgstr "XFCE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:290
 msgid "Applications and libraries for the XFCE Desktop"
-msgstr ""
+msgstr "Program och bibliotek för XFCE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:294
 msgid "LXDE Desktop"
-msgstr ""
+msgstr "LXDE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:296
 msgid "Applications and libraries for the LXDE Desktop"
-msgstr ""
+msgstr "Program och bibliotek för LXDE-skrivbordet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:300
 msgid "Multimedia"
-msgstr ""
+msgstr "Multimedia"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:302
 msgid "Applications and libraries for Multimedia"
-msgstr ""
+msgstr "Program och bibliotek för multimedia"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:306
 msgid "Networking"
@@ -206,15 +207,15 @@ msgstr "Nätverk"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:308
 msgid "Applications and libraries for Networking"
-msgstr ""
+msgstr "Program och bibliotek för nätverk"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:312
 msgid "Science"
-msgstr ""
+msgstr "Forskning"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:314
 msgid "Scientific applications and libraries"
-msgstr ""
+msgstr "Program och bibliotek för forskning"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:318
 msgid "Security"
@@ -222,19 +223,19 @@ msgstr "Säkerhet"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:320
 msgid "Security oriented applications"
-msgstr ""
+msgstr "Säkerhetsorienterade program"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:324
 msgid "X11"
-msgstr ""
+msgstr "X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:326
 msgid "Applications and libraries for X11"
-msgstr ""
+msgstr "Program och bibliotek för X11"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:610
 msgid "Reloading Portage modules"
-msgstr ""
+msgstr "Startar om Portage moduler"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1098
 msgid "error"
@@ -244,113 +245,113 @@ msgstr "fel"
 #: ../../lib/entropy/client/interfaces/package.py:693
 #: ../../lib/entropy/client/interfaces/package.py:1374
 msgid "not found"
-msgstr ""
+msgstr "Kan inte hittas"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2290
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2364
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2456
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2528
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3155
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4797
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2304
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2378
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2470
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2542
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3169
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4846
 #: ../../lib/entropy/client/interfaces/trigger.py:280
 msgid "QA"
-msgstr ""
+msgstr "QA"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2291
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2365
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2457
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2305
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2379
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2471
 msgid "Cannot run Source Package Manager trigger for"
-msgstr ""
+msgstr "Kan inte köra Portage utlösare för"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2300
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2374
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2466
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2314
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2388
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2480
 #: ../../lib/entropy/client/interfaces/trigger.py:283
 msgid "Please report it"
-msgstr ""
+msgstr "Var god att rapportera det"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2301
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2375
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2467
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2315
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2389
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2481
 msgid "Attach this"
-msgstr ""
+msgstr "Bifoga detta"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2529
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2543
 msgid "Cannot run SPM configure phase for"
-msgstr ""
+msgstr "Kan inte köra SPMs konfigurationsetapp för"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2533
-#: ../../lib/entropy/client/interfaces/package.py:3492
-#: ../../lib/entropy/client/interfaces/package.py:3529
-#: ../../lib/entropy/client/interfaces/package.py:3656
-#: ../../lib/entropy/client/interfaces/package.py:3663
-#: ../../lib/entropy/client/interfaces/package.py:3719
-#: ../../lib/entropy/client/interfaces/package.py:3747
-#: ../../lib/entropy/client/interfaces/package.py:3973
-#: ../../lib/entropy/client/interfaces/package.py:3993
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2547
+#: ../../lib/entropy/client/interfaces/package.py:3497
+#: ../../lib/entropy/client/interfaces/package.py:3534
+#: ../../lib/entropy/client/interfaces/package.py:3661
+#: ../../lib/entropy/client/interfaces/package.py:3668
+#: ../../lib/entropy/client/interfaces/package.py:3724
+#: ../../lib/entropy/client/interfaces/package.py:3752
+#: ../../lib/entropy/client/interfaces/package.py:3978
+#: ../../lib/entropy/client/interfaces/package.py:3998
 #: ../../lib/entropy/client/interfaces/trigger.py:74
 #: ../../lib/entropy/security.py:659 ../../client/solo/commands/rescue.py:200
 msgid "Error"
-msgstr ""
+msgstr "Fel"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2584
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2598
 msgid "package not available on system"
-msgstr ""
+msgstr "paketet är inte tillgängligt på systemet"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2593
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2607
 msgid "repackaging"
-msgstr ""
+msgstr "paketerar om"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2606
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2620
 msgid "Cannot complete quickpkg for atom"
-msgstr ""
+msgstr "Kan inte slutföra quickpkg för atomen"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2608
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2803
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2622
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2817
 msgid "do it manually"
-msgstr ""
+msgstr "gör det manuellt"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2626
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2640
 msgid "package files rebuild did not run properly"
-msgstr ""
+msgstr "kunde inte återbygga paketen korrekt"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2627
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2641
 msgid "Please update packages manually"
-msgstr ""
+msgstr "Var god att uppdatera paketen manuellt"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2764
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2778
 msgid "forcing package updates"
-msgstr ""
+msgstr "tvingar en uppdatering av paketen"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2765
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2779
 msgid "Syncing with"
-msgstr ""
+msgstr "Synkroniserar med"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2801
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2815
 msgid "Cannot complete quickpkg for atoms"
-msgstr ""
+msgstr "Kan inte sluföra quickpkg för atomer"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3156
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3170
 msgid "Cannot update Portage package metadata"
-msgstr ""
+msgstr "Kan inte uppdatera Portage paketets metadata "
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3182
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3196
 msgid "SPM uid update error"
-msgstr ""
+msgstr "Fel vid uppdatering av SPM uid"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3251
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3265
 msgid "Cannot update SPM installed pkgs file"
-msgstr ""
+msgstr "Kan inte uppdatera SPM installerade pkgs filer"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3344
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3358
 msgid "Portage world file is corrupted"
-msgstr ""
+msgstr "Portage world filen är trasig"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3398
-#: ../../lib/entropy/client/interfaces/db.py:384
-#: ../../lib/entropy/client/interfaces/db.py:487
-#: ../../lib/entropy/client/interfaces/db.py:593
-#: ../../lib/entropy/client/interfaces/db.py:1902 ../../lib/entropy/qa.py:802
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3412
+#: ../../lib/entropy/client/interfaces/db.py:389
+#: ../../lib/entropy/client/interfaces/db.py:492
+#: ../../lib/entropy/client/interfaces/db.py:598
+#: ../../lib/entropy/client/interfaces/db.py:1925 ../../lib/entropy/qa.py:802
 #: ../../client/solo/commands/install.py:480
 #: ../../client/solo/commands/install.py:483
 #: ../../client/solo/commands/install.py:490
@@ -358,385 +359,386 @@ msgstr ""
 #: ../../client/solo/commands/rescue.py:307
 #: ../../client/solo/commands/rescue.py:318 ../../services/kernel-switcher:140
 msgid "Attention"
-msgstr ""
+msgstr "Uppmärksamma"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3399
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3413
 msgid "preserved libraries have been found on system"
-msgstr ""
+msgstr "bevarade bibliotek har hittats på ditt system"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3534
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3684
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3548
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3698
 msgid "does not exist"
 msgstr "finns inte"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3534
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3548
 msgid "Overwriting"
-msgstr ""
+msgstr "Skriver över"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3580
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3594
 msgid "variable differs"
-msgstr ""
+msgstr "Skillnader i variablerna"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3580
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3669
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3594
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3683
 msgid "Updating"
-msgstr ""
+msgstr "Uppdaterar"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3609
 msgid "updating critical variables"
-msgstr ""
+msgstr "Uppdaterar kritiska variabler"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3669
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3683
 msgid "differs"
-msgstr ""
+msgstr "skiljer sig"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3684
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3698
 msgid "Reverting"
-msgstr ""
+msgstr "Återgår"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3699
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3713
 msgid "Skipping configuration files update, you are not root."
-msgstr ""
+msgstr "Hoppar över uppdatering av konfigurationsfiler då du är inte rot."
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3960
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3974
 msgid "Error calculating dependencies"
-msgstr ""
+msgstr "Fel vid beräkning av beroenden"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4519
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4533
 msgid "not supported"
-msgstr ""
+msgstr "stöds inte"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4520
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4534
 msgid "Probably Portage API has changed"
-msgstr ""
+msgstr "Portage API har antagligen ändrats"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4641
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4597
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4690
 msgid "IOError while reading"
-msgstr ""
+msgstr "IOFel vid läsning"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4798
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4847
 msgid "illegal Entropy package tag in ebuild"
-msgstr ""
+msgstr "Otillåten tagg i Entropy paketets ebuild"
 
 #: ../../lib/entropy/client/services/interfaces.py:61
 msgid "Unknown documents"
-msgstr ""
+msgstr "Okända dokument"
 
 #: ../../lib/entropy/client/services/interfaces.py:62
 msgid "Comments"
-msgstr ""
+msgstr "Kommentarer"
 
 #. BBCODE_TYPE_ID: _('BBcode Documents'),
 #: ../../lib/entropy/client/services/interfaces.py:64
 msgid "Images/Screenshots"
-msgstr ""
+msgstr "Bilder/Skärmdumpar"
 
 #: ../../lib/entropy/client/services/interfaces.py:65
 msgid "Generic Files"
-msgstr ""
+msgstr "Generiska Filer"
 
 #: ../../lib/entropy/client/services/interfaces.py:66
 msgid "Videos"
-msgstr ""
+msgstr "Videor"
 
 #: ../../lib/entropy/client/services/interfaces.py:67
 msgid "Icons"
-msgstr ""
+msgstr "Ikoner"
 
 #: ../../lib/entropy/client/services/interfaces.py:70
 msgid "Unknown document"
-msgstr ""
+msgstr "Okända dokument"
 
 #: ../../lib/entropy/client/services/interfaces.py:71
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. BBCODE_TYPE_ID: _('BBcode Document'),
 #: ../../lib/entropy/client/services/interfaces.py:73
 msgid "Image/Screenshot"
-msgstr ""
+msgstr "Bilder/skärmdumpar"
 
 #: ../../lib/entropy/client/services/interfaces.py:74
 msgid "Generic File"
-msgstr ""
+msgstr "Generisk fil"
 
 #: ../../lib/entropy/client/services/interfaces.py:75
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: ../../lib/entropy/client/services/interfaces.py:76
 msgid "Icon"
-msgstr ""
+msgstr "Ikon"
 
 #: ../../lib/entropy/client/misc.py:213 ../../lib/entropy/client/misc.py:579
 msgid "Automerging file"
-msgstr ""
+msgstr "Sammanfogar filen automatiskt"
 
 #: ../../lib/entropy/client/misc.py:247
 msgid "Found update"
-msgstr ""
+msgstr "Uppdatering tillgänglig"
 
 #: ../../lib/entropy/client/misc.py:595
 msgid "System Error"
-msgstr ""
+msgstr "Systemfel"
 
 #: ../../lib/entropy/client/misc.py:596
 msgid "Cannot automerge file"
-msgstr ""
+msgstr "Kan inte sammanfoga filen automatiskt"
 
 #: ../../lib/entropy/client/interfaces/sets.py:238
 msgid "Name already taken"
-msgstr ""
+msgstr "Namnet används redan"
 
 #: ../../lib/entropy/client/interfaces/sets.py:247
 msgid "Cannot remove the old element"
-msgstr ""
+msgstr "Kan inte ta bort den gamla beståndsdelen"
 
 #: ../../lib/entropy/client/interfaces/sets.py:249
 msgid "Cannot create the element"
-msgstr ""
+msgstr "Kan inte skapa beståndsdel"
 
 #: ../../lib/entropy/client/interfaces/sets.py:276
 msgid "cannot start with"
-msgstr ""
+msgstr "kan inte starta med"
 
 #: ../../lib/entropy/client/interfaces/sets.py:281
 msgid "Already removed"
-msgstr ""
+msgstr "Har redan tagits bort"
 
 #: ../../lib/entropy/client/interfaces/sets.py:285
 msgid "Not defined by user"
-msgstr ""
+msgstr "Inte definierad av användaren "
 
 #: ../../lib/entropy/client/interfaces/sets.py:293
 msgid "Set not found or unable to remove"
-msgstr ""
+msgstr "Kan inte hitta setet eller oförmogen att ta bort"
 
 #: ../../lib/entropy/client/interfaces/cache.py:106
 #: ../../lib/entropy/client/interfaces/methods.py:100
 #: ../../lib/entropy/client/interfaces/methods.py:125
-#: ../../client/solo/commands/upgrade.py:278
+#: ../../client/solo/commands/upgrade.py:279
 msgid "Repository"
-msgstr ""
+msgstr "Förråd"
 
 #: ../../lib/entropy/client/interfaces/cache.py:107
 #: ../../lib/entropy/client/interfaces/methods.py:126
 msgid "is corrupted"
-msgstr ""
+msgstr "är trasigt"
 
 #: ../../lib/entropy/client/interfaces/cache.py:108
 msgid "Cannot calculate the checksum"
-msgstr ""
+msgstr "Kan inte beräkna kontrollsumman"
 
 #: ../../lib/entropy/client/interfaces/methods.py:81
 msgid "Please update your repositories now in order to remove this message!"
-msgstr ""
+msgstr "Var god att uppdatera förråden nu för att slippa detta meddelande!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:101
-#: ../../client/solo/commands/pkg.py:197
+#: ../../client/solo/commands/pkg.py:200
 #: ../../client/solo/commands/mask.py:101
 msgid "is not available"
-msgstr ""
+msgstr "är inte tillgänglig"
 
 #: ../../lib/entropy/client/interfaces/methods.py:101
 #: ../../lib/entropy/client/interfaces/methods.py:126
 msgid "Cannot validate"
-msgstr ""
+msgstr "Kan inte bekräfta"
 
 #: ../../lib/entropy/client/interfaces/methods.py:275
 msgid "bad repository id specified"
-msgstr ""
+msgstr "felaktigt id på förråd har angivits"
 
 #: ../../lib/entropy/client/interfaces/methods.py:300
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
-msgstr ""
+msgstr "Förrådets %s har inte laddats ned än."
 
 #: ../../lib/entropy/client/interfaces/methods.py:1089
 msgid "System database not found or corrupted"
-msgstr ""
+msgstr "Systemets databas kan inte hittas eller är trasigt"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1090
 msgid "running in safe mode using temporary, empty repository"
-msgstr ""
+msgstr "körs i felsäkertläge och använder tillfälliga, tomma förråd"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1270
 msgid "Backing up repository to"
-msgstr ""
+msgstr "Säkerhetskopierar förråd till"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1290
 msgid "Repository backed up successfully"
-msgstr ""
+msgstr "Säkerhetskopieringen av förråd lyckades"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1299
 #: ../../lib/entropy/client/interfaces/methods.py:1357
 #: ../../lib/entropy/const.py:674
 msgid "All fine"
-msgstr ""
+msgstr "Allt är bra"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1318
 msgid "Restoring backed up repository"
-msgstr ""
+msgstr "Återställer säkerhetskopierat förråd"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1336
 msgid "Unable to unpack"
-msgstr ""
+msgstr "Kunda inte packa upp"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1346
 msgid "Repository restored successfully"
-msgstr ""
+msgstr "Återställning av förrådet lyckades"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1469
-#: ../../lib/entropy/client/interfaces/package.py:4100
+#: ../../lib/entropy/client/interfaces/package.py:4105
 msgid "Removing"
 msgstr "Tar bort"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1916
 msgid "Resources unlocked, let's go!"
-msgstr ""
+msgstr "Resurserna upplåsta, då kör vi!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1924
 msgid "Resources still locked, giving up!"
-msgstr ""
+msgstr "Resurserna är fortfarande låsta, jag ger upp!"
 
 #: ../../lib/entropy/client/interfaces/methods.py:1932
 msgid "Resources locked, sleeping..."
-msgstr ""
+msgstr "Resurserna är låsta, tar en tupplur..."
 
 #: ../../lib/entropy/client/interfaces/methods.py:2126
 msgid "Checking speed of"
-msgstr ""
+msgstr "Kollar hastigheten för"
 
 #: ../../lib/entropy/client/interfaces/methods.py:2157
 msgid "Mirror speed"
-msgstr ""
+msgstr "Spegelns hastighet"
 
-#: ../../lib/entropy/client/interfaces/methods.py:2671
+#: ../../lib/entropy/client/interfaces/methods.py:2676
 msgid "not a valid method"
-msgstr ""
+msgstr "metoden är inte giltig"
 
-#: ../../lib/entropy/client/interfaces/db.py:294
+#: ../../lib/entropy/client/interfaces/db.py:299
 msgid "Injecting downloaded dump"
-msgstr "Injicerar hämtad dump"
+msgstr "pumpar in hämtad dump"
 
-#: ../../lib/entropy/client/interfaces/db.py:385
+#: ../../lib/entropy/client/interfaces/db.py:390
 msgid "repository is not available at the following URL:"
-msgstr ""
+msgstr "Finns inget förråd på följande URL:"
 
-#: ../../lib/entropy/client/interfaces/db.py:396
+#: ../../lib/entropy/client/interfaces/db.py:401
 msgid "Looking for an alternate route using package mirrors"
-msgstr ""
+msgstr "Söker efter en alternativ rutt genom paketens speglar"
 
-#: ../../lib/entropy/client/interfaces/db.py:408
+#: ../../lib/entropy/client/interfaces/db.py:413
 msgid "Checking repository URL"
-msgstr ""
+msgstr "Kontrollerar förrådets URL"
 
-#: ../../lib/entropy/client/interfaces/db.py:429
+#: ../../lib/entropy/client/interfaces/db.py:434
 msgid "Found repository at URL"
-msgstr ""
+msgstr "Förråd hittat på URL"
 
-#: ../../lib/entropy/client/interfaces/db.py:441
+#: ../../lib/entropy/client/interfaces/db.py:446
 msgid "Unable to find alternate repository mirrors. Sorry."
-msgstr ""
+msgstr "Kan inte hitta alternativa förrådsspeglar."
 
-#: ../../lib/entropy/client/interfaces/db.py:457
+#: ../../lib/entropy/client/interfaces/db.py:462
 #: ../../client/solo/commands/status.py:153
 msgid "Repository URL"
-msgstr "Förråds-URL"
+msgstr "Förrådets URL"
 
-#: ../../lib/entropy/client/interfaces/db.py:465
+#: ../../lib/entropy/client/interfaces/db.py:470
 msgid "Repository local path"
 msgstr "Förrådets lokala sökväg"
 
-#: ../../lib/entropy/client/interfaces/db.py:473
+#: ../../lib/entropy/client/interfaces/db.py:478
 msgid "Repository API"
-msgstr "Förråds-API"
+msgstr "Förrådets API"
 
-#: ../../lib/entropy/client/interfaces/db.py:488
+#: ../../lib/entropy/client/interfaces/db.py:493
 msgid "Repository is being updated"
 msgstr "Förrådet uppdateras"
 
-#: ../../lib/entropy/client/interfaces/db.py:489
+#: ../../lib/entropy/client/interfaces/db.py:494
 msgid "Try again in a few minutes"
-msgstr "Försök igen om ett par minuter"
+msgstr "Försök igen om några minuter"
 
 #. starting to download
-#: ../../lib/entropy/client/interfaces/db.py:550
+#: ../../lib/entropy/client/interfaces/db.py:555
 msgid "Downloading repository"
-msgstr ""
+msgstr "Hämtar förråd"
 
-#: ../../lib/entropy/client/interfaces/db.py:594
+#: ../../lib/entropy/client/interfaces/db.py:599
 msgid "unable to download the repository"
-msgstr ""
+msgstr "kan inte hämta ned förrådet"
 
-#: ../../lib/entropy/client/interfaces/db.py:614
+#: ../../lib/entropy/client/interfaces/db.py:619
 msgid "Downloading checksum"
 msgstr "Hämtar kontrollsumma"
 
-#: ../../lib/entropy/client/interfaces/db.py:639
+#: ../../lib/entropy/client/interfaces/db.py:644
 msgid "Cannot fetch checksum"
-msgstr ""
+msgstr "Kan inte hämta kontrollsumma"
 
-#: ../../lib/entropy/client/interfaces/db.py:640
+#: ../../lib/entropy/client/interfaces/db.py:645
 #: ../../lib/entropy/client/interfaces/db.py:1216
 msgid "Cannot verify repository integrity"
-msgstr ""
+msgstr "Kan inte verifiera förrådets integritet"
 
-#: ../../lib/entropy/client/interfaces/db.py:731
+#: ../../lib/entropy/client/interfaces/db.py:736
 msgid "Unpacking database to"
 msgstr "Packar upp databas till"
 
-#: ../../lib/entropy/client/interfaces/db.py:748
+#: ../../lib/entropy/client/interfaces/db.py:753
 msgid "Cannot unpack compressed package"
-msgstr ""
+msgstr "Kan inte packa upp det komprimerade paketet"
 
-#: ../../lib/entropy/client/interfaces/db.py:749
+#: ../../lib/entropy/client/interfaces/db.py:754
 msgid "Skipping repository"
-msgstr ""
+msgstr "Hoppar över förråd"
 
-#: ../../lib/entropy/client/interfaces/db.py:783
+#: ../../lib/entropy/client/interfaces/db.py:788
 msgid "Repository is invalid"
-msgstr ""
+msgstr "Förrådet är ogiltigt"
 
-#: ../../lib/entropy/client/interfaces/db.py:807
+#: ../../lib/entropy/client/interfaces/db.py:812
 msgid "Indexing Repository metadata"
 msgstr "Indexerar förrådets metadata"
 
 #: ../../lib/entropy/client/interfaces/db.py:1023
 msgid "Downloading repository metafile"
-msgstr "Hämtar förrådsmetafil"
+msgstr "Hämtar förrådets metafil"
 
 #: ../../lib/entropy/client/interfaces/db.py:1033
 msgid "Downloading GPG signature of repository metafile"
-msgstr ""
+msgstr "Hämtar GPG-signatur för förrådets metafil"
 
 #: ../../lib/entropy/client/interfaces/db.py:1043
 msgid "Downloading Notice Board"
-msgstr ""
+msgstr "Hämtar anslagstavla"
 
 #: ../../lib/entropy/client/interfaces/db.py:1069
 msgid "unpacked meta file"
-msgstr "packade upp metadata"
+msgstr "uppackad metafil"
 
 #: ../../lib/entropy/client/interfaces/db.py:1075
 msgid "removed meta file"
-msgstr "tog bort metafil"
+msgstr "borttagen metafil"
 
 #: ../../lib/entropy/client/interfaces/db.py:1092
 msgid "not available, it's ok"
-msgstr ""
+msgstr "inte tillgänglig, det är lugnt!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1096
 msgid "not available, not very ok!"
-msgstr ""
+msgstr "inte tillgänglig, inte alls lugnt!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1109
 msgid "available, w00t!"
-msgstr "tillgänglig, w00t!"
+msgstr "tillgänglig, vAAAAd!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1127
 msgid "cannot be unpacked, not very ok!"
-msgstr ""
+msgstr "kan inte packas upp, inte alls lugnt!"
 
 #: ../../lib/entropy/client/interfaces/db.py:1178
 msgid "Repository revision"
@@ -744,16 +746,16 @@ msgstr "Förrådsrevision"
 
 #: ../../lib/entropy/client/interfaces/db.py:1201
 msgid "Checking downloaded repository"
-msgstr ""
+msgstr "Kontrollerar hämtat förråd"
 
 #: ../../lib/entropy/client/interfaces/db.py:1215
 msgid "Cannot open digest"
-msgstr ""
+msgstr "Kan inte öppna sammandrag"
 
 #: ../../lib/entropy/client/interfaces/db.py:1226
 #: ../../lib/entropy/client/interfaces/db.py:1237
 msgid "Downloaded repository status"
-msgstr ""
+msgstr "Status för hämtat förråd"
 
 #: ../../lib/entropy/client/interfaces/db.py:1227
 msgid "OK"
@@ -761,11 +763,11 @@ msgstr "OK"
 
 #: ../../lib/entropy/client/interfaces/db.py:1238
 msgid "ERROR"
-msgstr ""
+msgstr "FEL"
 
 #: ../../lib/entropy/client/interfaces/db.py:1247
 msgid "An error occured while checking repository integrity"
-msgstr ""
+msgstr "Ett fel uppstod när förrådets integritet skulle kontrolleras"
 
 #: ../../lib/entropy/client/interfaces/db.py:1248
 msgid "Giving up"
@@ -773,80 +775,82 @@ msgstr "Ger upp"
 
 #: ../../lib/entropy/client/interfaces/db.py:1270
 #: ../../lib/entropy/security.py:284
-msgid ""
-"Make sure to verify the imported key and set an appropriate trust level"
-msgstr "Kom ihåg att verifiera importerade nycklar och sätta passande nivåer"
+msgid "Make sure to verify the imported key and set an appropriate trust level"
+msgstr ""
+"Kom ihåg att verifiera importerade nycklar och att sätta lämpliga "
+"förtroendenivåer"
 
 #: ../../lib/entropy/client/interfaces/db.py:1289
 msgid "This repository suports GPG-signed packages"
-msgstr ""
+msgstr "Detta förråd stödjer GPG-singnerade paket"
 
 #: ../../lib/entropy/client/interfaces/db.py:1296
 msgid "you may want to install GnuPG to take advantage of this feature"
-msgstr ""
+msgstr "du bör installera GnuPG för att fullt använda denna feature"
 
 #: ../../lib/entropy/client/interfaces/db.py:1330
 #: ../../lib/entropy/security.py:323
 msgid "GPG key changed for"
-msgstr ""
+msgstr "GPG-nyckeln ändrades för"
 
 #: ../../lib/entropy/client/interfaces/db.py:1350
 #: ../../lib/entropy/security.py:342
 msgid "GPG key already installed for"
-msgstr "GPG-nyckel redan installerad för"
+msgstr "GPG-nyckeln är redan installerad för"
 
 #: ../../lib/entropy/client/interfaces/db.py:1363
 msgid "GPG key EXPIRED for repository"
-msgstr ""
+msgstr "GPG-nyckeln har utgått för detta förråd"
 
 #: ../../lib/entropy/client/interfaces/db.py:1375
 msgid "Installing GPG key for repository"
-msgstr ""
+msgstr "Installerar GPG-nyckel för förråd"
 
 #: ../../lib/entropy/client/interfaces/db.py:1393
 #: ../../lib/entropy/client/interfaces/db.py:1425
 #: ../../lib/entropy/security.py:380
 msgid "Error during GPG key installation"
-msgstr ""
+msgstr "Fel vid installation av GPG-nyckel"
 
 #: ../../lib/entropy/client/interfaces/db.py:1403
 msgid "GPG key seems already installed but not properly recorded, resetting"
 msgstr ""
+"GPG-nyckel verkar redan finnas men är inte korrekt registrerad, återställs"
 
 #: ../../lib/entropy/client/interfaces/db.py:1437
 msgid "Successfully installed GPG key for repository"
-msgstr ""
+msgstr "Förrådets GPG-nyckel installerades utan problem"
 
 #: ../../lib/entropy/client/interfaces/db.py:1446
 #: ../../lib/entropy/security.py:400
 msgid "Fingerprint"
-msgstr ""
+msgstr "Registrering"
 
 #: ../../lib/entropy/client/interfaces/db.py:1486
 msgid "Verifying GPG signature of"
-msgstr ""
+msgstr "Verifierar GPG-singnatur för"
 
 #: ../../lib/entropy/client/interfaces/db.py:1500
 msgid "Verified GPG signature of"
-msgstr "Verifierade GPG-signatur för"
+msgstr "Verifierad GPG-signatur för"
 
 #: ../../lib/entropy/client/interfaces/db.py:1510
 #: ../../lib/entropy/security.py:425
 msgid "Error during GPG verification of"
-msgstr ""
+msgstr "Fel vid GPG-verifiering för"
 
 #: ../../lib/entropy/client/interfaces/db.py:1519
 #: ../../lib/entropy/security.py:434
 msgid "It could mean a potential security risk"
-msgstr ""
+msgstr "Det är en potentiell säkerhetsrisk"
 
 #: ../../lib/entropy/client/interfaces/db.py:1574
 msgid "Web Service"
-msgstr ""
+msgstr "Webbtjänst"
 
 #: ../../lib/entropy/client/interfaces/db.py:1575
 msgid "skipping differential sync"
-msgstr ""
+msgstr "Hoppar över differens synkronisering"
 
 #: ../../lib/entropy/client/interfaces/db.py:1576
 msgid "threshold"
@@ -854,15 +858,15 @@ msgstr "tröskel"
 
 #: ../../lib/entropy/client/interfaces/db.py:1610
 msgid "Web Service communication error"
-msgstr ""
+msgstr "Kommunikationsfel hos Webbtjänsten"
 
 #: ../../lib/entropy/client/interfaces/db.py:1630
 msgid "Web Service data error"
-msgstr ""
+msgstr "Datafel hos Webbtjänsten"
 
 #: ../../lib/entropy/client/interfaces/db.py:1646
 msgid "Local status"
-msgstr ""
+msgstr "Lokal status"
 
 #: ../../lib/entropy/client/interfaces/db.py:1678
 msgid "Fetching segments"
@@ -872,35 +876,35 @@ msgstr "Hämtar segment"
 #: ../../lib/entropy/client/interfaces/db.py:1733
 #: ../../lib/entropy/client/interfaces/db.py:1750
 msgid "Web Service status"
-msgstr ""
+msgstr "Webbtjänstens status"
 
 #: ../../lib/entropy/client/interfaces/db.py:1715
 msgid "cannot fetch repository metadata"
-msgstr ""
+msgstr "kan inte hämta förrådets metadata "
 
 #: ../../lib/entropy/client/interfaces/db.py:1734
 msgid "cannot update treeupdates data"
-msgstr ""
+msgstr "kan inte uppdatera träuppdateringens data"
 
 #: ../../lib/entropy/client/interfaces/db.py:1751
 msgid "cannot update package sets data"
-msgstr ""
+msgstr "kan inte uppdatera paket-setets data"
 
 #: ../../lib/entropy/client/interfaces/db.py:1767
 msgid "Fetch error on segment while adding"
-msgstr ""
+msgstr "Hämtningsfel på segment medans det lades till"
 
 #: ../../lib/entropy/client/interfaces/db.py:1793
 msgid "repository error while adding packages"
-msgstr ""
+msgstr "Förrådsfel medans paketet lades till"
 
 #: ../../lib/entropy/client/interfaces/db.py:1816
 msgid "repository error while removing packages"
-msgstr "förrådsfel vid paketborttagning"
+msgstr "förrådet rapporterar fel vid borttagning av paket"
 
 #: ../../lib/entropy/client/interfaces/db.py:1832
 msgid "Repository checksum doesn't match remote."
-msgstr ""
+msgstr "Förrådets kontrollsumma matchar inte fjärrförrådets."
 
 #: ../../lib/entropy/client/interfaces/db.py:1835
 msgid "local"
@@ -908,23 +912,23 @@ msgstr "lokal"
 
 #: ../../lib/entropy/client/interfaces/db.py:1840
 msgid "remote"
-msgstr ""
+msgstr "fjärr"
 
-#: ../../lib/entropy/client/interfaces/db.py:1903
+#: ../../lib/entropy/client/interfaces/db.py:1926
 msgid "repository is already up to date"
-msgstr ""
+msgstr "förrådet är redan uppdaterat"
 
-#: ../../lib/entropy/client/interfaces/db.py:2107
+#: ../../lib/entropy/client/interfaces/db.py:2130
 msgid "Configuration files update error, not critical, continuing"
-msgstr ""
+msgstr "Fel vid uppdatering av konfigurationsfiler, ej kritiskt, fortsätter"
 
 #: ../../lib/entropy/client/interfaces/package.py:373
 msgid "Already prepared"
-msgstr ""
+msgstr "Redan förberedd"
 
 #: ../../lib/entropy/client/interfaces/package.py:378
 msgid "Not yet prepared"
-msgstr ""
+msgstr "Har inte förberetts"
 
 #: ../../lib/entropy/client/interfaces/package.py:610
 #: ../../lib/entropy/client/interfaces/package.py:1281
@@ -934,31 +938,31 @@ msgstr "Spegel"
 #: ../../lib/entropy/client/interfaces/package.py:612
 #: ../../lib/entropy/client/interfaces/package.py:1283
 msgid "maximum failure threshold reached"
-msgstr ""
+msgstr "maximala gränsen för fel har uppnåtts"
 
 #: ../../lib/entropy/client/interfaces/package.py:657
 msgid "success"
-msgstr ""
+msgstr "lyckades"
 
 #: ../../lib/entropy/client/interfaces/package.py:666
 msgid "Aggregated transfer rate"
-msgstr ""
+msgstr "Sammanställd överföringshastighet"
 
 #: ../../lib/entropy/client/interfaces/package.py:669
 #: ../../lib/entropy/client/interfaces/package.py:1339
-#: ../../lib/entropy/client/interfaces/package.py:3417
+#: ../../lib/entropy/client/interfaces/package.py:3422
 msgid "second"
 msgstr "sekund"
 
 #: ../../lib/entropy/client/interfaces/package.py:684
 #: ../../lib/entropy/client/interfaces/package.py:1355
-#: ../../lib/entropy/client/interfaces/package.py:3432
+#: ../../lib/entropy/client/interfaces/package.py:3437
 msgid "Error downloading from"
 msgstr "Fel vid hämtning från"
 
 #: ../../lib/entropy/client/interfaces/package.py:688
 msgid "data not available on this mirror"
-msgstr ""
+msgstr "datan kan inte hittas på denna spegel"
 
 #: ../../lib/entropy/client/interfaces/package.py:691
 #: ../../lib/entropy/client/interfaces/package.py:1364
@@ -968,17 +972,17 @@ msgstr "fel kontrollsumma"
 #. timeout!
 #: ../../lib/entropy/client/interfaces/package.py:695
 msgid "timeout error"
-msgstr ""
+msgstr "timeout fel"
 
 #: ../../lib/entropy/client/interfaces/package.py:697
 #: ../../lib/entropy/client/interfaces/package.py:1385
-#: ../../lib/entropy/client/interfaces/package.py:3443
+#: ../../lib/entropy/client/interfaces/package.py:3448
 msgid "discarded download"
-msgstr ""
+msgstr "avvisad hämtning"
 
 #: ../../lib/entropy/client/interfaces/package.py:700
 #: ../../lib/entropy/client/interfaces/package.py:1388
-#: ../../lib/entropy/client/interfaces/package.py:3445
+#: ../../lib/entropy/client/interfaces/package.py:3450
 msgid "unknown reason"
 msgstr "okänd orsak"
 
@@ -987,19 +991,19 @@ msgid "Downloading from"
 msgstr "Hämtar från"
 
 #: ../../lib/entropy/client/interfaces/package.py:1333
-#: ../../lib/entropy/client/interfaces/package.py:3414
+#: ../../lib/entropy/client/interfaces/package.py:3419
 msgid "Successfully downloaded from"
-msgstr "Framgångsrik hämtning från"
+msgstr "Hämtningen lyckades från"
 
 #: ../../lib/entropy/client/interfaces/package.py:1338
-#: ../../lib/entropy/client/interfaces/package.py:3417
+#: ../../lib/entropy/client/interfaces/package.py:3422
 msgid "at"
 msgstr "på"
 
 #: ../../lib/entropy/client/interfaces/package.py:1361
-#: ../../lib/entropy/client/interfaces/package.py:3438
+#: ../../lib/entropy/client/interfaces/package.py:3443
 msgid "file not available on this mirror"
-msgstr ""
+msgstr "filen är inte tillgänglig på denna spegel"
 
 #: ../../lib/entropy/client/interfaces/package.py:1369
 msgid "Disabling resume"
@@ -1007,15 +1011,15 @@ msgstr "Avaktiverar återupptagning"
 
 #: ../../lib/entropy/client/interfaces/package.py:1379
 msgid "timeout, retrying on this mirror"
-msgstr ""
+msgstr "timeout, försöker igen på denna spegel"
 
 #: ../../lib/entropy/client/interfaces/package.py:1382
 msgid "timeout, giving up"
-msgstr ""
+msgstr "timeout, jag ger upp "
 
 #: ../../lib/entropy/client/interfaces/package.py:1487
 msgid "Package signature verification error for"
-msgstr ""
+msgstr "Paketsignaturs verifieringsfel för"
 
 #: ../../lib/entropy/client/interfaces/package.py:1519
 msgid "disabled"
@@ -1023,23 +1027,23 @@ msgstr "avaktiverad"
 
 #: ../../lib/entropy/client/interfaces/package.py:1532
 msgid "Checking package signature"
-msgstr ""
+msgstr "Kontollerar paketsignatur"
 
 #: ../../lib/entropy/client/interfaces/package.py:1543
 msgid "Package signature verification"
-msgstr ""
+msgstr "Paketsignatur verifiering"
 
 #: ../../lib/entropy/client/interfaces/package.py:1545
 msgid "temporarily unavailable"
-msgstr ""
+msgstr "tillfälligt otilllgänglig"
 
 #: ../../lib/entropy/client/interfaces/package.py:1555
 msgid "Package signature"
-msgstr ""
+msgstr "Paketsignatur"
 
 #: ../../lib/entropy/client/interfaces/package.py:1557
 msgid "does not match the recorded one"
-msgstr ""
+msgstr "matchar inte den registrerade"
 
 #: ../../lib/entropy/client/interfaces/package.py:1567
 msgid "matches"
@@ -1047,7 +1051,7 @@ msgstr "stämmer"
 
 #: ../../lib/entropy/client/interfaces/package.py:1582
 msgid "Checking package checksum..."
-msgstr ""
+msgstr "Kontrollerar paketets kontrollsumma..."
 
 #: ../../lib/entropy/client/interfaces/package.py:1595
 msgid "Package checksum matches"
@@ -1056,36 +1060,36 @@ msgstr "Paketets kontrollsumma stämmer"
 #: ../../lib/entropy/client/interfaces/package.py:1615
 #, python-format
 msgid "Checksum does not match. Download attempt #%s"
-msgstr ""
+msgstr "Kontrollsumman matchar inte. Hämtningsförsök #%s"
 
 #: ../../lib/entropy/client/interfaces/package.py:1637
 msgid "Cannot properly fetch package! Quitting."
-msgstr ""
+msgstr "Kan inte hämta paketet på ett bra sätt! Avbryter."
 
 #: ../../lib/entropy/client/interfaces/package.py:1649
 msgid "Cannot fetch package or checksum does not match"
-msgstr ""
+msgstr "Kan inte hämta paket eller så stämmer inte kontrollsumman"
 
 #: ../../lib/entropy/client/interfaces/package.py:1650
 msgid "Try to download latest repositories"
-msgstr ""
+msgstr "Försök att hämta det senaste förrådet"
 
 #: ../../lib/entropy/client/interfaces/package.py:1679
-#: ../../lib/entropy/client/interfaces/package.py:4072
+#: ../../lib/entropy/client/interfaces/package.py:4077
 msgid "Unpacking"
 msgstr "Packar upp"
 
 #: ../../lib/entropy/client/interfaces/package.py:1720
 msgid "Unpack error"
-msgstr ""
+msgstr "Fel vid uppacking"
 
 #: ../../lib/entropy/client/interfaces/package.py:1749
 msgid "Unable to find Entropy metadata in package"
-msgstr ""
+msgstr "Kan inte hitta Entropys metadata i paketet"
 
 #: ../../lib/entropy/client/interfaces/package.py:1813
 msgid "configuration phase"
-msgstr ""
+msgstr "konfigurationsetapp"
 
 #: ../../lib/entropy/client/interfaces/package.py:1830
 msgid "Removing from Entropy"
@@ -1100,17 +1104,17 @@ msgid "remove"
 msgstr "ta bort"
 
 #: ../../lib/entropy/client/interfaces/package.py:1939
-#: ../../lib/entropy/client/interfaces/package.py:3305
+#: ../../lib/entropy/client/interfaces/package.py:3310
 msgid "Protecting config file"
-msgstr ""
+msgstr "Skyddar konfigurationsfilen"
 
 #: ../../lib/entropy/client/interfaces/package.py:1958
 msgid "This package contains a badly encoded file !!!"
-msgstr ""
+msgstr "Detta paketet innehåller en dåligt kodad fil !!!"
 
 #: ../../lib/entropy/client/interfaces/package.py:2075
 msgid "Collision found during removal of"
-msgstr ""
+msgstr "En krock har uppstått vid borttagning av"
 
 #: ../../lib/entropy/client/interfaces/package.py:2191
 msgid "Updating database"
@@ -1123,36 +1127,36 @@ msgstr "%s är en fil men skall vara en katalog! Tar bort om 20 sekunder..."
 
 #: ../../lib/entropy/client/interfaces/package.py:2710
 msgid "directory expected, symlink found"
-msgstr ""
+msgstr "katalog förväntad, symlink hittad"
 
 #: ../../lib/entropy/client/interfaces/package.py:2713
 #: ../../lib/entropy/client/interfaces/package.py:3017
 msgid "Removing in 20 seconds !!"
-msgstr "Tar bort om 20 sekunder!"
+msgstr "Tar bort om 20 sekunder!!"
 
 #: ../../lib/entropy/client/interfaces/package.py:2759
 msgid "Cannot remove symlink"
-msgstr ""
+msgstr "Kan inte ta bort symlänken"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
 #: ../../lib/entropy/client/interfaces/package.py:2923
 msgid "Automerging config file, never modified"
-msgstr ""
+msgstr "Sammanfogar automatiskt konfigurationsfilen. Ändrades aldrig"
 
 #: ../../lib/entropy/client/interfaces/package.py:2952
 #: ../../lib/entropy/client/interfaces/package.py:2974
 msgid "Circular symlink issue"
-msgstr ""
+msgstr "Kretsformat problem med symlink"
 
 #: ../../lib/entropy/client/interfaces/package.py:3014
 msgid "file expected, directory found"
-msgstr ""
+msgstr "fil förväntad, katalogen hittad"
 
 #: ../../lib/entropy/client/interfaces/package.py:3067
 msgid "File move error"
-msgstr ""
+msgstr "Fel vid flytt av fil"
 
 #: ../../lib/entropy/client/interfaces/package.py:3070
 msgid "please report"
@@ -1160,213 +1164,213 @@ msgstr "vänligen rapportera"
 
 #: ../../lib/entropy/client/interfaces/package.py:3222
 msgid "Cannot protect broken symlink"
-msgstr ""
+msgstr "Kan inte skydda trasig symlänk"
 
-#: ../../lib/entropy/client/interfaces/package.py:3261
+#: ../../lib/entropy/client/interfaces/package.py:3266
 msgid "Skipping file installation/removal"
-msgstr ""
+msgstr "Hoppar över installation/borttagning "
 
-#: ../../lib/entropy/client/interfaces/package.py:3322
+#: ../../lib/entropy/client/interfaces/package.py:3327
 msgid "Collision found during install for"
-msgstr ""
+msgstr "Krock uppstod under installationen av"
 
-#: ../../lib/entropy/client/interfaces/package.py:3325
+#: ../../lib/entropy/client/interfaces/package.py:3330
 msgid "cannot overwrite"
-msgstr ""
+msgstr "kan inte skriva över"
 
-#: ../../lib/entropy/client/interfaces/package.py:3398
-#: ../../lib/entropy/client/interfaces/package.py:3461
-#: ../../lib/entropy/client/interfaces/package.py:3508
-#: ../../client/solo/utils.py:253 ../../client/solo/commands/command.py:286
+#: ../../lib/entropy/client/interfaces/package.py:3403
+#: ../../lib/entropy/client/interfaces/package.py:3466
+#: ../../lib/entropy/client/interfaces/package.py:3513
+#: ../../client/solo/utils.py:261 ../../client/solo/commands/command.py:291
 msgid "Downloading"
 msgstr "Hämtar"
 
-#: ../../lib/entropy/client/interfaces/package.py:3425
+#: ../../lib/entropy/client/interfaces/package.py:3430
 msgid "Local path"
-msgstr ""
+msgstr "Lokal sökväg"
 
-#: ../../lib/entropy/client/interfaces/package.py:3491
+#: ../../lib/entropy/client/interfaces/package.py:3496
 msgid "Package cannot be fetched. Try to update repositories"
-msgstr ""
+msgstr "Paketet kan inte hämtas. Försök att uppdatera dina förråd"
 
-#: ../../lib/entropy/client/interfaces/package.py:3510
+#: ../../lib/entropy/client/interfaces/package.py:3515
 msgid "archive"
 msgid_plural "archives"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "arkiv"
+msgstr[1] "arkiven"
 
-#: ../../lib/entropy/client/interfaces/package.py:3527
+#: ../../lib/entropy/client/interfaces/package.py:3532
 msgid "Some packages cannot be fetched"
-msgstr ""
+msgstr "Några av paketen kan inte hämtas"
 
-#: ../../lib/entropy/client/interfaces/package.py:3528
+#: ../../lib/entropy/client/interfaces/package.py:3533
 msgid "Try to update your repositories and retry"
-msgstr ""
+msgstr "Uppdatera dina förråd och försök igen"
 
-#: ../../lib/entropy/client/interfaces/package.py:3556
+#: ../../lib/entropy/client/interfaces/package.py:3561
 msgid "Package cannot be downloaded, unknown error."
-msgstr ""
+msgstr "Paketet kan inte hämtas, okänt fel."
 
-#: ../../lib/entropy/client/interfaces/package.py:3565
+#: ../../lib/entropy/client/interfaces/package.py:3570
 msgid "Installed package in queue vanished, skipping."
-msgstr ""
+msgstr "Paketet som står i kö för installation försvann, hoppar över"
 
-#: ../../lib/entropy/client/interfaces/package.py:3601
+#: ../../lib/entropy/client/interfaces/package.py:3606
 msgid "Merging package"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package.py:3654
-msgid "You are running out of disk space"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package.py:3655
-msgid "I bet, you're probably Michele"
-msgstr ""
+msgstr "Sammanfogar paket"
 
 #: ../../lib/entropy/client/interfaces/package.py:3659
+msgid "You are running out of disk space"
+msgstr "Du håller på att få slut på diskutrymme"
+
+#: ../../lib/entropy/client/interfaces/package.py:3660
+msgid "I bet, you're probably Michele"
+msgstr "Jag slår vad om att du förmodlingen är Michele"
+
+#: ../../lib/entropy/client/interfaces/package.py:3664
 msgid "An error occured while trying to unpack the package"
-msgstr ""
+msgstr "Ett fel uppstod när paketet skulle försökas packas upp"
 
-#: ../../lib/entropy/client/interfaces/package.py:3662
-#: ../../lib/entropy/client/interfaces/package.py:3718
+#: ../../lib/entropy/client/interfaces/package.py:3667
+#: ../../lib/entropy/client/interfaces/package.py:3723
 msgid "Check if your system is healthy"
-msgstr ""
+msgstr "Kontrollera om systemet är friskt"
 
-#: ../../lib/entropy/client/interfaces/package.py:3681
+#: ../../lib/entropy/client/interfaces/package.py:3686
 msgid "Installing package"
-msgstr "Installerar paket"
+msgstr "Installerar paketet"
 
-#: ../../lib/entropy/client/interfaces/package.py:3701
+#: ../../lib/entropy/client/interfaces/package.py:3706
 msgid "unsupported splitdebug usage (package files)"
-msgstr ""
+msgstr "kan inte hantera användningen av splitdebug (paket filer)"
 
-#: ../../lib/entropy/client/interfaces/package.py:3705
+#: ../../lib/entropy/client/interfaces/package.py:3710
 msgid "<3 debug files installation enabled <3"
-msgstr ""
+msgstr "<3 installation av debugfiler aktiverad <3"
 
-#: ../../lib/entropy/client/interfaces/package.py:3717
+#: ../../lib/entropy/client/interfaces/package.py:3722
 msgid "An error occured while trying to install the package"
-msgstr ""
+msgstr "Ett fel uppstod vid försök att installera paketet"
 
-#: ../../lib/entropy/client/interfaces/package.py:3732
+#: ../../lib/entropy/client/interfaces/package.py:3737
 msgid "Removing data"
 msgstr "Tar bort data"
 
-#: ../../lib/entropy/client/interfaces/package.py:3745
+#: ../../lib/entropy/client/interfaces/package.py:3750
 msgid "An error occured while trying to remove the package"
-msgstr ""
+msgstr "Ett fel uppstod vid försök att avinstallera paketet"
 
-#: ../../lib/entropy/client/interfaces/package.py:3746
+#: ../../lib/entropy/client/interfaces/package.py:3751
 msgid "Check if you have enough disk space on your hard disk"
-msgstr ""
+msgstr "Kontrollera om du har tillräckligt med diskutrymme"
 
-#: ../../lib/entropy/client/interfaces/package.py:3760
-#: ../../lib/entropy/client/interfaces/package.py:4108
+#: ../../lib/entropy/client/interfaces/package.py:3765
+#: ../../lib/entropy/client/interfaces/package.py:4113
 #: ../../client/solo/utils.py:64
 msgid "Cleaning"
-msgstr "Städar"
+msgstr "Rensar"
 
-#: ../../lib/entropy/client/interfaces/package.py:3819
+#: ../../lib/entropy/client/interfaces/package.py:3824
 msgid "Error during package files permissions setup"
-msgstr ""
+msgstr "Fel uppstod när tillstånden skulle sättas för paketen"
 
-#: ../../lib/entropy/client/interfaces/package.py:3851
+#: ../../lib/entropy/client/interfaces/package.py:3856
 msgid "Cleaning previously installed application data."
-msgstr ""
+msgstr "Rensar onödig data från installationen."
 
-#: ../../lib/entropy/client/interfaces/package.py:3958
+#: ../../lib/entropy/client/interfaces/package.py:3963
 msgid "Configuring package"
-msgstr ""
+msgstr "Konfigurerar paket"
 
-#: ../../lib/entropy/client/interfaces/package.py:3970
-#: ../../lib/entropy/client/interfaces/package.py:3990
+#: ../../lib/entropy/client/interfaces/package.py:3975
+#: ../../lib/entropy/client/interfaces/package.py:3995
 msgid "An error occured while trying to configure the package"
-msgstr ""
+msgstr "Ett fel uppstod vid försök när paketet skulle konfigureras"
 
-#: ../../lib/entropy/client/interfaces/package.py:3972
+#: ../../lib/entropy/client/interfaces/package.py:3977
 msgid "Make sure that your system is healthy"
-msgstr ""
+msgstr "Försäkra dig om att ditt system är friskt"
 
-#: ../../lib/entropy/client/interfaces/package.py:3992
+#: ../../lib/entropy/client/interfaces/package.py:3997
 msgid "It seems that Source Package Manager entry is missing"
-msgstr ""
+msgstr "Det verkar som om att Portage anteckning saknas"
 
-#: ../../lib/entropy/client/interfaces/package.py:4016
+#: ../../lib/entropy/client/interfaces/package.py:4021
 msgid "Installed package vanished"
-msgstr ""
+msgstr "Det installerade paketet försvann"
 
-#: ../../lib/entropy/client/interfaces/package.py:4022
+#: ../../lib/entropy/client/interfaces/package.py:4027
 msgid "Fetch not available"
-msgstr ""
+msgstr "Hämtning är inte möjlig"
 
-#: ../../lib/entropy/client/interfaces/package.py:4029
+#: ../../lib/entropy/client/interfaces/package.py:4034
 msgid "Fetching"
 msgstr "Hämtar"
 
-#: ../../lib/entropy/client/interfaces/package.py:4037
+#: ../../lib/entropy/client/interfaces/package.py:4042
 msgid "Multi Fetching"
 msgstr "Multihämtning"
 
-#: ../../lib/entropy/client/interfaces/package.py:4038
-#: ../../lib/entropy/client/interfaces/package.py:4058
-#: ../../client/solo/commands/query.py:1265
+#: ../../lib/entropy/client/interfaces/package.py:4043
+#: ../../lib/entropy/client/interfaces/package.py:4063
+#: ../../client/solo/commands/query.py:1272
 #: ../../client/solo/commands/_manage.py:602
 msgid "package"
 msgid_plural "packages"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "paket"
+msgstr[1] "paketen"
 
-#: ../../lib/entropy/client/interfaces/package.py:4044
+#: ../../lib/entropy/client/interfaces/package.py:4049
 msgid "Fetching sources"
-msgstr "Hämtar källkoder"
+msgstr "Hämtar källor"
 
-#: ../../lib/entropy/client/interfaces/package.py:4050
+#: ../../lib/entropy/client/interfaces/package.py:4055
 msgid "Verifying"
-msgstr ""
+msgstr "Verifierar"
 
-#: ../../lib/entropy/client/interfaces/package.py:4057
+#: ../../lib/entropy/client/interfaces/package.py:4062
 msgid "Multi Verification"
-msgstr ""
+msgstr "Fleraktiv verifikation"
 
-#: ../../lib/entropy/client/interfaces/package.py:4064
+#: ../../lib/entropy/client/interfaces/package.py:4069
 msgid "Merging"
 msgstr "Sammanfogar"
 
-#: ../../lib/entropy/client/interfaces/package.py:4085
+#: ../../lib/entropy/client/interfaces/package.py:4090
 msgid "Installing"
 msgstr "Installerar"
 
-#: ../../lib/entropy/client/interfaces/package.py:4116
+#: ../../lib/entropy/client/interfaces/package.py:4121
 msgid "Postinstall"
-msgstr ""
+msgstr "Efterinstallation"
 
-#: ../../lib/entropy/client/interfaces/package.py:4124
+#: ../../lib/entropy/client/interfaces/package.py:4129
 msgid "Setup"
-msgstr ""
+msgstr "Setup"
 
-#: ../../lib/entropy/client/interfaces/package.py:4132
+#: ../../lib/entropy/client/interfaces/package.py:4137
 msgid "Preinstall"
-msgstr ""
+msgstr "Förinstallation"
 
-#: ../../lib/entropy/client/interfaces/package.py:4140
+#: ../../lib/entropy/client/interfaces/package.py:4145
 msgid "Preremove"
-msgstr ""
+msgstr "Förborttagning"
 
-#: ../../lib/entropy/client/interfaces/package.py:4148
+#: ../../lib/entropy/client/interfaces/package.py:4153
 msgid "Postremove"
-msgstr ""
+msgstr "Efterborttagning"
 
-#: ../../lib/entropy/client/interfaces/package.py:4162
+#: ../../lib/entropy/client/interfaces/package.py:4167
 msgid "Configuring"
-msgstr ""
+msgstr "Konfigurerar"
 
-#: ../../lib/entropy/client/interfaces/package.py:4215
+#: ../../lib/entropy/client/interfaces/package.py:4220
 msgid "An error occured. Action aborted."
-msgstr ""
+msgstr "Ett fel uppstod, åtgärd avbruten"
 
 #: ../../lib/entropy/client/interfaces/client.py:950
 msgid "forcing packages metadata update"
-msgstr ""
+msgstr "tvingar uppdatering av paketens metadata"
 
 #: ../../lib/entropy/client/interfaces/client.py:959
 msgid "Updating system database using repository"
@@ -1374,7 +1378,7 @@ msgstr "Uppdaterar systemdatabas"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:73
 msgid "Source Package Manager interface can't be loaded"
-msgstr ""
+msgstr "Portage gränssnitt kan inte laddas"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:76
 msgid "please fix"
@@ -1382,123 +1386,123 @@ msgstr "vänligen åtgärda"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:281
 msgid "Cannot run External trigger for"
-msgstr ""
+msgstr "Kan inte köra extern utlösare för"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:503
 msgid "Installing info"
-msgstr ""
+msgstr "Installations info"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:522
 msgid "post-install phase"
-msgstr "efterinstallationsfas"
+msgstr "efterinstallationsetapp"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:532
 msgid "pre-install phase"
-msgstr ""
+msgstr "Förinstallationsetapp"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:542
 msgid "setup phase"
-msgstr ""
+msgstr "setupetapp"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:552
 msgid "pre-remove phase"
-msgstr ""
+msgstr "förborttagningsetapp"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:562
 msgid "post-remove phase"
-msgstr "efterborttagningsfas"
+msgstr "efterborttagningsetapp"
 
 #: ../../lib/entropy/client/interfaces/repository.py:172
 msgid "Something bad happened. Please have a look."
-msgstr ""
+msgstr "Något väldigt illa har hänt. Var gor och ta en titt på detta."
 
 #: ../../lib/entropy/client/interfaces/repository.py:194
 msgid "there is"
 msgid_plural "there are"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "det är en"
+msgstr[1] "det finns"
 
 #: ../../lib/entropy/client/interfaces/repository.py:196
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "paketfil som inte kunde tas bort"
+msgstr[1] "paketfiler som inte kan tas bort"
 
 #: ../../lib/entropy/client/interfaces/repository.py:209
 msgid "Packages are stored in"
-msgstr ""
+msgstr "Paketen är lagrade i"
 
 #: ../../lib/entropy/client/interfaces/repository.py:239
 msgid "a new release is available"
-msgstr ""
+msgstr "En ny utgåva finns tillgänglig"
 
 #: ../../lib/entropy/client/interfaces/repository.py:240
 msgid "Mind to install it before any other package"
-msgstr ""
+msgstr "Något emot att installera den innan något annat installeras"
 
 #: ../../lib/entropy/client/interfaces/repository.py:305
 msgid "Advisories fetch error"
-msgstr ""
+msgstr "Kunde inte hämta rådgivelser"
 
 #. let's dance!
 #: ../../lib/entropy/client/interfaces/repository.py:337
 msgid "Repositories synchronization"
-msgstr "Förrådssynkronisering"
+msgstr "Synkroniserar förråden"
 
-#: ../../lib/entropy/client/interfaces/dep.py:51
+#: ../../lib/entropy/client/interfaces/dep.py:52
 #, python-format
 msgid "Checking %s"
-msgstr ""
+msgstr "Kontrollerar %s"
 
-#: ../../lib/entropy/client/interfaces/dep.py:1803
+#: ../../lib/entropy/client/interfaces/dep.py:1978
 msgid "Sorting dependencies"
-msgstr ""
+msgstr "Sorterar beroenden"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2004
+#: ../../lib/entropy/client/interfaces/dep.py:2179
 msgid "Calculating inverse dependencies for"
 msgstr "Beräknar omvända beroenden för"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2617
+#: ../../lib/entropy/client/interfaces/dep.py:2793
 msgid "Calculating updates"
 msgstr "Beräknar uppdateringar"
 
-#: ../../lib/entropy/fetchers.py:792
+#: ../../lib/entropy/fetchers.py:807
 msgid "infinite"
-msgstr ""
+msgstr "oändlig"
 
-#: ../../lib/entropy/fetchers.py:864
+#: ../../lib/entropy/fetchers.py:879
 msgid "[F]"
 msgstr "[F]"
 
-#: ../../lib/entropy/fetchers.py:865 ../../lib/entropy/fetchers.py:1239
+#: ../../lib/entropy/fetchers.py:880 ../../lib/entropy/fetchers.py:1254
 msgid "ETA"
 msgstr "Återstående tid"
 
-#: ../../lib/entropy/fetchers.py:866 ../../lib/entropy/fetchers.py:1240
+#: ../../lib/entropy/fetchers.py:881 ../../lib/entropy/fetchers.py:1255
 msgid "sec"
 msgstr "sek"
 
-#: ../../lib/entropy/fetchers.py:1121
+#: ../../lib/entropy/fetchers.py:1136
 msgid "Aggregated download"
-msgstr ""
+msgstr "Sammanställd hämtning"
 
-#: ../../lib/entropy/fetchers.py:1123
+#: ../../lib/entropy/fetchers.py:1138
 msgid "item"
 msgid_plural "items"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "objekt"
+msgstr[1] "objekten"
 
 #: ../../lib/entropy/security.py:355
 msgid "GPG key EXPIRED for URL"
-msgstr ""
+msgstr "GPG-nyckel har utgått för URL"
 
 #: ../../lib/entropy/security.py:366
 msgid "Installing GPG key for URL"
-msgstr ""
+msgstr "Installerar GPG-nyckel för URL"
 
 #: ../../lib/entropy/security.py:391
 msgid "Successfully installed GPG key for URL"
-msgstr ""
+msgstr "Installationen av GPG-nyckel för URL lyckades"
 
 #: ../../lib/entropy/security.py:445 ../../lib/entropy/security.py:1020
 #: ../../lib/entropy/security.py:1035 ../../lib/entropy/security.py:1042
@@ -1508,23 +1512,23 @@ msgstr ""
 #: ../../lib/entropy/security.py:1172 ../../lib/entropy/security.py:1193
 #: ../../lib/entropy/security.py:1221 ../../lib/entropy/security.py:1233
 msgid "Security Advisories"
-msgstr "Säkerhetsrådgivning"
+msgstr "Säkerhetsrådgivelser"
 
 #: ../../lib/entropy/security.py:446
 msgid "GPG key verification successful"
-msgstr "GPG-nyckel verifierades framgångsrikt"
+msgstr "Verifikationen av GPG-nyckeln lyckades"
 
-#: ../../lib/entropy/security.py:662 ../../client/solo/commands/pkg.py:195
+#: ../../lib/entropy/security.py:662 ../../client/solo/commands/pkg.py:198
 #: ../../client/solo/commands/_manage.py:457
 #: ../../client/solo/commands/_manage.py:479
 #: ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
-msgstr ""
+msgstr "Varning"
 
 #: ../../lib/entropy/security.py:664
 msgid "advisory broken"
-msgstr ""
+msgstr "rådgivare trasiga"
 
 #: ../../lib/entropy/security.py:1021
 msgid "getting latest advisories"
@@ -1532,7 +1536,7 @@ msgstr "hämtar senaste råd"
 
 #: ../../lib/entropy/security.py:1036
 msgid "updated successfully"
-msgstr "uppdaterade framgångsrikt"
+msgstr "uppdateringen lyckades"
 
 #: ../../lib/entropy/security.py:1043
 msgid "already up to date"
@@ -1540,39 +1544,39 @@ msgstr "redan aktuell"
 
 #: ../../lib/entropy/security.py:1085
 msgid "cannot download checksum, sorry"
-msgstr ""
+msgstr "kan inte hämta kontrollsumma, förlåt"
 
 #: ../../lib/entropy/security.py:1108
 msgid "unable to download advisories, sorry"
-msgstr ""
+msgstr "kunde inte hämta rådgivare, förlåt"
 
 #: ../../lib/entropy/security.py:1120
 msgid "Verifying checksum"
-msgstr ""
+msgstr "Verifierar kontrollsumma"
 
 #: ../../lib/entropy/security.py:1137
 msgid "cannot open packages, sorry"
-msgstr ""
+msgstr "kan inte öppna paketet, förlåt"
 
 #: ../../lib/entropy/security.py:1149
 msgid "cannot read the checksum, sorry"
-msgstr ""
+msgstr "kan inte läsa kontrollsumman, förlåt"
 
 #: ../../lib/entropy/security.py:1161
 msgid "digest verification failed, sorry"
-msgstr ""
+msgstr "verifieringen av sammandrag misslyckades, förlåt"
 
 #: ../../lib/entropy/security.py:1173
 msgid "verification successful"
-msgstr "framgångsrik verifiering"
+msgstr "verifieringen lyckades"
 
 #: ../../lib/entropy/security.py:1194
 msgid "GPG service not available"
-msgstr ""
+msgstr "GPG-tjänsten är inte tillgänglig"
 
 #: ../../lib/entropy/security.py:1222
 msgid "digest verification failed, try again later"
-msgstr ""
+msgstr "verifieringen av sammandrag misslyckades, försök igen senare"
 
 #: ../../lib/entropy/security.py:1234
 msgid "installing"
@@ -1580,104 +1584,104 @@ msgstr "installerar"
 
 #: ../../lib/entropy/const.py:652
 msgid "Runtime dependency"
-msgstr ""
+msgstr "Körtidsberoende"
 
 #: ../../lib/entropy/const.py:653
 msgid "Post dependency"
-msgstr ""
+msgstr "Platsberoende"
 
 #: ../../lib/entropy/const.py:654
 msgid "Manually added (by staff) dependency"
-msgstr ""
+msgstr "Manuellt tillagda beroenden (av teamet)"
 
 #: ../../lib/entropy/const.py:655
 msgid "Build dependency"
-msgstr ""
+msgstr "Byggberoende"
 
 #: ../../lib/entropy/const.py:675
 msgid "Corrupted Client Repository. Please restore a backup."
-msgstr ""
+msgstr "Trasiga klient förråd. Vad god återställ från säkerhetskopia"
 
 #: ../../lib/entropy/const.py:707
 msgid "reason not available"
-msgstr ""
+msgstr "anledning inte tillgänglig"
 
 #: ../../lib/entropy/const.py:708
 msgid "user package.mask"
-msgstr ""
+msgstr "användarens paket.maskering"
 
 #: ../../lib/entropy/const.py:709
 msgid "system keywords"
-msgstr ""
+msgstr "systemnyckelord"
 
 #: ../../lib/entropy/const.py:710
 msgid "user package.unmask"
-msgstr ""
+msgstr "användarens paket.avmaskering"
 
 #: ../../lib/entropy/const.py:711
 msgid "user repo package.keywords (all packages)"
-msgstr ""
+msgstr "användarens egna förrådspaket.nyckelord (alla paket)"
 
 #: ../../lib/entropy/const.py:712
 msgid "user repo package.keywords"
-msgstr ""
+msgstr "användarens egna förrådspaket.nyckelord "
 
 #: ../../lib/entropy/const.py:713
 msgid "user package.keywords"
-msgstr ""
+msgstr "användarens egna paket.nyckelord "
 
 #: ../../lib/entropy/const.py:714
 msgid "completely masked (by keyword?)"
-msgstr ""
+msgstr "fullständigt maskerade (av nyckelord)"
 
 #: ../../lib/entropy/const.py:715
 msgid "repository general packages.db.mask"
-msgstr ""
+msgstr "Förrådets generella pakets.db.maskering"
 
 #: ../../lib/entropy/const.py:716
 msgid "repository general packages.db.keywords"
-msgstr ""
+msgstr "Förrådets generella pakets.db.maskering.nyckelord"
 
 #: ../../lib/entropy/const.py:717
 msgid "user license.mask"
-msgstr ""
+msgstr "användarens licens.maskering"
 
 #: ../../lib/entropy/const.py:718
 msgid "user live unmask"
-msgstr ""
+msgstr "användarens live-avmaskering"
 
 #: ../../lib/entropy/const.py:719
 msgid "user live mask"
-msgstr ""
+msgstr "användarens live-maskering"
 
-#: ../../lib/entropy/output.py:643
+#: ../../lib/entropy/output.py:628
 msgid "Entropy needs your attention"
 msgstr "Entropy behöver din uppmärksamhet"
 
-#: ../../lib/entropy/output.py:781 ../../lib/entropy/output.py:1026
-#: ../../client/solo/commands/ugc.py:650 ../../client/solo/commands/ugc.py:760
-#: ../../client/solo/commands/ugc.py:783 ../../client/solo/commands/ugc.py:964
-#: ../../client/solo/commands/upgrade.py:273
-#: ../../client/solo/commands/upgrade.py:301
+#: ../../lib/entropy/output.py:766 ../../lib/entropy/output.py:1011
+#: ../../client/solo/commands/ugc.py:652 ../../client/solo/commands/ugc.py:762
+#: ../../client/solo/commands/ugc.py:785 ../../client/solo/commands/ugc.py:966
+#: ../../client/solo/commands/upgrade.py:274
+#: ../../client/solo/commands/upgrade.py:302
 #: ../../client/solo/commands/rescue.py:656
 #: ../../client/solo/commands/rescue.py:661
 #: ../../client/solo/commands/rescue.py:701
 msgid "Yes"
 msgstr "Ja"
 
-#: ../../lib/entropy/output.py:781 ../../client/solo/main.py:169
-#: ../../client/solo/commands/pkg.py:253
+#: ../../lib/entropy/output.py:766 ../../client/solo/main.py:169
+#: ../../client/solo/commands/pkg.py:256
 #: ../../client/solo/commands/config.py:149
 #: ../../client/solo/commands/remove.py:398
 #: ../../client/solo/commands/remove.py:405
-#: ../../client/solo/commands/remove.py:450
+#: ../../client/solo/commands/remove.py:449
 #: ../../client/solo/commands/deptest.py:182
 #: ../../client/solo/commands/libtest.py:223
 #: ../../client/solo/commands/_manage.py:242
 #: ../../client/solo/commands/conf.py:391
 #: ../../client/solo/commands/conf.py:446
 #: ../../client/solo/commands/install.py:541
-#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/upgrade.py:274
 #: ../../client/solo/commands/rescue.py:328
 #: ../../client/solo/commands/rescue.py:332
 #: ../../client/solo/commands/rescue.py:339
@@ -1685,98 +1689,98 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nej"
 
-#: ../../lib/entropy/output.py:796
+#: ../../lib/entropy/output.py:781
 msgid "Entropy got a question for you"
-msgstr ""
+msgstr "Entropy har en fråga till dig"
 
-#: ../../lib/entropy/output.py:810
+#: ../../lib/entropy/output.py:795
 msgid "Interrupted"
-msgstr ""
+msgstr "Avbruten"
 
-#: ../../lib/entropy/output.py:872 ../../lib/entropy/output.py:876
+#: ../../lib/entropy/output.py:857 ../../lib/entropy/output.py:861
 msgid "Selected number"
-msgstr ""
+msgstr "Valda nummer"
 
-#: ../../lib/entropy/output.py:893 ../../client/solo/commands/_manage.py:714
+#: ../../lib/entropy/output.py:878 ../../client/solo/commands/_manage.py:714
 msgid "Please select an option"
-msgstr ""
+msgstr "Var god och välj ett alternativ"
 
-#: ../../lib/entropy/output.py:895
+#: ../../lib/entropy/output.py:880
 msgid "Discard all"
-msgstr ""
+msgstr "Kasta alla"
 
-#: ../../lib/entropy/output.py:896
+#: ../../lib/entropy/output.py:881
 msgid "Confirm"
-msgstr ""
+msgstr "Godkänn"
 
-#: ../../lib/entropy/output.py:897
+#: ../../lib/entropy/output.py:882
 msgid "Add item"
-msgstr ""
+msgstr "Lägg till objekt"
 
-#: ../../lib/entropy/output.py:898
+#: ../../lib/entropy/output.py:883
 msgid "Edit item"
-msgstr ""
+msgstr "Redigera objekt"
 
-#: ../../lib/entropy/output.py:899
+#: ../../lib/entropy/output.py:884
 msgid "Remove item"
-msgstr ""
+msgstr "Ta bort objekt"
 
-#: ../../lib/entropy/output.py:900
+#: ../../lib/entropy/output.py:885
 msgid "Show current list"
-msgstr ""
+msgstr "Visa nuvarande lista"
 
-#: ../../lib/entropy/output.py:904 ../../client/solo/commands/conf.py:247
+#: ../../lib/entropy/output.py:889 ../../client/solo/commands/conf.py:247
 #: ../../client/solo/commands/conf.py:290
 msgid "Your choice (type a number and press enter):"
-msgstr "Ditt val (ange ett tal och tryck enter):"
+msgstr "Ditt val (ange ett nummer och tryck enter):"
 
-#: ../../lib/entropy/output.py:936
+#: ../../lib/entropy/output.py:921
 msgid "You don't have typed a number."
-msgstr ""
+msgstr "Du har inte infört ett nummer"
 
-#: ../../lib/entropy/output.py:939
+#: ../../lib/entropy/output.py:924
 msgid "Invalid action."
-msgstr ""
+msgstr "Ogiltig åtgärd"
 
-#: ../../lib/entropy/output.py:949
+#: ../../lib/entropy/output.py:934
 msgid "String to add (-1 to go back):"
-msgstr ""
+msgstr "Sträng som kommer läggas till (-1 för att återvända):"
 
-#: ../../lib/entropy/output.py:959
+#: ../../lib/entropy/output.py:944
 msgid "Invalid string."
-msgstr ""
+msgstr "Ogiltig sträng"
 
-#: ../../lib/entropy/output.py:967
+#: ../../lib/entropy/output.py:952
 msgid "Element number to edit (-1 to go back):"
-msgstr ""
+msgstr "Nummer på beståndsdel som kommer att redigeras (-1 för att återvända):"
 
-#: ../../lib/entropy/output.py:978
+#: ../../lib/entropy/output.py:963
 msgid "old"
-msgstr "gamla"
+msgstr "gammalt"
 
-#: ../../lib/entropy/output.py:978
+#: ../../lib/entropy/output.py:963
 msgid "new value:"
 msgstr "nytt värde:"
 
-#: ../../lib/entropy/output.py:986 ../../lib/entropy/output.py:1004
+#: ../../lib/entropy/output.py:971 ../../lib/entropy/output.py:989
 msgid "Invalid element."
-msgstr ""
+msgstr "Ogiltig beståndsdel"
 
-#: ../../lib/entropy/output.py:995
+#: ../../lib/entropy/output.py:980
 msgid "Element number to remove (-1 to go back):"
-msgstr ""
+msgstr "Nummer på beståndsdel som kommer tas bort (-1 för att återvända):"
 
 #: ../../lib/entropy/qa.py:161
 msgid "Searching for broken reverse dependencies"
-msgstr ""
+msgstr "Söker efter omvändna beroenden som är trasiga"
 
 #: ../../lib/entropy/qa.py:178
 msgid "scanning for broken reverse dependencies"
-msgstr ""
+msgstr "Skannar efter omvändna beroenden som är trasiga"
 
 #: ../../lib/entropy/qa.py:219
 msgid "broken libraries detected"
-msgstr ""
+msgstr "trasiga bibliotek har hittats"
 
 #: ../../lib/entropy/qa.py:230
 msgid "needs"
@@ -1784,240 +1788,240 @@ msgstr "behöver"
 
 #: ../../lib/entropy/qa.py:274
 msgid "Searching for missing Runtime dependencies"
-msgstr ""
+msgstr "Söker efter saknade körtidsberoenden"
 
 #: ../../lib/entropy/qa.py:281
 msgid "scanning"
-msgstr ""
+msgstr "skannar"
 
 #: ../../lib/entropy/qa.py:299 ../../lib/entropy/qa.py:587
 msgid "no packages"
-msgstr ""
+msgstr "inga paket"
 
 #: ../../lib/entropy/qa.py:351
 msgid "blacklisted dependencies !!!"
-msgstr ""
+msgstr "svartlistade beroenden !!!"
 
 #: ../../lib/entropy/qa.py:389
 msgid "is potentially missing these dependencies"
-msgstr ""
+msgstr "saknar eventuellt dom här beroenden"
 
 #: ../../lib/entropy/qa.py:526
 msgid "determining missing libraries"
-msgstr ""
+msgstr "fastlägger vilka beroenden som saknas"
 
 #: ../../lib/entropy/qa.py:558
 msgid "requires"
-msgstr ""
+msgstr "kräver"
 
 #: ../../lib/entropy/qa.py:575 ../../lib/entropy/qa.py:586
 msgid "provided by"
-msgstr ""
+msgstr "tillhandahållna av"
 
 #: ../../lib/entropy/qa.py:599
 msgid "no missing runtime libraries found"
-msgstr ""
+msgstr "inga saknade körtidsberoenden hittades"
 
 #: ../../lib/entropy/qa.py:635
 msgid "Libraries test"
-msgstr ""
+msgstr "Testar biblioteken"
 
 #: ../../lib/entropy/qa.py:650
 msgid "Broken symbols packages list"
-msgstr ""
+msgstr "Lista på trasiga paketsymboler"
 
 #: ../../lib/entropy/qa.py:651
 msgid "Broken executables list"
-msgstr ""
+msgstr "Lista körbara filer som är trasiga"
 
 #: ../../lib/entropy/qa.py:653
 msgid "Dumping results into these files"
-msgstr ""
+msgstr "Dumpar resultat i dom här filerna"
 
 #: ../../lib/entropy/qa.py:733
 msgid "discarding directory"
-msgstr ""
+msgstr "överger katalogen"
 
 #: ../../lib/entropy/qa.py:735
 msgid "because it's symlinked on"
-msgstr ""
+msgstr "för att den är symlänkad till"
 
 #: ../../lib/entropy/qa.py:797
 msgid "Collecting broken executables"
-msgstr ""
+msgstr "Samlar ihop trasiga bibliotek/program"
 
 #: ../../lib/entropy/qa.py:803
 msgid "don't worry about libraries that are shown here but not later."
-msgstr ""
+msgstr "oroa dig inte över bibliotek som visas här men inte sen."
 
 #: ../../lib/entropy/qa.py:824
 msgid "Scanning libraries"
-msgstr ""
+msgstr "Skannar biblioteken"
 
 #: ../../lib/entropy/qa.py:932
 msgid "various broken symbols"
-msgstr ""
+msgstr "flera trasiga symboler"
 
 #: ../../lib/entropy/qa.py:973
 msgid "Matching broken libraries/executables"
-msgstr ""
+msgstr "Matchar dom trasiga biblioteken/programmen"
 
 #: ../../lib/entropy/qa.py:1677
 msgid "Not prepared yet"
-msgstr ""
+msgstr "Inte förberedd än"
 
 #: ../../client/solo/utils.py:65
 msgid "directory"
-msgstr ""
+msgstr "katalog"
 
 #: ../../client/solo/utils.py:73
 msgid "Cleaned"
-msgstr ""
+msgstr "Rensade"
 
 #: ../../client/solo/utils.py:75
 msgid "files and directories"
-msgstr ""
+msgstr "filer och kataloger"
 
-#: ../../client/solo/utils.py:176 ../../client/solo/utils.py:319
-#: ../../client/solo/utils.py:320 ../../client/solo/commands/repo.py:466
+#: ../../client/solo/utils.py:184 ../../client/solo/utils.py:327
+#: ../../client/solo/utils.py:328 ../../client/solo/commands/repo.py:471
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
-#: ../../client/solo/utils.py:255 ../../client/solo/commands/command.py:288
+#: ../../client/solo/utils.py:263 ../../client/solo/commands/command.py:293
 msgid "Uploading"
-msgstr ""
+msgstr "Laddar upp"
 
-#: ../../client/solo/utils.py:277 ../../client/solo/commands/rescue.py:235
+#: ../../client/solo/utils.py:285 ../../client/solo/commands/rescue.py:235
 msgid "corrupted"
-msgstr ""
+msgstr "trasig"
 
-#: ../../client/solo/utils.py:318 ../../client/solo/commands/_manage.py:150
+#: ../../client/solo/utils.py:326 ../../client/solo/commands/_manage.py:150
 #: ../../client/solo/commands/_manage.py:194
 msgid "Not installed"
-msgstr ""
+msgstr "Inte installerad"
 
-#: ../../client/solo/utils.py:344 ../../client/solo/commands/query.py:453
-#: ../../client/solo/commands/query.py:696
-#: ../../client/solo/commands/query.py:1021
+#: ../../client/solo/utils.py:352 ../../client/solo/commands/query.py:460
+#: ../../client/solo/commands/query.py:703
+#: ../../client/solo/commands/query.py:1028
 msgid "Package"
 msgstr "Paket"
 
-#: ../../client/solo/utils.py:346 ../../client/solo/commands/hop.py:57
+#: ../../client/solo/utils.py:354 ../../client/solo/commands/hop.py:57
 msgid "branch"
-msgstr ""
+msgstr "gren"
 
-#: ../../client/solo/utils.py:353
+#: ../../client/solo/utils.py:361
 msgid "Category"
 msgstr "Kategori"
 
-#: ../../client/solo/utils.py:355
+#: ../../client/solo/utils.py:363
 msgid "Name"
 msgstr "Namn"
 
-#: ../../client/solo/utils.py:371 ../../client/solo/commands/query.py:561
+#: ../../client/solo/utils.py:379 ../../client/solo/commands/query.py:568
 msgid "Masked"
-msgstr "Maskade"
+msgstr "Maskerade"
 
-#: ../../client/solo/utils.py:374
+#: ../../client/solo/utils.py:382
 msgid "Available"
 msgstr "Tillgängliga"
 
-#: ../../client/solo/utils.py:376 ../../client/solo/utils.py:384
+#: ../../client/solo/utils.py:384 ../../client/solo/utils.py:392
 msgid "Installed"
 msgstr "Installerade"
 
-#: ../../client/solo/utils.py:379 ../../client/solo/utils.py:385
+#: ../../client/solo/utils.py:387 ../../client/solo/utils.py:393
 msgid "version"
 msgstr "version"
 
-#: ../../client/solo/utils.py:380 ../../client/solo/utils.py:387
+#: ../../client/solo/utils.py:388 ../../client/solo/utils.py:395
 msgid "revision"
-msgstr ""
+msgstr "revision"
 
-#: ../../client/solo/utils.py:390
+#: ../../client/solo/utils.py:398
 msgid "Slot"
 msgstr "Spår"
 
-#: ../../client/solo/utils.py:406
+#: ../../client/solo/utils.py:414
 msgid "Size"
 msgstr "Storlek"
 
-#: ../../client/solo/utils.py:408 ../../client/solo/commands/ugc.py:376
+#: ../../client/solo/utils.py:416 ../../client/solo/commands/ugc.py:378
 msgid "Download"
-msgstr ""
+msgstr "Hämtning"
 
-#: ../../client/solo/utils.py:410
+#: ../../client/solo/utils.py:418
 msgid "Checksum"
-msgstr ""
+msgstr "Kontrollsumma"
 
-#: ../../client/solo/utils.py:415
+#: ../../client/solo/utils.py:423
 msgid "Dependencies"
 msgstr "Beroenden"
 
-#: ../../client/solo/utils.py:424 ../../client/solo/utils.py:607
+#: ../../client/solo/utils.py:432 ../../client/solo/utils.py:615
 msgid "Legend"
-msgstr ""
+msgstr "Teckenförklaring"
 
-#: ../../client/solo/utils.py:432
+#: ../../client/solo/utils.py:440
 msgid "Conflicts"
-msgstr ""
+msgstr "Konflikter"
 
-#: ../../client/solo/utils.py:437
+#: ../../client/solo/utils.py:445
 msgid "Homepage"
 msgstr "Hemsida"
 
-#: ../../client/solo/utils.py:447 ../../client/solo/commands/security.py:224
-#: ../../client/solo/commands/ugc.py:621
+#: ../../client/solo/utils.py:455 ../../client/solo/commands/security.py:224
+#: ../../client/solo/commands/ugc.py:623
 msgid "Description"
 msgstr "Beskrivning"
 
-#: ../../client/solo/utils.py:456
+#: ../../client/solo/utils.py:464
 msgid "USE flags"
 msgstr "USE-flaggor"
 
-#: ../../client/solo/utils.py:476
+#: ../../client/solo/utils.py:484
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/solo/utils.py:478
+#: ../../client/solo/utils.py:486
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/solo/utils.py:480
+#: ../../client/solo/utils.py:488
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
-#: ../../client/solo/utils.py:484
+#: ../../client/solo/utils.py:492
 msgid "Sources"
 msgstr "Källor"
 
-#: ../../client/solo/utils.py:489
+#: ../../client/solo/utils.py:497
 msgid "Entry API"
-msgstr ""
+msgstr "Post API"
 
-#: ../../client/solo/utils.py:491
+#: ../../client/solo/utils.py:499
 msgid "Compiled with"
-msgstr ""
+msgstr "Kompilerad med"
 
-#: ../../client/solo/utils.py:496 ../../client/solo/commands/search.py:178
-#: ../../client/solo/commands/ugc.py:369 ../../client/solo/commands/ugc.py:628
-#: ../../client/solo/commands/match.py:203
+#: ../../client/solo/utils.py:504 ../../client/solo/commands/search.py:178
+#: ../../client/solo/commands/ugc.py:371 ../../client/solo/commands/ugc.py:630
+#: ../../client/solo/commands/match.py:219
 msgid "Keywords"
 msgstr "Nyckelord"
 
-#: ../../client/solo/utils.py:511
+#: ../../client/solo/utils.py:519
 msgid "Created"
-msgstr ""
+msgstr "Skapad"
 
-#: ../../client/solo/utils.py:517 ../../client/solo/commands/_manage.py:773
+#: ../../client/solo/utils.py:525 ../../client/solo/commands/_manage.py:773
 msgid "License"
 msgstr "Licens"
 
-#: ../../client/solo/utils.py:539
+#: ../../client/solo/utils.py:547
 msgid "Reverse graphing installed package"
-msgstr ""
+msgstr "Installerade program med omvändna modifikationer"
 
-#: ../../client/solo/utils.py:551 ../../client/solo/utils.py:710
+#: ../../client/solo/utils.py:559 ../../client/solo/utils.py:718
 #: ../../client/solo/commands/config.py:116
 #: ../../client/solo/commands/remove.py:379
 #: ../../client/solo/commands/source.py:153
@@ -2025,143 +2029,161 @@ msgstr ""
 #: ../../client/solo/commands/download.py:153
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
-msgstr ""
+msgstr "Inga paket hittades"
 
-#: ../../client/solo/utils.py:610
+#: ../../client/solo/utils.py:618
 msgid "packages passed as arguments"
-msgstr ""
+msgstr "paketen godkända som argument"
 
-#: ../../client/solo/utils.py:613
+#: ../../client/solo/utils.py:621
 msgid "packages with no further dependencies"
-msgstr ""
+msgstr "inga ytterligare beroenden för paketen"
 
-#: ../../client/solo/utils.py:616
+#: ../../client/solo/utils.py:624
 msgid "packages with further dependencies (node)"
-msgstr ""
+msgstr "inga ytterligare beroenden för paketen (node)"
 
-#: ../../client/solo/utils.py:619
+#: ../../client/solo/utils.py:627
 msgid "packages already pulled in as dependency in upper levels (circularity)"
-msgstr ""
+msgstr "paketen har redan hämtas in som beroenden i övre nivåer (kretsformat)"
 
-#: ../../client/solo/utils.py:698
+#: ../../client/solo/utils.py:706
 msgid "Graphing"
-msgstr ""
+msgstr "Modifiering"
 
 #: ../../client/solo/main.py:41
 msgid "Installed packages repository corrupted. Please re-generate it"
-msgstr ""
+msgstr "Dom installerade paketens förråd är trasiga. Var god och återskapa dom"
 
 #: ../../client/solo/main.py:51
 msgid "Cannot continue"
-msgstr ""
+msgstr "Kan inte fortsätta"
 
 #: ../../client/solo/main.py:80
 msgid "Your hard drive is full! Your fault!"
-msgstr ""
+msgstr "Din hårddisk är full! Enbart ditt fel!"
 
 #: ../../client/solo/main.py:89
 msgid "No more memory dude! Your fault!"
-msgstr ""
+msgstr "Finns inget mer minne! Enbart ditt fel grabben!"
 
 #: ../../client/solo/main.py:95
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that the program "
 "crashed. Well, you know, shit happens."
 msgstr ""
+"Tjena! Mitt namn är Fel Rapporterare. Det är med stor sorg som jag "
+"informerar dig om att programmet kraschade. Som du vet, ibland skiter det "
+"sig."
 
 #: ../../client/solo/main.py:101
 msgid ""
 "But there's something you could do to help me to be a better application."
 msgstr ""
+"Men det finns saker du kan göra för att göra mig till ett bättre program."
 
 #: ../../client/solo/main.py:107
 msgid "-- BUT, DO NOT SUBMIT THE SAME REPORT MORE THAN ONCE --"
 msgstr ""
+"-- MEN, GE FAN I ATT RAPPORTERA SAMMA SAK FLERA GÅNGER! BLIR SKOGSTOKIG! --"
 
 #: ../../client/solo/main.py:112
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
+"Nu kommer jag visa dig vad som hände. Bli inte rädd, jag är här för att "
+"hjälpa dig."
 
 #: ../../client/solo/main.py:149
 msgid ""
 "Oh well, I cannot even write to TMPDIR. So, please copy the error and mail "
 "lxnay@sabayon.org."
 msgstr ""
+"Aj fan, jag kan inte ens skriva till TMPDIR. Så, var schysst och kopiera "
+"felrapporten och maila lxnay@sabayon.org"
 
 #: ../../client/solo/main.py:164
 msgid ""
 "Erm... Can I send the error, along with some other information\n"
-"about your hardware to my creators so they can fix me? (Your IP will be logged)"
+"about your hardware to my creators so they can fix me? (Your IP will be "
+"logged)"
 msgstr ""
+"Eehmm.... Är det lugnt om jag skickar ytterligare information\n"
+" om din hårdvara till mina skapare så att dom kan fixa mig? Din IP kommer "
+"loggas"
 
 #: ../../client/solo/main.py:171
 msgid "Ok, ok ok ok... Sorry!"
-msgstr ""
+msgstr "Ok, ok ok ok.....Ta't lugnt!"
 
 #: ../../client/solo/main.py:177
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
 msgstr ""
+"Om du vill bli kontaktad och på så vis få aktivt stöd var god och svara på "
+"frågorna här under:"
 
 #: ../../client/solo/main.py:184
 msgid "Your Full name:"
-msgstr ""
+msgstr "Fullständigt namn"
 
 #: ../../client/solo/main.py:185
 msgid "Your E-Mail address:"
-msgstr ""
+msgstr "Din E-mail adress:"
 
 #: ../../client/solo/main.py:186
 msgid "What you were doing:"
-msgstr ""
+msgstr "Vad du höll på med:"
 
 #: ../../client/solo/main.py:208
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
 msgstr ""
+"Tack så hemskt mycket. Felet har rapporterats och förhoppningsvis kommer "
+"problemet lösas så snart som möjligt."
 
 #: ../../client/solo/main.py:214
 msgid ""
-"Ugh. Cannot send the report. Please mail the file below to "
-"lxnay@sabayon.org."
+"Ugh. Cannot send the report. Please mail the file below to lxnay@sabayon.org."
 msgstr ""
+"Ugh. Kan inte skicka felrappoten. Var god och skicka filen här under till "
+"lxnay@sabayon.org"
 
 #: ../../client/solo/main.py:234
 msgid "Entropy/Equo version mismatch"
-msgstr ""
+msgstr "Entropy/Equos versioner matchar inte"
 
 #: ../../client/solo/main.py:235
 msgid "it could make your system explode!"
-msgstr ""
+msgstr "det kan göra att ditt system exploderar"
 
 #: ../../client/solo/main.py:244
 msgid "Entropy is running off a Live System"
-msgstr ""
+msgstr "Entropy körs från ett live-System"
 
 #: ../../client/solo/main.py:246
 msgid "Performance and stability could get severely compromised"
-msgstr ""
+msgstr "Prestation och stabilitet kan gravt försämras"
 
-#: ../../client/solo/main.py:329
+#: ../../client/solo/main.py:348
 msgid "superuser access required"
-msgstr ""
+msgstr "du måste vara superanvändare för denna åtgärd"
 
-#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:477
+#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/pkg.py:480
 #: ../../client/solo/commands/rescue.py:71
 msgid "execute advanced tasks on packages"
-msgstr ""
+msgstr "utför avancerade åtgärder på paketen"
 
 #: ../../client/solo/commands/pkg.py:73 ../../client/solo/commands/query.py:73
 #: ../../client/solo/commands/query.py:154
 #: ../../client/solo/commands/security.py:69
 #: ../../client/solo/commands/cache.py:61 ../../client/solo/commands/ugc.py:72
-#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:144
+#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:66 ../../client/solo/commands/conf.py:76
 #: ../../client/solo/commands/rescue.py:72 ../../services/kernel-switcher:317
 msgid "available commands"
-msgstr ""
+msgstr "tillgängliga kommandon"
 
 #: ../../client/solo/commands/pkg.py:79
 #: ../../client/solo/commands/config.py:63
@@ -2179,118 +2201,118 @@ msgstr ""
 msgid "ask before making any changes"
 msgstr "fråga före ändring genomförs"
 
-#: ../../client/solo/commands/pkg.py:85
-#: ../../client/solo/commands/command.py:81
+#: ../../client/solo/commands/pkg.py:86
+#: ../../client/solo/commands/command.py:86
 msgid "not a valid Entropy package file"
-msgstr ""
+msgstr "är inte en giltig paketfil för Entropy "
 
-#: ../../client/solo/commands/pkg.py:90
+#: ../../client/solo/commands/pkg.py:93
 msgid "generate packages from the installed system"
-msgstr ""
+msgstr "generera paket från det installerade systemet"
 
-#: ../../client/solo/commands/pkg.py:94
+#: ../../client/solo/commands/pkg.py:97
 msgid "installed package name"
-msgstr ""
+msgstr "namn på installerat paket"
 
-#: ../../client/solo/commands/pkg.py:99 ../../client/solo/commands/pkg.py:116
-#: ../../client/solo/commands/pkg.py:133 ../../client/solo/commands/pkg.py:150
+#: ../../client/solo/commands/pkg.py:102 ../../client/solo/commands/pkg.py:119
+#: ../../client/solo/commands/pkg.py:136 ../../client/solo/commands/pkg.py:153
 msgid "destination directory where to save generated packages"
-msgstr ""
+msgstr "målkatalogen där du vill spara genererade paket"
 
-#: ../../client/solo/commands/pkg.py:106
+#: ../../client/solo/commands/pkg.py:109
 msgid "transform SPM package files into Entropy ones"
-msgstr ""
+msgstr "omförvandla SPMs paketfiler till Entropy-paket"
 
-#: ../../client/solo/commands/pkg.py:111
+#: ../../client/solo/commands/pkg.py:114
 msgid "SPM package file path"
-msgstr ""
+msgstr "Sökväg för SPM-paket"
 
-#: ../../client/solo/commands/pkg.py:123
+#: ../../client/solo/commands/pkg.py:126
 msgid "transform Entropy package files into SPM ones"
-msgstr ""
+msgstr "förvandla Entropy paketfiler till SPM-paket"
 
-#: ../../client/solo/commands/pkg.py:128 ../../client/solo/commands/pkg.py:145
+#: ../../client/solo/commands/pkg.py:131 ../../client/solo/commands/pkg.py:148
 msgid "Entropy package file path"
-msgstr ""
+msgstr "Sökväg för Entropys paket"
 
-#: ../../client/solo/commands/pkg.py:140
+#: ../../client/solo/commands/pkg.py:143
 msgid "extract Entropy metadata from Entropy packages"
-msgstr ""
+msgstr "extrahera Entropys metadata från Entropy paket"
 
-#: ../../client/solo/commands/pkg.py:223 ../../client/solo/commands/pkg.py:301
-#: ../../client/solo/commands/pkg.py:392 ../../client/solo/commands/pkg.py:439
+#: ../../client/solo/commands/pkg.py:226 ../../client/solo/commands/pkg.py:304
+#: ../../client/solo/commands/pkg.py:395 ../../client/solo/commands/pkg.py:442
 msgid "broken directory path"
-msgstr ""
+msgstr "sökväg till katalogen är trasig"
 
-#: ../../client/solo/commands/pkg.py:236
+#: ../../client/solo/commands/pkg.py:239
 msgid "This is the list of packages that would be considered"
-msgstr ""
+msgstr "Detta är paketen som beaktas"
 
-#: ../../client/solo/commands/pkg.py:252
+#: ../../client/solo/commands/pkg.py:255
 #: ../../client/solo/commands/config.py:148
 #: ../../client/solo/commands/_manage.py:241
 #: ../../client/solo/commands/install.py:540
 msgid "Would you like to continue ?"
-msgstr ""
+msgstr "Vill du fortsätta?"
 
-#: ../../client/solo/commands/pkg.py:263
+#: ../../client/solo/commands/pkg.py:266
 msgid "generating package"
-msgstr ""
+msgstr "generar paket"
 
-#: ../../client/solo/commands/pkg.py:273
+#: ../../client/solo/commands/pkg.py:276
 msgid "package file creation error"
-msgstr ""
+msgstr "fel vid skapandet av paketfil"
 
-#: ../../client/solo/commands/pkg.py:281
+#: ../../client/solo/commands/pkg.py:284
 msgid "package generated"
-msgstr ""
+msgstr "paket har generats"
 
-#: ../../client/solo/commands/pkg.py:310 ../../client/solo/commands/pkg.py:399
-#: ../../client/solo/commands/pkg.py:446
+#: ../../client/solo/commands/pkg.py:313 ../../client/solo/commands/pkg.py:402
+#: ../../client/solo/commands/pkg.py:449
 msgid "working on package file"
-msgstr ""
+msgstr "jobbar på paketfil"
 
-#: ../../client/solo/commands/pkg.py:323
+#: ../../client/solo/commands/pkg.py:326
 msgid "package file extraction complete"
-msgstr ""
+msgstr "extraheringen av paketfilen är slutförd"
 
-#: ../../client/solo/commands/pkg.py:361
+#: ../../client/solo/commands/pkg.py:364
 msgid "package metadata generation complete"
-msgstr ""
+msgstr "genereringen av paketets metadata slutförd"
 
-#: ../../client/solo/commands/pkg.py:372
+#: ../../client/solo/commands/pkg.py:375
 msgid "package file generated at"
-msgstr ""
+msgstr "paketfilen genererad till"
 
-#: ../../client/solo/commands/pkg.py:411 ../../client/solo/commands/pkg.py:459
+#: ../../client/solo/commands/pkg.py:414 ../../client/solo/commands/pkg.py:462
 msgid "error during metadata extraction"
-msgstr ""
+msgstr "Fel uppstod vid extrahering av metadata"
 
-#: ../../client/solo/commands/pkg.py:419
+#: ../../client/solo/commands/pkg.py:422
 msgid "package file generated"
-msgstr ""
+msgstr "paketfil genererad"
 
-#: ../../client/solo/commands/pkg.py:467
+#: ../../client/solo/commands/pkg.py:470
 msgid "metadata file generated"
-msgstr ""
+msgstr "metadatan genererad"
 
 #: ../../client/solo/commands/query.py:72
-#: ../../client/solo/commands/query.py:1538
+#: ../../client/solo/commands/query.py:1581
 msgid "repository query tools"
-msgstr ""
+msgstr "förrådens sökningsverktyg"
 
 #: ../../client/solo/commands/query.py:77
 msgid "resolve what package a file belongs to"
-msgstr ""
+msgstr "avgör vilket paket en fil tillhör"
 
 #: ../../client/solo/commands/query.py:80
 #: ../../client/solo/commands/query.py:200
 msgid "file path"
-msgstr ""
+msgstr "sökväg"
 
 #: ../../client/solo/commands/query.py:87
 msgid "show package changelog"
-msgstr ""
+msgstr "visa paketets ändringslogg"
 
 #: ../../client/solo/commands/query.py:90
 #: ../../client/solo/commands/query.py:100
@@ -2306,129 +2328,129 @@ msgstr ""
 #: ../../client/solo/commands/download.py:56
 #: ../../client/solo/commands/mask.py:44
 msgid "package name"
-msgstr ""
+msgstr "paketnamn"
 
 #: ../../client/solo/commands/query.py:97
 msgid "show reverse dependencies of package"
-msgstr ""
+msgstr "visa omvändna beroenden för paketet"
 
 #: ../../client/solo/commands/query.py:107
 msgid "search package by description"
-msgstr ""
+msgstr "sök paket efter beskrivning"
 
 #: ../../client/solo/commands/query.py:110
 msgid "description keyword"
-msgstr ""
+msgstr "nyckelordsbeskrivning"
 
 #: ../../client/solo/commands/query.py:117
 msgid "show files owned by package"
-msgstr ""
+msgstr "visa vilka filer som ägs av paketet"
 
 #: ../../client/solo/commands/query.py:127
 msgid "search installed packages"
-msgstr ""
+msgstr "sök efter installerade paket"
 
 #: ../../client/solo/commands/query.py:137
 msgid "show packages using the given license"
-msgstr ""
+msgstr "visa paket som använder den angivna licensen"
 
 #: ../../client/solo/commands/query.py:140
 msgid "license name"
-msgstr ""
+msgstr "licensnamn"
 
 #: ../../client/solo/commands/query.py:146
 #: ../../client/solo/commands/query.py:153
 msgid "list packages"
-msgstr ""
+msgstr "Visa alla paket"
 
 #: ../../client/solo/commands/query.py:157
 msgid "list installed packages"
-msgstr ""
+msgstr "Visa dina installerade paket"
 
 #: ../../client/solo/commands/query.py:160
 msgid "only list packages installed by user"
-msgstr ""
+msgstr "visa bara paket som användaren själv installerat"
 
 #: ../../client/solo/commands/query.py:163
 msgid "only list packages installed from given repositories"
-msgstr ""
+msgstr "visa bara paket som installerats från angivet förråd"
 
 #: ../../client/solo/commands/query.py:171
 msgid "list available packages"
-msgstr ""
+msgstr "visa tillgängliga paket"
 
 #: ../../client/solo/commands/query.py:174
 msgid "only list packages from given repositories"
-msgstr ""
+msgstr "visa bara paket  från angivet förråd"
 
 #: ../../client/solo/commands/query.py:182
 msgid "show packages able to handle the given mimetype"
-msgstr ""
+msgstr "visa paket som kan hantera angiven mimetype"
 
 #: ../../client/solo/commands/query.py:185
 msgid "mimetype"
-msgstr ""
+msgstr "mimetype"
 
 #: ../../client/solo/commands/query.py:188
 #: ../../client/solo/commands/query.py:203
 msgid "only show installed packages"
-msgstr ""
+msgstr "visa bara installerade paket"
 
 #: ../../client/solo/commands/query.py:197
 msgid "associate file to packages able to handle it"
-msgstr ""
+msgstr "associera filer till dom paket som kan hantera dom"
 
 #: ../../client/solo/commands/query.py:212
 msgid "show runtime libraries needed by the given package"
-msgstr ""
+msgstr "visa körtidsberoenden från det angivna paketet"
 
 #: ../../client/solo/commands/query.py:222
 msgid "search files not belonging to any packages"
-msgstr ""
+msgstr "sök efter filer som inte tillhör något paket"
 
 #: ../../client/solo/commands/query.py:228
 msgid "show packages requiring the given library name"
-msgstr ""
+msgstr "visa paket som krävs av det angivna biblioteksnamnet"
 
 #: ../../client/solo/commands/query.py:231
 msgid "library name (example: libdl.so.2)"
-msgstr ""
+msgstr "biblioteksnamn (example: libdl.so.2)"
 
 #: ../../client/solo/commands/query.py:238
 msgid "search package sets"
-msgstr ""
+msgstr "sök efter paketset"
 
 #: ../../client/solo/commands/query.py:241
 msgid "set name"
-msgstr ""
+msgstr "namn på set"
 
 #: ../../client/solo/commands/query.py:248
 msgid "show packages owning the given slot"
-msgstr ""
+msgstr "visa paket som äger den angivna platsen"
 
 #: ../../client/solo/commands/query.py:251
 msgid "slot name"
-msgstr ""
+msgstr "namn på plats"
 
 #: ../../client/solo/commands/query.py:258
 msgid "show packages owning the given tag"
-msgstr ""
+msgstr "visa paketen som äger angiven tagg"
 
 #: ../../client/solo/commands/query.py:261
 msgid "tag name"
-msgstr ""
+msgstr "namn på tagg"
 
 #: ../../client/solo/commands/query.py:268
 msgid "show packages at the given revision"
-msgstr ""
+msgstr "visa paketen på den angivna revisionen"
 
 #: ../../client/solo/commands/query.py:271
 msgid "revision name"
-msgstr ""
+msgstr "namn på revisionen"
 
 #: ../../client/solo/commands/query.py:278
 msgid "show the direct dependencies graph for the given package"
-msgstr ""
+msgstr "visa den direkta beroendemodifikationen för det angivna paketet"
 
 #: ../../client/solo/commands/query.py:285
 #: ../../client/solo/commands/query.py:302
@@ -2436,213 +2458,241 @@ msgid ""
 "include system packages, build-time dependencies and circular dependencies "
 "information"
 msgstr ""
+"inkludera systempaket, byggtidsberoende och den kretsformade "
+"beroendeinformationen"
 
 #: ../../client/solo/commands/query.py:295
 msgid "show the inverse dependencies graph for the given package"
-msgstr ""
+msgstr "visa den omkastade beroendemodifikationen för det angivna paketet"
 
-#: ../../client/solo/commands/query.py:348
+#: ../../client/solo/commands/query.py:312
+#, fuzzy
+msgid "show the number of updates available"
+msgstr "Det finns %s uppdatering tillgänglig"
+
+#: ../../client/solo/commands/query.py:355
 msgid "Belong Search"
-msgstr ""
+msgstr "Tillhöra Sökning"
 
-#: ../../client/solo/commands/query.py:400
-#: ../../client/solo/commands/query.py:557
-#: ../../client/solo/commands/query.py:651
-#: ../../client/solo/commands/query.py:765
-#: ../../client/solo/commands/query.py:955
-#: ../../client/solo/commands/query.py:1324
-#: ../../client/solo/commands/query.py:1383
-#: ../../client/solo/commands/query.py:1446
-#: ../../client/solo/commands/query.py:1494
+#: ../../client/solo/commands/query.py:407
+#: ../../client/solo/commands/query.py:564
+#: ../../client/solo/commands/query.py:658
+#: ../../client/solo/commands/query.py:772
+#: ../../client/solo/commands/query.py:962
+#: ../../client/solo/commands/query.py:1331
+#: ../../client/solo/commands/query.py:1390
+#: ../../client/solo/commands/query.py:1453
+#: ../../client/solo/commands/query.py:1501
 msgid "Keyword"
-msgstr ""
+msgstr "Nyckelord"
 
-#: ../../client/solo/commands/query.py:403
-#: ../../client/solo/commands/query.py:572
-#: ../../client/solo/commands/query.py:652
-#: ../../client/solo/commands/query.py:697
-#: ../../client/solo/commands/query.py:768
-#: ../../client/solo/commands/query.py:957
-#: ../../client/solo/commands/query.py:1022
-#: ../../client/solo/commands/query.py:1271
-#: ../../client/solo/commands/query.py:1325
-#: ../../client/solo/commands/query.py:1386
-#: ../../client/solo/commands/query.py:1449
-#: ../../client/solo/commands/query.py:1497
+#: ../../client/solo/commands/query.py:410
+#: ../../client/solo/commands/query.py:579
+#: ../../client/solo/commands/query.py:659
+#: ../../client/solo/commands/query.py:704
+#: ../../client/solo/commands/query.py:775
+#: ../../client/solo/commands/query.py:964
+#: ../../client/solo/commands/query.py:1029
+#: ../../client/solo/commands/query.py:1278
+#: ../../client/solo/commands/query.py:1332
+#: ../../client/solo/commands/query.py:1393
+#: ../../client/solo/commands/query.py:1456
+#: ../../client/solo/commands/query.py:1504
 #: ../../client/solo/commands/search.py:180
-#: ../../client/solo/commands/match.py:205
+#: ../../client/solo/commands/match.py:221
 msgid "Found"
-msgstr ""
+msgstr "Hittade"
 
-#: ../../client/solo/commands/query.py:405
-#: ../../client/solo/commands/query.py:570
-#: ../../client/solo/commands/query.py:654
-#: ../../client/solo/commands/query.py:762
-#: ../../client/solo/commands/query.py:952
-#: ../../client/solo/commands/query.py:1323
-#: ../../client/solo/commands/query.py:1381
-#: ../../client/solo/commands/query.py:1444
-#: ../../client/solo/commands/query.py:1492
+#: ../../client/solo/commands/query.py:412
+#: ../../client/solo/commands/query.py:577
+#: ../../client/solo/commands/query.py:661
+#: ../../client/solo/commands/query.py:769
+#: ../../client/solo/commands/query.py:959
+#: ../../client/solo/commands/query.py:1330
+#: ../../client/solo/commands/query.py:1388
+#: ../../client/solo/commands/query.py:1451
+#: ../../client/solo/commands/query.py:1499
 #: ../../client/solo/commands/search.py:182
-#: ../../client/solo/commands/match.py:207
+#: ../../client/solo/commands/match.py:223
 msgid "entry"
 msgid_plural "entries"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "post"
+msgstr[1] "poster"
 
-#: ../../client/solo/commands/query.py:422
+#: ../../client/solo/commands/query.py:429
 msgid "ChangeLog Search"
-msgstr ""
+msgstr "Sök bland ändringsloggar"
 
-#: ../../client/solo/commands/query.py:432
-#: ../../client/solo/commands/query.py:440
+#: ../../client/solo/commands/query.py:439
+#: ../../client/solo/commands/query.py:447
 #: ../../client/solo/commands/_manage.py:386
 msgid "No match for"
-msgstr ""
+msgstr "Ingen träff för"
 
-#: ../../client/solo/commands/query.py:464
+#: ../../client/solo/commands/query.py:471
 msgid "No ChangeLog available"
-msgstr ""
+msgstr "Ingen ändringslogg tillgänglig"
 
-#: ../../client/solo/commands/query.py:479
+#: ../../client/solo/commands/query.py:486
 msgid "Attention: developer-repo option not enabled"
-msgstr ""
+msgstr "Varning: Utvecklarförrådet är inte aktiverat"
 
-#: ../../client/solo/commands/query.py:499
+#: ../../client/solo/commands/query.py:506
 msgid "Reverse Dependencies Search"
-msgstr ""
+msgstr "Sök efter beroenden omvänt"
 
-#: ../../client/solo/commands/query.py:559
+#: ../../client/solo/commands/query.py:566
 #: ../../client/solo/commands/libtest.py:198
 msgid "Matched"
-msgstr ""
+msgstr "Stämmer"
 
-#: ../../client/solo/commands/query.py:565
+#: ../../client/solo/commands/query.py:572
 msgid "from repository"
 msgstr "från förråd"
 
-#: ../../client/solo/commands/query.py:567
+#: ../../client/solo/commands/query.py:574
 msgid "from the installed packages repository"
-msgstr ""
+msgstr "från dom installerade paketens förråd"
 
-#: ../../client/solo/commands/query.py:595
+#: ../../client/solo/commands/query.py:602
 msgid "Description Search"
-msgstr ""
+msgstr "Sök enligt beskriving"
 
-#: ../../client/solo/commands/query.py:619
-#: ../../client/solo/commands/query.py:775
-#: ../../client/solo/commands/query.py:834
-#: ../../client/solo/commands/query.py:966
-#: ../../client/solo/commands/query.py:1331
-#: ../../client/solo/commands/query.py:1394
-#: ../../client/solo/commands/query.py:1457
-#: ../../client/solo/commands/query.py:1505
+#: ../../client/solo/commands/query.py:626
+#: ../../client/solo/commands/query.py:782
+#: ../../client/solo/commands/query.py:841
+#: ../../client/solo/commands/query.py:973
+#: ../../client/solo/commands/query.py:1338
+#: ../../client/solo/commands/query.py:1401
+#: ../../client/solo/commands/query.py:1464
+#: ../../client/solo/commands/query.py:1512
 msgid "No matches"
-msgstr ""
+msgstr "Inga träffar"
 
-#: ../../client/solo/commands/query.py:670
+#: ../../client/solo/commands/query.py:677
 msgid "Files Search"
-msgstr ""
+msgstr "Sök efter filer"
 
-#: ../../client/solo/commands/query.py:698
+#: ../../client/solo/commands/query.py:705
 msgid "files"
 msgstr "filer"
 
-#: ../../client/solo/commands/query.py:726
+#: ../../client/solo/commands/query.py:733
 msgid "License Search"
 msgstr "Sök licens"
 
-#: ../../client/solo/commands/query.py:792
+#: ../../client/solo/commands/query.py:799
 msgid "Listing Packages"
-msgstr ""
+msgstr "Visar paketen"
 
-#: ../../client/solo/commands/query.py:885
+#: ../../client/solo/commands/query.py:892
 msgid "Repository is not available"
-msgstr ""
+msgstr "Förrådet är inte tillgängligt"
 
-#: ../../client/solo/commands/query.py:916
+#: ../../client/solo/commands/query.py:923
 msgid "Searching Mimetype"
-msgstr ""
+msgstr "Sök efter mimetype"
 
-#: ../../client/solo/commands/query.py:998
-msgid "Needed Packages Search"
-msgstr ""
+#: ../../client/solo/commands/query.py:1005
+#, fuzzy
+msgid "Needed Libraries Search"
+msgstr "Sök efter nödvändiga paket"
 
-#: ../../client/solo/commands/query.py:1023
+#: ../../client/solo/commands/query.py:1030
 msgid "libraries"
 msgstr "bibliotek"
 
-#: ../../client/solo/commands/query.py:1039
+#: ../../client/solo/commands/query.py:1046
 msgid "Orphans Search"
-msgstr ""
+msgstr "Sök efter föräldralösa"
 
-#: ../../client/solo/commands/query.py:1107
+#: ../../client/solo/commands/query.py:1114
 msgid "Analyzing"
 msgstr "Analyserar"
 
-#: ../../client/solo/commands/query.py:1121
+#: ../../client/solo/commands/query.py:1128
 msgid "Analyzed directories"
 msgstr "Analyserade kataloger"
 
-#: ../../client/solo/commands/query.py:1126
+#: ../../client/solo/commands/query.py:1133
 msgid "Masked directories"
-msgstr ""
+msgstr "Maskerade kataloger"
 
-#: ../../client/solo/commands/query.py:1131
+#: ../../client/solo/commands/query.py:1138
 msgid "Number of files collected on the filesystem"
-msgstr ""
+msgstr "Antalet filer insamlade på filsystemet"
 
-#: ../../client/solo/commands/query.py:1136
+#: ../../client/solo/commands/query.py:1143
 msgid "Now searching among installed packages"
-msgstr ""
+msgstr "Söker nu bland installerade paket"
 
-#: ../../client/solo/commands/query.py:1167
+#: ../../client/solo/commands/query.py:1174
 msgid "Checking"
-msgstr ""
+msgstr "Kontrollerar"
 
-#: ../../client/solo/commands/query.py:1182
+#: ../../client/solo/commands/query.py:1189
 msgid "Number of total files"
-msgstr ""
-
-#: ../../client/solo/commands/query.py:1188
-msgid "Number of matching files"
-msgstr ""
+msgstr "Totala antalet filer"
 
 #: ../../client/solo/commands/query.py:1195
+msgid "Number of matching files"
+msgstr "Antalet träffar på filer"
+
+#: ../../client/solo/commands/query.py:1202
 msgid "Number of orphaned files"
-msgstr ""
+msgstr "Antalet föräldralösa filer"
 
-#: ../../client/solo/commands/query.py:1201
+#: ../../client/solo/commands/query.py:1208
 msgid "Writing file to disk"
-msgstr ""
+msgstr "Skriver till disk"
 
-#: ../../client/solo/commands/query.py:1231
+#: ../../client/solo/commands/query.py:1238
 msgid "Total space wasted"
-msgstr ""
+msgstr "Totalt använt utrymme"
 
-#: ../../client/solo/commands/query.py:1249
+#: ../../client/solo/commands/query.py:1256
 msgid "Required Packages Search"
-msgstr ""
+msgstr "Sök efter dom paket som krävs"
 
-#: ../../client/solo/commands/query.py:1267
+#: ../../client/solo/commands/query.py:1274
 msgid "Library"
-msgstr ""
+msgstr "Bibliotek"
 
-#: ../../client/solo/commands/query.py:1291
+#: ../../client/solo/commands/query.py:1298
 msgid "Package Set Search"
-msgstr ""
+msgstr "Sök efter paket-set"
 
-#: ../../client/solo/commands/query.py:1347
+#: ../../client/solo/commands/query.py:1354
 msgid "Slot Search"
-msgstr ""
+msgstr "Sök efter plats"
 
-#: ../../client/solo/commands/query.py:1410
+#: ../../client/solo/commands/query.py:1417
 msgid "Tag Search"
-msgstr ""
+msgstr "Sök efter tagg"
 
-#: ../../client/solo/commands/query.py:1473
+#: ../../client/solo/commands/query.py:1480
 msgid "Revision Search"
-msgstr ""
+msgstr "Sök revision"
+
+#: ../../client/solo/commands/query.py:1549
+#: ../../magneto/src/magneto/gtk/magneto.glade.h:2
+msgid "Available Updates"
+msgstr "Tillgängliga uppdateringar"
+
+#: ../../client/solo/commands/query.py:1563
+#, fuzzy
+msgid "Packages to update:"
+msgstr "Träffade paket uppdateras"
+
+#: ../../client/solo/commands/query.py:1566
+#, fuzzy
+msgid "Packages to remove:"
+msgstr "Antal paket som kommer att tas bort"
+
+#: ../../client/solo/commands/query.py:1570
+#, fuzzy
+msgid "Packages already up-to-date:"
+msgstr "Paketen som träffades är redan uppdaterade"
 
 #: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
@@ -2654,19 +2704,19 @@ msgstr ""
 #: ../../client/solo/commands/rescue.py:86
 #: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
-msgstr ""
+msgstr "visa hur mycket som skulle ha utförts"
 
 #: ../../client/solo/commands/config.py:76
 #: ../../client/solo/commands/remove.py:81
 #: ../../client/solo/commands/search.py:76
-#: ../../client/solo/commands/command.py:90
+#: ../../client/solo/commands/command.py:95
 #: ../../client/solo/commands/source.py:76
-#: ../../client/solo/commands/match.py:89
+#: ../../client/solo/commands/match.py:90
 #: ../../client/solo/commands/install.py:84
 #: ../../client/solo/commands/upgrade.py:79
 #: ../../client/solo/commands/download.py:76
 msgid "verbose output"
-msgstr ""
+msgstr "verbose utdata"
 
 #: ../../client/solo/commands/config.py:126
 #: ../../client/solo/commands/status.py:130
@@ -2680,146 +2730,147 @@ msgstr ""
 #: ../../client/solo/commands/install.py:288
 #: ../../client/solo/commands/install.py:374
 msgid "Not available"
-msgstr ""
+msgstr "Inte tillgänglig"
 
 #: ../../client/solo/commands/config.py:130
 msgid "installed from"
-msgstr ""
+msgstr "installerad från"
 
 #: ../../client/solo/commands/config.py:141
 #: ../../client/solo/commands/remove.py:307
 #: ../../client/solo/commands/_manage.py:230
 msgid "Packages involved"
-msgstr ""
+msgstr "Paket involverade"
 
 #: ../../client/solo/commands/config.py:165
 msgid "configure"
-msgstr ""
+msgstr "konfigurera"
 
 #: ../../client/solo/commands/config.py:187
 msgid "configure installed packages"
-msgstr ""
+msgstr "konfigurera installerade paket"
 
 #: ../../client/solo/commands/status.py:105
 msgid "Repository name"
-msgstr ""
+msgstr "Förrådsnamn"
 
 #: ../../client/solo/commands/status.py:114
 msgid "Revision"
-msgstr ""
+msgstr "Revision"
 
 #: ../../client/solo/commands/status.py:126
 msgid "Repository class"
-msgstr ""
+msgstr "Förrådsklass"
 
 #: ../../client/solo/commands/status.py:133
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../client/solo/commands/status.py:140
 msgid "Notice Board"
-msgstr ""
+msgstr "Anslagstavla"
 
 #: ../../client/solo/commands/status.py:147
 msgid "Path"
-msgstr ""
+msgstr "Sökväg"
 
 #: ../../client/solo/commands/status.py:160
 msgid "Package URLs"
-msgstr ""
+msgstr "Paketens URL"
 
 #: ../../client/solo/commands/status.py:175
 msgid "show Repositories status"
-msgstr ""
+msgstr "visa förrådsstatus"
 
 #: ../../client/solo/commands/update.py:64
-#: ../../client/solo/commands/ugc.py:234
+#: ../../client/solo/commands/ugc.py:236
 #: ../../client/solo/commands/notice.py:57
 msgid "repository"
 msgstr "förråd"
 
 #: ../../client/solo/commands/update.py:67
 msgid "force update"
-msgstr ""
+msgstr "tvinga uppdatering"
 
 #: ../../client/solo/commands/update.py:103
 msgid "You must be either root or in this group:"
-msgstr ""
-
-#: ../../client/solo/commands/update.py:122
-msgid "Sending the update request to Entropy Services"
-msgstr ""
+msgstr "Du måste antingen vara rot eller tillhöra denna grupp:"
 
 #: ../../client/solo/commands/update.py:123
+msgid "Sending the update request to Entropy Services"
+msgstr "Skickar uppdateringsförfrågan till Entropys tjänster"
+
+#: ../../client/solo/commands/update.py:124
 msgid "Repositories will be updated in background"
-msgstr ""
+msgstr "Förråden kommer uppdateras i bakgrunden"
 
-#: ../../client/solo/commands/update.py:132
+#: ../../client/solo/commands/update.py:133
 msgid "app-admin/rigo-daemon not installed. Update not allowed."
-msgstr ""
+msgstr "app-admin/rigo-daemon är inte installerad. Uppdatering tillåts inte."
 
-#: ../../client/solo/commands/update.py:191
+#: ../../client/solo/commands/update.py:200
 msgid "Have a nice day"
-msgstr ""
+msgstr "Ha en trevlig dag"
 
-#: ../../client/solo/commands/update.py:196
+#: ../../client/solo/commands/update.py:205
 msgid "Repositories update not allowed"
-msgstr ""
+msgstr "Uppdatering av förråden är inte tillåten"
 
-#: ../../client/solo/commands/update.py:221
+#: ../../client/solo/commands/update.py:230
 #: ../../client/solo/commands/hop.py:116
 msgid "No repositories specified in"
-msgstr ""
+msgstr "Inga förråd har specificerats i"
 
-#: ../../client/solo/commands/update.py:260
+#: ../../client/solo/commands/update.py:269
 #: ../../client/solo/commands/notice.py:123
 msgid "Notice board not available"
-msgstr ""
+msgstr "Anslagstavlan är inte tillgänglig"
 
-#: ../../client/solo/commands/update.py:274
+#: ../../client/solo/commands/update.py:283
 msgid "Notice board"
 msgstr "Anslagstavla"
 
 #. title
-#: ../../client/solo/commands/update.py:287
+#: ../../client/solo/commands/update.py:296
 #: ../../client/solo/commands/security.py:219
-#: ../../client/solo/commands/ugc.py:355 ../../client/solo/commands/ugc.py:614
+#: ../../client/solo/commands/ugc.py:357 ../../client/solo/commands/ugc.py:616
 #: ../../client/solo/commands/notice.py:146
 #: ../../client/solo/commands/notice.py:183
 msgid "Title"
 msgstr "Titel"
 
-#: ../../client/solo/commands/update.py:296
+#: ../../client/solo/commands/update.py:305
 msgid "update repositories"
-msgstr ""
+msgstr "uppdatera förråden"
 
 #: ../../client/solo/commands/security.py:68
 #: ../../client/solo/commands/security.py:631
 msgid "system security tools"
-msgstr ""
+msgstr "verktyg för systemsäkerhet"
 
 #: ../../client/solo/commands/security.py:73
 msgid "verify installed files using stored checksums"
-msgstr ""
+msgstr "verifiera installerade filer från lagrade kontrollsummor"
 
 #: ../../client/solo/commands/security.py:77
 msgid "consider mtime instead of SHA256 (false positives ahead)"
-msgstr ""
+msgstr "Överväg mtime instället för SHA256 (falska positiva framför)"
 
 #: ../../client/solo/commands/security.py:81
 msgid "update hashes and mtime (useful after editing config files)"
 msgstr ""
+"uppdatera hash och mtime (användbart efter man redigerat konfigurationsfiler)"
 
 #: ../../client/solo/commands/security.py:85
 msgid "reinstall faulty packages"
-msgstr ""
+msgstr "installera om bristfälliga paket"
 
 #: ../../client/solo/commands/security.py:96
 #: ../../client/solo/commands/security.py:168
 #: ../../client/solo/commands/install.py:98
 #: ../../client/solo/commands/upgrade.py:93
 msgid "just download packages"
-msgstr "enbart hämtning av paket"
+msgstr "hämta bara paketen"
 
 #: ../../client/solo/commands/security.py:112
 msgid "download the latest Security Advisories"
@@ -2827,35 +2878,36 @@ msgstr "hämta de senaste säkerhetsråden"
 
 #: ../../client/solo/commands/security.py:116
 msgid "force download"
-msgstr ""
+msgstr "tvinga hämtning"
 
 #: ../../client/solo/commands/security.py:125
 msgid "list all the available Security Advisories"
-msgstr "lista alla tillgängliga säkerhetsråd"
+msgstr "visa alla tillgängliga säkerhetsråd"
 
 #: ../../client/solo/commands/security.py:131
 msgid "list only affected"
-msgstr "lista enbart berörda"
+msgstr "visa enbart berörda"
 
 #: ../../client/solo/commands/security.py:134
 msgid "list only unaffected"
-msgstr "lista enbart oberörda"
+msgstr "visa enbart oberörda"
 
 #: ../../client/solo/commands/security.py:143
 msgid "show information about provided advisories identifiers"
-msgstr ""
+msgstr "visa information om tillhandahållna rådgivares identifierare"
 
 #: ../../client/solo/commands/security.py:148
-msgid "advistory indentifier"
-msgstr ""
+#, fuzzy
+msgid "advisory indentifier"
+msgstr "rådgivaridentifierare"
 
 #: ../../client/solo/commands/security.py:155
 msgid "automatically install all the available security updates"
-msgstr "installera alla tillgängliga säkerhetskopiera automatiskt"
+msgstr "installera alla tillgängliga säkerhetsuppdateringar automatiskt"
 
 #: ../../client/solo/commands/security.py:215
 msgid "Advisory Identifier"
-msgstr ""
+msgstr "rådgivaridentifierare"
 
 #: ../../client/solo/commands/security.py:247
 msgid "Background"
@@ -2863,95 +2915,95 @@ msgstr "Bakgrund"
 
 #: ../../client/solo/commands/security.py:254
 msgid "Exploitable"
-msgstr ""
+msgstr "Utnyttningsbar"
 
 #: ../../client/solo/commands/security.py:260
 msgid "Impact"
-msgstr ""
+msgstr "Inverkan"
 
 #: ../../client/solo/commands/security.py:267
 msgid "Impact type"
-msgstr ""
+msgstr "Typ av inverkan"
 
 #: ../../client/solo/commands/security.py:272
 msgid "Revised"
-msgstr ""
+msgstr "Ändrad"
 
 #: ../../client/solo/commands/security.py:277
 msgid "Announced"
-msgstr ""
+msgstr "Tillkännagiven"
 
 #: ../../client/solo/commands/security.py:282
 msgid "Synopsis"
-msgstr ""
+msgstr "Översikt"
 
 #: ../../client/solo/commands/security.py:289
 msgid "References"
-msgstr ""
+msgstr "Referenser "
 
 #: ../../client/solo/commands/security.py:295
 msgid "Upstream bugs"
-msgstr ""
+msgstr "Uppströmsbuggar"
 
 #: ../../client/solo/commands/security.py:301
 msgid "Affected"
-msgstr ""
+msgstr "Påverkade"
 
 #: ../../client/solo/commands/security.py:309
 msgid "vulnerable versions"
-msgstr ""
+msgstr "Sårbara versioner"
 
 #: ../../client/solo/commands/security.py:312
 msgid "unaffected versions"
-msgstr ""
+msgstr "versioner som inte påverkas"
 
 #: ../../client/solo/commands/security.py:317
 msgid "Workaround"
-msgstr ""
+msgstr "Tillfällig lösning"
 
 #: ../../client/solo/commands/security.py:324
 msgid "Resolution"
-msgstr ""
+msgstr "Lösning"
 
 #: ../../client/solo/commands/security.py:351
 msgid "Checking system files"
-msgstr ""
+msgstr "Kontrollerar systemfilerna"
 
 #: ../../client/solo/commands/security.py:379
 msgid "no checksum information"
-msgstr ""
+msgstr "Ingen information om kontrollsumman"
 
 #: ../../client/solo/commands/security.py:428
 msgid "found altered files"
-msgstr ""
+msgstr "hittade filer som har ändrats"
 
 #: ../../client/solo/commands/security.py:447
 msgid "assimilated new hashes and mtime"
-msgstr ""
+msgstr "uppta nya hashes och mtime"
 
 #: ../../client/solo/commands/security.py:458
 msgid "unavailable"
-msgstr ""
+msgstr "otillgänglig"
 
 #: ../../client/solo/commands/security.py:465
 msgid "No altered files found"
-msgstr ""
+msgstr "Inga ändrade filer hittades"
 
 #: ../../client/solo/commands/security.py:491
 msgid "Altered files have been found"
-msgstr ""
+msgstr "Ändrade filer har hittats"
 
 #: ../../client/solo/commands/security.py:495
 msgid "Packages have been reinstalled successfully"
-msgstr ""
+msgstr "Ominstallationen av paketen lyckades"
 
 #: ../../client/solo/commands/security.py:527
 msgid "No advisories available or applicable"
-msgstr ""
+msgstr "Inga rådgivare tillgängliga eller användbara"
 
 #: ../../client/solo/commands/security.py:570
 msgid "Advisory does not exist"
-msgstr ""
+msgstr "Rådgivare existerar inte"
 
 #: ../../client/solo/commands/security.py:596
 msgid "Calculating security updates"
@@ -2959,15 +3011,15 @@ msgstr "Beräknar säkerhetsuppdateringar"
 
 #: ../../client/solo/commands/security.py:615
 msgid "All the available updates have been already installed"
-msgstr ""
+msgstr "Alla tillgängliga uppdateringar har redan installerats"
 
 #: ../../client/solo/commands/moo.py:114
 msgid "moo at user"
-msgstr ""
+msgstr "muua mot användare"
 
 #: ../../client/solo/commands/moo.py:121
 msgid "bow to lxnay"
-msgstr ""
+msgstr "buga dig för lxnay"
 
 #: ../../client/solo/commands/remove.py:88
 #: ../../client/solo/commands/source.py:90
@@ -2975,7 +3027,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:105
 #: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
-msgstr ""
+msgstr "utesluta paketets beroenden"
 
 #: ../../client/solo/commands/remove.py:94
 #: ../../client/solo/commands/source.py:96
@@ -2983,7 +3035,7 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:111
 #: ../../client/solo/commands/download.py:95
 msgid "do not calculate dependencies recursively"
-msgstr ""
+msgstr "beräkna inte beroenden rekursivt"
 
 #: ../../client/solo/commands/remove.py:100
 #: ../../client/solo/commands/source.py:102
@@ -2991,153 +3043,154 @@ msgstr ""
 #: ../../client/solo/commands/upgrade.py:117
 #: ../../client/solo/commands/download.py:101
 msgid "include dependencies no longer needed"
-msgstr ""
+msgstr "inkludera beroenden som inte längre behövs "
 
 #: ../../client/solo/commands/remove.py:106
 #: ../../client/solo/commands/install.py:128
 #: ../../client/solo/commands/upgrade.py:123
 msgid "when used with --deep, include virtual packages"
-msgstr ""
+msgstr "när använt med --deep, inkludera virtuella paket"
 
 #: ../../client/solo/commands/remove.py:112
 #: ../../client/solo/commands/install.py:134
 #: ../../client/solo/commands/upgrade.py:129
 msgid "remove package configuration files no longer needed"
-msgstr ""
+msgstr "ta bort paketkonfigurationer som inte längre används"
 
 #: ../../client/solo/commands/remove.py:118
 msgid "force system packages removal (dangerous!)"
-msgstr ""
+msgstr "tvinga borttagning av systempaket (farligt)"
 
 #: ../../client/solo/commands/remove.py:173
 msgid "removal"
-msgstr ""
+msgstr "borttagning"
 
 #: ../../client/solo/commands/remove.py:189
 #: ../../client/solo/commands/source.py:172
 #: ../../client/solo/commands/download.py:172
 msgid "All done"
-msgstr ""
+msgstr "Allt klart"
 
 #: ../../client/solo/commands/remove.py:201
 msgid "These are the packages that should be MANUALLY removed"
-msgstr ""
+msgstr "Detta är paketen som borde tas bort manuellt"
 
 #: ../../client/solo/commands/remove.py:207
 #: ../../client/solo/commands/install.py:354
 msgid "These are the packages that would be removed"
-msgstr ""
+msgstr "Detta är paketen som kommer tas bort"
 
 #: ../../client/solo/commands/remove.py:257
 msgid "These are the chosen packages"
-msgstr ""
+msgstr "Detta är dom valda paketen"
 
 #: ../../client/solo/commands/remove.py:270
 msgid "vital package"
-msgstr ""
+msgstr "vitalt paket"
 
 #: ../../client/solo/commands/remove.py:271
 msgid "Removal forbidden"
-msgstr ""
+msgstr "Borttagning förbjuden"
 
 #: ../../client/solo/commands/remove.py:321
 msgid "Packages that would be removed"
-msgstr ""
+msgstr "Antal paket som kommer att tas bort"
 
 #: ../../client/solo/commands/remove.py:351
 #: ../../client/solo/commands/install.py:445
 msgid "Freed disk space"
-msgstr ""
+msgstr "Utrymme som frigjorts"
 
 #: ../../client/solo/commands/remove.py:358
 msgid "Total bandwidth wasted"
-msgstr ""
+msgstr "Total bandbredd använd"
 
 #: ../../client/solo/commands/remove.py:388
 #: ../../client/solo/commands/rescue.py:631
 msgid "Nothing to do"
-msgstr ""
+msgstr "Inget att göra"
 
 #: ../../client/solo/commands/remove.py:395
 msgid "Would you like to calculate dependencies ?"
-msgstr ""
+msgstr "Vill du beräkna beroenden?"
 
 #: ../../client/solo/commands/remove.py:402
 msgid "Would you like to remove them now ?"
-msgstr ""
+msgstr "Vill du ta bort dom nu?"
 
 #: ../../client/solo/commands/remove.py:423
 msgid "Ouch!"
-msgstr ""
+msgstr "Aj fan!"
 
 #: ../../client/solo/commands/remove.py:424
 msgid "the following system packages were pulled in"
-msgstr ""
+msgstr "följande systempaket hämtades "
 
-#: ../../client/solo/commands/remove.py:448
+#: ../../client/solo/commands/remove.py:447
 msgid "Would you like to proceed ?"
-msgstr ""
+msgstr "Vill du fortsätta"
 
-#: ../../client/solo/commands/remove.py:463
+#: ../../client/solo/commands/remove.py:462
 msgid "remove packages from system"
-msgstr ""
+msgstr "ta bort paket från systemet"
 
 #: ../../client/solo/commands/search.py:68
 msgid "search keyword"
-msgstr ""
+msgstr "sök efter nyckelord"
 
 #: ../../client/solo/commands/search.py:72
-#: ../../client/solo/commands/match.py:85
+#: ../../client/solo/commands/repo.py:106
+#: ../../client/solo/commands/match.py:86
 msgid "quiet output, for scripting purposes"
-msgstr ""
+msgstr "tyst utdata, för scripting"
 
 #: ../../client/solo/commands/search.py:81
 msgid "search among installed packages only"
-msgstr ""
+msgstr "sök enbart bland installerade paket"
 
 #: ../../client/solo/commands/search.py:85
 msgid "search among available packages only"
-msgstr ""
+msgstr "säk enbart bland tillgängliga paket"
 
 #: ../../client/solo/commands/search.py:167
 msgid "Searching"
-msgstr ""
+msgstr "Söker"
 
 #: ../../client/solo/commands/search.py:214
 msgid "search packages in repositories"
-msgstr "sök paket i förråd"
+msgstr "sök efter paket "
 
 #: ../../client/solo/commands/deptest.py:64
 #: ../../client/solo/commands/libtest.py:67
 #: ../../client/solo/commands/unused.py:65
 msgid "show less details (useful for scripting)"
-msgstr "visa färre detaljer (bra för skript)"
+msgstr "visa färre detaljer (bra för scripting)"
 
 #: ../../client/solo/commands/deptest.py:67
 #: ../../client/solo/commands/libtest.py:74 ../../services/kernel-switcher:313
 msgid "just show what would be done"
-msgstr "bara visa vad som skall utföras"
+msgstr "visa bara vad som kommer att utföras"
 
 #: ../../client/solo/commands/deptest.py:104
 msgid "Running dependency test"
-msgstr ""
+msgstr "Kontrollerar alla beroenden"
 
 #: ../../client/solo/commands/deptest.py:159
 msgid "These are the dependencies not found"
-msgstr ""
+msgstr "Det här beroenden som saknas"
 
 #: ../../client/solo/commands/deptest.py:169
 msgid "Needed by"
-msgstr ""
+msgstr "Som krävs av"
 
 #: ../../client/solo/commands/deptest.py:180
 msgid "Would you like to install the packages ?"
-msgstr ""
+msgstr "Vill du installera paketen?"
 
 #: ../../client/solo/commands/deptest.py:187
 #: ../../client/solo/commands/libtest.py:227
 msgid "Installing available packages in"
-msgstr "Installerar tillgängliga paket i"
+msgstr "Installerar tillgängliga paket om"
 
 #: ../../client/solo/commands/deptest.py:188
 #: ../../client/solo/commands/libtest.py:228
@@ -3146,53 +3199,53 @@ msgstr "10 sekunder"
 
 #: ../../client/solo/commands/deptest.py:206
 msgid "look for unsatisfied dependencies"
-msgstr ""
+msgstr "sök efter otillfredställda beroenden"
 
-#: ../../client/solo/commands/command.py:70
+#: ../../client/solo/commands/command.py:71
 msgid "not a valid directory"
-msgstr ""
+msgstr "inte en giltig katalog "
 
-#: ../../client/solo/commands/command.py:93
+#: ../../client/solo/commands/command.py:98
 #: ../../client/solo/commands/source.py:83
 #: ../../client/solo/commands/install.py:91
 #: ../../client/solo/commands/upgrade.py:86
 #: ../../client/solo/commands/download.py:83
 msgid "quiet output"
-msgstr ""
+msgstr "tyst utdata"
 
-#: ../../client/solo/commands/command.py:319
+#: ../../client/solo/commands/command.py:324
 msgid "Acquiring Entropy Resources Lock, please wait..."
-msgstr ""
+msgstr "Erhåller Entropys resurs lås, vad god vänta"
 
-#: ../../client/solo/commands/command.py:326
-#: ../../client/solo/commands/command.py:356
+#: ../../client/solo/commands/command.py:331
+#: ../../client/solo/commands/command.py:361
 #: ../../services/kernel-switcher:159 ../../services/kernel-switcher:271
 msgid "Another Entropy is currently running."
-msgstr ""
+msgstr "En annan Entropy körs redan."
 
-#: ../../client/solo/commands/command.py:384
+#: ../../client/solo/commands/command.py:389
 msgid "When you wrote"
-msgstr ""
+msgstr "När du skrev"
 
-#: ../../client/solo/commands/command.py:386
+#: ../../client/solo/commands/command.py:391
 msgid "You Meant(tm)"
-msgstr ""
+msgstr "Menade du(tm)"
 
-#: ../../client/solo/commands/command.py:387
+#: ../../client/solo/commands/command.py:392
 msgid "one of these below?"
-msgstr "en av dessa nedan?"
+msgstr "en av dom här?"
 
 #: ../../client/solo/commands/cache.py:60
 msgid "manage cache"
-msgstr ""
+msgstr "hantera cachen"
 
 #: ../../client/solo/commands/cache.py:64
 msgid "clean Entropy Library Cache"
-msgstr ""
+msgstr "rensa Entropys bibliotekscache"
 
 #: ../../client/solo/commands/cache.py:67
 msgid "show more details"
-msgstr "visa mer detaljerat"
+msgstr "visa fler detaljer"
 
 #: ../../client/solo/commands/cache.py:70
 msgid "print results in a scriptable way"
@@ -3200,525 +3253,530 @@ msgstr "skriv ut resultatet på ett skriptbart sätt"
 
 #: ../../client/solo/commands/cache.py:122
 msgid "Cleaning Entropy cache, please wait ..."
-msgstr "Städar Entropys cache, vänligen vänta..."
+msgstr "Rensar Entropys cache, vänligen vänta..."
 
 #: ../../client/solo/commands/cache.py:129
 msgid "Entropy cache cleaned."
-msgstr ""
+msgstr "Entropys bibliotekscache rensad"
 
 #: ../../client/solo/commands/cache.py:140
 msgid "manage Entropy Library Cache"
-msgstr ""
+msgstr "hantera Entropys bibliotekscache"
 
-#: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1005
+#: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1007
 msgid "manage User Generated Content"
-msgstr ""
+msgstr "hantera användargenerat innehåll"
 
 #: ../../client/solo/commands/ugc.py:75
 msgid "login against the given repository"
-msgstr ""
+msgstr "logga in mot angivet förråd"
 
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
-#: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/repo.py:72
-#: ../../client/solo/commands/repo.py:80 ../../client/solo/commands/repo.py:96
-#: ../../client/solo/commands/repo.py:109
+#: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
+#: ../../client/solo/commands/repo.py:72 ../../client/solo/commands/repo.py:80
+#: ../../client/solo/commands/repo.py:96
+#: ../../client/solo/commands/repo.py:113
 msgid "repository name"
-msgstr ""
+msgstr "förrådsnamn"
 
 #: ../../client/solo/commands/ugc.py:80 ../../client/solo/commands/ugc.py:90
 msgid "force action"
-msgstr ""
+msgstr "tvinga åtgärd"
 
 #: ../../client/solo/commands/ugc.py:85
 msgid "logout from the given repository"
-msgstr ""
+msgstr "logga ut från angivet förråd"
 
 #: ../../client/solo/commands/ugc.py:96
 msgid ""
-"manage package documents in the selected repository (comments, files, "
-"videos)"
+"manage package documents in the selected repository (comments, files, videos)"
 msgstr ""
+"hantera paketets dokument i det valda förrådet (kommentarer, filer, videor)"
 
 #: ../../client/solo/commands/ugc.py:104
 msgid "manage Documents"
-msgstr ""
+msgstr "hantera dokument"
 
 #: ../../client/solo/commands/ugc.py:108
 msgid "get available documents for the provided package name"
-msgstr ""
+msgstr "hämta tillgängliga dokument för det angivna paketet"
 
 #: ../../client/solo/commands/ugc.py:111 ../../client/solo/commands/ugc.py:119
-#: ../../client/solo/commands/ugc.py:127 ../../client/solo/commands/ugc.py:149
-#: ../../client/solo/commands/ugc.py:156
+#: ../../client/solo/commands/ugc.py:127 ../../client/solo/commands/ugc.py:151
+#: ../../client/solo/commands/ugc.py:158
 msgid "package name (example: x11-libs/qt)"
-msgstr ""
+msgstr "paketnamn (exempel:<11-libs/qt)"
 
 #: ../../client/solo/commands/ugc.py:116
 msgid "add a new document to the provided package name"
-msgstr ""
+msgstr "lägga till ett nytt dokument till angivna paketet"
 
 #: ../../client/solo/commands/ugc.py:124
 msgid "remove documents from database using their identifiers"
-msgstr ""
+msgstr "ta bort dokument från databasen med deras identifierare"
 
 #: ../../client/solo/commands/ugc.py:130
 msgid "document identifier"
-msgstr ""
+msgstr "dokumentidentifierare"
 
 #: ../../client/solo/commands/ugc.py:137
 msgid "manage package votes in the selected repository"
-msgstr ""
+msgstr "hantera programmens betyg i det valda förrådet"
 
-#: ../../client/solo/commands/ugc.py:143
+#: ../../client/solo/commands/ugc.py:145
 msgid "manage Votes"
-msgstr ""
+msgstr "hantera Betyg"
 
-#: ../../client/solo/commands/ugc.py:147
+#: ../../client/solo/commands/ugc.py:149
 msgid "get vote for the provided package name"
-msgstr ""
+msgstr "hämta betyg för det angivna paketet"
 
-#: ../../client/solo/commands/ugc.py:154
+#: ../../client/solo/commands/ugc.py:156
 msgid "add vote to the provided package name"
-msgstr ""
+msgstr "lägg till ett betyg till det angivna paketet"
 
-#: ../../client/solo/commands/ugc.py:194 ../../client/solo/commands/ugc.py:298
+#: ../../client/solo/commands/ugc.py:196 ../../client/solo/commands/ugc.py:300
 msgid "Invalid repository"
-msgstr ""
+msgstr "Ogiltigt förråd"
 
-#: ../../client/solo/commands/ugc.py:205 ../../client/solo/commands/ugc.py:309
-#: ../../client/solo/commands/ugc.py:433 ../../client/solo/commands/ugc.py:515
-#: ../../client/solo/commands/ugc.py:731 ../../client/solo/commands/ugc.py:848
-#: ../../client/solo/commands/ugc.py:886
+#: ../../client/solo/commands/ugc.py:207 ../../client/solo/commands/ugc.py:311
+#: ../../client/solo/commands/ugc.py:435 ../../client/solo/commands/ugc.py:517
+#: ../../client/solo/commands/ugc.py:733 ../../client/solo/commands/ugc.py:850
+#: ../../client/solo/commands/ugc.py:888
 msgid "Repository does not support Entropy Services."
-msgstr ""
-
-#: ../../client/solo/commands/ugc.py:215
-msgid "Already logged in as"
-msgstr ""
+msgstr "Förrådet stöds inte utav Entropys tjänser"
 
 #: ../../client/solo/commands/ugc.py:217
-msgid "Please logout first"
-msgstr ""
+msgid "Already logged in as"
+msgstr "Redan inloggad som"
 
-#: ../../client/solo/commands/ugc.py:229
+#: ../../client/solo/commands/ugc.py:219
+msgid "Please logout first"
+msgstr "Var god och logga ut först"
+
+#: ../../client/solo/commands/ugc.py:231
 msgid "Username"
 msgstr "Användarnamn"
 
-#: ../../client/solo/commands/ugc.py:230
+#: ../../client/solo/commands/ugc.py:232
 msgid "Password"
 msgstr "Lösenord"
 
-#: ../../client/solo/commands/ugc.py:234
+#: ../../client/solo/commands/ugc.py:236
 msgid "Please login against"
-msgstr ""
+msgstr "Var god och logga in mot"
 
-#: ../../client/solo/commands/ugc.py:242
+#: ../../client/solo/commands/ugc.py:244
 msgid "Login aborted. Not logged in."
-msgstr ""
+msgstr "Inloggning avbruten. Loggades inte in"
 
-#: ../../client/solo/commands/ugc.py:256
+#: ../../client/solo/commands/ugc.py:258
 msgid "Authentication error. Not logged in."
-msgstr ""
+msgstr "Autentiseringsfel. Loggades inte in."
 
-#: ../../client/solo/commands/ugc.py:265
+#: ../../client/solo/commands/ugc.py:267
 msgid "Communication error. Not logged in."
-msgstr ""
+msgstr "Kommunikationsfel. Loggades inte in"
 
-#: ../../client/solo/commands/ugc.py:275
+#: ../../client/solo/commands/ugc.py:277
 msgid "Successfully logged in as"
-msgstr ""
+msgstr "lyckades logga in som"
 
-#: ../../client/solo/commands/ugc.py:282
+#: ../../client/solo/commands/ugc.py:284
 msgid "From now on, any UGC action will be committed as this user"
-msgstr ""
+msgstr "Fån och med nu kommer alla UGC åtgärder bli gjorda som denna användare"
 
-#: ../../client/solo/commands/ugc.py:319
+#: ../../client/solo/commands/ugc.py:321
 msgid "Not logged in."
-msgstr ""
-
-#: ../../client/solo/commands/ugc.py:328
-msgid "User"
-msgstr "Användare"
+msgstr "Inte inloggad"
 
 #: ../../client/solo/commands/ugc.py:330
+msgid "User"
+msgstr "Användaren"
+
+#: ../../client/solo/commands/ugc.py:332
 msgid "has been logged out."
-msgstr ""
+msgstr "har loggats ut"
 
-#: ../../client/solo/commands/ugc.py:339
+#: ../../client/solo/commands/ugc.py:341
 msgid "No title"
-msgstr ""
+msgstr "Ingen titel"
 
-#: ../../client/solo/commands/ugc.py:366
+#: ../../client/solo/commands/ugc.py:368
 #: ../../client/solo/commands/notice.py:189
 msgid "Content"
 msgstr "Innehåll"
 
-#: ../../client/solo/commands/ugc.py:383
+#: ../../client/solo/commands/ugc.py:385
 msgid "no votes"
-msgstr ""
+msgstr "inga betyg"
 
-#: ../../client/solo/commands/ugc.py:389
+#: ../../client/solo/commands/ugc.py:391
 msgid "current package vote"
-msgstr ""
+msgstr "nuvarande betyg på paketet"
 
-#: ../../client/solo/commands/ugc.py:450 ../../client/solo/commands/ugc.py:460
-#: ../../client/solo/commands/ugc.py:477 ../../client/solo/commands/ugc.py:696
-#: ../../client/solo/commands/ugc.py:767 ../../client/solo/commands/ugc.py:792
-#: ../../client/solo/commands/ugc.py:804 ../../client/solo/commands/ugc.py:816
-#: ../../client/solo/commands/ugc.py:861 ../../client/solo/commands/ugc.py:939
-#: ../../client/solo/commands/ugc.py:974 ../../client/solo/commands/ugc.py:985
+#: ../../client/solo/commands/ugc.py:452 ../../client/solo/commands/ugc.py:462
+#: ../../client/solo/commands/ugc.py:479 ../../client/solo/commands/ugc.py:698
+#: ../../client/solo/commands/ugc.py:769 ../../client/solo/commands/ugc.py:794
+#: ../../client/solo/commands/ugc.py:806 ../../client/solo/commands/ugc.py:818
+#: ../../client/solo/commands/ugc.py:863 ../../client/solo/commands/ugc.py:941
+#: ../../client/solo/commands/ugc.py:976 ../../client/solo/commands/ugc.py:987
 msgid "UGC error"
-msgstr ""
+msgstr "UGC fel"
 
-#: ../../client/solo/commands/ugc.py:489
+#: ../../client/solo/commands/ugc.py:491
 msgid "Number of downloads"
-msgstr "Antal nedladdningar"
+msgstr "Antalet hämtningar"
 
-#: ../../client/solo/commands/ugc.py:496
+#: ../../client/solo/commands/ugc.py:498
 msgid "No User Generated Content available."
-msgstr ""
+msgstr "Inget användargenererat innehåll tillgängligt"
 
-#: ../../client/solo/commands/ugc.py:527 ../../client/solo/commands/ugc.py:898
+#: ../../client/solo/commands/ugc.py:529 ../../client/solo/commands/ugc.py:900
 msgid "Not logged in, please login first."
-msgstr ""
+msgstr "Inte inloggad, vad god och logga in först"
 
-#: ../../client/solo/commands/ugc.py:537
+#: ../../client/solo/commands/ugc.py:539
 msgid "Add document"
 msgstr "Lägg till dokument"
 
-#: ../../client/solo/commands/ugc.py:542
+#: ../../client/solo/commands/ugc.py:544
 msgid "text comment"
 msgstr "textkommentar"
 
-#: ../../client/solo/commands/ugc.py:543
-msgid "icon"
-msgstr ""
-
-#: ../../client/solo/commands/ugc.py:544
-msgid "simple file"
-msgstr ""
-
 #: ../../client/solo/commands/ugc.py:545
-msgid "simple image"
-msgstr ""
+msgid "icon"
+msgstr "ikon"
 
 #: ../../client/solo/commands/ugc.py:546
-msgid "video"
-msgstr ""
+msgid "simple file"
+msgstr "enkel fil"
 
-#: ../../client/solo/commands/ugc.py:563
-msgid "Insert document title"
-msgstr ""
+#: ../../client/solo/commands/ugc.py:547
+msgid "simple image"
+msgstr "enkel bild"
+
+#: ../../client/solo/commands/ugc.py:548
+msgid "video"
+msgstr "video"
 
 #: ../../client/solo/commands/ugc.py:565
-msgid "Insert document description/comment"
-msgstr ""
+msgid "Insert document title"
+msgstr "Infoga titel på dokumentet"
 
-#: ../../client/solo/commands/ugc.py:568
-msgid "Insert document's keywords (space separated)"
-msgstr ""
+#: ../../client/solo/commands/ugc.py:567
+msgid "Insert document description/comment"
+msgstr "Infoga beskriving/kommentar om dokumentet"
 
 #: ../../client/solo/commands/ugc.py:570
+msgid "Insert document's keywords (space separated)"
+msgstr "Infoga nyckelord för dokumentet (åtskillda med mellanslag)"
+
+#: ../../client/solo/commands/ugc.py:572
 msgid "Choose document type"
-msgstr ""
+msgstr "Välj typ av dokument"
 
-#: ../../client/solo/commands/ugc.py:575 ../../client/solo/commands/ugc.py:595
+#: ../../client/solo/commands/ugc.py:577 ../../client/solo/commands/ugc.py:597
 msgid "Entropy UGC document submission"
-msgstr ""
+msgstr "Entropys UGC dokumenttillägg"
 
-#: ../../client/solo/commands/ugc.py:592
+#: ../../client/solo/commands/ugc.py:594
 msgid "Insert document path"
-msgstr ""
+msgstr "Infoga dokument sökväg"
 
-#: ../../client/solo/commands/ugc.py:608 ../../client/solo/commands/ugc.py:748
-#: ../../client/solo/commands/ugc.py:951
+#: ../../client/solo/commands/ugc.py:610 ../../client/solo/commands/ugc.py:750
+#: ../../client/solo/commands/ugc.py:953
 msgid "Please review your submission"
-msgstr ""
+msgstr "Var god att granska ditt tillägg"
 
-#: ../../client/solo/commands/ugc.py:636
+#: ../../client/solo/commands/ugc.py:638
 msgid "Document path"
-msgstr ""
+msgstr "Dokument sökväg"
 
-#: ../../client/solo/commands/ugc.py:643
+#: ../../client/solo/commands/ugc.py:645
 msgid "Document type"
-msgstr ""
+msgstr "Dokumenttyp"
 
-#: ../../client/solo/commands/ugc.py:649 ../../client/solo/commands/ugc.py:963
+#: ../../client/solo/commands/ugc.py:651 ../../client/solo/commands/ugc.py:965
 msgid "Do you want to submit?"
-msgstr ""
+msgstr "Vill du lägga till?"
 
-#: ../../client/solo/commands/ugc.py:681
+#: ../../client/solo/commands/ugc.py:683
 msgid "Invalid document"
-msgstr ""
+msgstr "ogiltigt dokument"
 
-#: ../../client/solo/commands/ugc.py:710
+#: ../../client/solo/commands/ugc.py:712
 msgid "Document added, thank you!"
-msgstr ""
+msgstr "Dokumentet lades till, tack!"
 
-#: ../../client/solo/commands/ugc.py:741
+#: ../../client/solo/commands/ugc.py:743
 msgid "Documents removal"
-msgstr ""
+msgstr "Tar bort dokumenten"
 
-#: ../../client/solo/commands/ugc.py:754
+#: ../../client/solo/commands/ugc.py:756
 msgid "Document identifiers"
-msgstr ""
+msgstr "Dokumentidentifierare"
 
-#: ../../client/solo/commands/ugc.py:759
+#: ../../client/solo/commands/ugc.py:761
 msgid "Would you like to review them?"
-msgstr ""
+msgstr "Vill du granska dom?"
 
-#: ../../client/solo/commands/ugc.py:782
+#: ../../client/solo/commands/ugc.py:784
 msgid "Would you like to continue with the removal?"
-msgstr ""
+msgstr "Vill du fortsätta med borttagningen?"
 
-#: ../../client/solo/commands/ugc.py:805
+#: ../../client/solo/commands/ugc.py:807
 msgid "cannot get the requested Document"
-msgstr ""
+msgstr "kan inte hämta det begärda dokumentet"
 
-#: ../../client/solo/commands/ugc.py:825
+#: ../../client/solo/commands/ugc.py:827
 msgid "UGC status"
-msgstr ""
+msgstr "UGC status"
 
-#: ../../client/solo/commands/ugc.py:826
+#: ../../client/solo/commands/ugc.py:828
 msgid "removed successfully"
-msgstr ""
+msgstr "borttagningen lyckades"
 
-#: ../../client/solo/commands/ugc.py:907
+#: ../../client/solo/commands/ugc.py:909
 msgid "add vote"
-msgstr ""
+msgstr "lägg till betyg"
 
-#: ../../client/solo/commands/ugc.py:915
+#: ../../client/solo/commands/ugc.py:917
 msgid "Insert your vote (from 1 to 5)"
-msgstr ""
+msgstr "Lägg till ditt betyg (från 1 till 5)"
 
-#: ../../client/solo/commands/ugc.py:919
+#: ../../client/solo/commands/ugc.py:921
 msgid "Entropy UGC vote submission"
-msgstr ""
+msgstr "Entropys UGC betygstillägg"
 
-#: ../../client/solo/commands/ugc.py:940
+#: ../../client/solo/commands/ugc.py:942
 msgid "invalid vote, must be in range"
-msgstr ""
+msgstr "ogiltligt betyg, måste vara inom ansatt område"
 
-#: ../../client/solo/commands/ugc.py:957
+#: ../../client/solo/commands/ugc.py:959
 msgid "Vote"
-msgstr "Rösta"
+msgstr "Betygsätt"
 
-#: ../../client/solo/commands/ugc.py:986
+#: ../../client/solo/commands/ugc.py:988
 msgid "already voted"
-msgstr ""
+msgstr "du har redan betygsatt detta"
 
-#: ../../client/solo/commands/ugc.py:994
+#: ../../client/solo/commands/ugc.py:996
 msgid "vote added, thank you!"
-msgstr ""
+msgstr "betyg har lagts till, tack!"
 
 #: ../../client/solo/commands/help.py:70
 msgid "Entropy Command Line Client, Equo"
+msgstr "Entropys Kommandoradsklient, Equo"
+
+#: ../../client/solo/commands/help.py:77
+msgid "force colored output"
 msgstr ""
 
-#: ../../client/solo/commands/help.py:97 ../../services/kernel-switcher:337
+#: ../../client/solo/commands/help.py:102 ../../services/kernel-switcher:337
 msgid "this help"
-msgstr ""
+msgstr "denna hjälpsida"
 
 #: ../../client/solo/commands/repo.py:65
-#: ../../client/solo/commands/repo.py:639
+#: ../../client/solo/commands/repo.py:648
 msgid "manage repositories"
-msgstr ""
+msgstr "hantera förråden"
 
 #: ../../client/solo/commands/repo.py:69
 msgid "enable repositories"
-msgstr ""
+msgstr "aktivera förråd"
 
 #: ../../client/solo/commands/repo.py:77
 msgid "disable repositories"
-msgstr ""
+msgstr "avaktivera förråd"
 
 #: ../../client/solo/commands/repo.py:85
 msgid "add a repository"
-msgstr ""
+msgstr "lägg till ett förråd"
 
 #: ../../client/solo/commands/repo.py:88
 msgid "repository string"
-msgstr ""
+msgstr "förrådssträng"
 
 #: ../../client/solo/commands/repo.py:93
 msgid "remove a repository"
-msgstr ""
+msgstr "ta bort ett förråd"
 
 #: ../../client/solo/commands/repo.py:101
 msgid "list active repositories"
-msgstr ""
+msgstr "visa dom aktiva förråden"
 
-#: ../../client/solo/commands/repo.py:106
+#: ../../client/solo/commands/repo.py:110
 msgid "reorder mirrors basing on response time"
 msgstr "omsortera speglar baserat på svarstid"
 
-#: ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:116
 msgid "simulate execution"
-msgstr ""
-
-#: ../../client/solo/commands/repo.py:117
-msgid "merge content of source repository to destination"
-msgstr ""
-
-#: ../../client/solo/commands/repo.py:119
-msgid "source repository"
-msgstr ""
+msgstr "simulera verkställandet"
 
 #: ../../client/solo/commands/repo.py:121
-msgid "destination repository"
-msgstr ""
+msgid "merge content of source repository to destination"
+msgstr "sammanfoga innehållet av källförrådet till målet"
+
+#: ../../client/solo/commands/repo.py:123
+msgid "source repository"
+msgstr "källförråd"
 
 #: ../../client/solo/commands/repo.py:125
+msgid "destination repository"
+msgstr "målförråd"
+
+#: ../../client/solo/commands/repo.py:129
 msgid "also remove dependency conflicts during merge"
-msgstr ""
+msgstr "ta också bort beroendekonflikter vid sammanfogningen"
 
-#: ../../client/solo/commands/repo.py:218
+#: ../../client/solo/commands/repo.py:222
 msgid "repository already enabled"
-msgstr ""
+msgstr "förrådet är redan aktiverat"
 
-#: ../../client/solo/commands/repo.py:227
-#: ../../client/solo/commands/repo.py:281
-#: ../../client/solo/commands/repo.py:502
+#: ../../client/solo/commands/repo.py:231
+#: ../../client/solo/commands/repo.py:285
+#: ../../client/solo/commands/repo.py:511
 msgid "repository not available"
-msgstr ""
+msgstr "förrådet är inte tillgängligt"
 
-#: ../../client/solo/commands/repo.py:247
+#: ../../client/solo/commands/repo.py:251
 msgid "repository enabled"
-msgstr ""
+msgstr "förrådet aktiverat"
 
-#: ../../client/solo/commands/repo.py:253
+#: ../../client/solo/commands/repo.py:257
 msgid "cannot enable repository"
-msgstr ""
+msgstr "kan inte aktivera förrådet"
 
-#: ../../client/solo/commands/repo.py:272
+#: ../../client/solo/commands/repo.py:276
 msgid "repository already disabled"
 msgstr "förråd redan avaktiverat"
 
-#: ../../client/solo/commands/repo.py:303
-#: ../../client/solo/commands/repo.py:317
+#: ../../client/solo/commands/repo.py:307
+#: ../../client/solo/commands/repo.py:321
 msgid "cannot disable repository"
-msgstr ""
+msgstr "kan inte avaktivera förråd"
 
-#: ../../client/solo/commands/repo.py:311
+#: ../../client/solo/commands/repo.py:315
 msgid "repository disabled"
 msgstr "förråd avaktiverat"
 
-#: ../../client/solo/commands/repo.py:333
+#: ../../client/solo/commands/repo.py:337
 msgid "invalid data, skipping"
-msgstr ""
+msgstr "ogiltig data, hoppar över"
 
-#: ../../client/solo/commands/repo.py:355
+#: ../../client/solo/commands/repo.py:359
 msgid "Adding repository string"
-msgstr ""
+msgstr "lägger till förrådssträng"
 
-#: ../../client/solo/commands/repo.py:365
+#: ../../client/solo/commands/repo.py:369
 msgid "invalid repository string"
-msgstr ""
+msgstr "ogiltig förrådssträng"
 
-#: ../../client/solo/commands/repo.py:373
+#: ../../client/solo/commands/repo.py:377
 msgid "Repository id:"
-msgstr ""
+msgstr "förrådets id:"
 
-#: ../../client/solo/commands/repo.py:376
+#: ../../client/solo/commands/repo.py:380
 msgid "Description:"
 msgstr "Beskrivning:"
 
-#: ../../client/solo/commands/repo.py:379
-msgid "Repository format:"
-msgstr ""
-
 #: ../../client/solo/commands/repo.py:383
+msgid "Repository format:"
+msgstr "Formatera förråd:"
+
+#: ../../client/solo/commands/repo.py:387
 msgid "Packages URL:"
-msgstr ""
+msgstr "Paketens URL:"
 
-#: ../../client/solo/commands/repo.py:386
+#: ../../client/solo/commands/repo.py:390
 msgid "None given"
-msgstr ""
+msgstr "Inte angiven"
 
-#: ../../client/solo/commands/repo.py:388
+#: ../../client/solo/commands/repo.py:392
 msgid "Repository URL:"
 msgstr "Förråds-URL:"
 
-#: ../../client/solo/commands/repo.py:397
+#: ../../client/solo/commands/repo.py:401
 msgid "repository added succesfully"
-msgstr ""
+msgstr "förrådet lades till utan problem"
 
-#: ../../client/solo/commands/repo.py:402
+#: ../../client/solo/commands/repo.py:406
 msgid "cannot add repository"
-msgstr ""
+msgstr "kan inte lägga till förråd"
 
-#: ../../client/solo/commands/repo.py:424
+#: ../../client/solo/commands/repo.py:428
 msgid "repository id not available"
-msgstr ""
+msgstr "förrådets id är inte tillgängligt"
 
-#: ../../client/solo/commands/repo.py:444
+#: ../../client/solo/commands/repo.py:448
 msgid "repository removed succesfully"
-msgstr ""
+msgstr "förrådet togs bort utan problem"
 
-#: ../../client/solo/commands/repo.py:450
+#: ../../client/solo/commands/repo.py:454
 msgid "cannot remove repository"
-msgstr ""
+msgstr "kan inte ta bort förrådet"
 
-#: ../../client/solo/commands/repo.py:516
+#: ../../client/solo/commands/repo.py:525
 msgid "mirror order:"
-msgstr ""
+msgstr "speglarnas sortering:"
 
-#: ../../client/solo/commands/repo.py:526
+#: ../../client/solo/commands/repo.py:535
 msgid "mirrors sorted successfully"
-msgstr ""
+msgstr "sortering av speglarna lyckades"
 
-#: ../../client/solo/commands/repo.py:545
-#: ../../client/solo/commands/repo.py:552
-msgid "repository not found"
-msgstr ""
-
+#: ../../client/solo/commands/repo.py:554
 #: ../../client/solo/commands/repo.py:561
+msgid "repository not found"
+msgstr "förrådet kunde inte hittas"
+
+#: ../../client/solo/commands/repo.py:570
 msgid "repository cannot be source and destination"
-msgstr ""
+msgstr "förrådet kan inte både vara källa och mål"
 
-#: ../../client/solo/commands/repo.py:569
+#: ../../client/solo/commands/repo.py:578
 msgid "merging repositories"
-msgstr ""
+msgstr "sammanfogar förråden"
 
-#: ../../client/solo/commands/repo.py:585
+#: ../../client/solo/commands/repo.py:594
 msgid "working on repository"
-msgstr ""
+msgstr "jobbar med förrådet"
 
-#: ../../client/solo/commands/repo.py:602
+#: ../../client/solo/commands/repo.py:611
 msgid "merging package"
-msgstr ""
+msgstr "sammanfogar paket"
 
-#: ../../client/solo/commands/repo.py:626
+#: ../../client/solo/commands/repo.py:635
 msgid "done merging packages"
-msgstr ""
+msgstr "sammanfogning av paketen är klar"
 
 #: ../../client/solo/commands/source.py:108
 #: ../../client/solo/commands/download.py:107
 msgid "calculate dependencies relaxing constraints"
-msgstr ""
+msgstr "beräkna dom vilande beroendens begränsningar"
 
 #: ../../client/solo/commands/source.py:114
 #: ../../client/solo/commands/install.py:104
 #: ../../client/solo/commands/upgrade.py:99
 #: ../../client/solo/commands/download.py:113
 msgid "include build-time dependencies"
-msgstr ""
+msgstr "inkludera byggtidsberoende"
 
 #: ../../client/solo/commands/source.py:120
 msgid "save files into the current working directory"
-msgstr ""
+msgstr "spara filer i nuvarande arbetskatalog"
 
 #: ../../client/solo/commands/source.py:157
 msgid "Source code download"
-msgstr ""
+msgstr "Hämta källkod"
 
 #: ../../client/solo/commands/source.py:194
 msgid "sources download"
-msgstr ""
+msgstr "hämta källor"
 
 #: ../../client/solo/commands/source.py:216
 msgid "download packages source code"
-msgstr ""
+msgstr "Hämta paketets källkod"
 
 #: ../../client/solo/commands/yell.py:34
 msgid "You should run equo --help"
@@ -3734,7 +3792,7 @@ msgstr "Läste du över huvud taget equo --help?"
 
 #: ../../client/solo/commands/yell.py:37
 msgid "I give up. Run that equo --help !!!!!!!"
-msgstr "Jag ger upp. Kör det där equo --help!"
+msgstr "Jag ger upp. Kör det där equo --help!!!!! NÅN GÅNG"
 
 #: ../../client/solo/commands/yell.py:38
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
@@ -3756,40 +3814,40 @@ msgstr "Dra åt helvete."
 
 #: ../../client/solo/commands/yell.py:46
 msgid "Stop that, you idiot."
-msgstr ""
+msgstr "Sluta din idiot!!!"
 
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
-msgstr ""
+msgstr "skäll ut användare"
 
 #: ../../client/solo/commands/libtest.py:80
 msgid "print broken files to stdout"
-msgstr ""
+msgstr "skriv trasiga filer till stdout"
 
 #: ../../client/solo/commands/libtest.py:85
 msgid "dump results to files"
-msgstr ""
+msgstr "dumpa resultat till fil"
 
 #: ../../client/solo/commands/libtest.py:140
 #: ../../client/solo/commands/libtest.py:173
 msgid "System is healthy"
-msgstr ""
+msgstr "Systemet är friskt"
 
 #: ../../client/solo/commands/libtest.py:179
 msgid "Libraries/Executables statistics"
-msgstr ""
+msgstr "Biblioteken/Körbaras statistik"
 
 #: ../../client/solo/commands/libtest.py:185
 msgid "Not matched"
-msgstr ""
+msgstr "Matchar inte"
 
 #: ../../client/solo/commands/libtest.py:221
 msgid "Would you like to install them ?"
-msgstr ""
+msgstr "Vill du installera dom?"
 
 #: ../../client/solo/commands/libtest.py:249
 msgid "look for missing libraries"
-msgstr ""
+msgstr "sök efter saknade beroenden"
 
 #: ../../client/solo/commands/notice.py:153
 #: ../../client/solo/commands/conf.py:221
@@ -3799,42 +3857,42 @@ msgstr "Avsluta"
 
 #: ../../client/solo/commands/notice.py:162
 msgid "Choose one by typing its identifier"
-msgstr ""
+msgstr "Välj en med att skriva in dess identifierare"
 
 #: ../../client/solo/commands/notice.py:194
 msgid "Link"
-msgstr ""
+msgstr "Länk"
 
 #: ../../client/solo/commands/notice.py:203
 msgid "Press Enter to continue"
-msgstr ""
+msgstr "Tryck på Enter för att fortsätta"
 
 #: ../../client/solo/commands/notice.py:211
 msgid "repository notice board reader"
-msgstr ""
+msgstr "förrådets anslagstavla"
 
 #: ../../client/solo/commands/_manage.py:90
 msgid "Scanning configuration files to update"
-msgstr ""
+msgstr "Skannar efter konfigurationsfiler som måste uppdateras"
 
 #: ../../client/solo/commands/_manage.py:99
 msgid "No configuration files to update."
-msgstr ""
+msgstr "Inga konfigurationsfiler behöver uppdateras."
 
 #: ../../client/solo/commands/_manage.py:104
 #, python-format
 msgid "There is %s configuration file needing update"
 msgid_plural "There are %s configuration files needing update"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Det finns %s konfigurationsfil som måste uppdateras"
+msgstr[1] "Det finns %s  konfigurationsfiler som måste uppdateras"
 
 #: ../../client/solo/commands/_manage.py:112
 msgid "Please run"
-msgstr ""
+msgstr "Var god kör"
 
 #: ../../client/solo/commands/_manage.py:128
 msgid "These are the selected packages"
-msgstr ""
+msgstr "Detta är dom valda paketen"
 
 #: ../../client/solo/commands/_manage.py:181
 msgid "Versions"
@@ -3847,7 +3905,7 @@ msgstr "Ominstallera"
 
 #: ../../client/solo/commands/_manage.py:206
 msgid "Switch repo"
-msgstr ""
+msgstr "Byta förråd"
 
 #: ../../client/solo/commands/_manage.py:213
 msgid "Install"
@@ -3859,7 +3917,7 @@ msgstr "Uppgradera"
 
 #: ../../client/solo/commands/_manage.py:217
 msgid "Downgrade"
-msgstr ""
+msgstr "Degradera"
 
 #: ../../client/solo/commands/_manage.py:225
 msgid "Action"
@@ -3867,28 +3925,28 @@ msgstr "Åtgärd"
 
 #: ../../client/solo/commands/_manage.py:237
 msgid "Would you like to continue with the dependencies calculation?"
-msgstr ""
+msgstr "Vill du fortsätta med att beräkna beroenden?"
 
 #. every package matching app-foo is masked
 #: ../../client/solo/commands/_manage.py:339
 msgid "Every package matching"
-msgstr ""
+msgstr "Alla paketen matchar"
 
 #: ../../client/solo/commands/_manage.py:341
 msgid "is masked"
-msgstr ""
+msgstr "är maskerat"
 
 #: ../../client/solo/commands/_manage.py:359
 msgid "Masking reason"
-msgstr ""
+msgstr "Anledning för maskering"
 
 #: ../../client/solo/commands/_manage.py:371
 msgid "matching"
-msgstr ""
+msgstr "matchar"
 
 #: ../../client/solo/commands/_manage.py:373
 msgid "is broken"
-msgstr ""
+msgstr "är trasigt"
 
 #: ../../client/solo/commands/_manage.py:377
 msgid "atom"
@@ -3900,15 +3958,15 @@ msgstr "i"
 
 #: ../../client/solo/commands/_manage.py:388
 msgid "in repositories"
-msgstr ""
+msgstr "i förråden"
 
 #: ../../client/solo/commands/_manage.py:401
 msgid "Not found"
-msgstr ""
+msgstr "Kan inte hittas"
 
 #: ../../client/solo/commands/_manage.py:410
 msgid "package needed by"
-msgstr ""
+msgstr "paketet behövs av"
 
 #: ../../client/solo/commands/_manage.py:416
 #: ../../client/solo/commands/_manage.py:783
@@ -3918,11 +3976,11 @@ msgstr "från"
 
 #: ../../client/solo/commands/_manage.py:460
 msgid "Skipped"
-msgstr ""
+msgstr "Hoppades över"
 
 #: ../../client/solo/commands/_manage.py:481
 msgid "is not installed"
-msgstr ""
+msgstr "är inte installerat"
 
 #: ../../client/solo/commands/_manage.py:510
 msgid "Calculating dependencies"
@@ -3930,24 +3988,24 @@ msgstr "Beräknar beroenden"
 
 #: ../../client/solo/commands/_manage.py:521
 msgid "Dependencies not found"
-msgstr ""
+msgstr "Beroenden kan inte hittas"
 
 #: ../../client/solo/commands/_manage.py:532
 msgid "Conflicting packages were pulled in"
-msgstr ""
+msgstr "Paket med konflikter hämtades in"
 
 #: ../../client/solo/commands/_manage.py:548
 msgid "Please mask conflicts using"
-msgstr ""
+msgstr "Var god och maskera konflikter genom att använda"
 
 #: ../../client/solo/commands/_manage.py:597
 #: ../../client/solo/commands/_manage.py:638
 msgid "download"
-msgstr ""
+msgstr "hämta"
 
 #: ../../client/solo/commands/_manage.py:663
 msgid "Repositories are old, please run:"
-msgstr ""
+msgstr "Förråden är gamla, var god kör:"
 
 #: ../../client/solo/commands/_manage.py:687
 msgid "Please update the following critical packages"
@@ -3971,7 +4029,7 @@ msgstr "Acceptera licensen och fråga inte igen (jag har läst den)"
 
 #: ../../client/solo/commands/_manage.py:733
 msgid "Quit"
-msgstr ""
+msgstr "Avsluta"
 
 #: ../../client/solo/commands/_manage.py:740
 msgid "Your choice (type a number and press enter)"
@@ -3987,11 +4045,11 @@ msgstr "behövs av"
 
 #: ../../client/solo/commands/_manage.py:815
 msgid "No license data available"
-msgstr ""
+msgstr "Inget licensavtal är tillgängligt"
 
 #: ../../client/solo/commands/_manage.py:826
 msgid "No file viewer"
-msgstr ""
+msgstr "Ingen filläsare"
 
 #: ../../client/solo/commands/_manage.py:827
 msgid "License saved into"
@@ -3999,11 +4057,11 @@ msgstr "Licens sparad i"
 
 #: ../../client/solo/commands/conf.py:75
 msgid "manage configuration file updates"
-msgstr ""
+msgstr "hantera uppdaterade konfigurationsfiler"
 
 #: ../../client/solo/commands/conf.py:79
 msgid "update configuration files"
-msgstr ""
+msgstr "uppdatera konfigurationsfiler"
 
 #: ../../client/solo/commands/conf.py:140
 msgid "Scanning filesystem"
@@ -4019,13 +4077,15 @@ msgid "file"
 msgstr "fil"
 
 #: ../../client/solo/commands/conf.py:183
-#: ../../client/solo/commands/conf.py:628
+#: ../../client/solo/commands/conf.py:629
 msgid "Type a number"
-msgstr ""
+msgstr "Skriv in en siffra"
 
 #: ../../client/solo/commands/conf.py:213
 msgid "Please choose a file to update by typing its identification number."
-msgstr "Vänligen välj en fil för uppdatering genom att ange dess identifikationsnummer."
+msgstr ""
+"Vänligen välj en fil för uppdatering genom att ange dess "
+"identifikationsnummer."
 
 #: ../../client/solo/commands/conf.py:217
 msgid "Other options are:"
@@ -4033,19 +4093,19 @@ msgstr "Andra alternativ är:"
 
 #: ../../client/solo/commands/conf.py:226
 msgid "Automerge all the files asking you one by one"
-msgstr ""
+msgstr "Sammanfoga filerna genom att godkänna dom en efter en"
 
 #: ../../client/solo/commands/conf.py:231
 msgid "Automerge all the files without questioning"
-msgstr ""
+msgstr "Sammanfoga filerna utan att fråga"
 
 #: ../../client/solo/commands/conf.py:236
 msgid "Discard all the files asking you one by one"
-msgstr ""
+msgstr "Avvisa alla filerna en för en"
 
 #: ../../client/solo/commands/conf.py:241
 msgid "Discard all the files without questioning"
-msgstr ""
+msgstr "Avvisa alla filerna utan att fråga"
 
 #: ../../client/solo/commands/conf.py:254
 msgid "Please choose an action to take for the selected file."
@@ -4053,215 +4113,220 @@ msgstr "Vänligen välj en åtgärd att utföra på den valda filen."
 
 #: ../../client/solo/commands/conf.py:259
 msgid "Come back to the files list"
-msgstr ""
+msgstr "Gå tillbaka till filvisningen"
 
 #: ../../client/solo/commands/conf.py:264
 msgid "Replace original with update"
-msgstr ""
+msgstr "Ersätt original med den uppdaterade"
 
 #: ../../client/solo/commands/conf.py:269
 msgid "Delete update, keeping original as is"
-msgstr ""
+msgstr "Ta bort uppdatering, behåll orginalet som det är"
 
 #: ../../client/solo/commands/conf.py:274
 msgid "Edit proposed file and show diffs again"
-msgstr ""
+msgstr "Redigera föreslagen fil och visa skillnaderna igen"
 
 #: ../../client/solo/commands/conf.py:279
 msgid "Interactively merge original with update"
-msgstr ""
+msgstr "Sammanfoga originalet med uppdatering interaktivt"
 
 #: ../../client/solo/commands/conf.py:284
 msgid "Show differences again"
-msgstr ""
+msgstr "Visa skillnaderna i filerna igen"
 
 #: ../../client/solo/commands/conf.py:380
 #: ../../client/solo/commands/conf.py:435
 msgid "Source file"
-msgstr ""
+msgstr "Källfil"
 
 #: ../../client/solo/commands/conf.py:385
 #: ../../client/solo/commands/conf.py:440
 msgid "Destination file"
-msgstr ""
+msgstr "Målfil"
 
 #: ../../client/solo/commands/conf.py:390
 msgid "Overwrite ?"
-msgstr ""
+msgstr "Skriva över?"
 
 #: ../../client/solo/commands/conf.py:399
 msgid "Cannot merge"
-msgstr ""
+msgstr "Kan inte sammanfoga"
 
 #: ../../client/solo/commands/conf.py:445
 msgid "Discard ?"
-msgstr ""
+msgstr "Avvisa?"
 
 #: ../../client/solo/commands/conf.py:451
-#: ../../client/solo/commands/conf.py:585
+#: ../../client/solo/commands/conf.py:586
 msgid "Discarding"
-msgstr ""
+msgstr "Avvisar"
 
 #: ../../client/solo/commands/conf.py:460
 msgid "Cannot remove"
-msgstr ""
+msgstr "Kan inte tas bort"
 
 #: ../../client/solo/commands/conf.py:476
 msgid "Editing file"
-msgstr ""
+msgstr "Redigerar fil"
 
 #: ../../client/solo/commands/conf.py:483
 msgid "Edited file"
-msgstr ""
+msgstr "Ändrad fil"
 
 #: ../../client/solo/commands/conf.py:485
 msgid "showing difference"
-msgstr ""
+msgstr "visar förändringar"
 
 #: ../../client/solo/commands/conf.py:493
-#: ../../client/solo/commands/conf.py:597
-#: ../../client/solo/commands/conf.py:608
+#: ../../client/solo/commands/conf.py:598
+#: ../../client/solo/commands/conf.py:609
 msgid "Automerging"
-msgstr ""
+msgstr "Autosammanfogar"
 
-#: ../../client/solo/commands/conf.py:533
+#: ../../client/solo/commands/conf.py:534
 msgid "Interactive merge"
-msgstr ""
+msgstr "Interaktiv sammanfogning"
 
-#: ../../client/solo/commands/conf.py:549
+#: ../../client/solo/commands/conf.py:550
 msgid "OSError during interactive merge"
-msgstr ""
+msgstr "OSFel under interaktiv sammanfogning"
 
-#: ../../client/solo/commands/conf.py:556
+#: ../../client/solo/commands/conf.py:557
 msgid "IOError during interactive merge"
-msgstr ""
+msgstr "IOFel inträffade under interaktiv sammanfogning"
 
-#: ../../client/solo/commands/conf.py:566
+#: ../../client/solo/commands/conf.py:567
 msgid "Unable to merge file"
-msgstr ""
+msgstr "Kunde inte sammanfoga filen"
 
-#: ../../client/solo/commands/conf.py:616
+#: ../../client/solo/commands/conf.py:617
 msgid "Selected file"
-msgstr ""
+msgstr "Vald fil"
 
-#: ../../client/solo/commands/conf.py:638
+#: ../../client/solo/commands/conf.py:639
 #, python-format
 msgid "Replacing %s with %s"
-msgstr ""
+msgstr "Ersätter %s med %s"
 
-#: ../../client/solo/commands/conf.py:645
+#: ../../client/solo/commands/conf.py:646
 #, python-format
 msgid "Cannot merge %s"
-msgstr ""
+msgstr "Kan inte sammanfoga %s"
 
-#: ../../client/solo/commands/conf.py:653
+#: ../../client/solo/commands/conf.py:654
 #, python-format
 msgid "Deleting %s"
-msgstr ""
+msgstr "Tar bort %s"
 
-#: ../../client/solo/commands/conf.py:659
+#: ../../client/solo/commands/conf.py:660
 #, python-format
 msgid "Cannot remove %s"
-msgstr ""
+msgstr "Kan inte ta bort %s"
 
-#: ../../client/solo/commands/conf.py:697
+#: ../../client/solo/commands/conf.py:698
 msgid "manage package file updates"
-msgstr ""
+msgstr "hantera konfigfiler"
 
-#: ../../client/solo/commands/match.py:81
+#: ../../client/solo/commands/match.py:82
 msgid "match keyword"
-msgstr ""
+msgstr "matcha nyckelord"
 
 #: ../../client/solo/commands/match.py:94
+#, fuzzy
+msgid "return only injected packages "
+msgstr "visa bara installerade paket"
+
+#: ../../client/solo/commands/match.py:99
 msgid "match among installed packages only"
-msgstr ""
+msgstr "matcha enbart bland installerade paket"
 
-#: ../../client/solo/commands/match.py:98
+#: ../../client/solo/commands/match.py:103
 msgid "match among available packages only"
-msgstr ""
-
-#: ../../client/solo/commands/match.py:102
-msgid "return all the matches, not just the best"
-msgstr ""
+msgstr "matcha enbart bland tillgängliga paket"
 
 #: ../../client/solo/commands/match.py:107
-msgid "return matches found in every repository"
-msgstr ""
+msgid "return all the matches, not just the best"
+msgstr "sänd tillbaka alla träffar, inte bara dom bästa"
 
-#: ../../client/solo/commands/match.py:113
+#: ../../client/solo/commands/match.py:112
+msgid "return matches found in every repository"
+msgstr "sänd tillbaka alla träffar från alla förråd"
+
+#: ../../client/solo/commands/match.py:118
 msgid "print repository information (w/--quiet)"
 msgstr "skriv ut förrådsinformation (w/--quiet)"
 
-#: ../../client/solo/commands/match.py:117
+#: ../../client/solo/commands/match.py:122
 msgid "print description too (w/--quiet)"
 msgstr "skriv ut beskrivning också (w/--quiet)"
 
-#: ../../client/solo/commands/match.py:121
+#: ../../client/solo/commands/match.py:126
 msgid "print \":<slot>\" next to package names (w/--quiet)"
-msgstr ""
+msgstr "skriv \":<slot>\" bredvid paketnamnet (w/--quiet)"
 
-#: ../../client/solo/commands/match.py:192
+#: ../../client/solo/commands/match.py:208
 msgid "Matching"
-msgstr ""
+msgstr "Söker träffar"
 
-#: ../../client/solo/commands/match.py:242
+#: ../../client/solo/commands/match.py:258
 msgid "match packages in repositories"
-msgstr ""
+msgstr "sök matchande träffar i förråden"
 
 #: ../../client/solo/commands/install.py:140
 #: ../../client/solo/commands/upgrade.py:135
 msgid "relax dependencies constraints during calculation"
-msgstr ""
+msgstr "låt beroendens begränsningar vila under beräkning"
 
 #: ../../client/solo/commands/install.py:147
 #: ../../client/solo/commands/upgrade.py:142
 #: ../../client/solo/commands/download.py:120
 msgid "download multiple packages in parallel (max 10)"
-msgstr ""
+msgstr "hämta flera paket parallellt (max 10)"
 
 #: ../../client/solo/commands/install.py:207
 msgid "These are the packages that would be installed"
-msgstr ""
+msgstr "Detta är paketen som skulle ha blivit installerade"
 
 #: ../../client/solo/commands/install.py:355
 msgid "conflicting/substituted"
-msgstr ""
+msgstr "kofliktande/ersatta"
 
 #: ../../client/solo/commands/install.py:390
 msgid "Packages needing to be installed/updated/downgraded"
-msgstr ""
+msgstr "Paketen som kommer att installeras/uppdateras/degraderas"
 
 #: ../../client/solo/commands/install.py:395
 msgid "Packages needing to be removed"
-msgstr ""
+msgstr "Paket som behöver tas bort"
 
 #: ../../client/solo/commands/install.py:402
 msgid "Packages needing to be installed"
-msgstr ""
+msgstr "Paket som måste installeras"
 
 #: ../../client/solo/commands/install.py:409
 msgid "Packages needing to be reinstalled"
-msgstr ""
+msgstr "Paket som måste installeras om"
 
 #: ../../client/solo/commands/install.py:416
 msgid "Packages needing to be updated"
-msgstr ""
+msgstr "Paket som måste uppdateras"
 
 #: ../../client/solo/commands/install.py:423
 msgid "Packages needing to be downgraded"
-msgstr ""
+msgstr "Paket som måste degraderas"
 
 #: ../../client/solo/commands/install.py:436
 msgid "Download size"
-msgstr ""
+msgstr "Hämtningsstorlek"
 
 #: ../../client/solo/commands/install.py:443
 msgid "Used disk space"
-msgstr ""
+msgstr "Änvänt diskutrymme"
 
 #: ../../client/solo/commands/install.py:459
 msgid "You need at least"
-msgstr ""
+msgstr "Du behöver åtminstonde"
 
 #: ../../client/solo/commands/install.py:461
 msgid "of free space"
@@ -4270,10 +4335,11 @@ msgstr "av tillgängligt utrymme"
 #: ../../client/solo/commands/install.py:475
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
+"Du har inte tillräckligt med utrymme för installationen. Frigör utrymme först"
 
 #: ../../client/solo/commands/install.py:573
 msgid "Download complete"
-msgstr ""
+msgstr "Hämtning avslutad"
 
 #: ../../client/solo/commands/install.py:602
 msgid "install"
@@ -4281,11 +4347,11 @@ msgstr "installera"
 
 #: ../../client/solo/commands/install.py:624
 msgid "Installation complete"
-msgstr ""
+msgstr "Installationen avslutad"
 
 #: ../../client/solo/commands/install.py:633
 msgid "install or update packages or package files"
-msgstr ""
+msgstr "Installera eller uppdatera paket eller dess filer"
 
 #: ../../client/solo/commands/upgrade.py:190
 msgid "Calculating System Updates"
@@ -4293,143 +4359,147 @@ msgstr "Beräknar systemuppdateringar"
 
 #: ../../client/solo/commands/upgrade.py:201
 msgid "Packages matching update"
-msgstr ""
+msgstr "Träffade paket uppdateras"
 
 #: ../../client/solo/commands/upgrade.py:207
 msgid "Packages matching not available"
-msgstr ""
+msgstr "Paketens träffar är inte tillgänglig"
 
 #: ../../client/solo/commands/upgrade.py:213
 msgid "Packages matching already up to date"
-msgstr ""
+msgstr "Paketen som träffades är redan uppdaterade"
 
-#: ../../client/solo/commands/upgrade.py:236
+#: ../../client/solo/commands/upgrade.py:237
 msgid "Nothing to update"
-msgstr ""
+msgstr "Finns inget att uppdatera"
 
-#: ../../client/solo/commands/upgrade.py:250
+#: ../../client/solo/commands/upgrade.py:251
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
+"På systemet finns paket som inte längre är tillgängliga i fjärrförrådet"
 
-#: ../../client/solo/commands/upgrade.py:255
+#: ../../client/solo/commands/upgrade.py:256
 msgid ""
 "Even if they are usually harmless, it is suggested (after proper "
 "verification) to remove them."
 msgstr ""
+"Även om dom oftast är harmlösa är det ändå rekommenderat (efter riktig "
+"verifiering) att ta bort dom."
 
-#: ../../client/solo/commands/upgrade.py:273
+#: ../../client/solo/commands/upgrade.py:274
 msgid "Selective"
-msgstr ""
+msgstr "Selektiv"
 
-#: ../../client/solo/commands/upgrade.py:281
+#: ../../client/solo/commands/upgrade.py:282
 msgid "Would you like to remove them?"
-msgstr ""
+msgstr "Vill du ta bort dom?"
 
-#: ../../client/solo/commands/upgrade.py:300
+#: ../../client/solo/commands/upgrade.py:301
 msgid "Remove this?"
-msgstr ""
+msgstr "Ta bort detta?"
 
-#: ../../client/solo/commands/upgrade.py:316
+#: ../../client/solo/commands/upgrade.py:317
 msgid "Nothing to remove"
-msgstr ""
+msgstr "Finns inget att ta bort"
 
-#: ../../client/solo/commands/upgrade.py:345
+#: ../../client/solo/commands/upgrade.py:346
 msgid "There are more updates to install, reloading Entropy"
-msgstr ""
+msgstr "Det finns ytterligare uppdateringar, startar om Entropy"
 
-#: ../../client/solo/commands/upgrade.py:364
+#: ../../client/solo/commands/upgrade.py:365
 msgid "upgrade the system"
-msgstr ""
+msgstr "uppgradera systemet"
 
 #: ../../client/solo/commands/rescue.py:91
 msgid "check installed packages repository for errors"
-msgstr ""
+msgstr "kontrollera dom installerade paketens förråd efter fel"
 
 #: ../../client/solo/commands/rescue.py:98
 msgid "compact the installed packages repository"
-msgstr ""
+msgstr "sätt ihop det installerade paketets förråd"
 
 #: ../../client/solo/commands/rescue.py:104
 msgid ""
 "re-generate the installed packages repository using the Source Package "
 "Manager"
-msgstr ""
+msgstr "generera om det installerade paketens förråd med Portage"
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
-msgstr ""
+msgstr "generera om SPM<->Entropys pakets UIDs kartläggning"
 
 #: ../../client/solo/commands/rescue.py:117
 msgid ""
 "update Entropy installed packages repository merging Source Package Manager "
 "changes"
 msgstr ""
+"uppdatera dom Entropy installerade paketen och sammanfoga Portage ändringar"
 
 #: ../../client/solo/commands/rescue.py:128
 msgid "create a backup of the installed packages repository"
-msgstr ""
+msgstr "skapa en säkerhetskopia av dom installerade paketens förråd"
 
 #: ../../client/solo/commands/rescue.py:134
 msgid "restore a backup of the installed packages repository"
-msgstr ""
+msgstr "återställ från en säkerhetskopia av dom installerade paketens förråd"
 
 #: ../../client/solo/commands/rescue.py:173
 msgid "Repository error"
-msgstr ""
+msgstr "Fel på förråd"
 
 #: ../../client/solo/commands/rescue.py:181
 #: ../../client/solo/commands/rescue.py:234
 #: ../../client/solo/commands/rescue.py:243
 msgid "Sanity Check"
-msgstr ""
+msgstr "Hälsokontroll"
 
 #: ../../client/solo/commands/rescue.py:182
 msgid "installed packages repository"
-msgstr ""
+msgstr "installerade paketsförråd"
 
 #: ../../client/solo/commands/rescue.py:188
 msgid "Scanning..."
-msgstr ""
+msgstr "skannar..."
 
 #: ../../client/solo/commands/rescue.py:224
 msgid "Error checking package"
-msgstr ""
+msgstr "Fel vid kontroll av paket"
 
 #: ../../client/solo/commands/rescue.py:244
 msgid "passed"
-msgstr ""
+msgstr "godkänd"
 
 #: ../../client/solo/commands/rescue.py:266
 msgid "Compacting the Installed Packages repository"
-msgstr ""
+msgstr "Det installerade paketets förråd sammanförs"
 
 #: ../../client/solo/commands/rescue.py:279
 msgid "Compaction complete"
-msgstr ""
+msgstr "Sammanföringen slutförd"
 
 #: ../../client/solo/commands/rescue.py:308
 msgid ""
 "the Installed Packages repository will be re-generated using the Source "
 "Package Manager"
-msgstr ""
+msgstr "dom installerade paketens förråd kommer att genereras om utav Portage"
 
 #: ../../client/solo/commands/rescue.py:319
 msgid "I am not joking, this is quite disruptive"
-msgstr ""
+msgstr "Jag skämtar inte! Detta är ganska störande"
 
 #: ../../client/solo/commands/rescue.py:327
 msgid "Understood ?"
-msgstr ""
+msgstr "Förstått?"
 
 #: ../../client/solo/commands/rescue.py:331
 msgid "Really ?"
-msgstr ""
+msgstr "Verkligen?"
 
 #: ../../client/solo/commands/rescue.py:336
 msgid "This is your last chance"
-msgstr ""
+msgstr "Detta är din sista varning"
 
 #: ../../client/solo/commands/rescue.py:337
 msgid "Ok?"
@@ -4438,217 +4508,220 @@ msgstr "Ok?"
 #: ../../client/solo/commands/rescue.py:354
 #: ../../client/solo/commands/rescue.py:377
 msgid "Cannot read metadata"
-msgstr ""
+msgstr "Kan inte läsa metadata"
 
 #: ../../client/solo/commands/rescue.py:385
 msgid "Creating a backup of the current repository"
-msgstr ""
+msgstr "Skapar en säkerhetskopia på nuvarande förråd"
 
 #: ../../client/solo/commands/rescue.py:397
 msgid "Cannot backup the repository"
-msgstr ""
+msgstr "Kan inte säkerhetskopiera förrådet"
 
 #: ../../client/solo/commands/rescue.py:414
 msgid "Cannot delete old repository"
-msgstr ""
+msgstr "Kan inte ta bort det gamla förrådet"
 
 #: ../../client/solo/commands/rescue.py:424
 msgid "Initializing a new repository"
-msgstr ""
+msgstr "Initialiserar ett nytt förråd"
 
 #: ../../client/solo/commands/rescue.py:435
 msgid "Repository initialized, generating metadata"
-msgstr ""
+msgstr "Förrådet har initierats, generar metadata"
 
 #: ../../client/solo/commands/rescue.py:465
 #: ../../client/solo/commands/rescue.py:727
 msgid "Invalid package"
-msgstr ""
+msgstr "Ogiltigt paket"
 
 #: ../../client/solo/commands/rescue.py:478
 #: ../../client/solo/commands/rescue.py:741
 msgid "Metadata generation error"
-msgstr ""
+msgstr "Fel vid generering av metadata"
 
 #: ../../client/solo/commands/rescue.py:521
 msgid "Indexing metadata, please wait..."
-msgstr ""
+msgstr "indexerar metadata, var god vänta"
 
 #: ../../client/solo/commands/rescue.py:526
 msgid "Repository metadata generation complete"
-msgstr ""
+msgstr "Generering av förrådens metadata slutförd"
 
 #: ../../client/solo/commands/rescue.py:541
 msgid "Scanning Source Package Manager repository"
-msgstr ""
+msgstr "Skannar Portage förråd"
 
 #: ../../client/solo/commands/rescue.py:555
 msgid "Cannot find package"
-msgstr ""
+msgstr "Kan inte hitta paket"
 
 #: ../../client/solo/commands/rescue.py:567
 msgid "Scanning Entropy repository"
-msgstr ""
+msgstr "Skannar Entropys förråd"
 
 #: ../../client/solo/commands/rescue.py:638
 msgid "These packages were removed"
-msgstr ""
+msgstr "Dom här paketen togs bort"
 
 #: ../../client/solo/commands/rescue.py:660
 #: ../../client/solo/commands/rescue.py:700
 msgid "Continue ?"
-msgstr ""
+msgstr "Fortsätt?"
 
 #: ../../client/solo/commands/rescue.py:679
 msgid "Removal complete"
-msgstr ""
+msgstr "Borttagning slutförd"
 
 #: ../../client/solo/commands/rescue.py:686
 msgid "These packages were added"
-msgstr ""
+msgstr "Dom här paketen lades till"
 
 #: ../../client/solo/commands/rescue.py:783
 msgid "Update complete"
-msgstr ""
+msgstr "Uppdatering slutförd"
 
 #: ../../client/solo/commands/rescue.py:795
 msgid "Re-generating packages mapping"
-msgstr ""
+msgstr "Generare om kartläggning för paket"
 
 #: ../../client/solo/commands/rescue.py:804
 msgid "Packages mapping re-generated"
-msgstr ""
+msgstr "Paketens kartläggning har generats om"
 
 #: ../../client/solo/commands/rescue.py:832
 msgid "No backups found"
-msgstr ""
+msgstr "Inga säkerhetskopior hittades"
 
 #: ../../client/solo/commands/rescue.py:854
 msgid "Select the repository to restore"
-msgstr ""
+msgstr "Välj vilket förråd som ska återställas"
 
 #: ../../client/solo/commands/rescue.py:861
 msgid "Entropy Installed Packages Repository backups"
-msgstr ""
+msgstr "Entropy installerade paketens säkerhetskopierade förråd"
 
 #: ../../client/solo/commands/rescue.py:886
 msgid "tools to rescue the running system"
-msgstr ""
+msgstr "verktyg för att rädda systemet som är i drift"
 
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
 msgstr "ta bort hämtade paket och rensa temp-kataloger"
 
-#: ../../client/solo/commands/unused.py:70
+#: ../../client/solo/commands/unused.py:71
 msgid "sort packages by size"
-msgstr ""
+msgstr "sortera paket efter storlek"
 
-#: ../../client/solo/commands/unused.py:75
+#: ../../client/solo/commands/unused.py:76
 msgid "include packages installed by user"
-msgstr ""
+msgstr "inkludera paket installerade av användaren"
 
-#: ../../client/solo/commands/unused.py:114
+#: ../../client/solo/commands/unused.py:115
 msgid ""
 "Running unused packages test, pay attention, there can be false positives"
 msgstr ""
+"Skannar efter oanvändra paket! VAR UPPMÄRKSAM, det KAN ge bedrägliga utslag"
 
-#: ../../client/solo/commands/unused.py:162
+#: ../../client/solo/commands/unused.py:163
 msgid "look for unused packages (pay attention)"
-msgstr ""
+msgstr "sök efter oanvändna paket (var uppmärksam)"
 
 #: ../../client/solo/commands/download.py:157
 msgid "Package download"
-msgstr ""
+msgstr "Pakethämtning"
 
 #: ../../client/solo/commands/download.py:189
 msgid "download packages, essentially"
-msgstr ""
+msgstr "hämta paket, precis som det låter"
 
 #: ../../client/solo/commands/hop.py:92
 msgid "Already on branch"
-msgstr ""
+msgstr "Du är redan på denna gren"
 
 #: ../../client/solo/commands/hop.py:133
 msgid "Succesfully switched to branch"
-msgstr ""
+msgstr "Lyckades byta gren till "
 
 #: ../../client/solo/commands/hop.py:140
 msgid "Now run 'equo upgrade' to upgrade your distribution to"
-msgstr ""
+msgstr "Nu kör du 'equo upgrade' för att uppgradera din utgåva till"
 
 #: ../../client/solo/commands/hop.py:148
 msgid "Unable to switch to branch"
-msgstr ""
+msgstr "Kan inte byta gren"
 
 #: ../../client/solo/commands/hop.py:160
 msgid "upgrade the System to a new branch"
-msgstr ""
+msgstr "uppgradera systemet till en ny gren"
 
 #: ../../client/solo/commands/mask.py:53
 msgid "only show what would be done"
-msgstr "enbart visning av vad som skall utföras"
+msgstr "visa enbart vad som skulle ha utförts"
 
 #: ../../client/solo/commands/mask.py:125
 msgid "These are the packages that would be handled"
-msgstr ""
+msgstr "Detta är paketen som kommer att behandlas"
 
 #: ../../client/solo/commands/mask.py:160
 msgid "Would you like to continue?"
-msgstr ""
+msgstr "Vill du fortsätta?"
 
 #: ../../client/solo/commands/mask.py:174
 msgid "action not executed"
-msgstr ""
+msgstr "åtgärd inte utförd"
 
 #: ../../client/solo/commands/mask.py:222
 msgid "mask one or more packages"
-msgstr ""
+msgstr "maskera ett eller flera paket"
 
 #: ../../client/solo/commands/mask.py:229
 msgid "unmask one or more packages"
-msgstr ""
+msgstr "avmaskera ett eller flera paket"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
 msgstr "Magneto Entropy uppdateringsverktyg"
 
+#: ../../magneto/src/magneto/kde/interfaces.py:228
+#: ../../magneto/src/magneto/gtk/interfaces.py:195
+msgid "Your system currently has an outdated version of"
+msgstr "Ditt system har en gammal version av"
+
 #: ../../magneto/src/magneto/kde/interfaces.py:229
 #: ../../magneto/src/magneto/gtk/interfaces.py:196
-msgid "Your system currently has an outdated version of"
-msgstr ""
-
-#: ../../magneto/src/magneto/kde/interfaces.py:230
-#: ../../magneto/src/magneto/gtk/interfaces.py:197
 msgid "installed"
 msgstr "installerad"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:231
-#: ../../magneto/src/magneto/gtk/interfaces.py:198
+#: ../../magneto/src/magneto/kde/interfaces.py:230
+#: ../../magneto/src/magneto/gtk/interfaces.py:197
 msgid "the latest available version is"
-msgstr ""
+msgstr "den senaste versionen är"
 
-#: ../../magneto/src/magneto/kde/interfaces.py:233
-#: ../../magneto/src/magneto/gtk/interfaces.py:200
+#: ../../magneto/src/magneto/kde/interfaces.py:232
+#: ../../magneto/src/magneto/gtk/interfaces.py:199
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
+"Det är rekommenderat att du uppgraderar till den senaste versionen innan du "
+"uppdaterar några andra paket"
 
 #: ../../magneto/src/magneto/kde/components.py:83
 msgid "Close"
-msgstr ""
+msgstr "Stäng"
 
 #: ../../magneto/src/magneto/kde/components.py:84
 msgid "Launch Application Browser"
-msgstr ""
+msgstr "Öppna Rigo ProgramHanteraren"
 
 #: ../../magneto/src/magneto/kde/components.py:94
 msgid "Application updates"
-msgstr ""
+msgstr "Programuppdateringar"
 
-#: ../../magneto/src/magneto/gtk/interfaces.py:133
+#: ../../magneto/src/magneto/gtk/interfaces.py:132
 msgid "System Updates"
-msgstr ""
+msgstr "Systemuppdateringar"
 
 #: ../../magneto/src/magneto/gtk/components.py:88
 msgid "Application"
@@ -4660,7 +4733,7 @@ msgstr "Senaste version"
 
 #: ../../magneto/src/magneto/gtk/components.py:131
 msgid "Critical Information"
-msgstr ""
+msgstr "Kritisk information"
 
 #: ../../magneto/src/magneto/core/interfaces.py:162
 msgid "_Disable Notification Applet"
@@ -4684,15 +4757,15 @@ msgstr "Sök _uppdateringar"
 
 #: ../../magneto/src/magneto/core/interfaces.py:167
 msgid "Check for updates"
-msgstr ""
+msgstr "Sök efter uppdateringar"
 
 #: ../../magneto/src/magneto/core/interfaces.py:168
 msgid "_Launch Package Manager"
-msgstr "Starta _pakethanteraren"
+msgstr "Starta _ProgramHanteraren"
 
 #: ../../magneto/src/magneto/core/interfaces.py:169
 msgid "Launch Package Manager"
-msgstr ""
+msgstr "Öppna ProgramHanteraren"
 
 #: ../../magneto/src/magneto/core/interfaces.py:170
 msgid "_Packages Website"
@@ -4700,7 +4773,7 @@ msgstr "Webbsida för paket"
 
 #: ../../magneto/src/magneto/core/interfaces.py:171
 msgid "Use Packages web interface"
-msgstr ""
+msgstr "Gå till paketens WebbTjänst"
 
 #: ../../magneto/src/magneto/core/interfaces.py:172
 msgid "_Sabayon Linux Website"
@@ -4708,7 +4781,7 @@ msgstr "_Sabayon Linux Webbsida"
 
 #: ../../magneto/src/magneto/core/interfaces.py:173
 msgid "Launch Sabayon Linux Website"
-msgstr ""
+msgstr "Gå till Sabayons hemsida"
 
 #: ../../magneto/src/magneto/core/interfaces.py:175
 msgid "_Exit"
@@ -4716,149 +4789,143 @@ msgstr "_Avsluta"
 
 #: ../../magneto/src/magneto/core/interfaces.py:307
 msgid "Cannot monitor Sabayon updates"
-msgstr ""
+msgstr "Kan inte övervaka Sabayons uppdateringar"
 
 #: ../../magneto/src/magneto/core/interfaces.py:309
 msgid "Entropy DBus service not available"
-msgstr "Entropy D-Bus-tjänst är inte tillgänglig"
+msgstr "Entropy DBus-tjänst är inte tillgänglig"
 
 #: ../../magneto/src/magneto/core/interfaces.py:310
 msgid "unable to communicate with the updates service"
-msgstr ""
+msgstr "kan inte kommunicera med uppdateringstjänsten"
 
-#: ../../magneto/src/magneto/core/interfaces.py:318
-msgid "Sabayon updates service loaded"
-msgstr "Sabayon uppdateringstjänst startad"
-
-#: ../../magneto/src/magneto/core/interfaces.py:320
-msgid "Entropy DBus service loaded"
-msgstr "Entropy D-Bus-tjänst startad"
-
-#: ../../magneto/src/magneto/core/interfaces.py:321
-msgid "your Sabayon will notify you once updates are available"
-msgstr "Din Sabayon kommer att underrätta dig när uppdateringar finns tillgängliga"
-
-#: ../../magneto/src/magneto/core/interfaces.py:334
+#: ../../magneto/src/magneto/core/interfaces.py:325
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Det finns %s uppdatering tillgänglig"
+msgstr[1] "Det finns %s uppdateringar tillgängliga"
 
-#: ../../magneto/src/magneto/core/interfaces.py:340
+#: ../../magneto/src/magneto/core/interfaces.py:331
 msgid "Sabayon updates available"
 msgstr "Det finns uppdateringar för Sabayon"
 
-#: ../../magneto/src/magneto/core/interfaces.py:341
+#: ../../magneto/src/magneto/core/interfaces.py:332
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Det finns <b>%s</b> uppdatering tillgänglig"
+msgstr[1] "Det finns <b>%s</b> uppdateringar tillgängliga"
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:349
-#: ../../magneto/src/magneto/core/interfaces.py:351
+#: ../../magneto/src/magneto/core/interfaces.py:340
+#: ../../magneto/src/magneto/core/interfaces.py:342
 msgid "Your Sabayon is up-to-date"
 msgstr "Din Sabayon är aktuell"
 
-#: ../../magneto/src/magneto/core/interfaces.py:352
+#: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "No updates available at this time, cool!"
-msgstr "Inga uppdateringar tillgängliga vid denna tidpunkt, tufft!"
+msgstr "Det finns inget att uppdatera, ballt!"
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:363
+#: ../../magneto/src/magneto/core/interfaces.py:354
 msgid "Repositories are being updated"
 msgstr "Förråden uppdateras"
 
-#: ../../magneto/src/magneto/core/interfaces.py:364
+#: ../../magneto/src/magneto/core/interfaces.py:355
 msgid "Sabayon repositories status"
-msgstr ""
+msgstr "Sabayons förrådsstatus"
 
-#: ../../magneto/src/magneto/core/interfaces.py:365
+#: ../../magneto/src/magneto/core/interfaces.py:356
 msgid "Repositories are being updated automatically"
-msgstr ""
+msgstr "Förråden kommer nu att uppdateras"
 
-#: ../../magneto/src/magneto/core/interfaces.py:459
+#: ../../magneto/src/magneto/core/interfaces.py:450
 msgid "Updates Notification Applet Disabled"
 msgstr "Aviseringsverktyget för uppdateringar är avaktiverat"
 
-#: ../../magneto/src/magneto/core/interfaces.py:469
+#: ../../magneto/src/magneto/core/interfaces.py:460
 msgid "Updates Notification Applet Enabled"
 msgstr "Aviseringsverktyget för uppdateringar är aktiverat"
 
 #: ../../services/kernel-switcher:139
 msgid "has been installed."
-msgstr ""
+msgstr "har blivit installerad."
 
 #: ../../services/kernel-switcher:141
 msgid "some external drivers cannot work across multiple kernels."
-msgstr ""
+msgstr "några externa drivrutiner fungerar inte över flera kärnor samtidigt."
 
 #: ../../services/kernel-switcher:142
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Var god att starta om din dator nu!"
 
 #: ../../services/kernel-switcher:164
 msgid "Package does not exist"
-msgstr ""
+msgstr "Paketet existerar inte"
 
 #: ../../services/kernel-switcher:171
 msgid "Not a kernel"
-msgstr ""
+msgstr "Inte en kärna"
 
 #: ../../services/kernel-switcher:203
 msgid "Cannot find your currently running kernel."
-msgstr ""
+msgstr "Kan inte hitta kärnan som är i drift"
 
 #: ../../services/kernel-switcher:205
 msgid "Try without --from-running."
-msgstr ""
+msgstr "Försök utan --from-running"
 
 #: ../../services/kernel-switcher:275
 msgid "No kernel packages found"
-msgstr ""
+msgstr "Inga paket för kärnor hittades"
 
 #: ../../services/kernel-switcher:296
 msgid "Sabayon Kernel Switcher"
-msgstr ""
+msgstr "Sabayons Kärnväljare"
 
 #: ../../services/kernel-switcher:303
 msgid "quiet mode"
-msgstr ""
+msgstr "tyst läge"
 
 #: ../../services/kernel-switcher:306
 msgid "verbose mode"
-msgstr ""
+msgstr "verbose läge"
 
 #: ../../services/kernel-switcher:310
 msgid "ask confirmation"
-msgstr ""
+msgstr "fråga efter bekräftelse"
 
 #: ../../services/kernel-switcher:320
 msgid "install a new or just another kernel"
-msgstr ""
+msgstr "installera en ny eller en helt annan kärna"
 
 #: ../../services/kernel-switcher:325
 msgid "use 'uname -r' to determine the running kernel"
-msgstr ""
+msgstr "använd 'uname -r' för att fastställa vilken kärna som används"
 
 #: ../../services/kernel-switcher:328
 msgid "the new kernel package dependency name"
-msgstr ""
+msgstr "namn på den nya kärnans beroenden"
 
 #: ../../services/kernel-switcher:332
 msgid "list kernels"
-msgstr ""
+msgstr "visa kärnor"
 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:1
 msgid "Magneto Application Updates Notifier"
 msgstr "Magneto - aviseraren för programuppdateringar"
 
-#: ../../magneto/src/magneto/gtk/magneto.glade.h:2
-msgid "Available Updates"
-msgstr "Tillgängliga uppdateringar"
-
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
-msgstr "_Starta pakethanteraren"
+msgstr "_Starta ProgramHanteraren"
+
+#~ msgid "Sabayon updates service loaded"
+#~ msgstr "Sabayons uppdateringstjänst startad"
+
+#~ msgid "Entropy DBus service loaded"
+#~ msgstr "Entropy DBus-tjänst startad"
+
+#~ msgid "your Sabayon will notify you once updates are available"
+#~ msgstr ""
+#~ "din Sabayon kommer att underrätta dig när uppdateringar finns tillgängliga"
