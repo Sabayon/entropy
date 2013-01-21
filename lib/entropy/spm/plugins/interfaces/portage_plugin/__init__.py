@@ -4665,7 +4665,7 @@ class PortagePlugin(SpmPlugin):
         ldpaths = entropy.tools.collect_linker_paths()
         for obj, ftype in content.items():
 
-            if ftype != "obj":
+            if ftype not in ("obj", "sym"):
                 continue
             obj_dir, obj_name = os.path.split(obj)
 
