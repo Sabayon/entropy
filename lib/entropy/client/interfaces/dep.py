@@ -1735,49 +1735,45 @@ class CalculatorsMixin:
             matched_deps.add(depmatch)
 
         found_matches = set()
+        keyslot = repo.retrieveKeySlotAggregated(package_id)
         for needed, elfclass in bumped_needed_libs:
 
             solved_neededs = []
             found = False
-            for myrepo in self._settings['repositories']['order']:
+            for s_repo_id in self._settings['repositories']['order']:
 
-                solved_needed = self.open_repository(
-                    myrepo).resolveNeeded(
+                s_repo = self.open_repository(s_repo_id)
+                solved_needed = s_repo.resolveNeeded(
                     needed, elfclass = elfclass)
                 if solved_needed:
-                    solved_neededs.append((myrepo, solved_needed))
+                    solved_neededs.append((s_repo_id, solved_needed))
 
                 for repo_pkg_id in solved_needed:
-                    repo_pkg_match = (repo_pkg_id, myrepo)
+                    repo_pkg_match = (repo_pkg_id, s_repo_id)
 
                     if package_match == repo_pkg_match:
                         # myself? no!
                         continue
 
-                    if repo_pkg_match in matched_deps:
-                        found_matches.add(repo_pkg_match)
-                        found = True
-                        break
+                    if repo_pkg_match not in matched_deps:
+                        # not a matched dep!
+                        continue
+
+                    s_keyslot = s_repo.retrieveKeySlotAggregated(
+                        repo_pkg_id)
+                    if s_keyslot == keyslot:
+                        # do not pull anything inside the same keyslot!
+                        continue
+
+                    found_matches.add(repo_pkg_match)
+                    found = True
+                    break
 
                 if found:
                     break
 
-            if not found and solved_neededs:
-                const_debug_write(
-                    __name__,
-                    "_lookup_library_breakages_available, QA BUG, "
-                    "no (%s, %s) needed dependency for %s" % (
-                        needed, elfclass, package_match,))
-                # it looks like the needed library is
-                # not in one of the dependencies, even though
-                # this is a repo bug (QA QA QA!), we should
-                # really make sure that the user is not left
-                # without a broken package. grab the last
-                # package matched (ouch for randomness).
-                needed_repo_id, solved_needed = solved_neededs[0]
-                solved_needed = sorted(solved_needed) # less random
-                found_matches.add((solved_needed[-1], needed_repo_id))
-            elif not found:
+            if not found:
+                # TODO: make it a real warning
                 const_debug_write(
                     __name__,
                     "_lookup_library_breakages_available, HUGE QA BUG, "
