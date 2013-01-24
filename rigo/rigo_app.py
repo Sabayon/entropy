@@ -183,6 +183,12 @@ class Rigo(Gtk.Application):
         self._activity_rwsem = ReadersWritersSemaphore()
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
+
+        preload_task = ParallelTask(self._entropy_ws.preload)
+        preload_task.name = "PreloadEntropyWebService"
+        preload_task.daemon = True
+        preload_task.start()
+
         self._service = RigoServiceController(
             self, self._activity_rwsem,
             self._entropy, self._entropy_ws)
