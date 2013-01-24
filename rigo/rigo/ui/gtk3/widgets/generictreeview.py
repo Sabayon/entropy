@@ -49,6 +49,7 @@ class GenericTreeView(Gtk.TreeView):
         self.connect("cursor-changed", self._on_cursor_changed, tr)
         # our own "activate" handler
         self.connect("row-activated", self._on_row_activated, tr)
+        self._calc_row_heights(tr)
 
     @property
     def model(self):
@@ -117,7 +118,8 @@ class GenericTreeView(Gtk.TreeView):
 
         normal_height = max(32 + 4*ypad, em(2.5) + 4*ypad)
         tr.normal_height = normal_height
-        tr.selected_height = tr.normal_height + btn_h + StockEms.MEDIUM
+        medium = StockEms.MEDIUM
+        tr.selected_height = tr.normal_height + btn_h + medium
 
     def _on_style_updated(self, widget, tr):
         self._calc_row_heights(tr)
