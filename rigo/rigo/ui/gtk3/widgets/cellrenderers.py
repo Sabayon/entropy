@@ -63,7 +63,7 @@ class CellRendererAppView(Gtk.CellRendererText):
                      }
 
     def __init__(self, icons, layout, show_ratings, overlay_icon_name):
-        GObject.GObject.__init__(self)
+        super(CellRendererAppView, self).__init__()
 
         # geometry-state values
         self.pixbuf_width = 0
@@ -421,7 +421,7 @@ class CellRendererConfigUpdateView(Gtk.CellRendererText):
                      }
 
     def __init__(self, icons, icon_size, layout):
-        GObject.GObject.__init__(self)
+        super(CellRendererConfigUpdateView, self).__init__()
 
         # Icons
         self._icons = icons
@@ -632,7 +632,7 @@ class CellRendererNoticeView(Gtk.CellRendererText):
                      }
 
     def __init__(self, icons, icon_size, layout):
-        GObject.GObject.__init__(self)
+        super(CellRendererNoticeView, self).__init__()
 
         # Icons
         self._icons = icons
@@ -850,7 +850,7 @@ class CellRendererRepositoryView(Gtk.CellRendererText):
                      }
 
     def __init__(self, icons, icon_size, layout):
-        GObject.GObject.__init__(self)
+        super(CellRendererRepositoryView, self).__init__()
 
         # Icons
         self._icons = icons
@@ -1064,7 +1064,7 @@ class CellRendererPreferenceView(Gtk.CellRendererText):
                      }
 
     def __init__(self, icons, icon_size, layout):
-        GObject.GObject.__init__(self)
+        super(CellRendererPreferenceView, self).__init__()
 
         # Icons
         self._icons = icons
@@ -1275,7 +1275,7 @@ class CellRendererGroupView(Gtk.CellRendererText):
         }
 
     def __init__(self, icons, icon_size, layout):
-        GObject.GObject.__init__(self)
+        super(CellRendererGroupView, self).__init__()
 
         # Icons
         self._icons = icons
@@ -1469,7 +1469,7 @@ class CellRendererGroupView(Gtk.CellRendererText):
         context.restore()
 
 
-class CellButtonRenderer:
+class CellButtonRenderer(object):
 
     def __init__(self, widget, name, use_max_variant_width=True):
         # use_max_variant_width is currently ignored. assumed to be True
