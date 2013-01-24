@@ -47,6 +47,13 @@ class EntropyWebService(object):
         self._tx_callback = tx_callback
         self._mutex = Lock()
 
+    def preload(self):
+        """
+        Preload the Web Services objects in memory.
+        """
+        for repository_id in self._entropy.repositories():
+            self.get(repository_id)
+
     def get(self, repository_id):
         """
         Get Entropy Web Services service object (ClientWebService).
