@@ -1,3 +1,21 @@
+commit 4426b93254458d22e6bbfcc2a3db65dc90c232fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 22:18:43 2013 +0000
+
+    Release Entropy 172
+
+commit cd71308eb8fb6bc4add40c6840a15b06cd342049
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 22:12:15 2013 +0000
+
+    [Rigo] fixup TreeView initialization that could lead to race condition in calculating widget size
+
+commit 415250685324f6d909b1def2f42672fb98924180
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:40:22 2013 +0000
+
+    Tagging Entropy version 171
+
 commit b40c10af3d8a28eae64aa246e3dcc2821fe2b364
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 24 00:40:21 2013 +0000
