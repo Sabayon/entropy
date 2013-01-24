@@ -1486,24 +1486,26 @@ class CellButtonRenderer(object):
         self.visible = True
 
         self.widget = widget
-        return
 
     def _layout_reset(self, layout):
         layout.set_width(-1)
         layout.set_ellipsize(Pango.EllipsizeMode.NONE)
-        return
 
     @property
-    def x(self): return self.allocation[0]
+    def x(self):
+        return self.allocation[0]
 
     @property
-    def y(self): return self.allocation[1]
+    def y(self):
+        return self.allocation[1]
 
     @property
-    def width(self): return self.allocation[2]
+    def width(self):
+        return self.allocation[2]
 
     @property
-    def height(self): return self.allocation[3]
+    def height(self):
+        return self.allocation[3]
 
     def configure_geometry(self, layout):
         self._layout_reset(layout)
@@ -1519,8 +1521,9 @@ class CellButtonRenderer(object):
         w /= Pango.SCALE
         h /= Pango.SCALE
 
-        self.set_size(w+2*self.xpad, h+2*self.ypad)
-        return
+        w = w+2*self.xpad
+        h = h+2*self.ypad
+        self.set_size(w, h)
 
     def point_in(self, px, py):
         x, y, w, h = self.allocation
@@ -1532,11 +1535,9 @@ class CellButtonRenderer(object):
 
     def set_position(self, x, y):
         self.allocation[:2] = int(x), int(y)
-        return
 
     def set_size(self, w, h):
         self.allocation[2:] = int(w), int(h)
-        return
 
     def set_state(self, state):
         if not isinstance(state, Gtk.StateFlags):
@@ -1547,7 +1548,6 @@ class CellButtonRenderer(object):
 
         self.state = state
         self.widget.queue_draw_area(*self.allocation)
-        return
 
     def set_sensitive(self, is_sensitive):
         if is_sensitive:
@@ -1555,7 +1555,6 @@ class CellButtonRenderer(object):
         else:
             state = Gtk.StateFlags.INSENSITIVE
         self.set_state(state)
-        return
 
     def show(self):
         self.visible = True
@@ -1565,22 +1564,20 @@ class CellButtonRenderer(object):
 
     def set_markup(self, markup):
         self.markup_variant = (markup,)
-        return
 
     def set_markup_variants(self, markup_variants):
         if not isinstance(markup_variants, dict):
             msg = type(markup_variants)
             raise TypeError("Expects a dict object, got %s" % msg)
 
-        elif not markup_variants: return
+        elif not markup_variants:
+            return
 
         self.markup_variants = markup_variants
         self.current_variant = list(markup_variants.keys())[0]
-        return
 
     def set_variant(self, current_var):
         self.current_variant = current_var
-        return
 
     def is_sensitive(self):
         return self.state == Gtk.StateFlags.INSENSITIVE
@@ -1619,4 +1616,3 @@ class CellButtonRenderer(object):
         context.restore()
 
         context.restore()
-        return
