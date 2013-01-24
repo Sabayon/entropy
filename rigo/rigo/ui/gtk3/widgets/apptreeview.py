@@ -46,23 +46,17 @@ class AppTreeView(GenericTreeView):
 
     def __init__(self, entropy_client, rigo_service, apc, icons, show_ratings,
                  icon_size, store=None):
+        Gtk.TreeView.__init__(self)
 
         self._entropy = entropy_client
         self._apc = apc
         self._service = rigo_service
-
-        Gtk.TreeView.__init__(self)
 
         tr = CellRendererAppView(icons,
                                  self.create_pango_layout(""),
                                  show_ratings,
                                  Icons.INSTALLED_OVERLAY)
         tr.set_pixbuf_width(icon_size)
-        tr.set_button_spacing(em(0.3))
-
-        GenericTreeView.__init__(
-            self, self._row_activated_callback,
-            self._button_activated_callback, tr)
 
         # create buttons and set initial strings
         info = CellButtonRenderer(
@@ -81,6 +75,10 @@ class AppTreeView(GenericTreeView):
 
         tr.button_pack_start(info)
         tr.button_pack_end(action)
+
+        GenericTreeView.__init__(
+            self, self._row_activated_callback,
+            self._button_activated_callback, tr)
 
         column = Gtk.TreeViewColumn(
             "Applications", tr,
