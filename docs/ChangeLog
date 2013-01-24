@@ -1,3 +1,60 @@
+commit b40c10af3d8a28eae64aa246e3dcc2821fe2b364
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:40:21 2013 +0000
+
+    Release Entropy 171
+
+commit 321eb030c56ae64d91bf67af0fa8254bc911b5cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:39:07 2013 +0000
+
+    [Rigo] GenericTreeView: fixup row height calculation during TV initialization
+
+commit 18d89599de700a10af7c7d11a48bce0b13a726e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:34:27 2013 +0000
+
+    [Rigo] cellrenderers: cleanup the code a bit
+
+commit 4f5acbfb44994165b6ea7e76c02f98558a9eafe1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:32:26 2013 +0000
+
+    [Rigo] AppTreeView: reorder initialization, fixes a race in rendering cells
+    
+    This addresses a potential race that caused the row size to be calculated
+    incorrectly.
+
+commit 550e8aad3b4fbb47dc47ebb2ff716578d9f87451
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:18:44 2013 +0000
+
+    [Rigo] preload the EntropyWebService instances by calling EntropyWebService.preload()
+
+commit 170b0635d80282976c2a6bdd9bacd68af3c59d3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:18:16 2013 +0000
+
+    [Rigo] use new-style classes and super() in cellrenderers
+
+commit 77196a0b79c87e6a4b9a08de2abac74bf3ab8338
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:17:20 2013 +0000
+
+    [Rigo] add preload() to EntropyWebService. It can be called to preload objects in cache
+
+commit d4545d0da8d834a9efed7779ecb5bd4515164089
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 00:16:59 2013 +0000
+
+    [Rigo] use ETP_DEBUG=1 in debug_rigo.sh
+
+commit 400db830310979d2cc6cc97ce1fc6a3e99d66266
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 21 09:12:37 2013 +0000
+
+    Tagging Entropy version 170
+
 commit 9a2f4c00cd32d0bd2b8ffc220fb93efce37c1e1a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 21 09:12:37 2013 +0000
