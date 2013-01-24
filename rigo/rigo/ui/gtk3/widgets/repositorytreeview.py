@@ -56,13 +56,6 @@ class RepositoryTreeView(GenericTreeView):
             self.create_pango_layout(""))
         tr.set_pixbuf_width(icon_size)
 
-        GenericTreeView.__init__(
-            self, None,
-            self._button_activated_callback, tr)
-
-        column = Gtk.TreeViewColumn("Repositories", tr,
-                                    repository=self.COL_ROW_DATA)
-
         toggle_repo = CellButtonRenderer(
             self, name=RepositoryCellButtonIDs.TOGGLE)
         toggle_repo.set_markup_variants(
@@ -75,6 +68,13 @@ class RepositoryTreeView(GenericTreeView):
         rename_repo.set_markup_variants(
             {self.VARIANT_RENAME: _("Rename")})
         tr.button_pack_start(rename_repo)
+
+        column = Gtk.TreeViewColumn("Repositories", tr,
+                                    repository=self.COL_ROW_DATA)
+
+        GenericTreeView.__init__(
+            self, None,
+            self._button_activated_callback, tr)
 
         column.set_cell_data_func(tr, self._cell_data_func_cb)
         column.set_fixed_width(350)

@@ -49,18 +49,18 @@ class NoticeBoardTreeView(GenericTreeView):
             self.create_pango_layout(""))
         tr.set_pixbuf_width(icon_size)
 
+        show_notice = CellButtonRenderer(
+            self, name=NoticeCellButtonIDs.SHOW)
+        show_notice.set_markup_variants(
+            {self.VARIANT_SHOW: _("Show"),})
+        tr.button_pack_end(show_notice)
+
         GenericTreeView.__init__(
             self, self._row_activated_callback,
             self._button_activated_callback, tr)
 
         column = Gtk.TreeViewColumn("Notices", tr,
                                     notice=self.COL_ROW_DATA)
-
-        show_notice = CellButtonRenderer(
-            self, name=NoticeCellButtonIDs.SHOW)
-        show_notice.set_markup_variants(
-            {self.VARIANT_SHOW: _("Show"),})
-        tr.button_pack_end(show_notice)
 
         column.set_cell_data_func(tr, self._cell_data_func_cb)
         column.set_fixed_width(350)

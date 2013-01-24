@@ -76,10 +76,6 @@ class ConfigUpdatesTreeView(GenericTreeView):
         tr.set_pixbuf_width(icon_size)
         tr.set_button_spacing(em(0.3))
 
-        GenericTreeView.__init__(self,
-            self._row_activated_callback,
-            self._button_activated_callback, tr)
-
         # create buttons and set initial strings
         edit_source = CellButtonRenderer(
             self, name=ConfigUpdateCellButtonIDs.EDIT)
@@ -104,6 +100,10 @@ class ConfigUpdatesTreeView(GenericTreeView):
         discard.set_markup_variants(
             {self.VARIANT_DISCARD: _("Discard")})
         tr.button_pack_end(discard)
+
+        GenericTreeView.__init__(self,
+            self._row_activated_callback,
+            self._button_activated_callback, tr)
 
         column = Gtk.TreeViewColumn("ConfigUpdates", tr,
                                     confupdate=self.COL_ROW_DATA)
