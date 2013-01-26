@@ -147,14 +147,14 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         # run it unconditionally
         PackageBuilder.post_build(emerge_config)
 
-        if preserved_libs and not nsargs.disable_preserved_libs:
-            # completely abort
-            break
-
         completed.extend([x for x in local_completed \
             if x not in completed])
         # portage calls setcwd()
         os.chdir(cwd)
+
+        if preserved_libs and not nsargs.disable_preserved_libs:
+            # completely abort
+            break
 
         if local_completed and nsargs.commit:
             _rc = binary_pms.commit(
