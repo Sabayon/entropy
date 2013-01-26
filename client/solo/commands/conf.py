@@ -440,7 +440,7 @@ Manage package file updates.
                 darkred(_("Destination file")),
                 purple(destination_path),)
         )
-        if cmd == -3:
+        if cmd == -7:
             rc = entropy_client.ask_question(
                 ">>   %s" % (_("Discard ?"),) )
             if rc == _("No"):
