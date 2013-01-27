@@ -916,6 +916,7 @@ class Rigo(Gtk.Application):
         self._window.show()
         managing = self._start_managing()
         if not managing:
+            self._change_view_state(RigoViewStates.GROUPS_VIEW_STATE)
             self._service.hello()
 
     def _easter_eggs(self):
