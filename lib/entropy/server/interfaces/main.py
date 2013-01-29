@@ -6422,6 +6422,7 @@ class Server(Client):
 
             for key in rewrites_enabled:
 
+                dep_string_rewrite, dep_pattern = key
                 compiled_pattern, replaces = dep_rewrite[key]
                 if compiled_pattern is None:
                     # user is asking to add dep_pattern to dependency list
