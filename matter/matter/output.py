@@ -11,10 +11,11 @@
     This module contains Entropy (user) Output classes and routines.
 
 """
-import sys
-import os
+from datetime import datetime
 import curses
 import errno
+import os
+import sys
 
 from matter.utils import is_python3
 
@@ -398,12 +399,13 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
         setcols()
     reset_cursor()
     is_tty = is_stdout_a_tty()
+    t = datetime.now()
+    time_str = t.strftime("%Y-%m-%d %H:%M:%S")
     if is_tty:
         writechar("\r", stderr = stderr)
-    if back:
-        msg = color_func(">>") + " " + msg
-    else:
-        msg = color_func(">>") + " " + msg + end
+    msg = "%s %s %s" % (color_func(">>"), time_str, msg)
+    if not back:
+        msg += end
 
     _std_write(msg, stderr = stderr)
     if back and (not is_tty):
