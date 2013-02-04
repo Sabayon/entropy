@@ -1,3 +1,45 @@
+commit 2b4b258e8f56893e8a8253299918a00ebce787ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 4 08:53:43 2013 +0000
+
+    Release Entropy 173
+
+commit 474798b895570ae1fbe6eee31cab0a8d3f9b0b2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 3 17:17:09 2013 +0000
+
+    [matter] add timestamp to every output line
+
+commit c9977d124413be08a45d90c24a76e33adbc77c3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 29 09:03:16 2013 +0000
+
+    [entropy.server] fix dep_rewrites package additions handling
+
+commit 2839e9c03d077b02c9d3dc9e93c6f4866200b3ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 27 10:41:34 2013 +0000
+
+    [Rigo] change startup view to Groups
+
+commit 075b84872b8308065f9293f2a87da46bc9fe89ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 26 11:42:17 2013 +0000
+
+    [equo] fix "equo conf update" -7 discard option as per bug 3630
+
+commit 2cdb87d5671c11b8656645b55bd245aeff19f3a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 26 10:24:59 2013 +0000
+
+    [matter] make sure to always account for built packages
+
+commit 2b10e62afe3d7b87ef1843397e679e91a1986d24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 24 22:18:43 2013 +0000
+
+    Tagging Entropy version 172
+
 commit 4426b93254458d22e6bbfcc2a3db65dc90c232fc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 24 22:18:43 2013 +0000
