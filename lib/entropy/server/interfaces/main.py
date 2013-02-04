@@ -2403,12 +2403,11 @@ class Server(Client):
         @rtype: int or None
         """
         branch = self._settings['repositories']['branch']
-        package_id, repo = package_match
+        package_id, from_repository_id = package_match
         to_repository_id = todbconn.name
 
-        dbconn = self.open_server_repository(repo, read_only = False,
-            no_upload = True)
-        from_repository_id = dbconn.name
+        dbconn = self.open_server_repository(
+            from_repository_id, read_only = False, no_upload = True)
         match_atom = dbconn.retrieveAtom(package_id)
         package_rel_path = dbconn.retrieveDownloadURL(package_id)
 
@@ -2425,7 +2424,7 @@ class Server(Client):
 
         self.output(
             "[%s=>%s|%s] %s: %s" % (
-                darkgreen(repo),
+                darkgreen(from_repository_id),
                 darkred(to_repository_id),
                 brown(branch),
                 blue(_("switching")),
@@ -2438,14 +2437,14 @@ class Server(Client):
         )
         # move binary file
         from_file = self.complete_local_package_path(package_rel_path,
-            repo)
+            from_repository_id)
         if not os.path.isfile(from_file):
             from_file = self.complete_local_upload_package_path(
-                package_rel_path, repo)
+                package_rel_path, from_repository_id)
         if not os.path.isfile(from_file):
             self.output(
                 "[%s=>%s|%s] %s: %s -> %s" % (
-                    darkgreen(repo),
+                    darkgreen(from_repository_id),
                     darkred(to_repository_id),
                     brown(branch),
                     bold(_("cannot switch, package not found, skipping")),
@@ -2530,10 +2529,10 @@ class Server(Client):
             extra_rel = extra_download['download']
 
             from_extra = self.complete_local_package_path(extra_rel,
-                repo)
+                from_repository_id)
             if not os.path.isfile(from_extra):
                 from_extra = self.complete_local_upload_package_path(
-                    extra_rel, repo)
+                    extra_rel, from_repository_id)
 
             to_extra = self.complete_local_upload_package_path(
                 extra_rel, to_repository_id)
@@ -2543,7 +2542,7 @@ class Server(Client):
         for from_item, to_item in copy_data:
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(from_repository_id),
                     darkred(to_repository_id),
                     brown(branch),
                     blue(_("moving file")),
@@ -2559,11 +2558,11 @@ class Server(Client):
 
         self.output(
             "[%s=>%s|%s] %s: %s" % (
-                darkgreen(repo),
+                darkgreen(from_repository_id),
                 darkred(to_repository_id),
                 brown(branch),
                 blue(_("loading data from source repository")),
-                darkgreen(repo),
+                darkgreen(from_repository_id),
             ),
             importance = 0,
             level = "info",
@@ -2616,7 +2615,7 @@ class Server(Client):
 
         self.output(
             "[%s=>%s|%s] %s: %s" % (
-                darkgreen(repo),
+                darkgreen(from_repository_id),
                 darkred(to_repository_id),
                 brown(branch),
                 blue(_("injecting data to destination repository")),
@@ -2637,11 +2636,11 @@ class Server(Client):
         if not do_copy:
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(from_repository_id),
                     darkred(to_repository_id),
                     brown(branch),
                     blue(_("removing entry from source repository")),
-                    darkgreen(repo),
+                    darkgreen(from_repository_id),
                 ),
                 importance = 0,
                 level = "info",
@@ -2656,7 +2655,7 @@ class Server(Client):
 
         self.output(
             "[%s=>%s|%s] %s: %s" % (
-                darkgreen(repo),
+                darkgreen(from_repository_id),
                 darkred(to_repository_id),
                 brown(branch),
                 blue(_("successfully handled atom")),
