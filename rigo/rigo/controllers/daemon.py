@@ -921,12 +921,13 @@ class RigoServiceController(GObject.Object):
                 if self._avc is not None:
                     self._avc.set_many(update)
 
-            box = UpdatesNotificationBox(
-                self._entropy, self._avc,
-                len(update), 0)
-            box.connect("upgrade-request", _on_upgrade)
-            box.connect("show-request", _on_update_show)
-            self._nc.append(box)
+            if not UpdatesNotificationBox.snoozed():
+                box = UpdatesNotificationBox(
+                    self._entropy, self._avc,
+                    len(update), 0)
+                box.connect("upgrade-request", _on_upgrade)
+                box.connect("show-request", _on_update_show)
+                self._nc.append(box)
 
     def _unavailable_repositories_signal(self, repositories):
         const_debug_write(
@@ -1503,6 +1504,10 @@ class RigoServiceController(GObject.Object):
         """
         Start Entropy Repositories Update
         """
+        # Un-snooze repositories update notification box.
+        # We will be back nagging the user about possible
+        # package updates.
+        UpdatesNotificationBox.unsnooze()
         task = ParallelTask(self._update_repositories,
                             repositories, force)
         task.name = "UpdateRepositoriesThread"

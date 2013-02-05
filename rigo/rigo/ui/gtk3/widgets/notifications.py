@@ -79,11 +79,15 @@ class NotificationBox(Gtk.HBox):
         """
         self._widgets.append(widget)
 
-    def add_destroy_button(self, text):
+    def add_destroy_button(self, text, callback=None):
         """
         Add button that destroys the whole Notification object.
+        It is possible to provide a callback function that will be called
+        without arguments before destroying the notification box.
         """
         def _destroy(*args):
+            if callback is not None:
+                callback()
             self.destroy()
         self.add_button(text, _destroy)
 
@@ -153,6 +157,11 @@ class NotificationBox(Gtk.HBox):
 
 class UpdatesNotificationBox(NotificationBox):
 
+    # class level variable that makes possible to turn
+    # off the updates notification for the whole process
+    # lifecycle.
+    _snoozed = False
+
     __gsignals__ = {
         # Update button clicked
         "upgrade-request" : (GObject.SignalFlags.RUN_LAST,
@@ -189,9 +198,11 @@ class UpdatesNotificationBox(NotificationBox):
                 _("Updates available, how about installing them?")),
             message_type=Gtk.MessageType.WARNING,
             context_id="UpdatesNotificationBox")
-        self.add_button(_("_Update System"), self._update)
+        self.add_button(_("_Update"), self._update)
         self.add_button(_("_Show"), self._show)
         self.add_destroy_button(_("_Ignore"))
+        self.add_destroy_button(_("Srsly, ignore!"),
+                                callback=UpdatesNotificationBox.snooze)
 
     def _update(self, button):
         """
@@ -204,6 +215,27 @@ class UpdatesNotificationBox(NotificationBox):
         Show button callback from the updates notification box.
         """
         self.emit("show-request")
+
+    @classmethod
+    def snooze(cls):
+        """
+        Turn off this notification for the whole process lifetime.
+        """
+        cls._snoozed = True
+
+    @classmethod
+    def unsnooze(cls):
+        """
+        Turn back on this notification.
+        """
+        cls._snoozed = False
+
+    @classmethod
+    def snoozed(cls):
+        """
+        Return whether the notification is currently "snoozed".
+        """
+        return cls._snoozed
 
 
 class RepositoriesUpdateNotificationBox(NotificationBox):
