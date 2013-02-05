@@ -2263,19 +2263,6 @@ def bytes_into_human(xbytes):
         size += "MB"
     return size
 
-def get_random_temp_file():
-    """
-    Return random temporary file path.
-    @deprecated
-
-    @return: temporary, random file path
-    @rtype: string
-    """
-    fd, tmp_path = tempfile.mkstemp(
-        prefix="entropy.tools.get_random_temp_file")
-    os.close(fd)
-    return tmp_path
-
 def convert_unix_time_to_human_time(unixtime):
     """
     Convert UNIX time (int) into human readable time format.

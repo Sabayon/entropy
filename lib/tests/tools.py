@@ -429,9 +429,6 @@ class ToolsTest(unittest.TestCase):
         end = '97.7MB'
         self.assertEqual(et.bytes_into_human(begin), end)
 
-    def test_get_random_temp_file(self):
-        self.assertTrue(et.get_random_temp_file())
-
     """
     def test_convert_unix_time_to_human_time(self):
         unixtime = 1
