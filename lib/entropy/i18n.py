@@ -122,3 +122,32 @@ def change_language(lang):
         if t_func is not old_:
             continue
         module.__dict__['_'] = _
+
+# determine whether we have a valid locale configured and
+# glibc is happy.
+_FALLBACK_LOCALE = "en_US.UTF-8"
+_DETECTED_ENC = sys.getfilesystemencoding()
+_VALID_LOCALE = _LOCALE_FULL == _DETECTED_ENC
+
+# Define some constants that can be used externally.
+ENCODING = "UTF-8"
+RAW_ENCODING = "raw_unicode_escape"
+
+# if locale is invalid, we call change_language and switch
+# to a reliable one that we assume it's always present: _FALLBACK_LOCALE.
+# Values different from UTF-8 are not supported and can cause
+# massive system destruction. Unfortunately, there is no good way
+# to ensure that a valid UTF-8 encoding is selected, but we try to do
+# our best to automatically recover from this.
+if not _VALID_LOCALE:
+    default_locale = "en_US." + ENCODING
+    sys.stderr.write("""\
+invalid filesystem encoding %s, must be %s.
+Make sure to set LC_ALL, LANG, LANGUAGE to valid %s values.
+Please execute:
+  LC_ALL=en_US.%s %s
+Trying to force %s.
+""" % (_DETECTED_ENC, ENCODING, ENCODING, ENCODING,
+       " ".join(sys.argv), _FALLBACK_LOCALE))
+    # switch to the FALLBACK_LOCALE
+    change_language(_FALLBACK_LOCALE)

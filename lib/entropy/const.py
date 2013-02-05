@@ -33,27 +33,6 @@ import os
 import time
 import codecs
 
-_ENCODING = "UTF-8"
-_RAW_ENCODING = "raw_unicode_escape"
-# check for potentially disruptive filesystem encoding setting.
-# Values different from UTF-8 are not supported and can cause
-# massive system destruction. Unfortunately, there is no good way
-# to ensure that a valid UTF-8 encoding is selected, so the library
-# must die here.
-default_enc = sys.getfilesystemencoding()
-if default_enc is None:
-    default_enc = "ascii"
-if default_enc.lower() != _ENCODING.lower():
-    default_locale = "en_US." + _ENCODING
-    sys.stderr.write("""\
-invalid filesystem encoding %s, must be %s.
-Make sure to set LC_ALL, LANG, LANGUAGE to valid %s values.
-Please execute:
-  LC_ALL=en_US.%s %s
-Cannot automatically recover from this.
-""" % (default_enc, _ENCODING, _ENCODING, _ENCODING, ' '.join(sys.argv)))
-    # just nag from now, make possible to fix broken glibc
-    # raise SystemExit(1)
 
 import stat
 import errno
@@ -70,7 +49,7 @@ try:
 except ImportError:
     # python 3.x
     import _thread as thread
-from entropy.i18n import _
+from entropy.i18n import _, ENCODING, RAW_ENCODING
 
 # Setup debugger hook on SIGUSR1
 def debug_signal(signum, frame):
@@ -147,7 +126,7 @@ _arch_override_file = os.path.join("/", _rootdir, "etc/entropy/.arch")
 ETP_ARCH_CONST = None
 if os.path.isfile(_arch_override_file):
     try:
-        with codecs.open(_arch_override_file, "r", encoding=_ENCODING) \
+        with codecs.open(_arch_override_file, "r", encoding=ENCODING) \
                 as arch_f:
             _arch_const = arch_f.readline().strip()
             if _arch_const:
@@ -735,8 +714,8 @@ def const_default_settings(rootdir):
         },
 
         # default entropy configuration files encoding
-        'conf_encoding': _ENCODING,
-        'conf_raw_encoding': _RAW_ENCODING,
+        'conf_encoding': ENCODING,
+        'conf_raw_encoding': RAW_ENCODING,
 
     }
 
@@ -787,7 +766,7 @@ def const_read_entropy_release():
     if os.path.isfile(revision_file) and \
         os.access(revision_file, os.R_OK):
 
-        with codecs.open(revision_file, "r", encoding=_ENCODING) as rev_f:
+        with codecs.open(revision_file, "r", encoding=ENCODING) as rev_f:
             myrev = rev_f.readline().strip()
             etpConst['entropyversion'] = myrev
 
@@ -1320,7 +1299,7 @@ def _const_add_entropy_group(group_name):
         raise KeyError
     ids = set()
 
-    with codecs.open(group_file, "r", encoding=_ENCODING) \
+    with codecs.open(group_file, "r", encoding=ENCODING) \
             as group_f:
         for line in group_f.readlines():
             if line and line.split(":"):
@@ -1339,7 +1318,7 @@ def _const_add_entropy_group(group_name):
         else:
             new_id = 10000
 
-    with codecs.open(group_file, "a", encoding=_ENCODING) \
+    with codecs.open(group_file, "a", encoding=ENCODING) \
             as group_fw:
         group_fw.seek(0, 2)
         app_line = "%s:x:%s:\n" % (group_name, new_id,)
@@ -1391,7 +1370,7 @@ def const_israwstring(obj):
     else:
         return isinstance(obj, str)
 
-def const_convert_to_unicode(obj, enctype = _RAW_ENCODING):
+def const_convert_to_unicode(obj, enctype = RAW_ENCODING):
     """
     Convert generic string to unicode format, this function supports both
     Python 2.x and Python 3.x unicode bullshit.
@@ -1434,7 +1413,7 @@ def const_convert_to_unicode(obj, enctype = _RAW_ENCODING):
         else:
             return unicode(obj, enctype)
 
-def const_convert_to_rawstring(obj, from_enctype = _RAW_ENCODING):
+def const_convert_to_rawstring(obj, from_enctype = RAW_ENCODING):
     """
     Convert generic string to raw string (str for Python 2.x or bytes for
     Python 3.x).
@@ -1524,7 +1503,7 @@ def const_islive():
     global _CMDLINE
     if _CMDLINE is None:
         try:
-            with codecs.open("/proc/cmdline", "r", encoding=_ENCODING) \
+            with codecs.open("/proc/cmdline", "r", encoding=ENCODING) \
                     as cmdline_f:
                 _CMDLINE = cmdline_f.readline().strip().split()
         except IOError as err:
