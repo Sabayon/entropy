@@ -110,7 +110,7 @@ class EntropyRepositoryPlugin(object):
 
     def close_repo_hook(self, entropy_repository_instance):
         """
-        Called during EntropyRepository instance shutdown (closeDB).
+        Called during EntropyRepository instance shutdown (close()).
 
         @param entropy_repository_instance: EntropyRepository instance
         @type entropy_repository_instance: EntropyRepository
@@ -483,14 +483,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     "[close_repo_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-    def closeDB(self):
-        """
-        @deprecated, please see close()
-        """
-        warnings.warn("EntropyRepositoryBase.closeDB() is now deprecated. " + \
-            "Please use close()")
-        return self.close()
-
     def vacuum(self):
         """
         Repository storage cleanup and optimization function.
@@ -524,14 +516,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         Rollback last transaction, if it hasn't been already committed.
         """
         raise NotImplementedError()
-
-    def commitChanges(self):
-        """
-        @deprecated, please see commit()
-        """
-        warnings.warn("EntropyRepositoryBase.commitChanges() " + \
-            "is now deprecated. Please use commit()")
-        return self.commit()
 
     def initializeRepository(self):
         """
@@ -1395,7 +1379,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'size': size,
             'revision': revision,
             'counter': self.retrieveSpmUid(package_id),
-            'messages': [], deprecated
             'trigger': self.retrieveTrigger(package_id),
             'disksize': self.retrieveOnDiskSize(package_id),
             'changelog': self.retrieveChangelog(package_id),
