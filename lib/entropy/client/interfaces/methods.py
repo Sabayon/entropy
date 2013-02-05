@@ -1750,10 +1750,6 @@ class MiscMixin:
     _FILE_LOCK_MAP = {
     }
 
-    def setup_file_permissions(self, file_path):
-        """ @deprecated """
-        const_setup_file(file_path, etpConst['entropygid'], 0o664)
-
     def _file_lock_setup(self, file_path):
         """
         Setup _FILE_LOCK_MAP for file_path, allocating locking information.
