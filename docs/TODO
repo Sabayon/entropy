@@ -1,21 +1,18 @@
-Backlog (raw)
+Short term:
 
-  1.0:
+- register EAPI of packages and do sanity check, force
+  Portage update if EAPI is not the latest (put etpapi to work).
 
-    - register EAPI of packages and do sanity check, force
-      Portage update if EAPI is not the latest (put etpapi to work).
+- conditional deps:
+  enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
+  Test package generation and entropy client behaviour
+  (both direct and inverse dependencies calculation)
 
-    - conditional deps:
-      enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
-      Test package generation and entropy client behaviour
-      (both direct and inverse dependencies calculation)
+- rewrite entropy.Security() to be O(1) (dump sulfur first)
 
-    - rewrite entropy.Security() to be O(1) (dump sulfur first)
 
-  long term:
+ Long term:
 
-    - move variables away from etpConst
-      (to SystemSettings || Client || Server as static methods)
-
-  long long term:
-    - python 3.x support -> more tests
+ - move variables away from etpConst
+   (to SystemSettings || Client || Server as static methods)
+ - Python 3.3+ support
