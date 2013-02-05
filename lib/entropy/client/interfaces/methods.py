@@ -335,13 +335,6 @@ class RepositoryMixin:
                     EntropyCacher.CACHE_IDS['critical_update'])
         return conn
 
-    def get_repository_revision(self, reponame):
-        """ @deprecated """
-        try:
-            return int(self.get_repository(reponame).revision(reponame))
-        except (ValueError, TypeError,):
-            return -1
-
     def add_repository(self, repository_metadata):
         """
         Add repository to Entropy Client configuration and data structures.
@@ -899,14 +892,6 @@ class RepositoryMixin:
         self.close_repositories()
         self._validate_repositories()
         return disabled
-
-    def add_package_to_repositories(self, pkg_file):
-        """@deprecated please use add_package_repository"""
-        try:
-            package_matches = self.add_package_repository(pkg_file)
-            return 0, package_matches
-        except EntropyPackageException:
-            return -1, []
 
     def add_package_repository(self, package_file_path):
         """
