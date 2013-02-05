@@ -123,15 +123,16 @@ def change_language(lang):
             continue
         module.__dict__['_'] = _
 
+# Define some constants that can be used externally.
+ENCODING = "UTF-8"
+RAW_ENCODING = "raw_unicode_escape"
+
 # determine whether we have a valid locale configured and
 # glibc is happy.
 _FALLBACK_LOCALE = "en_US.UTF-8"
 _DETECTED_ENC = sys.getfilesystemencoding()
-_VALID_LOCALE = _LOCALE_FULL == _DETECTED_ENC
 
-# Define some constants that can be used externally.
-ENCODING = "UTF-8"
-RAW_ENCODING = "raw_unicode_escape"
+_VALID_LOCALE = ENCODING == _DETECTED_ENC
 
 # if locale is invalid, we call change_language and switch
 # to a reliable one that we assume it's always present: _FALLBACK_LOCALE.
