@@ -3,7 +3,8 @@ Backlog (raw)
   1.0:
 
     - register EAPI of packages and do sanity check, force
-      Portage update if EAPI is not the latest.
+      Portage update if EAPI is not the latest (put etpapi to work).
+
     - conditional deps:
       enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
       Test package generation and entropy client behaviour
