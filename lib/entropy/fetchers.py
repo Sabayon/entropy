@@ -910,10 +910,6 @@ class UrlFetcher(TextInterface):
         current_txt += " <->  "+average+"% "+bartext
         TextInterface.output(self, current_txt, back = True)
 
-    def output(self):
-        """ @deprecated, remove after 2010 """
-        return self.update()
-
     def update(self):
         """
         Main fetch progress callback. You can reimplement this to refresh
