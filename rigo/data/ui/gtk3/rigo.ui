@@ -61,10 +61,10 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkButton" id="prefButton">
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="receives_default">True</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="relief">none</property>
                         <accelerator key="m" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
                         <child>
@@ -605,10 +605,10 @@
                                 <property name="can_focus">False</property>
                                 <child>
                                   <object class="GtkButton" id="appViewCommentSendButton">
+                                    <property name="use_action_appearance">False</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
-                                    <property name="use_action_appearance">False</property>
                                     <property name="use_underline">True</property>
                                     <child>
                                       <object class="GtkLabel" id="appViewCommentSendButtonLabel">
@@ -731,15 +731,15 @@
       </object>
     </child>
   </object>
-  <object class="GtkEntryCompletion" id="searchEntryCompletion">
-    <property name="model">searchEntryStore</property>
-    <property name="minimum_key_length">2</property>
-    <property name="text_column">0</property>
-  </object>
   <object class="GtkListStore" id="searchEntryStore">
     <columns>
       <!-- column-name name -->
       <column type="gchararray"/>
     </columns>
+  </object>
+  <object class="GtkEntryCompletion" id="searchEntryCompletion">
+    <property name="model">searchEntryStore</property>
+    <property name="minimum_key_length">2</property>
+    <property name="text_column">0</property>
   </object>
 </interface>
