@@ -13,16 +13,18 @@
 import os
 
 from entropy.const import etpConst, etpSys
+from entropy.exceptions import SPMError
 from entropy.core import Singleton
 from entropy.misc import LogFile
 from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
+
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 9
+    BASE_PLUGIN_API_VERSION = 10
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -45,6 +47,11 @@ class SpmPlugin(Singleton):
     # directory during package install or removal, environment_update
     # is triggered
     ENV_DIRS = set()
+
+    class Error(SPMError):
+        """
+        Base class for Source Package Manager exceptions.
+        """
 
     def init_singleton(self, output_interface):
         """

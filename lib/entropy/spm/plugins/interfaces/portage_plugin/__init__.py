@@ -29,7 +29,7 @@ from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
     const_debug_enabled
-from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
+from entropy.exceptions import FileNotFound, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
     purple, red, bold, blue, getcolor, decolorize, is_mute, is_interactive
@@ -551,7 +551,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 9
+    PLUGIN_API_VERSION = 10
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -1093,8 +1093,8 @@ class PortagePlugin(SpmPlugin):
             for package_file in generated_package_files:
                 if not (os.path.isfile(package_file) and \
                     os.access(package_file, os.F_OK | os.R_OK)):
-                    raise SPMError(
-                        "SPMError: Spm:generate_package %s: %s %s" % (
+                    raise self.Error(
+                        "Spm:generate_package %s: %s %s" % (
                             _("error"),
                             package_file,
                             _("not found"),
@@ -1842,7 +1842,7 @@ class PortagePlugin(SpmPlugin):
         counter_path = os.path.join(counter_dir, counter_name)
 
         if not os.access(counter_dir, os.W_OK):
-            raise SPMError("SPM package directory not found")
+            raise self.Error("SPM package directory not found")
 
         enc = etpConst['conf_encoding']
         try:
@@ -1878,9 +1878,9 @@ class PortagePlugin(SpmPlugin):
             with codecs.open(atom_counter_path, "r", encoding=enc) as f:
                 counter = int(f.readline().strip())
         except ValueError:
-            raise SPMError("invalid Unique Identifier found")
+            raise self.Error("invalid Unique Identifier found")
         except Exception as e:
-            raise SPMError("General SPM Error: %s" % (repr(e),))
+            raise self.Error("General SPM Error: %s" % (repr(e),))
 
         return counter
 
@@ -3191,7 +3191,7 @@ class PortagePlugin(SpmPlugin):
                     try:
                         counter = self.assign_uid_to_installed_package(
                             spm_package, root = root)
-                    except SPMError as err:
+                    except self.Error as err:
                         mytxt = "%s: %s [%s]" % (
                             brown(_("SPM uid update error")), pkg_dir, err,
                         )
@@ -3852,8 +3852,8 @@ class PortagePlugin(SpmPlugin):
 
         try:
             mytree = self._portage.vartree(root=root)
-        except Exception as e:
-            raise SPMError("SPMError: %s" % (repr(e),))
+        except Exception as err:
+            raise self.Error(err)
         PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
 
@@ -3867,8 +3867,8 @@ class PortagePlugin(SpmPlugin):
             # settings=self._portage.settings
             mytree = self._portage.portagetree(root=None,
                 settings=self._portage.settings)
-        except Exception as e:
-            raise SPMError("SPMError: %s" % (repr(e),))
+        except Exception as err:
+            raise self.Error(err)
         PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
 
@@ -3881,8 +3881,8 @@ class PortagePlugin(SpmPlugin):
         pkgdir = root+self._portage.settings['PKGDIR']
         try:
             mytree = self._portage.binarytree(root, pkgdir)
-        except Exception as e:
-            raise SPMError("SPMError: %s" % (repr(e),))
+        except Exception as err:
+            raise self.Error(err)
         PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
 
@@ -3897,8 +3897,8 @@ class PortagePlugin(SpmPlugin):
             mysettings = self._portage.config(config_root = config_root,
                 target_root = root,
                 config_incrementals = self._portage.const.INCREMENTALS)
-        except Exception as e:
-            raise SPMError("SPMError: %s" % (repr(e),))
+        except Exception as err:
+            raise self.Error(err)
         if use_cache:
             PortagePlugin.CACHE['config'][(config_root, root)] = mysettings
 
