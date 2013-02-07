@@ -103,9 +103,16 @@ class Trigger:
     def run(self):
         """
         Run the actual triggers, this method must be called after prepare().
+        This method returns an error code, non-zero values must be considered
+        an error and further phase execution must be stopped.
         """
+        assert self._prepared, "prepare() not called"
+
         for trigger_func in self._triggers:
-            trigger_func()
+            code = trigger_func()
+            if code != 0:
+                return code
+        return 0
 
     def kill(self):
         """
@@ -516,52 +523,90 @@ class Trigger:
             proc.wait() # ignore any error
         return 0
 
-    def _trigger_spm_postinstall(self):
-        if self._spm is not None:
+    def _execute_package_phase(self, action_metadata, package_metadata,
+                               action_name, phase_name):
+        """
+        Wrapper against Source Package Manager's execute_package_phase.
+        This method handles both fatal and non-fatal exceptions.
+        """
+        if self._spm is None:
+            # Source Package Manager not available.
+            # TODO: In future this will be come fatal.
+            return 0
+
+        self._entropy.output(
+            "%s: %s" % (brown(_("Package phase")), teal(phase_name),),
+            importance = 0,
+            header = red("   ## "))
+
+        try:
+            self._spm.execute_package_phase(
+                action_metadata, package_metadata, action_name,
+                phase_name)
+
+        except self._spm.PhaseFailure as err:
+            txt = "%s: %s %s, %s. %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run phase")),
+                bold(phase_name),
+                err.message,
+                brown(_("Please report it")),
+                )
             self._entropy.output(
-                "%s: %s" % (_("SPM"), brown(_("post-install phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            return self._spm.execute_package_phase(self._action_metadata,
-                self._pkgdata, self._action, 'postinstall')
+                txt,
+                importance = 1,
+                header = red("   ## "),
+                level = "warning")
+            return 0  # non-fatal
+
+        except self._spm.OutdatedPhaseError as err:
+            err_msg = "%s: %s" % (
+                brown(_("Source Package Manager is too old, "
+                        "please update it")),
+                err)
+            self._entropy.output(
+                err_msg,
+                importance = 1,
+                header = darkred("   ## "),
+                level = "error"
+                )
+            return 1
+
+        except self._spm.PhaseError as err:
+            err_msg = "%s: %s" % (
+                brown(_("Source Package Manager phase error")),
+                err)
+            self._entropy.output(
+                err_msg,
+                importance = 1,
+                header = darkred("   ## "),
+                level = "error"
+                )
+            return 1
+
+        return 0
+
+    def _trigger_spm_postinstall(self):
+        return self._execute_package_phase(
+            self._action_metadata,
+            self._pkgdata, self._action, "postinstall")
 
     def _trigger_spm_preinstall(self):
-        if self._spm is not None:
-            self._entropy.output(
-                "%s: %s" % (_("SPM"), brown(_("pre-install phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            return self._spm.execute_package_phase(self._action_metadata,
-                self._pkgdata, self._action, 'preinstall')
+        return self._execute_package_phase(
+            self._action_metadata,
+            self._pkgdata, self._action, "preinstall")
 
     def _trigger_spm_setup(self):
-        if self._spm is not None:
-            self._entropy.output(
-                "%s: %s" % (_("SPM"), brown(_("setup phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            return self._spm.execute_package_phase(self._action_metadata,
-                self._pkgdata, self._action, 'setup')
+        return self._execute_package_phase(
+            self._action_metadata,
+            self._pkgdata, self._action, "setup")
 
     def _trigger_spm_preremove(self):
-        if self._spm is not None:
-            self._entropy.output(
-                "%s: %s" % (_("SPM"), brown(_("pre-remove phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            return self._spm.execute_package_phase(self._action_metadata,
-                self._pkgdata, self._action, 'preremove')
+        return self._execute_package_phase(
+            self._action_metadata,
+            self._pkgdata, self._action, "preremove")
 
     def _trigger_spm_postremove(self):
-        if self._spm is not None:
-            self._entropy.output(
-                "%s: %s" % (_("SPM"), brown(_("post-remove phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            return self._spm.execute_package_phase(self._action_metadata,
-                self._pkgdata, self._action, 'postremove')
+        return self._execute_package_phase(
+            self._action_metadata,
+            self._pkgdata, self._action, "postremove")

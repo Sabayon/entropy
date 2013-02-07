@@ -1798,7 +1798,7 @@ class Package:
     def __configure_package(self):
 
         try:
-            Spm = self._entropy.Spm()
+            spm = self._entropy.Spm()
         except Exception as err:
             self._entropy.logger.log(
                 "[Package]",
@@ -1814,9 +1814,39 @@ class Package:
             importance = 0,
             header = red("   ## ")
         )
-        return Spm.execute_package_phase(self.pkgmeta, self.pkgmeta,
-            self._action, "configure")
+        try:
+            spm.execute_package_phase(self.pkgmeta, self.pkgmeta,
+                                      self._action, "configure")
 
+        except spm.PhaseFailure as err:
+            self._entropy.logger.log(
+                "[Package]", "Phase execution failed with %s, %d" % (
+                    err.message, err.code))
+            return err.code
+
+        except spm.OutdatedPhaseError as err:
+            self._entropy.logger.log(
+                "[Package]", "Source Package Manager is too old: %s" % (
+                    err))
+
+            err_msg = "%s: %s" % (
+                brown(_("Source Package Manager is too old, please update it")),
+                err)
+            self._entropy.output(
+                err_msg,
+                importance = 1,
+                header = darkred("   ## "),
+                level = "error"
+                )
+            return 1
+
+        except spm.PhaseError as err:
+            self._entropy.logger.log(
+                "[Package]", "Phase execution error: %s" % (
+                    err))
+            return 1
+
+        return 0
 
     def __remove_package(self):
 
@@ -3778,40 +3808,54 @@ class Package:
     def _post_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         action_data = self.pkgmeta['triggers'].get('install')
+        code = 0
+
         if pkgdata:
-            trigger = self._entropy.Triggers(self._action, 'postinstall',
+            trigger = self._entropy.Triggers(
+                self._action, "postinstall",
                 pkgdata, action_data)
             do = trigger.prepare()
             if do:
-                trigger.run()
+                code = trigger.run()
             trigger.kill()
+
         del pkgdata
-        return 0
+        return code
 
     def _pre_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         action_data = self.pkgmeta['triggers'].get('install')
+        code = 0
+
         if pkgdata:
-            trigger = self._entropy.Triggers(self._action, 'preinstall',
+            trigger = self._entropy.Triggers(
+                self._action, "preinstall",
                 pkgdata, action_data)
             do = trigger.prepare()
             if do:
-                trigger.run()
+                code = trigger.run()
             trigger.kill()
+
         del pkgdata
-        return 0
+        return code
 
     def _setup_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         action_data = self.pkgmeta['triggers'].get('install')
+        code = 0
+
         if pkgdata:
-            trigger = self._entropy.Triggers(self._action, 'setup',
+            trigger = self._entropy.Triggers(
+                self._action, "setup",
                 pkgdata, action_data)
             do = trigger.prepare()
             if do:
-                trigger.run()
+                code = trigger.run()
             trigger.kill()
+
         del pkgdata
+        if code != 0:
+            return code
 
         # NOTE: fixup permissions in the image directory
         # the setup phase could have created additional users and groups
@@ -3836,15 +3880,19 @@ class Package:
     def _pre_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
         action_data = self.pkgmeta['triggers'].get('install')
+        code = 0
+
         if remdata:
-            trigger = self._entropy.Triggers(self._action, 'preremove', remdata,
-            action_data)
+            trigger = self._entropy.Triggers(
+                self._action, 'preremove', remdata,
+                action_data)
             do = trigger.prepare()
             if do:
-                trigger.run()
+                code = trigger.run()
                 trigger.kill()
+
         del remdata
-        return 0
+        return code
 
     def _package_install_clean(self):
         """
@@ -3911,15 +3959,19 @@ class Package:
     def _post_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
         action_data = self.pkgmeta['triggers'].get('install')
+        code = 0
+
         if remdata:
-            trigger = self._entropy.Triggers(self._action, 'postremove',
+            trigger = self._entropy.Triggers(
+                self._action, "postremove",
                 remdata, action_data)
             do = trigger.prepare()
             if do:
-                trigger.run()
+                code = trigger.run()
             trigger.kill()
+
         del remdata
-        return 0
+        return code
 
     def _removeconflict_step(self):
 

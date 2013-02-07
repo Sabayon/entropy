@@ -2144,9 +2144,15 @@ class PortagePlugin(SpmPlugin):
                     vartree = vartree,
                     debug = const_debug_enabled()
                 )
-            except:
+
+            except self._portage.exception.UnsupportedAPIException as err:
                 logger.write(entropy.tools.get_traceback())
-                raise
+                raise self.OutdatedPhaseError(err)
+
+            except Exception as err:
+                logger.write(entropy.tools.get_traceback())
+                raise self.PhaseError(err)
+
             finally:
                 sys.stdout = oldsysstdout
                 sys.stderr = oldsysstderr
@@ -2182,7 +2188,10 @@ class PortagePlugin(SpmPlugin):
                 del metadata
                 del keys
 
-        return rc
+        if rc != 0:
+            raise self.PhaseFailure(
+                "Phase terminated with exit status: %d" % (rc,),
+                rc)
 
     @staticmethod
     def _pkg_compose_atom(package_metadata):
@@ -2275,7 +2284,7 @@ class PortagePlugin(SpmPlugin):
 
         if os.path.isfile(env_file):
             # setup phase already called
-            return 0
+            return
 
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         # is ebuild available ?
@@ -2285,58 +2294,34 @@ class PortagePlugin(SpmPlugin):
                 " phase for %s. Ebuild path: %s not found." % (
                     package, ebuild,)
             )
-            return 1
+            raise self.PhaseFailure(
+                "Ebuild not found at path: %s" % (
+                    ebuild,), 1)
 
         try:
-            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+            self._portage_doebuild(
+                ebuild, action_name, action_metadata,
                 "setup", "bintree", package,
                 portage_tmpdir = package_metadata['unpackdir'],
                 licenses = package_metadata.get('accept_license'))
-        except Exception as e:
+
+        except self.PhaseError:
+            # by contract, this exception must be raised.
+            raise
+
+        except self.PhaseFailure:
+            # and this as well must be raised.
+            raise
+
+        except Exception as err:
             entropy.tools.print_traceback()
-
-            self.log_message(
-                "[SETUP] ATTENTION Cannot properly run SPM setup"
-                " phase for %s. Something bad happened."
-                " Exception %s" % (package, repr(e),))
-
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run Source Package Manager trigger for")),
-                bold(str(package)),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            mytxt = "%s. %s: %s [%s]" % (
-                brown(_("Please report it")),
-                bold(_("Attach this")),
-                darkred(etpConst['entropylogfile']),
-                brown("setup"),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            rc = 1
-
-        if rc != 0:
-            self.log_message(
-                "[SETUP] ATTENTION Cannot properly run Source Package Manager"
-                " setup phase for %s Something bad happened." % (package,)
-            )
-
-        return rc
+            raise self.PhaseFailure("%s" % (err,), 1)
 
     def _pkg_fooinst(self, action_metadata, package_metadata, action_name,
         phase):
 
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
-        rc = 0
 
         # is ebuild available ?
         if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
@@ -2345,58 +2330,33 @@ class PortagePlugin(SpmPlugin):
                 " phase for %s. Ebuild path: %s not found." % (
                     phase, package, ebuild,)
             )
-            return 1
+            raise self.PhaseFailure(
+                "Ebuild not found at path: %s" % (
+                    ebuild,), 1)
 
-        rc = self._pkg_setup(action_name, action_metadata, package_metadata)
-        if rc != 0:
-            return rc
+        self._pkg_setup(action_name, action_metadata, package_metadata)
+
         try:
-
-            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+            self._portage_doebuild(
+                ebuild, action_name, action_metadata,
                 phase, "bintree", package,
                 portage_tmpdir = package_metadata['unpackdir'],
                 licenses = package_metadata.get('accept_license'))
 
-            if rc != 0:
-                self.log_message(
-                    "[PRE] ATTENTION Cannot properly run SPM %s"
-                    " phase for %s. Something bad happened." % (
-                        phase, package,)
-                )
-            self._reload_portage_if_required(phase, package_metadata)
+        except self.PhaseError as err:
+            # by contract, this exception must be raised.
+            raise
 
-        except Exception as e:
+        except self.PhaseFailure:
+            # and this as well must be raised.
+            raise
 
+        except Exception as err:
             entropy.tools.print_traceback()
+            raise self.PhaseFailure("%s" % (err,), 1)
 
-            self.log_message(
-                "[PRE] ATTENTION Cannot properly run SPM %s"
-                " phase for %s. Something bad happened."
-                " Exception %s" % (phase, package, repr(e),))
-
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run Source Package Manager trigger for")),
-                bold(str(package)),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            mytxt = "%s. %s: %s [%s]" % (
-                brown(_("Please report it")),
-                bold(_("Attach this")),
-                darkred(etpConst['entropylogfile']),
-                brown(phase),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-
-        return rc
+        finally:
+            self._reload_portage_if_required(phase, package_metadata)
 
     def _pkg_foorm(self, action_metadata, package_metadata, action_name, phase):
 
@@ -2406,102 +2366,85 @@ class PortagePlugin(SpmPlugin):
         ebuild = self.get_installed_package_build_script_path(package)
 
         if not os.path.isfile(ebuild):
-            return 0
+            return
 
         try:
             ebuild, moved_ebuild = self._pkg_remove_setup_ebuild_env(
                 ebuild, package)
 
-        except EOFError as e:
+        except EOFError as err:
             # stuff on system is broken, ignore it
+            entropy.tools.print_traceback()
+            err_msg = "Ebuild: pkg_%s() failed, EOFError: %s - ignoring" % (
+                phase, err)
             self.__output.output(
-                darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
-                    str(e) + darkred(" - ignoring"),
+                err_msg,
                 importance = 1,
                 level = "warning",
                 header = red("   ## ")
             )
-            return 0
+            raise self.PhaseFailure(
+                "Phase failed with EOFError", 1)
 
-        except OSError as e:
+        except OSError as err:
             # this means something really bad
             # but for now we just push out a warning
+            entropy.tools.print_traceback()
+            err_msg = "Ebuild: pkg_%s() failed, OSError: %s - ignoring" % (
+                phase, err)
             self.__output.output(
-                "%s: %s" % (
-                    darkred("!!! Ebuild: pkg_" + phase + "(), OSError: "),
-                    repr(e),),
+                err_msg,
                 importance = 1,
                 level = "warning",
                 header = red("   ## ")
             )
-            return 0
+            raise self.PhaseFailure(
+                "Phase failed with OSError", 1)
 
-
-        except ImportError as e:
+        except ImportError as err:
             # stuff on system is broken, ignore it
+            entropy.tools.print_traceback()
+            err_msg = "Ebuild: pkg_%s() failed, ImportError: %s - ignoring" % (
+                phase, err)
             self.__output.output(
-                darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
-                    str(e) + darkred(" - ignoring"),
+                err_msg,
                 importance = 1,
                 level = "warning",
                 header = red("   ## ")
             )
-            return 0
+            raise self.PhaseFailure(
+                "Phase failed with ImportError", 1)
 
         work_dir = os.path.join(etpConst['entropyunpackdir'],
             package.replace("/", "_"))
 
         try:
             self._reload_portage_if_required(phase, package_metadata)
-            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+
+            self._portage_doebuild(
+                ebuild, action_name, action_metadata,
                 phase, "bintree", package, portage_tmpdir = work_dir,
                 licenses = package_metadata.get('accept_license'))
-        except Exception as e:
 
+        except self.PhaseError as err:
+            # by contract, this exception must be raised.
+            raise
+
+        except self.PhaseFailure:
+            # and this as well must be raised.
+            raise
+
+        except Exception as err:
             entropy.tools.print_traceback()
+            raise self.PhaseFailure("%s" % (err,), 1)
 
-            self.log_message(
-                "[PRE] ATTENTION Cannot properly run SPM %s"
-                " phase for %s. Something bad happened."
-                " Exception %s" % (phase, package, repr(e),)
-            )
-
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run Source Package Manager trigger for")),
-                bold(str(package)),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            mytxt = "%s. %s: %s [%s]" % (
-                brown(_("Please report it")),
-                bold(_("Attach this")),
-                darkred(etpConst['entropylogfile']),
-                brown(phase),
-            )
-            self.__output.output(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
         finally:
             if os.path.isdir(work_dir):
                 shutil.rmtree(work_dir, True)
 
-        if rc != 0:
-            self.log_message(
-                "[PRE] ATTENTION Cannot properly run SPM %s trigger "
-                "for %s. Something bad happened." % (phase, package,)
-            )
-
         if moved_ebuild is not None:
             if os.path.isfile(moved_ebuild):
                 self._pkg_remove_overlayed_ebuild(moved_ebuild)
-
-        return rc
 
     def _pkg_preinst(self, action_name, action_metadata, package_metadata):
         return self._pkg_fooinst(action_metadata, package_metadata,
@@ -2524,39 +2467,25 @@ class PortagePlugin(SpmPlugin):
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = self.get_installed_package_build_script_path(package)
         if not os.path.isfile(ebuild):
-            return 2
+            raise self.PhaseFailure("No ebuild found: %s" % (ebuild,), 2)
 
         try:
-
-            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+            self._portage_doebuild(
+                ebuild, action_name, action_metadata,
                 "config", "bintree", package,
                 licenses = package_metadata.get('accept_license'))
 
-            if rc != 0:
-                return 3
+        except self.PhaseError as err:
+            # by contract, this exception must be raised.
+            raise
+
+        except self.PhaseFailure:
+            # and this as well must be raised.
+            raise
 
         except Exception as err:
-
             entropy.tools.print_traceback()
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run SPM configure phase for")),
-                bold(str(package)),
-            )
-            mytxt2 = "%s: %s, %s" % (
-                bold(_("Error")),
-                type(Exception),
-                repr(err),
-            )
-            for txt in (mytxt, mytxt2,):
-                self.__output.output(
-                    txt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-            return 1
-
-        return 0
+            raise self.PhaseFailure("%s" % (err,), 1)
 
     def append_metadata_to_package(self, entropy_package_name, package_path):
         """
@@ -2878,8 +2807,8 @@ class PortagePlugin(SpmPlugin):
             'postrm': self._pkg_postrm,
             'config': self._pkg_config,
         }
-        return phase_calls[portage_phase](action_name, action_metadata,
-            package_metadata)
+        phase_calls[portage_phase](action_name, action_metadata,
+                                   package_metadata)
 
     def _bump_vartree_mtime(self, portage_cpv, root = None):
         """
