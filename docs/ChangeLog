@@ -1,3 +1,146 @@
+commit c028464ebeaedfd931986dbbcf6dd85a19b52a93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 7 08:43:33 2013 +0100
+
+    Release Entropy 174
+
+commit 10fbf275e63072a774784411c33f09ed8d04b174
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 7 08:30:40 2013 +0100
+
+    [entropy.spm] rework SpmPlugin.execute_package_phase API specifications
+    
+    This makes phase execution and error handling more fine grained and on the
+    long run more robust as well.
+    Any exception raised by SPM is now considered fatal, while phase execution
+    failures (execution with error code != 0) are still considered non-fatal for now.
+
+commit 88c0e7ef6c8a62a3281841b87c63aedd18d9bb0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 6 19:10:46 2013 +0100
+
+    [entropy.spm] create SpmPlugin.Error base exception class for all SPM issues
+
+commit 9c5ec4c7cbd4647ed365b40e74a243b7ef5fc3f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:34:47 2013 +0000
+
+    [entropy.fetchers] drop UrlFetcher.output, deprecated in 2010
+
+commit 69a2e0e8c08253c39b7ca801adbc78b0167bb25c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:34:02 2013 +0000
+
+    [entropy.client] drop get_file_permissions, deprecated
+
+commit 8807ff8ba709d94472cc5b795a3d975abe00e279
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:33:25 2013 +0000
+
+    [entropy.tools] drop get_random_temp_file, deprecated
+
+commit 86821d408b766606f265f28d680e72933030cbed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:32:24 2013 +0000
+
+    [entropy.client] drop deprecated methods
+
+commit 78f0a65b059fabf89bd7379621c4c0d903af2fcc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:30:02 2013 +0000
+
+    [todo] update TODO
+
+commit a123f53e43c77cc1b2a8de27d7a91dcd8157c10f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:25:23 2013 +0000
+
+    [Rigo] update rigo.pot
+
+commit d8848d68fc280cfc4896b9b772d66a6f4e4fd72a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:22:29 2013 +0000
+
+    [Rigo] make Glade-3 happy and acknowledge its xml changes once and for all
+
+commit 1cdda9f5fe2a64846f2e3d122be039c63577c571
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:18:32 2013 +0000
+
+    [Rigo] add support for accelerators
+    
+    From the main Rigo window, these are the currently supported accelerators:
+    - CTRL+A: move the focus to the search bar, put the cursor at the beginning
+    - CTRL+B: move the focus to the search bar, send a backspace character to it
+    - CTRL+F: move the focus to the search bar
+    - CTRL+K: move the focus to the search bar, kill the right-most text
+    - CTRL+M: load the preferences Menu
+    - CTRL+P: move the focus to the Application View widget
+
+commit 20c4a55984710f482bcaac2ee22b8d61ba47b155
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:08:04 2013 +0000
+
+    [Rigo] fixup Application View rendering when window is maximized
+
+commit 1e1da0863f7f48e904c0cc9e0ea7467bc8937026
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 11:00:53 2013 +0000
+
+    [todo] update TODO
+
+commit d339fc8208e20d7ddd022f5503eb68a7f26086b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 10:56:46 2013 +0000
+
+    [Rigo] make possible to disable the updates notification box
+
+commit e34ee97cdcfc0c7f5e0092d0c6fb23903408adee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 10:18:11 2013 +0000
+
+    [entropy.db] drop deprecated methods closeDB() and commitChanges()
+
+commit c2c6c51703ec28900c7175674e03b8777dff7649
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 10:14:01 2013 +0000
+
+    [Rigo] fix Application View rendering when window is maximized
+
+commit c2f82543fc1757da26cdc099c5fc78b5c7b0a8d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 08:29:37 2013 +0000
+
+    [entropy.i18n] try recover from invalid filesystem encoding
+    
+    This should also help with invalid UTF-8 characters returned by _()
+
+commit 4f8205323f5b2444d902f2a6ba74b7c9631855aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 5 08:29:37 2013 +0000
+
+    [entropy.i18n] try recover from invalid filesystem encoding
+    
+    This should also help with invalid UTF-8 characters returned by _()
+
+commit cf4b066dbff5e46829b5fa1d41a2fb997794a8ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 4 13:46:00 2013 +0000
+
+    [entropy.server] cleanup _move_package and fix a potential variable name collision
+
+commit ba860bcc63bccf6eea14f661f32c3c63f14b5da8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 4 13:38:06 2013 +0000
+
+    [todo] update TODO
+
+commit f5c591e400f4c63b19d1c1b8aad75491983f6b6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 4 08:53:43 2013 +0000
+
+    Tagging Entropy version 173
+
 commit 2b4b258e8f56893e8a8253299918a00ebce787ac
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 4 08:53:43 2013 +0000
