@@ -1747,7 +1747,7 @@ class PortagePlugin(SpmPlugin):
             if err.errno != errno.ENOENT:
                 raise
             return
-        proc.wait()
+        return proc.wait()
 
     def print_build_environment_info(self, stdin = None, stdout = None,
         stderr = None, environ = None, pid_write_func = None,
