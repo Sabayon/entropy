@@ -484,7 +484,8 @@ class Trigger:
                 etpConst['logging']['normal_loglevel_id'],
                 "[POST] Running env_update"
             )
-            self._spm.environment_update()
+            return self._spm.environment_update()
+        return 0
 
     def _trigger_infofile_install(self):
         info_exec = Trigger.INSTALL_INFO_EXEC
