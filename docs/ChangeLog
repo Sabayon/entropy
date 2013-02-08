@@ -1,3 +1,27 @@
+commit 877cf926d850fd5a9f42a71c478108885909b92f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 8 17:14:22 2013 +0100
+
+    Release Entropy 175
+
+commit 172fe3a2eaa72cec69196a89a9afd17f99e20e26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 8 17:12:49 2013 +0100
+
+    [entropy.client] Trigger: _trigger_env_update must return an integer
+
+commit 88ac77e8a97236561e981261f2e8b6b34a82bdd5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 8 17:12:04 2013 +0100
+
+    [entropy.spm] PortagePlugin: environment_update() must return an execution status int
+
+commit 2a84c85376168fa15bd6bcda45240a123ef443fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 7 08:43:34 2013 +0100
+
+    Tagging Entropy version 174
+
 commit c028464ebeaedfd931986dbbcf6dd85a19b52a93
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 7 08:43:33 2013 +0100
