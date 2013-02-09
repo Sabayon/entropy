@@ -351,7 +351,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 if provider_deps:
                     self.output(
                         "%s:" % (
-                            darkgreen(_("library provided by")),),
+                            blue(_("library provided by")),),
                         importance = 0,
                         level = "warning",
                         header = red("   $ "))
@@ -363,6 +363,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         header = purple("    :: "))
 
             missing_map[(package_id, repository_id)] = missing_extended
+
+        if package_matches:
+            self.output("")
 
         return missing_map
 
