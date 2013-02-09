@@ -112,9 +112,11 @@ Toolset containing all the Entropy Server built-in QA tests available.
         return self._call_locked, [nsargs.func, None]
 
     def _deptest(self, entropy_server):
-        entropy_server.extended_dependencies_test(
+        missing_deps = entropy_server.extended_dependencies_test(
             entropy_server.repositories())
-        return 0
+        if not missing_deps:
+            return 0
+        return 1
 
     def _libtest(self, entropy_server):
         rc = entropy_server.test_shared_objects(
