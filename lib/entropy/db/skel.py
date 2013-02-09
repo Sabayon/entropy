@@ -3601,6 +3601,19 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @rtype: tuple or frozenset
         @raise AttributeError: if order_by value is invalid
         """
+        raise NotImplementedError()
+
+    def listAllInjectedPackageIds(self):
+        """
+        List all injected package identifiers available in repository.
+
+        Injected packages are those not tracking any Source Package Manager
+        packages.
+
+        @return: frozenset of package identifiers
+        @rtype: frozenset
+        """
+        raise NotImplementedError()
 
     def listAllSpmUids(self):
         """

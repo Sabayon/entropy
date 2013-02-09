@@ -4608,6 +4608,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 return tuple()
             return frozenset()
 
+    def listAllInjectedPackageIds(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute("SELECT idpackage FROM injected")
+        return self._cur2frozenset(cur)
+
     def _listAllDependencies(self):
         """
         List all dependencies available in repository.
