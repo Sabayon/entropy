@@ -267,18 +267,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
             blacklist = set()
 
         scan_msg = blue(_("scanning"))
-        count = 0
-        maxcount = len(package_matches)
         missing_map = {}
         repos = sorted(entropy_client.repositories())
 
-        for package_id, repo in package_matches:
-            count += 1
-            dbconn = entropy_client.open_repository(repo)
-            atom = dbconn.retrieveAtom(package_id)
+        for count, (package_id, repository_id) in enumerate(package_matches, 1):
+            repo = entropy_client.open_repository(repository_id)
+            atom = repo.retrieveAtom(package_id)
             self.output(
                 "[%s] %s: %s" % (
-                            darkgreen(repo),
+                            darkgreen(repository_id),
                             scan_msg,
                             darkgreen(atom),
                         ),
@@ -286,11 +283,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 level = "info",
                 header = blue(" @@ "),
                 back = True,
-                count = (count, maxcount,)
+                count = (count, len(package_matches),)
             )
 
             missing_extended, missing = self._get_missing_libraries(
-                entropy_client, (package_id, repo))
+                entropy_client, (package_id, repository_id))
 
             if not missing:
                 continue
@@ -308,7 +305,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 if old_missing:
                     self.output(
                         "[%s] %s: %s %s:" % (
-                            darkgreen(repo),
+                            darkgreen(repository_id),
                             darkred("package"),
                             darkgreen(atom),
                             darkred(_("blacklisted dependencies !!!")),
@@ -316,7 +313,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         importance = 1,
                         level = "warning",
                         header = bold(" @@ "),
-                        count = (count, maxcount,)
+                        count = (count, len(package_matches),)
                     )
                 for dep in sorted(old_missing):
                     self.output(
@@ -331,7 +328,41 @@ class QAInterface(TextInterface, EntropyPluginStore):
             if not missing_extended:
                 continue
 
-            missing_map[(package_id, repo)] = missing_extended
+            # warn about the missing dep
+            self.output(
+                "[%s] %s %s:" % (
+                    darkgreen(repository_id),
+                    brown(atom),
+                    blue(_("requires libraries"))),
+                importance = 1,
+                level = "warning",
+                header = red(" @@ "))
+
+            for (lib, elfclass), provider_deps in missing_extended:
+                self.output(
+                    "%s [%s:%d]" % (
+                        purple(lib),
+                        teal("elfclass"),
+                        elfclass),
+                    importance = 0,
+                    level = "warning",
+                    header = brown("  # "))
+
+                if provider_deps:
+                    self.output(
+                        "%s:" % (
+                            darkgreen(_("library provided by")),),
+                        importance = 0,
+                        level = "warning",
+                        header = red("   $ "))
+                for dep in sorted(provider_deps):
+                    self.output(
+                        darkgreen(dep),
+                        importance = 0,
+                        level = "warning",
+                        header = purple("    :: "))
+
+            missing_map[(package_id, repository_id)] = missing_extended
 
         return missing_map
 
