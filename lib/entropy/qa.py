@@ -266,13 +266,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
         if blacklist is None:
             blacklist = set()
 
-        scan_msg = blue(_("Searching for missing Runtime dependencies"))
-        self.output(
-            "%s..." % (scan_msg,),
-            importance = 1,
-            level = "info",
-            header = red(" @@ ")
-        )
         scan_msg = blue(_("scanning"))
         count = 0
         maxcount = len(package_matches)
