@@ -4142,6 +4142,19 @@ class Server(Client):
         qa = self.QA()
         missing_map = qa.test_missing_dependencies(
             self, injected, blacklist = blacklist)
+        if missing_map:
+            self.output(
+                darkred(_("There are broken injected packages. Please fix.")),
+                importance = 2,
+                level = "error",
+                header = red(" @@ "))
+        else:
+            self.output(
+                blue(_("Injected packages are healthy. You lucky...")),
+                importance = 1,
+                level = "info",
+                header = brown(" @@ ")
+            )
 
         return set(missing_map.keys())
 

@@ -364,9 +364,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             missing_map[(package_id, repository_id)] = missing_extended
 
-        if package_matches:
-            self.output("")
-
         return missing_map
 
     def warn_missing_dependencies(self, entropy_client, package_matches):
