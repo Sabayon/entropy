@@ -5536,7 +5536,7 @@ class Server(Client):
             # missing dependencies check
             missing_map = my_qa.test_missing_dependencies(
                 self, [(x, pkg_repo) for x in package_ids],
-                self_check = True, black_list = pkg_blacklisted_deps)
+                blacklist = pkg_blacklisted_deps)
 
             missing_deps = self.__user_filter_out_missing_deps(pkg_repo,
                 dbconn, missing_map, ask)
