@@ -1187,9 +1187,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @rtype: tuple
         """
 
-        def is_system_pkg(pkg_id, repo):
-            if repo.isSystemPackage(pkg_id):
+        def is_system_pkg(pkg_id, repo, system_packages):
+            if (pkg_id, repo.name) in system_packages:
                 return True
+
             reverse_deps = repo.retrieveReverseDependencies(pkg_id,
                 key_slot = True)
             # with virtual packages, it can happen that system packages
@@ -1201,9 +1202,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 if rev_pkg_id == -1:
                     # can't find
                     continue
-                rev_repo = entropy_client.open_repository(rev_repo_id)
-                if rev_repo.isSystemPackage(rev_pkg_id):
+                if (rev_pkg_id, rev_repo_id) in system_packages:
                     return True
+
             return False
 
         def populate_caches(pkg_id, repo, provided_libs, scope_cache):
@@ -1233,8 +1234,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         provided_libs = {}
         scope_cache = set()
-        dependencies = self.get_deep_dependency_list(entropy_client,
-            package_match, atoms = True)
+        dependencies = self.get_deep_dependency_list(None,
+            (package_id, dbconn), atoms = True)
 
         for dependency in dependencies:
             pkg_id, repo_id = entropy_client.atom_match(dependency)
@@ -1249,6 +1250,13 @@ class QAInterface(TextInterface, EntropyPluginStore):
         packages_cache = set()
         package_map = {}
         package_map_reverse = {}
+
+        # Populate the system packages cache
+        system_packages = set()
+        for s_repo_id in repos:
+            s_repo = entropy_client.open_repository(s_repo_id)
+            for s_package_id in s_repo.listAllSystemPackageIds():
+                system_packages.add((s_package_id, s_repo_id))
 
         for needed, elfclass in neededs:
             data_solved = self._resolve_library(
@@ -1278,7 +1286,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 key, slot = pkg_dbconn.retrieveKeySlot(pkg_id)
                 if (key, slot) in scope_cache:
                     continue
-                system_pkg = is_system_pkg(pkg_id, pkg_dbconn)
+                system_pkg = is_system_pkg(pkg_id, pkg_dbconn, system_packages)
                 if system_pkg:
                     # ignore system package missing dep if this is a
                     # system package, it means that further missing
