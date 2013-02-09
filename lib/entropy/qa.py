@@ -1176,6 +1176,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
         rdepends = {}
         rdepends_plain = set()
         neededs = dbconn.retrieveNeeded(package_id, extended = True)
+        if not neededs:
+            return rdepends, rdepends_plain
+
         ldpaths = entropy.tools.collect_linker_paths()
         deps_content = set()
         dependencies = self.get_deep_dependency_list(entropy_client,
