@@ -272,30 +272,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
         missing_map = {}
         repos = sorted(entropy_client.repositories())
 
-        def _warn_soname(soname, elf_class):
-            # try to resolve soname
-            for needed_repo in repos:
-                needed_dbconn = entropy_client.open_repository(needed_repo)
-                pkg_ids = needed_dbconn.resolveNeeded(soname,
-                    elfclass = elf_class)
-                if pkg_ids:
-                    pkg_atoms = sorted((
-                        needed_dbconn.retrieveKeySlotAggregated(x) for x in \
-                            pkg_ids))
-                    pkg_atoms_string = ', '.join(pkg_atoms)
-                else:
-                    pkg_atoms_string = _("no packages")
-                self.output(
-                    "[%s:%s] %s" % (
-                        brown(needed_repo),
-                        teal(soname),
-                        purple(pkg_atoms_string),
-                    ),
-                    importance = 0,
-                    level = "info",
-                    header = brown("     # ")
-                )
-
         for package_id, repo in package_matches:
             count += 1
             dbconn = entropy_client.open_repository(repo)
@@ -357,20 +333,66 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             missing_map[(package_id, repo)] = missing_extended
 
-        count = 0
-        for package_id, repo in package_matches:
-            count += 1
-            dbconn = entropy_client.open_repository(repo)
+        return missing_map
+
+    def warn_missing_dependencies(self, entropy_client, package_matches):
+        """
+        Scan given package matches looking for missing dependencies.
+        This method scans the live filesystem looking for library matches,
+        so the returned information might be incorrect (packages using
+        runtime LD_LIBRARY_PATH and other dlopen() magic might be reported
+        as false positives).
+
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_matches: list of entropy package matches tuples
+            (package id, repo id)
+        @type package_matches: list
+        @return: list (set) of broken package matches
+        @rtype: set
+        """
+        repos = sorted(entropy_client.repositories())
+
+        def _warn_soname(soname, elfclass):
+            # try to resolve soname
+            for needed_repo in repos:
+                needed_dbconn = entropy_client.open_repository(needed_repo)
+                pkg_ids = needed_dbconn.resolveNeeded(soname,
+                    elfclass = elfclass)
+                if pkg_ids:
+                    pkg_atoms = sorted((
+                        needed_dbconn.retrieveKeySlotAggregated(x) for x in \
+                            pkg_ids))
+                    pkg_atoms_string = ', '.join(pkg_atoms)
+                else:
+                    pkg_atoms_string = _("no packages")
+                self.output(
+                    "[%s:%s] %s" % (
+                        brown(needed_repo),
+                        teal(soname),
+                        purple(pkg_atoms_string),
+                    ),
+                    importance = 0,
+                    level = "info",
+                    header = brown("     # ")
+                )
+
+        broken_matches = set()
+        for count, (package_id, repo_id) in enumerate(package_matches, 1):
+            dbconn = entropy_client.open_repository(repo_id)
             atom = dbconn.retrieveAtom(package_id)
 
             # check for untracked missing sonames (using less reliable
             # ldd check, but just warn)
             missing_sonames = self._get_unresolved_sonames(entropy_client,
-                (package_id, repo))
+                (package_id, repo_id))
             if missing_sonames:
+                broken_matches.add((package_id, repo_id))
+
                 self.output(
-                    "[repo:%s] %s: %s %s:" % (
-                        darkgreen(repo),
+                    "[%s] %s: %s %s:" % (
+                        darkgreen(repo_id),
                         blue("package"),
                         darkgreen(atom),
                         blue(_("is potentially missing these dependencies")),
@@ -378,23 +400,23 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     importance = 1,
                     level = "info",
                     header = red(" @@ "),
-                    count = (count, maxcount,)
+                    count = (count, len(package_matches),)
                 )
             for executable, sonames in missing_sonames.items():
-                elf_class = entropy.tools.read_elf_class(executable)
+                elfclass = entropy.tools.read_elf_class(executable)
                 self.output(
                     "%s (elf class: %s):" % (
                         brown(executable),
-                        teal(str(elf_class)),
+                        teal(str(elfclass)),
                     ),
                     importance = 0,
                     level = "info",
                     header = purple("   ## ")
                 )
                 for soname in sonames:
-                    _warn_soname(soname, elf_class)
+                    _warn_soname(soname, elfclass)
 
-        return missing_map
+        return broken_matches
 
     def test_missing_runtime_libraries(self, entropy_client, package_matches,
         base_repository_id = None, excluded_libraries = None, silent = False):
