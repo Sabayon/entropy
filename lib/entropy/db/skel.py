@@ -3615,6 +3615,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def listAllSystemPackageIds(self):
+        """
+        List all system package identifiers available in repository.
+
+        System packages are those directly marked as part of the base system.
+
+        @return: frozenset of package identifiers
+        @rtype: frozenset
+        """
+        raise NotImplementedError()
+
     def listAllSpmUids(self):
         """
         List all Source Package Manager unique package identifiers bindings
