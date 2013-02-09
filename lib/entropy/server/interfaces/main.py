@@ -4076,7 +4076,7 @@ class Server(Client):
                             darkgreen(dependency),
                             header = "   - ")
 
-                if not dependencies:
+                if not missing:
                     self.output(
                         blue(_("No missing dependencies. Lucky bastard...")),
                         importance = 1,
