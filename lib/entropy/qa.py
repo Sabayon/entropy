@@ -338,7 +338,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 level = "warning",
                 header = red(" @@ "))
 
-            for (lib, elfclass), provider_deps in missing_extended:
+            for (lib, elfclass), provider_deps in missing_extended.items():
                 self.output(
                     "%s [%s:%d]" % (
                         purple(lib),
