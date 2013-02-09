@@ -4076,6 +4076,14 @@ class Server(Client):
                             darkgreen(dependency),
                             header = "   - ")
 
+                if not dependencies:
+                    self.output(
+                        blue(_("No missing dependencies. Lucky bastard...")),
+                        importance = 1,
+                        level = "info",
+                        header = brown(" @@ ")
+                    )
+
         return missing_dependencies
 
     def injected_library_dependencies_test(self, repository_ids):
