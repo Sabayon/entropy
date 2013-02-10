@@ -1131,16 +1131,22 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 return False
             return True
 
-        pkg_matches = self.get_deep_dependency_list(entropy_client,
-            package_match)
+        pkg_matches = set()
+        package_id, repo_id = package_match
+        entropy_repository = entropy_client.open_repository(repo_id)
+
+        for dependency in entropy_repository.retrieveRuntimeDependencies(
+            package_id):
+            match_pkg_id, match_repo_id = entropy_client.atom_match(dependency)
+            if match_pkg_id == -1:
+                continue
+            pkg_matches.add((match_pkg_id, match_repo_id))
 
         all_content = set()
         for pkg_id, pkg_repo in pkg_matches:
             pkg_dbconn = entropy_client.open_repository(pkg_repo)
             all_content |= pkg_dbconn.retrieveContent(pkg_id)
 
-        package_id, repo_id = package_match
-        entropy_repository = entropy_client.open_repository(repo_id)
         package_content = entropy_repository.retrieveContent(package_id)
         all_content |= package_content
 
