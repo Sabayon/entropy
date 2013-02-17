@@ -1820,13 +1820,17 @@ class Package:
 
         except spm.PhaseFailure as err:
             self._entropy.logger.log(
-                "[Package]", "Phase execution failed with %s, %d" % (
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
+                "Phase execution failed with %s, %d" % (
                     err.message, err.code))
             return err.code
 
         except spm.OutdatedPhaseError as err:
             self._entropy.logger.log(
-                "[Package]", "Source Package Manager is too old: %s" % (
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
+                "Source Package Manager is too old: %s" % (
                     err))
 
             err_msg = "%s: %s" % (
@@ -1842,7 +1846,9 @@ class Package:
 
         except spm.PhaseError as err:
             self._entropy.logger.log(
-                "[Package]", "Phase execution error: %s" % (
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
+                "Phase execution error: %s" % (
                     err))
             return 1
 
