@@ -21,24 +21,24 @@ from matter.utils import is_python3
 
 
 stuff = {}
-stuff['cols'] = 30
+stuff["cols"] = 30
 try:
     curses.setupterm()
-    stuff['cols'] = curses.tigetnum('cols')
+    stuff["cols"] = curses.tigetnum("cols")
 except Exception:
     pass
 
-stuff['cleanline'] = ""
+stuff["cleanline"] = ""
 
 def setcols():
-    stuff['cleanline'] = ""
-    count = stuff['cols']
+    stuff["cleanline"] = ""
+    count = stuff["cols"]
     while count:
-        stuff['cleanline'] += ' '
+        stuff["cleanline"] += " "
         count -= 1
 setcols()
-stuff['cursor'] = False
-stuff['ESC'] = chr(27)
+stuff["cursor"] = False
+stuff["ESC"] = chr(27)
 
 havecolor=1
 global dotitles
@@ -110,9 +110,9 @@ for x in range(30, 38):
         ansi_color_codes.append("%im" % x)
         ansi_color_codes.append("%i;01m" % x)
 
-rgb_ansi_colors = ['0x000000', '0x555555', '0xAA0000', '0xFF5555', '0x00AA00',
-        '0x55FF55', '0xAA5500', '0xFFFF55', '0x0000AA', '0x5555FF', '0xAA00AA',
-        '0xFF55FF', '0x00AAAA', '0x55FFFF', '0xAAAAAA', '0xFFFFFF']
+rgb_ansi_colors = ["0x000000", "0x555555", "0xAA0000", "0xFF5555", "0x00AA00",
+        "0x55FF55", "0xAA5500", "0xFFFF55", "0x0000AA", "0x5555FF", "0xAA00AA",
+        "0xFF55FF", "0x00AAAA", "0x55FFFF", "0xAAAAAA", "0xFFFFFF"]
 
 for x in range(len(rgb_ansi_colors)):
         codes[rgb_ansi_colors[x]] = esc_seq + ansi_color_codes[x]
@@ -164,7 +164,7 @@ def nocolor():
     """
     Turn off colorization process-wide.
     """
-    os.environ['MATTER_NO_COLOR'] = "1"
+    os.environ["MATTER_NO_COLOR"] = "1"
     global havecolor
     havecolor=0
 
@@ -369,7 +369,7 @@ def reset_cursor():
     of the line.
     """
     if havecolor:
-        sys.stdout.write(stuff['ESC'] + '[2K')
+        sys.stdout.write(stuff["ESC"] + "[2K")
     _flush_stdouterr()
 
 def _flush_stdouterr():
@@ -387,13 +387,13 @@ def _std_write(msg, stderr = False):
     try:
         obj.write(msg)
     except UnicodeEncodeError:
-        msg = msg.encode('utf-8')
+        msg = msg.encode("utf-8")
         if is_python3():
             obj.buffer.write(msg)
         else:
             obj.write(msg)
 
-def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
+def _print_prio(msg, color_func, back = False, flush = True, end = "\n",
     stderr = False):
     if not back:
         setcols()
@@ -414,7 +414,7 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
     if flush:
         _flush_stdouterr()
 
-def print_error(msg, back = False, flush = True, end = '\n'):
+def print_error(msg, back = False, flush = True, end = "\n"):
     """
     Service function used by Entropy text client (will be moved from here)
     to write error messages to stdout (not stderr, atm).
@@ -432,7 +432,7 @@ def print_error(msg, back = False, flush = True, end = '\n'):
     return _print_prio(msg, darkred, back = back, flush = flush, end = end, 
         stderr = True)
 
-def print_info(msg, back = False, flush = True, end = '\n'):
+def print_info(msg, back = False, flush = True, end = "\n"):
     """
     Service function used by Entropy text client (will be moved from here)
     to write info messages to stdout (not stderr, atm).
@@ -449,7 +449,7 @@ def print_info(msg, back = False, flush = True, end = '\n'):
     """
     return _print_prio(msg, darkgreen, back = back, flush = flush, end = end)
 
-def print_warning(msg, back = False, flush = True, end = '\n'):
+def print_warning(msg, back = False, flush = True, end = "\n"):
     """
     Service function used by Entropy text client (will be moved from here)
     to write warning messages to stdout (not stderr, atm).
@@ -473,7 +473,7 @@ def print_generic(*args, **kwargs):
     to write generic messages to stdout (not stderr, atm).
     NOTE: don't use this directly but rather subclass TextInterface class.
     """
-    stderr = kwargs.get('stderr', False)
+    stderr = kwargs.get("stderr", False)
     msg_idx = 1
     for msg in args:
         _std_write(msg, stderr = stderr)
@@ -481,7 +481,7 @@ def print_generic(*args, **kwargs):
             sys.stdout.write(" ")
         msg_idx += 1
 
-    end = kwargs.get('end', '\n')
+    end = kwargs.get("end", "\n")
     _std_write(end, stderr = stderr)
     _flush_stdouterr()
 

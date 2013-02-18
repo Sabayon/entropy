@@ -69,7 +69,7 @@ class GenericSpecFunctions(object):
             x = str(x)
             return x
         except (UnicodeDecodeError, UnicodeEncodeError,):
-            return ''
+            return ""
 
     def valid_yes_no(self, x):
         return x in ("yes", "no")
@@ -130,128 +130,128 @@ class MatterSpec(GenericSpecFunctions):
         @rtype: dict
         """
         return {
-            'build-args': {
-                'cb': self.ne_string,
-                've': self.ve_string_shlex_splitter,
-                'default': ["--verbose", "--nospinner"],
-                'desc': "Portage build arguments (default is --verbose\n "
+            "build-args": {
+                "cb": self.ne_string,
+                "ve": self.ve_string_shlex_splitter,
+                "default": ["--verbose", "--nospinner"],
+                "desc": "Portage build arguments (default is --verbose\n "
                 "--nospinner)",
             },
-            'dependencies': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow dependencies to be pulled in? (yes/no)",
+            "dependencies": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow dependencies to be pulled in? (yes/no)",
             },
-            'downgrade': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow package downgrades? (yes/no)",
+            "downgrade": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow package downgrades? (yes/no)",
             },
-            'keep-going': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Make possible to continue if one \n\t"
+            "keep-going": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Make possible to continue if one \n\t"
                 "or more packages fail to build? (yes/no)",
             },
-            'new-useflags': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow new USE flags? (yes/no)",
+            "new-useflags": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow new USE flags? (yes/no)",
             },
-            'removed-useflags': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow removed USE flags? (yes/no)",
+            "removed-useflags": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow removed USE flags? (yes/no)",
             },
-            'rebuild': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow package rebuilds? (yes/no)",
+            "rebuild": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow package rebuilds? (yes/no)",
             },
-            'spm-repository-change': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow Source Package Manager (Portage) \n\t"
+            "spm-repository-change": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow Source Package Manager (Portage) \n\t"
                 "repository change? (yes/no)",
             },
-            'spm-repository-change-if-upstreamed': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "In case of Source Package Manager \n\trepository "
+            "spm-repository-change-if-upstreamed": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "In case of Source Package Manager \n\trepository "
                 "changes, allow execution if the original repository "
                 "\n\tdoes not contain the package anymore? (yes/no)",
             },
-            'not-installed': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "no",
-                'desc': "Allow compiling packages even if they "
+            "not-installed": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Allow compiling packages even if they "
                 "are not \n\tactually installed on the System? (yes/no)",
             },
-            'soft-blocker': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "yes",
-                'desc': "Allow soft-blockers in the merge queue?\n "
+            "soft-blocker": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "yes",
+                "desc": "Allow soft-blockers in the merge queue?\n "
                 "Packages will be unmerged if yes. (yes/no)",
             },
-            'unmerge': {
-                'cb': self.valid_yes_no,
-                've': self.ve_string_stripper,
-                'default': "yes",
-                'desc': "Allow package unmerges due to Portage\n "
+            "unmerge": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "yes",
+                "desc": "Allow package unmerges due to Portage\n "
                 "soft-blockers resolution. (yes/no)",
             },
-            'pkgpre': {
-                'cb': self.not_none,
-                've': self.ve_string_open_file_read,
-                'default': None,
-                'desc': "Package pre execution script hook path, "
+            "pkgpre": {
+                "cb": self.not_none,
+                "ve": self.ve_string_open_file_read,
+                "default": None,
+                "desc": "Package pre execution script hook path, "
                 "executed \n\tfor each package (also see example files)",
             },
-            'pkgpost': {
-                'cb': self.not_none,
-                've': self.ve_string_open_file_read,
-                'default': None,
-                'desc': "Package build post execution script hook path, "
+            "pkgpost": {
+                "cb": self.not_none,
+                "ve": self.ve_string_open_file_read,
+                "default": None,
+                "desc": "Package build post execution script hook path, "
                 "executed \n\tfor each package (also see example files)",
             },
-            'buildfail': {
-                'cb': self.not_none,
-                've': self.ve_string_open_file_read,
-                'default': None,
-                'desc': "Package build failure execution script hook "
+            "buildfail": {
+                "cb": self.not_none,
+                "ve": self.ve_string_open_file_read,
+                "default": None,
+                "desc": "Package build failure execution script hook "
                 "path, \n\texecuted for each failing package (also see "
                 "example files)",
             },
-            'packages': {
-                'cb': self.always_valid,
-                've': self.valid_comma_sep_list_list,
-                'mod': lambda l_l: [x for x in l_l if x],
-                'desc': "List of packages to scrape, separated by "
+            "packages": {
+                "cb": self.always_valid,
+                "ve": self.valid_comma_sep_list_list,
+                "mod": lambda l_l: [x for x in l_l if x],
+                "desc": "List of packages to scrape, separated by "
                 "comma. \n\tIf you want to let Portage consider a group "
                 "of packages, \n\tjust separate them with spaces/tabs but "
                 "no commas",
             },
-            'repository': {
-                'cb': self.ne_string,
-                've': self.ve_string_stripper,
-                'desc': "Binary Package Manager repository in where "
+            "repository": {
+                "cb": self.ne_string,
+                "ve": self.ve_string_stripper,
+                "desc": "Binary Package Manager repository in where "
                 "newly built \n\tpackages will be put and pushed to",
             },
-            'stable': {
-                'cb': self.valid_yes_no_inherit,
-                've': self.ve_string_stripper,
-                'default': "inherit",
-                'desc': "Only accept Portage stable packages (no "
+            "stable": {
+                "cb": self.valid_yes_no_inherit,
+                "ve": self.ve_string_stripper,
+                "default": "inherit",
+                "desc": "Only accept Portage stable packages (no "
                 "unstable keywords)",
             },
         }
@@ -308,7 +308,7 @@ class SpecPreprocessor:
 
         spec_f = self._spec_file_obj
         spec_f.seek(0)
-        lines = ''
+        lines = ""
         try:
             for line in spec_f.readlines():
                 # call recursively
@@ -353,7 +353,7 @@ class SpecPreprocessor:
                     line = expander(line)
             final_content.append(line)
 
-        final_content = (''.join(final_content)).split("\n")
+        final_content = ("".join(final_content)).split("\n")
 
         return final_content
 
@@ -406,8 +406,8 @@ class SpecParser:
             check_dict = self._parser_data_path.get(key)
             if not isinstance(check_dict, dict):
                 continue
-            value = check_dict['ve'](value)
-            if not check_dict['cb'](value):
+            value = check_dict["ve"](value)
+            if not check_dict["cb"](value):
                 continue
 
             if key in mydict:
@@ -445,7 +445,7 @@ class SpecParser:
         """
         for statement, opts in self._parser_data_path.items():
             if "default" in opts and (statement not in mydata):
-                mydata[statement] = opts['default']
+                mydata[statement] = opts["default"]
 
     def _mod_parse(self, mydata):
         """
@@ -454,7 +454,7 @@ class SpecParser:
         """
         for statement, opts in self._parser_data_path.items():
             if statement in mydata and "mod" in opts:
-                mydata[statement] = opts['mod'](mydata[statement])
+                mydata[statement] = opts["mod"](mydata[statement])
 
     def _validate_parse(self, mydata):
         for param in self.vital_parameters:

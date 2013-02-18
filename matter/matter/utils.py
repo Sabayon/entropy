@@ -79,7 +79,7 @@ def print_exception(silent=False, tb_data=None, all_frame_data=False):
             frame.f_code.co_filename, frame.f_lineno))
 
         for key, value in list(frame.f_locals.items()):
-            cur_str = ''
+            cur_str = ""
             cur_str = "\t%20s = " % key
             try:
                 cur_str += repr(value) + "\n"
@@ -236,7 +236,7 @@ def convert_to_unicode(obj, enctype = _RAW_ENCODING):
     # string/unicode support
     if is_unicode(obj):
         return obj
-    if hasattr(obj, 'decode'):
+    if hasattr(obj, "decode"):
         return obj.decode(enctype)
     else:
         if is_python3():

@@ -8,15 +8,15 @@ import os
 import re
 import time
 
-os.environ['ETP_GETTEXT_DOMAIN'] = "entropy-server"
+os.environ["ETP_GETTEXT_DOMAIN"] = "entropy-server"
 
 # Entropy imports
-sys.path.insert(0, '/usr/lib/entropy/lib')
-sys.path.insert(0, '/usr/lib/entropy/server')
-sys.path.insert(0, '/usr/lib/entropy/client')
-sys.path.insert(0, '../lib')
-sys.path.insert(0, '../server')
-sys.path.insert(0, '../client')
+sys.path.insert(0, "/usr/lib/entropy/lib")
+sys.path.insert(0, "/usr/lib/entropy/server")
+sys.path.insert(0, "/usr/lib/entropy/client")
+sys.path.insert(0, "../lib")
+sys.path.insert(0, "../server")
+sys.path.insert(0, "../client")
 
 
 # Entropy imports
@@ -25,9 +25,9 @@ from entropy.output import print_info, print_error, print_warning, \
     purple, brown
 
 # Portage imports
-os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
-os.environ['FEATURES'] = "split-log"
-os.environ['CMAKE_NO_COLOR'] = "yes"
+os.environ["ACCEPT_PROPERTIES"] = "* -interactive"
+os.environ["FEATURES"] = "split-log"
+os.environ["CMAKE_NO_COLOR"] = "yes"
 
 from _emerge.actions import load_emerge_config
 import portage
@@ -483,7 +483,7 @@ if __name__ == "__main__":
         nocolor()
 
     parser = argparse.ArgumentParser(
-        description='Automated package updates scanner',
+        description="Automated package updates scanner",
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     parser.add_argument("--verbose", "-v", action="store_true",

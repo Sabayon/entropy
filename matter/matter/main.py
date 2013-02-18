@@ -97,8 +97,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         keep_going = spec["keep-going"] == "yes"
         local_completed = []
 
-        tot_pkgs = len(spec['packages'])
-        for pkg_count, packages in enumerate(spec['packages'], 1):
+        tot_pkgs = len(spec["packages"])
+        for pkg_count, packages in enumerate(spec["packages"], 1):
 
             builder = PackageBuilder(
                 emerge_config, packages,
@@ -131,7 +131,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 local_completed.extend(
                     [x for x in built_packages \
                          if x not in local_completed])
-                tainted_repositories.add(spec['repository'])
+                tainted_repositories.add(spec["repository"])
 
             # make some room
             print_info("")
@@ -158,7 +158,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
 
         if local_completed and nsargs.commit:
             _rc = binary_pms.commit(
-                spec['repository'],
+                spec["repository"],
                 local_completed)
             if exit_st == 0 and _rc != 0:
                 exit_st = _rc
@@ -272,13 +272,13 @@ Available Binary PMSs:
              for k in avail_binpms]),)
 
     parser = argparse.ArgumentParser(
-        description='Automated Packages Builder',
+        description="Automated Packages Builder",
         epilog=_env_vars_help,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # * instead of + in order to support --sync only tasks
     parser.add_argument(
-        "spec", nargs='+', metavar="<spec>", type=file,
+        "spec", nargs="+", metavar="<spec>", type=file,
         help="matter spec file")
 
     default_pms = avail_binpms[0]

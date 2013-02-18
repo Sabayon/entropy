@@ -38,7 +38,7 @@ Environment variables:
         DEFAULT_MATTER_ARGS,)
 
     parser = argparse.ArgumentParser(
-        description='Entropy Matter, execution scheduler',
+        description="Entropy Matter, execution scheduler",
         epilog=ENV_VARS_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
