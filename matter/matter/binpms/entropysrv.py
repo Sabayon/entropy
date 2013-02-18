@@ -209,10 +209,11 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         """
         return self._entropy.Mirrors.sync_repository(repository)
 
-    def commit(self, repository, packages):
+    def commit(self, spec, packages):
         """
         Overridden from BaseBinaryPMS.
         """
+        repository = spec["repository"]
         spm = self._entropy.Spm()
         spm_atoms = set()
         exit_st = 0

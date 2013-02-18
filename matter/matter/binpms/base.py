@@ -197,10 +197,12 @@ class BaseBinaryPMS(object):
                     "preserved libraries are found on "
                     "the system, aborting.")
 
-    def commit(self, repository, packages):
+    def commit(self, spec, packages):
         """
-        Commit packages to the BinaryPMS repository.
+        Commit packages to the BinaryPMS repository specified in the
+        Spec object.
         """
+        repository = spec["repository"]
         pkgdir = self._build_pkgdir(repository)
         env = os.environ.copy()
         env["PKGDIR"] = pkgdir
@@ -215,7 +217,7 @@ class BaseBinaryPMS(object):
     def push(self, repository):
         """
         Push all the packages built by PackageBuilder to the
-        given repository.
+        repository.
         """
         pkgpush_f = self._nsargs.portage_pkgpush
         if pkgpush_f is None:

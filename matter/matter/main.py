@@ -158,7 +158,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
 
         if local_completed and nsargs.commit:
             _rc = binary_pms.commit(
-                spec["repository"],
+                spec,
                 local_completed)
             if exit_st == 0 and _rc != 0:
                 exit_st = _rc
