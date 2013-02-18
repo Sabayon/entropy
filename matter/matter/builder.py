@@ -62,10 +62,6 @@ class PackageBuilder(object):
     OVERLAYS_SYNC_CMD = shlex.split(os.getenv("MATTER_OVERLAYS_SYNC_CMD",
         DEFAULT_OVERLAYS_SYNC_CMD))
 
-    DEFAULT_PORTAGE_BUILD_ARGS = "--verbose --nospinner"
-    PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
-        DEFAULT_PORTAGE_BUILD_ARGS).split()
-
     PORTAGE_BUILTIN_ARGS = ["--accept-properties=-interactive"]
 
     def __init__(self, emerge_config, packages, params,
@@ -626,8 +622,8 @@ class PackageBuilder(object):
         # non interactive properties, this is not really required
         # accept-properties just sets os.environ...
         build_args = []
-        build_args += PackageBuilder.PORTAGE_BUILD_ARGS
         build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
+        build_args += self._params['build-args'],
         build_args += ["=" + best_v for _x, best_v in packages]
         myaction, myopts, myfiles = parse_opts(build_args)
 
@@ -754,7 +750,7 @@ class PackageBuilder(object):
         return retval
 
     @classmethod
-    def post_build(cls, emerge_config):
+    def post_build(cls, spec, emerge_config):
         """
         Execute Portage post-build tasks.
         """
@@ -763,7 +759,7 @@ class PackageBuilder(object):
             print_info("executing post-build operations, please wait...")
             builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
             _action, opts, _files = parse_opts(
-                PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args)
+                builtin_args + spec['build-args'])
             unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
                 opts, "clean", [], mtimedb["ldpath"], autoclean=1)
 

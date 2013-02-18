@@ -17,6 +17,10 @@ stable: inherit
 # Mandatory, cannot be empty
 repository: community0
 
+# Provide custom build arguments to Portage.
+# Default is: --verbose --nospinner
+build-args: --verbose --nospinner
+
 # Allow Source Package Manager (Portage) repository change?
 # Valid values are either "yes" or "no"
 # Default is: no

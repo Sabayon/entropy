@@ -10,6 +10,7 @@
 
 """
 import os
+import shlex
 
 from matter.utils import convert_to_unicode, get_stringtype
 
@@ -59,6 +60,9 @@ class GenericSpecFunctions(object):
 
     def ve_integer_converter(self, x):
         return int(x)
+
+    def ve_string_shlex_splitter(self, x):
+        return list(shlex.split(x))
 
     def valid_ascii(self, x):
         try:
@@ -126,6 +130,13 @@ class MatterSpec(GenericSpecFunctions):
         @rtype: dict
         """
         return {
+            'build-args': {
+                'cb': self.ne_string,
+                've': self.ve_string_shlex_splitter,
+                'default': ["--verbose", "--nospinner"],
+                'desc': "Portage build arguments (default is --verbose\n "
+                "--nospinner)",
+            },
             'dependencies': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
