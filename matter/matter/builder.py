@@ -623,7 +623,7 @@ class PackageBuilder(object):
         # accept-properties just sets os.environ...
         build_args = []
         build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
-        build_args += self._params["build-args"],
+        build_args += self._params["build-args"]
         build_args += ["=" + best_v for _x, best_v in packages]
         myaction, myopts, myfiles = parse_opts(build_args)
 
