@@ -30,8 +30,14 @@ repository: community0
 stable: inherit
 
 # Provide custom build arguments to Portage.
+# --ask and --buildpkgonly are not allowed and automatically filtered.
 # Default is: --verbose --nospinner
-build-args: --verbose --nospinner
+# build-args: --verbose --nospinner
+
+# Only build the packages without merging them into the system.
+# Valid values are either "yes" or "no"
+# Default is: no
+# build-only: no
 
 # Allow Source Package Manager (Portage) repository change?
 # Valid values are either "yes" or "no"

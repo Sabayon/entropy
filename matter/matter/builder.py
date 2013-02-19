@@ -526,6 +526,29 @@ class PackageBuilder(object):
             settings["ACCEPT_KEYWORDS"] = keywords
             settings.lock()
 
+    @classmethod
+    def _setup_build_args(cls, spec):
+        """
+        Filter out invalid or unwanted Portage build arguments,
+        like --ask and --buildpkgonly and add other ones.
+        """
+        unwanted_args = ["--ask", "-a", "--buildpkgonly", "-B"]
+
+        for builtin_arg in PackageBuilder.PORTAGE_BUILTIN_ARGS:
+            yield builtin_arg
+
+        for build_arg in spec["build-args"]:
+            if build_arg not in unwanted_args:
+                yield build_arg
+            else:
+                print_warning("cannot use emerge %s argument, you idiot",
+                              build_arg)
+
+        build_only = spec["build-only"] == "yes"
+        if build_only:
+            yield "--buildpkg"
+            yield "--buildpkgonly"
+
     def _run_builder(self, dirs_cleanup_queue):
         """
         This method is called by _run and executes the whole package build
@@ -622,17 +645,13 @@ class PackageBuilder(object):
 
         # non interactive properties, this is not really required
         # accept-properties just sets os.environ...
-        build_args = []
-        build_args += PackageBuilder.PORTAGE_BUILTIN_ARGS
-        build_args += self._params["build-args"]
+        build_args = list(self._setup_build_args(self._params))
         build_args += ["=" + best_v for _x, best_v in packages]
+
         myaction, myopts, myfiles = parse_opts(build_args)
         adjust_configs(myopts, emerge_trees)
         apply_priorities(settings)
 
-        if "--ask" in myopts:
-            print_warning("cannot use --ask emerge argument, you idiot")
-            del myopts["--ask"]
         spinner = stdout_spinner()
         if "--quiet" in myopts:
             spinner.update = spinner.update_basic
@@ -760,9 +779,8 @@ class PackageBuilder(object):
         emerge_settings, emerge_trees, mtimedb = emerge_config
         if "yes" == emerge_settings.get("AUTOCLEAN"):
             print_info("executing post-build operations, please wait...")
-            builtin_args = PackageBuilder.PORTAGE_BUILTIN_ARGS
-            _action, opts, _files = parse_opts(
-                builtin_args + spec["build-args"])
+            build_args = list(cls._setup_build_args(spec))
+            _action, opts, _files = parse_opts(build_args)
             unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
                 opts, "clean", [], mtimedb["ldpath"], autoclean=1)
 

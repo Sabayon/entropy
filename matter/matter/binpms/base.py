@@ -205,14 +205,6 @@ class BaseBinaryPMS(object):
                     "preserved libraries are found on "
                     "the system, aborting.")
 
-    def _is_build_only(self, spec):
-        """
-        Return whether packages have been only built and not installed
-        into the system.
-        """
-        _action, opts, _files = self._parse_opts(spec["build-args"])
-        return opts["--buildpkgonly"]
-
     def _commit_build_only(self, spec, packages):
         """
         Commit packages that have been built with -B.
@@ -283,7 +275,8 @@ class BaseBinaryPMS(object):
         Commit packages to the BinaryPMS repository specified in the
         Spec object.
         """
-        if self._is_build_only(spec):
+        build_only = spec["build-only"] == "yes"
+        if build_only:
             return self._commit_build_only(spec, packages)
         return self._commit(spec, packages)
 

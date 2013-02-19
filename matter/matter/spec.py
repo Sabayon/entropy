@@ -137,6 +137,13 @@ class MatterSpec(GenericSpecFunctions):
                 "desc": "Portage build arguments (default is --verbose\n "
                 "--nospinner)",
             },
+            "build-only": {
+                "cb": self.valid_yes_no,
+                "ve": self.ve_string_stripper,
+                "default": "no",
+                "desc": "Only build the packages without merging them\n "
+                "into the system.",
+            },
             "dependencies": {
                 "cb": self.valid_yes_no,
                 "ve": self.ve_string_stripper,
