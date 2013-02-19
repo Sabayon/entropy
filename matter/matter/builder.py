@@ -24,6 +24,7 @@ os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
 os.environ['FEATURES'] = "split-log"
 os.environ['CMAKE_NO_COLOR'] = "yes"
 
+from _emerge.actions import adjust_configs, apply_priorities
 from _emerge.depgraph import backtrack_depgraph
 try:
     from _emerge.actions import validate_ebuild_environment
@@ -626,6 +627,8 @@ class PackageBuilder(object):
         build_args += self._params["build-args"]
         build_args += ["=" + best_v for _x, best_v in packages]
         myaction, myopts, myfiles = parse_opts(build_args)
+        adjust_configs(myopts, emerge_trees)
+        apply_priorities(settings)
 
         if "--ask" in myopts:
             print_warning("cannot use --ask emerge argument, you idiot")
