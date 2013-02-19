@@ -229,7 +229,7 @@ def main():
     avail_binpms = BaseBinaryPMS.available_pms
 
     matter_spec = MatterSpec()
-    parser_data = matter_spec.parser_data_path()
+    parser_data = matter_spec.data()
     matter_spec_params = ""
     for spec_key in sorted(parser_data.keys()):
         par = parser_data[spec_key]

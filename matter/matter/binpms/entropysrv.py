@@ -18,6 +18,7 @@ import sys
 
 from matter.binpms.base import BaseBinaryResourceLock, \
     BaseBinaryPMS
+from matter.spec import MatterSpec, MatterSpecParser, GenericSpecFunctions
 from matter.output import print_info, print_warning, print_error
 from matter.utils import print_traceback
 
@@ -363,3 +364,29 @@ class EntropyBinaryPMS(BaseBinaryPMS):
 
 BaseBinaryPMS.register(EntropyBinaryPMS)
 BaseBinaryPMS.DEFAULT = False
+
+
+class EntropySpecParser(MatterSpecParser):
+    """
+    External .spec parser object which implements
+    extra .spec parameters support.
+    """
+
+    def __init__(self):
+        super(EntropySpecParser, self).__init__()
+        self._funcs = GenericSpecFunctions()
+
+    def vital_parameters(self):
+        """
+        Overridden from MatterSpecParser.
+        """
+        return []
+
+    def data(self):
+        """
+        Overridden from MatterSpecParser.
+        """
+        return {}
+
+
+MatterSpec.register_parser(EntropySpecParser())
