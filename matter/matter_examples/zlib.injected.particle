@@ -3,7 +3,7 @@
 # List of packages required to be built.
 # Comma separated, example: app-foo/bar, bar-baz/foo
 # Mandatory, cannot be empty
-packages: sys-libs/zlib, asd-foo/foo
+packages: sys-libs/zlib
 
 # Enforce stable or unstable packages on emerge.
 # yes = only stable packages are accepted
@@ -27,6 +27,11 @@ repository: community0
 # Default is: no
 build-only: yes
 
+# Drop older packages in the same slot when adding an injected package.
+# Injected packages come into play when 'build-only: yes'
+# Default is: no
+drop-old-injected: yes
+
 # Allow Source Package Manager (Portage) repository change?
 # Valid values are either "yes" or "no"
 # Default is: no
@@ -42,7 +47,7 @@ spm-repository-change-if-upstreamed: yes
 # Allow compiling package even if it's not actually installed on system?
 # Valid values are either "yes" or "no"
 # Default is: no
-not-installed: no
+not-installed: yes
 
 # Allow soft-blockers in the merge queue? Packages will be unmerged if yes.
 # Valid values are either "yes" or "no"
@@ -62,7 +67,7 @@ dependencies: yes
 # Allow package downgrade?
 # Valid values are either "yes" or "no"
 # Default is: no
-downgrade: no
+downgrade: yes
 
 # Allow package rebuild?
 # Valid values are either "yes" or "no"

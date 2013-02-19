@@ -27,6 +27,11 @@ repository: community0
 # Default is: no
 # build-only: no
 
+# Drop older packages in the same slot when adding an injected package.
+# Injected packages come into play when 'build-only: yes'
+# Default is: no
+# drop-old-injected: no
+
 # Allow Source Package Manager (Portage) repository change?
 # Valid values are either "yes" or "no"
 # Default is: no

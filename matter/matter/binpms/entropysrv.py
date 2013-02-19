@@ -218,6 +218,7 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         settings, _trees, _db = self.load_emerge_config()
         pkgdir = settings["PKGDIR"]
         repository = spec["repository"]
+        drop_old_injected = spec["drop-old-injected"] == "yes"
 
         print_info("committing build-only packages: %s, to repository: %s" % (
             ", ".join(sorted(packages)), repository,))
@@ -237,10 +238,39 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         pkg_files = [([x], True) for x in package_files]
         package_ids = self._entropy.add_packages_to_repository(
             repository, pkg_files, ask=False)
-        if package_ids:
-            # checking dependencies and print issues
-            self._entropy.dependencies_test(repository)
         self._entropy.commit_repositories()
+
+        if package_ids:
+
+            # drop old injected packages if they are in the
+            # same key + slot of the newly added ones.
+            # This is not atomic, but we don't actually care.
+            if drop_old_injected:
+                repo = self._entropy.open_repository(repository)
+
+                key_slots = set()
+                for package_id in package_ids:
+                    key, slot = repo.retrieveKeySlot(package_id)
+                    key_slots.add((key, slot))
+
+                key_slot_package_ids = set()
+                for key, slot in key_slots:
+                    ks_package_ids = [x for x in repo.searchKeySlot(key, slot) \
+                                          if repo.isInjected(x)]
+                    key_slot_package_ids.update(ks_package_ids)
+                # remove the newly added packages, of course
+                key_slot_package_ids -= package_ids
+                key_slot_package_ids = sorted(key_slot_package_ids)
+                if key_slot_package_ids:
+                    print_info("removing old injected packages, "
+                               "as per drop-old-injected:")
+                    for package_id in key_slot_package_ids:
+                        atom = repo.retrieveAtom(package_id)
+                        print_info("  %s" % (atom,))
+                    self._entropy.remove_packages(
+                        repository, key_slot_package_ids)
+
+            self._entropy.dependencies_test(repository)
 
         return exit_st
 
@@ -340,10 +370,10 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         # (beside those blacklisted), since this execution is not interactive
         package_ids = self._entropy.add_packages_to_repository(
             repository, etp_pkg_files, ask=False)
-        if package_ids:
-            # checking dependencies and print issues
-            self._entropy.dependencies_test(repository)
         self._entropy.commit_repositories()
+
+        if package_ids:
+            self._entropy.dependencies_test(repository)
 
         return exit_st
 
@@ -386,7 +416,16 @@ class EntropySpecParser(MatterSpecParser):
         """
         Overridden from MatterSpecParser.
         """
-        return {}
+        return {
+            "drop-old-injected": {
+                "cb": self._funcs.valid_yes_no,
+                "ve": self._funcs.ve_string_stripper,
+                "default": "no",
+                "desc": "Drop older packages in the same slot when\n "
+                "adding an injected package. Injected packages come\n "
+                "into play when 'build-only: yes'",
+                },
+            }
 
 
 MatterSpec.register_parser(EntropySpecParser())
