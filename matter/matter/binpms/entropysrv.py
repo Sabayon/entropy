@@ -209,8 +209,43 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         """
         return self._entropy.Mirrors.sync_repository(repository)
 
-    def commit(self, spec, packages):
+    def _commit_build_only(self, spec, packages):
         """
+        Commit packages that have been built with -B.
+        Overridden from BaseBinaryPMS.
+        """
+        settings, _trees, _db = self.load_emerge_config()
+        pkgdir = settings["PKGDIR"]
+        repository = spec["repository"]
+
+        print_info("committing build-only packages: %s, to repository: %s" % (
+            ", ".join(sorted(packages)), repository,))
+
+        exit_st = 0
+        package_files = []
+        for package in packages:
+            tbz2_atom = package + ".tbz2"
+            source_path = os.path.join(pkgdir, tbz2_atom)
+            if not os.path.isfile(source_path):
+                print_warning(
+                    "cannot find package tarball: %s" % (source_path,))
+                exit_st = 1
+                continue
+            package_files.append(source_path)
+
+        pkg_files = [([x], True) for x in package_files]
+        package_ids = self._entropy.add_packages_to_repository(
+            repository, pkg_files, ask=False)
+        if package_ids:
+            # checking dependencies and print issues
+            self._entropy.dependencies_test(repository)
+        self._entropy.commit_repositories()
+
+        return exit_st
+
+    def _commit(self, spec, packages):
+        """
+        Commit packages that have been merged into the system.
         Overridden from BaseBinaryPMS.
         """
         repository = spec["repository"]
@@ -303,11 +338,11 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         # NOTE: any missing runtime dependency will be added
         # (beside those blacklisted), since this execution is not interactive
         package_ids = self._entropy.add_packages_to_repository(
-            repository, etp_pkg_files, ask = False)
+            repository, etp_pkg_files, ask=False)
         if package_ids:
             # checking dependencies and print issues
             self._entropy.dependencies_test(repository)
-        self._entropy.close_repositories()
+        self._entropy.commit_repositories()
 
         return exit_st
 
