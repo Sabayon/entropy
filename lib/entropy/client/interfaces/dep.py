@@ -26,6 +26,7 @@ from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError, InterfaceError
 from entropy.db.skel import EntropyRepositoryBase
+from entropy.client.interfaces.db import InstalledPackagesRepository
 
 import entropy.dep
 
@@ -395,7 +396,7 @@ class CalculatorsMixin:
         """
         if repositories is None:
             repositories = self.repositories()[:]
-            repositories.insert(0, etpConst['clientdbid'])
+            repositories.insert(0, InstalledPackagesRepository.NAME)
 
         u_hash = ""
         if isinstance(repositories, (list, tuple, set)):
@@ -2181,7 +2182,7 @@ class CalculatorsMixin:
             for d_dep in d_deps:
                 if repo_db is self._installed_repository:
                     m_idpackage, m_rc_x = repo_db.atomMatch(d_dep)
-                    m_rc = etpConst['clientdbid']
+                    m_rc = InstalledPackagesRepository.NAME
                 else:
                     m_idpackage, m_rc = self.atom_match(d_dep)
 
@@ -3265,7 +3266,8 @@ class CalculatorsMixin:
             contains a "value" attribute providing a list of system package
             matches.
         """
-        _idpackages = [(x, etpConst['clientdbid']) for x in package_identifiers]
+        repo_name = InstalledPackagesRepository.NAME
+        _idpackages = [(x, repo_name) for x in package_identifiers]
         treeview = self._generate_reverse_dependency_tree(_idpackages,
             deep = deep, recursive = recursive, empty = empty,
             system_packages = system_packages)

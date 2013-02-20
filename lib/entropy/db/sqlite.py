@@ -2302,9 +2302,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._clearLiveCache("_doesTableExist")
             self._clearLiveCache("_doesColumnInTableExist")
 
-        if self.name != etpConst['clientdbid']:
-            return do_create()
-
         mytxt = "%s: %s" % (
             bold(_("ATTENTION")),
             red(_("generating provided_libs metadata, please wait!")),

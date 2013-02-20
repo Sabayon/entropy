@@ -894,7 +894,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         # add system database if community repository mode is enabled
         if data['community_mode']:
-            client_repository_id = etpConst['clientserverrepoid']
+            client_repository_id = InstalledPackagesRepository.NAME
             data['repositories'][client_repository_id] = {}
             mydata = {}
             mydata['description'] = const_convert_to_unicode(
@@ -906,7 +906,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             ServerSystemSettingsPlugin.REPOSITORIES[client_repository_id] = \
                 mydata
             # installed packages repository is now the base repository
-            data['base_repository_id'] = etpConst['clientserverrepoid']
+            data['base_repository_id'] = client_repository_id
 
         # expand paths
         for repoid in data['repositories']:
@@ -1033,7 +1033,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
             # filter out system repository if community repository
             # mode is enabled
-            if repoid == etpConst['clientserverrepoid']:
+            if repoid == InstalledPackagesRepository.NAME:
                 continue
 
             idpackages = set()
@@ -1300,9 +1300,9 @@ class Server(Client):
                         _("repository not configured"),
                     )
             )
-        if etpConst['clientserverrepoid'] == self._repository:
+        if InstalledPackagesRepository.NAME == self._repository:
             raise PermissionDenied("PermissionDenied: %s %s" % (
-                    etpConst['clientserverrepoid'],
+                    InstalledPackagesRepository.NAME,
                     _("protected repository id, can't use this, sorry dude..."),
                 )
             )
@@ -2680,12 +2680,12 @@ class Server(Client):
         my_matches = [(x, from_repository_id) for x in package_ids]
 
         # avoid setting __default__ as default server repo
-        if etpConst['clientserverrepoid'] in (to_repository_id,
-                                              from_repository_id):
+        if InstalledPackagesRepository.NAME in (to_repository_id,
+                                                from_repository_id):
             self.output(
                 "%s: %s" % (
                     blue(_("Cannot touch system repository")),
-                    red(etpConst['clientserverrepoid']),
+                    red(InstalledPackagesRepository.NAME),
                 ),
                 importance = 2, level = "warning", header = darkred(" @@ ")
             )
@@ -4487,7 +4487,7 @@ class Server(Client):
         @type handle_uninitialized: bool
         """
         # avoid setting __default__ as default server repo
-        if repository_id == etpConst['clientserverrepoid']:
+        if repository_id == InstalledPackagesRepository.NAME:
             return
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
@@ -4557,8 +4557,8 @@ class Server(Client):
 
     def _save_default_repository(self, repoid):
 
-        # avoid setting __default__ as default server repo
-        if repoid == etpConst['clientserverrepoid']:
+        # avoid setting __system__ as default server repo
+        if repoid == InstalledPackagesRepository.NAME:
             return
 
         enc = etpConst['conf_encoding']
@@ -4636,7 +4636,7 @@ class Server(Client):
         """
 
         # avoid setting __default__ as default server repo
-        if repository_id == etpConst['clientserverrepoid']:
+        if repository_id == InstalledPackagesRepository.NAME:
             return False
 
         server_conf = ServerSystemSettingsPlugin.server_conf_path()
@@ -4847,11 +4847,11 @@ class Server(Client):
         return conn
 
     @staticmethod
-    def get_repository(repoid):
+    def get_repository(repository_id):
         """
         Reimplemented from entropy.client.interfaces.client.Client class
         """
-        if repoid == etpConst['clientserverrepoid']:
+        if repository_id == InstalledPackagesRepository.NAME:
             return InstalledPackagesRepository
         return ServerPackagesRepository
 
@@ -4934,7 +4934,7 @@ class Server(Client):
             return self._memory_db_srv_instances[repository_id]
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if repository_id == etpConst['clientserverrepoid'] and \
+        if repository_id == InstalledPackagesRepository.NAME and \
                 srv_set['community_mode']:
             return self.installed_repository()
 
@@ -6023,7 +6023,6 @@ class Server(Client):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         backup_list = [
             'etpdatabaseclientfilepath',
-            'clientdbid',
             {'server': srv_set.copy()},
         ]
         for setting in backup_list:
@@ -6035,7 +6034,6 @@ class Server(Client):
             if "__temporary__" not in repo_data:
                 etpConst['etpdatabaseclientfilepath'] = \
                     self._get_local_repository_file(repository_id)
-            etpConst['clientdbid'] = etpConst['serverdbid']
         const_create_working_dirs()
 
     def _show_interface_status(self):

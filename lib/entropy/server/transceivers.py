@@ -15,6 +15,7 @@ from entropy.const import const_isstring, const_isnumber, etpConst
 from entropy.output import darkred, blue, brown, darkgreen, red, bold
 from entropy.transceivers.exceptions import TransceiverConnectionError
 from entropy.i18n import _
+from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.core.settings.base import SystemSettings
 from entropy.transceivers import EntropyTransceiver
 from entropy.tools import print_traceback, is_valid_md5, compare_md5, md5sum
@@ -351,7 +352,7 @@ class TransceiverServerHandler:
             if current_repository_id == repository_id:
                 # not me
                 continue
-            if repository_id == etpConst['clientserverrepoid']:
+            if repository_id == InstalledPackagesRepository.NAME:
                 # __system__ repository doesn't have anything remotely
                 # it's a fake repo, skip
                 continue

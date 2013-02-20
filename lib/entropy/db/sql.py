@@ -599,6 +599,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
     _MAIN_THREAD = _get_main_thread()
 
+    # Generic repository name to use when none is given.
+    GENERIC_NAME = "__generic__"
+
     def __init__(self, db, read_only, skip_checks, indexing,
                  xcache, temporary, name):
         # connection and cursor automatic cleanup support
@@ -614,7 +617,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self.__cursor_pool_mutex = threading.RLock()
         self.__cursor_pool = {}
         if name is None:
-            name = etpConst['genericdbid']
+            name = self.GENERIC_NAME
         self._live_cacher = EntropyRepositoryCacher()
 
         EntropyRepositoryBase.__init__(self, read_only, xcache,

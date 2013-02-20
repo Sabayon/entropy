@@ -23,6 +23,7 @@ from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
 from entropy.transceivers import EntropyTransceiver
 from entropy.server.interfaces import ServerSystemSettingsPlugin
 from entropy.server.interfaces.rss import ServerRssMetadata
+from entropy.client.interfaces.db import InstalledPackagesRepository
 
 import entropy.tools
 
@@ -150,8 +151,8 @@ repository) by pushing updated data.
             self._repositories.extend(entropy_server.repositories())
 
         for repository_id in self._repositories:
-            # avoid __default__
-            if repository_id == etpConst['clientserverrepoid']:
+            # avoid __system__
+            if repository_id == InstalledPackagesRepository.NAME:
                 continue
             rc = self._push_repo(entropy_server, repository_id)
             if rc != 0:

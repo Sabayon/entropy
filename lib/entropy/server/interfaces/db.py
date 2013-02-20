@@ -36,7 +36,8 @@ from entropy.misc import FastRSS
 from entropy.cache import EntropyCacher
 from entropy.exceptions import OnlineMirrorError
 from entropy.security import Repository as RepositorySecurity
-from entropy.client.interfaces.db import CachedRepository
+from entropy.client.interfaces.db import InstalledPackagesRepository, \
+    CachedRepository
 from entropy.i18n import _
 
 from entropy.server.interfaces.rss import ServerRssMetadata
@@ -1138,7 +1139,7 @@ Name:    %s
         for myrepo in self._entropy.repositories():
 
             # avoid __default__
-            if myrepo == etpConst['clientserverrepoid']:
+            if myrepo == InstalledPackagesRepository.NAME:
                 continue
 
             mydbc = self._entropy.open_server_repository(myrepo,

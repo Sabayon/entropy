@@ -10,7 +10,9 @@ import shutil
 import signal
 import time
 import tempfile
+
 from entropy.client.interfaces import Client
+from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_setup_entropy_pid
 from entropy.output import set_mute
@@ -29,9 +31,8 @@ class EntropyClientTest(unittest.TestCase):
         self.mem_repo_desc = "This is a testing repository"
         self.Client = Client(installed_repo = -1, indexing = False,
             xcache = False, repo_validation = False)
-        # fake clientDbconn
         self.Client._installed_repository = self.Client.open_temp_repository(
-            name = etpConst['clientdbid'], temp_file = ":memory:")
+            name = InstalledPackagesRepository.NAME, temp_file = ":memory:")
         # as per GenericRepository specifications, enable generic handlePackage
         self.Client._installed_repository.override_handlePackage = True
         self.Spm = self.Client.Spm()

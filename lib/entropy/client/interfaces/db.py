@@ -118,8 +118,17 @@ class InstalledPackagesRepository(CachedRepository):
     This class represents the installed packages repository and is a direct
     subclass of EntropyRepository.
     """
+
+    # Name of the repository
+    NAME = "__system__"
+
     def __init__(self, *args, **kwargs):
-        EntropyRepository.__init__(self, *args, **kwargs)
+        # force our own name, always.
+        kwargs = kwargs.copy()
+        kwargs['name'] = self.NAME
+        super(InstalledPackagesRepository, self).__init__(
+            *args, **kwargs)
+
         # ensure proper repository file permissions
         if entropy.tools.is_root() and os.path.isfile(self._db):
             const_setup_file(self._db, etpConst['entropygid'], 0o644,

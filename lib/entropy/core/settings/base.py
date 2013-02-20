@@ -1496,9 +1496,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     data['branch'], data['product'])
             except AttributeError:
                 return
-            if reponame == etpConst['clientdbid']:
-                # not allowed!!!
-                return
 
             # validate repository id string
             if not entropy.tools.validate_repository_id(reponame):

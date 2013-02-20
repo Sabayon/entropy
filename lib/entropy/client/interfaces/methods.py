@@ -197,9 +197,8 @@ class RepositoryMixin:
         self._can_run_sys_set_hooks = old_value
 
     def _open_repository(self, repository_id, _enabled_repos = None):
-        # support for installed pkgs repository, got by issuing
-        # repoid = etpConst['clientdbid']
-        if repository_id == etpConst['clientdbid']:
+        # support for installed packages repository here as well
+        if repository_id == InstalledPackagesRepository.NAME:
             return self._installed_repository
 
         key = self.__get_repository_cache_key(repository_id)
@@ -226,7 +225,7 @@ class RepositoryMixin:
         return self._open_repository(repository_id)
 
     @staticmethod
-    def get_repository(repoid):
+    def get_repository(repository_id):
         """
         Given a repository identifier, returns the repository class associated
         with it.
@@ -235,12 +234,12 @@ class RepositoryMixin:
         WARNING: do not use this to open a repository. Please use
         Client.open_repository() instead.
 
-        @param repoid: repository identifier
-        @type repoid: string
+        @param repository_id: repository identifier
+        @type repository_id: string
         @return: EntropyRepositoryBase based class
         @rtype: class object
         """
-        if repoid == etpConst['clientdbid']:
+        if repository_id == InstalledPackagesRepository.NAME:
             return InstalledPackagesRepository
         return AvailablePackagesRepository
 
@@ -258,7 +257,7 @@ class RepositoryMixin:
         return repository_id.endswith(etpConst['packagesext']) or \
             repository_id.endswith(etpConst['packagesext_webinstall'])
 
-    def _load_repository(self, repoid, xcache = True, indexing = True,
+    def _load_repository(self, repository_id, xcache = True, indexing = True,
         _enabled_repos = None):
         """
         Effective repository interface loader. Stay away from here.
@@ -268,27 +267,27 @@ class RepositoryMixin:
             _enabled_repos = self._enabled_repos
 
         repo_data = self._settings['repositories']['available']
-        if (repoid not in _enabled_repos) and \
-            (not repo_data.get(repoid, {}).get('__temporary__')) and \
-            (repoid not in repo_data):
+        if (repository_id not in _enabled_repos) and \
+            (not repo_data.get(repository_id, {}).get('__temporary__')) and \
+            (repository_id not in repo_data):
 
-            t = "%s: %s" % (_("bad repository id specified"), repoid,)
-            if repoid not in self._repo_error_messages_cache:
+            t = "%s: %s" % (_("bad repository id specified"), repository_id,)
+            if repository_id not in self._repo_error_messages_cache:
                 self.output(
                     darkred(t),
                     importance = 2,
                     level = "warning"
                 )
-                self._repo_error_messages_cache.add(repoid)
+                self._repo_error_messages_cache.add(repository_id)
             raise RepositoryError("invalid repository id (1)")
 
         try:
-            repo_obj = repo_data[repoid]
+            repo_obj = repo_data[repository_id]
         except KeyError:
             raise RepositoryError("invalid repository id (2)")
 
         if repo_obj.get('__temporary__'):
-            repo_key = self.__get_repository_cache_key(repoid)
+            repo_key = self.__get_repository_cache_key(repository_id)
             try:
                 conn = self._memory_db_instances[repo_key]
             except KeyError:
@@ -297,34 +296,37 @@ class RepositoryMixin:
             dbfile = os.path.join(repo_obj['dbpath'],
                 etpConst['etpdatabasefile'])
             if not os.path.isfile(dbfile):
-                t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
-                if repoid not in self._repo_error_messages_cache:
+                t = _("Repository %s hasn't been downloaded yet.") % (
+                    repository_id,)
+                if repository_id not in self._repo_error_messages_cache:
                     # don't want to have it printed if --quiet is on
                     self.output(
                         darkred(t),
                         importance = 2,
                         level = "warning"
                     )
-                    self._repo_error_messages_cache.add(repoid)
+                    self._repo_error_messages_cache.add(repository_id)
                 raise RepositoryError("repository not downloaded")
 
-            conn = self.get_repository(repoid)(
+            conn = self.get_repository(repository_id)(
                 readOnly = True,
                 dbFile = dbfile,
-                name = repoid,
+                # this is ignored if get_repository() returns
+                # InstalledPackagesRepository
+                name = repository_id,
                 xcache = xcache,
                 indexing = indexing
             )
-            conn.setCloseToken(repoid)
+            conn.setCloseToken(repository_id)
             self._add_plugin_to_client_repository(conn)
 
-        if (repoid not in self._treeupdates_repos) and \
+        if (repository_id not in self._treeupdates_repos) and \
             entropy.tools.is_root() and \
-            not self._is_package_repository(repoid):
+            not self._is_package_repository(repository_id):
 
             # only as root due to Portage
             try:
-                updated = self.repository_packages_spm_sync(repoid, conn)
+                updated = self.repository_packages_spm_sync(repository_id, conn)
             except (OperationalError, DatabaseError,):
                 updated = False
             if updated:
@@ -1069,6 +1071,8 @@ class RepositoryMixin:
 
     def _open_installed_repository(self):
 
+        name = InstalledPackagesRepository.NAME
+
         def load_db_from_ram():
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
@@ -1079,7 +1083,7 @@ class RepositoryMixin:
                 level = "warning",
                 header = bold(" !!! "),
             )
-            m_conn = self.open_temp_repository(name = etpConst['clientdbid'])
+            m_conn = self.open_temp_repository(name)
             self._add_plugin_to_client_repository(m_conn)
             return m_conn
 
@@ -1093,19 +1097,20 @@ class RepositoryMixin:
             conn = load_db_from_ram()
             entropy.tools.print_traceback(f = self.logger)
         else:
+
             try:
-                repo_class = self.get_repository(etpConst['clientdbid'])
+                repo_class = self.get_repository(name)
                 conn = repo_class(readOnly = False,
-                    dbFile = db_path,
-                    name = etpConst['clientdbid'],
-                    xcache = self.xcache, indexing = self._indexing
-                )
-                conn.setCloseToken(etpConst['clientdbid'])
+                                  dbFile = db_path,
+                                  xcache = self.xcache,
+                                  indexing = self._indexing)
+                conn.setCloseToken(name)
                 self._add_plugin_to_client_repository(conn)
                 # TODO: remove this in future, drop useless data from clientdb
             except (DatabaseError,):
                 entropy.tools.print_traceback(f = self.logger)
                 conn = load_db_from_ram()
+
             else:
                 # validate database
                 if self._installed_repo_enable:
@@ -1113,7 +1118,7 @@ class RepositoryMixin:
                         conn.validate()
                     except SystemDatabaseError:
                         try:
-                            conn.close(_token = etpConst['clientdbid'])
+                            conn.close(_token = name)
                         except (RepositoryPluginError, OSError, IOError):
                             pass
                         entropy.tools.print_traceback(f = self.logger)
@@ -1136,7 +1141,8 @@ class RepositoryMixin:
         Close the Installed Packages repository. It will be reopened
         on demand.
         """
-        self._installed_repository.close(_token = etpConst['clientdbid'])
+        self._installed_repository.close(
+            _token = InstalledPackagesRepository.NAME)
 
     def open_generic_repository(self, repository_path, dbname = None,
         name = None, xcache = None, read_only = False, indexing_override = None,

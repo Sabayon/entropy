@@ -668,10 +668,10 @@ def const_default_settings(rootdir):
             'server_plugin_fake_client': "server_plugin_fake_client",
         },
 
-        'clientserverrepoid': "__system__", # these two values have to match!
-        'clientdbid': "__system__", # these two values have to match!
-        'serverdbid': "__server__",
-        'genericdbid': "__generic__",
+        # TODO: remove when Sulfur and PackageKit stopped using it
+        # keep in sync with InstalledPackagesRepository.NAME
+        'clientdbid': "__system__",
+
         'spmdbid': "spm-db",
         'spmetprev': 9999,
         'systemreleasefile': "/etc/sabayon-release",

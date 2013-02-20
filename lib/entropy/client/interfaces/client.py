@@ -18,6 +18,7 @@ from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
 from entropy.client.interfaces.cache import CacheMixin
+from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
@@ -857,7 +858,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         if hasattr(self, '_installed_repository'):
             if self._installed_repository is not None:
                 self._installed_repository.close(
-                    _token = etpConst['clientdbid'])
+                    _token = InstalledPackagesRepository.NAME)
         if hasattr(self, 'logger'):
             self.logger.close()
         if hasattr(self, '_settings') and \
@@ -974,7 +975,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                 repository_identifier, stored_digest)
             # store new actions
             self._installed_repository.addRepositoryUpdatesActions(
-                etpConst['clientdbid'], update_actions,
+                InstalledPackagesRepository.NAME, update_actions,
                     self._settings['repositories']['branch'])
             self._installed_repository.commit()
             # clear client cache
