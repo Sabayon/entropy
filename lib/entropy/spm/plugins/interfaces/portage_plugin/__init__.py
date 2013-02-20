@@ -2839,7 +2839,9 @@ class PortagePlugin(SpmPlugin):
             os.access(contents_path, os.R_OK)):
             return
 
-        enc = etpConst['conf_encoding']
+        # Portage metadata is encoded using raw_unicode_escape.
+        # Do not change enc to UTF-8, or xblast installation will fail.
+        enc = etpConst['conf_raw_encoding']
         with codecs.open(contents_path, "r", encoding=enc) as cont_f:
             with codecs.open(contents_path+".tmp", "w", encoding=enc) \
                     as cont_new_f:
