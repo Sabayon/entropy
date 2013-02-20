@@ -1286,8 +1286,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         provided_libs = {}
         scope_cache = set()
-        dependencies = dbconn.retrieveRuntimeDependencies(
-            package_id)
+        dependencies = self.get_deep_dependency_list(None,
+            (package_id, dbconn), atoms = True)
 
         for dependency in dependencies:
             pkg_id, repo_id = entropy_client.atom_match(dependency)
