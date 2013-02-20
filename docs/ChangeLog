@@ -1,3 +1,26 @@
+commit 09adfa92e6c2df3da5b3858dc836b0f9f8cc12b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 20 18:56:39 2013 +0100
+
+    Release Entropy 177
+
+commit b3aad3da83a7633891133989a8104c5146d12533
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 20 18:44:02 2013 +0100
+
+    Revert "[entropy.qa] test_missing_dependencies: only consider direct dependencies"
+    
+    This reverts commit a0037bfe762f79eb764f00d57baf79cf338f4df9.
+    It turned out that only considering direct dependencies is a no-go.
+    Also see:
+    http://www.flameeyes.eu/autotools-mythbuster/pkgconfig/dependencies.html
+
+commit 1eb2924354e98c461cc214831c581db78403bec2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 20 13:36:08 2013 +0100
+
+    Tagging Entropy version 176
+
 commit 65e5fcdb68522d6d108485cae572143ecf16dea9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 20 13:36:08 2013 +0100
