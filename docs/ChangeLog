@@ -1,3 +1,21 @@
+commit 1fa5b9acf3f98e543670fec9b4da189c9e620244
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 21 00:11:14 2013 +0100
+
+    Release Entropy 178
+
+commit ac243067f3a446b392a91336630a13fa19c9d282
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 21 00:09:47 2013 +0100
+
+    [entropy.qa] fix the usage of get_deep_dependency_list
+
+commit 6a66b43f7bf5716a212d3afed6944ab94b1c5759
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 20 18:56:39 2013 +0100
+
+    Tagging Entropy version 177
+
 commit 09adfa92e6c2df3da5b3858dc836b0f9f8cc12b2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 20 18:56:39 2013 +0100
