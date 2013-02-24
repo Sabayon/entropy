@@ -285,9 +285,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # critical_updates = False is needed to avoid
         # issues with metadata not being available
         try:
-            update, remove, fine, spm_fine = \
-                self._helper.calculate_updates(
-                    critical_updates = False)
+            outcome = self._helper.calculate_updates(critical_updates = False)
+            update, remove = outcome['update'], outcome['remove']
+            fine, spm_fine = outcome['fine'], outcome['spm_fine']
         except (ValueError, SystemDatabaseError, RepositoryError,):
             # RepositoryError is triggered when branch is hopped
             # SystemDatabaseError is triggered when no client db is avail

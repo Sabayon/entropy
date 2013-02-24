@@ -1549,8 +1549,9 @@ Repository query tools.
                 brown(_("Available Updates")),
                 header=darkred(" @@ "))
 
-        update, remove, fine, _spm_fine = \
-            entropy_client.calculate_updates(quiet=quiet)
+        outcome = entropy_client.calculate_updates(quiet=quiet)
+        update, remove = outcome['update'], outcome['remove']
+        fine, critical_f = outcome['fine'], outcome['critical_found']
 
         if quiet:
             entropy_client.output(
@@ -1569,6 +1570,9 @@ Repository query tools.
             toc.append((
                 blue(_("Packages already up-to-date:")),
                 bold(const_convert_to_unicode(len(fine)))))
+            toc.append((
+                purple(_("Critical updates found:")),
+                teal(const_convert_to_unicode(str(critical_f)))))
         print_table(entropy_client, toc)
 
         return 0

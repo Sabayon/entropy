@@ -2682,9 +2682,10 @@ class CalculatorsMixin:
         @return: list of Entropy package matches that should be updated
         @rtype: list
         """
-        update, remove, fine, spm_fine = self.calculate_updates(
+        outcome = self.calculate_updates(
             critical_updates = False, use_cache = use_cache)
-
+        update, remove = outcome['update'], outcome['remove']
+        fine, spm_fine = outcome['fine'], outcome['spm_fine']
         if not update:
             return []
 
@@ -2725,7 +2726,6 @@ class CalculatorsMixin:
 
     def calculate_updates(self, empty = False, use_cache = True,
         critical_updates = True, quiet = False):
-
         """
         Calculate package updates. By default, this method also handles critical
         updates priority. Updates (as well as other objects here) are returned
@@ -2742,15 +2742,17 @@ class CalculatorsMixin:
         @type critical_updates: bool
         @keyword quiet: do not print any status info if True
         @type quiet: bool
-        @return: tuple composed by (list of package matches (updates),
-            list of installed package identifiers (removal), list of
-            package names already up-to-date (fine), list of package names
-            already up-to-date when user enabled "ignore-spm-downgrades")
+        @return: dict composed by (list of package matches ("update" key),
+            list of installed package identifiers ("remove" key), list of
+            package names already up-to-date ("fine" key), list of package names
+            already up-to-date when user enabled "ignore-spm-downgrades",
+            "spm_fine" key), if critical updates were found ("critical_found"
+            key). If critical_found is True, relaxed dependencies calculation
+            must be enforced.
         @rtype: tuple
         """
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
-        update = []
         remove = []
         fine = []
         spm_fine = []
@@ -2758,10 +2760,16 @@ class CalculatorsMixin:
         # critical updates hook, if enabled
         # this will force callers to receive only critical updates
         if misc_settings.get('forcedupdates') and critical_updates:
-            upd_atoms, upd_matches = self.calculate_critical_updates(
+            _atoms, update = self.calculate_critical_updates(
                 use_cache = use_cache)
-            if upd_atoms:
-                return upd_matches, remove, fine, spm_fine
+            if update:
+                return {
+                    'update': update,
+                    'remove': remove,
+                    'fine': fine,
+                    'spm_fine': spm_fine,
+                    'critical_found': True,
+                    }
 
         repo_hash = self._repositories_hash()
         if use_cache and self.xcache:
@@ -2786,6 +2794,7 @@ class CalculatorsMixin:
             # client db is broken!
             raise SystemDatabaseError("installed packages repository is broken")
 
+        update = []
         maxlen = len(idpackages)
         mytxt = _("Calculating updates")
         last_avg = 0
@@ -2941,14 +2950,22 @@ class CalculatorsMixin:
         # still referenced by others as "removable"
         # check inverse dependencies at the cost of growing complexity
         if remove:
-            remove = [x for x in remove if not \
-                self._installed_repository.retrieveReverseDependencies(x)]
+            remove = [
+                x for x in remove if not \
+                    self._installed_repository.retrieveReverseDependencies(x)]
+
+        outcome = {
+            'update': update,
+            'remove': remove,
+            'fine': fine,
+            'spm_fine': spm_fine,
+            'critical_found': False,
+            }
 
         if self.xcache:
             c_hash = self._get_updates_cache_hash(repo_hash, empty,
                 ignore_spm_downgrades)
-            data = (update, remove, fine, spm_fine)
-            self._cacher.push(c_hash, data, async = False)
+            self._cacher.push(c_hash, outcome, async = False)
             self._cacher.sync()
 
         if not update:
@@ -2958,7 +2975,7 @@ class CalculatorsMixin:
             if os.access(br_path, os.W_OK) and os.path.isfile(br_path):
                 os.remove(br_path)
 
-        return update, remove, fine, spm_fine
+        return outcome
 
     def calculate_orphaned_packages(self, use_cache = True):
         """
@@ -2971,8 +2988,9 @@ class CalculatorsMixin:
         package ids (list) and automatically removable ones (list)
         @rtype: tuple
         """
-        update, remove, fine, spm_fine = self.calculate_updates(
-            use_cache = use_cache)
+        outcome = self.calculate_updates(use_cache = use_cache)
+        update, remove = outcome['update'], outcome['remove']
+        fine, spm_fine = outcome['fine'], outcome['spm_fine']
 
         installed_repo = self.installed_repository()
         # verify that client database idpackage still exist,

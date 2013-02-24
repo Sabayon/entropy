@@ -1158,13 +1158,12 @@ class RigoDaemonService(dbus.service.Object):
         rwsem) version of _installed_repository_updated()
         """
         write_output("_installed_repository_updated_unlocked:"
-                     " changed, sending signal",
+                     " called, sending signal",
                      debug=True)
 
         # signal updates available
-        update, remove, fine, spm_fine = \
-            self._entropy.calculate_updates()
-        self._signal_updates_unlocked(update, remove)
+        outcome = self._entropy.calculate_updates()
+        self._signal_updates_unlocked(outcome['update'], outcome['remove'])
 
     def _signal_updates_unlocked(self, update, remove):
         """
@@ -1586,10 +1585,11 @@ class RigoDaemonService(dbus.service.Object):
                 return outcome
 
             # check if we need to respawn the upgrade process again?
-            metadata = self._process_upgrade_action_calculate()
-            if metadata is None:
+            outcome = self._process_upgrade_action_calculate()
+            if outcome is None:
                 return AppTransactionOutcome.INTERNAL_ERROR
-            update, remove, fine, spm_fine = metadata
+
+            update = outcome['update']
             if update:
                 GLib.idle_add(
                     self.restarting_system_upgrade, len(update))
@@ -1619,9 +1619,7 @@ class RigoDaemonService(dbus.service.Object):
         Calculate Application Updates.
         """
         try:
-            update, remove, fine, spm_fine = \
-                self._entropy.calculate_updates()
-            return update, remove, fine, spm_fine
+            return self._entropy.calculate_updates()
         except SystemDatabaseError as sde:
             write_output(
                 "_process_upgrade_action_calculate, SystemDatabaseError: "
@@ -1636,14 +1634,19 @@ class RigoDaemonService(dbus.service.Object):
             "_process_upgrade_merge_action, about to calculate_updates()",
             debug=True)
 
-        metadata = self._process_upgrade_action_calculate()
-        if metadata is None:
+        outcome = self._process_upgrade_action_calculate()
+        if outcome is None:
             return AppTransactionOutcome.INTERNAL_ERROR
-        update, remove, fine, spm_fine = metadata
+
+        relaxed = False
+        # per specifications, if critical_found is True, relaxed
+        # must be forced to True.
+        if outcome['critical_found']:
+            relaxed = True
 
         try:
             install, removal = self._entropy.get_install_queue(
-                update, False, False)
+                outcome['update'], False, False, relaxed=True)
 
         except DependenciesNotFound as dnf:
             write_output(
@@ -2538,9 +2541,7 @@ class RigoDaemonService(dbus.service.Object):
                     self._rwsem.reader_acquire()
                     try:
                         # signal updates available
-                        update, remove, fine, spm_fine = \
-                            self._entropy.calculate_updates()
-                        self._signal_updates_unlocked(update, remove)
+                        self._installed_repository_updated_unlocked()
                     finally:
                         self._rwsem.reader_release()
 

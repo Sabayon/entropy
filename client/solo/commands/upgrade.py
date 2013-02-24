@@ -191,8 +191,13 @@ Upgrade the system.
             darkred(" @@ "))
 
         with entropy_client.Cacher():
-            update, remove, fine, _spm_fine = \
-                entropy_client.calculate_updates(empty=empty)
+            outcome = entropy_client.calculate_updates(empty=empty)
+            update, remove = outcome['update'], outcome['remove']
+            fine, critical_f = outcome['fine'], outcome['critical_found']
+            # if critical updates have been found, relaxed is enforced
+            # as per specifications.
+            if critical_f:
+                relaxed = True
 
         if verbose or pretend:
             entropy_client.output(
@@ -338,9 +343,8 @@ Upgrade the system.
         # install queue, ignoring the rest of available packages.
         # So, respawning myself again using execvp() should be a much
         # better idea.
-        update, _remove, _fine, _spm_fine = \
-            entropy_client.calculate_updates()
-        if update:
+        outcome = entropy_client.calculate_updates()
+        if outcome['update']:
             entropy_client.output(
                 "%s." % (
                     purple(_("There are more updates to install, "

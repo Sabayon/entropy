@@ -2709,13 +2709,16 @@ class RigoServiceController(GObject.Object):
         """
         self._entropy.rwsem().reader_acquire()
         try:
-            update, remove, fine, spm_fine = \
-                self._entropy.calculate_updates()
+            outcome = self._entropy.calculate_updates()
+
+            update = outcome['update']
             if not update:
                 return True
+
             licenses = self._entropy.get_licenses_to_accept(update)
             if not licenses:
                 return True
+
         finally:
             self._entropy.rwsem().reader_release()
 

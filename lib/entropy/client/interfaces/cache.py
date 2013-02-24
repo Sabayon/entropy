@@ -191,7 +191,7 @@ class CacheMixin:
         repo_order = [x for x in self._settings['repositories']['order'] if
             x in enabled_repos]
 
-        c_hash = "%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|v2" % (
             repo_hash, empty_deps, enabled_repos,
             repo_order,
             ignore_spm_downgrades,
