@@ -172,7 +172,6 @@ class PackageBuilder(object):
 
         matter_package_names = " ".join(self._packages)
         std_env["MATTER_PACKAGE_NAMES"] = matter_package_names
-        print_info("MATTER_PACKAGE_NAMES = %s" % (matter_package_names,))
 
         # run pkgpre, if any
         pkgpre = self._params["pkgpre"]
