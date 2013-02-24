@@ -164,6 +164,7 @@ class ApplicationsViewController(GObject.Object):
         # support for search cmd + arguments
         # some search_cmds can have arguments provided
         search_cmd, search_args = split_text[0], split_text[1:]
+        sort = False
 
         self._entropy.rwsem().reader_acquire()
         try:
@@ -173,6 +174,7 @@ class ApplicationsViewController(GObject.Object):
             # in:installed [<search arg 1> ...]
             if search_cmd == ApplicationsViewController.SHOW_INSTALLED_KEY:
                 use_fallback = False
+                sort = True
                 inst_repo = self._entropy.installed_repository()
                 if not search_args:
                     for pkg_id in inst_repo.listAllPackageIds(
@@ -187,12 +189,14 @@ class ApplicationsViewController(GObject.Object):
                     ApplicationsViewController.SHOW_CATEGORY_KEY and \
                     search_args:
                 use_fallback = False
+                sort = True
                 for search_arg in search_args:
                     matches += self._entropy.atom_search(search_arg + "/")
 
             # package set search
             elif search_cmd.startswith(etpConst['packagesetprefix']):
                 use_fallback = False
+                sort = True
                 sets = self._entropy.Sets()
                 package_deps = sets.expand(text)
                 for package_dep in package_deps:
@@ -225,6 +229,8 @@ class ApplicationsViewController(GObject.Object):
                     matches.extend(
                         [x for x in search_matches if x not in matches])
 
+            if sort:
+                matches.sort(key=self._sort_key)
             return matches
         finally:
             self._entropy.rwsem().reader_release()
@@ -700,6 +706,14 @@ class ApplicationsViewController(GObject.Object):
                 task.daemon = True
                 self._search_writeback_thread = task
                 task.start()
+
+    def _sort_key(self, package_match):
+        """
+        Return the object used for sorting a list of package matches.
+        """
+        return Application(
+            self._entropy, self._entropy_ws,
+            self._service, package_match).name
 
     def search(self, text):
         """
