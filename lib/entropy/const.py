@@ -36,7 +36,6 @@ import codecs
 
 import stat
 import errno
-import fcntl
 import signal
 import gzip
 import bz2
@@ -184,7 +183,6 @@ if _DEBUG and not _installed_sigquit:
 etpConst = {}
 
 def initconfig_entropy_constants(rootdir):
-
     """
     Main constants configurators, this is the only function that you should
     call from the outside, anytime you want. it will reset all the variables
@@ -196,7 +194,6 @@ def initconfig_entropy_constants(rootdir):
     @return: None
     @raise AttributeError: when specified rootdir is not a directory
     """
-
     if rootdir and not os.path.isdir(rootdir):
         raise AttributeError("not a valid chroot.")
 
@@ -212,8 +209,8 @@ def initconfig_entropy_constants(rootdir):
 
     const_default_settings(rootdir)
     const_read_entropy_release()
+
     const_create_working_dirs()
-    const_setup_entropy_pid()
     const_configure_lock_paths()
 
     # reflow back settings
@@ -226,16 +223,6 @@ def initconfig_entropy_constants(rootdir):
     const_setup_perms(etpConst['confdir'], etpConst['entropygid'],
         recursion = False)
 
-    # setup pid file directory if not existing
-    # this is really important, build system should also handle this
-    # but better being paranoid and do stuff ourselves :-)
-    if not os.path.isdir(etpConst['pidfiledir']):
-        try:
-            const_setup_directory(etpConst['pidfiledir'])
-        except (OSError, IOError) as err:
-            sys.stderr.write("WARNING: cannot create %s, %s\n" % (
-                    etpConst['pidfiledir'], repr(err),))
-
     # also setup /var/tmp/entropy if it doesn't exist.
     # /var/tmp can be mounted on tmpfs
     if not os.path.isdir(etpConst['entropyunpackdir']):
@@ -244,9 +231,6 @@ def initconfig_entropy_constants(rootdir):
         except (OSError, IOError) as err:
             sys.stderr.write("WARNING: cannot create %s: %s\n" % (
                     etpConst['entropyunpackdir'], repr(err),))
-
-    const_setup_perms(etpConst['pidfiledir'], etpConst['entropygid'],
-        recursion = False)
 
     if sys.excepthook is sys.__excepthook__:
         sys.excepthook = __const_handle_exception
@@ -266,7 +250,6 @@ def const_default_settings(rootdir):
     default_etp_dir = os.getenv(
         'DEV_ETP_VAR_DIR',
         os.path.join(rootdir, "var/lib/entropy"))
-    default_etp_tmpdir = "/tmp"
     default_etp_dbdir_name = "database"
 
     default_etp_dbdir = os.path.join(
@@ -570,9 +553,6 @@ def const_default_settings(rootdir):
         'officialrepositoryid': "sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
-        # Entropy resources lock file path
-        'pidfiledir': "/var/run/entropy",
-        'pidfile': "/var/run/entropy/entropy.lock",
         # option to keep a backup of config files after
         # being overwritten by equo conf update
         'filesbackup': True,
@@ -788,117 +768,6 @@ def const_pid_exists(pid):
     except OSError as err:
         return err.errno == errno.EPERM
 
-_ENTROPY_PID_F_MAP = {}
-_ENTROPY_PID_MUTEX = threading.Lock()
-def const_setup_entropy_pid(just_read = False, force_handling = False):
-    """
-    Setup Entropy pid file, if possible and if UID = 0 (root).
-    If the application is run with --no-pid-handling argument
-    (or ETP_NO_PID_HANDLING env var is set),
-    this function will have no effect. If just_read is specified,
-    this function will only try to read the current pid string in
-    the Entropy pid file (etpConst['pidfile']). If any other entropy
-    istance is currently owning the contained pid, the second bool of the tuple
-    is True.
-
-    @keyword just_read: only read the current pid file, if any and if possible
-    @type just_read: bool
-    @keyword force_handling: force pid handling even if "--no-pid-handling" is
-        given
-    @type force_handling: bool
-    @rtype: tuple
-    @return: tuple composed by two bools, (if pid lock file has been acquired,
-        locked resources)
-    """
-    with _ENTROPY_PID_MUTEX:
-
-        no_pid_handling = ("--no-pid-handling" in sys.argv) or \
-            os.getenv("ETP_NO_PID_HANDLING")
-
-        if (no_pid_handling and not force_handling) and not just_read:
-            return False, False
-
-        pid = os.getpid()
-        _entropy_pid_f = _ENTROPY_PID_F_MAP.get(pid)
-        if _entropy_pid_f is not None:
-            # we have already acquired the lock, we're safe
-            return False, False
-
-        setup_done = False
-        locked = False
-        # acquire the pid file exclusively, in non-blocking mode
-        # if the acquisition fails, it means that another process
-        # is holding it. No matter what is the pid written inside,
-        # which itself is unreliable since pids can be reused
-        # quite easily.
-        flags = fcntl.LOCK_EX | fcntl.LOCK_NB
-
-        # PID creation
-        pid_file = etpConst['pidfile']
-        pid_f = None
-
-        locked = True
-        try:
-            pid_f = open(pid_file, "a+")
-            fcntl.flock(pid_f.fileno(), flags)
-            locked = False
-        except IOError as err:
-            if err.errno == errno.EWOULDBLOCK:
-                locked = True
-            elif err.errno not in (errno.EROFS, errno.EACCES):
-                # readonly filesystem or permission denied
-                raise
-            else:
-                # in any other case, the lock is not acquired,
-                # so locked is False
-                locked = False
-
-        if (not just_read) and (pid_f is not None) and (not locked):
-            # write my pid in it then, not that it matters...
-            try:
-                pid_f.seek(0)
-                pid_f.truncate()
-                pid_f.write(str(pid))
-                pid_f.flush()
-            except IOError as err:
-                if err.errno not in (errno.EROFS, errno.EACCES):
-                    # readonly filesystem or permission denied
-                    raise
-                # who cares otherwise...
-
-            try:
-                const_chmod_entropy_pid()
-            except OSError:
-                pass
-            setup_done = True
-
-        if (pid_f is not None) and locked:
-            # the lock file is acquired by another process
-            # and we were not able to get it. So, close pid_f
-            # and set it to None. So that next time we get here
-            # we'll retry the whole procedure.
-            pid_f.close()
-            pid_f = None
-        if pid_f is not None:
-            _ENTROPY_PID_F_MAP[pid] = pid_f
-        return setup_done, locked
-
-def const_unsetup_entropy_pid():
-    """
-    Drop Entropy Pid Lock if acquired. Return True if dropped,
-    False otherwise.
-    """
-
-    with _ENTROPY_PID_MUTEX:
-        pid = os.getpid()
-        _entropy_pid_f = _ENTROPY_PID_F_MAP.get(pid)
-        if _entropy_pid_f is not None:
-            fcntl.flock(_entropy_pid_f.fileno(), fcntl.LOCK_UN)
-            _entropy_pid_f.close()
-            del _ENTROPY_PID_F_MAP[pid]
-            return True
-        return False
-
 def const_secure_config_file(config_file):
     """
     Setup entropy file needing strict permissions, no world readable.
@@ -988,18 +857,6 @@ def const_regain_privileges():
 
     etpConst['uid'] = 0
 
-def const_chmod_entropy_pid():
-    """
-    Setup entropy pid file permissions, if possible.
-
-    @return: None
-    """
-    try:
-        mygid = const_get_entropy_gid()
-    except KeyError:
-        mygid = 0
-    const_setup_file(etpConst['pidfile'], mygid, 0o664)
-
 def const_create_working_dirs():
 
     """
@@ -1008,12 +865,6 @@ def const_create_working_dirs():
     @rtype: None
     @return: None
     """
-
-    # handle pid file, this is /var/run and usually tmpfs
-    piddir = etpConst['pidfiledir']
-    if etpConst['uid'] == 0:
-        const_setup_directory(piddir)
-
     # create group if it doesn't exist
     gid = None
     try:

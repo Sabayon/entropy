@@ -14,7 +14,7 @@ import tempfile
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst, const_setup_entropy_pid
+from entropy.const import etpConst
 from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
