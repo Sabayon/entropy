@@ -22,7 +22,7 @@ import pynotify
 # applet imports
 from magneto.core import config
 from magneto.core.interfaces import MagnetoCore
-from magneto.gtk.components import AppletNoticeWindow, AppletIconPixbuf
+from magneto.gtk.components import AppletNoticeWindow
 
 # Entropy imports
 from entropy.i18n import _
@@ -31,46 +31,44 @@ import entropy.dep
 class Magneto(MagnetoCore):
 
     def __init__(self):
-
         from dbus.mainloop.glib import DBusGMainLoop
-        MagnetoCore.__init__(self, icon_loader_class = AppletIconPixbuf,
-            main_loop_class = DBusGMainLoop)
+        super(Magneto, self).__init__(main_loop_class = DBusGMainLoop)
 
-        self.__setup_gtk_app()
+        self._setup_gtk_app()
 
-    def __setup_gtk_app(self):
+    def _setup_gtk_app(self):
+        self._menu = gtk.Menu()
+        self._menu_items = {}
 
-        self.menu = gtk.Menu()
-        self.menu_items = {}
-        for i in self._menu_item_list:
-            if i is None:
-                self.menu.add(gtk.SeparatorMenuItem())
+        for item in self._menu_item_list:
+            if item is None:
+                self._menu.add(gtk.SeparatorMenuItem())
+                continue
+            icon_id, title, desc, cb = item
+
+            if icon_id == "exit":
+                w = gtk.ImageMenuItem(stock_id = "gtk-quit")
             else:
-                sid = None
-                myid = i[0]
-                if myid == "exit":
-                    sid = "gtk-quit"
-                if sid:
-                    w = gtk.ImageMenuItem(stock_id = sid)
-                else:
-                    w = gtk.ImageMenuItem(i[1])
-                    pix = self.get_menu_image(myid)
-                    img = gtk.Image()
-                    img.set_from_pixbuf(pix)
-                    w.set_image(img)
-                self.menu_items[myid] = w
-                w.connect('activate', i[3])
-                w.show()
-                self.menu.add(w)
+                w = gtk.ImageMenuItem(title)
+                image_path = self.get_menu_image(icon_id)
+                img = gtk.Image()
+                img.set_from_file(image_path)
+                w.set_image(img)
 
-        self.menu.show_all()
+            self._menu_items[icon_id] = w
+            w.connect("activate", cb)
+            w.show()
+            self._menu.add(w)
 
-        self.status_icon = gtk.status_icon_new_from_pixbuf(
-            self.icons.best_match("okay", 22))
-        self.status_icon.connect("popup-menu", self.applet_context_menu)
-        self.status_icon.connect("activate", self.applet_doubleclick)
+        self._menu.show_all()
 
-    def __do_first_check(self):
+        icon_path = self._icon_to_path(self.icons.get("okay"))
+        self._status_icon = gtk.status_icon_new_from_file(icon_path)
+
+        self._status_icon.connect("popup-menu", self.applet_context_menu)
+        self._status_icon.connect("activate", self.applet_doubleclick)
+
+    def _first_check(self):
 
         def _do_check():
             self.send_check_updates_signal(startup_check = True)
@@ -80,10 +78,26 @@ class Magneto(MagnetoCore):
             # after 10 seconds
             gobject.timeout_add(10000, _do_check)
 
-    def startup(self):
+    def _icon_to_path(self, image_name):
+        """
+        Resolve an icon name to a path to a pixmap.
+        """
+        return os.path.abspath(
+            os.path.join(config.PIXMAPS_PATH, image_name + ".png"))
 
+
+    def get_menu_image(self, name):
+        """
+        Override MagnetoCore get_menu_image to return a full
+        blown .png path, since Gtk2 lacks proper SVG and theming
+        support.
+        """
+        image_name = super(Magneto, self).get_menu_image(name)
+        return self._icon_to_path(image_name)
+
+    def startup(self):
         self._dbus_service_available = self.setup_dbus()
-        if config.settings['APPLET_ENABLED'] and \
+        if config.settings["APPLET_ENABLED"] and \
             self._dbus_service_available:
             self.enable_applet(do_check = False)
         else:
@@ -91,7 +105,7 @@ class Magneto(MagnetoCore):
         if not self._dbus_service_available:
             gobject.timeout_add(30000, self.show_service_not_available)
         else:
-            self.__do_first_check()
+            self._first_check()
 
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)
@@ -103,26 +117,26 @@ class Magneto(MagnetoCore):
         gtk.gdk.threads_leave()
 
     def close_service(self):
-        MagnetoCore.close_service(self)
+        super(Magneto, self).close_service()
         gobject.timeout_add(0, gtk.main_quit)
 
-    def change_icon(self, image):
-        to_image = self.icons.best_match(image, self.applet_size)
-        self.status_icon.set_from_pixbuf(to_image)
+    def change_icon(self, icon_name):
+        image_path = self._icon_to_path(self.icons.get(icon_name))
+        self._status_icon.set_from_file(image_path)
 
     def disable_applet(self, *args):
-        MagnetoCore.disable_applet(self)
-        self.menu_items['disable_applet'].hide()
-        self.menu_items['enable_applet'].show()
+        super(Magneto, self).disable_applet()
+        self._menu_items["disable_applet"].hide()
+        self._menu_items["enable_applet"].show()
 
     def enable_applet(self, w = None, do_check = True):
-        done = MagnetoCore.enable_applet(self, do_check = do_check)
+        done = super(Magneto, self).enable_applet(do_check = do_check)
         if done:
-            self.menu_items['disable_applet'].show()
-            self.menu_items['enable_applet'].hide()
+            self._menu_items["disable_applet"].show()
+            self._menu_items["enable_applet"].hide()
 
     def applet_doubleclick(self, widget):
-        return MagnetoCore.applet_doubleclick(self)
+        super(Magneto, self).applet_doubleclick()
 
     def show_alert(self, title, text, urgency = None, force = False):
 
@@ -131,14 +145,14 @@ class Magneto(MagnetoCore):
                 return False
             pynotify.init(_("System Updates"))
             n = pynotify.Notification(title, text)
-            if urgency == 'critical':
+            if urgency == "critical":
                 n.set_urgency(pynotify.URGENCY_CRITICAL)
-            elif urgency == 'low':
+            elif urgency == "low":
                 n.set_urgency(pynotify.URGENCY_LOW)
             self.last_alert = (title, text)
             try:
                 # this has been dropped from libnotify 0.7
-                n.attach_to_status_icon(self.status_icon)
+                n.attach_to_status_icon(self._status_icon)
             except AttributeError:
                 pass
             n.show()
@@ -148,11 +162,11 @@ class Magneto(MagnetoCore):
 
     def update_tooltip(self, tip):
         self.tooltip_text = tip
-        self.status_icon.set_tooltip(tip)
+        self._status_icon.set_tooltip(tip)
 
     def applet_context_menu(self, icon, button, activate_time):
         if button == 3:
-            self.menu.popup(None, None, None, 0, activate_time)
+            self._menu.popup(None, None, None, 0, activate_time)
             return
 
     def hide_notice_window(self):
@@ -189,14 +203,16 @@ class Magneto(MagnetoCore):
 
             packages.append((key, ver,))
 
-        critical_txt = ''
+        critical_txt = ""
         if entropy_ver is not None:
-            critical_txt = "%s <b>sys-apps/entropy</b> %s, %s <b>%s</b>. %s." % (
+            critical_txt = "%s <b>sys-apps/entropy</b> "
+            "%s, %s <b>%s</b>. %s." % (
                 _("Your system currently has an outdated version of"),
                 _("installed"),
                 _("the latest available version is"),
                 entropy_ver,
-                _("It is recommended that you upgrade to the latest before updating any other packages")
+                _("It is recommended that you upgrade to "
+                  "the latest before updating any other packages")
             )
 
         self._notice_window.populate(packages, critical_txt)

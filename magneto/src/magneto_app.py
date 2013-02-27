@@ -19,13 +19,13 @@ import time
 
 def _startup(unlock_callback):
     sys.path.insert(0, "/usr/lib/rigo")
-    sys.path.insert(0, '/usr/lib/entropy/client')
-    sys.path.insert(0, '/usr/lib/entropy/lib')
-    sys.path.insert(0, '/usr/lib/entropy/magneto')
-    sys.path.insert(0, '../rigo')
-    sys.path.insert(0, '../../client')
-    sys.path.insert(0, '../../lib')
-    sys.path.insert(0, './')
+    sys.path.insert(0, "/usr/lib/entropy/client")
+    sys.path.insert(0, "/usr/lib/entropy/lib")
+    sys.path.insert(0, "/usr/lib/entropy/magneto")
+    sys.path.insert(0, "../rigo")
+    sys.path.insert(0, "../../client")
+    sys.path.insert(0, "../../lib")
+    sys.path.insert(0, "./")
 
     startup_delay = None
     for arg in sys.argv[1:]:
@@ -42,6 +42,8 @@ def _startup(unlock_callback):
         time.sleep(startup_delay)
 
     kde_env = os.getenv("KDE_FULL_SESSION")
+    desktop_session = os.getenv("DESKTOP_SESSION")
+    is_mate = desktop_session == "MATE"
 
     if "--kde" in sys.argv:
         from magneto.kde.interfaces import Magneto
@@ -60,6 +62,12 @@ def _startup(unlock_callback):
                     from magneto.gtk3.interfaces import Magneto
                 except ImportError:
                     from magneto.gtk.interfaces import Magneto
+        elif is_mate:
+            # Load GTK2, fallback to GTK3
+            try:
+                from magneto.gtk.interfaces import Magneto
+            except ImportError:
+                from magneto.gtk3.interfaces import Magneto
         else:
             # load GTK3, fallback to GTK2
             try:
@@ -93,8 +101,6 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
-
-    sys.argv.append('--no-pid-handling')
     import entropy.tools
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
@@ -106,7 +112,8 @@ if __name__ == "__main__":
         if acquired:
             _startup(_unlock_func)
         else:
-            sys.stderr.write("Warning: another Magneto instance is already running.\n")
+            sys.stderr.write(
+                "Warning: another Magneto instance is already running.\n")
             raise SystemExit(1)
     finally:
         if acquired:

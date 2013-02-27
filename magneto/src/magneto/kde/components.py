@@ -20,41 +20,6 @@ from PyQt4.QtGui import QPixmap, QHBoxLayout, QListView, QLabel, QWidget, \
 # Entropy imports
 from entropy.i18n import _
 
-# Magneto imports
-from magneto.core.config import PIXMAPS_PATH, ICON_PATH
-
-class AppletIconPixbuf:
-
-    def __init__(self):
-        self.images = {}
-
-    def add_file(self, name, filename):
-
-        if name not in self.images:
-            self.images[name] = []
-
-        filename = os.path.join(PIXMAPS_PATH, filename)
-        if not os.access(filename, os.R_OK):
-            raise AttributeError("Cannot open image file %s" % filename)
-
-        pixmap = QPixmap(filename)
-        self.add(name, pixmap)
-
-    def add(self, name, pixbuf):
-        self.images[name].append(pixbuf)
-
-    def best_match(self, name, size):
-        best = None
-
-        for image in self.images[name]:
-            if not best:
-                best = image
-                continue
-            if abs(size - image.height) < abs(size - best.height):
-                best = image
-
-        return best
-
 
 class AppletNoticeWindow(QWidget):
 
@@ -92,11 +57,6 @@ class AppletNoticeWindow(QWidget):
         # set window settings
         self.resize(400, 200)
         self.setWindowTitle(_("Application updates"))
-
-        # set window icon
-        if os.access(ICON_PATH, os.R_OK) and os.path.isfile(ICON_PATH):
-            self.__window_icon = QIcon(ICON_PATH)
-            self.setWindowIcon(self.__window_icon)
 
         self.connect(self.__close_button, SIGNAL("clicked()"), self.on_close)
         self.connect(self.__launch_pm_button, SIGNAL("clicked()"), self.on_pm)

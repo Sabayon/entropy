@@ -11,14 +11,9 @@
 import os
 import entropy.dump
 
-# Paths
-PIXMAPS_PATH = "/usr/share/pixmaps/magneto"
-ICON_PATH_NAME = "magneto.png"
-ICON_PATH = os.path.join("../..", ICON_PATH_NAME)
-if not os.path.isdir(PIXMAPS_PATH):
-    PIXMAPS_PATH = "../gfx/magneto"
-if not os.path.isfile(ICON_PATH):
-    ICON_PATH = "../gfx/%s" % (ICON_PATH_NAME,)
+ICON_PATH = os.getenv("MAGNETO_ICON_PATH", "/usr/share/magneto/icons")
+DATA_DIR = os.getenv("MAGNETO_DATA_DIR", "/usr/share/magneto")
+PIXMAPS_PATH = os.getenv("MAGNETO_PIXMAPS_PATH", "/usr/share/pixmaps/magneto")
 
 APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY",
     "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]

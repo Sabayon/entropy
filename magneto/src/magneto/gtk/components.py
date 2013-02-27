@@ -19,42 +19,6 @@ gtk.glade.bindtextdomain('entropy', "/usr/share/locale")
 import gtk
 from entropy.i18n import _
 
-# Magneto imports
-from magneto.core.config import PIXMAPS_PATH, ICON_PATH
-
-class AppletIconPixbuf:
-
-    def __init__(self):
-        self.images = {}
-
-    def add_file(self, name, filename):
-
-        if name not in self.images:
-            self.images[name] = []
-
-        filename = os.path.join(PIXMAPS_PATH, filename)
-        if not os.access(filename, os.R_OK):
-            raise AttributeError("Cannot open image file %s" % filename)
-
-        pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
-
-        self.add(name, pixbuf)
-
-    def add(self, name, pixbuf):
-        self.images[name].append(pixbuf)
-
-    def best_match(self, name, size):
-        best = None
-
-        for image in self.images[name]:
-            if not best:
-                best = image
-                continue
-            if abs(size - image.height) < abs(size - best.height):
-                best = image
-
-        return best
-
 
 class GladeWindow:
 
@@ -87,7 +51,8 @@ class AppletNoticeWindow(GladeWindow):
             gtk.TreeViewColumn(
                 _("Application"), gtk.CellRendererText(), text=0))
         self.package_list.append_column(
-            gtk.TreeViewColumn(_("Latest version"), gtk.CellRendererText(), text=1))
+            gtk.TreeViewColumn(_("Latest version"),
+                               gtk.CellRendererText(), text=1))
         self.package_list.get_selection().set_mode(gtk.SELECTION_NONE)
 
         self.notebook = self.get_widget('notice_notebook')

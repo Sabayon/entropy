@@ -34,7 +34,20 @@ from magneto.core import config
 from RigoDaemon.config import DbusConfig
 from RigoDaemon.enums import ActivityStates
 
-class MagnetoCoreUI:
+
+class MagnetoIconMap(object):
+
+    def __init__(self):
+        self._images = {}
+
+    def add(self, name, filename):
+        self._images[name] = filename
+
+    def get(self, name):
+        return self._images.get(name)
+
+
+class MagnetoCoreUI(object):
 
     """
     Methods in this class are inherited by MagnetoCore and should be
@@ -78,7 +91,7 @@ class MagnetoCoreUI:
         """
         raise NotImplementedError()
 
-    def change_icon(self, image):
+    def change_icon(self, icon_name):
         """
         Update applet icon
         """
@@ -117,7 +130,7 @@ class MagnetoCore(MagnetoCoreUI):
     DBUS_INTERFACE = DbusConfig.BUS_NAME
     DBUS_PATH = DbusConfig.OBJECT_PATH
 
-    def __init__(self, icon_loader_class, main_loop_class):
+    def __init__(self, main_loop_class):
 
         if "--debug" not in sys.argv:
             import signal
@@ -144,16 +157,19 @@ class MagnetoCore(MagnetoCoreUI):
         # Applet manual check selected
         self.manual_check_triggered = False
 
-        self.icons = icon_loader_class()
-        self.icons.add_file("okay", "applet-okay.png")
-        self.icons.add_file("error", "applet-error.png")
-        self.icons.add_file("busy", "applet-busy.png")
-        self.icons.add_file("critical", "applet-critical.png")
-        self.icons.add_file("disable", "applet-disable.png")
-        self.icons.add_file("pm", "pm.png")
-        self.icons.add_file("web", "applet-web.png")
-        self.icons.add_file("configuration", "applet-configuration.png")
-        self.applet_size = 22
+        self.icons = MagnetoIconMap()
+        # This layer of indirection is useful for when
+        # icons are not available on the currently configured
+        # icon set.
+        self.icons.add("okay", "security-high")
+        self.icons.add("error", "emblem-danger")
+        self.icons.add("busy", "emblem-important")
+        self.icons.add("critical", "security-low")
+        self.icons.add("disable", "edit-delete")
+        self.icons.add("pm", "system-software-update")
+        self.icons.add("web", "internet-web-browser")
+        self.icons.add("configuration", "preferences-system")
+        self.icons.add("exit", "application-exit")
 
         # Dbus variables
         self._dbus_init_error_msg = 'Unknown error'
@@ -172,7 +188,7 @@ class MagnetoCore(MagnetoCoreUI):
             ("web_site", _("_Sabayon Linux Website"),
                 _("Launch Sabayon Linux Website"), self.load_website),
             None,
-            ("application-exit", _("_Exit"), _("Exit"), self.exit_applet),
+            ("exit", _("_Exit"), _("Exit"), self.exit_applet),
         )
 
         self._main_loop_class = main_loop_class
@@ -411,23 +427,19 @@ class MagnetoCore(MagnetoCoreUI):
         self.current_state = new_state
 
     def get_menu_image(self, name):
-
-        if name == "update_now":
-            pix = self.icons.best_match("pm", 22)
-        elif name == "check_now":
-            pix = self.icons.best_match("okay", 22)
-        elif name in ["web_panel", "web_site"]:
-            pix = self.icons.best_match("web", 22)
-        elif name == "configure_applet":
-            pix = self.icons.best_match("configuration", 22)
-        elif name == "disable_applet":
-            pix = self.icons.best_match("disable", 22)
-        elif name == "enable_applet":
-            pix = self.icons.best_match("okay", 22)
-        else:
-            pix = self.icons.best_match("busy", 22)
-
-        return pix
+        image_map = {
+            "update_now": "pm",
+            "check_now": "okay",
+            "web_panel": "web",
+            "web_site": "web",
+            "configure_applet": "configuration",
+            "disable_applet": "disable",
+            "enable_applet": "okay",
+            "__fallback__": "busy",
+            "exit": "exit",
+            }
+        return self.icons.get(
+            image_map.get(name, "__fallback__"))
 
     def load_packages_url(self, *data):
         self.load_url(etpConst['packages_website_url'])
