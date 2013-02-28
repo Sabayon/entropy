@@ -11,7 +11,7 @@ equo-match - match packages in repositories
 
 SYNOPSIS
 --------
-equo match [-h] [--quiet] [--verbose] [--installed | --available]
+equo match [-h] [--quiet] [--verbose] [--injected] [--installed | --available]
            [--multimatch] [--multirepo] [--showrepo] [--showdesc] [--showslot]
            <string> [<string> ...]
 
@@ -42,6 +42,9 @@ OPTIONAL ARGUMENTS
 
 *-v*::
     verbose output
+
+*--injected*::
+    return only injected packages 
 
 *--installed*::
     match among installed packages only

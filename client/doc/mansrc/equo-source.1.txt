@@ -12,7 +12,8 @@ equo-source - download packages source code
 SYNOPSIS
 --------
 equo source [-h] [--ask | --pretend] [--verbose] [--quiet] [--nodeps]
-            [--norecursive] [--deep] [--relaxed] [--bdeps] [--savehere]
+            [--onlydeps] [--norecursive] [--deep] [--relaxed] [--bdeps]
+            [--savehere]
             <package> [<package> ...]
 
 
@@ -51,6 +52,9 @@ OPTIONAL ARGUMENTS
 
 *--nodeps*::
     exclude package dependencies
+
+*-o*::
+    only include dependencies of selected packages
 
 *--norecursive*::
     do not calculate dependencies recursively

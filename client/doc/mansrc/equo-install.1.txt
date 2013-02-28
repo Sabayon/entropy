@@ -12,8 +12,9 @@ equo-install - install or update packages or package files
 SYNOPSIS
 --------
 equo install [-h] [--ask | --pretend] [--verbose] [--quiet] [--fetch]
-             [--bdeps] [--nodeps] [--norecursive] [--deep] [--empty]
-             [--configfiles] [--relaxed] [--multifetch {1,2,3,4,5,6,7,8,9,10}]
+             [--bdeps] [--nodeps] [--onlydeps] [--norecursive] [--deep]
+             [--empty] [--configfiles] [--relaxed]
+             [--multifetch {1,2,3,4,5,6,7,8,9,10}]
              <package> [<package> ...]
 
 
@@ -58,6 +59,9 @@ OPTIONAL ARGUMENTS
 
 *--nodeps*::
     exclude package dependencies
+
+*-o*::
+    only include dependencies of selected packages
 
 *--norecursive*::
     do not calculate dependencies recursively
