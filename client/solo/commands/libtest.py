@@ -235,7 +235,7 @@ Test system integrity by looking for missing libraries.
             exit_st = self._install_action(
                 entropy_client, True, True,
                 pretend, ask, False, quiet, False,
-                False, False, False, False,
+                False, False, False, False, False,
                 False, 1, [],
                 package_matches=package_matches)
 

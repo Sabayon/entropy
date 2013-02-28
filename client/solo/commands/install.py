@@ -111,6 +111,13 @@ Install or update packages or package files.
         _commands["--nodeps"] = {}
 
         parser.add_argument(
+            "--onlydeps", "-o", action="store_true",
+            default=False,
+            help=_("only include dependencies of selected packages"))
+        _commands["--onlydeps"] = {}
+        _commands["-o"] = {}
+
+        parser.add_argument(
             "--norecursive", action="store_true",
             default=False,
             help=_("do not calculate dependencies recursively"))
@@ -172,6 +179,7 @@ Install or update packages or package files.
         deep = self._nsargs.deep
         fetch = self._nsargs.fetch
         bdeps = self._nsargs.bdeps
+        onlydeps = self._nsargs.onlydeps
         relaxed = self._nsargs.relaxed
         multifetch = self._nsargs.multifetch
         packages = self._nsargs.packages
@@ -179,7 +187,7 @@ Install or update packages or package files.
         exit_st, _show_cfgupd = self._install_action(
             entropy_client, deps, recursive,
             pretend, ask, verbose, quiet, empty,
-            config_files, deep, fetch, bdeps,
+            config_files, deep, fetch, bdeps, onlydeps,
             relaxed, multifetch, packages)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
@@ -496,7 +504,7 @@ Install or update packages or package files.
     def _install_action(self, entropy_client, deps, recursive,
                         pretend, ask, verbose, quiet, empty,
                         config_files, deep, fetch, bdeps,
-                        relaxed, multifetch, packages,
+                        onlydeps, relaxed, multifetch, packages,
                         package_matches=None):
         """
         Solo Install action implementation.
@@ -526,10 +534,15 @@ Install or update packages or package files.
             return 1, False
 
         run_queue, removal_queue = self._generate_install_queue(
-            entropy_client, packages, deps, empty, deep, relaxed, bdeps,
-            recursive)
+            entropy_client, packages, deps, empty, deep, relaxed,
+            onlydeps, bdeps, recursive)
         if (run_queue is None) or (removal_queue is None):
             return 1, False
+        elif not (run_queue or removal_queue):
+            entropy_client.output(
+                "%s." % (blue(_("Nothing to do")),),
+                level="warning", header=darkgreen(" @@ "))
+            return 0, True
 
         self._show_install_queue(
             entropy_client, inst_repo, run_queue, removal_queue,
@@ -582,7 +595,10 @@ Install or update packages or package files.
                 'removeconfig': config_files,
             }
 
-            if pkg_match in package_set:
+            if onlydeps:
+                metaopts['install_source'] = \
+                    etpConst['install_sources']['automatic_dependency']
+            elif pkg_match in package_set:
                 metaopts['install_source'] = \
                     etpConst['install_sources']['user']
             else:

@@ -91,6 +91,13 @@ Download source code of packages.
         _commands["--nodeps"] = {}
 
         parser.add_argument(
+            "--onlydeps", "-o", action="store_true",
+            default=False,
+            help=_("only include dependencies of selected packages"))
+        _commands["--onlydeps"] = {}
+        _commands["-o"] = {}
+
+        parser.add_argument(
             "--norecursive", action="store_true",
             default=False,
             help=_("do not calculate dependencies recursively"))
@@ -143,6 +150,7 @@ Download source code of packages.
         savehere = self._nsargs.savehere
         recursive = not self._nsargs.norecursive
         relaxed = self._nsargs.relaxed
+        onlydeps = self._nsargs.onlydeps
         bdeps = self._nsargs.bdeps
 
         packages = self._scan_packages(
@@ -162,10 +170,15 @@ Download source code of packages.
             return exit_st, False
 
         run_queue, removal_queue = self._generate_install_queue(
-            entropy_client, packages, deps, False, deep, relaxed, bdeps,
-            recursive)
+            entropy_client, packages, deps, False, deep, relaxed,
+            onlydeps, bdeps, recursive)
         if (run_queue is None) or (removal_queue is None):
             return 1
+        elif not (run_queue or removal_queue):
+            entropy_client.output(
+                "%s." % (blue(_("Nothing to do")),),
+                level="warning", header=darkgreen(" @@ "))
+            return 0
 
         if pretend:
             entropy_client.output(

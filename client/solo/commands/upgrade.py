@@ -231,7 +231,7 @@ Upgrade the system.
                 exit_st, _show_cfgupd = self._install_action(
                     entropy_client, deps, recursive,
                     pretend, ask, verbose, quiet, empty,
-                    config_files, deep, fetch, bdeps,
+                    config_files, deep, fetch, bdeps, False,
                     relaxed, multifetch, [],
                     package_matches=update)
                 if exit_st != 0:

@@ -480,10 +480,10 @@ System security tools.
                     valid_matches.add((package_id, repository_id))
 
             if valid_matches:
-                rc= self._install_action(
+                rc = self._install_action(
                     entropy_client, True, True,
                     pretend, ask, False, quiet, False,
-                    False, False, fetch, False,
+                    False, False, fetch, False, False,
                     False, 1, [], package_matches=list(valid_matches))
 
         if not quiet:
@@ -620,7 +620,7 @@ System security tools.
         return self._install_action(
             entropy_client, True, True,
             pretend, ask, False, quiet, False,
-            False, False, fetch, False,
+            False, False, fetch, False, False,
             False, 1, [], package_matches=list(valid_matches))
 
 

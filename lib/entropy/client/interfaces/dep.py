@@ -1189,7 +1189,7 @@ class CalculatorsMixin:
 
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
-        deep_deps = False, unsatisfied_deps_cache = None,
+        only_deps = False, deep_deps = False, unsatisfied_deps_cache = None,
         elements_cache = None, post_deps_cache = None, recursive = True,
         selected_matches = None):
 
@@ -1232,7 +1232,12 @@ class CalculatorsMixin:
             repo_db = self.open_repository(repo_id)
 
             ## first element checks
+            add_to_graph = True
             if first_element:
+                if only_deps:
+                    # in this case, we only add pkg_match to
+                    # the graph if it's a dependency of something else
+                    add_to_graph = False
                 first_element = False
                 # we need to check if first element is masked because of
                 # course, we don't trust function caller.
@@ -1301,7 +1306,8 @@ class CalculatorsMixin:
                 obj.update(post_dep_matches)
 
             # eventually add our package match to depgraph
-            graph.add(pkg_match, dep_matches)
+            if add_to_graph:
+                graph.add(pkg_match, dep_matches)
             graph_cache.add(pkg_match)
             pkg_match_set = set([pkg_match])
             for post_dep_match in post_dep_matches:
@@ -1927,15 +1933,16 @@ class CalculatorsMixin:
 
     def _get_required_packages(self, package_matches, empty_deps = False,
         deep_deps = False, relaxed_deps = False, build_deps = False,
-        quiet = False, recursive = True):
+        only_deps = False, quiet = False, recursive = True):
 
         sha = hashlib.sha1()
-        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
+        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
                 repr(sorted(package_matches)),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
                 build_deps,
+                only_deps,
                 recursive,
                 self._installed_repository.checksum(),
                 # needed when users do bogus things like editing config files
@@ -2005,7 +2012,8 @@ class CalculatorsMixin:
                 mygraph, conflicts = self._generate_dependency_tree(
                     matched_atom, graph, empty_deps = empty_deps,
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
-                    build_deps = build_deps, elements_cache = elements_cache,
+                    build_deps = build_deps, only_deps = only_deps,
+                    elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
                     post_deps_cache = post_deps_cache,
                     recursive = recursive, selected_matches = package_matches
@@ -3328,7 +3336,7 @@ class CalculatorsMixin:
 
     def get_install_queue(self, package_matches, empty, deep,
         relaxed = False, build = False, quiet = False, recursive = True,
-        critical_updates = True):
+        only_deps = False, critical_updates = True):
         """
         Return the ordered installation queue (including dependencies, if
         required), for given package matches.
@@ -3354,8 +3362,11 @@ class CalculatorsMixin:
         @keyword recursive: scan dependencies recursively (usually, this is
             the wanted behaviour)
         @type recursive: bool
+        @keyword only_deps: only pull in package_matches dependencies and not
+            themselves, unless they are also dependencies.
+        @type only_deps: bool
         @keyword critical_updates: pull in critical updates if any
-        @type recursive: bool
+        @type critical_updates: bool
         @return: tuple composed by a list of package matches to install and
             a list of package matches to remove (informational)
         @raise DependenciesCollision: packages pulled in conflicting depedencies
@@ -3423,8 +3434,9 @@ class CalculatorsMixin:
                 internal_matches += _filter_key_slot(upd_matches)
 
         try:
-            deptree = self._get_required_packages(internal_matches,
-                empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed,
+            deptree = self._get_required_packages(
+                internal_matches, empty_deps = empty, deep_deps = deep,
+                relaxed_deps = relaxed, only_deps = only_deps,
                 build_deps = build, quiet = quiet, recursive = recursive)
         except DependenciesCollision as exc:
             # Packages pulled in conflicting dependencies, these sharing the

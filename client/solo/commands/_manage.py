@@ -494,7 +494,8 @@ class SoloManage(SoloCommand):
         return package_ids
 
     def _generate_install_queue(self, entropy_client, packages, deps,
-                                empty, deep, relaxed, bdeps, recursive):
+                                empty, deep, relaxed, onlydeps, bdeps,
+                                recursive):
         """
         Generate a complete installation queue.
         """
@@ -514,7 +515,8 @@ class SoloManage(SoloCommand):
             run_queue, removal_queue = \
                 entropy_client.get_install_queue(
                     packages, empty, deep, relaxed=relaxed,
-                    build = bdeps, recursive = recursive)
+                    build=bdeps, recursive=recursive,
+                    only_deps=onlydeps)
         except DependenciesNotFound as exc:
             run_deps = exc.value
             entropy_client.output(
