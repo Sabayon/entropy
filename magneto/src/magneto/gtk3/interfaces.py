@@ -200,8 +200,8 @@ class Magneto(MagnetoCore):
 
         critical_txt = ''
         if entropy_ver is not None:
-            critical_txt = "%s <b>sys-apps/entropy</b>"
-            " %s, %s <b>%s</b>. %s." % (
+            critical_txt = "%s <b>sys-apps/entropy</b> %s, %s <b>%s</b>. %s."
+            txt = critical_txt % (
                 _("Your system currently has an outdated version of"),
                 _("installed"),
                 _("the latest available version is"),
@@ -210,6 +210,6 @@ class Magneto(MagnetoCore):
                   " the latest before updating any other packages")
                 )
 
-        self._notice_window.populate(packages, critical_txt)
+        self._notice_window.populate(packages, txt)
         self._notice_window.show()
         self.notice_window_shown = True
