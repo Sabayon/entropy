@@ -1327,8 +1327,8 @@ class CalculatorsMixin:
                     "_generate_dependency_tree(revdep cache) %s wants %s" % (
                         purple(atom), blue(" ".join(wanted_deps)),))
 
-        del graph_cache
-        del inverse_dep_stack_cache
+        graph_cache.clear()
+        inverse_dep_stack_cache.clear()
         # if deps not found, we won't do dep-sorting at all
         if deps_not_found:
             #del stack
