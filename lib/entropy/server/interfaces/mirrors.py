@@ -2348,7 +2348,7 @@ class Server(object):
                 return done
 
         for package_rel in expire:
-            self._create_expiration_file(repository_id, extra_package_rel)
+            self._create_expiration_file(repository_id, package_rel)
 
         # split queue by remote directories to work on
         removal_map = {}
