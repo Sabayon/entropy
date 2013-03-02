@@ -698,6 +698,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # disabled by default for now
             'nonfree_packages_dir_support': False,
             'sync_speed_limit': None,
+            'weak_package_files': False,
             'changelog': True,
             'rss': {
                 'enabled': etpConst['rss-feed'],
@@ -805,6 +806,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 speed_limit = None
             data['sync_speed_limit'] = speed_limit
 
+        def _weak_package_files(line, setting):
+            opt = entropy.tools.setting_to_bool(setting)
+            if opt is not None:
+                data['weak_package_files'] = opt
+
         def _changelog(line, setting):
             bool_setting = entropy.tools.setting_to_bool(setting)
             if bool_setting is not None:
@@ -864,6 +870,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # backward compatibility
             'sync-speed-limit': _syncspeedlimit,
             'syncspeedlimit': _syncspeedlimit,
+            'weak-package-files': _weak_package_files,
             'changelog': _changelog,
             'rss-feed': _rss_feed,
             'rss-name': _rss_name,

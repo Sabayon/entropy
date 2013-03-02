@@ -1944,12 +1944,32 @@ class Server(object):
 
         pkg_path = self._entropy.complete_local_package_path(package_rel,
             repository_id)
-        pkg_path += etpConst['packagesexpirationfileext']
-        if not os.path.isfile(pkg_path):
+        exp_pkg_path = pkg_path + etpConst['packagesexpirationfileext']
+        weak_pkg_path = pkg_path + etpConst['packagesweakfileext']
+
+        # it is assumed that weakened package files are always marked
+        # as expired first. So, if a .expired file exists, a .weak
+        # does as well. However, we must also be fault tolerant and
+        # cope with the situation in where .weak files exist but not
+        # their .expired counterpart.
+        # So, if a .weak file exists, we won't return straight away.
+        # At the same time, if a .expired file exists, we will use that.
+
+        expired_exists = os.path.lexists(exp_pkg_path)
+        weak_exists = os.path.lexists(weak_pkg_path)
+
+        test_pkg_path = None
+        if expired_exists:
+            test_pkg_path = exp_pkg_path
+        elif weak_exists:
+            # deal with corruption
+            test_pkg_path = weak_pkg_path
+        else:
+            # package file not expired, return straight away
             return False
 
-        mtime = os.path.getmtime(pkg_path)
-        delta = days*24*3600
+        mtime = os.path.getmtime(test_pkg_path)
+        delta = days * 24 * 3600
         currmtime = time.time()
         file_delta = currmtime - mtime
 
@@ -1957,24 +1977,47 @@ class Server(object):
             return True
         return False
 
-    def _create_expiration_file(self, repository_id, package_rel,
-        gentle = False):
+    def _create_expiration_file(self, repository_id, package_rel):
+        """
+        Mark the package file as expired by creating an .expired file
+        if it does not exist. Please note that the created file mtime
+        will be used to determine when the real package file will be
+        removed.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param package_rel: package relative url, as returned by
+            EntropyRepository.retrieveDownloadURL
+        @type package_rel: string
+        """
         pkg_path = self._entropy.complete_local_package_path(package_rel,
             repository_id)
+
         pkg_path += etpConst['packagesexpirationfileext']
-        if gentle and os.path.isfile(pkg_path):
+        if os.path.lexists(pkg_path):
+            # do not touch the file then, or mtime will be updated
             return
-        with open(pkg_path, "wb") as f_exp:
+
+        self._entropy.output(
+            "[%s] %s" % (
+                blue(_("expire")),
+                darkgreen(pkg_path),
+            ),
+            importance = 1,
+            level = "info",
+            header = brown(" @@ ")
+        )
+
+        with open(pkg_path, "w") as f_exp:
             f_exp.flush()
 
     def _collect_expiring_packages(self, repository_id, branch):
 
-        dbconn = self._entropy.open_repository(repository_id)
+        repo = self._entropy.open_repository(repository_id)
 
-        database_bins = set(dbconn.listAllDownloads(do_sort = False,
+        database_bins = set(repo.listAllDownloads(do_sort = False,
             full_path = True))
-        extra_database_bins = set(dbconn.listAllExtraDownloads(do_sort = False))
+        extra_database_bins = set(repo.listAllExtraDownloads(do_sort = False))
 
         repo_basedir = self._entropy._get_local_repository_base_directory(
             repository_id)
@@ -1984,10 +2027,117 @@ class Server(object):
         extra_repo_bins = set(self._entropy._get_basedir_pkg_listing(
             repo_basedir, etpConst['packagesextraext'], branch = branch))
 
+        # scan .weak files. This is part of the weak-package-files support.
+        weak_ext = etpConst['packagesweakfileext']
+        weak_ext_len = len(weak_ext)
+
+        def _map_weak_ext(path):
+            return path[:-weak_ext_len]
+
+        repo_bins |= set(
+            map(
+                _map_weak_ext,
+                self._entropy._get_basedir_pkg_listing(
+                    repo_basedir,
+                    etpConst['packagesext'] + weak_ext,
+                    branch = branch))
+            )
+        extra_repo_bins |= set(
+            map(
+                _map_weak_ext,
+                self._entropy._get_basedir_pkg_listing(
+                    repo_basedir,
+                    etpConst['packagesextraext'] + weak_ext,
+                    branch = branch))
+            )
+
         # convert to set, so that we can do fast thingszzsd
         repo_bins -= database_bins
         extra_repo_bins -= extra_database_bins
         return repo_bins, extra_repo_bins
+
+    def _weaken_package_file(self, repository_id, package_rel):
+        """
+        Weaken the package file by creating a .weak file containing
+        information about the to-be-removed package file.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param package_rel: package relative url, as returned by
+            EntropyRepository.retrieveDownloadURL
+        @type package_rel: string
+        """
+        pkg_path = self._entropy.complete_local_package_path(package_rel,
+            repository_id)
+
+        pkg_path += etpConst['packagesweakfileext']
+        if os.path.lexists(pkg_path):
+            # do not touch, or mtime will be updated
+            return
+
+        self._entropy.output(
+            "[%s] %s" % (
+                blue(_("weaken")),
+                darkgreen(pkg_path),
+            ),
+            importance = 1,
+            level = "info",
+            header = brown(" @@ ")
+        )
+
+        with open(pkg_path, "w") as f_exp:
+            f_exp.flush()
+
+    def _remove_local_package(self, repository_id, package_rel,
+                              remove_expired = True, remove_weak = True):
+        """
+        Remove a package file locally.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param package_rel: package relative url, as returned by
+            EntropyRepository.retrieveDownloadURL
+        @type package_rel: string
+        @keyword remove_expired: remove the .expired file?
+        @type remove_expired: bool
+        @keyword remove_weak: remove the .weak file?
+        @type remove_weak: bool
+        """
+        package_path = self._entropy.complete_local_package_path(
+            package_rel, repository_id)
+        # if package files are stuck in the upload/ directory
+        # it means that the repository itself has never been pushed
+        up_package_path = self._entropy.complete_local_upload_package_path(
+            package_rel, repository_id)
+
+        remove_list = [package_path, up_package_path]
+        if remove_expired:
+            package_path_expired = package_path + \
+                etpConst['packagesexpirationfileext']
+            remove_list.append(package_path_expired)
+
+        if remove_weak:
+            package_path_weak = package_path + \
+                etpConst['packagesweakfileext']
+            remove_list.append(package_path_weak)
+
+        for path in remove_list:
+            try:
+                os.remove(path)
+            except OSError as err:
+                # handle race conditions
+                if err.errno != errno.ENOENT:
+                    raise
+                continue
+            self._entropy.output(
+                "[%s] %s" % (
+                    blue(_("remove")),
+                    darkgreen(path),
+                ),
+                importance = 1,
+                level = "info",
+                header = brown(" @@ ")
+            )
 
     def tidy_mirrors(self, repository_id, ask = True, pretend = False,
         expiration_days = None):
@@ -2010,14 +2160,16 @@ class Server(object):
         @return: True, if tidy went successful, False if not
         @rtype: bool
         """
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if expiration_days is None:
-            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
             expiration_days = srv_set['packages_expiration_days']
         else:
             if not isinstance(expiration_days, const_get_int()):
                 raise AttributeError("invalid expiration_days")
             if expiration_days < 0:
                 raise AttributeError("invalid expiration_days")
+
+        weak_package_files = srv_set['weak_package_files']
 
         self._entropy.output(
             "[%s|%s|%s] %s" % (
@@ -2084,57 +2236,107 @@ class Server(object):
                 branch_pkglist = set(branch_extra_pkglist_data[other_branch])
                 extra_expiring_packages -= branch_pkglist
 
-        removal = []
+        remove = []
+        expire = []
+        weaken = []
+
         for package_rel in expiring_packages:
             expired = self._is_package_expired(repository_id, package_rel,
                 expiration_days)
             if expired:
-                removal.append(package_rel)
+                remove.append(package_rel)
             else:
-                self._create_expiration_file(repository_id, package_rel,
-                    gentle = True)
+                expire.append(package_rel)
+                if weak_package_files:
+                    weaken.append(package_rel)
 
         for extra_package_rel in extra_expiring_packages:
             expired = self._is_package_expired(repository_id, extra_package_rel,
                 expiration_days)
             if expired:
-                removal.append(extra_package_rel)
+                remove.append(extra_package_rel)
             else:
-                self._create_expiration_file(repository_id, extra_package_rel,
-                    gentle = True)
+                expire.append(package_rel)
+                if weak_package_files:
+                    weaken.append(package_rel)
 
-        if not removal:
+        if not (remove or weaken or expire):
             self._entropy.output(
                 "[%s] %s" % (
                     brown(branch),
-                    blue(_("nothing to remove on this branch")),
+                    blue(_("nothing to clean on this branch")),
                 ),
                 importance = 1,
                 level = "info",
                 header = blue(" @@ ")
             )
             return done
-        else:
+
+        if remove:
             self._entropy.output(
                 "[%s] %s:" % (
                     brown(branch),
-                    blue(_("these are the expired packages")),
+                    blue(_("these will be removed")),
                 ),
                 importance = 1,
                 level = "info",
                 header = blue(" @@ ")
             )
-            for package in removal:
-                self._entropy.output(
-                    "[%s] %s: %s" % (
-                            brown(branch),
-                            blue(_("remove")),
-                            darkgreen(package),
-                        ),
-                    importance = 1,
-                    level = "info",
-                    header = brown("    # ")
-                )
+        for package in remove:
+            self._entropy.output(
+                "[%s] %s: %s" % (
+                        brown(branch),
+                        blue(_("remove")),
+                        darkgreen(package),
+                    ),
+                importance = 1,
+                level = "info",
+                header = brown("    # ")
+            )
+
+        if expire:
+            self._entropy.output(
+                "[%s] %s:" % (
+                    brown(branch),
+                    blue(_("these will be marked as expired")),
+                ),
+                importance = 1,
+                level = "info",
+                header = blue(" @@ ")
+            )
+        for package in expire:
+            self._entropy.output(
+                "[%s] %s: %s" % (
+                        brown(branch),
+                        blue(_("remove")),
+                        darkgreen(package),
+                    ),
+                importance = 1,
+                level = "info",
+                header = brown("    # ")
+            )
+
+        if weaken:
+            self._entropy.output(
+                "[%s] %s:" % (
+                    brown(branch),
+                    blue(_("these will be removed and marked as weak")),
+                ),
+                importance = 1,
+                level = "info",
+                header = blue(" @@ ")
+            )
+        for package in weaken:
+            self._entropy.output(
+                "[%s] %s: %s" % (
+                        brown(branch),
+                        blue(_("weaken")),
+                        darkgreen(package),
+                    ),
+                importance = 1,
+                level = "info",
+                header = brown("    # ")
+            )
 
         if pretend:
             return done
@@ -2145,11 +2347,14 @@ class Server(object):
             if rc_question == _("No"):
                 return done
 
+        for package_rel in expire:
+            self._create_expiration_file(repository_id, extra_package_rel)
+
         # split queue by remote directories to work on
         removal_map = {}
         dbconn = self._entropy.open_server_repository(repository_id,
             just_reading = True)
-        for package_rel in removal:
+        for package_rel in remove:
             rel_path = self._entropy.complete_remote_package_relative_path(
                 package_rel, repository_id)
             rel_dir = os.path.dirname(rel_path)
@@ -2228,38 +2433,14 @@ class Server(object):
         # remove locally
         ##
 
-        for package_rel in removal:
+        for package_rel in remove:
+            self._remove_local_package(repository_id, package_rel)
 
-            package_path = self._entropy.complete_local_package_path(
-                package_rel, repository_id)
-            # if package files are stuck in the upload/ directory
-            # it means that the repository itself has never been pushed
-            up_package_path = self._entropy.complete_local_upload_package_path(
-                package_rel, repository_id)
-            package_path_expired = package_path + \
-                etpConst['packagesexpirationfileext']
-
-            # .expired for all the paths in removal doesn't sound
-            # that ok but since we handle ENOENT, that's fine
-            my_rm_list = (package_path, up_package_path, package_path_expired)
-            for myfile in my_rm_list:
-                try:
-                    os.remove(myfile)
-                except OSError as err:
-                    # handle race conditions
-                    if err.errno != errno.ENOENT:
-                        raise
-                    continue
-                self._entropy.output(
-                    "[%s] %s: %s" % (
-                        brown(branch),
-                        blue(_("removed")),
-                        darkgreen(myfile),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = brown(" @@ ")
-                )
+        for package_rel in weaken:
+            self._weaken_package_file(repository_id, package_rel)
+            self._remove_local_package(repository_id, package_rel,
+                                       remove_expired = False,
+                                       remove_weak = False)
 
         return done
 

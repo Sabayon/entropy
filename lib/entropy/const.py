@@ -480,6 +480,9 @@ def const_default_settings(rootdir):
         'packagemtimefileext': ".mtime",
         # Extension of the file that "contains" expiration mtime
         'packagesexpirationfileext': ".expired",
+        # Extension of the file that contains package file
+        # information, replacing the real tarballs to save space.
+        'packagesweakfileext': ".weak",
         # number of days after a package will be removed from mirrors
         'packagesexpirationdays': 15,
         # name of the trigger file that would be executed

@@ -35,6 +35,19 @@ community-mode = disable
 default-repository = sabayonlinux.org
 
 #
+# "Weak package files" is an option that helps reducing the size of
+# the local packages directory by removing package files as soon as they
+# are removed from the repository database. A replacement file with a
+# .weak extension is created instead. This reduces data redundancy,
+# even though it is only about stale files.
+#
+# syntax for weak-package-files:
+#    weak-package-files = <enable/disable>
+#    default is: disable
+#
+weak-package-files = disable
+
+#
 #  syntax for repository:
 #
 #    repository: server-side repositories configuration
