@@ -49,6 +49,10 @@ class EitCleanup(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
+        parser.add_argument("--pretend", action="store_true",
+                            default=False,
+                            help=_("show what would be done"))
+
         parser.add_argument('--days', type=int, default=self._days,
             help=_("expired since how many days"))
         return parser
@@ -67,7 +71,7 @@ class EitCleanup(EitCommand):
                 # already given a repo
                 outcome = []
                 break
-        outcome += ["--quick", "--days"]
+        outcome += ["--quick", "--days", "--pretend"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -115,6 +119,7 @@ This commands makes possible to manually force a cleanup.
         self._ask = not nsargs.quick
         if nsargs.days is not None:
             self._days = nsargs.days
+        self._pretend = nsargs.pretend
         return self._call_locked, [self._cleanup, nsargs.repo]
 
     def _cleanup(self, entropy_server):

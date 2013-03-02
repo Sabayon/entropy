@@ -75,6 +75,9 @@ class EitPush(EitCommand):
         group.add_argument("--as", metavar="<repo>", default=None,
                            help=_("push as fake repository"),
                            dest="asrepo")
+        parser.add_argument("--pretend", action="store_true",
+                            default=False,
+                            help=_("show what would be done"))
 
         return parser
 
@@ -137,6 +140,7 @@ repository) by pushing updated data.
         if nsargs.repo is not None:
             self._repositories.append(nsargs.repo)
         self._as_repository_id = nsargs.asrepo
+        self._pretend = nsargs.pretend
 
         return self._call_locked, [self._push, nsargs.repo]
 

@@ -11,7 +11,7 @@ eit-push - push repository packages and metadata
 
 SYNOPSIS
 --------
-eit push [-h] [--quick] [--all | --as <repo>] [<repo>]
+eit push [-h] [--quick] [--all | --as <repo>] [--pretend] [<repo>]
 
 
 INTRODUCTION
@@ -44,6 +44,9 @@ OPTIONAL ARGUMENTS
 
 *--as*=<repo>::
     push as fake repository
+
+*--pretend*::
+    show what would be done
 
 
 

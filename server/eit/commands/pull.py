@@ -62,6 +62,9 @@ class EitPull(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
+        parser.add_argument("--pretend", action="store_true",
+                            default=False,
+                            help=_("show what would be done"))
 
         group = parser.add_mutually_exclusive_group()
         group.add_argument("--all", action="store_true",
@@ -126,6 +129,7 @@ repository) by pulling updated data.
         self._all = nsargs.all
         if nsargs.repo is not None:
             self._repositories.append(nsargs.repo)
+        self._pretend = nsargs.pretend
 
         return self._call_locked, [self._pull, nsargs.repo]
 

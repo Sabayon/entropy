@@ -11,7 +11,7 @@ eit-cleanup - clean expired packages from a repository
 
 SYNOPSIS
 --------
-eit cleanup [-h] [--quick] [--days DAYS] [<repo>]
+eit cleanup [-h] [--quick] [--pretend] [--days DAYS] [<repo>]
 
 
 INTRODUCTION
@@ -44,6 +44,9 @@ OPTIONAL ARGUMENTS
 
 *--quick*::
     no stupid questions
+
+*--pretend*::
+    show what would be done
 
 *--days*::
     expired since how many days
