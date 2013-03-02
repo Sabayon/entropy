@@ -2256,9 +2256,9 @@ class Server(object):
             if expired:
                 remove.append(extra_package_rel)
             else:
-                expire.append(package_rel)
+                expire.append(extra_package_rel)
                 if weak_package_files:
-                    weaken.append(package_rel)
+                    weaken.append(extra_package_rel)
 
         if not (remove or weaken or expire):
             self._entropy.output(
@@ -2308,7 +2308,7 @@ class Server(object):
             self._entropy.output(
                 "[%s] %s: %s" % (
                         brown(branch),
-                        blue(_("remove")),
+                        blue(_("expire")),
                         darkgreen(package),
                     ),
                 importance = 1,
