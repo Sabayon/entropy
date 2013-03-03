@@ -1203,6 +1203,7 @@ class Server(object):
         removal_queue = set()
         fine_queue = set()
         branch = self._settings['repositories']['branch']
+        pkg_ext = etpConst['packagesext']
 
         def _account_extra_packages(local_package, queue):
             repo = self._entropy.open_repository(repository_id)
@@ -1217,7 +1218,7 @@ class Server(object):
 
         for local_package in upload_packages:
 
-            if not local_package.endswith(etpConst['packagesext']):
+            if not local_package.endswith(pkg_ext):
                 continue
 
             if local_package in remote_packages:
@@ -1247,7 +1248,10 @@ class Server(object):
         # we have to upload it we have local_packages and remote_packages
         for local_package in local_packages:
 
-            if not local_package.endswith(etpConst['packagesext']):
+            if not local_package.endswith(pkg_ext):
+                continue
+            # ignore file if its .weak alter-ego exists
+            if self._weaken_file_exists(repository_id, local_package):
                 continue
 
             if local_package in remote_packages:
@@ -1272,7 +1276,7 @@ class Server(object):
         # Fill download_queue and removal_queue
         for remote_package in remote_packages:
 
-            if not remote_package.endswith(etpConst['packagesext']):
+            if not remote_package.endswith(pkg_ext):
                 continue
 
             if remote_package in local_packages:
