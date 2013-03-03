@@ -1043,6 +1043,15 @@ class Server(object):
         )
         self._entropy.output(
             "%s:  %s" % (
+                brown(_("Packages to be downloaded")),
+                brown(str(len(download))),
+            ),
+            importance = 0,
+            level = "info",
+            header = blue(" @@ ")
+        )
+        self._entropy.output(
+            "%s:  %s" % (
                 bold(_("Packages to be uploaded")),
                 bold(str(len(upload))),
             ),
