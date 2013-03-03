@@ -915,20 +915,31 @@ class Server(object):
             return local_files, local_packages
 
         branch = self._settings['repositories']['branch']
-        pkg_files = self._entropy._get_basedir_pkg_listing(base_dir,
-            etpConst['packagesext'], branch = branch)
-
         pkg_ext = etpConst['packagesext']
+
+        pkg_files = set(self._entropy._get_basedir_pkg_listing(base_dir,
+            pkg_ext, branch = branch))
+
         weak_ext = etpConst['packagesweakfileext']
         weak_ext_len = len(weak_ext)
         weak_pkg_ext = pkg_ext + weak_ext
 
+        def _map_weak_ext(path):
+            return path[:-weak_ext_len]
+
+        if weak_files:
+            pkg_files |= set(
+                map(
+                    _map_weak_ext,
+                    self._entropy._get_basedir_pkg_listing(
+                        base_dir,
+                        weak_pkg_ext,
+                        branch = branch))
+                )
+
         for package in pkg_files:
             if package.endswith(pkg_ext):
                 local_packages.add(package)
-                local_files += 1
-            elif weak_files and package.endswith(weak_pkg_ext):
-                local_packages.add(package[:-weak_ext_len])
                 local_files += 1
 
         return local_files, local_packages
