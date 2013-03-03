@@ -1977,6 +1977,22 @@ class Server(object):
             return True
         return False
 
+    def _expiration_file_exists(self, repository_id, package_rel):
+        """
+        Return whether the expiration file exists for the given package.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param package_rel: package relative url, as returned by
+            EntropyRepository.retrieveDownloadURL
+        @type package_rel: string
+        """
+        pkg_path = self._entropy.complete_local_package_path(package_rel,
+            repository_id)
+
+        pkg_path += etpConst['packagesexpirationfileext']
+        return os.path.lexists(pkg_path)
+
     def _create_expiration_file(self, repository_id, package_rel):
         """
         Mark the package file as expired by creating an .expired file
@@ -2246,7 +2262,8 @@ class Server(object):
             if expired:
                 remove.append(package_rel)
             else:
-                expire.append(package_rel)
+                if not self._expiration_file_exists(repository_id, package_rel):
+                    expire.append(package_rel)
                 if weak_package_files:
                     weaken.append(package_rel)
 
@@ -2256,7 +2273,9 @@ class Server(object):
             if expired:
                 remove.append(extra_package_rel)
             else:
-                expire.append(extra_package_rel)
+                if not self._expiration_file_exists(
+                    repository_id, extra_package_rel):
+                    expire.append(extra_package_rel)
                 if weak_package_files:
                     weaken.append(extra_package_rel)
 
