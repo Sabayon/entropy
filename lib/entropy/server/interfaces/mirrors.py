@@ -2280,7 +2280,7 @@ class Server(object):
             else:
                 if not self._expiration_file_exists(repository_id, package_rel):
                     expire.append(package_rel)
-                if weak_package_files and self._weaken_file_exists(
+                if weak_package_files and not self._weaken_file_exists(
                     repository_id, package_rel):
                     weaken.append(package_rel)
 
@@ -2293,7 +2293,7 @@ class Server(object):
                 if not self._expiration_file_exists(
                     repository_id, extra_package_rel):
                     expire.append(extra_package_rel)
-                if weak_package_files and self._weaken_file_exists(
+                if weak_package_files and not self._weaken_file_exists(
                     repository_id, extra_package_rel):
                     weaken.append(extra_package_rel)
 
