@@ -1280,6 +1280,11 @@ class Server(object):
                 continue
 
             if remote_package in local_packages:
+
+                # ignore file if its .weak alter-ego exists
+                if self._weaken_file_exists(repository_id, remote_package):
+                    continue
+
                 local_filepath = self._entropy.complete_local_package_path(
                     remote_package, repository_id)
                 local_size = entropy.tools.get_file_size(local_filepath)
