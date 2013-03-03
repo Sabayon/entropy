@@ -904,7 +904,7 @@ class Server(object):
 
         return upload_files, upload_packages
 
-    def _calculate_local_package_files(self, repository_id):
+    def _calculate_local_package_files(self, repository_id, weak_files = False):
         local_files = 0
         local_packages = set()
         base_dir = self._entropy._get_local_repository_base_directory(
@@ -919,13 +919,19 @@ class Server(object):
             etpConst['packagesext'], branch = branch)
 
         pkg_ext = etpConst['packagesext']
+        weak_ext = etpConst['packagesweakfileext']
+        weak_ext_len = len(weak_ext)
+        weak_pkg_ext = pkg_ext + weak_ext
+
         for package in pkg_files:
             if package.endswith(pkg_ext):
                 local_packages.add(package)
                 local_files += 1
+            elif weak_files and package.endswith(weak_pkg_ext):
+                local_packages.add(package[:-weak_ext_len])
+                local_files += 1
 
         return local_files, local_packages
-
 
     def _show_local_sync_stats(self, upload_files, local_files):
         self._entropy.output(
@@ -1133,7 +1139,7 @@ class Server(object):
         upload_files, upload_packages = self._calculate_local_upload_files(
             repository_id)
         local_files, local_packages = self._calculate_local_package_files(
-            repository_id)
+            repository_id, weak_files = True)
         self._show_local_sync_stats(upload_files, local_files)
 
         self._entropy.output(
@@ -1668,7 +1674,6 @@ class Server(object):
         @rtype: tuple
         @todo: improve return data documentation
         """
-
         self._entropy.output(
             "[%s|%s] %s" % (
                 repository_id,
@@ -1680,7 +1685,6 @@ class Server(object):
             header = red(" @@ "),
             back = True
         )
-
 
         successfull_mirrors = set()
         broken_mirrors = set()
@@ -1758,6 +1762,7 @@ class Server(object):
                 remote_packages_data, repository_id)
             del upload_queue, download_queue, removal_queue, \
                 remote_packages_data
+
             self._show_sync_queues(upload, download, removal, copy_q, metainfo)
 
             if not len(upload)+len(download)+len(removal)+len(copy_q):
