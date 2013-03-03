@@ -1,3 +1,75 @@
+commit 7573e0e1d5194af9ffa58a2570a1ef2e53e5762e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 01:08:10 2013 +0000
+
+    Release Entropy 180
+
+commit b905b98525165755ac17545da01c607f5bd330c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 01:06:31 2013 +0000
+
+    [entropy.server] _calculate_sync_queues: ignore remote package file if a local .weak file exists
+
+commit 873ae5267b3f2ca6eba181cc50ef11cb9cbedde1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 01:03:52 2013 +0000
+
+    [entropy.server] _calculate_sync_queues: ignore local package file if .weak file exists
+
+commit 46577fe93f09b6d6f8f6f758db15cf8198ca05c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:54:01 2013 +0000
+
+    [entropy.server] _calculate_local_package_files: properly handle .weak files
+
+commit 3a49a8cc47459512dc4cfe9249261af8f7739b64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:39:54 2013 +0000
+
+    [entropy.server] _calculate_local_package_files: take into consideration .weak files
+
+commit 55110bf2308b7a82e09d71fe57335b1480123b06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:27:22 2013 +0000
+
+    [entropy.server] _show_sync_queues: inform about package download as well
+
+commit 552698d2d67eefdcf973c9bb17d2679793a7aa50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:18:51 2013 +0000
+
+    [entropy.server] tidy_mirrors: fix weak file detection logic
+
+commit 9f0bdb959ca3c65fb620578ee7b983e525261c2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:12:06 2013 +0000
+
+    [entropy.server] tidy_mirrors: do not show packages as weak if they've already marked
+
+commit be758fae7b4658dc1c7e397b314d1381ea0fd0d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 00:03:40 2013 +0000
+
+    [entropy.server] tidy_mirrors: do not show packages as expired if they've already marked
+
+commit 843c9ad6f85b51fcbfa170db9d9ae3a81ea59bc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 2 23:54:46 2013 +0000
+
+    [entropy.server] s/extra_package_rel/package_rel/ in tidy_mirrors()
+
+commit 5801abf88d23bbe198fdb34c9b7166a6ad2b184c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 2 23:50:08 2013 +0000
+
+    [entropy.server] fix typos in tidy_mirrors()
+
+commit 82770b26ae68f698e1156c814881f407de141e0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 2 18:58:16 2013 +0000
+
+    Tagging Entropy version 179
+
 commit ee38930096b8d8ea72023e41d3196b6eedfc5730
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Mar 2 18:58:16 2013 +0000
