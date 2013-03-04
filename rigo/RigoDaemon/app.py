@@ -741,6 +741,7 @@ class RigoDaemonService(dbus.service.Object):
 
         self._start_package_cache_timer()
         self._start_repositories_update_timer()
+        self._start_timed_reload()
 
     def _thread_dumper(self):
         """
@@ -765,6 +766,16 @@ class RigoDaemonService(dbus.service.Object):
             task.name = "ThreadDumper"
             task.daemon = True
             task.start()
+
+    def _start_timed_reload(self):
+        """
+        Start timer thread that reloads RigoDaemon every 24 hours.
+        This avoids the Python process to grow over time.
+        """
+        task = Timer(3600 * 24, self.reload)
+        task.daemon = True
+        task.name = "TimedReloadTimer"
+        task.start()
 
     def _start_package_cache_timer(self):
         """
