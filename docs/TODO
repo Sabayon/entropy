@@ -1,7 +1,6 @@
 Short term:
 
-- register EAPI of packages and do sanity check, force
-  Portage update if EAPI is not the latest (put etpapi to work).
+- use .ini-like layout for entropy config
 
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
