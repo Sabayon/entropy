@@ -673,22 +673,6 @@ class CalculatorsMixin:
             "_get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
                 deep_deps, dependencies,))
 
-        # satisfied dependencies filter support
-        # package.satisfied file support
-        satisfied_kw = '__%s__satisfied_ids' % (__name__,)
-        satisfied_data = self._settings.get(satisfied_kw)
-        if satisfied_data is None:
-            satisfied_list = self._settings['satisfied']
-            tmp_satisfied_data = set()
-            for atom in satisfied_list:
-                matches, m_res = self.atom_match(atom, multi_match = True,
-                    mask_filter = False, multi_repo = True,
-                    match_repo = match_repo)
-                if m_res == 0:
-                    tmp_satisfied_data |= matches
-            satisfied_data = tmp_satisfied_data
-            self._settings[satisfied_kw] = satisfied_data
-
         etp_cmp = entropy.dep.entropy_compare_versions
         etp_get_rev = entropy.dep.dep_get_entropy_revision
 
@@ -915,12 +899,6 @@ class CalculatorsMixin:
                                 (old_r_id, old_r_repo),
                                 from_atom, (r_id, r_repo),
                                 to_atom,))
-
-            # satisfied dependencies filter support
-            # package.satisfied file support
-            if (r_id, r_repo,) in satisfied_data:
-                push_to_cache(dependency, False)
-                continue # satisfied
 
             dbconn = self.open_repository(r_repo)
             try:
