@@ -471,10 +471,181 @@ class CalculatorsMixin:
 
         return matches
 
+    def _resolve_or_dependencies(self, dependencies, selected_matches,
+                                 _selected_matches_cache = None):
+        """
+        Resolve a simple or dependency like "foo;bar;baz?" by looking at the
+        currently installed packages and those that would be installed.
+        The outcome is the selected dependency, if possible.
+
+        @param dependencies: ordered list of or dependencies, recursion not
+            supported.
+        @type dependencies: list
+        @param selected_matches: a list of package matches that
+            compose the dependency graph.
+        @type selected_matches: list
+        @return: the new dependency string
+        @rtype: tuple
+        """
+        inst_repo = self._installed_repository
+        if _selected_matches_cache is None:
+            cache = {}
+        else:
+            cache = _selected_matches_cache
+
+        def _generate_keyslot_cache():
+            keyslot_map = {}
+            keyslot_set = set()
+            for package_id, repository_id in selected_matches:
+                repo = self.open_repository(repository_id)
+                keyslot = repo.retrieveKeySlot(package_id)
+                keyslot_set.add(keyslot)
+
+                obj = keyslot_map.setdefault(keyslot, set())
+                obj.add((package_id, repository_id))
+            cache['map'] = keyslot_map
+            cache['set'] = keyslot_set
+
+        selected = False
+        selected_matches_set = set(selected_matches)
+        for dep in dependencies:
+
+            # determine if dependency has been explicitly selected
+            matches, _pkg_rc = self.atom_match(
+                dep, multi_match = True, multi_repo = True)
+            common = set(matches) & selected_matches_set
+            if common:
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_simple_or_dependency, "
+                        "or dependency candidate => %s, "
+                        "has been explicitly selected. "
+                        "Found the dependency though." % (dep,))
+                dependency = dep
+                selected = True
+                break
+
+            package_ids, _pkg_rc = inst_repo.atomMatch(
+                dep, multiMatch = True)
+            if not package_ids:
+                # no matches, skip this.
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_simple_or_dependency, "
+                        "or dependency candidate => %s, no "
+                        "installed matches, skipping for now" % (dep,))
+                continue
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_resolve_simple_or_dependency, "
+                    "or dependency candidate => %s ?" % (
+                        dep,))
+
+            # generate cache now.
+            if not cache:
+                _generate_keyslot_cache()
+
+            dep_keyslot_set = set()
+            for package_id in package_ids:
+                dep_keyslot_set.add(
+                    inst_repo.retrieveKeySlot(package_id))
+            common = cache['set'] & dep_keyslot_set
+
+            if not common:
+                # there is nothing in common between the
+                # dependency and the selected matches.
+                # We found it !
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_simple_or_dependency, "
+                        "or dependency candidate => %s, "
+                        "no common keyslots between selected and this. "
+                        "Found the dependency though." % (dep,))
+                dependency = dep
+                selected = True
+                break
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_resolve_simple_or_dependency, "
+                    "or dependency candidate => %s, "
+                    "common slots with selected matches: %s "
+                    "(selected matches: %s)" % (
+                        dep, common, selected_matches,))
+
+            if common:
+                common_pkg_matches = set()
+                for keyslot in common:
+                    common_pkg_matches.update(cache['map'][keyslot])
+
+                # determining if the new packages are still matching
+                # the selected dependency in the or literal.
+                repo_matches, repo_rc = self.atom_match(
+                    dep, multi_match = True, multi_repo = True)
+                common = set(repo_matches) & common_pkg_matches
+
+                if const_debug_enabled():
+                    if common:
+                        const_debug_write(
+                            __name__,
+                            "_resolve_simple_or_dependency, "
+                            "or dependency candidate => %s, "
+                            "common slots with selected matches: %s "
+                            "(selected matches: %s)" % (
+                                dep, common, selected_matches,))
+                    else:
+                        const_debug_write(
+                            __name__,
+                            "_resolve_simple_or_dependency, "
+                            "or dependency candidate => %s, "
+                            "installing %s would make the dependency "
+                            "invalid." % (dep, common,))
+
+            if not common:
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_simple_or_dependency, "
+                        "or dependency candidate => %s, "
+                        "no common packages found. Sorry." % (
+                            dep,))
+                continue
+
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_resolve_simple_or_dependency, "
+                    "or dependency, selected => %s, from: %s" % (
+                        dep, dependencies,))
+            # found it, rewrite dependency and c_ids
+            dependency = dep
+            selected = True
+            break
+
+        if not selected:
+            # then pick the first, which is considered the default
+            # choice.
+            dependency = dependencies[0]
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_resolve_simple_or_dependency, "
+                    "or dependency candidate => %s, will "
+                    "pick this (the default one)" % (dependency,))
+
+        return dependency
+
     DISABLE_SLOT_INTERSECTION = os.getenv("ETP_DISABLE_SLOT_INTERSECTION")
 
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
-        relaxed_deps = False, depcache = None, match_repo = None):
+                                      relaxed_deps = False, depcache = None,
+                                      match_repo = None):
 
         inst_repo = self._installed_repository
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
@@ -484,7 +655,7 @@ class CalculatorsMixin:
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = inst_repo.checksum()
-            c_hash = "%s|%s|%s|%s|%s|%s" % (c_data, deep_deps,
+            c_hash = "%s|%s|%s|%s|%s|%s|v2" % (c_data, deep_deps,
                 client_checksum, relaxed_deps, ignore_spm_downgrades,
                 match_repo)
             c_hash = "%s_%s" % (
@@ -628,28 +799,6 @@ class CalculatorsMixin:
                 unsatisfied.add(dependency)
                 push_to_cache(dependency, True)
                 continue
-
-            if dependency.endswith(etpConst['entropyordepquestion']):
-                # need to rewrite c_ids and dependency to only focus on
-                # the installed dep.
-                deps = dependency[:-1].split(etpConst['entropyordepsep'])
-                for dep in deps:
-                    or_c_ids, or_c_rc = inst_repo.atomMatch(
-                        dep, multiMatch = True)
-                    if or_c_rc != 0:
-                        continue
-                    common_c_ids = c_ids & or_c_ids
-                    if common_c_ids:
-                        if const_debug_enabled():
-                            const_debug_write(
-                                __name__,
-                                "_get_unsatisfied_dependencies, "
-                                "or dependency, selected => %s, from: %s" % (
-                                    dep, deps,))
-                        # found it, rewrite dependency and c_ids
-                        dependency = dep
-                        c_ids = or_c_ids
-                        break
 
             # support for app-foo/foo-123~-1
             # -1 revision means, always pull the latest
@@ -1015,7 +1164,7 @@ class CalculatorsMixin:
         conflicts.add(c_idpackage)
 
     def __generate_dependency_tree_resolve_conditional(self, unsatisfied_deps,
-        selected_matches):
+        selected_matches, selected_matches_cache):
 
         # expand list of package dependencies evaluating conditionals
         unsatisfied_deps = entropy.dep.expand_dependencies(unsatisfied_deps,
@@ -1025,20 +1174,10 @@ class CalculatorsMixin:
         def _simple_or_dep_map(dependency):
             # simple or dependency format support.
             if dependency.endswith(etpConst['entropyordepquestion']):
-                # or dependency!
                 deps = dependency[:-1].split(etpConst['entropyordepsep'])
-                for dep in deps:
-                    matches, rc = self.atom_match(dep, multi_match = True,
-                        multi_repo = True)
-                    if rc == 0:
-                        difference = set(matches) - set(selected_matches)
-                        if len(difference) != len(matches):
-                            # ok, there is something in the selected data
-                            if const_debug_enabled():
-                                const_debug_write(__name__,
-                                "__generate_dependency_tree_resolve_conditional"
-                                " replaced %s with %s" % (dependency, dep,))
-                            return dep
+                return self._resolve_or_dependencies(
+                    deps, selected_matches,
+                    _selected_matches_cache=selected_matches_cache)
             return dependency
 
         return set(map(_simple_or_dep_map, unsatisfied_deps))
@@ -1048,7 +1187,7 @@ class CalculatorsMixin:
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
         stack, graph, deps_not_found, conflicts, unsat_cache, relaxed_deps,
         build_deps, deep_deps, empty_deps, recursive, selected_matches,
-        elements_cache):
+        elements_cache, selected_matches_cache):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
@@ -1070,7 +1209,7 @@ class CalculatorsMixin:
                 "%s, %s, current dependency list => %s" % (
                     pkg_match, atom, myundeps,))
         myundeps = self.__generate_dependency_tree_resolve_conditional(
-            myundeps, selected_matches)
+            myundeps, selected_matches, selected_matches_cache)
         if const_debug_enabled():
             const_debug_write(__name__,
                 "__generate_dependency_tree_analyze_deplist conditionals, "
@@ -1151,6 +1290,8 @@ class CalculatorsMixin:
             # nvidia-drivers pulls in nvidia-userspace which has nvidia-drivers
             # listed as post-dependency
             post_deps = list(filter(_post_deps_filter, post_deps))
+            post_deps = self.__generate_dependency_tree_resolve_conditional(
+                post_deps, selected_matches, selected_matches_cache)
             post_deps = self._get_unsatisfied_dependencies(post_deps,
                 deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                 depcache = unsat_cache)
@@ -1191,7 +1332,7 @@ class CalculatorsMixin:
         empty_deps = False, relaxed_deps = False, build_deps = False,
         only_deps = False, deep_deps = False, unsatisfied_deps_cache = None,
         elements_cache = None, post_deps_cache = None, recursive = True,
-        selected_matches = None):
+        selected_matches = None, selected_matches_cache = None):
 
         pkg_id, pkg_repo = matched_atom
         if (pkg_id == -1) or (pkg_repo == 1):
@@ -1299,7 +1440,7 @@ class CalculatorsMixin:
                     pkg_match, repo_db, stack, graph, deps_not_found,
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
                     build_deps, deep_deps, empty_deps, recursive,
-                    selected_matches, elements_cache)
+                    selected_matches, elements_cache, selected_matches_cache)
 
             if post_dep_matches:
                 obj = post_deps_cache.setdefault(pkg_match, set())
@@ -1936,7 +2077,7 @@ class CalculatorsMixin:
         only_deps = False, quiet = False, recursive = True):
 
         sha = hashlib.sha1()
-        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
+        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|%s|v3" % (
                 repr(sorted(package_matches)),
                 empty_deps,
                 deep_deps,
@@ -1982,6 +2123,7 @@ class CalculatorsMixin:
         sort_dep_text = _("Sorting dependencies")
         unsat_deps_cache = {}
         elements_cache = set()
+        selected_matches_cache = {}
         post_deps_cache = {}
         matchfilter = set()
         for matched_atom in package_matches:
@@ -2016,7 +2158,8 @@ class CalculatorsMixin:
                     elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
                     post_deps_cache = post_deps_cache,
-                    recursive = recursive, selected_matches = package_matches
+                    recursive = recursive, selected_matches = package_matches,
+                    selected_matches_cache = selected_matches_cache
                 )
             except DependenciesNotFound as err:
                 deps_not_found |= err.value
