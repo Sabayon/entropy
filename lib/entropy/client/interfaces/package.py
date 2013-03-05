@@ -4297,24 +4297,20 @@ class Package:
         # generate metadata dictionary
         self._generate_metadata()
 
-    @staticmethod
-    def splitdebug_enabled(entropy_client, pkg_match):
+    @classmethod
+    def splitdebug_enabled(cls, entropy_client, pkg_match):
         """
         Return whether splitdebug is enabled for package.
         """
         settings = entropy_client.Settings()
         # this is a SystemSettings.CachingList object
-        split_data = settings['splitdebug']
-        if not split_data:
-            # no entries, consider splitdebug always enabled
-            return True
+        splitdebug = settings['splitdebug']
+        splitdebug_mask = settings['splitdebug_mask']
 
-        pkg_id, pkg_repo = pkg_match
-        pkg_matches = split_data.get()
-        if pkg_matches is None:
+        def _generate_cache(lst_obj):
             # compute the package matching then
             pkg_matches = set()
-            for dep in settings['splitdebug']:
+            for dep in lst_obj:
                 dep, repo_ids = entropy.dep.dep_get_match_in_repos(dep)
                 if repo_ids is not None:
                     if pkg_repo not in repo_ids:
@@ -4323,10 +4319,38 @@ class Package:
                 dep_matches, rc = entropy_client.atom_match(
                     dep, multi_match=True, multi_repo=True)
                 pkg_matches |= dep_matches
+
             # set cache back
-            split_data.set(pkg_matches)
-        # determine if it's enabled then
-        enabled = pkg_match in pkg_matches
+            lst_obj.set(pkg_matches)
+            return pkg_matches
+
+        enabled = False
+        if not splitdebug:
+            # no entries, consider splitdebug always enabled
+            enabled = True
+        else:
+            # whitelist support
+            pkg_id, pkg_repo = pkg_match
+            pkg_matches = splitdebug.get()
+
+            if pkg_matches is None:
+                pkg_matches = _generate_cache(splitdebug)
+
+            # determine if it's enabled then
+            enabled = pkg_match in pkg_matches
+
+        # if it's enabled, check whether it's blacklisted
+        if enabled:
+            # blacklist support
+            pkg_id, pkg_repo = pkg_match
+            pkg_matches = splitdebug_mask.get()
+
+            if pkg_matches is None:
+                # compute the package matching
+                pkg_matches = _generate_cache(splitdebug_mask)
+
+            enabled = pkg_match not in pkg_matches
+
         return enabled
 
     def _package_splitdebug_enabled(self, pkg_match):

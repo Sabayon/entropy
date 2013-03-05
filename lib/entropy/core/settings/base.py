@@ -298,6 +298,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             # selectively enable splitdebug for packages
             'splitdebug': os.path.join(
                     packages_dir, "package.splitdebug"),
+            'splitdebug_mask': os.path.join(
+                    packages_dir, "package.splitdebug.mask"),
              # masking configuration files
             'license_mask': os.path.join(
                     packages_dir, "license.mask"),
@@ -328,8 +330,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'keywords', 'unmask', 'mask', 'license_mask',
             'license_accept', 'system_mask', 'system_package_sets',
             'system_dirs', 'system_dirs_mask', 'extra_ldpaths',
-            'splitdebug', 'system', 'system_rev_symlinks', 'hw_hash',
-            'broken_syms', 'broken_libs_mask', 'broken_links_mask'
+            'splitdebug', 'splitdebug_mask', 'system',
+            'system_rev_symlinks', 'hw_hash', 'broken_syms',
+            'broken_libs_mask', 'broken_links_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
@@ -931,7 +934,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         Parser returning packages for which the splitdebug feature
         should be enabled. Splitdebug is about installing /usr/lib/debug
-        files into system. If no entries are listed in here and
+        files into the system. If no entries are listed in here and
         splitdebug is enabled in client.conf, the feature will be considered
         enabled for any package.
 
@@ -939,6 +942,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         return self.__generic_parser(self.__setting_files['splitdebug'],
+            comment_tag = self.__pkg_comment_tag)
+
+    def _splitdebug_mask_parser(self):
+        """
+        Parser returning packages for which the splitdebug feature
+        should be always disabled. This takes the precedence over
+        package.splitdebug.
+        Splitdebug is about installing /usr/lib/debug files into the system.
+        If no entries are listed in here and splitdebug is enabled in
+        client.conf, the feature will be considered enabled for any package.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        return self.__generic_parser(self.__setting_files['splitdebug_mask'],
             comment_tag = self.__pkg_comment_tag)
 
     def _license_mask_parser(self):
