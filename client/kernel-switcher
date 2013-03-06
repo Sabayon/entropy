@@ -80,7 +80,9 @@ if __name__ == "__main__":
             return inst_rc
 
         def _switch(etp_client):
+            switcher = kswitch.KernelSwitcher(etp_client)
             kernel_package = f_nsargs.kernel
+
             pkg_id, pkg_repo = etp_client.atom_match(kernel_package)
             if pkg_id == -1:
                 print_error("%s: %s" % (
@@ -89,7 +91,7 @@ if __name__ == "__main__":
                 return 1
 
             kernel_match = (pkg_id, pkg_repo)
-            kernel_matches = kswitch.list_kernels(etp_client)
+            kernel_matches = switcher.list()
             if kernel_match not in kernel_matches:
                 print_error(
                     "%s: %s" % (brown(_("Not a kernel")),
@@ -97,8 +99,8 @@ if __name__ == "__main__":
                 return 1
 
             try:
-                return kswitch.switch_kernel(
-                    etp_client, kernel_match, _install,
+                return switcher.switch(
+                    kernel_match, _install,
                     from_running=f_nsargs.from_running)
             except kswitch.CannotFindRunningKernel:
                 print_error(
@@ -116,7 +118,8 @@ if __name__ == "__main__":
     def _list_kernels(f_nsargs):
 
         def _list(etp_client):
-            kernels = kswitch.list_kernels(etp_client)
+            switcher = kswitch.KernelSwitcher(etp_client)
+            kernels = switcher.list()
             if not kernels:
                 print_warning(_("No kernel packages found"))
                 return 1

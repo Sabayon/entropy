@@ -31,35 +31,11 @@ KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
 RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
 
 
-def _get_kernels(entropy_client):
-    matches, x_rc = entropy_client.atom_match(KERNEL_BINARY_VIRTUAL,
-        multi_match = True, multi_repo = True)
-    return matches, x_rc
-
-
 def _remove_tag_from_slot(slot):
     if not hasattr(entropy.dep, "remove_tag_from_slot"):
         # backward compatibility
         return slot[::-1].split(",", 1)[-1][::-1]
     return entropy.dep.remove_tag_from_slot(slot)
-
-
-def _get_target_tag(entropy_client, kernel_match):
-    try:
-        matches = entropy_client.get_reverse_queue([kernel_match],
-            recursive = False)
-    except DependenciesNotRemovable:
-        # wtf should not happen
-        raise
-    tags = set()
-    for pkg_id, pkg_repo in matches:
-        tag = entropy_client.open_repository(pkg_repo).retrieveTag(pkg_id)
-        if tag:
-            tags.add(tag)
-
-    if tags:
-        tags = sorted(tags, reverse = True)
-        return tags.pop(0)
 
 
 def _setup_kernel_symlink(target_tag):
@@ -154,117 +130,158 @@ class CannotFindRunningKernel(EntropyException):
     """
 
 
-def switch_kernel(entropy_client, kernel_match, installer,
-                  from_running=False):
-    """
-    Execute a kernel switch to the given kernel package.
-    Caller is expected to acquire any relevant Entropy lock before
-    calling this function.
+class KernelSwitcher(object):
 
-    @param entropy_client: an Entropy Client object instance
-    @type entropy_client: entropy.client.interfaces.Client
-    @param kernel_match: an Entropy package match referencing
-        a valid kernel package
-    @type kernel_match: tuple
-    @param installer: a callable function that is expected to install
-        the provided package matches (calculating dependencies, etc).
-        This function must have the following signature:
-        <int> exit_status callable(<Client> entropy_client,
-                                   <list> package_matches).
-        If you plan on implementing something like --pretend,
-        make sure to return a non-zero status as well.
-    @type installer: callable
-    @keyword from_running: if True, determine the current kernel from the
-        running system
-    @type from_running: bool
-    @return: the execution status, 0 means fine
-    @rtype: int
-    """
-    pkg_id, pkg_repo = kernel_match
-    kernel_atom = entropy_client.open_repository(
-        pkg_repo).retrieveAtom(pkg_id)
-    # this can be None !
-    target_tag = _get_target_tag(entropy_client, kernel_match)
+    def __init__(self, entropy_client):
+        """
+        KernelSwitcher constructor.
 
-    inst_repo = entropy_client.installed_repository()
-    # try to look for the currently running kernel first if
-    # --from-running is specified (use uname -r)
-    latest_kernel = -1
-    if from_running:
+        @param entropy_client: an Entropy Client object instance
+        @type entropy_client: entropy.client.interfaces.Client
+        """
+        self._entropy = entropy_client
+
+    def _get_kernels(self):
+        """
+        Return a list of kernel package matches.
+        """
+        return self._entropy.atom_match(
+            KERNEL_BINARY_VIRTUAL,
+            multi_match=True, multi_repo=True)
+
+    def _get_target_tag(self, kernel_match):
+        """
+        Get the package tag for the given kernel package match.
+
+        @param kernel_match: an Entropy package match referencing
+            a valid kernel package
+        @type kernel_match: tuple
+        """
         try:
-            uname_r = os.uname()[2]
-        except OSError:
-            uname_r = None
-        except IndexError:
-            uname_r = None
+            matches = self._entropy.get_reverse_queue(
+                [kernel_match], recursive=False)
+        except DependenciesNotRemovable:
+            # wtf should not happen
+            raise
 
-        pkg_file = None
-        if uname_r is not None:
-            pkg_file = _guess_kernel_package_file(uname_r)
-        if pkg_file is not None:
-            _pkg_ids = list(inst_repo.searchBelongs(pkg_file))
-            # if more than one, get the latest
-            _pkg_ids.sort(reverse=True)
-            if _pkg_ids:
-                latest_kernel = _pkg_ids[0]
+        tags = set()
+        for pkg_id, pkg_repo in matches:
+            tag = self._entropy.open_repository(
+                pkg_repo).retrieveTag(pkg_id)
+            if tag:
+                tags.add(tag)
+
+        if tags:
+            tags = sorted(tags, reverse = True)
+            return tags.pop(0)
+
+    def switch(self, kernel_match, installer, from_running=False):
+        """
+        Execute a kernel switch to the given kernel package.
+        Caller is expected to acquire any relevant Entropy lock before
+        calling this function.
+
+        @param kernel_match: an Entropy package match referencing
+            a valid kernel package
+        @type kernel_match: tuple
+        @param installer: a callable function that is expected to install
+            the provided package matches (calculating dependencies, etc).
+            This function must have the following signature:
+            <int> exit_status callable(<Client> entropy_client,
+                                       <list> package_matches).
+            If you plan on implementing something like --pretend,
+            make sure to return a non-zero status as well.
+        @type installer: callable
+        @keyword from_running: if True, determine the current kernel from the
+            running system
+        @type from_running: bool
+        @return: the execution status, 0 means fine
+        @rtype: int
+        """
+        pkg_id, pkg_repo = kernel_match
+        kernel_atom = self._entropy.open_repository(
+            pkg_repo).retrieveAtom(pkg_id)
+        # this can be None !
+        target_tag = self._get_target_tag(kernel_match)
+
+        inst_repo = self._entropy.installed_repository()
+        # try to look for the currently running kernel first if
+        # --from-running is specified (use uname -r)
+        latest_kernel = -1
+        if from_running:
+            try:
+                uname_r = os.uname()[2]
+            except OSError:
+                uname_r = None
+            except IndexError:
+                uname_r = None
+
+            pkg_file = None
+            if uname_r is not None:
+                pkg_file = _guess_kernel_package_file(uname_r)
+            if pkg_file is not None:
+                _pkg_ids = list(inst_repo.searchBelongs(pkg_file))
+                # if more than one, get the latest
+                _pkg_ids.sort(reverse=True)
+                if _pkg_ids:
+                    latest_kernel = _pkg_ids[0]
+            if latest_kernel == -1:
+                raise CannotFindRunningKernel(
+                    "Cannot find the currently running kernel")
+
         if latest_kernel == -1:
-            raise CannotFindRunningKernel(
-                "Cannot find the currently running kernel")
+            latest_kernel, _k_rc = inst_repo.atomMatch(
+                KERNEL_BINARY_VIRTUAL)
+        installed_revdeps = []
+        if (latest_kernel != -1) and target_tag:
+            installed_revdeps = self._entropy.get_removal_queue(
+                [latest_kernel], recursive = False)
 
-    if latest_kernel == -1:
-        latest_kernel, _k_rc = inst_repo.atomMatch(
-            KERNEL_BINARY_VIRTUAL)
-    installed_revdeps = []
-    if (latest_kernel != -1) and target_tag:
-        installed_revdeps = entropy_client.get_removal_queue(
-            [latest_kernel], recursive = False)
+        # only pull in packages that are installed at this time.
+        def _installed_pkgs_translator(inst_pkg_id):
+            if inst_pkg_id == latest_kernel:
+                # will be added later
+                return None
+            key, slot = inst_repo.retrieveKeySlot(inst_pkg_id)
+            target_slot = _remove_tag_from_slot(slot) + "," + target_tag
 
-    # only pull in packages that are installed at this time.
-    def _installed_pkgs_translator(inst_pkg_id):
-        if inst_pkg_id == latest_kernel:
-            # will be added later
-            return None
-        key, slot = inst_repo.retrieveKeySlot(inst_pkg_id)
-        target_slot = _remove_tag_from_slot(slot) + "," + target_tag
+            pkg_id, pkg_repo = self._entropy.atom_match(key,
+                match_slot = target_slot)
+            if pkg_id == -1:
+                return None
+            return pkg_id, pkg_repo
 
-        pkg_id, pkg_repo = entropy_client.atom_match(key,
-            match_slot = target_slot)
-        if pkg_id == -1:
-            return None
-        return pkg_id, pkg_repo
+        matches = map(_installed_pkgs_translator, installed_revdeps)
+        matches = [x for x in matches if x is not None]
+        matches.append(kernel_match)
 
-    matches = map(_installed_pkgs_translator, installed_revdeps)
-    matches = [x for x in matches if x is not None]
-    matches.append(kernel_match)
+        opengl = _get_opengl_impl()
+        rc = installer(self._entropy, matches)
+        if rc == 0:
+            _set_opengl_impl(opengl)
+            if target_tag:
+                # if target_tag is None, we are unable to set the symlink
+                _setup_kernel_symlink(target_tag)
+            else:
+                # try to guess, sigh, for now
+                guessed_kernel_name = _guess_kernel_name(kernel_atom)
+                if guessed_kernel_name:
+                    _setup_kernel_symlink(guessed_kernel_name)
+            _show_kernel_warnings(kernel_atom)
 
-    opengl = _get_opengl_impl()
-    rc = installer(entropy_client, matches)
-    if rc == 0:
-        _set_opengl_impl(opengl)
-        if target_tag:
-            # if target_tag is None, we are unable to set the symlink
-            _setup_kernel_symlink(target_tag)
-        else:
-            # try to guess, sigh, for now
-            guessed_kernel_name = _guess_kernel_name(kernel_atom)
-            if guessed_kernel_name:
-                _setup_kernel_symlink(guessed_kernel_name)
-        _show_kernel_warnings(kernel_atom)
+        return rc
 
-    return rc
+    def list(self):
+        """
+        Return a sorted (by atom) list of currently available
+        kernels.
 
-
-def list_kernels(entropy_client):
-    """
-    Return a sorted (by atom) list of currently available
-    kernels.
-
-    @param entropy_client: an Entropy Client object instance
-    @type entropy_client: entropy.client.interfaces.Client
-    @return: a sorted list of Entropy package matches
-    @rtype: list
-    """
-    matches, _rc = _get_kernels(entropy_client)
-    key_sorter = lambda x: \
-        entropy_client.open_repository(x[1]).retrieveAtom(x[0])
-    return sorted(matches, key=key_sorter)
+        @param entropy_client: an Entropy Client object instance
+        @type entropy_client: entropy.client.interfaces.Client
+        @return: a sorted list of Entropy package matches
+        @rtype: list
+        """
+        matches, _rc = self._get_kernels()
+        key_sorter = lambda x: \
+            self._entropy.open_repository(x[1]).retrieveAtom(x[0])
+        return sorted(matches, key=key_sorter)
