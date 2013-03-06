@@ -1,0 +1,126 @@
+#!/usr/bin/python
+import sys
+sys.path.insert(0, "/usr/lib/entropy/lib")
+sys.path.insert(0, "/usr/lib/entropy/client")
+sys.path.insert(0, "/usr/lib/entropy/kernel-switcher")
+sys.path.insert(0, "../lib")
+sys.path.insert(0, "../client")
+sys.path.insert(0, "../kernel-switcher")
+
+import os
+import argparse
+
+from entropy.output import brown, print_warning, print_error
+from entropy.i18n import _
+from entropy.client.interfaces import Client
+import entropy.dep
+import entropy.tools
+
+from solo.utils import print_package_info
+
+import kswitch
+
+
+if __name__ == "__main__":
+
+    app_name = os.path.basename(sys.argv[0])
+    parser = argparse.ArgumentParser(
+        description=_("Sabayon Kernel Switcher"),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        prog=app_name)
+
+    def _add_standard_args(_parser, restricted):
+        _parser.add_argument("--quiet", "-q", action="store_true",
+                            default=False,
+                            help=_("quiet mode"))
+        _parser.add_argument("--verbose", "-v", action="store_true",
+                            default=False,
+                            help=_("verbose mode"))
+        if not restricted:
+            _parser.add_argument("--ask", "-a", action="store_true",
+                                 default=False,
+                                 help=_("ask confirmation"))
+            _parser.add_argument("--pretend", "-p", action="store_true",
+                                 default=False,
+                                 help=_("just show what would be done"))
+
+    subparsers = parser.add_subparsers(
+        title="kernel-switcher",
+        description=_("available commands"))
+
+    def _wrap_locked_api(method, *args, **kwargs):
+        etp_client = None
+        acquired = False
+        try:
+            etp_client = Client()
+            acquired = entropy.tools.acquire_entropy_locks(etp_client)
+            if not acquired:
+                print_error(brown(_("Another Entropy is currently running.")))
+                return 1
+            return method(etp_client, *args, **kwargs)
+        finally:
+            if acquired and (etp_client is not None):
+                entropy.tools.release_entropy_locks(etp_client)
+            if etp_client is not None:
+                etp_client.shutdown()
+
+    def _switch_kernel(f_nsargs):
+        return _wrap_locked_api(
+            kswitch.switch_kernel,
+            f_nsargs.kernel, pretend=f_nsargs.pretend,
+            ask=f_nsargs.ask, verbose=f_nsargs.verbose,
+            quiet=f_nsargs.quiet,
+            from_running=f_nsargs.from_running)
+
+    def _list_kernels(f_nsargs):
+
+        def _list(etp_client):
+            kernels = kswitch.list_kernels(etp_client)
+            if not kernels:
+                print_warning(_("No kernel packages found"))
+                return 1
+            for pkg_id, pkg_repo in kernels:
+                repo = etp_client.open_repository(pkg_repo)
+                print_package_info(
+                    pkg_id, etp_client, repo,
+                    show_repo_if_quiet = True,
+                    extended=f_nsargs.verbose,
+                    quiet=f_nsargs.quiet)
+            return 0
+
+        return _wrap_locked_api(_list)
+
+    switch_parser = subparsers.add_parser(
+        "switch", help=_("install a new or just another kernel"))
+    switch_parser.set_defaults(func=_switch_kernel)
+    switch_parser.add_argument(
+        "--from-running", action="store_true",
+        default=False,
+        help=_("use 'uname -r' to determine the running kernel"))
+    switch_parser.add_argument(
+        "kernel", metavar="<kernel>",
+        help=_("the new kernel package dependency name"))
+    _add_standard_args(switch_parser, False)
+
+    list_parser = subparsers.add_parser(
+        "list", help=_("list kernels"))
+    list_parser.set_defaults(func=_list_kernels)
+    _add_standard_args(list_parser, True)
+
+    help_parser = subparsers.add_parser(
+        "help", help=_("this help"))
+    def _print_help(*_args):
+        parser.print_help()
+    help_parser.set_defaults(func=_print_help)
+
+    try:
+        nsargs = parser.parse_args(sys.argv[1:])
+    except IOError as err:
+        parser.print_help()
+        raise SystemExit(1)
+
+    try:
+        rc = nsargs.func(nsargs)
+    except KeyboardInterrupt:
+        rc = 1
+    raise SystemExit(rc)

@@ -21,7 +21,6 @@ install:
 	install -m 644 solo/commands/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/solo/commands/
 	install -m 644 revision $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 equo.py $(DESTDIR)/$(BINDIR)/equo
-	install -m 755 ../services/kernel-switcher $(DESTDIR)$(BINDIR)/
 
 	# copy zsh completion
 	install -d $(DESTDIR)$(PREFIX)/share/zsh/site-functions
