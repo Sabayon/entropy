@@ -9,13 +9,15 @@ sys.path.insert(0, "../kernel-switcher")
 
 import os
 import argparse
+import functools
 
-from entropy.output import brown, print_warning, print_error
+from entropy.output import brown, print_warning, print_error, teal
 from entropy.i18n import _
 from entropy.client.interfaces import Client
 import entropy.dep
 import entropy.tools
 
+from solo.commands.install import SoloInstall
 from solo.utils import print_package_info
 
 import kswitch
@@ -65,12 +67,51 @@ if __name__ == "__main__":
                 etp_client.shutdown()
 
     def _switch_kernel(f_nsargs):
-        return _wrap_locked_api(
-            kswitch.switch_kernel,
-            f_nsargs.kernel, pretend=f_nsargs.pretend,
-            ask=f_nsargs.ask, verbose=f_nsargs.verbose,
-            quiet=f_nsargs.quiet,
-            from_running=f_nsargs.from_running)
+
+        def _install(etp_client, matches):
+            install = SoloInstall([])
+            inst_rc, _show_cfgupd = install._install_action(
+                etp_client, True, True,
+                f_nsargs.pretend, f_nsargs.ask, f_nsargs.verbose,
+                f_nsargs.quiet, False, False, False, False, False,
+                False, False, 1, [], package_matches=list(matches))
+            if _show_cfgupd:
+                install._show_config_files_update(etp_client)
+            if f_nsargs.pretend:
+                # this won't trigger any post install action
+                return 1
+            return inst_rc
+
+        def _switch(etp_client):
+            kernel_package = f_nsargs.kernel
+            pkg_id, pkg_repo = etp_client.atom_match(kernel_package)
+            if pkg_id == -1:
+                print_error("%s: %s" % (
+                        brown(_("Package does not exist")),
+                        teal(kernel_package),))
+                return 1
+
+            kernel_match = (pkg_id, pkg_repo)
+            kernel_matches = kswitch.list_kernels(etp_client)
+            if kernel_match not in kernel_matches:
+                print_error(
+                    "%s: %s" % (brown(_("Not a kernel")),
+                                teal(kernel_package),))
+                return 1
+
+            install_func = functools.partial(_install, etp_client)
+            try:
+                return kswitch.switch_kernel(
+                    etp_client, kernel_match, install_func,
+                    from_running=f_nsargs.from_running)
+            except kswitch.CannotFindRunningKernel:
+                print_error(
+                    brown(_("Cannot find your currently running kernel.")))
+                print_error(
+                    brown(_("Try without --from-running.")))
+                return 1
+
+        return _wrap_locked_api(_switch)
 
     def _list_kernels(f_nsargs):
 

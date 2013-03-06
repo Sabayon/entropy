@@ -17,14 +17,13 @@ import codecs
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
-from entropy.exceptions import DependenciesNotRemovable
+from entropy.exceptions import EntropyException, DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.output import teal, purple, darkgreen, brown, print_info, \
-    red, print_warning, print_error
+    red, print_warning
+
 import entropy.dep
 import entropy.tools
-
-from solo.commands.install import SoloInstall
 
 
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
@@ -121,11 +120,11 @@ def _guess_kernel_package_file(release_level):
             return const_convert_to_unicode(level_path)
 
 
-def _get_opengl_impl(pretend):
+def _get_opengl_impl():
     eselect_exec = "/usr/bin/eselect"
     sts = 1
     out = "xorg-x11"
-    if os.access(eselect_exec, os.X_OK) and not pretend:
+    if os.access(eselect_exec, os.X_OK):
         sts, xout = entropy.tools.getstatusoutput("%s opengl show" % (
             eselect_exec,))
         if sts == 0:
@@ -147,8 +146,16 @@ def _show_kernel_warnings(kernel_atom):
     print_warning(darkgreen(_("Please reboot your computer now !")))
 
 
-def switch_kernel(entropy_client, kernel_package, from_running=False,
-                  pretend=False, ask=False, verbose=False, quiet=False):
+class CannotFindRunningKernel(EntropyException):
+    """
+    Exception raised when the kernel switching code is unable
+    to find the currently running kernel. This code path is
+    triggered when switch_kernel() is called with from_running=True.
+    """
+
+
+def switch_kernel(entropy_client, kernel_match, installer,
+                  from_running=False):
     """
     Execute a kernel switch to the given kernel package.
     Caller is expected to acquire any relevant Entropy lock before
@@ -156,34 +163,25 @@ def switch_kernel(entropy_client, kernel_package, from_running=False,
 
     @param entropy_client: an Entropy Client object instance
     @type entropy_client: entropy.client.interfaces.Client
-    @param kernel_package: a kernel package dependency string
-    @type kernel_package: string
+    @param kernel_match: an Entropy package match referencing
+        a valid kernel package
+    @type kernel_match: tuple
+    @param installer: a callable function that is expected to install
+        the provided package matches (calculating dependencies, etc).
+        This function must have the following signature:
+        <int> exit_status callable(<list> package_matches).
+        If you plan on implementing something like --pretend,
+        make sure to return a non-zero status as well.
+    @type installer: callable
     @keyword from_running: if True, determine the current kernel from the
         running system
     @type from_running: bool
-    @keyword pretend: if True, show what would be done
-    @type pretend: bool
-    @keyword ask: if True, ask interactively
-    @type ask: bool
-    @keyword verbose: if True, be more verbose
-    @type verbose: bool
-    @keyword quiet: if True, be more quiet
-    @type quiet: bool
+    @return: the execution status, 0 means fine
+    @rtype: int
     """
-    pkg_id, pkg_repo = entropy_client.atom_match(kernel_package)
-    if pkg_id == -1:
-        print_error("%s: %s" % (brown(_("Package does not exist")),
-            teal(kernel_package),))
-        return 1
-    kernel_matches, rc = _get_kernels(entropy_client)
-
-    kernel_match = (pkg_id, pkg_repo)
-    if kernel_match not in kernel_matches:
-        print_error("%s: %s" % (brown(_("Not a kernel")),
-            teal(kernel_package),))
-        return 1
-
-    kernel_atom = entropy_client.open_repository(pkg_repo).retrieveAtom(pkg_id)
+    pkg_id, pkg_repo = kernel_match
+    kernel_atom = entropy_client.open_repository(
+        pkg_repo).retrieveAtom(pkg_id)
     # this can be None !
     target_tag = _get_target_tag(entropy_client, kernel_match)
 
@@ -209,11 +207,8 @@ def switch_kernel(entropy_client, kernel_package, from_running=False,
             if _pkg_ids:
                 latest_kernel = _pkg_ids[0]
         if latest_kernel == -1:
-            print_error(
-                brown(_("Cannot find your currently running kernel.")))
-            print_error(
-                brown(_("Try without --from-running.")))
-            return 1
+            raise CannotFindRunningKernel(
+                "Cannot find the currently running kernel")
 
     if latest_kernel == -1:
         latest_kernel, _k_rc = inst_repo.atomMatch(
@@ -241,18 +236,9 @@ def switch_kernel(entropy_client, kernel_package, from_running=False,
     matches = [x for x in matches if x is not None]
     matches.append(kernel_match)
 
-    opengl = _get_opengl_impl(pretend)
-
-    install = SoloInstall([])
-    rc, _show_cfgupd = install._install_action(
-        entropy_client, True, True,
-        pretend, ask, verbose,
-        quiet, False, False, False, False, False,
-        False, False, 1, [], package_matches=list(matches))
-    if _show_cfgupd:
-        install._show_config_files_update(entropy_client)
-
-    if rc == 0 and not pretend:
+    opengl = _get_opengl_impl()
+    rc = installer(matches)
+    if rc == 0:
         _set_opengl_impl(opengl)
         if target_tag:
             # if target_tag is None, we are unable to set the symlink
@@ -263,6 +249,7 @@ def switch_kernel(entropy_client, kernel_package, from_running=False,
             if guessed_kernel_name:
                 _setup_kernel_symlink(guessed_kernel_name)
         _show_kernel_warnings(kernel_atom)
+
     return rc
 
 
