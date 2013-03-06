@@ -107,6 +107,10 @@ if __name__ == "__main__":
                     brown(_("Try without --from-running.")))
                 return 1
 
+        if not entropy.tools.is_root():
+            print_error(
+                brown(_("superuser access required")))
+            return 1
         return _wrap_locked_api(_switch)
 
     def _list_kernels(f_nsargs):
