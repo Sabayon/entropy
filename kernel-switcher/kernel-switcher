@@ -9,7 +9,6 @@ sys.path.insert(0, "../kernel-switcher")
 
 import os
 import argparse
-import functools
 
 from entropy.output import brown, print_warning, print_error, teal
 from entropy.i18n import _
@@ -99,10 +98,9 @@ if __name__ == "__main__":
                                 teal(kernel_package),))
                 return 1
 
-            install_func = functools.partial(_install, etp_client)
             try:
                 return kswitch.switch_kernel(
-                    etp_client, kernel_match, install_func,
+                    etp_client, kernel_match, _install,
                     from_running=f_nsargs.from_running)
             except kswitch.CannotFindRunningKernel:
                 print_error(

@@ -169,7 +169,8 @@ def switch_kernel(entropy_client, kernel_match, installer,
     @param installer: a callable function that is expected to install
         the provided package matches (calculating dependencies, etc).
         This function must have the following signature:
-        <int> exit_status callable(<list> package_matches).
+        <int> exit_status callable(<Client> entropy_client,
+                                   <list> package_matches).
         If you plan on implementing something like --pretend,
         make sure to return a non-zero status as well.
     @type installer: callable
@@ -237,7 +238,7 @@ def switch_kernel(entropy_client, kernel_match, installer,
     matches.append(kernel_match)
 
     opengl = _get_opengl_impl()
-    rc = installer(matches)
+    rc = installer(entropy_client, matches)
     if rc == 0:
         _set_opengl_impl(opengl)
         if target_tag:
