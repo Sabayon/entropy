@@ -1,5 +1,5 @@
 PKGNAME = entropy
-SUBDIRS = 
+SUBDIRS = kswitch
 PREFIX = /usr
 VARDIR = /var
 BINDIR = $(PREFIX)/bin

@@ -1,9 +1,5 @@
 Short term:
 
-- equo PDEPEND against kernel-switcher
-- kernel-switcher RDEPEND against equo
-
-
 - use .ini-like layout for entropy config
 
 - conditional deps:
