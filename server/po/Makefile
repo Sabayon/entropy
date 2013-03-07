@@ -21,7 +21,9 @@ PYFILES =  $(wildcard ../../lib/entropy/transceivers/uri_handlers/*.py) \
 	$(wildcard ../../lib/entropy/*.py) \
 	$(wildcard ../../server/*.py) \
 	$(wildcard ../../server/eit/*.py) \
-	$(wildcard ../../server/eit/commands/*.py)
+	$(wildcard ../../matter/*.py) \
+	$(wildcard ../../matter/matter/*.py) \
+	$(wildcard ../../matter/matter/binpms/*.py)
 
 POTFILES = $(PYFILES)
 
