@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-05 11:25+0000\n"
+"POT-Creation-Date: 2013-03-07 09:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,27 +26,27 @@ msgstr ""
 msgid "Uploading"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1213 ../rigo_app.py:766
+#: ../RigoDaemon/app.py:1223 ../rigo_app.py:766
 msgid "Not authorized"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1249
+#: ../RigoDaemon/app.py:1259
 msgid "No repositories configured"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1254
+#: ../RigoDaemon/app.py:1264
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1784
+#: ../RigoDaemon/app.py:1798
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:2090
+#: ../RigoDaemon/app.py:2104
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:2190
+#: ../RigoDaemon/app.py:2204
 msgid "Application Install"
 msgstr ""
 
@@ -256,12 +256,12 @@ msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:2029 ../rigo/controllers/daemon.py:2691
-#: ../rigo/controllers/daemon.py:2918
+#: ../rigo/controllers/daemon.py:2921
 msgid "Another activity is currently in progress"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:2032 ../rigo/controllers/daemon.py:2695
-#: ../rigo/controllers/daemon.py:2922
+#: ../rigo/controllers/daemon.py:2925
 msgid "K thanks"
 msgstr ""
 
@@ -308,7 +308,7 @@ msgstr ""
 msgid "Okay"
 msgstr ""
 
-#: ../rigo/controllers/daemon.py:2838
+#: ../rigo/controllers/daemon.py:2841
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr ""
 
@@ -547,54 +547,54 @@ msgstr ""
 msgid "Loading comments..."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:253
-#: ../rigo/ui/gtk3/controllers/applications.py:314
+#: ../rigo/ui/gtk3/controllers/applications.py:259
+#: ../rigo/ui/gtk3/controllers/applications.py:320
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:552
+#: ../rigo/ui/gtk3/controllers/applications.py:558
 msgid "Nothing found for"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:562
+#: ../rigo/ui/gtk3/controllers/applications.py:568
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:594
+#: ../rigo/ui/gtk3/controllers/applications.py:600
 msgid "Not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:721
+#: ../rigo/ui/gtk3/controllers/applications.py:735
 msgid "Update repositories"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:722
+#: ../rigo/ui/gtk3/controllers/applications.py:736
 msgid "Force the update of the available repositories."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:732
+#: ../rigo/ui/gtk3/controllers/applications.py:746
 msgid "Show Configuration File Updates"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:733
+#: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:742
+#: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:743
+#: ../rigo/ui/gtk3/controllers/applications.py:757
 msgid "Browse through the currently Installed Applications."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:755
+#: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Optimize Download Speed"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:756
+#: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
 msgstr ""
 
