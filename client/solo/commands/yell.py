@@ -25,7 +25,7 @@ class SoloYell(SoloCommand):
 
     NAME = "yell"
     ALIASES = []
-    CATCH_ALL = True
+    CATCH_ALL = False
     ALLOW_UNPRIVILEGED = True
     HIDDEN = True
 
