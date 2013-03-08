@@ -35,7 +35,7 @@ PYFILES = $(wildcard ../../lib/entropy/db/*.py) \
 	$(wildcard ../../magneto/src/magneto/kde/*.py) \
 	$(wildcard ../../magneto/src/magneto/gtk/*.py) \
 	$(wildcard ../../magneto/src/magneto/core/*.py) \
-	../../services/kernel-switcher
+	../kernel-switcher
 
 POTFILES = $(PYFILES) $(GLADEFILES)
 
