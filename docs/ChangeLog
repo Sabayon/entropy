@@ -1,3 +1,121 @@
+commit 1b18a831f1542b5d77e6e2e58b8852facb8f056e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 13:42:32 2013 +0100
+
+    Release Entropy 181
+
+commit 0e52aadf337d703cd6a12925a14ba74fdba4b84d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 13:38:39 2013 +0100
+
+    [solo] SoloYell is not a catch-all. SoloHelp is.
+
+commit a1e59c352fbc9ea81cf00a2a42a14eba8426bc38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 12:55:59 2013 +0100
+
+    [server] fix --help output when redirected through pipes, fix bug 4049
+
+commit 113f9d74b7aa4b8e0dc599746dbaa599f6152481
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 12:55:13 2013 +0100
+
+    [client] fix --help output when redirected through pipes, fix bug 4049
+
+commit 102dc594e5379498710e1f1307c7974277e42d51
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 12:19:50 2013 +0100
+
+    [client] po: update entropy.pot
+
+commit ac961efd5d28393b88a0933715f80ccfe77beafe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 12:19:13 2013 +0100
+
+    [client] po: update POTFILES.in paths
+
+commit b44c89ad191fa7351558ae00f51f52ac74fde4d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 15:51:35 2013 +0000
+
+    [kernel-switcher] turn the kernel switcher library into an OO interface
+
+commit 23738ead62986a29cd7503fe2a18aa5cc428ddba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 15:44:32 2013 +0000
+
+    [kernel-switcher] force superuser access
+
+commit d05426e6188b8da3dbd524a6118ffaf24e94f49c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 15:28:56 2013 +0000
+
+    [kernel-switcher] move kswitch to entropy lib, kernel-switcher back to equo
+
+commit aae36c5e7bd5f8af6a7fa3b19d91d2894a469744
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 14:07:49 2013 +0000
+
+    [kernel-switcher] tweak switch_kernel's installer callable expected signature
+
+commit 7507e68180ca21579c4561cb2163c9384ba25b97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 13:07:31 2013 +0000
+
+    [kernel-switcher] complete the separation between the library and the application
+
+commit 9dc8f266874f1acd7d5c1904f89b8fcb6fc388ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 6 11:52:21 2013 +0000
+
+    [kernel-switcher] initial kernel-switcher refactoring
+    
+    Migrate kernel-switcher to a separate directory and start splitting
+    the code into library <-> application.
+
+commit 502d9c8b9e19a29b980a49397ece49a973975686
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 5 15:52:53 2013 +0000
+
+    [entropy.client.package] add support for package.splitdebug.mask, see bug 3707
+
+commit 5cb3939718c4754ba50e76fd2cb7f835122c33a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 5 15:09:44 2013 +0000
+
+    [entropy.client] drop package.satisfied support, see bug #3879
+    
+    It never worked as users expected and can lead to misinterpretation.
+    It will be reimplemented in future through something similar to package.provided
+
+commit 84b0b92c4e7bb884454b574e566689150d588c1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 5 13:20:28 2013 +0000
+
+    [entropy.client.dep] rewrite simple or dependencies resolution
+    
+    Selected matches was not respected by the simple or dependencies
+    resolution code. This commit addresses the problem and fixes the
+    virtual/glu dependendency handling.
+
+commit 808715f796d8270bbbb395078044f3530d746b3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 5 13:20:13 2013 +0000
+
+    [TODO] update TODO
+
+commit 73abfc6fa0158b287819d116542f1be1fe9dab8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 4 13:59:44 2013 +0000
+
+    [RigoDaemon] schedule a reload every 24 hours to cut on Python leaks.
+
+commit 1db427fe18755c69d9807389582f8f0a01e01137
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 3 01:08:10 2013 +0000
+
+    Tagging Entropy version 180
+
 commit 7573e0e1d5194af9ffa58a2570a1ef2e53e5762e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 3 01:08:10 2013 +0000
