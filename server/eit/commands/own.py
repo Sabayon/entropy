@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import purple, darkgreen, teal, bold
@@ -81,7 +82,7 @@ please use *eit files*.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._quiet = nsargs.quiet
         self._quiet = nsargs.quiet

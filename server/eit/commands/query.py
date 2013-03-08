@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.output import purple, darkgreen, bold, brown, teal
 from entropy.const import etpConst
@@ -144,7 +145,7 @@ tools.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._repository_id = nsargs.inrepo
         self._quiet = nsargs.quiet

@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 import tempfile
 import codecs
 
@@ -133,7 +134,7 @@ repository) by pushing updated data.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._ask = not nsargs.quick
         self._all = nsargs.all

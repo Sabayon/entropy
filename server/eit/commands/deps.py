@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.const import etpConst
@@ -70,7 +71,7 @@ non-permanent way.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._packages += nsargs.packages
         return self._call_locked, [self._deps, nsargs.inrepo]

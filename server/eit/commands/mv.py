@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.i18n import _
 
@@ -68,7 +69,7 @@ then is removed from source.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._source = nsargs.source
         self._dest = nsargs.dest

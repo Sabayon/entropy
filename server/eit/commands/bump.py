@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.output import darkgreen, blue
 from entropy.i18n import _
@@ -101,7 +102,7 @@ will be accepted and new repository data will be uploaded.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._sync = nsargs.sync
         return self._call_locked, [self._bump, nsargs.repo]

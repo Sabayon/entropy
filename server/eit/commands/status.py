@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.const import etpConst
 from entropy.i18n import _
@@ -97,7 +98,7 @@ Show repository status (such as: *configured mirrors*,
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         return self._call_locked, [self._status, nsargs.repo]
 

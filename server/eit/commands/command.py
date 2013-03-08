@@ -10,7 +10,7 @@
 
 """
 from entropy.i18n import _
-from entropy.output import darkgreen, print_error
+from entropy.output import darkgreen, print_error, print_generic
 from entropy.exceptions import PermissionDenied
 from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
@@ -47,6 +47,22 @@ class EitCommand(object):
         the ArgumentParser object that will be used by parse().
         """
         raise NotImplementedError()
+
+    def print_help(self, parser):
+        """
+        ArgumentParser.print_help wrapper that properly handles
+        UTF-8 encoding in a fault-tolerant way. Also see bug #4049.
+
+        @param parser: an ArgumentParser object
+        @type parser: argparse.ArgumentParser
+        """
+        class _Printer(object):
+
+            @classmethod
+            def write(self, string):
+                print_generic(string)
+
+        parser.print_help(file=_Printer)
 
     def parse(self):
         """

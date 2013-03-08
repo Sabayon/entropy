@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import teal, purple
@@ -106,7 +107,7 @@ Toolset containing all the Entropy Server built-in QA tests available.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func, None]

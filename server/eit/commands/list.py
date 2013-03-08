@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import brown, teal, purple, darkgreen
@@ -76,7 +77,7 @@ If you wonder what's inside a repository, you've found the right tool.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._quiet = nsargs.quiet
         self._verbose = nsargs.verbose

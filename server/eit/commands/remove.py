@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import purple, darkgreen, brown, teal
@@ -72,7 +73,7 @@ Remove a package from repository. It's no-brainer actually.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._ask = not nsargs.quick
         self._nodeps = nsargs.nodeps

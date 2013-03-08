@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import teal, purple
@@ -75,7 +76,7 @@ repositories as much as you can.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._packages += nsargs.packages
         return self._call_locked, [self._inject, nsargs.to]

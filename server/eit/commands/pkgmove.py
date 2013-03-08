@@ -13,6 +13,7 @@ import sys
 import os
 import errno
 import argparse
+import functools
 import tempfile
 import codecs
 
@@ -104,7 +105,7 @@ doing.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._repository_id = nsargs.repo
         return self._call_locked, [self._pkgmove, self._repository_id]

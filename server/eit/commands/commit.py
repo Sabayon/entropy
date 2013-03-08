@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, \
@@ -116,7 +117,7 @@ If you would like to selectively add certain packages, please see
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._interactive = nsargs.interactive
         if not self._interactive:

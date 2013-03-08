@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import functools
 
 from entropy.i18n import _
 from entropy.output import purple
@@ -77,7 +78,7 @@ If you are interested in dependency string matching, please see
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._quiet = nsargs.quiet
         self._packages += nsargs.packages

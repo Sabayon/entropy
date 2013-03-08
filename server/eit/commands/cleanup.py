@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import functools
 
 from entropy.output import darkgreen, blue, purple
 from entropy.i18n import _
@@ -114,7 +115,7 @@ This commands makes possible to manually force a cleanup.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._ask = not nsargs.quick
         if nsargs.days is not None:
