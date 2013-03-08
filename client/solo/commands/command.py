@@ -16,8 +16,8 @@ import argparse
 from entropy.i18n import _
 from entropy.const import const_convert_to_unicode, \
     const_convert_to_rawstring
-from entropy.output import darkgreen, teal, purple, print_error, bold, \
-    brown
+from entropy.output import darkgreen, teal, purple, print_error, \
+    print_generic, bold, brown
 from entropy.exceptions import PermissionDenied
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
@@ -96,6 +96,22 @@ class SoloCommand(object):
         parser.add_argument(
             "--quiet", "-q", action="store_true", default=False,
             help=_("quiet output"))
+
+    def print_help(self, parser):
+        """
+        ArgumentParser.print_help wrapper that properly handles
+        UTF-8 encoding in a fault-tolerant way. Also see bug #4049.
+
+        @param parser: an ArgumentParser object
+        @type parser: argparse.ArgumentParser
+        """
+        class _Printer(object):
+
+            @classmethod
+            def write(self, string):
+                print_generic(string)
+
+        parser.print_help(file=_Printer)
 
     def parse(self):
         """

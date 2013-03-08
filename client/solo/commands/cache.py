@@ -9,6 +9,7 @@
     B{Entropy Command Line Client}.
 
 """
+import functools
 import sys
 import argparse
 
@@ -84,7 +85,7 @@ Manage Entropy Library Cache.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func]

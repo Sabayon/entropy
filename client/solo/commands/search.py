@@ -9,6 +9,7 @@
     B{Entropy Command Line Client}.
 
 """
+import functools
 import sys
 import argparse
 
@@ -95,7 +96,7 @@ Search for packages.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return parser.print_help, []
+            return functools.partial(self.print_help, parser), []
 
         self._quiet = nsargs.quiet
         self._verbose = nsargs.verbose
