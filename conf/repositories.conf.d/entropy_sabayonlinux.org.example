@@ -1,97 +1,126 @@
+# Entropy Repository configuration file.
 #
-#  syntax for repositories (content in square brackets not mandatory):
+#  This is an example of the new syntax (with a complete listing
+#  of the supported arguments):
 #
-#    repository: where the available packages and its database are stored
-#|    repository = repository_id|repository description|<packages mirror 1> <2>|<database uri>[,<UGC service URI>][#compression_method]
+#  [repository-id]
+#  desc = Sabayon Linux Official Testing Repository
+#  repo = http://pkg.sabayon.org,sabayon.org
+#  pkg = http://pkg.sabayon.org
+#  pkg = http://dl.sabayon.org/entropy
+#  enabled = <true/false>
 #
-#    example (content in square brackets not mandatory):
-#|       repository = sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org[,sabayon.org][#bz2]
+#  [repository-id]
+#  desc = This statement will be ignored.
+#  repo = This url will be ignored.
+#  pkg = http://some.more.mirror.org/entropy
+#  pkg = http://some.more.mirror.net/entropy
 #
-# Supported protocols are: file, http, https, ftp, ftps, rsync
-# Remove the initial "|" char, do not uncomment blindly,
-# these are JUST EXAMPLES !!
+#  As you can see, multiple statements for the same repository
+#  are allowed. However, only the first desc = and repo =
+#  statements will be considered, while there can be as many pkg =
+#  as you want.
+#
+#  Statements description:
+#  - "desc": stands for description, the repository name description.
+#  - "repo": the repository database URL string, plus other parameters
+#            as supported in the previous configuration file syntax:
+#            <db url prefix>[,<remote web services server url][#<compression>].
+#  - "pkg": the repository packages URL string. This must be a valid URL.
+#           The supported protocols are those supported by entropy.fetchers.
+#  - "enabled": if set, its value can be either "true" or "false". The default
+#               value is "true". It indicates if a repository is configured
+#               but currently disabled or enabled. Please take into account
+#               that config files in /etc/entropy/repositories.conf.d/ starting
+#               with "_" are considered to contain disabled repositories. This
+#               is just provided for convienence.
 
-# Sabayon Linux Official Repository
-# Base source URLs, do not remove
-repository = sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+[sabayonlinux.org]
+desc = Sabayon Linux Official Repository
+repo = http://pkg.sabayon.org
+pkg = http://pkg.sabayon.org
 
 # Sabayon Packages Continent-based Load Balancer
-repository = sabayonlinux.org||http://dl.sabayon.org/entropy|
+pkg = http://dl.sabayon.org/entropy
 
 # id-REPO, Indonesian FOSS Repository, 100Mbit/sec
-repository = sabayonlinux.org||http://bali.idrepo.or.id/sabayon/entropy|
-repository = sabayonlinux.org||http://madura.idrepo.or.id/sabayon/entropy|
-repository = sabayonlinux.org||http://sumbawa.idrepo.or.id/sabayon/entropy|
+pkg = http://bali.idrepo.or.id/sabayon/entropy
+pkg = http://madura.idrepo.or.id/sabayon/entropy
+pkg = http://sumbawa.idrepo.or.id/sabayon/entropy
 
 # RIKEN Nishina Center for research support, Japan, 1Gbit/sec
-repository = sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
+pkg = http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy
+
 # Yamagata University, Japan, 1Gbit/sec
-repository = sabayonlinux.org||http://ftp.yz.yamagata-u.ac.jp/pub/linux/sabayonlinux/entropy|
+pkg = http://ftp.yz.yamagata-u.ac.jp/pub/linux/sabayonlinux/entropy
+
 # KDDI R&D Laboratories Inc., Japan, 200Mbit/sec
-repository = sabayonlinux.org||http://ftp.kddilabs.jp/Linux/packages/sabayonlinux/entropy|
+pkg = http://ftp.kddilabs.jp/Linux/packages/sabayonlinux/entropy
 
 # Silicon Hill (http://www.sh.cvut.cz), 1Gbit/sec, Czech Republic
-repository = sabayonlinux.org||http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy|
+pkg = http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy
+
 # UPC Česká republika, a.s., 2Gbit/sec, Czech Republic
-repository = sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
+pkg = http://debian.mirror.dkm.cz/sabayon/entropy
 
 # KLID, Denmark, 1Gbit/sec
-repository = sabayonlinux.org||ftp://ftp.klid.dk/sabayonlinux/entropy|
+pkg = ftp://ftp.klid.dk/sabayonlinux/entropy
 
 # Free Software Network, Hungary, 1Gbit/sec
-repository = sabayonlinux.org||http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
-# repository = sabayonlinux.org||rsync://ftp.fsn.hu/linux/sabayon/entropy|
-# repository = sabayonlinux.org||ftp://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
+pkg = http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy
+# pkg = rsync://ftp.fsn.hu/linux/sabayon/entropy
+# pkg = ftp://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy
 
 # University of Crete, 1Gbit/sec, Greece
-repository = sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
+pkg = http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy
 
 # Rede das Novas Licenciaturas - Instituto Superior Técnico, 1Gbit/sec, Portugal
-repository = sabayonlinux.org||http://ftp.rnl.ist.utl.pt/pub/sabayon/entropy|
-# repository = sabayonlinux.org||ftp://ftp.rnl.ist.utl.pt/pub/sabayon/entropy|
+pkg = http://ftp.rnl.ist.utl.pt/pub/sabayon/entropy
+# pkg = ftp://ftp.rnl.ist.utl.pt/pub/sabayon/entropy
 
 # Freelydifferent.com, France
-repository = sabayonlinux.org||http://mirror.freelydifferent.com/sabayon/entropy|
+pkg = http://mirror.freelydifferent.com/sabayon/entropy
 
 # NLUUG, Holland
-repository = sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-# repository = sabayonlinux.org||rsync://ftp.nluug.nl/sabayonlinux/entropy|
+pkg = ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy
+# pkg = rsync://ftp.nluug.nl/sabayonlinux/entropy
+
 # Surfnet, Holland
-repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-# repository = sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
+pkg = http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy
+# pkg = rsync://ftp.SURFnet.nl/sabayonlinux/entropy
 
 # Yes Optus Mirror, Australia
-# repository = sabayonlinux.org||http://mirror.optusnet.com.au/sabayon/entropy|
-# repository = sabayonlinux.org||ftp://mirror.optusnet.com.au/sabayon/entropy|
+# pkg = http://mirror.optusnet.com.au/sabayon/entropy
+# pkg = ftp://mirror.optusnet.com.au/sabayon/entropy
 
 # Internode, Australia
-repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayon/entropy|
+pkg = http://mirror.internode.on.net/pub/sabayon/entropy
 
 # Instituto Federal de Educação, Ciência e Tecnologia do Cearà, Brazil
-repository = sabayonlinux.org||http://www2.itti.ifce.edu.br/sabayon/entropy|
+pkg = http://www2.itti.ifce.edu.br/sabayon/entropy
 
 # Yandex Linux Mirror, Russian Federation
-# repository = sabayonlinux.org||ftp://mirror.yandex.ru/sabayon/entropy|
-# repository = sabayonlinux.org||rsync://mirror.yandex.ru/sabayon/entropy|
-repository = sabayonlinux.org||http://mirror.yandex.ru/sabayon/entropy|
+# pkg = ftp://mirror.yandex.ru/sabayon/entropy
+# pkg = rsync://mirror.yandex.ru/sabayon/entropy
+pkg = http://mirror.yandex.ru/sabayon/entropy
 
 # Universidade Federal do Parana', Brazil
-# repository = sabayonlinux.org||ftp://sabayon.c3sl.ufpr.br/sabayon/entropy|
-# repository = sabayonlinux.org||rsync://sabayon.c3sl.ufpr.br/sabayon/entropy|
-repository = sabayonlinux.org||http://sabayon.c3sl.ufpr.br/entropy|
+# pkg = ftp://sabayon.c3sl.ufpr.br/sabayon/entropy
+# pkg = rsync://sabayon.c3sl.ufpr.br/sabayon/entropy
+pkg = http://sabayon.c3sl.ufpr.br/entropy
 
 # University of Maryland LUG, 1Gbit/sec, United States
-# repository = sabayonlinux.org||rsync://mirror.umd.edu/sabayonlinux/entropy|
-repository = sabayonlinux.org||http://mirror.umd.edu/sabayonlinux/entropy|
+# pkg = rsync://mirror.umd.edu/sabayonlinux/entropy
+pkg = http://mirror.umd.edu/sabayonlinux/entropy
 
 # Open Source Institute, Clarkson University, 300Mbit/sec, United States
-repository = sabayonlinux.org||http://mirror.clarkson.edu/sabayon/entropy|
+pkg = http://mirror.clarkson.edu/sabayon/entropy
 
 # Cross-LFS Project mirror, United States
-repository = sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
+pkg = http://cross-lfs.sabayonlinux.org/entropy
 
 # GARR Network mirror, Italy
-repository = sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+pkg = http://na.mirror.garr.it/mirrors/sabayonlinux/entropy
 
 # Sabayon Hetzner.de Mirror, Germany
-repository = sabayonlinux.org||http://mirror.de.sabayon.org/entropy|
+pkg = http://mirror.de.sabayon.org/entropy

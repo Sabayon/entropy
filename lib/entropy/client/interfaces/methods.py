@@ -41,6 +41,7 @@ from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
 from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     teal
+from entropy.core.settings.base import RepositoryConfigParser
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError
@@ -640,30 +641,15 @@ class RepositoryMixin:
             new_content.append(line)
         content = new_content
 
-        repository_lines = []
-        mirror_count = 0
-        for mirror in repository_metadata['plain_packages']:
-            if mirror_count == 0:
-                mirror_count += 1
-                rline = "repository = %s|%s|%s|%s#%s" % (
-                    repository_metadata['repoid'],
-                    repository_metadata['description'],
-                    mirror,
-                    repository_metadata['plain_database'],
-                    repository_metadata['dbcformat'],
-                )
-            else:
-                rline = "repository = %s||%s|" % (
-                    repository_metadata['repoid'],
-                    mirror,
-                )
-            repository_lines.append(rline)
-        accomplished = True
-
-        # create (overwrite) enabled_conf_file
-        # containing proper repository_lines
-        entropy.tools.atomic_write(
-            enabled_conf_file, "\n".join(repository_lines) + "\n", enc)
+        parser = RepositoryConfigParser(encoding = enc)
+        parser.write(
+            enabled_conf_file,
+            repository_metadata['repoid'],
+            repository_metadata['description'],
+            "%s#%s" % (
+                repository_metadata['plain_database'],
+                repository_metadata['dbcformat']),
+            repository_metadata['plain_packages'])
 
         # if any disabled entry file is around, kill it with fire!
         try:
@@ -678,7 +664,7 @@ class RepositoryMixin:
         entropy.tools.atomic_write(
             repo_conf, "\n".join(content) + "\n", enc)
 
-        return accomplished
+        return True
 
     def _conf_remove_repository(self, repository_id):
         """

@@ -14,10 +14,14 @@
     "Singleton" is a class that is inherited from singleton objects.
 
 """
-import sys
-import os
+import codecs
 import inspect
+import os
+import re
+import sys
+
 from entropy.const import etpConst
+
 
 class Singleton(object):
 
@@ -115,6 +119,7 @@ class EntropyPluginStore(object):
         plugin id.
         """
         return plugin_id in self.__plugins
+
 
 class EntropyPluginFactory:
 
@@ -338,7 +343,6 @@ class EntropyPluginFactory:
 
         return available
 
-
     def get_available_plugins(self):
         """
         Return currently available plugin classes.
@@ -383,3 +387,114 @@ class EntropyPluginFactory:
             raise KeyError
 
         return klass
+
+
+class BaseConfigParser(dict):
+    """
+    Entropy .ini-like configuration file parser.
+
+    This is a base class useful for implementing .ini-like
+    configuration files.
+
+    A possible syntax is something like:
+
+    [section]
+    param = value
+    param = value
+
+    [section]
+    param = value
+    param = value
+    """
+    # Regular expression to match new configuration file sections.
+    _SECTION_RE = re.compile("^\[(.*)\]$")
+
+    # Starting character that denotes an ignored line.
+    _COMMENT_CHAR = "#"
+
+    # key <-> value statements separator.
+    _SEPARATOR = "="
+
+    # Must be reimplemented by subclasses.
+    # Must be a list of supported statement keys.
+    _SUPPORTED_KEYS = None
+
+    def __init__(self, encoding = None):
+        super(BaseConfigParser, self).__init__()
+        self._encoding = encoding
+
+    def read(self, files):
+        """
+        Read the given list of configuration file paths and populate
+        the repository metadata.
+
+        @param files: configuration file paths
+        @type files: list
+        """
+        for path in files:
+            self._parse(path)
+
+    def _parse(self, path):
+        """
+        Given a file path, parse the content and update the
+        dictionary.
+
+        @param path: a configuration file path
+        @type path: string
+        """
+        if self._encoding is None:
+            with open(path, "r") as cfg_f:
+                content = cfg_f.readlines()
+        else:
+            with codecs.open(path, "r", encoding=encoding) as cfg_f:
+                content = cfg_f.readlines()
+
+        repository_id = None
+        for line in content:
+
+            line = line.strip()
+            if not line:
+                continue
+            if line.startswith(self._COMMENT_CHAR):
+                continue
+
+            section = self._SECTION_RE.match(line)
+            if section:
+                candidate = self._validate_section(section)
+                if candidate:
+                    repository_id = candidate
+                continue
+
+            if repository_id is None:
+                # skip lines, no section defined
+                continue
+
+            key_value = line.split(self._SEPARATOR, 1)
+            if len(key_value) != 2:
+                # not a well formed line, skip
+                continue
+
+            key, value = [x.strip() for x in key_value]
+            if key not in self._SUPPORTED_KEYS:
+                # key is invalid
+                continue
+            elif not value:
+                # value is invalid
+                continue
+
+            repo_data = self.setdefault(repository_id, {})
+            key_data = repo_data.setdefault(key, [])
+            key_data.append(value)
+
+    @classmethod
+    def _validate_section(cls, match):
+        """
+        Validate a matched section object and return the
+        extracted data (if valid) or None (if not valid).
+
+        @param match: a re.match object
+        @type match: re.match
+        @return: the valid section name, if any, or None
+        @rtype: string
+        """
+        raise NotImplementedError()

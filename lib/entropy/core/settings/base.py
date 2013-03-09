@@ -17,21 +17,191 @@
     ONLY mimics a I{dict} AND it's not a subclass of it.
 
 """
-import os
+import codecs
 import errno
+import os
 import sys
 import threading
-import codecs
 
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_debug_write, const_is_python3
-from entropy.core import Singleton, EntropyPluginStore
+from entropy.core import Singleton, EntropyPluginStore, BaseConfigParser
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
 import entropy.tools
+
+
+class RepositoryConfigParser(BaseConfigParser):
+    """
+    Entropy .ini-like repository configuration file parser.
+
+    This is backward compatible with the previous repository
+    implementation, in the sense that old repository syntax
+    is just ignored. However, a mix of old and new statements
+    may result in an undefined behaviour.
+
+    This is an example of the new syntax (with a complete listing
+    of the supported arguments):
+
+    [sabayon-limbo]
+    desc = Sabayon Linux Official Testing Repository
+    repo = http://pkg.sabayon.org,sabayon.org
+    pkg = http://pkg.sabayon.org
+    pkg = http://dl.sabayon.org/entropy
+    enabled = <true/false>
+
+    [sabayon-limbo]
+    desc = This statement will be ignored.
+    repo = This url will be ignored.
+    pkg = http://some.more.mirror.org/entropy
+    pkg = http://some.more.mirror.net/entropy
+
+    As you can see, multiple statements for the same repository
+    are allowed. However, only the first desc = and repo =
+    statements will be considered, while there can be as many pkg =
+    as you want.
+
+    Statements description:
+    - "desc": stands for description, the repository name description.
+    - "repo": the repository database URL string, plus other parameters
+              as supported in the previous configuration file syntax:
+              <db url prefix>[,<remote web services server url][#<compression>].
+    - "pkg": the repository packages URL string. This must be a valid URL.
+             The supported protocols are those supported by entropy.fetchers.
+    - "enabled": if set, its value can be either "true" or "false". The default
+                 value is "true". It indicates if a repository is configured
+                 but currently disabled or enabled. Please take into account
+                 that config files in /etc/entropy/repositories.conf.d/ starting
+                 with "_" are considered to contain disabled repositories. This
+                 is just provided for convienence.
+    """
+
+    _SUPPORTED_KEYS = ("desc", "repo", "pkg", "enabled")
+
+    _DEFAULT_ENABLED_VALUE = True
+
+    def __init__(self, encoding = None):
+        super(RepositoryConfigParser, self).__init__(encoding = encoding)
+
+    @classmethod
+    def _validate_section(cls, match):
+        """
+        Reimpemented from BaseConfigParser.
+        """
+        # a new repository begins
+        groups = match.groups()
+        if not groups:
+            return
+
+        candidate = groups[0]
+        if not entropy.tools.validate_repository_id(candidate):
+            return
+        return candidate
+
+    def write(self, path, repository_id, desc, repo, pkgs, enabled = True):
+        """
+        Write the repository configuration to the given file.
+        """
+        if enabled:
+            enabled_str = "true"
+        else:
+            enabled_str = "false"
+        config = """\
+# Repository configuration file automatically generated
+# by Entropy on your behalf.
+
+[%(repository_id)s]
+desc = %(desc)s
+repo = %(repo)s
+enabled = %(enabled)s
+""" % {
+            "repository_id": repository_id,
+            "desc": desc,
+            "repo": repo,
+            "enabled": enabled_str,
+            }
+        for pkg in pkgs:
+            config += "pkg = %s\n" % (pkg,)
+        config += "\n"
+
+        entropy.tools.atomic_write(path, config, self._encoding)
+
+    def repositories(self):
+        """
+        Return a list of valid parsed repositories.
+
+        A repository is considered valid iff it contains
+        at least one "repo" and "pkg" parameter.
+        """
+        required_keys = set(("repo", "pkg"))
+        repositories = []
+
+        for repository_id, repo_data in self.items():
+            remaining = required_keys - set(repo_data.keys())
+            if not remaining:
+                # then required_keys are there
+                repositories.append(repository_id)
+
+        repositories.sort()
+        return repositories
+
+    def repo(self, repository_id):
+        """
+        Return the database URL for the given repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository URL
+        @rtype: string
+        """
+        return self[repository_id]["repo"][0]
+
+    def pkgs(self, repository_id):
+        """
+        Return the list of package URLs for the given repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the package URLs
+        @rtype: list
+        """
+        return self[repository_id]["pkg"]
+
+    def desc(self, repository_id):
+        """
+        Return the description of the repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository description
+        @rtype: string
+        """
+        return self[repository_id]["desc"][0]
+
+    def enabled(self, repository_id):
+        """
+        Return whether the repository is enabled or disabled.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @return: the repository status
+        @rtype: bool
+        """
+        try:
+            enabled = self[repository_id]["enabled"][0]
+            return enabled.strip().lower() == "true"
+        except KeyError:
+            return self._DEFAULT_ENABLED_VALUE
+
 
 class SystemSettings(Singleton, EntropyPluginStore):
 
@@ -1300,7 +1470,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
             metadata)
         @raise AttributeError: when repostring passed is invalid.
         """
-
         if branch is None:
             branch = etpConst['branch']
         if product is None:
@@ -1314,114 +1483,127 @@ class SystemSettings(Singleton, EntropyPluginStore):
         if len(repo_split) < 4:
             raise AttributeError("repostring must have at least 5 pipe separated parts")
 
-        reponame = repo_split[0].strip()
+        name = repo_split[0].strip()
         if not _skip_repository_validation:
             # validate repository id string
-            if not entropy.tools.validate_repository_id(reponame):
+            if not entropy.tools.validate_repository_id(name):
                 raise AttributeError("invalid repository identifier")
 
-        repodesc = repo_split[1].strip()
-        repopackages = repo_split[2].strip()
-        repodatabase = repo_split[3].strip()
+        desc = repo_split[1].strip()
+        # protocol filter takes place inside entropy.fetchers
+        packages = [x.strip() for x in repo_split[2].strip().split() \
+                        if x.strip()]
+        database = repo_split[3].strip()
+        return name, self._generate_repository_metadata(
+            name, desc, packages, database, product, branch)
+
+    def _generate_repository_metadata(self, name, desc, packages, database,
+                                      product = None, branch = None):
+        """
+        Given a set of raw repository metadata information, like name,
+        description, a list of package urls and the database url, generate
+        the appropriate metadata.
+        """
+        if branch is None:
+            branch = etpConst['branch']
+        if product is None:
+            product = etpConst['product']
 
         # Support for custom database file compression
         dbformat = None
         for testno in range(2):
-            dbformatcolon = repodatabase.rfind("#")
+            dbformatcolon = database.rfind("#")
             if dbformatcolon == -1:
                 break
 
             try:
-                dbformat = repodatabase[dbformatcolon+1:]
+                dbformat = database[dbformatcolon+1:]
             except (IndexError, ValueError, TypeError,):
                 pass
-            repodatabase = repodatabase[:dbformatcolon]
+            database = database[:dbformatcolon]
 
         if dbformat not in etpConst['etpdatabasesupportedcformats']:
             # fallback to default
             dbformat = etpConst['etpdatabasefileformat']
 
         # strip off, if exists, the deprecated service_uri part (EAPI3 shit)
-        uricol = repodatabase.rfind(",")
+        uricol = database.rfind(",")
         if uricol != -1:
-            repodatabase = repodatabase[:uricol]
+            database = database[:uricol]
 
-        mydata = {}
-        mydata['repoid'] = reponame
+        data = {}
+        data['repoid'] = name
 
-        mydata['description'] = repodesc
-        mydata['packages'] = []
-        mydata['plain_packages'] = []
+        data['description'] = desc
+        data['packages'] = []
+        data['plain_packages'] = []
 
-        mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
-            reponame + os.path.sep + product + os.path.sep + \
+        data['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
+            name + os.path.sep + product + os.path.sep + \
             etpConst['currentarch'] + os.path.sep + branch
 
-        mydata['dbcformat'] = dbformat
+        data['dbcformat'] = dbformat
         if not dbformat in etpConst['etpdatabasesupportedcformats']:
-            mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
+            data['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
 
-        if repodatabase:
-            if not entropy.tools.is_valid_uri(repodatabase):
+        if database:
+            if not entropy.tools.is_valid_uri(database):
                 raise AttributeError("invalid repository database URL")
-        mydata['plain_database'] = repodatabase
+        data['plain_database'] = database
 
         database = entropy.tools.expand_plain_database_mirror(
-            repodatabase, product, reponame, branch)
+            database, product, name, branch)
         if database is None:
             database = const_convert_to_unicode("")
-        mydata['database'] = database
+        data['database'] = database
 
-        mydata['notice_board'] = mydata['database'] + os.path.sep + \
+        data['notice_board'] = data['database'] + os.path.sep + \
             etpConst['rss-notice-board']
 
-        mydata['local_notice_board'] = mydata['dbpath'] + os.path.sep + \
+        data['local_notice_board'] = data['dbpath'] + os.path.sep + \
             etpConst['rss-notice-board']
 
-        mydata['local_notice_board_userdata'] = mydata['dbpath'] + \
+        data['local_notice_board_userdata'] = data['dbpath'] + \
             os.path.sep + etpConst['rss-notice-board-userdata']
 
-        mydata['dbrevision'] = "0"
-        dbrevision_file = os.path.join(mydata['dbpath'],
+        data['dbrevision'] = "0"
+        dbrevision_file = os.path.join(data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
         if os.path.isfile(dbrevision_file) and \
             os.access(dbrevision_file, os.R_OK):
             enc = etpConst['conf_encoding']
             with codecs.open(dbrevision_file, "r", encoding=enc) as dbrev_f:
-                mydata['dbrevision'] = dbrev_f.readline().strip()
+                data['dbrevision'] = dbrev_f.readline().strip()
 
         # setup GPG key path
-        mydata['gpg_pubkey'] = mydata['dbpath'] + os.path.sep + \
+        data['gpg_pubkey'] = data['dbpath'] + os.path.sep + \
             etpConst['etpdatabasegpgfile']
 
         # setup script paths
-        mydata['post_branch_hop_script'] = mydata['dbpath'] + os.path.sep + \
+        data['post_branch_hop_script'] = data['dbpath'] + os.path.sep + \
             etpConst['etp_post_branch_hop_script']
-        mydata['post_branch_upgrade_script'] = mydata['dbpath'] + \
+        data['post_branch_upgrade_script'] = data['dbpath'] + \
             os.path.sep + etpConst['etp_post_branch_upgrade_script']
-        mydata['post_repo_update_script'] = mydata['dbpath'] + os.path.sep + \
+        data['post_repo_update_script'] = data['dbpath'] + os.path.sep + \
             etpConst['etp_post_repo_update_script']
 
-        mydata['webservices_config'] = mydata['dbpath'] + os.path.sep + \
+        data['webservices_config'] = data['dbpath'] + os.path.sep + \
             etpConst['etpdatabasewebservicesfile']
 
         # initialize CONFIG_PROTECT
         # will be filled the first time the db will be opened
-        mydata['configprotect'] = None
-        mydata['configprotectmask'] = None
+        data['configprotect'] = None
+        data['configprotectmask'] = None
 
-        # protocol filter takes place inside entropy.fetchers
-        repopackages = [x.strip() for x in repopackages.split() if x.strip()]
-
-        for repo_package in repopackages:
+        for repo_package in packages:
             new_repo_package = entropy.tools.expand_plain_package_mirror(
-                repo_package, product, reponame)
+                repo_package, product, name)
             if new_repo_package is None:
                 continue
-            mydata['plain_packages'].append(repo_package)
-            mydata['packages'].append(new_repo_package)
+            data['plain_packages'].append(repo_package)
+            data['packages'].append(new_repo_package)
 
-        return reponame, mydata
+        return data
 
     def _repositories_parser(self):
         """
@@ -1452,7 +1634,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         enc = etpConst['conf_encoding']
         # TODO: repository = statements in repositories.conf
-        # will be deprecated by mid 2012
+        # will be deprecated by mid 2014
         with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
             repositoriesconf = [x.strip() for x in \
                                     repo_f.readlines() if x.strip()]
@@ -1614,6 +1796,36 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 continue
             func(line, value)
 
+        # .ini-like file support.
+        _conf_dir, setting_files, _skipped_files, _auto_upd = \
+            self.__setting_dirs["repositories_conf_d"]
+        candidate_inis = [x for x, y in setting_files]
+
+        ini_parser = RepositoryConfigParser()
+        try:
+            ini_parser.read(candidate_inis)
+        except (IOError, OSError):
+            ini_parser = None
+
+        if ini_parser:
+            ini_repositories = ini_parser.repositories()
+            for ini_repository in ini_repositories:
+                if ini_repository in repoids:
+                    # double syntax is not supported.
+                    continue
+
+                repoids.add(ini_repository)
+                ini_db = ini_parser.repo(ini_repository)
+                ini_pkgs = ini_parser.pkgs(ini_repository)
+                ini_desc = ini_parser.desc(ini_repository)
+                ini_excluded = not ini_parser.enabled(ini_repository)
+                ini_data = self._generate_repository_metadata(
+                    ini_repository, ini_desc, ini_pkgs, ini_db)
+                if ini_excluded:
+                    data['excluded'][ini_repository] = ini_data
+                else:
+                    data['available'][ini_repository] = ini_data
+                    data['order'].append(ini_repository)
 
         try:
             tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))

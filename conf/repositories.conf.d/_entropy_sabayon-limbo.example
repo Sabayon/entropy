@@ -1,12 +1,53 @@
+# Entropy Repository configuration file.
+#
+#  This is an example of the new syntax (with a complete listing
+#  of the supported arguments):
+#
+#  [repository-id]
+#  desc = Sabayon Linux Official Testing Repository
+#  repo = http://pkg.sabayon.org,sabayon.org
+#  pkg = http://pkg.sabayon.org
+#  pkg = http://dl.sabayon.org/entropy
+#  enabled = <true/false>
+#
+#  [repository-id]
+#  desc = This statement will be ignored.
+#  repo = This url will be ignored.
+#  pkg = http://some.more.mirror.org/entropy
+#  pkg = http://some.more.mirror.net/entropy
+#
+#  As you can see, multiple statements for the same repository
+#  are allowed. However, only the first desc = and repo =
+#  statements will be considered, while there can be as many pkg =
+#  as you want.
+#
+#  Statements description:
+#  - "desc": stands for description, the repository name description.
+#  - "repo": the repository database URL string, plus other parameters
+#            as supported in the previous configuration file syntax:
+#            <db url prefix>[,<remote web services server url][#<compression>].
+#  - "pkg": the repository packages URL string. This must be a valid URL.
+#           The supported protocols are those supported by entropy.fetchers.
+#  - "enabled": if set, its value can be either "true" or "false". The default
+#               value is "true". It indicates if a repository is configured
+#               but currently disabled or enabled. Please take into account
+#               that config files in /etc/entropy/repositories.conf.d/ starting
+#               with "_" are considered to contain disabled repositories. This
+#               is just provided for convienence.
+
 # Experimental Sabayon repository "sabayon-limbo"
 # Here you can find in-testing packages that will be merged to
 # the mainline repository soon.
 # You can use any mirror listed for "sabayonlinux.org"
-repository = sabayon-limbo|Sabayon Limbo Testing Repository|http://dl.sabayon.org/entropy|http://pkg.sabayon.org,sabayon.org
-repository = sabayon-limbo||http://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-repository = sabayon-limbo||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
-repository = sabayon-limbo||http://mirror.internode.on.net/pub/sabayon/entropy|
-repository = sabayon-limbo||http://mirror.yandex.ru/sabayon/entropy|
-repository = sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
-repository = sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
-repository = sabayon-limbo||http://mirror.de.sabayon.org/entropy|
+
+[sabayon-limbo]
+desc = Sabayon Limbo Testing Repository
+repo = http://pkg.sabayon.org
+pkg = http://dl.sabayon.org/entropy
+pkg = http://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy
+pkg = http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon
+pkg = http://mirror.internode.on.net/pub/sabayon/entropy
+pkg = http://mirror.yandex.ru/sabayon/entropy
+pkg = http://cross-lfs.sabayonlinux.org/entropy
+pkg = http://na.mirror.garr.it/mirrors/sabayonlinux/entropy
+pkg = http://mirror.de.sabayon.org/entropy
