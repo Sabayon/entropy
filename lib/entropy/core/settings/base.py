@@ -1801,7 +1801,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__setting_dirs["repositories_conf_d"]
         candidate_inis = [x for x, y in setting_files]
 
-        ini_parser = RepositoryConfigParser()
+        ini_parser = RepositoryConfigParser(encoding = enc)
         try:
             ini_parser.read(candidate_inis)
         except (IOError, OSError):

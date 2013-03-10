@@ -446,7 +446,7 @@ class BaseConfigParser(dict):
             with open(path, "r") as cfg_f:
                 content = cfg_f.readlines()
         else:
-            with codecs.open(path, "r", encoding=encoding) as cfg_f:
+            with codecs.open(path, "r", encoding=self._encoding) as cfg_f:
                 content = cfg_f.readlines()
 
         repository_id = None
