@@ -422,6 +422,7 @@ class BaseConfigParser(dict):
     def __init__(self, encoding = None):
         super(BaseConfigParser, self).__init__()
         self._encoding = encoding
+        self._ordered_sections = []
 
     def read(self, files):
         """
@@ -449,7 +450,7 @@ class BaseConfigParser(dict):
             with codecs.open(path, "r", encoding=self._encoding) as cfg_f:
                 content = cfg_f.readlines()
 
-        repository_id = None
+        section_name = None
         for line in content:
 
             line = line.strip()
@@ -462,10 +463,12 @@ class BaseConfigParser(dict):
             if section:
                 candidate = self._validate_section(section)
                 if candidate:
-                    repository_id = candidate
+                    section_name = candidate
+                    if candidate not in self._ordered_sections:
+                        self._ordered_sections.append(candidate)
                 continue
 
-            if repository_id is None:
+            if section_name is None:
                 # skip lines, no section defined
                 continue
 
@@ -482,7 +485,7 @@ class BaseConfigParser(dict):
                 # value is invalid
                 continue
 
-            repo_data = self.setdefault(repository_id, {})
+            repo_data = self.setdefault(section_name, {})
             key_data = repo_data.setdefault(key, [])
             key_data.append(value)
 
