@@ -1821,8 +1821,16 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 repoids.add(ini_repository)
                 ini_db = ini_parser.repo(ini_repository)
-                ini_pkgs = ini_parser.pkgs(ini_repository)
-                ini_desc = ini_parser.desc(ini_repository)
+                try:
+                    ini_pkgs = ini_parser.pkgs(ini_repository)
+                except KeyError:
+                    ini_pkgs = []
+
+                try:
+                    ini_desc = ini_parser.desc(ini_repository)
+                except KeyError:
+                    ini_desc = _("No description")
+
                 ini_excluded = not ini_parser.enabled(ini_repository)
                 ini_data = self._generate_repository_metadata(
                     ini_repository, ini_desc, ini_pkgs, ini_db)
