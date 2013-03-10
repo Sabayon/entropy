@@ -141,13 +141,13 @@ enabled = %(enabled)s
         required_keys = set(("repo", "pkg"))
         repositories = []
 
-        for repository_id, repo_data in self.items():
+        for repository_id in self._ordered_sections:
+            repo_data = self[repository_id]
             remaining = required_keys - set(repo_data.keys())
             if not remaining:
                 # then required_keys are there
                 repositories.append(repository_id)
 
-        repositories.sort()
         return repositories
 
     def repo(self, repository_id):
