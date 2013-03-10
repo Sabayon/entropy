@@ -507,6 +507,21 @@ class ToolsTest(unittest.TestCase):
         new_dict = et.dict_from_xml_extended(xml_data)
         self.assertEqual(data, new_dict)
 
+    def test_validate_repository_id(self):
+        data = [
+            ("server=repository", False),
+            ("repository", True),
+            ("=asd'?^ì$", False),
+            ("[$", False),
+            ("sabayonlinux.org", True),
+            ("sabayon-limbo", True),
+            ("mania.org", True)
+            ]
+        for repository_id, expected in data:
+            self.assertEqual(
+                et.validate_repository_id(repository_id),
+                expected)
+
     def test_xml_from_dict(self):
         data = {
             "foo": "abc",

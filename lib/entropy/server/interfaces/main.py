@@ -33,6 +33,7 @@ from entropy.output import purple, red, darkgreen, \
 from entropy.cache import EntropyCacher
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
+from entropy.core import BaseConfigParser
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import EntropyTransceiver
@@ -416,13 +417,215 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             package_id)
 
 
+class RepositoryConfigParser(BaseConfigParser):
+    """
+    Entropy .ini-like server-side repository configuration file parser.
+
+    Entropy Server now supports repositories defined inside
+    /etc/entropy/repositories.conf.d/ files, written using the
+    syntax detailed below. This improves the ability to enable, disable,
+    add and remove repositories programmatically. Furthermore, it
+    makes possible to extend the supported parameters without breaking
+    backward compatibility.
+
+    In order to differentiate Entropy Client repository definitions between
+    Entropy Server ones, each repository section must start with "[server=".
+
+    This is an example of the syntax (with a complete listing
+    of the supported arguments):
+
+    [server=sabayon-limbo]
+    desc = Sabayon Linux Official Testing Repository
+    repo = ssh://username@full.host:~username/sabayon-limbo
+    enabled = <true/false>
+
+    [server=sabayon-limbo]
+    desc = This statement will be ignored.
+    repo-only = ssh://username@repo.host:~username/sabayon-limbo
+    pkg-only = ssh://username@pkg.host:~username/sabayon-limbo
+
+    [server=sabayon-base]
+    desc = This is the base repository.
+    repo-only = ssh://username@repo.host:~username/sabayon-base
+    pkg-only = ssh://username@pkg.host:~username/sabayon-base
+    base = <true/false>
+
+    As you can see, multiple statements for the same repository
+    are allowed. However, only the first desc = statement will be
+    considered, while there can be as many {pkg,repo}* = as you want.
+
+    The repository order is important, but this is guaranteed by the
+    fact that configuration files are parsed in lexical order.
+
+    Statements description:
+    - "desc": stands for description, the repository name description.
+    - "repo": the push & pull URI, for both packages and repository database.
+    - "repo-only": same as repo, but only for the repository database
+                   push & pull.
+    - "pkg-only": same as repo, but only for the packages push & pull.
+             The supported protocols are those supported by entropy.fetchers.
+    - "enabled": if set, its value can be either "true" or "false". The default
+                 value is "true". It indicates if a repository is configured
+                 but currently disabled or enabled. Please take into account
+                 that config files in /etc/entropy/repositories.conf.d/ starting
+                 with "_" are considered to contain disabled repositories. This
+                 is just provided for convienence.
+    - "base": if set, its value can be either "true" or "false". The default
+              value is "false". If no repository has the flag set, the first
+              listed repository will be the base one. Only the first repository
+              with "base = true" will be considered. The base repository is the
+              repository that is considered base for all the others
+              (the main one).
+    """
+
+    _SUPPORTED_KEYS = ("desc", "repo", "repo-only", "pkg-only",
+                       "base", "enabled")
+
+    _DEFAULT_ENABLED_VALUE = True
+    _DEFAULT_BASE_VALUE = False
+
+    def __init__(self, encoding = None):
+        super(RepositoryConfigParser, self).__init__(encoding = encoding)
+
+    @classmethod
+    def _validate_section(cls, match):
+        """
+        Reimpemented from BaseConfigParser.
+        """
+        # a new repository begins
+        groups = match.groups()
+        if not groups:
+            return
+
+        candidate = groups[0]
+        prefix = "server="
+        if not candidate.startswith(prefix):
+            return
+        candidate = candidate[len(prefix):]
+        if not entropy.tools.validate_repository_id(candidate):
+            return
+        return candidate
+
+    def base_repository(self):
+        """
+        Return the base repository, if any, or None.
+
+        @return: the base repository identifier
+        @rtype: string or None
+        """
+        repositories = self.repositories()
+        base = None
+        for repository_id in repositories:
+            try:
+                p_value = self[repository_id]["base"][0]
+                value = False
+                if p_value.strip().lower() == "true":
+                    value = True
+            except KeyError:
+                value = self._DEFAULT_BASE_VALUE
+            if value:
+                base = repository_id
+                break
+
+        if base is None and repositories:
+            base = repositories[0]
+        return base
+
+    def repositories(self):
+        """
+        Return a list of valid parsed repositories.
+
+        A repository is considered valid iff it contains
+        at least "repo". The parse order is preserved.
+        """
+        required_keys = set(("repo",))
+        repositories = []
+
+        for repository_id in self._ordered_sections:
+            repo_data = self[repository_id]
+            remaining = required_keys - set(repo_data.keys())
+            if not remaining:
+                # then required_keys are there
+                repositories.append(repository_id)
+
+        return repositories
+
+    def repo(self, repository_id):
+        """
+        Return the repository push & pull URIs for both packages and
+        repository database.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository push & pull URIs.
+        @rtype: list
+        """
+        return self[repository_id]["repo"]
+
+    def repo_only(self, repository_id):
+        """
+        Return the repository push & pull URIs for the repository
+        database only.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository push & pull URIs for the repository
+            database only.
+        @rtype: list
+        """
+        return self[repository_id]["repo-only"]
+
+    def pkg_only(self, repository_id):
+        """
+        Return the repository push & pull URIs for the repository only.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository push & pull URIs for the packages only.
+        @rtype: list
+        """
+        return self[repository_id]["pkg-only"]
+
+    def desc(self, repository_id):
+        """
+        Return the description of the repository.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not found or
+            metadata is not available
+        @return: the repository description
+        @rtype: string
+        """
+        return self[repository_id]["desc"][0]
+
+    def enabled(self, repository_id):
+        """
+        Return whether the repository is enabled or disabled.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @return: the repository status
+        @rtype: bool
+        """
+        try:
+            enabled = self[repository_id]["enabled"][0]
+            return enabled.strip().lower() == "true"
+        except KeyError:
+            return self._DEFAULT_ENABLED_VALUE
+
+
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
     # List of static server-side repositories that must survive
     # a repositories metadata reload
     REPOSITORIES = {}
-
-
 
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
@@ -438,8 +641,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         # path to /etc/entropy/server.conf (usually, depends on systemroot)
         return os.path.join(etpConst['confdir'], "server.conf")
 
-    @staticmethod
-    def analyze_server_repo_string(repostring, product = None):
+    @classmethod
+    def analyze_server_repo_string(cls, repostring, product = None):
         """
         Analyze a server repository string (usually contained in server.conf),
         extracting all the parameters.
@@ -454,7 +657,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if product is None:
             product = etpConst['product']
 
-        mydata = {}
+        data = {}
         repo_key, repostring = entropy.tools.extract_setting(repostring)
         if repo_key != "repository":
             raise AttributeError("invalid repostring passed")
@@ -463,17 +666,12 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if len(repo_split) < 3:
             raise AttributeError("invalid repostring passed (2)")
 
-        repoid = repo_split[0].strip()
-        repodesc = repo_split[1].strip()
-        repouris = repo_split[2].strip()
+        repository_id = repo_split[0].strip()
+        desc = repo_split[1].strip()
+        uris = repo_split[2].strip().split()
 
-        mydata = {}
-        mydata['repoid'] = repoid
-        mydata['description'] = repodesc
-        mydata['pkg_mirrors'] = []
-        mydata['repo_mirrors'] = []
-        mydata['community'] = False
-        uris = repouris.split()
+        repo_mirrors = []
+        pkg_mirrors = []
         for uri in uris:
             do_pkg = False
             do_repo = False
@@ -487,15 +685,42 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     uri = uri[3:]
                     continue
                 break
+
             if not (do_repo or do_pkg):
                 do_repo = True
                 do_pkg = True
             if do_repo:
-                mydata['repo_mirrors'].append(uri)
+                repo_mirrors.append(uri)
             if do_pkg:
-                mydata['pkg_mirrors'].append(uri)
+                pkg_mirrors.append(uri)
 
-        return repoid, mydata
+        return repository_id, cls._generate_repository_metadata(
+            repository_id, desc, repo_mirrors, pkg_mirrors)
+
+    @classmethod
+    def _generate_repository_metadata(cls, repository_id, desc,
+                                      repo_mirrors, pkg_mirrors):
+        """
+        Generate the repository metadata given raw information.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @param desc: repository description
+        @type desc: string
+        @param repo_mirrors: list of repository database mirrors
+        @type repo_mirrors: list
+        @param pkg_mirrors: list of repository packages mirrors
+        @type pkg_mirrors: list
+        @return: the repository metadata
+        @rtype: dict
+        """
+        data = {}
+        data['repoid'] = repository_id
+        data['description'] = desc
+        data['pkg_mirrors'] = pkg_mirrors[:]
+        data['repo_mirrors'] = repo_mirrors[:]
+        data['community'] = False
+        return data
 
     def __generic_parser(self, filepath):
         """
@@ -638,19 +863,20 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         return data
 
     def server_parser(self, sys_set):
-
         """
         Parses Entropy server system configuration file.
 
         @return dict data
         """
-        server_conf = ServerSystemSettingsPlugin.server_conf_path()
+        srv_plugin_class = ServerSystemSettingsPlugin
+        server_conf = srv_plugin_class.server_conf_path()
         root = etpConst['systemroot']
         try:
             mtime = os.path.getmtime(server_conf)
         except (OSError, IOError):
             mtime = 0.0
 
+        enc = etpConst['conf_encoding']
         serverconf = None
         cache_key = (root, server_conf)
         cache_obj = self._mtime_cache.get(cache_key)
@@ -661,7 +887,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             cache_obj = {'mtime': mtime,}
 
         if serverconf is None:
-            enc = etpConst['conf_encoding']
             try:
                 with codecs.open(server_conf, "r", encoding=enc) \
                         as server_f:
@@ -682,7 +907,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 self._mtime_cache[cache_key] = cache_obj
 
         data = {
-            'repositories': ServerSystemSettingsPlugin.REPOSITORIES.copy(),
+            'repositories': srv_plugin_class.REPOSITORIES.copy(),
             'community_mode': False,
             'qa_langs': [const_convert_to_unicode("en_US"),
                          const_convert_to_unicode("C")],
@@ -768,9 +993,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 data['broken_revdeps_qa_check'] = opt
 
         def _repository_func(line, setting):
+            # TODO: deprecate in 2015. repositories.conf.d/ is the
+            # supported way to define repositories.
             try:
                 repoid, repodata = \
-                    ServerSystemSettingsPlugin.analyze_server_repo_string(
+                    srv_plugin_class.analyze_server_repo_string(
                         line, product = sys_set['repositories']['product'])
             except AttributeError:
                 # error parsing string
@@ -779,7 +1006,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # validate repository id string
             if not entropy.tools.validate_repository_id(repoid):
                 sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
-                    repoid, ServerSystemSettingsPlugin.server_conf_path()))
+                    repoid, srv_plugin_class.server_conf_path()))
                 return
 
             if repoid in data['repositories']:
@@ -893,6 +1120,66 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 continue
             func(line, value)
 
+        # .ini-like file support.
+        repositories_d_conf = sys_set.get_setting_dirs_data(
+            )['repositories_conf_d']
+        _conf_dir, setting_files, _skipped_files, _upd = repositories_d_conf
+        candidate_inis = [x for x,y in setting_files]
+
+        ini_parser = RepositoryConfigParser(encoding = enc)
+        try:
+            ini_parser.read(candidate_inis)
+        except (IOError, OSError) as err:
+            sys.stderr.write("Cannot parse %s: %s\n" % (
+                    " ".join(candidate_inis),
+                    err))
+            ini_parser = None
+
+        if ini_parser:
+            repositories = set(data['repositories'].keys())
+            ini_repositories = ini_parser.repositories()
+            if data['base_repository_id'] is None:
+                # if base_repository_id is not set, then
+                # take the value of ini config files.
+                ini_base = ini_parser.base_repository()
+                if ini_base:
+                    data['base_repository_id'] = ini_base
+
+            for ini_repository in ini_repositories:
+                if ini_repository in repositories:
+                    # double syntax is not supported.
+                    continue
+                ini_enabled = ini_parser.enabled(ini_repository)
+                if not ini_enabled:
+                    continue
+
+                try:
+                    ini_desc = ini_parser.desc(ini_repository)
+                except KeyError:
+                    ini_desc = _("No description")
+                try:
+                    ini_mirrors = ini_parser.repo(ini_repository)
+                except KeyError:
+                    ini_mirrors = []
+
+                repo_mirrors = []
+                pkg_mirrors = []
+                repo_mirrors.extend(ini_mirrors)
+                pkg_mirrors.extend(ini_mirrors)
+
+                try:
+                    repo_mirrors.extend(ini_parser.repo_only(ini_repository))
+                except KeyError:
+                    pass
+                try:
+                    pkg_mirrors.extend(ini_parser.pkg_only(ini_repository))
+                except KeyError:
+                    pass
+
+                repo_data = srv_plugin_class._generate_repository_metadata(
+                    ini_repository, ini_desc, repo_mirrors, pkg_mirrors)
+                data['repositories'][ini_repository] = repo_data
+
         env_community_mode = os.getenv("ETP_COMMUNITY_MODE")
         if env_community_mode == "0":
             data['community_mode'] = False
@@ -910,14 +1197,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             mydata['repo_mirrors'] = []
             mydata['community'] = False
             data['repositories'][client_repository_id].update(mydata)
-            ServerSystemSettingsPlugin.REPOSITORIES[client_repository_id] = \
+            srv_plugin_class.REPOSITORIES[client_repository_id] = \
                 mydata
             # installed packages repository is now the base repository
             data['base_repository_id'] = client_repository_id
 
         # expand paths
         for repoid in data['repositories']:
-            ServerSystemSettingsPlugin.extend_repository_metadata(
+            srv_plugin_class.extend_repository_metadata(
                 sys_set, repoid, data['repositories'][repoid])
 
         # Support for shell variables

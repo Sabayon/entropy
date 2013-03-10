@@ -1,0 +1,59 @@
+# Entropy Server now supports repositories defined inside
+# /etc/entropy/repositories.conf.d/ files, written using the
+# syntax detailed below. This improves the ability to enable, disable,
+# add and remove repositories programmatically. Furthermore, it
+# makes possible to extend the supported parameters without breaking
+# backward compatibility.
+#
+# In order to differentiate Entropy Client repository definitions between
+# Entropy Server ones, each repository section must start with "[server=".
+#
+# This is an example of the syntax (with a complete listing
+# of the supported arguments):
+#
+# [server=sabayon-limbo]
+# desc = Sabayon Linux Official Testing Repository
+# repo = ssh://username@full.host:~username/sabayon-limbo
+# enabled = <true/false>
+#
+# [server=sabayon-limbo]
+# desc = This statement will be ignored.
+# repo-only = ssh://username@repo.host:~username/sabayon-limbo
+# pkg-only = ssh://username@pkg.host:~username/sabayon-limbo
+#
+# [server=sabayon-base]
+# desc = This is the base repository.
+# repo-only = ssh://username@repo.host:~username/sabayon-base
+# pkg-only = ssh://username@pkg.host:~username/sabayon-base
+# base = <true/false>
+#
+# As you can see, multiple statements for the same repository
+# are allowed. However, only the first desc = statement will be
+# considered, while there can be as many {pkg,repo}* = as you want.
+#
+# The repository order is important, but this is guaranteed by the
+# fact that configuration files are parsed in lexical order.
+#
+# Statements description:
+# - "desc": stands for description, the repository name description.
+# - "repo": the push & pull URI, for both packages and repository database.
+# - "repo-only": same as repo, but only for the repository database
+#                push & pull.
+# - "pkg-only": same as repo, but only for the packages push & pull.
+#          The supported protocols are those supported by entropy.fetchers.
+# - "enabled": if set, its value can be either "true" or "false". The default
+#              value is "true". It indicates if a repository is configured
+#              but currently disabled or enabled. Please take into account
+#              that config files in /etc/entropy/repositories.conf.d/ starting
+#              with "_" are considered to contain disabled repositories. This
+#              is just provided for convienence.
+# - "base": if set, its value can be either "true" or "false". The default
+#           value is "false". If no repository has the flag set, the first
+#           listed repository will be the base one.
+
+# [server=<example repository>]
+# desc = Entropy Server Example Repository
+# repo = ssh://user@localhost:~user/repository-name
+# repo-only = ssh://user@localhost:~user/repository-only-name
+# pkg-only = ssh://user@localhost:~user/package-only-name
+# enabled = true

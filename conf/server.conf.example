@@ -47,25 +47,6 @@ default-repository = sabayonlinux.org
 #
 weak-package-files = disable
 
-#
-#  syntax for repository:
-#
-#    repository: server-side repositories configuration
-#    Currently supported upload URI protocols are ftp:// and ssh://
-#      => repository = <repository_id>|<repository description>|<upload URI 1> <2>
-#    (EAPI3 part is optional)
-#
-#    PLEASE NOTE: the first repository listed is going to be considered the
-#                 "base" repository
-#    PLEASE NOTE (2): you can specify server for repository or packages
-#    sync only, by prefixing URIs with <p> (for packages only) or <r>
-#    (for repository only)
-#
-#    example:
-#      => repository = myserverrepo|My Server Repository|ftp://user:pass@111.111.111.111/ ssh://username@host:~user/path:port
-#
-# repository = 
-
 # Database format used by EAPI1 packages:
 # bz2 or gz
 database-format = bz2

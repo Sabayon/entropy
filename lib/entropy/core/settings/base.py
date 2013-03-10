@@ -97,6 +97,8 @@ class RepositoryConfigParser(BaseConfigParser):
             return
 
         candidate = groups[0]
+        # Note, candidate must not start with server=
+        # as this is used for Entropy Server repositories.
         if not entropy.tools.validate_repository_id(candidate):
             return
         return candidate
@@ -1804,7 +1806,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         ini_parser = RepositoryConfigParser(encoding = enc)
         try:
             ini_parser.read(candidate_inis)
-        except (IOError, OSError):
+        except (IOError, OSError) as err:
+            sys.stderr.write("Cannot parse %s: %s\n" % (
+                    " ".join(candidate_inis),
+                    err))
             ini_parser = None
 
         if ini_parser:

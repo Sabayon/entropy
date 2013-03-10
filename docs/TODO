@@ -1,8 +1,5 @@
 Short term:
 
-- migrate server.conf repositories to repositories.conf.d,
-  ini-like stuff?
-
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
   Test package generation and entropy client behaviour
@@ -21,3 +18,4 @@ Short term:
           also see _conf_add_repository(), _conf_remove_repository(),
           shift_repository()
  - [2015] remove non-ini repositories parsing support from repositories.conf.*
+ - [2015] remove repositories parsing from server.conf
