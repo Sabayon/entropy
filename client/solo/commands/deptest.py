@@ -9,7 +9,6 @@
     B{Entropy Command Line Client}.
 
 """
-import functools
 import sys
 import argparse
 import time
@@ -78,7 +77,7 @@ Test system integrity by checking installed packages dependencies.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._ask = nsargs.ask
         self._quiet = nsargs.quiet

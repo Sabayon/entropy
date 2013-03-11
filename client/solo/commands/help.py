@@ -90,7 +90,7 @@ class SoloHelp(SoloCommand):
                 aliases_str)
             desc = descriptor.get_description()
             group.add_argument(name, help=darkgreen(desc), action="store_true")
-        self.print_help(parser)
+        parser.print_help()
         if not self._args:
             return 1
         return 0

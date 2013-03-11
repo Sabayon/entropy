@@ -9,7 +9,6 @@
     B{Entropy Command Line Client}.
 
 """
-import functools
 import sys
 import argparse
 
@@ -68,7 +67,7 @@ Upgrade the System to a new branch.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._branch = nsargs.branch
 

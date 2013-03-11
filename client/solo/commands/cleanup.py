@@ -9,7 +9,6 @@
     B{Entropy Command Line Client}.
 
 """
-import functools
 import os
 import sys
 import argparse
@@ -71,7 +70,7 @@ Remove downloaded packages and clean temporary directories.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         return self._call_locked, [self._cleanup]
 

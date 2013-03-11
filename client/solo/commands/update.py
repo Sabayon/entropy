@@ -9,7 +9,6 @@
     B{Entropy Command Line Client}.
 
 """
-import functools
 import sys
 import argparse
 
@@ -78,7 +77,7 @@ Update Entropy Repositories.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._force = nsargs.force
         self._repositories += nsargs.repo

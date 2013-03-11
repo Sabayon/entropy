@@ -26,6 +26,31 @@ import entropy.tools
 
 from solo.utils import enlightenatom
 
+
+def _fix_argparse_print_help():
+    """
+    Fix argparse.ArgumentParser.print_help to always work
+    with UTF-8 characters and pipes. See bug 4049.
+    """
+    class _Printer(object):
+
+        @classmethod
+        def write(self, string):
+            print_generic(string)
+
+    original_print_help = argparse.ArgumentParser.print_help
+
+    def _print_help(zelf, file=None):
+        if file is None:
+            file = _Printer
+        return original_print_help(zelf, file=file)
+
+    argparse.ArgumentParser.print_help = _print_help
+
+
+_fix_argparse_print_help()
+
+
 class SoloCommand(object):
     """
     Base class for Solo commands
@@ -96,22 +121,6 @@ class SoloCommand(object):
         parser.add_argument(
             "--quiet", "-q", action="store_true", default=False,
             help=_("quiet output"))
-
-    def print_help(self, parser):
-        """
-        ArgumentParser.print_help wrapper that properly handles
-        UTF-8 encoding in a fault-tolerant way. Also see bug #4049.
-
-        @param parser: an ArgumentParser object
-        @type parser: argparse.ArgumentParser
-        """
-        class _Printer(object):
-
-            @classmethod
-            def write(self, string):
-                print_generic(string)
-
-        parser.print_help(file=_Printer)
 
     def parse(self):
         """

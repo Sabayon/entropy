@@ -9,7 +9,6 @@
     B{Entropy Command Line Client}.
 
 """
-import functools
 import os
 import sys
 import argparse
@@ -143,7 +142,7 @@ Manage Entropy Repositories.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func]
