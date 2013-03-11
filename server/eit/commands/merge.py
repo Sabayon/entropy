@@ -12,7 +12,6 @@
 import sys
 import os
 import argparse
-import functools
 
 from entropy.i18n import _
 
@@ -76,7 +75,7 @@ back in. This tool does exactly this.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._ask = not nsargs.quick
         self._merge_branch = nsargs.branch

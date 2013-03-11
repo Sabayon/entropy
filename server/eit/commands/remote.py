@@ -12,7 +12,6 @@
 import sys
 import os
 import argparse
-import functools
 import codecs
 
 from entropy.const import etpConst
@@ -84,7 +83,7 @@ Manage (add, remove, list) configured repositories.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func, None]

@@ -13,7 +13,6 @@ import sys
 import os
 import errno
 import argparse
-import functools
 import tempfile
 import codecs
 
@@ -87,7 +86,7 @@ list notice-board titles for user consumption.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._repository_id = nsargs.repo
         return self._call_locked, [nsargs.func, self._repository_id]

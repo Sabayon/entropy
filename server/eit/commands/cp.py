@@ -12,7 +12,6 @@
 import sys
 import os
 import argparse
-import functools
 
 from entropy.output import darkgreen, blue, brown, bold, red, purple, teal
 from entropy.i18n import _
@@ -113,7 +112,7 @@ Copy packages from source repository to destination repository.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError as err:
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._source = nsargs.source[0]
         self._dest = nsargs.dest[0]

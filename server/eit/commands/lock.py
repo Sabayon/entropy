@@ -11,7 +11,6 @@
 """
 import sys
 import argparse
-import functools
 
 from entropy.i18n import _
 from entropy.output import darkgreen, brown, purple, blue, darkred
@@ -124,7 +123,7 @@ repositories.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._client = nsargs.client
         self._repository_id = nsargs.repo[0]

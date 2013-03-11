@@ -13,7 +13,6 @@ import sys
 import os
 import subprocess
 import argparse
-import functools
 
 from entropy.i18n import _
 
@@ -60,7 +59,7 @@ This commands opens repository ChangeLog.bz2 using *bzless*.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         return self._call_locked, [self._log, nsargs.repo]
 

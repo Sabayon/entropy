@@ -12,7 +12,6 @@
 import os
 import sys
 import argparse
-import functools
 
 from entropy.i18n import _, ngettext
 from entropy.output import bold, purple, darkgreen, blue, teal
@@ -91,7 +90,7 @@ over just use the *--no-copy* switch.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._from_branch = nsargs.frombranch
         self._to_branch = nsargs.branch

@@ -11,7 +11,6 @@
 """
 import sys
 import argparse
-import functools
 
 from entropy.i18n import _
 from entropy.output import darkgreen
@@ -105,7 +104,7 @@ re-fetching the remote version available on mirrors.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._local = nsargs.local
         self._ask = not nsargs.quick

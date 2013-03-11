@@ -11,7 +11,6 @@
 """
 import sys
 import argparse
-import functools
 
 from entropy.i18n import _
 
@@ -58,7 +57,7 @@ The package must be already available in the queried repository.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         # setup atoms variable before spawning commit
         self._packages = nsargs.packages[:]

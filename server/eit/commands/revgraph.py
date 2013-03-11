@@ -11,7 +11,6 @@
 """
 import sys
 import argparse
-import functools
 
 from entropy.i18n import _
 
@@ -78,7 +77,7 @@ For a direct dependency graph, please see *eit graph*.
         try:
             nsargs = parser.parse_args(self._args)
         except IOError:
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._quiet = nsargs.quiet
         self._packages += nsargs.packages

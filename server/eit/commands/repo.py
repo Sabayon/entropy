@@ -12,7 +12,6 @@
 import sys
 import os
 import argparse
-import functools
 
 from entropy.i18n import _
 from entropy.output import darkgreen, teal
@@ -58,7 +57,7 @@ Show current repository, its branch and configured mirrors.
             parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
         return self._call_locked, [self._void, None]
 
     def _void(self, entropy_server):

@@ -12,7 +12,6 @@
 import sys
 import os
 import argparse
-import functools
 
 from entropy.i18n import _
 from entropy.output import darkgreen, teal
@@ -103,7 +102,7 @@ So, please setup your repository there and only then run *eit init <repo>*.
             nsargs = parser.parse_args(self._args)
         except IOError as err:
             sys.stderr.write("%s\n" % (err,))
-            return functools.partial(self.print_help, parser), []
+            return parser.print_help, []
 
         self._ask = not nsargs.quick
         return self._call_locked, [self._init, nsargs.repo[0]]
