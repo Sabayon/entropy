@@ -12,7 +12,7 @@ equo-upgrade - upgrade the system
 SYNOPSIS
 --------
 equo upgrade [-h] [--ask | --pretend] [--verbose] [--quiet] [--fetch]
-             [--bdeps] [--nodeps] [--norecursive] [--deep] [--empty]
+             [--bdeps] [--nodeps] [--norecursive] [--deep] [--empty] [--purge]
              [--configfiles] [--relaxed] [--multifetch {1,2,3,4,5,6,7,8,9,10}]
 
 
@@ -61,6 +61,9 @@ OPTIONAL ARGUMENTS
 
 *--empty*::
     when used with --deep, include virtual packages
+
+*--purge*::
+    remove unmaintained packages, if any. This will respect --ask, --pretend and other switches.
 
 *--configfiles*::
     remove package configuration files no longer needed

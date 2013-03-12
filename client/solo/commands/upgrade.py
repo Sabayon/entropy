@@ -124,6 +124,13 @@ Upgrade the system.
         _commands["--empty"] = {}
 
         parser.add_argument(
+            "--purge", action="store_true",
+            default=False,
+            help=_("remove unmaintained packages, if any. This will respect "
+                   "--ask, --pretend and other switches."))
+        _commands["--purge"] = {}
+
+        parser.add_argument(
             "--configfiles", action="store_true",
             default=False,
             help=_("remove package configuration files no longer needed"))
@@ -163,6 +170,7 @@ Upgrade the system.
         verbose = self._nsargs.verbose
         quiet = self._nsargs.quiet
         empty = self._nsargs.empty
+        purge = self._nsargs.purge
         config_files = self._nsargs.configfiles
         deep = self._nsargs.deep
         fetch = self._nsargs.fetch
@@ -172,7 +180,7 @@ Upgrade the system.
 
         exit_st, _show_cfgupd = self._upgrade_action(
             entropy_client, deps, recursive,
-            pretend, ask, verbose, quiet, empty,
+            pretend, ask, verbose, quiet, empty, purge,
             config_files, deep, fetch, bdeps,
             relaxed, multifetch)
         if _show_cfgupd:
@@ -181,7 +189,7 @@ Upgrade the system.
 
     def _upgrade_action(self, entropy_client, deps, recursive,
                         pretend, ask, verbose, quiet, empty,
-                        config_files, deep, fetch, bdeps,
+                        purge, config_files, deep, fetch, bdeps,
                         relaxed, multifetch):
         """
         Solo Upgrade action implementation.
@@ -268,8 +276,13 @@ Upgrade the system.
                     entropy_client, manual_removal, manual=True)
             if remove:
                 self._show_removal_info(entropy_client, remove)
+                if not purge:
+                    entropy_client.output(
+                        blue(_("To automatically remove them, please run "
+                               "equo with --purge.")),
+                        header=darkred(" @@ "))
 
-        if remove and not fetch:
+        if remove and purge and not fetch:
 
             do_run = True
             rc = 1
