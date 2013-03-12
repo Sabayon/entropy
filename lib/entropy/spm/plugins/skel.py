@@ -24,7 +24,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 10
+    BASE_PLUGIN_API_VERSION = 11
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -355,10 +355,13 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def packages_repositories_metadata_update(self):
+    def packages_repositories_metadata_update(self, actions):
         """
         Executes Source Package Manager available packages repositories
         metadata update.
+
+        @param actions: a list of metadata update strings
+        @type actions: list
         """
         raise NotImplementedError()
 

@@ -551,7 +551,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 10
+    PLUGIN_API_VERSION = 11
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -910,33 +910,48 @@ class PortagePlugin(SpmPlugin):
             mirrors.extend(self._portage.thirdpartymirrors[mirror_name])
         return mirrors
 
-    def packages_repositories_metadata_update(self):
+    def packages_repositories_metadata_update(self, actions):
         """
         Reimplemented from SpmPlugin class.
         """
         root = etpConst['systemroot'] + os.path.sep
-        env = os.environ.copy()
-        env['ROOT'] = root
-        emaint_exec = "/usr/sbin/emaint"
-        args = (emaint_exec, "--fix", "moveinst")
-        if is_mute():
-            log = None
-            try:
-                log = LogFile(
-                    level = SystemSettings()['system']['log_level'],
-                    filename = etpConst['entropylogfile'],
-                    header = "[spm]"
-                )
-                subprocess.call(args, env = env, stdout = log,
-                    stderr = log)
-            finally:
-                if log is not None:
-                    log.flush()
-                    log.close()
-        else:
-            if os.access(emaint_exec, os.X_OK):
-                subprocess.call(args, env = env)
-            # else meh!
+        vartree = self._get_portage_vartree(root = root)
+        move = vartree.dbapi.move_ent
+        slotmove = vartree.dbapi.move_slot_ent
+
+        commands = []
+        for action in actions:
+            mytxt = "%s: %s: %s." % (
+                brown(_("SPM")),
+                purple(_("action")),
+                blue(action),
+            )
+            self.__output.output(
+                mytxt,
+                importance = 1,
+                level = "warning",
+                header = darkred(" * ")
+            )
+
+            command = action.split()
+            if command[0] == "move":
+                move(command)
+                commands.append(command)
+            elif command[0] == "slotmove":
+                slotmove(command)
+                commands.append(command)
+
+        mytxt = "%s: %s." % (
+            brown(_("SPM")),
+            purple(_("updating metadata")),
+        )
+        self.__output.output(
+            mytxt,
+            importance = 1,
+            level = "warning",
+            header = darkred(" * ")
+        )
+        vartree.dbapi.update_ents(commands)
 
     def match_package(self, package, match_type = None):
         """

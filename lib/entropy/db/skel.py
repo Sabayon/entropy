@@ -1672,11 +1672,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         )
         try:
             spm = get_spm(self)
-            spm.packages_repositories_metadata_update()
+            spm.packages_repositories_metadata_update(actions)
         except Exception:
             entropy.tools.print_traceback()
 
-        spm_moves = set()
         quickpkg_atoms = set()
         executed_actions = []
         for action in actions:
@@ -1693,7 +1692,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 header = darkred(" * ")
             )
             if command[0] == "move":
-                spm_moves.add(action)
                 move_actions = self._runTreeUpdatesMoveAction(command[1:],
                     quickpkg_atoms)
                 if move_actions:
@@ -1717,18 +1715,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 level = "info",
                 header = purple(" @@ ")
             )
-
-        if spm_moves:
-            try:
-                self._doTreeupdatesSpmCleanup(spm_moves)
-            except Exception as e:
-                mytxt = "%s: %s: %s, %s." % (
-                    bold(_("WARNING")),
-                    red(_("Cannot run SPM cleanup, error")),
-                    Exception,
-                    e,
-                )
-                entropy.tools.print_traceback()
 
         mytxt = "%s: %s." % (
             bold(_("Entropy")),
@@ -1965,68 +1951,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 continue
             quickpkg_queue.add(myatom)
         return quickpkg_queue
-
-    def _doTreeupdatesSpmCleanup(self, spm_moves):
-        """
-        Erase dead Source Package Manager db entries.
-
-        @todo: make more Portage independent (create proper entropy.spm
-            methods for dealing with this)
-        @param spm_moves: list of raw package name/slot update actions.
-        @type spm_moves: list
-        """
-        # now erase Spm entries if necessary
-        for action in spm_moves:
-            command = action.split()
-            if len(command) < 2:
-                continue
-
-            key = command[1]
-            category, name = key.split("/", 1)
-            dep_key = entropy.dep.dep_getkey(key)
-
-            try:
-                spm = get_spm(self)
-            except Exception:
-                entropy.tools.print_traceback()
-                continue
-
-            script_path = spm.get_installed_package_build_script_path(dep_key)
-            pkg_path = os.path.dirname(os.path.dirname(script_path))
-            if not os.path.isdir(pkg_path):
-                # no dir,  no party!
-                continue
-
-            mydirs = [os.path.join(pkg_path, x) for x in \
-                os.listdir(pkg_path) if \
-                entropy.dep.dep_getkey(os.path.join(category, x)) \
-                    == dep_key]
-            mydirs = [x for x in mydirs if os.path.isdir(x)]
-
-            # now move these dirs
-            for mydir in mydirs:
-                to_path = os.path.join(etpConst['entropyunpackdir'],
-                    os.path.basename(mydir))
-                mytxt = "%s: %s '%s' %s '%s'" % (
-                    bold(_("SPM")),
-                    red(_("Moving old entry")),
-                    blue(mydir),
-                    red(_("to")),
-                    blue(to_path),
-                )
-                self.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning",
-                    header = darkred(" * ")
-                )
-                if os.path.isdir(to_path):
-                    shutil.rmtree(to_path, True)
-                    try:
-                        os.rmdir(to_path)
-                    except OSError:
-                        pass
-                shutil.move(mydir, to_path)
 
     def listAllTreeUpdatesActions(self, no_ids_repos = False):
         """
