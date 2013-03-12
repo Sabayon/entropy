@@ -150,10 +150,11 @@ class Repository:
             self._entropy.clear_cache()
             if self.fetch_security:
                 self._update_security_advisories(_unlocked = _unlocked)
+
             # do treeupdates
             if isinstance(self._entropy.installed_repository(),
-                EntropyRepositoryBase) and entropy.tools.is_root():
-                # only as root due to bad SPM
+                EntropyRepositoryBase):
+
                 for repo in self.repo_ids:
                     try:
                         dbc = self._entropy.open_repository(repo)
