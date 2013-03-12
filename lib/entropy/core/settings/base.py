@@ -48,7 +48,7 @@ class RepositoryConfigParser(BaseConfigParser):
 
     [sabayon-limbo]
     desc = Sabayon Linux Official Testing Repository
-    repo = http://pkg.sabayon.org,sabayon.org
+    repo = http://pkg.sabayon.org
     pkg = http://pkg.sabayon.org
     pkg = http://dl.sabayon.org/entropy
     enabled = <true/false>
@@ -68,7 +68,7 @@ class RepositoryConfigParser(BaseConfigParser):
     - "desc": stands for description, the repository name description.
     - "repo": the repository database URL string, plus other parameters
               as supported in the previous configuration file syntax:
-              <db url prefix>[,<remote web services server url][#<compression>].
+              <db url prefix>[#<compression>].
     - "pkg": the repository packages URL string. This must be a valid URL.
              The supported protocols are those supported by entropy.fetchers.
     - "enabled": if set, its value can be either "true" or "false". The default
