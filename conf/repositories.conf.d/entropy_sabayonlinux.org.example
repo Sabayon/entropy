@@ -89,10 +89,6 @@ pkg = ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy
 pkg = http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy
 # pkg = rsync://ftp.SURFnet.nl/sabayonlinux/entropy
 
-# Yes Optus Mirror, Australia
-# pkg = http://mirror.optusnet.com.au/sabayon/entropy
-# pkg = ftp://mirror.optusnet.com.au/sabayon/entropy
-
 # Internode, Australia
 pkg = http://mirror.internode.on.net/pub/sabayon/entropy
 
