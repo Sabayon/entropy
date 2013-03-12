@@ -29,10 +29,12 @@ os.environ["ETP_NONITERACTIVE"] = "1"
 
 sys.path.insert(0, "/usr/lib/entropy/lib")
 sys.path.insert(0, "../../../lib")
+sys.path.insert(0, "../lib")
 
 from entropy.exceptions import PermissionDenied
 from entropy.server.interfaces import Server
 
+import entropy.dep
 import entropy.tools
 
 import portage.dep
@@ -190,6 +192,19 @@ class EntropyBinaryPMS(BaseBinaryPMS):
                 err_msg = "some configuration files have "
                 err_msg += "to be merged manually"
                 raise EntropyBinaryPMS.SystemValidationError(err_msg)
+
+    def best_available(self, package):
+        """
+        Overridden from BaseBinaryPMS.
+        """
+        package_id, repository_id = self._entropy.atom_match(package)
+        if package_id == -1:
+            return
+        atom = self._entropy.open_repository(
+            repository_id).retrieveAtom(package_id)
+        # revert any entropy related mangling
+        atom = entropy.dep.remove_tag(atom)
+        return atom
 
     def _push_packages(self, repository):
         """

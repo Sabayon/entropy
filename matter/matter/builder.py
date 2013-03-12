@@ -65,8 +65,9 @@ class PackageBuilder(object):
 
     PORTAGE_BUILTIN_ARGS = ["--accept-properties=-interactive"]
 
-    def __init__(self, emerge_config, packages, params,
+    def __init__(self, binary_pms, emerge_config, packages, params,
         spec_number, tot_spec, pkg_number, tot_pkgs, pretend):
+        self._binpms = binary_pms
         self._emerge_config = emerge_config
         self._packages = packages
         self._params = params
@@ -275,6 +276,7 @@ class PackageBuilder(object):
                 "package not installed: "
                 "%s, but 'not-installed: yes' provided" % (package,))
 
+        build_only = self._params["build-only"] == "yes"
         cmp_res = -1
         if best_installed:
             print_info("found installed: %s for %s" % (
@@ -286,6 +288,21 @@ class PackageBuilder(object):
             cmp_res = portage.versions.pkgcmp(
                 portage.versions.pkgsplit(best_installed),
                 portage.versions.pkgsplit(best_visible))
+        elif (not best_installed) and build_only:
+            # package is not installed, and build-only
+            # is provided. We assume that the package
+            # is being built and added to repositories directly.
+            # This means that we need to query binpms to know
+            # about the current version.
+            print_info("package is not installed, and 'build-only: yes'. "
+                       "Asking the binpms about the package state.")
+            best_available = self._binpms.best_available(package)
+            print_info("found available: %s for %s" % (
+                    best_available, package))
+            if best_available:
+                cmp_res = portage.versions.pkgcmp(
+                    portage.versions.pkgsplit(best_installed),
+                    portage.versions.pkgsplit(best_visible))
 
         is_rebuild = cmp_res == 0
 

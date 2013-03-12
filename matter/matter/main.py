@@ -101,7 +101,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         for pkg_count, packages in enumerate(spec["packages"], 1):
 
             builder = PackageBuilder(
-                emerge_config, packages,
+                binary_pms, emerge_config, packages,
                 spec, spec_count, tot_spec, pkg_count, tot_pkgs,
                 nsargs.pretend)
             _rc = builder.run()

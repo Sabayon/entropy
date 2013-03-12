@@ -166,6 +166,16 @@ class BaseBinaryPMS(object):
             invalid metadata.
         """
 
+    def best_available(self, package):
+        """
+        Given a package dependency, return the best available match atom.
+        The returned string must be in a Portage-readable atom string.
+        Return None for no matches or unsupported feature.
+
+        @param package: a package dependency.
+        @type package: string or None
+        """
+
     def check_preserved_libraries(self, emerge_config=None):
         """
         Ask Portage whether there are preserved libraries on the system.
