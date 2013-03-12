@@ -1,3 +1,223 @@
+commit d3fab6937c3461382781ba2f52a1a1246b8a18a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 14:13:56 2013 +0000
+
+    Release Entropy 182
+
+commit 45c0de49cac3a15a3fcb090afce4eabd90e54be4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 14:10:48 2013 +0000
+
+    [client] update entropy.pot
+
+commit c16a305102111c6d632ec2e100806a2d818c4a72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 14:09:10 2013 +0000
+
+    [equo] do not automatically remove unmaintained packages, unless --purge is passed
+    
+    This addresses the case in where the user may not have run equo with --ask
+    and unmaintained packages get removed without user consent.
+
+commit f02283523dda2307df0520b2fc040735bcd51bd2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 13:55:01 2013 +0000
+
+    [entropy.db,entropy.spm] rewrite SPM package metadata update code
+    
+    This commit moves all the SPM package metadata update logic, including
+    pkgmove and slotmove to entropy.spm plugins.
+    This makes possible to handle the event more reliably. In particular,
+    Entropy now controls what Portage does, basing on the repository treeupdates
+    information.
+    The scenario in where the Portage tree was not updated and the called
+    "emaint --fix moveinst" did not do what it was supposed to do is now
+    handled correctly.
+
+commit 6804e79b37b0f5d766659925751484f31454c6c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 13:53:12 2013 +0000
+
+    [entropy.client.interfaces.repository] drop is_root(), this is always running as root
+
+commit 1e53daf23d471585e0f8d6db53fe13655acb26bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 11 01:02:22 2013 +0000
+
+    [eit] monkey patch argparse.ArgumentParser to fix UTF-8 strings handling
+    
+    See bug 4049.
+
+commit 8fda22bd0b32eae993075f515cc102c40a87fc21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 11 00:58:21 2013 +0000
+
+    [equo] monkey patch argparse.ArgumentParser to fix UTF-8 strings handling
+    
+    See bug 4049.
+
+commit 9b81edfd188bf11f3599d99ec9495a1ed7582a11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 10 22:38:14 2013 +0000
+
+    [entropy.core] RepositoryConfigParser: always catch KeyError when raised
+
+commit ddf1f9ce3ce7ad8b2062af8d650c329a5a127431
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 10 22:37:49 2013 +0000
+
+    [entropy.core] RepositoryConfigParser: respect repository definition order
+
+commit bc63d82b9702ab9cd9648e5b5e6925e5f67cac14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 10 22:12:27 2013 +0000
+
+    [entropy.server] add support for server-side repositories.conf.d/ repository config files
+    
+        Entropy Server now supports repositories defined inside
+        /etc/entropy/repositories.conf.d/ files, written using the
+        syntax detailed below. This improves the ability to enable, disable,
+        add and remove repositories programmatically. Furthermore, it
+        makes possible to extend the supported parameters without breaking
+        backward compatibility.
+    
+        In order to differentiate Entropy Client repository definitions between
+        Entropy Server ones, each repository section must start with "[server=".
+    
+        This is an example of the syntax (with a complete listing
+        of the supported arguments):
+    
+        [server=sabayon-limbo]
+        desc = Sabayon Linux Official Testing Repository
+        repo = ssh://username@full.host:~username/sabayon-limbo
+        enabled = <true/false>
+    
+        [server=sabayon-limbo]
+        desc = This statement will be ignored.
+        repo-only = ssh://username@repo.host:~username/sabayon-limbo
+        pkg-only = ssh://username@pkg.host:~username/sabayon-limbo
+    
+        [server=sabayon-base]
+        desc = This is the base repository.
+        repo-only = ssh://username@repo.host:~username/sabayon-base
+        pkg-only = ssh://username@pkg.host:~username/sabayon-base
+        base = <true/false>
+    
+        As you can see, multiple statements for the same repository
+        are allowed. However, only the first desc = statement will be
+        considered, while there can be as many {pkg,repo}* = as you want.
+    
+        The repository order is important, but this is guaranteed by the
+        fact that configuration files are parsed in lexical order.
+    
+        Statements description:
+        - "desc": stands for description, the repository name description.
+        - "repo": the push & pull URI, for both packages and repository database.
+        - "repo-only": same as repo, but only for the repository database
+                       push & pull.
+        - "pkg-only": same as repo, but only for the packages push & pull.
+                 The supported protocols are those supported by entropy.fetchers.
+        - "enabled": if set, its value can be either "true" or "false". The default
+                     value is "true". It indicates if a repository is configured
+                     but currently disabled or enabled. Please take into account
+                     that config files in /etc/entropy/repositories.conf.d/ starting
+                     with "_" are considered to contain disabled repositories. This
+                     is just provided for convienence.
+        - "base": if set, its value can be either "true" or "false". The default
+                  value is "false". If no repository has the flag set, the first
+                  listed repository will be the base one. Only the first repository
+                  with "base = true" will be considered. The base repository is the
+                  repository that is considered base for all the others
+                  (the main one).
+
+commit 81baa1d58e5dc0573ca46e182c4259fff78913bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 10 18:25:56 2013 +0000
+
+    [entropy.core] BaseConfigParser: store section parse order (and properly rename variables)
+
+commit 6e96b38a7e1d3ff1c0f1bea9daa33dd18892f9ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 10 00:08:47 2013 +0000
+
+    [entropy.core] properly pass encoding= to RepositoryConfigParser
+
+commit 05f446d51a409266f44a5b65fadfdef574462807
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 9 23:51:58 2013 +0000
+
+    [entropy.client] add .ini like repositories.conf.d/ files support
+    
+        This is backward compatible with the previous repository
+        implementation, in the sense that old repository syntax
+        is just ignored. However, a mix of old and new statements
+        may result in an undefined behaviour.
+    
+        This is an example of the new syntax (with a complete listing
+        of the supported arguments):
+    
+        [sabayon-limbo]
+        desc = Sabayon Linux Official Testing Repository
+        repo = http://pkg.sabayon.org,sabayon.org
+        pkg = http://pkg.sabayon.org
+        pkg = http://dl.sabayon.org/entropy
+        enabled = <true/false>
+    
+        [sabayon-limbo]
+        desc = This statement will be ignored.
+        repo = This url will be ignored.
+        pkg = http://some.more.mirror.org/entropy
+        pkg = http://some.more.mirror.net/entropy
+    
+        As you can see, multiple statements for the same repository
+        are allowed. However, only the first desc = and repo =
+        statements will be considered, while there can be as many pkg =
+        as you want.
+    
+        Statements description:
+        - "desc": stands for description, the repository name description.
+        - "repo": the repository database URL string, plus other parameters
+                  as supported in the previous configuration file syntax:
+                  <db url prefix>[,<remote web services server url][#<compression>].
+        - "pkg": the repository packages URL string. This must be a valid URL.
+                 The supported protocols are those supported by entropy.fetchers.
+        - "enabled": if set, its value can be either "true" or "false". The default
+                     value is "true". It indicates if a repository is configured
+                     but currently disabled or enabled. Please take into account
+                     that config files in /etc/entropy/repositories.conf.d/ starting
+                     with "_" are considered to contain disabled repositories. This
+                     is just provided for convienence.
+
+commit bbe4c6b046cf88b51d3f3ca3530f2b0ef6312bbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 7 09:57:20 2013 +0000
+
+    [rigo] update translations
+
+commit ef7342aea3ff06c974e548b396f12372d3b284ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 7 09:57:10 2013 +0000
+
+    [server] update translations
+
+commit 67ddf2aa8962ca1c5288ddfe59ba33a4a81bbde5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 7 09:44:06 2013 +0000
+
+    [client] update translations
+
+commit 4fdfe607cb071772223f2acbb285899957c82bb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 7 09:43:38 2013 +0000
+
+    [client] po: update paths, add kswitch
+
+commit d721c7c09aa1c5453a67805ac83996cf33afb36c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 8 13:42:33 2013 +0100
+
+    Tagging Entropy version 181
+
 commit 1b18a831f1542b5d77e6e2e58b8852facb8f056e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 8 13:42:32 2013 +0100
