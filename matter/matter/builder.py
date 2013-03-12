@@ -101,7 +101,7 @@ class PackageBuilder(object):
 
         print_info("spawning pre hook: %s" % (hook_name,))
         return subprocess.call([hook_name],
-            env = PackageBuilder._build_standard_environment())
+            env = cls._build_standard_environment())
 
     @classmethod
     def teardown(cls, executable_hook_f, cwd, exit_st):
@@ -112,7 +112,7 @@ class PackageBuilder(object):
 
         print_info("spawning post hook: %s, passing exit status: %d" % (
             hook_name, exit_st,))
-        env = PackageBuilder._build_standard_environment()
+        env = cls._build_standard_environment()
         env["MATTER_EXIT_STATUS"] = str(exit_st)
         return subprocess.call([hook_name], env = env)
 
@@ -167,7 +167,7 @@ class PackageBuilder(object):
             header + "spawning package build: %s" % (
                 " ".join(self._packages),))
 
-        std_env = PackageBuilder._build_standard_environment(
+        std_env = self._build_standard_environment(
             repository=self._params["repository"])
 
         matter_package_names = " ".join(self._packages)
@@ -533,7 +533,7 @@ class PackageBuilder(object):
         """
         unwanted_args = ["--ask", "-a", "--buildpkgonly", "-B"]
 
-        for builtin_arg in PackageBuilder.PORTAGE_BUILTIN_ARGS:
+        for builtin_arg in cls.PORTAGE_BUILTIN_ARGS:
             yield builtin_arg
 
         for build_arg in spec["build-args"]:
@@ -743,7 +743,7 @@ class PackageBuilder(object):
 
         if self._params["buildfail"] and (failed_package is not None):
 
-            std_env = PackageBuilder._build_standard_environment(
+            std_env = self._build_standard_environment(
                 repository=self._params["repository"])
             std_env["MATTER_PACKAGE_NAMES"] = " ".join(self._packages)
             std_env["MATTER_PORTAGE_FAILED_PACKAGE_NAME"] = failed_package.cpv
@@ -788,12 +788,12 @@ class PackageBuilder(object):
         """
         Execute Portage and Overlays sync
         """
-        sync_cmd = PackageBuilder.PORTAGE_SYNC_CMD
-        std_env = PackageBuilder._build_standard_environment()
+        sync_cmd = cls.PORTAGE_SYNC_CMD
+        std_env = cls._build_standard_environment()
         exit_st = subprocess.call(sync_cmd, env = std_env)
         if exit_st != 0:
             return exit_st
 
         # overlays update
-        overlay_cmd = PackageBuilder.OVERLAYS_SYNC_CMD
+        overlay_cmd = cls.OVERLAYS_SYNC_CMD
         return subprocess.call(overlay_cmd, env = std_env)
