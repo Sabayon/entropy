@@ -7,7 +7,7 @@ all:
 
 
 install:
-	install -d $(DESTDIR)/$(LIBDIR)/entropy/kswitch
-	install -m 644 *.py $(DESTDIR)/$(LIBDIR)/entropy/kswitch/
+	install -d $(DESTDIR)/$(LIBDIR)/entropy/lib/kswitch
+	install -m 644 *.py $(DESTDIR)/$(LIBDIR)/entropy/lib/kswitch/
 
 clean:
