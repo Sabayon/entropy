@@ -1,3 +1,47 @@
+commit bf766fe5715a7e345869e5315d7b6e2588becfef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 13 12:25:46 2013 +0000
+
+    Release Entropy 183
+
+commit c360738b9555a9217698247684c5b7a7153ccd5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 13 12:03:39 2013 +0000
+
+    [kswitch] fix install path, resolve bug 4073
+
+commit b36a8669d426dcd7ca5fabdfacbdae22d268bc97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 21:09:54 2013 +0000
+
+    [conf] drop the "remote web services server url" part from repository "repo =" param
+    
+    This has been deprecated for long time.
+
+commit 4853d16275de5ed1cc83d94bccb4b055c4827e0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 19:09:25 2013 +0000
+
+    [conf] drop optusnet.com.au mirror from repositories.conf.d/
+
+commit 63eb797e7724f8193e02d732d73331b5f35d374f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 15:38:22 2013 +0000
+
+    [matter] query binpms when determining the availability status of an injected package
+
+commit bc7dda4a4f7dd3cb91cc426356a44d524e28a94b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 15:19:23 2013 +0000
+
+    [matter] builder: use cls. and self. in classmethods and methods
+
+commit a48dfd2f7cd51a302d7f6d120ab8c903bc2d32b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 12 14:13:56 2013 +0000
+
+    Tagging Entropy version 182
+
 commit d3fab6937c3461382781ba2f52a1a1246b8a18a0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 12 14:13:56 2013 +0000
