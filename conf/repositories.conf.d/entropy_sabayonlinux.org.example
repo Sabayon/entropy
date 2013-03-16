@@ -117,6 +117,3 @@ pkg = http://cross-lfs.sabayonlinux.org/entropy
 
 # GARR Network mirror, Italy
 pkg = http://na.mirror.garr.it/mirrors/sabayonlinux/entropy
-
-# Sabayon Hetzner.de Mirror, Germany
-pkg = http://mirror.de.sabayon.org/entropy
