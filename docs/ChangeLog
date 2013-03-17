@@ -1,3 +1,27 @@
+commit f0f3883a8657272fa6aeed147fc9a45a19e0accf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 17 08:27:56 2013 +0000
+
+    Release Entropy 184
+
+commit 52b329afa26bd7ff6b9ff0298fc111fd1f12fa45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 17 08:27:12 2013 +0000
+
+    [matter] fix typo in package versions calculation for injected packages
+
+commit c2fb4211374f6dd62d6aec9e9f5ff29db1e02dba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 16 19:25:55 2013 +0000
+
+    [conf] drop mirror.de.sabayon.org from default conf, it's in dl.sabayon.org already
+
+commit 64e8d6e963aeea7e28d329d533c260f2fe9a9d78
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 13 12:25:46 2013 +0000
+
+    Tagging Entropy version 183
+
 commit bf766fe5715a7e345869e5315d7b6e2588becfef
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 13 12:25:46 2013 +0000
