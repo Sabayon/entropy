@@ -301,7 +301,7 @@ class PackageBuilder(object):
                     best_available, package))
             if best_available:
                 cmp_res = portage.versions.pkgcmp(
-                    portage.versions.pkgsplit(best_installed),
+                    portage.versions.pkgsplit(best_available),
                     portage.versions.pkgsplit(best_visible))
 
         is_rebuild = cmp_res == 0
