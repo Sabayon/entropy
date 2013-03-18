@@ -403,6 +403,21 @@ class RigoServiceController(GObject.Object):
     @property
     def _entropy_bus(self):
         with self.__entropy_bus_mutex:
+            if self.__entropy_bus is not None:
+                # validate, and reconnect if needed
+                bus = self.__entropy_bus
+                reconnect_error = "org.freedesktop.DBus.Error.ServiceUnknown"
+                try:
+                    self.__entropy_bus.get_dbus_method("__invalid")()
+                except dbus.exceptions.DBusException as exc:
+                    dbus_error = exc.get_dbus_name()
+                    if dbus_error == reconnect_error:
+                        self.__entropy_bus = None
+                        const_debug_write(
+                            __name__,
+                            "_entropy_bus: reconnection required: %s" % (
+                                exc,))
+
             if self.__entropy_bus is None:
                 self.__entropy_bus = self._system_bus.get_object(
                     self.DBUS_INTERFACE, self.DBUS_PATH
