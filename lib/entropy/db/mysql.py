@@ -68,6 +68,9 @@ class MySQLCursorWrapper(SQLCursorWrapper):
                 raise RestartTransaction(err.args[0])
             raise
 
+    def wrap(self, method, *args, **kwargs):
+        return self._proxy_call(method, *args, **kwargs)
+
     def execute(self, *args, **kwargs):
         # force oursql to empty the resultset
         self._cur = self._cur.connection.cursor()
