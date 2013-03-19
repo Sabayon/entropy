@@ -888,18 +888,21 @@ class EntropySQLRepository(EntropyRepositoryBase):
             content = set()
             for x in cur:
                 content |= set(x)
-            return content
+            return frozenset(content)
 
         wrapper = SQLCursorWrapper(cur, self.ModuleProxy.exceptions())
-        return frozenset(wrapper.wrap(_convert))
+        return wrapper.wrap(_convert)
 
     def _cur2tuple(self, cur):
         """
         Flatten out a cursor content (usually some kind of list of lists)
         and transform it into an immutable tuple object.
         """
+        def _convert():
+            return tuple(itertools.chain.from_iterable(cur))
+
         wrapper = SQLCursorWrapper(cur, self.ModuleProxy.exceptions())
-        return tuple(wrapper.wrap(itertools.chain.from_iterable, cur))
+        return wrapper.wrap(_convert)
 
     def _connection_pool(self):
         """
