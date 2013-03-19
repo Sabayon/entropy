@@ -508,17 +508,34 @@ class CalculatorsMixin:
 
         selected = False
         selected_matches_set = set(selected_matches)
+        found_matches = []
         for dep in dependencies:
 
             # determine if dependency has been explicitly selected
             matches, _pkg_rc = self.atom_match(
                 dep, multi_match = True, multi_repo = True)
+            if matches:
+                found_matches.append((dep, matches))
+            if const_debug_enabled():
+                const_debug_write(
+                    __name__,
+                    "_resolve_or_dependency, "
+                    "or dependency, filtering %s, got matches: %s" % (
+                        dep, matches,))
+
+        if const_debug_enabled():
+            const_debug_write(
+                __name__,
+                "_resolve_or_dependency, "
+                "filtered list: %s" % (found_matches,))
+
+        for dep, matches in found_matches:
             common = set(matches) & selected_matches_set
             if common:
                 if const_debug_enabled():
                     const_debug_write(
                         __name__,
-                        "_resolve_simple_or_dependency, "
+                        "_resolve_or_dependency, "
                         "or dependency candidate => %s, "
                         "has been explicitly selected. "
                         "Found the dependency though." % (dep,))
@@ -533,7 +550,7 @@ class CalculatorsMixin:
                 if const_debug_enabled():
                     const_debug_write(
                         __name__,
-                        "_resolve_simple_or_dependency, "
+                        "_resolve_or_dependency, "
                         "or dependency candidate => %s, no "
                         "installed matches, skipping for now" % (dep,))
                 continue
@@ -541,7 +558,7 @@ class CalculatorsMixin:
             if const_debug_enabled():
                 const_debug_write(
                     __name__,
-                    "_resolve_simple_or_dependency, "
+                    "_resolve_or_dependency, "
                     "or dependency candidate => %s ?" % (
                         dep,))
 
@@ -562,7 +579,7 @@ class CalculatorsMixin:
                 if const_debug_enabled():
                     const_debug_write(
                         __name__,
-                        "_resolve_simple_or_dependency, "
+                        "_resolve_or_dependency, "
                         "or dependency candidate => %s, "
                         "no common keyslots between selected and this. "
                         "Found the dependency though." % (dep,))
@@ -573,7 +590,7 @@ class CalculatorsMixin:
             if const_debug_enabled():
                 const_debug_write(
                     __name__,
-                    "_resolve_simple_or_dependency, "
+                    "_resolve_or_dependency, "
                     "or dependency candidate => %s, "
                     "common slots with selected matches: %s "
                     "(selected matches: %s)" % (
@@ -594,7 +611,7 @@ class CalculatorsMixin:
                     if common:
                         const_debug_write(
                             __name__,
-                            "_resolve_simple_or_dependency, "
+                            "_resolve_or_dependency, "
                             "or dependency candidate => %s, "
                             "common slots with selected matches: %s "
                             "(selected matches: %s)" % (
@@ -602,7 +619,7 @@ class CalculatorsMixin:
                     else:
                         const_debug_write(
                             __name__,
-                            "_resolve_simple_or_dependency, "
+                            "_resolve_or_dependency, "
                             "or dependency candidate => %s, "
                             "installing %s would make the dependency "
                             "invalid." % (dep, common,))
@@ -611,7 +628,7 @@ class CalculatorsMixin:
                 if const_debug_enabled():
                     const_debug_write(
                         __name__,
-                        "_resolve_simple_or_dependency, "
+                        "_resolve_or_dependency, "
                         "or dependency candidate => %s, "
                         "no common packages found. Sorry." % (
                             dep,))
@@ -620,7 +637,7 @@ class CalculatorsMixin:
             if const_debug_enabled():
                 const_debug_write(
                     __name__,
-                    "_resolve_simple_or_dependency, "
+                    "_resolve_or_dependency, "
                     "or dependency, selected => %s, from: %s" % (
                         dep, dependencies,))
             # found it, rewrite dependency and c_ids
@@ -629,15 +646,24 @@ class CalculatorsMixin:
             break
 
         if not selected:
-            # then pick the first, which is considered the default
-            # choice.
-            dependency = dependencies[0]
-            if const_debug_enabled():
-                const_debug_write(
-                    __name__,
-                    "_resolve_simple_or_dependency, "
-                    "or dependency candidate => %s, will "
-                    "pick this (the default one)" % (dependency,))
+            # then pick the first available in repositories, if any,
+            # which is considered the default choice.
+            if found_matches:
+                dependency, _matches = found_matches[0]
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_or_dependency, "
+                        "or dependency candidate => %s, will "
+                        "pick this (the default one)" % (dependency,))
+            else:
+                dependency = dependencies[0]
+                if const_debug_enabled():
+                    const_debug_write(
+                        __name__,
+                        "_resolve_or_dependency, "
+                        "or dependency candidate => %s, nothing found, "
+                        "will pick this (the first one)" % (dependency,))
 
         return dependency
 
