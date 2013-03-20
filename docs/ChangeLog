@@ -1,3 +1,48 @@
+commit 3e30d2414dde92c4ebbd50fb529b35afe05cf6c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 20 16:50:21 2013 +0000
+
+    Release Entropy 186
+
+commit 831237b7fcfd77791b1cf744a5e4b8f95891c152
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 20 15:21:31 2013 +0000
+
+    [entropy.server] insert the package SHA1 checksum into the file name
+    
+    This commit partially reverts commit d6b7a21314fdaa53563b399aa25feb34a817066e.
+    Package revision is no longer incremented across package moves.
+    This has two advantages:
+      - much less traffic generated on the mirror infrastructure
+      - less updates for sabayon-limbo users when packages are moved to main
+    
+    Bumping the revision was required by sabayon-weekly, which had the problem
+    that some package files were replaced during normal activity on
+    sabayonlinux.org and sabayon-limbo on the mirror. This generated checksum
+    errors, thus adding the checksum in the package file name ensures that
+    Entropy Server will never overwrite package file names unless the checksum
+    also matches.
+    Having a SHA1 checksum in the file name is also good for security, and
+    we may even want to create a SHA1 from the GPG signature in future.
+
+commit 7f24231978289e1d7921626c9321c9168e764dcb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 20 15:07:49 2013 +0000
+
+    [eit.utils] print_package_info: also print SHA1, SHA256 and GPG info
+
+commit 5c123b679fd0224812f4d33dbb8d660f3d81c30c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 20 15:07:16 2013 +0000
+
+    [solo.utils] print_package_info: also print SHA1, SHA256 and GPG info
+
+commit ac028387c718c356111ed15a7be07a7daff8178e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 19 15:27:33 2013 +0000
+
+    Tagging Entropy version 185
+
 commit f0fad25ca5ae10c6f4cc62359f589d7d93979de2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 19 15:27:33 2013 +0000
