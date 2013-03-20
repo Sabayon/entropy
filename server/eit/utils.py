@@ -158,7 +158,7 @@ def print_package_info(package_id, entropy_server, entropy_repository,
 
     if not strict_output:
         toc.append((darkgreen("       %s:" % (_("Slot"),) ),
-            blue(str(pkgslot)),))
+            blue(pkgslot),))
 
         if extended:
             pkgsize = entropy_repository.retrieveSize(package_id)
@@ -168,17 +168,30 @@ def print_package_info(package_id, entropy_server, entropy_repository,
                 pkgbin = corrupted_str
             pkgdigest = entropy_repository.retrieveDigest(package_id) or \
                 corrupted_str
+            pkgsign = entropy_repository.retrieveSignatures(package_id)
             pkgdeps = entropy_repository.retrieveDependencies(package_id,
                 extended = True, resolve_conditional_deps = False)
             pkgconflicts = entropy_repository.retrieveConflicts(package_id)
             depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
 
             toc.append((darkgreen("       %s:" % (_("Size"),) ),
-                blue(str(pkgsize)),))
+                blue(pkgsize),))
             toc.append((darkgreen("       %s:" % (_("Download"),) ),
-                brown(str(pkgbin)),))
+                brown(pkgbin),))
             toc.append((darkgreen("       %s:" % (_("Checksum"),) ),
-                brown(str(pkgdigest)),))
+                brown(pkgdigest),))
+            if pkgsign:
+                sha1, sha256, sha512, gpg = pkgsign
+                toc.append((darkgreen("       %s:" % (_("SHA1"),) ),
+                            brown(sha1),))
+                toc.append((darkgreen("       %s:" % (_("SHA256"),) ),
+                            brown(sha256),))
+                if gpg:
+                    gpg_str = _("Yes")
+                else:
+                    gpg_str = _("No")
+                toc.append((darkgreen("       %s:" % (_("GPG"),) ),
+                            brown(gpg_str),))
 
             if pkgdeps:
                 toc.append(darkred("       ##") + " " + \
