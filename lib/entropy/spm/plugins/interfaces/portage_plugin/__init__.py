@@ -1642,7 +1642,8 @@ class PortagePlugin(SpmPlugin):
         data['download'] = os.path.join(data['download'],
             entropy.dep.create_package_filename(
                 data['category'], data['name'], data['version'],
-                    data['versiontag']))
+                data['versiontag'],
+                sha1=data['signatures']['sha1']))
 
         # removing temporary directory
         shutil.rmtree(tmp_dir, True)

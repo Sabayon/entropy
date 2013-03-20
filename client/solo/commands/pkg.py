@@ -330,6 +330,10 @@ Execute advanced tasks on Entropy packages and the running system.
 
             # append development revision number
             # and create final package file name
+            sha1 = None
+            signatures = pkg_data.get('signatures')
+            if signatures is not None:
+                sha1 = signatures['sha1']
             pkg_data['revision'] = etpConst['spmetprev']
             download_dirpath = entropy.tools.create_package_dirpath(
                 pkg_data['branch'], nonfree=False, restricted=False)
@@ -337,7 +341,8 @@ Execute advanced tasks on Entropy packages and the running system.
                 pkg_data['category'], pkg_data['name'],
                 pkg_data['version'], pkg_data['versiontag'],
                 ext=etpConst['packagesext'],
-                revision=pkg_data['revision'])
+                revision=pkg_data['revision'],
+                sha1=sha1)
             pkg_data['download'] = download_dirpath + "/" + download_name
 
             # migrate to the proper format

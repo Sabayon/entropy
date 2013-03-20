@@ -28,13 +28,14 @@ def generate_pkg_map(packages_directory):
         if not pkg_file.endswith(etpConst['packagesext']):
             continue
         try:
-            cat, name, ver, tag, rev = entropy.dep.exploit_package_filename(
+            (cat, name, ver, tag,
+             sha1, rev) = entropy.dep.exploit_package_filename(
                 pkg_file)
         except AttributeError:
             # skip invalid crap
             continue
         obj = pkg_map.setdefault((cat, name), set())
-        obj.add((ver, tag, rev, pkg_file))
+        obj.add((ver, tag, sha1, rev, pkg_file))
     return pkg_map
 
 def sort_packages(pkg_map_items):
@@ -42,20 +43,44 @@ def sort_packages(pkg_map_items):
     Sort packages by version, tag, revision and return a sort map (dict) and
     a sorted list of them (list)
     """
-    def _generate_from_to(cat_name_map, sorted_pkg_list):
+    cat_name_map = {}
+
+    def _generate_from_to(sorted_pkg_list):
         for pkg_idx in range(len(sorted_pkg_list)):
             pkg_key = sorted_pkg_list[pkg_idx]
             next_pkgs = set(sorted_pkg_list[pkg_idx:])
             next_pkgs.discard(pkg_key)
             sorted_next = sorted(next_pkgs, key = lambda x: cat_name_map[x])
+
+            ver_tag_rev = pkg_key[0], pkg_key[1], pkg_key[3]
             for next_pkg_key in sorted_next:
+                next_ver_tag_rev = (next_pkg_key[0], next_pkg_key[1],
+                                    next_pkg_key[3])
+                if ver_tag_rev == next_ver_tag_rev:
+                    # do not create an edelta between packages
+                    # with the same version tag and revision.
+                    continue
                 yield (cat_name_map[pkg_key], cat_name_map[next_pkg_key])
 
-    cat_name_map = dict((((ver, tag, rev), pkg_path) \
-        for ver, tag, rev, pkg_path in pkg_map_items))
-    sorted_pkgs = entropy.dep.get_entropy_newer_version(list(cat_name_map))
+    sort_name_map = {}
+    sort_pkgs = set()
+    for ver, tag, sha1, rev, pkg_path in pkg_map_items:
+        full_key = (ver, tag, sha1, rev)
+        cat_name_map[full_key] = pkg_path
+        key = (ver, tag, rev)
+        sort_pkgs.add(key)
+
+        obj = sort_name_map.setdefault(key, set())
+        obj.add(full_key)
+
+    sorted_pkgs = entropy.dep.get_entropy_newer_version(
+        list(sort_pkgs))
     sorted_pkgs.reverse()
-    return _generate_from_to(cat_name_map, sorted_pkgs)
+
+    full_sorted_pkgs = []
+    for key in sorted_pkgs:
+        full_sorted_pkgs.extend(sort_name_map[key])
+    return _generate_from_to(full_sorted_pkgs)
 
 def generate_package_deltas(directory, quiet):
     """

@@ -142,13 +142,28 @@ class DepTest(unittest.TestCase):
         self.assertEqual(et.get_entropy_newer_version(vers), out_vers)
 
     def test_create_package_filename(self):
-        category = "app-foo"
-        name = "foo"
-        version = "1.2.3"
+        package_category = "app-foo"
+        package_name = "foo"
+        package_version = "1.2.3"
         package_tag = "abc"
-        result = 'app-foo:foo-1.2.3#abc.tbz2'
-        self.assertEqual(et.create_package_filename(category, name, version,
-            package_tag), result)
+        package_sha1 = "c85320d9ddb90c13f4a215f1f0a87b531ab33310"
+        package_rev = 123
+
+        result = "app-foo:foo-1.2.3#abc.c85320d9ddb90c13f4a215f1f0a87b531ab33310~123.tbz2"
+        self.assertEqual(et.create_package_filename(
+                package_category, package_name, package_version,
+                package_tag, revision = package_rev,
+                sha1 = package_sha1), result)
+
+        # verify the inverse function
+        cat, name, ver, tag, sha1, rev = et.exploit_package_filename(
+            result)
+        self.assertEqual(cat, package_category)
+        self.assertEqual(name, package_name)
+        self.assertEqual(ver, package_version)
+        self.assertEqual(tag, package_tag)
+        self.assertEqual(sha1, package_sha1)
+        self.assertEqual(rev, package_rev)
 
     def test_create_package_atom_string(self):
         category = "app-foo"
@@ -232,6 +247,16 @@ class DepTest(unittest.TestCase):
             parser = et.DependencyStringParser(depstring, [test_db],
                 selected_matches = selected_matches)
             result, outcome = parser.parse()
+            self.assertEqual(outcome, expected_outcome)
+
+    def test_get_entropy_package_sha1(self):
+        names = [
+            ("app-foo:bar-123.eda9a5004ce8eb127d939de6ec394571a407f863~1.tbz2",
+             "eda9a5004ce8eb127d939de6ec394571a407f863"),
+            ]
+
+        for name, expected_outcome in names:
+            outcome = et.get_entropy_package_sha1(name)
             self.assertEqual(outcome, expected_outcome)
 
 if __name__ == '__main__':

@@ -2751,29 +2751,6 @@ class Server(Client):
             )
             return None
 
-        # determine the maximum revision for package, this avoids
-        # overwriting tbz2s already on mirrors, see bug #3904.
-        def _get_rev(rev_repo_id):
-            repo = self.open_repository(rev_repo_id)
-            pkg_ids = repo.getPackageIds(match_atom)
-            revs = [-1] # so that revs is not empty
-            revs += [repo.retrieveRevision(x) for x in pkg_ids]
-            return max(revs)
-
-        # given that we look into the current repo as well, this
-        # cannot be -1
-        max_rev = max([_get_rev(x) for x in self.repositories()])
-        assert max_rev != -1, "max_rev cannot be -1"
-        # increase by one and we have the new target revision we must use
-        new_package_revision = max_rev + 1
-
-        to_package_rel_path = entropy.dep.create_package_filename(
-            dbconn.retrieveCategory(package_id),
-            dbconn.retrieveName(package_id),
-            dbconn.retrieveVersion(package_id),
-            dbconn.retrieveTag(package_id),
-            revision = new_package_revision)
-
         # we need to ask SpmPlugin to re-extract metadata from pkg file
         # and grab the new "download" metadatum value using our
         # license check callback. It has to be done here because
@@ -2789,7 +2766,7 @@ class Server(Client):
         # the logic.
         updated_package_rel_path = os.path.join(
             os.path.dirname(tmp_data['download']),
-            os.path.basename(to_package_rel_path))
+            os.path.basename(package_rel_path))
         del tmp_data
 
         to_file = self.complete_local_upload_package_path(
@@ -2797,12 +2774,19 @@ class Server(Client):
 
         if new_tag is not None:
 
+            signatures = dbconn.retrieveSignatures(package_id)
+            packge_sha1 = None
+            if signatures:
+                package_sha1, _ignore, _ignore, _ignore = signatures
+
             tagged_package_filename = \
                 entropy.dep.create_package_filename(
                     dbconn.retrieveCategory(package_id),
                     dbconn.retrieveName(package_id),
                     dbconn.retrieveVersion(package_id),
-                    new_tag, revision = new_package_revision)
+                    new_tag,
+                    revision = dbconn.retrieveRevision(package_id),
+                    sha1 = package_sha1)
 
             to_file = self.complete_local_upload_package_path(
                 updated_package_rel_path, to_repository_id)
@@ -2871,8 +2855,6 @@ class Server(Client):
         # need to set back data['download'], because pkg path might got
         # changed, due to license re-validation
         data['download'] = updated_package_rel_path
-        # force our own revision, to avoid file name collisions
-        data['revision'] = new_package_revision
 
         # GPG
         # before inserting new pkg, drop GPG signature and re-sign
@@ -2922,8 +2904,7 @@ class Server(Client):
         )
         data['original_repository'] = to_repository_id
         # force our own revision, to avoid file name collisions
-        new_package_id = todbconn.handlePackage(
-            data, forcedRevision = new_package_revision)
+        new_package_id = todbconn.handlePackage(data)
         del data
         todbconn.commit()
 
@@ -3142,7 +3123,6 @@ class Server(Client):
 
     def _inject_database_into_packages(self, repository_id, injection_data):
 
-        # now inject metadata into tbz2 packages
         self.output(
             "[%s] %s:" % (
                 darkgreen(repository_id),
@@ -3258,7 +3238,19 @@ class Server(Client):
                 dbconn.setSignatures(idpackage, signatures['sha1'],
                     signatures['sha256'], signatures['sha512'],
                     gpg_sign)
+
+                # recompute the package file name and download url
+                # to match the final SHA1.
+                download_url = self._setup_repository_package_filename(
+                    dbconn, idpackage)
+                package_dir = os.path.dirname(package_path)
+                new_package_path = os.path.join(
+                    package_dir, os.path.basename(download_url))
+                os.rename(package_path, new_package_path)
+                package_path = new_package_path
+
                 dbconn.commit()
+
                 const_setup_file(package_path, etpConst['entropygid'], 0o664)
                 self.output(
                     "[%s|%s] %s: %s" % (
@@ -5656,26 +5648,32 @@ class Server(Client):
         destination_paths.reverse()
         return idpackage, destination_paths
 
-    def _setup_repository_package_filename(self, dbconn, idpackage):
+    def _setup_repository_package_filename(self, repo, package_id):
         """
         Setup a new repository file name using current package metadata.
         """
+        category = repo.retrieveCategory(package_id)
+        name = repo.retrieveName(package_id)
+        version = repo.retrieveVersion(package_id)
+        tag = repo.retrieveTag(package_id)
+        revision = repo.retrieveRevision(package_id)
+        signatures = repo.retrieveSignatures(package_id)
+        sha1 = None
+        if signatures:
+            sha1, _ignore, _ignore, _ignore = signatures
 
-        downloadurl = dbconn.retrieveDownloadURL(idpackage)
-        packagerev = dbconn.retrieveRevision(idpackage)
-        downloaddir = os.path.dirname(downloadurl)
-        downloadfile = os.path.basename(downloadurl)
-        # add revision
-        pkg_ext = etpConst['packagesext']
-        downloadfile = downloadfile[:-len(pkg_ext)]+"~%s%s" % (packagerev,
-            pkg_ext,)
-        downloadurl = os.path.join(downloaddir, downloadfile)
+        old_download_url = repo.retrieveDownloadURL(package_id)
+        download_dir = os.path.dirname(old_download_url)
 
-        # update url
-        dbconn.setDownloadURL(idpackage, downloadurl)
-        dbconn.commit()
+        package_name = entropy.dep.create_package_filename(
+            category, name, version, tag, ext = etpConst['packagesext'],
+            revision = revision, sha1 = sha1)
 
-        return downloadurl
+        download_url = os.path.join(download_dir, package_name)
+        repo.setDownloadURL(package_id, download_url)
+        repo.commit()
+
+        return download_url
 
     def __user_filter_out_missing_deps(self, pkg_repo, entropy_repository,
         missing_map, ask):

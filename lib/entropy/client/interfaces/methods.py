@@ -2383,13 +2383,18 @@ class MiscMixin:
         elif not shiftpath:
             shiftpath = os.path.sep
 
-        version = entropy_package_metadata['version']
-        version += "%s%s" % (etpConst['entropyrevisionprefix'],
-            entropy_package_metadata['revision'],)
+        signatures = entropy_package_metadata.get('signatures')
+        package_sha1 = None
+        if signatures:
+            package_sha1 = signatures['sha1']
         pkgname = entropy.dep.create_package_filename(
             entropy_package_metadata['category'],
-            entropy_package_metadata['name'], version,
-            entropy_package_metadata['versiontag'])
+            entropy_package_metadata['name'],
+            entropy_package_metadata['version'],
+            entropy_package_metadata['versiontag'],
+            revision = entropy_package_metadata['revision'],
+            sha1 = package_sha1
+            )
 
         pkg_path = os.path.join(save_directory, pkgname)
         if os.path.isfile(pkg_path):

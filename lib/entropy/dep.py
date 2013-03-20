@@ -716,8 +716,41 @@ def get_entropy_newer_version(versions):
     """
     return _generic_sorter(versions, entropy_compare_versions)
 
+sha1_re = re.compile(r"(.*)\.([a-f\d]{40})(.*)")
+def get_entropy_package_sha1(package_name):
+    """
+    Extract the SHA1 checksum from a package file name.
+
+    @param package_name: package file name
+    @type package_name: string
+    @return: the package SHA1 checksum, if any, or None
+    @rtype: string or None
+    """
+    match = sha1_re.match(package_name)
+    if match:
+        groups = match.groups()
+        if len(groups) != 3:
+            return
+        return groups[1]
+
+def remove_entropy_package_sha1(package_name):
+    """
+    Remove the SHA1 checksum from a package file name.
+
+    @param package_name: package file name
+    @type package_name: string
+    """
+    match = sha1_re.match(package_name)
+    if match:
+        groups = match.groups()
+        if len(groups) != 3:
+            return package_name
+        return groups[0]
+    return package_name
+
 def create_package_filename(category, name, version, package_tag,
-                            ext = None, revision = None):
+                            ext = None, revision = None,
+                            sha1 = None):
     """
     Create package filename string.
 
@@ -731,6 +764,8 @@ def create_package_filename(category, name, version, package_tag,
     @type package_tag: string or None
     @keyword ext: alternative package file extension
     @type ext: string
+    @keyword sha1: a SHA1 checksum to add to the file name
+    @type sha1: string
     @return: package file name string
     @rtype: string
     """
@@ -743,6 +778,8 @@ def create_package_filename(category, name, version, package_tag,
     package_name += package_tag
     if ext is None:
         ext = etpConst['packagesext']
+    if sha1 is not None:
+        package_name += ".%s" % (sha1,)
     if revision is not None:
         package_name += "~%d" % (revision,)
     package_name += ext
@@ -762,10 +799,10 @@ def strip_entropy_package_extension(pkg_path):
 def exploit_package_filename(package_name):
     """
     This is the inverse function of create_package_filename, and returns
-    a tuple composed by category, name, version, package_tag (None if not set)
-    and additional revision (as int).
+    a tuple composed by category, name, version, package_tag (None if not set),
+    SHA1 checksum (None if not set), and additional revision (as int).
     package_name should be a string like this:
-        <category>:<name>-<version>[~<revision>[#<tag>]][.tbz2]
+        <category>:<name>-<version>[.<sha1>][~<revision>[#<tag>]][.tbz2]
 
     @param package_name: package file name
     @type package_name: string
@@ -777,17 +814,20 @@ def exploit_package_filename(package_name):
     pkg_str = strip_entropy_package_extension(package_name)
     pkg_str = pkg_str.replace(":", "/")
     pkg_str = strip_entropy_package_extension(pkg_str)
-    etp_tag = dep_gettag(pkg_str)
-    pkg_str = remove_tag(pkg_str)
     etp_rev = dep_get_entropy_revision(pkg_str)
     pkg_str = remove_entropy_revision(pkg_str)
+    etp_sha1 = get_entropy_package_sha1(pkg_str)
+    pkg_str = remove_entropy_package_sha1(pkg_str)
+    etp_tag = dep_gettag(pkg_str)
+    pkg_str = remove_tag(pkg_str)
     split_data = catpkgsplit(pkg_str)
     if split_data is None:
-        raise AttributeError("invalid package name passed: %s" % (package_name,))
+        raise AttributeError("invalid package name passed: %s" % (
+                package_name,))
     etp_cat, etp_name, ver, rev = split_data
     if rev != "r0":
         ver += "-" + rev
-    return etp_cat, etp_name, ver, etp_tag, etp_rev
+    return etp_cat, etp_name, ver, etp_tag, etp_sha1, etp_rev
 
 def create_package_atom_string(category, name, version, package_tag):
     """
