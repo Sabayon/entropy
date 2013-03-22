@@ -189,7 +189,7 @@ Update Entropy Repositories.
                 dbus_interface = "org.sabayon.Rigo")
             accepted = False
             try:
-                if self._repositories:
+                if repos:
                     accepted = iface.update_repositories(
                         repos, self._force)
             except dbus.exceptions.DBusException as err:
