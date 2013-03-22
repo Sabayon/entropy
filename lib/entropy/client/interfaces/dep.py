@@ -1754,7 +1754,15 @@ class CalculatorsMixin:
         return broken_matches
 
     def __get_library_breakages(self, package_match, installed_package_id):
-
+        """
+        Get a list of library dependencies (at ELF metadata level)
+        that have been bumped for the given package.
+        The newly added ones, are considered a bump. In this way, whether
+        they are already present in the package dependencies or not, a
+        proper relation will be inserted on the dependency graph.
+        It can happen that a library may be considered satisfied
+        as package dependency but not on the current system state.
+        """
         package_id, repository_id = package_match
         repo = self.open_repository(repository_id)
 
@@ -1791,6 +1799,26 @@ class CalculatorsMixin:
         for lib, lib_name in repo_split.items():
             if lib_name in installed_split.values():
                 repo_lib_dumps.add((lib, repo_needed[lib]))
+
+        # now consider the case in where we have new libraries
+        # that are not in the installed libraries set.
+        new_libraries = set(repo_split.values()) - set(installed_split.values())
+        if new_libraries:
+
+            # Reverse repo_split in order to generate a mapping
+            # between a library name and its set of full libraries
+            reversed_repo_split = {}
+            for lib, lib_name in repo_split.items():
+                obj = reversed_repo_split.setdefault(lib_name, set())
+                obj.add(lib)
+
+            new_repo_lib_dumps = set()
+            for lib_name in new_libraries:
+                libs = reversed_repo_split[lib_name]
+                for lib in libs:
+                    elf_class = repo_needed[lib]
+                    new_repo_lib_dumps.add((lib, elf_class))
+            repo_lib_dumps |= new_repo_lib_dumps
 
         return inst_lib_dumps, repo_lib_dumps
 
