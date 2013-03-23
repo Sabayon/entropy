@@ -51,10 +51,12 @@ class SQLiteCursorWrapper(SQLCursorWrapper):
         super(SQLiteCursorWrapper, self).__init__(cursor, exceptions)
 
     def execute(self, *args, **kwargs):
-        return self._proxy_call(self._cur.execute, *args, **kwargs)
+        cur = self._proxy_call(self._cur.execute, *args, **kwargs)
+        return SQLiteCursorWrapper(cur, self._excs)
 
     def executemany(self, *args, **kwargs):
-        return self._proxy_call(self._cur.executemany, *args, **kwargs)
+        cur = self._proxy_call(self._cur.executemany, *args, **kwargs)
+        return SQLiteCursorWrapper(cur, self._excs)
 
     def close(self, *args, **kwargs):
         return self._proxy_call(self._cur.close, *args, **kwargs)
@@ -78,7 +80,14 @@ class SQLiteCursorWrapper(SQLCursorWrapper):
         return self._proxy_call(self._cur.nextset, *args, **kwargs)
 
     def __iter__(self):
-        return iter(self._cur)
+        cur = iter(self._cur)
+        return SQLiteCursorWrapper(cur, self._excs)
+
+    def __next__(self):
+        return self.wrap(next, self._cur)
+
+    def next(self):
+        return self.wrap(self._cur.next)
 
 
 class SQLiteConnectionWrapper(SQLConnectionWrapper):
