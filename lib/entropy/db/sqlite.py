@@ -48,7 +48,7 @@ class SQLiteCursorWrapper(SQLCursorWrapper):
     """
 
     def __init__(self, cursor, exceptions):
-        SQLCursorWrapper.__init__(self, cursor, exceptions)
+        super(SQLiteCursorWrapper, self).__init__(cursor, exceptions)
 
     def execute(self, *args, **kwargs):
         return self._proxy_call(self._cur.execute, *args, **kwargs)
