@@ -24,8 +24,11 @@ class SecurityTest(unittest.TestCase):
         self._entropy = Client(installed_repo = False)
         self._repository = Repository(keystore_dir = self._tmp_dir)
 
-        self._security_cache_dir = tempfile.mkdtemp()
-        self._security_dir = tempfile.mkdtemp()
+        tmp_dir = os.getenv("TMPDIR", os.getcwd())
+        self._security_cache_dir = tempfile.mkdtemp(
+            dir=tmp_dir, prefix="entropy.SecurityTest")
+        self._security_dir = tempfile.mkdtemp(
+            dir=tmp_dir, prefix="entropy.SecurityTest")
         System.SECURITY_DIR = self._security_dir
         System._CACHE_DIR = self._security_cache_dir
         System.SECURITY_URL = "file://" + _misc.get_security_pkg()
