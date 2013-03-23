@@ -6,6 +6,7 @@
 #  [repository-id]
 #  desc = Sabayon Linux Official Testing Repository
 #  repo = http://pkg.sabayon.org
+#  repo = http://pkg.repo.sabayon.org
 #  pkg = http://pkg.sabayon.org
 #  pkg = http://dl.sabayon.org/entropy
 #  enabled = <true/false>
@@ -17,9 +18,9 @@
 #  pkg = http://some.more.mirror.net/entropy
 #
 #  As you can see, multiple statements for the same repository
-#  are allowed. However, only the first desc = and repo =
-#  statements will be considered, while there can be as many pkg =
-#  as you want.
+#  are allowed. However, only the first desc = statement will be
+#  considered, while there can be as many pkg = and repo = as you
+#  want.
 #
 #  Statements description:
 #  - "desc": stands for description, the repository name description.
@@ -38,6 +39,8 @@
 [sabayonlinux.org]
 desc = Sabayon Linux Official Repository
 repo = http://pkg.sabayon.org
+# This is used as fallback if pkg.sabayon.org is not available
+repo = http://pkg.repo.sabayon.org
 pkg = http://pkg.sabayon.org
 
 # Sabayon Packages Continent-based Load Balancer

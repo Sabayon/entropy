@@ -9,15 +9,15 @@
     B{Entropy Package Manager Client EntropyRepository plugin code}.
 
 """
-import os
-import sys
-import subprocess
-import tempfile
-import threading
-import shutil
-import time
 import codecs
 import errno
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import threading
+import time
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     const_set_nice_level, const_setup_file, const_convert_to_unicode, \
@@ -167,7 +167,6 @@ class AvailablePackagesRepositoryUpdater(object):
         self.__big_sock_timeout = 20
         self._repository_id = repository_id
         self._cacher = EntropyCacher()
-        self._last_rev = -1
         self._entropy = entropy_client
         self._settings = SystemSettings()
         self._gpg_feature = gpg
@@ -191,14 +190,6 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = self._settings['repositories']['available']
         if self._repository_id not in avail_data:
             raise KeyError("Repository not available")
-
-        # default to the officially listed Repository URL
-        # in case of connection issues, we will fallback
-        # to packages mirrors.
-        # This is particularily for improving fault-tolerance
-        # and for Chinese people.
-        repo_data = avail_data[self._repository_id]
-        self._repo_uri = repo_data['database']
 
     @property
     def _webservices(self):
@@ -372,36 +363,82 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return repo_eapi
 
-    def __is_repository_updatable(self):
+    def _is_repository_updatable(self, revision):
+        """
+        Given a remote repository revision, return whether
+        the repository is updatable or not.
+        """
+        if self.__force:
+            return True
 
-        online = self.remote_revision()
-        if online != -1:
-            local = AvailablePackagesRepository.revision(
-                self._repository_id)
-            if (local == online) and (not self.__force):
-                return False
-        return True
+        local = AvailablePackagesRepository.revision(
+            self._repository_id)
+        return local != revision
 
-    def __select_database_mirror(self):
+    def _select_database_mirror(self):
         """
         Verify that the database mirror URL is available and working.
         If this is not the case, fallback to the first available
         and working packages mirror URL.
         """
-        current_uri = self._repo_uri
-        revision = self.remote_revision()
-        if revision != -1:
-            return
+        repos_data = self._settings['repositories']
+        avail_data = repos_data['available']
+        repo_data = avail_data[self._repository_id]
+        database_uris = repo_data['databases']
+
+        ws_revision = self._remote_webservice_revision()
+
+        # Setup the repository uri
+        revision = None
+        uri = None
+        cformat = None
+        for counter, uri_meta in enumerate(database_uris, 1):
+
+            mytxt = "%s: %s [%s]" % (
+                red(_("Scanning URL")),
+                teal(uri_meta['uri']),
+                brown(uri_meta['dbcformat']),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = blue("  # "),
+                back = True,
+                count = (counter, len(database_uris))
+            )
+
+            repo_uri = uri_meta['uri']
+            uri_revision = self._remote_revision(repo_uri)
+
+            if uri_revision != -1:
+
+                mytxt = "%s: %s [%s]" % (
+                    darkgreen(_("Selected URL")),
+                    teal(uri_meta['uri']),
+                    brown(uri_meta['dbcformat']),)
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    level = "info",
+                    header = blue("  # ")
+                )
+
+                revision = uri_revision
+                uri = repo_uri
+                cformat = uri_meta['dbcformat']
+                break
+
+        if uri is not None:
+            if ws_revision is not None:
+                return ws_revision, uri, cformat
+            elif revision is not None:
+                return revision, uri, cformat
 
         self._entropy.output(
             "%s: %s" % (
                 darkred(_("Attention")),
-                brown(_("repository is not available at the following URL:")),
+                brown(_("repository is not available at the database URLs")),
                 ),
-            importance = 1, level = "warning", header = "\t",
-        )
-        self._entropy.output(
-            "%s" % (current_uri,),
             importance = 1, level = "warning", header = "\t",
         )
         self._entropy.output(
@@ -412,11 +449,8 @@ class AvailablePackagesRepositoryUpdater(object):
             importance = 1, level = "warning", header = "\t",
         )
 
-        repos_data = self._settings['repositories']
-        avail_data = repos_data['available']
-        repo_data = avail_data[self._repository_id]
         package_uris = repo_data['plain_packages']
-
+        default_cformat = etpConst['etpdatabasefileformat']
         for package_uri in package_uris:
             self._entropy.output(
                 "%s:" % (brown(_("Checking repository URL")),),
@@ -431,14 +465,12 @@ class AvailablePackagesRepositoryUpdater(object):
                 package_uri, repos_data['product'],
                 self._repository_id,
                 repos_data['branch'])
-            if url == current_uri:
+            if url == uri:
                 # skip same URL
                 continue
-            revision = self.remote_revision(_repo_uri = url)
+            revision = self._remote_revision(url)
             if revision != -1:
                 # found
-                self._repo_uri = url
-
                 self._entropy.output(
                     "%s:" % (brown(_("Found repository at URL")),),
                     importance = 1, level = "warning", header = "\t",
@@ -447,7 +479,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     "%s" % (url,),
                     importance = 1, level = "warning", header = "\t",
                     )
-                return
+                return revision, url, default_cformat
 
         self._entropy.output(
             "%s" % (
@@ -456,9 +488,12 @@ class AvailablePackagesRepositoryUpdater(object):
                     ),),
             importance = 1, level = "warning", header = "\t",
         )
+        return None
 
-    def __show_repository_information(self):
-
+    def _show_repository_information(self):
+        """
+        Show the repository information to the user.
+        """
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
@@ -468,14 +503,19 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Repository URL")),
-            darkgreen(self._repo_uri),)
-        self._entropy.output(
-            mytxt,
-            importance = 1,
-            level = "info",
-            header = blue("  # ")
-        )
+
+        for uri_meta in repo_data['databases']:
+            mytxt = "%s: %s [%s]" % (
+                red(_("Repository URL")),
+                darkgreen(uri_meta['uri']),
+                brown(uri_meta['dbcformat']),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = blue("  # ")
+            )
+
         mytxt = "%s: %s" % (red(_("Repository local path")),
             darkgreen(repo_data['dbpath']),)
         self._entropy.output(
@@ -493,29 +533,14 @@ class AvailablePackagesRepositoryUpdater(object):
             header = blue("  # ")
         )
 
-    def __handle_repository_lock(self):
-        # get database lock
-        unlocked = self._is_repository_unlocked()
-        if not unlocked:
-            mytxt = "%s: %s. %s." % (
-                bold(_("Attention")),
-                red(_("Repository is being updated")),
-                red(_("Try again in a few minutes")),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "warning",
-                header = "\t"
-            )
-            return True
-        return False
-
     def __append_gpg_signature_to_path(self, path):
         return path + etpConst['etpgpgextension']
 
-    def __ensure_repository_path(self):
-
+    def _ensure_repository_path(self):
+        """
+        Make sure that the local repository directory has valid
+        permissions and ownership.
+        """
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
@@ -541,26 +566,14 @@ class AvailablePackagesRepositoryUpdater(object):
                 etpConst['entropygid'],
                 f_perms = 0o644)
 
-    def __validate_compression_method(self):
-
-        repo = self._repository_id
-        repo_settings = self._settings['repositories']
-        dbc_format = repo_settings['available'][repo]['dbcformat']
-        cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
-        if cmethod is None:
-            raise AttributeError("Wrong repository compression method")
-
-        return cmethod
-
     def __remove_repository_files(self):
         sys_set = self._settings
         avail_data = sys_set['repositories']['available']
         repo_dbpath = avail_data[self._repository_id]['dbpath']
         shutil.rmtree(repo_dbpath, True)
 
-    def __handle_database_download(self, cmethod):
+    def __database_download(self, uri, cmethod):
 
-        # starting to download
         mytxt = "%s ..." % (red(_("Downloading repository")),)
         self._entropy.output(
             mytxt,
@@ -576,12 +589,15 @@ class AvailablePackagesRepositoryUpdater(object):
 
             down_item = "dbdumplight"
 
-            down_status = self._download_item(down_item, cmethod,
+            down_status = self._download_item(
+                uri, down_item, cmethod,
                 disallow_redirect = True)
             if down_status:
                 # get GPG file if available
-                sig_status = self._download_item(down_item, cmethod,
-                    disallow_redirect = True, get_signature = True)
+                sig_status = self._download_item(
+                    uri, down_item, cmethod,
+                    disallow_redirect = True,
+                    get_signature = True)
 
             downloaded_item = down_item
 
@@ -595,11 +611,14 @@ class AvailablePackagesRepositoryUpdater(object):
                 const_debug_write(__name__,
                     "__handle_database_download: developer repo mode enabled")
 
-            down_status = self._download_item(down_item, cmethod,
+            down_status = self._download_item(
+                uri, down_item, cmethod,
                 disallow_redirect = True)
             if down_status:
-                sig_status = self._download_item(down_item, cmethod,
-                    disallow_redirect = True, get_signature = True)
+                sig_status = self._download_item(
+                    uri, down_item, cmethod,
+                    disallow_redirect = True,
+                    get_signature = True)
 
             downloaded_item = down_item
 
@@ -615,7 +634,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return down_status, sig_status, downloaded_item
 
-    def __handle_database_checksum_download(self, cmethod):
+    def __database_checksum_download(self, uri, cmethod):
 
         downitem = 'cklight'
         if self._developer_repo:
@@ -623,7 +642,8 @@ class AvailablePackagesRepositoryUpdater(object):
         if self._repo_eapi == 2: # EAPI = 2
             downitem = 'dbdumplightck'
 
-        garbage_url, hashfile = self._construct_paths(downitem, cmethod)
+        garbage_url, hashfile = self._construct_paths(
+            uri, downitem, cmethod)
         mytxt = "%s %s %s" % (
             red(_("Downloading checksum")),
             darkgreen(os.path.basename(hashfile)),
@@ -637,7 +657,8 @@ class AvailablePackagesRepositoryUpdater(object):
             header = "\t"
         )
 
-        db_down_status = self._download_item(downitem, cmethod,
+        db_down_status = self._download_item(
+            uri, downitem, cmethod,
             disallow_redirect = True)
 
         if not db_down_status and (downitem not in ('cklight', 'dbck',)):
@@ -645,7 +666,8 @@ class AvailablePackagesRepositoryUpdater(object):
             retryitem = 'cklight'
             if self._developer_repo:
                 retryitem = 'dbck'
-            db_down_status = self._download_item(retryitem, cmethod,
+            db_down_status = self._download_item(
+                uri, retryitem, cmethod,
                 disallow_redirect = True)
 
         if not db_down_status:
@@ -670,7 +692,7 @@ class AvailablePackagesRepositoryUpdater(object):
             md5hash = md5hash.split()[0]
         return entropy.tools.compare_md5(file_path, md5hash)
 
-    def __verify_database_checksum(self, cmethod = None):
+    def __verify_database_checksum(self, uri, cmethod = None):
 
         sys_settings_repos = self._settings['repositories']
         avail_config = sys_settings_repos['available'][self._repository_id]
@@ -678,19 +700,21 @@ class AvailablePackagesRepositoryUpdater(object):
         sep = os.path.sep
         if self._repo_eapi == 1:
             if self._developer_repo:
-                remote_gb, dbfile = self._construct_paths('db', cmethod)
-                remote_gb, md5file = self._construct_paths('dbck', cmethod)
+                remote_gb, dbfile = self._construct_paths(
+                    uri, "db", cmethod)
+                remote_gb, md5file = self._construct_paths(
+                    uri, "dbck", cmethod)
             else:
-                remote_gb, dbfile = self._construct_paths('dblight',
-                    cmethod)
-                remote_gb, md5file = self._construct_paths('cklight',
-                    cmethod)
+                remote_gb, dbfile = self._construct_paths(
+                    uri, "dblight", cmethod)
+                remote_gb, md5file = self._construct_paths(
+                    uri, "cklight", cmethod)
 
         elif self._repo_eapi == 2:
-            remote_gb, dbfile = self._construct_paths('dbdumplight',
-                cmethod)
-            remote_gb, md5file = self._construct_paths('dbdumplightck',
-                cmethod)
+            remote_gb, dbfile = self._construct_paths(
+                uri, "dbdumplight", cmethod)
+            remote_gb, md5file = self._construct_paths(
+                uri, "dbdumplightck", cmethod)
 
         else:
             raise AttributeError("EAPI must be = 1 or 2")
@@ -700,14 +724,14 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return self.__verify_file_checksum(dbfile, md5file)
 
-    def __unpack_downloaded_database(self, down_item, cmethod):
+    def __unpack_downloaded_database(self, uri, down_item, cmethod):
 
         rc = 0
         path = None
         sys_set_repos = self._settings['repositories']['available']
         repo_data = sys_set_repos[self._repository_id]
 
-        garbage, myfile = self._construct_paths(down_item, cmethod)
+        garbage, myfile = self._construct_paths(uri, down_item, cmethod)
 
         if self._repo_eapi in (1, 2,):
             try:
@@ -734,8 +758,10 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return rc
 
-    def __handle_downloaded_database_unpack(self, cmethod):
-
+    def _downloaded_database_unpack(self, uri, cmethod):
+        """
+        Unpack the downloaded database.
+        """
         file_to_unpack = etpConst['etpdatabasedump']
         if self._repo_eapi == 1:
             file_to_unpack = etpConst['etpdatabasefile']
@@ -757,7 +783,7 @@ class AvailablePackagesRepositoryUpdater(object):
         elif self._developer_repo:
             myitem = 'db'
 
-        myrc = self.__unpack_downloaded_database(myitem, cmethod)
+        myrc = self.__unpack_downloaded_database(uri, myitem, cmethod)
         if myrc != 0:
             mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),
                 red(_("Skipping repository")),)
@@ -770,7 +796,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return False, myitem
         return True, myitem
 
-    def __update_repository_revision(self):
+    def __update_repository_revision(self, revision):
         cur_rev = AvailablePackagesRepository.revision(self._repository_id)
         repo_data = self._settings['repositories']
         db_data = repo_data['available'][self._repository_id]
@@ -778,18 +804,12 @@ class AvailablePackagesRepositoryUpdater(object):
         if cur_rev != -1:
             db_data['dbrevision'] = str(cur_rev)
 
-        # update repository revision file
-        # self.remote_revision() output must be
-        # written into packages.db.revision for consistency
-        # otherwise WebService sync when WebService is on a separate
-        # server (and uses rsync) doesn't work at its best
-        # self._last_revs
         rev_file = os.path.join(db_data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
         enc = etpConst['conf_encoding']
         with codecs.open(rev_file, "w", encoding=enc) as rev_f:
             # safe anyway
-            rev_f.write(str(self._last_rev) + "\n")
+            rev_f.write("%s\n" % (revision,))
             rev_f.flush()
 
     def __validate_database(self):
@@ -835,8 +855,10 @@ class AvailablePackagesRepositoryUpdater(object):
                 pass
         const_set_nice_level(old_prio)
 
-    def _construct_paths(self, item, cmethod, get_signature = False):
-
+    def _construct_paths(self, uri, item, cmethod, get_signature = False):
+        """
+        Build a remote URL and a local path for a supported resource item.
+        """
         if item not in self._supported_download_items:
             raise AttributeError("Invalid item: %s" % (item,))
 
@@ -851,7 +873,6 @@ class AvailablePackagesRepositoryUpdater(object):
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
 
-        repo_db = self._repo_uri
         repo_dbpath = repo_data['dbpath']
         ec_hash = etpConst['etpdatabasehashfile']
         repo_lock_file = etpConst['etpdatabasedownloadlockfile']
@@ -880,47 +901,47 @@ class AvailablePackagesRepositoryUpdater(object):
 
         mymap = {
             'db': (
-                "%s/%s" % (repo_db, ec_cm2,),
+                "%s/%s" % (uri, ec_cm2,),
                 "%s/%s" % (repo_dbpath, ec_cm2,),
             ),
             'dbck': (
-                "%s/%s" % (repo_db, ec_cm9,),
+                "%s/%s" % (uri, ec_cm9,),
                 "%s/%s" % (repo_dbpath, ec_cm9,),
             ),
             'dblight': (
-                "%s/%s" % (repo_db, ec_cm7,),
+                "%s/%s" % (uri, ec_cm7,),
                 "%s/%s" % (repo_dbpath, ec_cm7,),
             ),
             'dbdump': (
-                "%s/%s" % (repo_db, ec_cm3,),
+                "%s/%s" % (uri, ec_cm3,),
                 "%s/%s" % (repo_dbpath, ec_cm3,),
             ),
             'dbdumplight': (
-                "%s/%s" % (repo_db, ec_cm5,),
+                "%s/%s" % (uri, ec_cm5,),
                 "%s/%s" % (repo_dbpath, ec_cm5,),
             ),
             'ck': (
-                "%s/%s" % (repo_db, ec_hash,),
+                "%s/%s" % (uri, ec_hash,),
                 "%s/%s" % (repo_dbpath, ec_hash,),
             ),
             'cklight': (
-                "%s/%s" % (repo_db, ec_cm8,),
+                "%s/%s" % (uri, ec_cm8,),
                 "%s/%s" % (repo_dbpath, ec_cm8,),
             ),
             'compck': (
-                "%s/%s%s" % (repo_db, ec_cm2, md5_ext,),
+                "%s/%s%s" % (uri, ec_cm2, md5_ext,),
                 "%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),
             ),
             'dbdumpck': (
-                "%s/%s" % (repo_db, ec_cm4,),
+                "%s/%s" % (uri, ec_cm4,),
                 "%s/%s" % (repo_dbpath, ec_cm4,),
             ),
             'dbdumplightck': (
-                "%s/%s" % (repo_db, ec_cm6,),
+                "%s/%s" % (uri, ec_cm6,),
                 "%s/%s" % (repo_dbpath, ec_cm6,),
             ),
             'lock': (
-                "%s/%s" % (repo_db, repo_lock_file,),
+                "%s/%s" % (uri, repo_lock_file,),
                 "%s/%s" % (repo_dbpath, repo_lock_file,),
             ),
             'notice_board': (
@@ -928,11 +949,11 @@ class AvailablePackagesRepositoryUpdater(object):
                 "%s/%s" % (repo_dbpath, notice_board_filename,),
             ),
             'meta_file': (
-                "%s/%s" % (repo_db, meta_file,),
+                "%s/%s" % (uri, meta_file,),
                 "%s/%s" % (repo_dbpath, meta_file,),
             ),
             'meta_file_gpg': (
-                "%s/%s" % (repo_db, meta_file_gpg,),
+                "%s/%s" % (uri, meta_file_gpg,),
                 "%s/%s" % (repo_dbpath, meta_file_gpg,),
             ),
         }
@@ -944,11 +965,11 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return url, path
 
-    def _download_item(self, item, cmethod = None,
+    def _download_item(self, uri, item, cmethod = None,
         disallow_redirect = True, get_signature = False):
 
-        url, filepath = self._construct_paths(item, cmethod,
-            get_signature = get_signature)
+        url, filepath = self._construct_paths(
+            uri, item, cmethod, get_signature = get_signature)
 
         # See bug #3495, download the file to
         # a temporary location and then move it
@@ -1000,20 +1021,22 @@ class AvailablePackagesRepositoryUpdater(object):
                 if err.errno != errno.ENOENT:
                     raise
 
-    def _is_repository_unlocked(self):
+    def _is_repository_unlocked(self, uri):
         """
         Returns whether the repository is remotely locked or not.
 
         @return: repository being remotely locked
         @rtype:bool
         """
-        rc = self._download_item("lock", disallow_redirect = True)
+        rc = self._download_item(uri, "lock", disallow_redirect = True)
         if rc: # cannot download database
             return False
         return True
 
-    def _standard_items_download(self):
-
+    def _standard_items_download(self, uri):
+        """
+        Download a set of "standard" files from the repository mirror.
+        """
         repos_data = self._settings['repositories']
         repo_data = repos_data['available'][self._repository_id]
         notice_board = os.path.basename(repo_data['local_notice_board'])
@@ -1090,9 +1113,9 @@ class AvailablePackagesRepositoryUpdater(object):
         for item, myfile, ignorable, mytxt in download_items:
 
             my_show_info(mytxt)
-            mystatus = self._download_item(item, disallow_redirect = True)
+            mystatus = self._download_item(uri, item, disallow_redirect = True)
             mytype = 'info'
-            myurl, mypath = self._construct_paths(item, None)
+            myurl, mypath = self._construct_paths(uri, item, None)
 
             # download failed, is it critical?
             if not mystatus:
@@ -1196,14 +1219,14 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return downloaded_files
 
-    def _check_downloaded_database(self, cmethod):
+    def _check_downloaded_database(self, uri, cmethod):
 
-        dbitem = 'dblight'
+        dbitem = "dblight"
         if self._repo_eapi == 2:
-            dbitem = 'dbdumplight'
+            dbitem = "dbdumplight"
         elif self._developer_repo:
-            dbitem = 'db'
-        garbage, dbfilename = self._construct_paths(dbitem, cmethod)
+            dbitem = "db"
+        garbage, dbfilename = self._construct_paths(uri, dbitem, cmethod)
 
         # verify checksum
         mytxt = "%s %s %s" % (
@@ -1218,7 +1241,7 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = "\t"
         )
-        db_status = self.__verify_database_checksum(cmethod)
+        db_status = self.__verify_database_checksum(uri, cmethod)
         if db_status == -1:
             mytxt = "%s. %s !" % (
                 red(_("Cannot open digest")),
@@ -1276,7 +1299,8 @@ class AvailablePackagesRepositoryUpdater(object):
             return False # gpg key not available
 
         def do_warn_user(fingerprint):
-            mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
+            mytxt = purple(_("Make sure to verify the imported key and "
+                             "set an appropriate trust level"))
             self._entropy.output(
                 mytxt + ":",
                 level = "warning",
@@ -1302,7 +1326,8 @@ class AvailablePackagesRepositoryUpdater(object):
                 level = "warning",
                 header = "\t"
             )
-            mytxt = purple(_("you may want to install GnuPG to take advantage of this feature"))
+            mytxt = purple(_("you may want to install GnuPG to take "
+                             "advantage of this feature"))
             self._entropy.output(
                 mytxt,
                 level = "warning",
@@ -1409,7 +1434,8 @@ class AvailablePackagesRepositoryUpdater(object):
                     )
                     return False
                 self._entropy.output(
-                    purple(_("GPG key seems already installed but not properly recorded, resetting")),
+                    purple(_("GPG key seems already installed but "
+                             "not properly recorded, resetting")),
                     level = "warning",
                     header = "\t"
                 )
@@ -1537,8 +1563,11 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return gpg_rc
 
-    def _handle_webserv_database_sync(self):
-
+    def _webservice_database_sync(self):
+        """
+        Update the local repository database through the webservice
+        using a differential sync.
+        """
         repo_db = None
         try:
             repo_db = self.__get_webserv_local_database()
@@ -1854,29 +1883,54 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return result
 
-    def remote_revision(self, _repo_uri = None):
-
-        if self._repo_eapi == 3 and _repo_uri is None:
-            # ask WebService then
-            revision = self.__get_webserv_repository_revision()
-            if revision is not None:
-                try:
-                    revision = int(revision)
-                except ValueError:
-                    revision = None
-            if revision is not None:
-                self._last_rev = revision
-                return revision
-            # otherwise, fallback to previous EAPI
-            self._repo_eapi -= 1
+    def remote_revision(self):
+        rev = self._remote_webservice_revision()
+        if rev is not None:
+            return rev
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
+        # default to the first entry, which is expected
+        # to be always available.
+        try:
+            uri = repo_data['databases'][0]['uri']
+        except IndexError:
+            rev = -1
+            return rev
 
-        if _repo_uri is None:
-            _repo_uri = self._repo_uri
+        rev = self._remote_revision(uri)
+        return rev
+
+    def _remote_webservice_revision(self):
+        """
+        Return the remote repository revision using the webservice.
+        This method returns None if the request failed or the
+        webservice is not available.
+        """
+        if self._repo_eapi < 3:
+            return
+
+        # ask WebService then
+        revision = self.__get_webserv_repository_revision()
+        if revision is not None:
+            try:
+                revision = int(revision)
+            except ValueError:
+                revision = None
+
+        if revision is not None:
+            return revision
+
+        # otherwise, fallback to previous EAPI
+        self._repo_eapi -= 1
+
+    def _remote_revision(self, uri):
+        """
+        Return the remote repository revision by downloading
+        the revision file from the given uri.
+        """
         sep = const_convert_to_unicode("/")
-        url = _repo_uri + sep + etpConst['etpdatabaserevisionfile']
+        url = uri + sep + etpConst['etpdatabaserevisionfile']
 
         tmp_fd, tmp_path = None, None
         rev = "-1"
@@ -1911,7 +1965,6 @@ class AvailablePackagesRepositoryUpdater(object):
             # corrupted data
             rev = -1
 
-        self._last_rev = rev
         return rev
 
     def update(self):
@@ -1921,14 +1974,14 @@ class AvailablePackagesRepositoryUpdater(object):
             raise PermissionDenied(
                 "cannot update repository as unprivileged user")
 
-        self.__show_repository_information()
+        self._show_repository_information()
 
-        # China loves us!
-        self.__select_database_mirror()
+        selected = self._select_database_mirror()
+        if selected is None:
+            return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
+        revision, uri, cformat = selected
 
-        # this calls writes self._last_rev which is used to write back
-        # updated repository revision, do not remove!
-        updatable = self.__is_repository_updatable()
+        updatable = self._is_repository_updatable(revision)
         if not self.__force:
             if not updatable:
                 mytxt = "%s: %s." % (bold(_("Attention")),
@@ -1941,12 +1994,23 @@ class AvailablePackagesRepositoryUpdater(object):
                 )
                 return EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE
 
-        locked = self.__handle_repository_lock()
+        locked = not self._is_repository_unlocked(uri)
         if locked:
+            mytxt = "%s: %s. %s." % (
+                bold(_("Attention")),
+                red(_("Repository is being updated")),
+                red(_("Try again in a few minutes")),
+            )
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "warning",
+                header = "\t"
+            )
             return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
 
         # clear database interface cache belonging to this repository
-        self.__ensure_repository_path()
+        self._ensure_repository_path()
 
         # dealing with EAPI
         # setting some vars
@@ -1964,7 +2028,8 @@ class AvailablePackagesRepositoryUpdater(object):
         dbfile = os.path.join(repo_data['dbpath'],
             etpConst['etpdatabasefile'])
         dbfile_old = dbfile+".sync"
-        cmethod = self.__validate_compression_method()
+        cmethod = etpConst['etpdatabasecompressclasses'].get(
+            cformat)
 
         while True:
 
@@ -1974,11 +2039,11 @@ class AvailablePackagesRepositoryUpdater(object):
             if self._repo_eapi < 3:
 
                 down_status, sig_down_status, downloaded_db_item = \
-                    self.__handle_database_download(cmethod)
+                    self.__database_download(uri, cmethod)
                 if not down_status:
                     return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
                 db_checksum_down_status = \
-                    self.__handle_database_checksum_download(cmethod)
+                    self.__database_checksum_download(uri, cmethod)
                 break
 
             elif self._repo_eapi == 3 and not \
@@ -1991,22 +2056,13 @@ class AvailablePackagesRepositoryUpdater(object):
 
                 status = False
                 try:
-                    status = self._handle_webserv_database_sync()
+                    status = self._webservice_database_sync()
                 except:
                     # avoid broken entries, deal with every exception
                     self.__remove_repository_files()
                     raise
 
-                if status is None: # remote db not available anymore ?
-                    time.sleep(5)
-                    locked = self.__handle_repository_lock()
-                    if locked:
-                        return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
-                    do_db_update_transfer = None
-                    self._repo_eapi -= 1
-                    continue
-
-                elif not status: # (status == False)
+                if not status:
                     # set to none and completely skip database alignment
                     do_db_update_transfer = None
                     self._repo_eapi -= 1
@@ -2014,13 +2070,13 @@ class AvailablePackagesRepositoryUpdater(object):
 
                 break
 
-        downloaded_files = self._standard_items_download()
+        downloaded_files = self._standard_items_download(uri)
         # also add db file to downloaded item
         # and md5 check repository
         if downloaded_db_item is not None:
 
-            durl, dpath = self._construct_paths(downloaded_db_item,
-                cmethod)
+            durl, dpath = self._construct_paths(
+                uri, downloaded_db_item, cmethod)
             downloaded_files.append(dpath)
             if sig_down_status:
                 d_sig_path = self.__append_gpg_signature_to_path(dpath)
@@ -2034,7 +2090,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 self.__remove_repository_files()
                 return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
 
-            rc = self._check_downloaded_database(cmethod)
+            rc = self._check_downloaded_database(uri, cmethod)
             if rc != 0:
                 # delete all
                 self.__remove_repository_files()
@@ -2063,15 +2119,15 @@ class AvailablePackagesRepositoryUpdater(object):
                         do_db_update_transfer = False
 
             unpack_status, unpacked_item = \
-                self.__handle_downloaded_database_unpack(cmethod)
+                self._downloaded_database_unpack(uri, cmethod)
 
             if not unpack_status:
                 # delete all
                 self.__remove_repository_files()
                 return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
-            unpack_url, unpack_path = self._construct_paths(unpacked_item,
-                cmethod)
+            unpack_url, unpack_path = self._construct_paths(
+                uri, unpacked_item, cmethod)
             files_to_remove.append(unpack_path)
 
             # re-validate
@@ -2125,7 +2181,7 @@ class AvailablePackagesRepositoryUpdater(object):
             # repository failed validation
             return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
-        self.__update_repository_revision()
+        self.__update_repository_revision(revision)
         if self._entropy._indexing:
             self.__database_indexing()
 
@@ -2136,7 +2192,8 @@ class AvailablePackagesRepositoryUpdater(object):
         except Exception as err:
             entropy.tools.print_traceback()
             mytxt = "%s: %s" % (
-                blue(_("Configuration files update error, not critical, continuing")),
+                blue(_("Configuration files update error, "
+                       "not critical, continuing")),
                 err,
             )
             self._entropy.output(mytxt, importance = 0,
@@ -2144,7 +2201,10 @@ class AvailablePackagesRepositoryUpdater(object):
 
         # remove garbage
         if os.access(dbfile_old, os.R_OK) and os.path.isfile(dbfile_old):
-            os.remove(dbfile_old)
+            try:
+                os.remove(dbfile_old)
+            except (OSError, IOError):
+                pass
 
         return EntropyRepositoryBase.REPOSITORY_UPDATED_OK
 
@@ -2601,7 +2661,8 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         Reimplemented from EntropyRepositoryBase
         """
         try:
-            return AvailablePackagesRepositoryUpdater(entropy_client, repository_id,
+            return AvailablePackagesRepositoryUpdater(
+                entropy_client, repository_id,
                 force, gpg).update()
         except KeyError:
             return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE

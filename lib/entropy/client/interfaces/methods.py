@@ -646,9 +646,7 @@ class RepositoryMixin:
             enabled_conf_file,
             repository_metadata['repoid'],
             repository_metadata['description'],
-            "%s#%s" % (
-                repository_metadata['plain_database'],
-                repository_metadata['dbcformat']),
+            repository_metadata['plain_databases'],
             repository_metadata['plain_packages'])
 
         # if any disabled entry file is around, kill it with fire!

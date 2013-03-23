@@ -49,6 +49,7 @@ class RepositoryConfigParser(BaseConfigParser):
     [sabayon-limbo]
     desc = Sabayon Linux Official Testing Repository
     repo = http://pkg.sabayon.org
+    repo = http://pkg.repo.sabayon.org
     pkg = http://pkg.sabayon.org
     pkg = http://dl.sabayon.org/entropy
     enabled = <true/false>
@@ -60,9 +61,9 @@ class RepositoryConfigParser(BaseConfigParser):
     pkg = http://some.more.mirror.net/entropy
 
     As you can see, multiple statements for the same repository
-    are allowed. However, only the first desc = and repo =
-    statements will be considered, while there can be as many pkg =
-    as you want.
+    are allowed. However, only the first desc = statement will be
+    considered, while there can be as many pkg = and repo = as you
+    want.
 
     Statements description:
     - "desc": stands for description, the repository name description.
@@ -103,7 +104,7 @@ class RepositoryConfigParser(BaseConfigParser):
             return
         return candidate
 
-    def write(self, path, repository_id, desc, repo, pkgs, enabled = True):
+    def write(self, path, repository_id, desc, repos, pkgs, enabled = True):
         """
         Write the repository configuration to the given file.
         """
@@ -111,18 +112,23 @@ class RepositoryConfigParser(BaseConfigParser):
             enabled_str = "true"
         else:
             enabled_str = "false"
+
+        repos_str = ""
+        for repo_meta in repos:
+            repos_str += "repo = %(uri)s#%(dbcformat)s\n" % repo_meta
+
         config = """\
 # Repository configuration file automatically generated
 # by Entropy on your behalf.
 
 [%(repository_id)s]
 desc = %(desc)s
-repo = %(repo)s
+%(repos)s
 enabled = %(enabled)s
 """ % {
             "repository_id": repository_id,
             "desc": desc,
-            "repo": repo,
+            "repos": repos_str.rstrip(),
             "enabled": enabled_str,
             }
         for pkg in pkgs:
@@ -152,16 +158,18 @@ enabled = %(enabled)s
 
     def repo(self, repository_id):
         """
-        Return the database URL for the given repository.
+        Return the list of database URLs for the given repository.
+        This includes the default one, which is the first element
+        listed.
 
         @param repository_id: the repository identifier
         @type repository_id: string
         @raise KeyError: if repository_id is not found or
             metadata is not available
-        @return: the repository URL
-        @rtype: string
+        @return: the list of repository URLs
+        @rtype: list
         """
-        return self[repository_id]["repo"][0]
+        return self[repository_id]["repo"]
 
     def pkgs(self, repository_id):
         """
@@ -1497,44 +1505,74 @@ class SystemSettings(Singleton, EntropyPluginStore):
                         if x.strip()]
         database = repo_split[3].strip()
         return name, self._generate_repository_metadata(
-            name, desc, packages, database, product, branch)
+            name, desc, packages, [database], product, branch)
 
-    def _generate_repository_metadata(self, name, desc, packages, database,
-                                      product = None, branch = None):
+    def _generate_repository_metadata(self, name, desc, packages, databases,
+                                      product, branch):
         """
         Given a set of raw repository metadata information, like name,
         description, a list of package urls and the database url, generate
         the appropriate metadata.
         """
-        if branch is None:
-            branch = etpConst['branch']
-        if product is None:
-            product = etpConst['product']
+        def _extract(database):
+            # Support for custom database file compression
+            dbformat = None
+            for testno in range(2):
+                dbformatcolon = database.rfind("#")
+                if dbformatcolon == -1:
+                    break
 
-        # Support for custom database file compression
-        dbformat = None
-        for testno in range(2):
-            dbformatcolon = database.rfind("#")
-            if dbformatcolon == -1:
-                break
+                try:
+                    dbformat = database[dbformatcolon+1:]
+                except (IndexError, ValueError, TypeError,):
+                    pass
+                database = database[:dbformatcolon]
 
-            try:
-                dbformat = database[dbformatcolon+1:]
-            except (IndexError, ValueError, TypeError,):
-                pass
-            database = database[:dbformatcolon]
+            if dbformat not in etpConst['etpdatabasesupportedcformats']:
+                # fallback to default
+                dbformat = etpConst['etpdatabasefileformat']
 
-        if dbformat not in etpConst['etpdatabasesupportedcformats']:
-            # fallback to default
-            dbformat = etpConst['etpdatabasefileformat']
+            # strip off, if exists, the deprecated service_uri part (EAPI3 shit)
+            uricol = database.rfind(",")
+            if uricol != -1:
+                database = database[:uricol]
 
-        # strip off, if exists, the deprecated service_uri part (EAPI3 shit)
-        uricol = database.rfind(",")
-        if uricol != -1:
-            database = database[:uricol]
+            return database, dbformat
 
         data = {}
         data['repoid'] = name
+
+        databases = [_extract(x) for x in databases]
+        databases = [(x, y) for x, y in databases if \
+                         entropy.tools.is_valid_uri(x)]
+        if not databases:
+            raise AttributeError("no valid repository database URLs")
+
+        data['databases'] = []
+        data['plain_databases'] = []
+        for index, (database, dbformat) in enumerate(databases):
+
+            database_expanded = entropy.tools.expand_plain_database_mirror(
+                database, product, name, branch)
+            if database_expanded is None:
+                database_expanded = const_convert_to_unicode("")
+
+
+            # XXX: backward compatibility support, consider the first
+            # databases entry as "database".
+            if index == 0:
+                data['dbcformat'] = dbformat
+                data['plain_database'] = database
+                data['database'] = database_expanded
+
+            data['databases'].append({
+                    'uri': database_expanded,
+                    'dbcformat': dbformat,
+                    })
+            data['plain_databases'].append({
+                    'uri': database,
+                    'dbcformat': dbformat,
+                    })
 
         data['description'] = desc
         data['packages'] = []
@@ -1543,21 +1581,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         data['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
             name + os.path.sep + product + os.path.sep + \
             etpConst['currentarch'] + os.path.sep + branch
-
-        data['dbcformat'] = dbformat
-        if not dbformat in etpConst['etpdatabasesupportedcformats']:
-            data['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
-
-        if database:
-            if not entropy.tools.is_valid_uri(database):
-                raise AttributeError("invalid repository database URL")
-        data['plain_database'] = database
-
-        database = entropy.tools.expand_plain_database_mirror(
-            database, product, name, branch)
-        if database is None:
-            database = const_convert_to_unicode("")
-        data['database'] = database
 
         data['notice_board'] = data['database'] + os.path.sep + \
             etpConst['rss-notice-board']
@@ -1690,9 +1713,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 if (not obj['plain_database']) and \
                     repodata['plain_database']:
 
+                    obj['dbrevision'] = repodata['dbrevision']
                     obj['plain_database'] = repodata['plain_database']
                     obj['database'] = repodata['database']
-                    obj['dbrevision'] = repodata['dbrevision']
                     obj['dbcformat'] = repodata['dbcformat']
 
             else:
@@ -1820,7 +1843,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     continue
 
                 repoids.add(ini_repository)
-                ini_db = ini_parser.repo(ini_repository)
+                ini_dbs = ini_parser.repo(ini_repository)
                 try:
                     ini_pkgs = ini_parser.pkgs(ini_repository)
                 except KeyError:
@@ -1833,7 +1856,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 ini_excluded = not ini_parser.enabled(ini_repository)
                 ini_data = self._generate_repository_metadata(
-                    ini_repository, ini_desc, ini_pkgs, ini_db)
+                    ini_repository, ini_desc, ini_pkgs, ini_dbs,
+                    data['product'], data['branch'])
                 if ini_excluded:
                     data['excluded'][ini_repository] = ini_data
                 else:
