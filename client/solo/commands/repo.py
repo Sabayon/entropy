@@ -83,9 +83,20 @@ Manage Entropy Repositories.
 
         add_parser = subparsers.add_parser("add",
             help=_("add a repository"))
-        add_parser.add_argument("string", nargs='+',
-                                metavar="<string>",
-                                help=_("repository string"))
+        add_parser.add_argument("--id", metavar="<repository>",
+                                help=_("repository identifier"))
+        add_parser.add_argument("--desc", metavar="<description>",
+                                help=_("repository description"))
+        add_parser.add_argument("--repo", nargs='+',
+                                metavar="<repo url>",
+                                help=_("repository database URL"))
+        add_parser.add_argument("--pkg", nargs='+',
+                                metavar="<pkg url>",
+                                help=_("repository packages URL"))
+        add_parser.add_argument("--cformat",
+                                default=etpConst['etpdatabasefileformat'],
+                                metavar="<compression format>",
+                                help=_("repository compression format"))
         add_parser.set_defaults(func=self._add)
         _commands.append("add")
 
@@ -178,8 +189,7 @@ Manage Entropy Repositories.
             outcome += avail_repos
 
         elif command == "add":
-            # complete with "repository|" ?
-            outcome.append("repository=")
+            outcome.extend(["--desc", "--id", "--repo", "--pkg"])
 
         elif command == "remove":
             settings = self._entropy_bashcomp().Settings()
@@ -326,83 +336,51 @@ Manage Entropy Repositories.
         """
         Solo Repo Add command.
         """
-        exit_st = 0
-
-        for string in self._nsargs.string:
-
-            if not string:
-                entropy_client.output(
-                    "[%s] %s" % (
-                        purple(string),
-                        blue(_("invalid data, skipping")),),
-                    level="warning", importance=1)
-                exit_st = 1
-                continue
-
-            _exit_st = self._add_repo(entropy_client, string)
-            if _exit_st != 0:
-                exit_st = _exit_st
-
-        return exit_st
-
-    def _add_repo(self, entropy_client, repo_string):
-        """
-        Solo Repo Add for given repository.
-        """
         settings = entropy_client.Settings()
         current_branch = settings['repositories']['branch']
         current_product = settings['repositories']['product']
         available_repos = settings['repositories']['available']
 
-        entropy_client.output(
-            "%s: %s" % (
-                teal(_("Adding repository string")),
-                blue(repo_string),))
+        repository_id = self._nsargs.id
+        repos = self._nsargs.repo
+        pkgs = self._nsargs.pkg
+        desc = self._nsargs.desc
+        cformat = self._nsargs.cformat
 
-        try:
-            repoid, repodata = settings._analyze_client_repo_string(
-                repo_string, current_branch, current_product)
-        except AttributeError as err:
-            entropy_client.output(
-                "[%s] %s: %s" % (
-                    purple(repo_string),
-                    blue(_("invalid repository string")),
-                    err,),
-                level="warning", importance=1
-            )
-            return 1
-
+        # show info
         toc = []
         toc.append((
                 purple(_("Repository id:")),
-                teal(repoid)))
+                teal(repository_id)))
         toc.append((
                 darkgreen(_("Description:")),
-                teal(repodata['description'])))
+                teal(desc)))
         toc.append((
                 purple(_("Repository format:")),
-                darkgreen(repodata['dbcformat'])))
+                darkgreen(cformat)))
 
-        for pkg_url in repodata['plain_packages']:
+        for pkg_url in pkgs:
             toc.append((purple(_("Packages URL:")), pkg_url))
-        db_url = repodata['plain_database']
-        if not db_url:
-            db_url = _("None given")
+        for repo_url in repos:
+            toc.append((purple(_("Repository URL:")), repo_url))
 
-        toc.append((purple(_("Repository URL:")), darkgreen(db_url)))
         toc.append(" ")
         print_table(entropy_client, toc)
+
+        repodata = settings._generate_repository_metadata(
+            repository_id, desc, pkgs, repos, current_product,
+            current_branch)
 
         added = entropy_client.add_repository(repodata)
         if added:
             entropy_client.output(
                 "[%s] %s" % (
-                    purple(repoid),
+                    purple(repository_id),
                     blue(_("repository added succesfully")),))
         else:
             entropy_client.output(
                 "[%s] %s" % (
-                    purple(repoid),
+                    purple(repository_id),
                     blue(_("cannot add repository")),),
                 level="warning", importance=1)
 
