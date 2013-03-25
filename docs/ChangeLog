@@ -1,3 +1,75 @@
+commit c2d7ed7d72309ad11bdc8448f3f357cfb33d53f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 25 08:56:19 2013 +0000
+
+    Release Entropy 187
+
+commit c5250594d11c976c4c7decb9f432178ea7cc012d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 19:20:22 2013 +0000
+
+    [equo] rewrite "equo repo add" command line interface, looks much better now
+
+commit 2dc14383735f8582d4065c118822b7dfcffbd899
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 19:00:15 2013 +0000
+
+    [tests] security: create temporary directory using TMPDIR or, if unset, $PWD
+
+commit 565db8d1a59312d57abd1c17b0e72d76d42ad9d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 18:48:02 2013 +0000
+
+    [entropy.client] add support for multiple "repo =" repository parameters
+    
+    This improves the availability when one or more repository database
+    mirrors are down.
+
+commit b395b13d8446512a2253d6a53fc24f1adf1cba1c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 11:42:42 2013 +0000
+
+    [tests] db: fix test_libs_download
+
+commit 1cd78383853f1b1ea978908e261b8829ffb3a6c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 11:38:39 2013 +0000
+
+    [entropy.db.sql] definitely fix the cursor object wrapping
+
+commit da8a2a1d228a2d76f1a982280d7808f05e549010
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 23 11:31:50 2013 +0000
+
+    [entropy.db] use super() instead of class.__init__()
+
+commit b7ebbf8f478671a678fcab740f2e3264bd066dd5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 22 13:56:41 2013 +0000
+
+    [entropy.client.dep] __get_library_breakages: handle the new library dependencies case
+    
+    It happened that __get_library_breakages only handled library bumps and
+    not also another important case: new library dependencies. This check is
+    very important at runtime, because it helps coping with unsatisfied
+    library dependencies (that might be satisfied at the package dependencies
+    level).
+    For instance, upgrading udev may fail because the new udevadm depends
+    against libblkid.so.1, which is a new dependency, while the util-linux
+    dependency metadatum is not enforcing the new version well enough.
+
+commit b559affa42c2fec8ea2b60887455ed4d32124ffc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 22 10:54:02 2013 +0000
+
+    [equo] fix typo in "equo update", fix bug 4107
+
+commit 533beb60c1fc72c701674afe85c69b1959e4fdaf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 20 16:50:21 2013 +0000
+
+    Tagging Entropy version 186
+
 commit 3e30d2414dde92c4ebbd50fb529b35afe05cf6c2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 20 16:50:21 2013 +0000
