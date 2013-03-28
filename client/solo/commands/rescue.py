@@ -21,6 +21,7 @@ from entropy.output import red, bold, brown, blue, darkred, darkgreen, \
 from entropy.const import etpConst
 from entropy.exceptions import SystemDatabaseError
 from entropy.db.exceptions import OperationalError, DatabaseError
+from entropy.client.interfaces.db import InstalledPackagesRepository
 
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand
@@ -428,8 +429,18 @@ Tools to rescue the running system.
             brown(repo_path),
             header="  ")
 
-        inst_repo.initializeRepository()
-        inst_repo.commit()
+        # open a repository at the old path, if repo_path is
+        # not in place, Entropy will forward us to the in-RAM
+        # database (for sqlite), which is not what we want.
+        gen_repo = entropy_client.open_generic_repository(
+            repo_path, dbname=InstalledPackagesRepository.NAME,
+            xcache=False, skip_checks=True)
+        gen_repo.initializeRepository()
+        gen_repo.commit()
+        gen_repo.close()
+
+        entropy_client.reopen_installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         entropy_client.output(
             purple(_("Repository initialized, generating metadata")),
