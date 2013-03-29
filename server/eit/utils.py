@@ -182,6 +182,10 @@ def print_package_info(package_id, entropy_server, entropy_repository,
                 brown(pkgdigest),))
             if pkgsign:
                 sha1, sha256, sha512, gpg = pkgsign
+                if not sha1:
+                    sha1 = _("N/A")
+                if not sha256:
+                    sha256 = _("N/A")
                 toc.append((darkgreen("       %s:" % (_("SHA1"),) ),
                             brown(sha1),))
                 toc.append((darkgreen("       %s:" % (_("SHA256"),) ),
