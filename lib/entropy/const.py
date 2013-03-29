@@ -1027,11 +1027,12 @@ def const_mkdtemp(dir=None, prefix=None, suffix=None):
     """
     if dir is None:
         dir = etpConst['entropyunpackdir']
-    try:
-        os.makedirs(dir)
-    except OSError as err:
-        if err.errno != errno.EEXIST:
-            dir = os.getenv("TMPDIR", "/var/tmp")
+        # try creating it only if it's our provided dir
+        try:
+            os.makedirs(dir)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                dir = os.getenv("TMPDIR", "/var/tmp")
 
     if prefix is None:
         prefix = ""
