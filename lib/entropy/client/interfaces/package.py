@@ -14,11 +14,10 @@ import os
 import errno
 import stat
 import shutil
-import tempfile
 import time
 import codecs
 
-from entropy.const import etpConst, const_setup_perms, \
+from entropy.const import etpConst, const_setup_perms, const_mkstemp, \
     const_isunicode, const_convert_to_unicode, const_debug_write, \
     const_debug_enabled, const_convert_to_rawstring, const_is_python3
 from entropy.exceptions import PermissionDenied, SPMError
@@ -1466,7 +1465,7 @@ class Package:
                 return None
 
             # write gpg signature to disk for verification
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = const_mkstemp(prefix="do_compare_gpg")
             with os.fdopen(tmp_fd, "w") as tmp_f:
                 tmp_f.write(hash_val)
                 tmp_f.flush()
@@ -4422,7 +4421,7 @@ class Package:
         tmp_fd, tmp_path = None, None
         generated = False
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="PackageContentSafety",
                 dir=tmp_dir)
             with Package.FileContentSafetyWriter(tmp_fd) as tmp_f:
@@ -4468,7 +4467,7 @@ class Package:
         tmp_fd, tmp_path = None, None
         generated = False
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="PackageContent",
                 dir=tmp_dir)
             with Package.FileContentWriter(tmp_fd) as tmp_f:

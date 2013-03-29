@@ -18,7 +18,6 @@ import stat
 import sys
 import shutil
 import stat
-import tempfile
 import subprocess
 import tarfile
 import time
@@ -28,7 +27,7 @@ import warnings
 from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
-    const_debug_enabled, const_mkdtemp
+    const_debug_enabled, const_mkdtemp, const_mkstemp
 from entropy.exceptions import FileNotFound, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
@@ -1019,7 +1018,7 @@ class PortagePlugin(SpmPlugin):
         tmp_fd, tmp_file = None, None
         debug_tmp_fd, debug_tmp_file = None, None
         try:
-            tmp_fd, tmp_file = tempfile.mkstemp(dir = file_save_dir,
+            tmp_fd, tmp_file = const_mkstemp(dir = file_save_dir,
                 prefix = "entropy.spm.Portage.generate_package._tar")
             os.close(tmp_fd)
             tmp_fd = None
@@ -1037,7 +1036,7 @@ class PortagePlugin(SpmPlugin):
                 m.update(repr(package))
                 debug_file_save_path = file_save_name + "." + m.hexdigest() + \
                     etpConst['packagesdebugext']
-                debug_tmp_fd, debug_tmp_file = tempfile.mkstemp(
+                debug_tmp_fd, debug_tmp_file = const_mkstemp(
                     dir = file_save_dir,
                     prefix = "entropy.spm.Portage.generate_package._debug_tar")
                 os.close(debug_tmp_fd)
@@ -1160,7 +1159,7 @@ class PortagePlugin(SpmPlugin):
                 warnings.warn("Something is wrong, no modinfo on the system")
                 return
 
-            tmp_fd, tmp_file = tempfile.mkstemp(
+            tmp_fd, tmp_file = const_mkstemp(
                 prefix="entropy.spm.portage._add_kernel_dependency_to_pkg")
             try:
                 with os.fdopen(tmp_fd, "w") as tmp_fw:
@@ -1240,7 +1239,7 @@ class PortagePlugin(SpmPlugin):
         raw_enc = etpConst['conf_raw_encoding']
 
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="entropy.spm.__source_env_get_var")
 
             sts = subprocess.call(args, stdout = tmp_fd)
@@ -2137,7 +2136,7 @@ class PortagePlugin(SpmPlugin):
             splitter_err = None
             try:
                 if is_mute():
-                    tmp_fd, tmp_file = tempfile.mkstemp(
+                    tmp_fd, tmp_file = const_mkstemp(
                         prefix="entropy.spm.portage._portage_doebuild")
                     tmp_fw = os.fdopen(tmp_fd, "w")
                     sys.stdout = tmp_fw

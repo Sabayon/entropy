@@ -13,11 +13,11 @@ import sys
 import os
 import errno
 import argparse
-import tempfile
 import codecs
 
 from entropy.i18n import _
 from entropy.output import purple, teal
+from entropy.const import const_mkstemp
 
 from eit.commands.descriptor import EitCommandDescriptor
 from eit.commands.command import EitCommand
@@ -147,7 +147,7 @@ doing.
         while True:
 
             if tmp_path is None:
-                tmp_fd, tmp_path = tempfile.mkstemp(
+                tmp_fd, tmp_path = const_mkstemp(
                     prefix = 'entropy.server.pkgmove',
                     suffix = ".conf")
                 with os.fdopen(tmp_fd, "w") as tmp_f:

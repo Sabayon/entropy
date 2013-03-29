@@ -23,7 +23,6 @@ import sys
 import pwd
 import time
 import signal
-import tempfile
 import shutil
 import subprocess
 import copy
@@ -61,7 +60,8 @@ from entropy.cache import EntropyCacher
 EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    initconfig_entropy_constants, const_debug_write, dump_signal
+    initconfig_entropy_constants, const_debug_write, dump_signal, \
+    const_mkstemp
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
     EntropyPackageException
@@ -2758,7 +2758,7 @@ class RigoDaemonService(dbus.service.Object):
             if busied:
                 # Setup Application Management
                 # Install/Remove notes
-                tmp_fd, tmp_path = tempfile.mkstemp(
+                tmp_fd, tmp_path = const_mkstemp(
                     prefix="RigoDaemonAppMgmt",
                     suffix=".notes")
                 with self._app_mgmt_mutex:
@@ -3013,7 +3013,7 @@ class RigoDaemonService(dbus.service.Object):
         tmp_fd, tmp_path = None, None
         path = ""
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="RigoDaemon", suffix=".diff")
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 rc = subprocess.call(
@@ -3077,7 +3077,7 @@ class RigoDaemonService(dbus.service.Object):
         Prepare the given configuration file copying it to
         a temporary path and setting proper permissions.
         """
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="RigoDaemon")
+        tmp_fd, tmp_path = const_mkstemp(prefix="RigoDaemon")
         try:
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 with open(path, "rb") as path_f:

@@ -13,12 +13,11 @@ import os
 import errno
 import sys
 import argparse
-import tempfile
 
 from entropy.i18n import _
 from entropy.output import red, bold, brown, blue, darkred, darkgreen, \
     purple, teal
-from entropy.const import etpConst
+from entropy.const import etpConst, const_mkstemp
 from entropy.exceptions import SystemDatabaseError
 from entropy.db.exceptions import OperationalError, DatabaseError
 from entropy.client.interfaces.db import InstalledPackagesRepository
@@ -451,7 +450,7 @@ Tools to rescue the running system.
         total = len(spm_packages)
         count = 0
         # perf: reuse temp file
-        tmp_fd, tmp_path = tempfile.mkstemp(
+        tmp_fd, tmp_path = const_mkstemp(
             prefix="equo.rescue.generate")
         os.close(tmp_fd)
 
@@ -715,7 +714,7 @@ Tools to rescue the running system.
             total = len(to_be_added)
             counter = 0
             # perf: only create temp file once
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="equo.rescue.spmsync")
             os.close(tmp_fd)
 

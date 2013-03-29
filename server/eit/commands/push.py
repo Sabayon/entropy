@@ -12,10 +12,10 @@
 import sys
 import os
 import argparse
-import tempfile
 import codecs
 
-from entropy.const import etpConst, const_convert_to_unicode
+from entropy.const import etpConst, const_convert_to_unicode, \
+    const_mkstemp
 from entropy.exceptions import OnlineMirrorError
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
@@ -179,7 +179,7 @@ repository) by pushing updated data.
         Store inside rss metadata object.
         """
         enc = etpConst['conf_encoding']
-        tmp_fd, tmp_commit_path = tempfile.mkstemp(
+        tmp_fd, tmp_commit_path = const_mkstemp(
             prefix="eit._push", suffix=".COMMIT_MSG")
         with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
             tmp_f.write(EitPush.DEFAULT_REPO_COMMIT_MSG)

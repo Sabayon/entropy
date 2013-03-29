@@ -10,7 +10,6 @@
 
 """
 import os
-import tempfile
 import shutil
 import time
 import errno
@@ -22,7 +21,8 @@ import codecs
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst, const_get_int, const_get_cpus, const_mkdtemp
+from entropy.const import etpConst, const_get_int, const_get_cpus, \
+    const_mkdtemp, const_mkstemp
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS, ParallelTask
@@ -685,7 +685,7 @@ class Server(object):
             if not (rc1 and rc2):
                 return (uri, revision)
 
-            tmp_fd, rev_tmp_path = tempfile.mkstemp(prefix = "entropy.server")
+            tmp_fd, rev_tmp_path = const_mkstemp(prefix = "entropy.server")
             try:
 
                 dlcount = 5

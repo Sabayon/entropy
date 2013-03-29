@@ -14,9 +14,9 @@ import errno
 import sys
 import argparse
 import subprocess
-import tempfile
 
-from entropy.const import const_convert_to_unicode, const_is_python3
+from entropy.const import const_convert_to_unicode, const_is_python3, \
+    const_mkstemp
 if const_is_python3():
     from subprocess import getoutput
 else:
@@ -313,7 +313,7 @@ Manage package file updates.
 
         fd, tmp_path = None, None
         try:
-            fd, tmp_path = tempfile.mkstemp(
+            fd, tmp_path = const_mkstemp(
                 suffix="equo.conf.showdiff")
             with os.fdopen(fd, "w") as f:
                 f.writelines(coloured)
@@ -502,7 +502,7 @@ Manage package file updates.
     def _interactive_merge_diff(self, source, destination):
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 suffix="equo.conf.intmerge")
             args = ("/usr/bin/sdiff", "-o", tmp_path,
                     source, destination)

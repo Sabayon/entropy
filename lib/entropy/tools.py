@@ -21,7 +21,6 @@ import os
 import time
 import shutil
 import tarfile
-import tempfile
 import subprocess
 import grp
 import pwd
@@ -36,7 +35,8 @@ import codecs
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
-    const_israwstring, const_secure_config_file, const_is_python3
+    const_israwstring, const_secure_config_file, const_is_python3, \
+    const_mkstemp
 from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
 def is_root():
@@ -768,7 +768,7 @@ def atomic_write(filepath, content_str, encoding):
     """
     tmp_fd, tmp_path = None, None
     try:
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="atomic_write.")
+        tmp_fd, tmp_path = const_mkstemp(prefix="atomic_write.")
         with codecs_fdopen(tmp_fd, "w", encoding) as tmp_f:
             tmp_f.write(content_str)
             tmp_f.flush()
@@ -1160,7 +1160,7 @@ def unpack_gzip(gzipfilepath):
     @rtype: string
     """
     filepath = gzipfilepath[:-3] # remove .gz
-    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
+    fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filegz = gzip.GzipFile(gzipfilepath, "rb")
         chunk = filegz.read(8192)
@@ -1182,7 +1182,7 @@ def unpack_bzip2(bzip2filepath):
     @rtype: string
     """
     filepath = bzip2filepath[:-4] # remove .bz2
-    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
+    fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filebz2 = bz2.BZ2File(bzip2filepath, "rb")
         chunk = filebz2.read(16384)
@@ -1292,12 +1292,12 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     else:
         _delta_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
 
-    tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
-    tmp_fd_b, tmp_path_b = tempfile.mkstemp(dir=os.path.dirname(pkg_path_b))
-    tmp_fd, tmp_path = tempfile.mkstemp(
+    tmp_fd_a, tmp_path_a = const_mkstemp(dir=os.path.dirname(pkg_path_a))
+    tmp_fd_b, tmp_path_b = const_mkstemp(dir=os.path.dirname(pkg_path_b))
+    tmp_fd, tmp_path = const_mkstemp(
         prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd)
-    tmp_fd_spm, tmp_path_spm = tempfile.mkstemp(
+    tmp_fd_spm, tmp_path_spm = const_mkstemp(
         prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd_spm)
 
@@ -1378,18 +1378,18 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         _pkg_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
         used_compression = _DELTA_COMPRESSION_MAP[pkg_compression]
 
-    tmp_fd, tmp_delta_path = tempfile.mkstemp(dir=os.path.dirname(delta_path))
+    tmp_fd, tmp_delta_path = const_mkstemp(dir=os.path.dirname(delta_path))
     os.close(tmp_fd)
-    tmp_spm_fd, tmp_spm_path = tempfile.mkstemp(dir=os.path.dirname(delta_path))
+    tmp_spm_fd, tmp_spm_path = const_mkstemp(dir=os.path.dirname(delta_path))
     os.close(tmp_spm_fd)
 
-    tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
-    tmp_meta_fd, tmp_metadata_path = tempfile.mkstemp(
+    tmp_fd_a, tmp_path_a = const_mkstemp(dir=os.path.dirname(pkg_path_a))
+    tmp_meta_fd, tmp_metadata_path = const_mkstemp(
         dir=os.path.dirname(new_pkg_path_b))
     os.close(tmp_meta_fd)
 
     tmp_fd_null, tmp_path_null = \
-        tempfile.mkstemp(dir=os.path.dirname(delta_path))
+        const_mkstemp(dir=os.path.dirname(delta_path))
 
     new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
     new_pkg_path_b_tmp_compressed = new_pkg_path_b_tmp + ".compress"

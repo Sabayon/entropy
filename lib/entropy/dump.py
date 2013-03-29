@@ -26,9 +26,9 @@
 import sys
 import os
 import time
-import tempfile
 
-from entropy.const import etpConst, const_setup_file, const_is_python3
+from entropy.const import etpConst, const_setup_file, const_is_python3, \
+    const_mkstemp
 # Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
 COMPAT_PICKLE_PROTOCOL = 0
 
@@ -107,7 +107,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
                     const_setup_file(d_path, E_GID, 0o775)
 
             dmp_name = os.path.basename(dmpfile)
-            tmp_fd, tmp_dmpfile = tempfile.mkstemp(
+            tmp_fd, tmp_dmpfile = const_mkstemp(
                 dir=c_dump_dir, prefix=dmp_name)
             # WARNING: it has been observed that using
             # os.fdopen() below in multi-threaded scenarios

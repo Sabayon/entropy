@@ -12,7 +12,6 @@
 import os
 import sys
 import errno
-import tempfile
 import pdb
 
 from entropy.i18n import _
@@ -20,7 +19,7 @@ from entropy.output import print_error, print_warning, bold, purple, \
     teal, blue, darkred, darkgreen, readtext, print_generic, TextInterface, \
     is_stdout_a_tty, nocolor
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    const_convert_to_unicode, const_debug_enabled
+    const_convert_to_unicode, const_debug_enabled, const_mkstemp
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, PermissionDenied, FileNotFound, SPMError
 
@@ -122,7 +121,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     error_fd, error_file = None, None
     try:
-        error_fd, error_file = tempfile.mkstemp(
+        error_fd, error_file = const_mkstemp(
             prefix="entropy.error.report.",
             suffix=".txt")
 

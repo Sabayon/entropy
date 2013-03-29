@@ -1039,6 +1039,35 @@ def const_mkdtemp(dir=None, prefix=None, suffix=None):
         suffix = ""
     return tempfile.mkdtemp(dir=dir, prefix=prefix, suffix=suffix)
 
+def const_mkstemp(dir=None, prefix=None, suffix=None):
+    """
+    mkstemp() wrapper that creates a temporary file inside
+    etpConst['entropyunpackdir'] if dir is None.
+
+    @keyword dir: TMPDIR
+    @type dir: string
+    @keyword prefix: the mkdtemp prefix argument
+    @type prefix: string
+    @keyword suffix: the mkdtemp suffix argument
+    @type suffix: string
+    @rtype: tuple
+    @return: the temporary file fd and path tuple
+    """
+    if dir is None:
+        dir = etpConst['entropyunpackdir']
+        # try creating it only if it's our provided dir
+        try:
+            os.makedirs(dir)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                dir = os.getenv("TMPDIR", "/var/tmp")
+
+    if prefix is None:
+        prefix = ""
+    if suffix is None:
+        suffix = ""
+    return tempfile.mkstemp(dir=dir, prefix=prefix, suffix=suffix)
+
 def const_get_chmod(myfile):
     """
     This function get the current permissions of the specified

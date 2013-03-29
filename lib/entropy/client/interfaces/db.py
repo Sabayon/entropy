@@ -15,13 +15,12 @@ import os
 import shutil
 import subprocess
 import sys
-import tempfile
 import threading
 import time
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     const_set_nice_level, const_setup_file, const_convert_to_unicode, \
-    const_debug_enabled, const_mkdtemp
+    const_debug_enabled, const_mkdtemp, const_mkstemp
 from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
     bold, TextInterface
 from entropy.dump import dumpobj, loadobj
@@ -1935,7 +1934,7 @@ class AvailablePackagesRepositoryUpdater(object):
         tmp_fd, tmp_path = None, None
         rev = "-1"
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix = "AvailableEntropyRepository.remote_revision")
             fetcher = self._entropy._url_fetcher(
                 url, tmp_path, resume = False)

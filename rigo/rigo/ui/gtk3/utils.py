@@ -23,9 +23,10 @@ this program; if not, write to the Free Software Foundation, Inc.,
 import os
 import logging
 import shutil
-import tempfile
 
 from gi.repository import Gtk, GdkPixbuf, GObject
+
+from entropy.const import const_mkstemp
 
 from rigo.paths import ICON_PATH
 
@@ -91,7 +92,7 @@ def get_sc_icon_theme(datadir):
 
 def resize_image(max_width, image_path, final_image_path):
     dirname = os.path.dirname(final_image_path)
-    tmp_fd, new_image_path = tempfile.mkstemp(
+    tmp_fd, new_image_path = const_mkstemp(
         dir=dirname, prefix="resize_image")
     os.close(tmp_fd)
 
@@ -117,7 +118,7 @@ def resize_image(max_width, image_path, final_image_path):
 
 def resize_image_height(max_height, image_path, final_image_path):
     dirname = os.path.dirname(final_image_path)
-    tmp_fd, new_image_path = tempfile.mkstemp(
+    tmp_fd, new_image_path = const_mkstemp(
         dir=dirname, prefix="resize_image")
     os.close(tmp_fd)
 

@@ -15,10 +15,9 @@ import os
 import shlex
 import subprocess
 import sys
-import tempfile
 
 from entropy.const import const_convert_to_unicode, etpConst, \
-    const_debug_write
+    const_debug_write, const_mkstemp
 from entropy.i18n import _, ngettext
 from entropy.output import darkgreen, blue, purple, teal, brown, bold, \
     darkred, readtext, is_interactive
@@ -748,7 +747,7 @@ class SoloManage(SoloCommand):
         def _get_license_text(license_name, repository_id):
             repo = entropy_client.open_repository(repository_id)
             text = repo.retrieveLicenseText(license_name)
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = const_mkstemp(prefix="LICENSES.")
             # text is binary string, do not use codecs.open()
             with os.fdopen(tmp_fd, "wb") as tmp_f:
                 tmp_f.write(text)

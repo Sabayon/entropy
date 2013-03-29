@@ -20,7 +20,6 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 import os
 import subprocess
-import tempfile
 import time
 from threading import Timer, Semaphore, Lock
 
@@ -33,7 +32,7 @@ from rigo.models.application import Application
 from rigo.enums import AppActions, LocalActivityStates, RigoViewStates
 
 from entropy.const import etpConst, const_convert_to_unicode, \
-    const_debug_write
+    const_debug_write, const_mkstemp
 from entropy.i18n import _, ngettext
 from entropy.services.client import WebService
 from entropy.misc import ParallelTask, TimeScheduled
@@ -571,7 +570,7 @@ class LicensesNotificationBox(NotificationBox):
                 self._entropy.rwsem().reader_release()
 
             if license_text is not None:
-                tmp_fd, tmp_path = tempfile.mkstemp(suffix=".txt")
+                tmp_fd, tmp_path = const_mkstemp(suffix=".txt")
                 try:
                     license_text = const_convert_to_unicode(
                         license_text, enctype=etpConst['conf_encoding'])

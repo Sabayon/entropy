@@ -12,11 +12,10 @@
 import os
 import sys
 import argparse
-import tempfile
 import shutil
 
 from entropy.const import etpConst, const_setup_directory, \
-    const_convert_to_unicode, const_convert_to_rawstring
+    const_convert_to_unicode, const_convert_to_rawstring, const_mkstemp
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, purple, darkred, blue
 
@@ -351,7 +350,7 @@ Execute advanced tasks on Entropy packages and the running system.
                 shutil.move(package_path, final_path)
             package_path = final_path
 
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="equo.smart.inflate.",
                 dir=savedir)
             os.close(tmp_fd)

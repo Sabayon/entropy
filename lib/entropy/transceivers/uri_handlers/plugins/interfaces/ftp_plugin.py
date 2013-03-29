@@ -12,9 +12,8 @@
 import os
 import time
 import socket
-import tempfile
 
-from entropy.const import const_debug_write
+from entropy.const import const_debug_write, const_mkstemp
 from entropy.tools import print_traceback, get_file_size, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl
 from entropy.output import blue, brown, darkgreen, red
@@ -495,7 +494,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         # now we can create the lock file reliably
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.txc.ftp.lock")
+            tmp_fd, tmp_path = const_mkstemp(prefix="entropy.txc.ftp.lock")
             # check if remote_ptr is already there
             if self._is_path_available(remote_ptr):
                 return False

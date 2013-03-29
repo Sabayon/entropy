@@ -20,14 +20,13 @@
 import errno
 import os
 import shutil
-import tempfile
 import time
 import bz2
 import codecs
 import threading
 
 from entropy.const import etpConst, const_setup_file, const_mkdtemp, \
-    const_convert_to_unicode
+    const_mkstemp, const_convert_to_unicode
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
@@ -1020,7 +1019,7 @@ Name:    %s
                     self._repository_id)
             enc = etpConst['conf_encoding']
 
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 dir=os.path.dirname(changelog_path))
 
             with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:

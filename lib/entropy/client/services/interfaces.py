@@ -26,10 +26,9 @@ if const_is_python3():
     from io import StringIO
 else:
     from cStringIO import StringIO
-import tempfile
 
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
-    const_convert_to_rawstring, const_convert_to_unicode
+    const_convert_to_rawstring, const_convert_to_unicode, const_mkstemp
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
 from entropy.fetchers import UrlFetcher
@@ -1380,7 +1379,7 @@ class ClientWebService(WebService):
         local_document_dir = os.path.dirname(local_document)
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 dir=local_document_dir, prefix="get_document_url")
 
             fetcher = self._entropy._url_fetcher(

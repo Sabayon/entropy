@@ -19,7 +19,6 @@ import shutil
 import stat
 import subprocess
 import sys
-import tempfile
 import time
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
@@ -27,7 +26,8 @@ from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
-    const_debug_enabled, const_convert_to_rawstring, const_mkdtemp
+    const_debug_enabled, const_convert_to_rawstring, const_mkdtemp, \
+    const_mkstemp
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -1445,7 +1445,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                     return True
             return False
 
-        tmp_fd, tmp_f = tempfile.mkstemp(prefix = 'entropy.server')
+        tmp_fd, tmp_f = const_mkstemp(prefix = 'entropy.server')
         dbc = None
         try:
             found_edb = entropy.tools.dump_entropy_metadata(package_path, tmp_f)
@@ -3158,7 +3158,7 @@ class Server(Client):
         orig_fd = None
         tmp_repo_orig_path = None
         try:
-            orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
+            orig_fd, tmp_repo_orig_path = const_mkstemp(
                 prefix="entropy.server._inject")
 
             empty_repo = GenericRepository(
@@ -3186,7 +3186,7 @@ class Server(Client):
                 tmp_repo_file = None
                 tmp_fd = None
                 try:
-                    tmp_fd, tmp_repo_file = tempfile.mkstemp(
+                    tmp_fd, tmp_repo_file = const_mkstemp(
                         prefix="entropy.server._inject_for")
                     with os.fdopen(tmp_fd, "wb") as tmp_f:
                         with open(tmp_repo_orig_path, "rb") as empty_f:
@@ -4871,7 +4871,7 @@ class Server(Client):
             if not found:
                 new_content.append("default-repository = %s" % (repoid,))
 
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = const_mkstemp(prefix="_save_default_repository")
             with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as f_srv_t:
                 for line in new_content:
                     f_srv_t.write(line+"\n")
@@ -4935,7 +4935,7 @@ class Server(Client):
                 raise
             return None
 
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp(prefix="_toggle_repository")
         with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as f_tmp:
             status = False
             for line in content:
@@ -5116,7 +5116,7 @@ class Server(Client):
         @type output_interface: entropy.output.TextInterface based instance
         """
         if temp_file is None:
-            tmp_fd, temp_file = tempfile.mkstemp(prefix = 'entropy.server')
+            tmp_fd, temp_file = const_mkstemp(prefix = 'entropy.server')
             os.close(tmp_fd)
 
         conn = ServerPackagesRepository(
@@ -5770,7 +5770,7 @@ class Server(Client):
         while True:
 
             if tmp_path is None:
-                tmp_fd, tmp_path = tempfile.mkstemp(prefix = 'entropy.server',
+                tmp_fd, tmp_path = const_mkstemp(prefix = 'entropy.server',
                     suffix = ".conf")
                 with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as tmp_f:
                     tmp_f.write(header_txt)

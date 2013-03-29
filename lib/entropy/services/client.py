@@ -15,14 +15,13 @@ import sys
 import os
 import errno
 import json
-import tempfile
 import threading
 import hashlib
 
 import socket
 
 from entropy.const import const_is_python3, const_convert_to_rawstring, \
-    const_get_int
+    const_get_int, const_mkstemp
 
 if const_is_python3():
     import http.client as httplib
@@ -394,7 +393,7 @@ class WebService(object):
                 return repr(value)
             return value
 
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp(prefix="_encode_multipart_form")
         tmp_f = os.fdopen(tmp_fd, "ab+")
         tmp_f.truncate(0)
         crlf = '\r\n'
@@ -953,7 +952,7 @@ class WebService(object):
         expected_hash = md5.hexdigest()
         func_name = "data_send_available"
 
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp(prefix="data_send_available")
         try:
             with os.fdopen(tmp_fd, "ab+") as tmp_f:
                 tmp_f.write(test_str)

@@ -10,9 +10,9 @@
 
 """
 import os
-import tempfile
 
-from entropy.const import const_debug_write, const_setup_file, etpConst
+from entropy.const import const_debug_write, const_setup_file, \
+    const_mkstemp, etpConst
 
 class DebugList(list):
 
@@ -246,7 +246,7 @@ class GraphDrawer(object):
         Generate a PNG from current Graph content.
         """
         graph = self._generate_pydot()
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.graph",
+        tmp_fd, tmp_path = const_mkstemp(prefix="entropy.graph",
             suffix=".png")
         os.close(tmp_fd)
         graph.write_png(tmp_path)
@@ -258,7 +258,7 @@ class GraphDrawer(object):
         Generate RAW dot file that can be used to feed graphviz
         """
         graph = self._generate_pydot()
-        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.graph",
+        tmp_fd, tmp_path = const_mkstemp(prefix="entropy.graph",
             suffix=".dot")
         os.close(tmp_fd)
         graph.write_raw(tmp_path)

@@ -12,13 +12,12 @@ import os
 import shutil
 import warnings
 import hashlib
-import tempfile
 import codecs
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
 from entropy.const import etpConst, const_cmp, const_debug_write, \
-    const_is_python3
+    const_mkstemp, const_is_python3
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
     darkred
 from entropy.cache import EntropyCacher
@@ -1604,7 +1603,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             tmp_fd, tmp_path = None, None
             try:
                 with codecs.open(file_path, "r", encoding=enc) as source_f:
-                    tmp_fd, tmp_path = tempfile.mkstemp(
+                    tmp_fd, tmp_path = const_mkstemp(
                         prefix="entropy.db._runConfigurationFilesUpdate",
                         dir=os.path.dirname(file_path))
                     with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) \

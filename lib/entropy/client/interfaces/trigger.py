@@ -12,12 +12,11 @@
 import sys
 import os
 import subprocess
-import tempfile
 import codecs
 
 from entropy.client.interfaces.client import Client
 from entropy.const import etpConst, const_isunicode, etpSys, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_mkstemp
 from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
 
@@ -453,7 +452,7 @@ class Trigger:
 
         entropy_sh = "#!%s" % (etpConst['trigger_sh_interpreter'],)
         entropy_sh = const_convert_to_rawstring(entropy_sh)
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp(prefix="_do_trigger_call_ext_generic")
         with os.fdopen(tmp_fd, "ab+") as tr_f:
             tr_f.write(const_convert_to_rawstring(self._pkgdata['trigger']))
             tr_f.flush()

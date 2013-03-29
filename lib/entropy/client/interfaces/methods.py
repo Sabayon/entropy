@@ -18,7 +18,6 @@ import sys
 import shutil
 import time
 import subprocess
-import tempfile
 import threading
 import codecs
 import copy
@@ -28,7 +27,8 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_setup_perms, const_isstring, const_convert_to_unicode, \
-    const_isnumber, const_convert_to_rawstring, const_mkdtemp
+    const_isnumber, const_convert_to_rawstring, const_mkdtemp, \
+    const_mkstemp
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     RepositoryPluginError, SecurityError, EntropyPackageException
 from entropy.db.skel import EntropyRepositoryBase
@@ -904,7 +904,7 @@ class RepositoryMixin:
         if package_file_path.endswith(etpConst['packagesext_webinstall']):
             webinstall_package = True
             # unbzip2
-            tmp_fd, tmp_path = tempfile.mkstemp(dir = db_dir)
+            tmp_fd, tmp_path = const_mkstemp(dir = db_dir)
             try:
                 entropy.tools.uncompress_file(dbfile, tmp_path, bz2.BZ2File)
             finally:
@@ -1192,7 +1192,7 @@ class RepositoryMixin:
         @rtype: entropy.client.interfaces.db.GenericRepository
         """
         if temp_file is None:
-            tmp_fd, temp_file = tempfile.mkstemp(
+            tmp_fd, temp_file = const_mkstemp(
                 prefix="entropy.client.methods.open_temp_repository")
             os.close(tmp_fd)
         if dbname is not None:
@@ -2078,7 +2078,7 @@ class MiscMixin:
 
         for mirror in mirrors:
 
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="entropy.client.methods.reorder_mirrors")
             try:
 
@@ -2330,7 +2330,7 @@ class MiscMixin:
             tmp_path = initialized_repository_path
             already_initialized = True
         else:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="entropy.client.methods._inject_edb")
 
         try:
@@ -2781,7 +2781,7 @@ class MatchMixin:
         enc = etpConst['conf_encoding']
         for mask_file in new_mask_list:
 
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="entropy.client.methods._clear_match_gen")
 
             with codecs.open(mask_file, "r", encoding=enc) as mask_f:
