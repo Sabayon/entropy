@@ -1,3 +1,72 @@
+commit 9493163db16c5b138cf401c373c05868e86ed8ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 12:12:51 2013 +0000
+
+    Release Entropy 188
+
+commit 22fdc5026cea079470697752529858b0136a3a01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 12:10:24 2013 +0000
+
+    [entropy.const] const_mkdtemp: call makedirs() only if dir=etpConst['entropyunpackdir']
+
+commit d6295b3e00feb82ca67acced1320f5fec7e67426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 12:09:17 2013 +0000
+
+    [entropy*] create const_mkstemp() as tempfile.mkstemp() wrapper.
+    
+    using /tmp as TMPDIR is a no go, since on modern systems, /tmp is on
+    tmpfs with a very limited amount of fs size assigned. Use /var/tmp/entropy
+    (or /var/tmp as fallback) instead.
+
+commit ff560d42d5ed3d98c72d4a3147ac5456d211734d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 11:42:41 2013 +0000
+
+    [Rigo] paths: call mkdtemp with dir=/var/tmp
+
+commit 0a6a70ce08314b09f4664f02de9bcb39772537b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 11:42:26 2013 +0000
+
+    [entropy.core.settings.base] add missing _() import
+
+commit 4c58fc9fbe8b43ab08f9e2b0a7d260c0fa66948c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 11:41:05 2013 +0000
+
+    [entropy*] create const_mkdtemp() as tempfile.mkdtemp() wrapper.
+    
+    using /tmp as TMPDIR is a no go, since on modern systems, /tmp is on
+    tmpfs with a very limited amount of fs size assigned. Use /var/tmp/entropy
+    (or /var/tmp as fallback) instead.
+
+commit bc083adbe9be39af930c07ce37a6fa53573a3907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 08:10:44 2013 +0000
+
+    [entropy.spm] PortagePlugin: use /var/tmp/entropy as mkdtemp() dir in doebuild()
+    
+    This avoids problems for users using tmpfs /tmp
+
+commit d89f15d7603de7016b16d3ba3de487dea9d0f475
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 28 18:51:22 2013 +0000
+
+    [solo.commands.rescue] fix "equo rescue generate"
+    
+    The database file was not written on disk because Entropy forwarded
+    any API call to the in-RAM database. If we generate a generic repository
+    and then reload the entropy installed packages one everything will work
+    as expected.
+
+commit fb76210e41e8c5a92435c8eec20ed37fdd861d94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 25 08:56:20 2013 +0000
+
+    Tagging Entropy version 187
+
 commit c2d7ed7d72309ad11bdc8448f3f357cfb33d53f7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 25 08:56:19 2013 +0000
