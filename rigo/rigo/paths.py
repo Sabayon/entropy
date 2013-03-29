@@ -26,5 +26,7 @@ DATA_DIR = os.getenv("RIGO_DATA_DIR", "/usr/share/rigo")
 
 _home_dir = os.getenv("HOME")
 if _home_dir is None:
-    _home_dir = tempfile.mkdtemp(prefix="EntropyHomeDirectory")
+    _home_dir = tempfile.mkdtemp(
+        prefix="EntropyHomeDirectory",
+        dir="/var/tmp")
 CONF_DIR = os.path.join(_home_dir, ".entropy")
