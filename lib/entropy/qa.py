@@ -27,7 +27,7 @@ import codecs
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
-from entropy.const import etpConst, etpSys, const_debug_write, \
+from entropy.const import etpConst, etpSys, const_debug_write, const_mkdtemp, \
     const_debug_write, const_convert_to_rawstring, const_is_python3
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
     teal
@@ -682,7 +682,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         files_list_path = None
         if dump_results_to_file:
 
-            tmp_dir = tempfile.mkdtemp()
+            tmp_dir = const_mkdtemp(prefix="qa.libtest")
             syms_list_path = os.path.join(tmp_dir, "libtest_syms.txt")
             files_list_path = os.path.join(tmp_dir, "libtest_files.txt")
 

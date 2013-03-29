@@ -21,7 +21,7 @@ import time
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     const_set_nice_level, const_setup_file, const_convert_to_unicode, \
-    const_debug_enabled
+    const_debug_enabled, const_mkdtemp
 from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
     bold, TextInterface
 from entropy.dump import dumpobj, loadobj
@@ -1147,7 +1147,7 @@ class AvailablePackagesRepositoryUpdater(object):
             if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
                 continue
 
-            tmpdir = tempfile.mkdtemp()
+            tmpdir = const_mkdtemp(prefix="_standard_items_download")
             repo_dir = repo_data['dbpath']
             enc = etpConst['conf_encoding']
             try:
@@ -1344,7 +1344,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         if pk_avail:
 
-            tmp_dir = tempfile.mkdtemp()
+            tmp_dir = const_mkdtemp(prefix="_install_gpg_key")
             repo_tmp_sec = self._entropy.RepositorySecurity(
                 keystore_dir = tmp_dir)
             # try to install and get fingerprint

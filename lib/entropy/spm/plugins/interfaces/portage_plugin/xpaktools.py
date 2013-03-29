@@ -14,7 +14,7 @@ import tempfile
 import os
 import errno
 import shutil
-from entropy.const import const_is_python3
+from entropy.const import etpConst, const_is_python3, const_mkdtemp
 from entropy.output import TextInterface
 from entropy.spm.plugins.factory import get_default_instance
 from entropy.spm.plugins.interfaces.portage_plugin import xpak
@@ -81,7 +81,7 @@ def unpack_xpak(xpakfile, tmpdir = None):
     @rtype: 
     """
     if tmpdir is None:
-        tmpdir = tempfile.mkdtemp()
+        tmpdir = const_mkdtemp(prefix="unpack_xpak")
     elif not os.path.isdir(tmpdir):
         raise AttributeError("tmpdir %s does not exist" % (tmpdir,))
     try:

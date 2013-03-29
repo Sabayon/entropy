@@ -17,12 +17,11 @@ import errno
 import shutil
 import subprocess
 import datetime
-import tempfile
 import time
 import codecs
 
 from entropy.exceptions import EntropyException
-from entropy.const import etpConst, const_setup_perms, \
+from entropy.const import etpConst, const_setup_perms, const_mkdtemp, \
     const_debug_write, const_setup_file, const_convert_to_unicode, \
     const_convert_to_rawstring, const_is_python3, const_debug_enabled
 from entropy.i18n import _
@@ -303,7 +302,7 @@ class System:
 
         if pk_avail:
 
-            tmp_dir = tempfile.mkdtemp()
+            tmp_dir = const_mkdtemp()
             repo_tmp_sec = self._entropy.RepositorySecurity(
                 keystore_dir = tmp_dir)
             # try to install and get fingerprint
@@ -1881,7 +1880,7 @@ class Repository:
         """
         tmp_dir = None
         try:
-            tmp_dir = tempfile.mkdtemp(prefix=".entropy.security.get_fp")
+            tmp_dir = const_mkdtemp(prefix=".entropy.security.get_fp")
             args = self.__default_gpg_args(preserve_perms = False,
                 homedir = tmp_dir)
             args += ["--import", key_path]

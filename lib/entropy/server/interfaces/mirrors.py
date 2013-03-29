@@ -22,7 +22,7 @@ import codecs
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst, const_get_int, const_get_cpus
+from entropy.const import etpConst, const_get_int, const_get_cpus, const_mkdtemp
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS, ParallelTask
@@ -145,7 +145,7 @@ class Server(object):
                         # nothing to do, not a file
                         continue
 
-                    tmp_dir = tempfile.mkdtemp(prefix = "entropy.server")
+                    tmp_dir = const_mkdtemp(prefix = "entropy.server")
                     down_path = os.path.join(tmp_dir,
                         os.path.basename(filename))
                     tries = 4
@@ -2527,7 +2527,7 @@ class Server(object):
         mirrors = self._entropy.remote_repository_mirrors(repository_id)
         rss_path = self._entropy._get_local_repository_notice_board_file(
             repository_id)
-        mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
+        mytmpdir = const_mkdtemp(prefix = "entropy.server")
 
         self._entropy.output(
             "[%s] %s %s" % (

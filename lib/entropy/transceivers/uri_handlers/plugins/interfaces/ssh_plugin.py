@@ -18,7 +18,7 @@ import shutil
 import codecs
 
 from entropy.const import const_isnumber, const_debug_write, \
-    etpConst
+    const_mkdtemp, etpConst
 from entropy.output import brown, darkgreen, teal
 from entropy.i18n import _
 from entropy.transceivers.exceptions import TransceiverConnectionError
@@ -251,7 +251,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             except (shutil.Error, OSError, IOError,):
                 pass
 
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp(prefix="ssh_plugin.download_many")
 
         args = [EntropySshUriHandler._TXC_CMD]
         c_args, remote_str = self._setup_common_args(remote_paths.pop())

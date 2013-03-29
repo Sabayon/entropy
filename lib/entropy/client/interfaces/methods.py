@@ -28,7 +28,7 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_setup_perms, const_isstring, const_convert_to_unicode, \
-    const_isnumber, const_convert_to_rawstring
+    const_isnumber, const_convert_to_rawstring, const_mkdtemp
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     RepositoryPluginError, SecurityError, EntropyPackageException
 from entropy.db.skel import EntropyRepositoryBase
@@ -894,7 +894,7 @@ class RepositoryMixin:
             doesn't contain a valid package repository.
         """
         basefile = os.path.basename(package_file_path)
-        db_dir = tempfile.mkdtemp()
+        db_dir = const_mkdtemp(prefix="add_package_repository")
         dbfile = os.path.join(db_dir, etpConst['etpdatabasefile'])
         dump_rc = entropy.tools.dump_entropy_metadata(package_file_path, dbfile)
         if not dump_rc:

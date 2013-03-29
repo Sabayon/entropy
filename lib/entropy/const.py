@@ -41,6 +41,7 @@ import gzip
 import bz2
 import grp
 import pwd
+import tempfile
 import traceback
 import threading
 try:
@@ -1009,6 +1010,34 @@ def const_setup_directory(dirpath):
             raise
     const_setup_perms(dirpath, etpConst['entropygid'],
                       recursion=False)
+
+def const_mkdtemp(dir=None, prefix=None, suffix=None):
+    """
+    mkdtemp() wrapper that creates a temporary directory inside
+    etpConst['entropyunpackdir'] if dir is None.
+
+    @keyword dir: TMPDIR
+    @type dir: string
+    @keyword prefix: the mkdtemp prefix argument
+    @type prefix: string
+    @keyword suffix: the mkdtemp suffix argument
+    @type suffix: string
+    @rtype: string
+    @return: the temporary directory path
+    """
+    if dir is None:
+        dir = etpConst['entropyunpackdir']
+    try:
+        os.makedirs(dir)
+    except OSError as err:
+        if err.errno != errno.EEXIST:
+            dir = os.getenv("TMPDIR", "/var/tmp")
+
+    if prefix is None:
+        prefix = ""
+    if suffix is None:
+        suffix = ""
+    return tempfile.mkdtemp(dir=dir, prefix=prefix, suffix=suffix)
 
 def const_get_chmod(myfile):
     """

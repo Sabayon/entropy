@@ -21,7 +21,8 @@ import sys
 import tempfile
 
 from entropy.const import etpConst, const_debug_write, \
-    const_debug_enabled, const_pid_exists, const_setup_perms
+    const_debug_enabled, const_pid_exists, const_setup_perms, \
+    const_mkdtemp
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, ParallelTask, Lifo
 import time
@@ -491,9 +492,13 @@ class MtimePingus(object):
         try:
             if not os.path.isdir(MtimePingus.PINGUS_DIR):
                 os.makedirs(MtimePingus.PINGUS_DIR, 0o775)
-                const_setup_perms(MtimePingus.PINGUS_DIR, etpConst['entropygid'])
+                const_setup_perms(
+                    MtimePingus.PINGUS_DIR,
+                    etpConst['entropygid'])
+
         except (OSError, IOError,):
-            MtimePingus.PINGUS_DIR = tempfile.mkdtemp() # what else can I do?
+            MtimePingus.PINGUS_DIR = const_mkdtemp(
+                prefix="pingus_dir")
 
     def _hash_key(self, key):
         """

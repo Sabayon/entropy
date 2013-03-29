@@ -27,7 +27,7 @@ from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
-    const_debug_enabled, const_convert_to_rawstring
+    const_debug_enabled, const_convert_to_rawstring, const_mkdtemp
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -2377,7 +2377,7 @@ class Server(Client):
 
 
         all_fine = True
-        tmp_down_dir = tempfile.mkdtemp(prefix = "entropy.server")
+        tmp_down_dir = const_mkdtemp(prefix="entropy.server")
 
         download_queue = {}
         dbconn = self.open_server_repository(repository_id, read_only = False,
@@ -4591,7 +4591,7 @@ class Server(Client):
         """
         pkg_list_path = None
         if dump_results_to_file:
-            tmp_dir = tempfile.mkdtemp(prefix = "entropy.server")
+            tmp_dir = const_mkdtemp(prefix="entropy.server")
             pkg_list_path = os.path.join(tmp_dir, "libtest_broken.txt")
             dmp_data = [
                 (_("Broken and matched packages list"), pkg_list_path,),
