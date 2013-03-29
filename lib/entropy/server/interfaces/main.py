@@ -531,6 +531,75 @@ class RepositoryConfigParser(BaseConfigParser):
             base = repositories[0]
         return base
 
+    def write(self, path, repository_id, desc, repo, repo_only,
+              pkg_only, base, enabled = True):
+        """
+        Write the repository configuration to the given file.
+
+        @param path: configuration file to write
+        @type path: string
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param desc: repository description
+        @type desc: string
+        @param repo: list of "repo=" uris
+        @type repo: list
+        @param repo_only: list of "repo-only=" uris
+        @type repo_only: list
+        @param pkg_only: list of "pkg-only=" uris
+        @type pkg_only: list
+        @param base: True, if this is the base repository
+        @type base: bool
+        @keyword enabled: True, if the repository is enabled
+        @type enabled: bool
+        """
+        if enabled:
+            enabled_str = "true"
+        else:
+            enabled_str = "false"
+
+        if base:
+            base_str = "true"
+        else:
+            base_str = "false"
+
+        repos_str = ""
+        for r in repo:
+            repos_str += "repo = %s\n" % (r,)
+
+        repo_only_str = ""
+        for r in repo_only:
+            repo_only_str += "repo-only = %s\n" % (r,)
+
+        pkg_only_str = ""
+        for pkg in pkg_only:
+            pkg_only_str += "pkg-only = %s\n" % (pkg,)
+
+        meta = {
+            "repository_id": repository_id,
+            "desc": desc,
+            "repos": repos_str.rstrip(),
+            "repo_only": repo_only_str.rstrip(),
+            "pkg_only": pkg_only_str.rstrip(),
+            "enabled": enabled_str,
+            "base": base_str,
+        }
+
+        config = """\
+# Repository configuration file automatically generated
+# by Entropy Server on your behalf.
+
+[server=%(repository_id)s]
+desc = %(desc)s
+%(repos)s
+%(repo_only)s
+%(pkg_only)s
+enabled = %(enabled)s
+base = %(base)s
+""" % meta
+
+        entropy.tools.atomic_write(path, config, self._encoding)
+
     def repositories(self):
         """
         Return a list of valid parsed repositories.
