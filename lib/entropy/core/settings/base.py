@@ -30,6 +30,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
 from entropy.core import Singleton, EntropyPluginStore, BaseConfigParser
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
+from entropy.i18n import _
 
 import entropy.tools
 
