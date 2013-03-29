@@ -85,6 +85,11 @@ class RepositoryConfigParser(BaseConfigParser):
 
     _DEFAULT_ENABLED_VALUE = True
 
+    # Repository configuration file suggested prefix. If config files
+    # are prefixed with this string, they can be automatically handled
+    # by Entropy.
+    FILENAME_PREFIX = "entropy_"
+
     def __init__(self, encoding = None):
         super(RepositoryConfigParser, self).__init__(encoding = encoding)
 

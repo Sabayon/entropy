@@ -510,7 +510,7 @@ class RepositoryMixin:
         # as per specifications, enabled config files handled by
         # Entropy Client (see repositories.conf.d/README) start with
         # entropy_ prefix.
-        base_name = "entropy_" + repository_id
+        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
         enabled_conf_file = os.path.join(conf_d_dir, base_name)
         # while disabled config files start with _
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
@@ -605,7 +605,7 @@ class RepositoryMixin:
         # as per specifications, enabled config files handled by
         # Entropy Client (see repositories.conf.d/README) start with
         # entropy_ prefix.
-        base_name = "entropy_" + repository_id
+        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
         enabled_conf_file = os.path.join(conf_d_dir, base_name)
         # while disabled config files start with _
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
@@ -681,7 +681,7 @@ class RepositoryMixin:
         # as per specifications, enabled config files handled by
         # Entropy Client (see repositories.conf.d/README) start with
         # entropy_ prefix.
-        base_name = "entropy_" + repository_id
+        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
         enabled_conf_file = os.path.join(conf_d_dir, base_name)
         # while disabled config files start with _
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
