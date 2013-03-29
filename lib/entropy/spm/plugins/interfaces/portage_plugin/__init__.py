@@ -2066,7 +2066,9 @@ class PortagePlugin(SpmPlugin):
         portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
 
         if portage_tmpdir is None:
-            portage_tmpdir = tempfile.mkdtemp()
+            # /tmp might be mounted using tmpfs, noexec, etc
+            portage_tmpdir = tempfile.mkdtemp(
+                dir=etpConst['entropyunpackdir'])
             portage_tmpdir_created = True
         elif not os.path.isdir(portage_tmpdir):
             os.makedirs(portage_tmpdir, 0o744)
