@@ -84,7 +84,7 @@ Manage Entropy Repositories.
         add_parser = subparsers.add_parser("add",
             help=_("add a repository"))
         add_parser.add_argument("id", metavar="<repository>",
-                                help=_("repository identifier"))
+                                help=_("repository name"))
         add_parser.add_argument("--desc", metavar="<description>",
                                 required=True,
                                 help=_("repository description"))
