@@ -503,18 +503,6 @@ class RepositoryMixin:
         @rtype: bool
         @raise IOError: if there are problems parsing config files
         """
-        repo_d_conf = self._settings.get_setting_dirs_data(
-            )['repositories_conf_d']
-        conf_d_dir, conf_files_mtime, skipped_files, auto_upd = repo_d_conf
-        repo_confs = [conf_p for conf_p, mtime_p in conf_files_mtime]
-        # as per specifications, enabled config files handled by
-        # Entropy Client (see repositories.conf.d/README) start with
-        # entropy_ prefix.
-        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
-        enabled_conf_file = os.path.join(conf_d_dir, base_name)
-        # while disabled config files start with _
-        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
-
         # backward compatibility, handle repositories.conf
         repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
@@ -554,24 +542,13 @@ class RepositoryMixin:
             new_content.append(line)
         content = new_content
 
-        # enabling or disabling the repo is just a rename()
-        # away for the new style files in repositories.conf.d/
-        found_in_confd = False
+        parser = RepositoryConfigParser(encoding = enc)
         if enable:
-            src = disabled_conf_file
-            dest = enabled_conf_file
+            found_in_confd = parser.enable(repository_id)
         else:
-            src = enabled_conf_file
-            dest = disabled_conf_file
-        try:
-            os.rename(src, dest)
-            os.utime(dest, None)
+            found_in_confd = parser.disable(repository_id)
+        if found_in_confd:
             accomplished = True
-            found_in_confd = True
-        except OSError as err:
-            if err.errno != errno.ENOENT:
-                # do not handle EPERM ?
-                raise
 
         if enable and found_in_confd:
             # if the action is enable and the repository
@@ -598,18 +575,6 @@ class RepositoryMixin:
         @rtype: bool
         @raise IOError: if there are problems parsing config files
         """
-        repo_d_conf = self._settings.get_setting_dirs_data(
-            )['repositories_conf_d']
-        conf_d_dir, conf_files_mtime, skipped_files, auto_upd = repo_d_conf
-        repo_confs = [conf_p for conf_p, mtime_p in conf_files_mtime]
-        # as per specifications, enabled config files handled by
-        # Entropy Client (see repositories.conf.d/README) start with
-        # entropy_ prefix.
-        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
-        enabled_conf_file = os.path.join(conf_d_dir, base_name)
-        # while disabled config files start with _
-        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
-
         # backward compatibility, handle repositories.conf
         repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
@@ -642,19 +607,11 @@ class RepositoryMixin:
         content = new_content
 
         parser = RepositoryConfigParser(encoding = enc)
-        parser.write(
-            enabled_conf_file,
+        outcome = parser.add(
             repository_metadata['repoid'],
             repository_metadata['description'],
             repository_metadata['plain_databases'],
             repository_metadata['plain_packages'])
-
-        # if any disabled entry file is around, kill it with fire!
-        try:
-            os.remove(disabled_conf_file)
-        except OSError as err:
-            if err.errno != errno.ENOENT:
-                raise
 
         # commit back changes to config file in both cases.
         # Add: we migrate to the new config file automatically
@@ -662,7 +619,7 @@ class RepositoryMixin:
         entropy.tools.atomic_write(
             repo_conf, "\n".join(content) + "\n", enc)
 
-        return True
+        return outcome
 
     def _conf_remove_repository(self, repository_id):
         """
@@ -674,18 +631,6 @@ class RepositoryMixin:
         @rtype: bool
         @raise IOError: if there are problems parsing config files
         """
-        repo_d_conf = self._settings.get_setting_dirs_data(
-            )['repositories_conf_d']
-        conf_d_dir, conf_files_mtime, skipped_files, auto_upd = repo_d_conf
-        repo_confs = [conf_p for conf_p, mtime_p in conf_files_mtime]
-        # as per specifications, enabled config files handled by
-        # Entropy Client (see repositories.conf.d/README) start with
-        # entropy_ prefix.
-        base_name = RepositoryConfigParser.FILENAME_PREFIX + repository_id
-        enabled_conf_file = os.path.join(conf_d_dir, base_name)
-        # while disabled config files start with _
-        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
-
         # backward compatibility, handle repositories.conf
         repo_conf = self._settings.get_setting_files_data()['repositories']
         content = []
@@ -724,21 +669,10 @@ class RepositoryMixin:
             new_content.append(line)
         content = new_content
 
-        # remove mode
-        try:
-            os.remove(enabled_conf_file)
+        parser = RepositoryConfigParser(encoding = enc)
+        outcome = parser.remove(repository_id)
+        if outcome:
             accomplished = True
-        except OSError as err:
-            if err.errno != errno.ENOENT:
-                raise
-        # since we want to remove, also drop disabled
-        # config files
-        try:
-            os.remove(disabled_conf_file)
-            accomplished = True
-        except OSError as err:
-            if err.errno != errno.ENOENT:
-                raise
 
         # commit back changes to config file in both cases.
         # Add: we migrate to the new config file automatically
