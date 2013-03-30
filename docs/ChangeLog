@@ -1,3 +1,121 @@
+commit 086d440f41e2afeeff9e8956a82c752c5417215f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:56:19 2013 +0000
+
+    Release Entropy 189
+
+commit 24c3b944dfa4523b9ae61b7bba788ddf7e0a004f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:54:39 2013 +0000
+
+    [server] po: update translations
+
+commit 300235aa05694ba90b6000055f815b5e645540f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:53:43 2013 +0000
+
+    [server] update entropy-server.pot
+
+commit b4a5201b6281ad157b303489d239e89d1f4df4bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:52:54 2013 +0000
+
+    [eit] add "eit repo add" and "eit repo remove" commands (and move "eit repo" to "eit repo show")
+
+commit 08087de9f92117edd97ea04c092a302f8fdd0c5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:52:00 2013 +0000
+
+    [client] po: update translations
+
+commit 731d70e33c28567aeedea29060c65e75a5499e24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:50:11 2013 +0000
+
+    [client] update entropy.pot
+
+commit 3668a5169b6c9a078427d6911ef8ccafd1706d16
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:49:03 2013 +0000
+
+    [equo] equo repo add: uniform strings, s/repository identifier/repository name/
+
+commit 92c870e570228243a03a08b89d65446a63d9a75b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:48:35 2013 +0000
+
+    [entropy.server] RepositoryConfigParser: make possible to leave the base= parameter unset
+
+commit b35bf099946fa7c86dedcc6000160e11a72fdd87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:48:13 2013 +0000
+
+    [entropy.server.interfaces] export RepositoryConfigParser
+
+commit 25a0d68d651ac3f24a6f8a15f2dceb4855031c30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:36:01 2013 +0000
+
+    [equo] fix "equo repo add" arguments parsing, catch AttributeError during arguments validation
+
+commit cdeedfe483bd5fe540e819d27dd07fbe45d98d89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 11:51:28 2013 +0000
+
+    [eit] main: do not execute command if not allowed
+
+commit 510605a687886ccc5e2d6d57a51145c56b052261
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 08:42:48 2013 +0000
+
+    [entropy.server] RepositoryConfigParser: add repository add, remove methods
+
+commit dd4fc477749c9dd57fcdf591aa87b455bc13da97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 08:30:35 2013 +0000
+
+    [entropy.core.settings.base] add support for disabled repository ini files
+    
+    Together with the "enabled=" repository configuration option inside repository
+    configuration files, the same ones can be in a disabled state if they are prefixed
+    with "_<file prefix>" (where <file prefix> is entropy_ at this time).
+
+commit 2ec410de69f6485736ba0804259817a5c157b6dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 00:21:58 2013 +0000
+
+    [entropy.client] RepositoryConfigParser: add enable, disable, add, remove methods
+
+commit e80f4fc40a6152e58d036801c3ae178962f1b59f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 23:18:54 2013 +0000
+
+    [entropy.client] move the repository config file prefix string to RepositoryConfigParser
+
+commit a2b73f7741614cf870261992aad90615cc94de75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 22:51:46 2013 +0000
+
+    [entropy.server] RepositoryConfigParser: add write() method
+
+commit ab57f906bfa667f489ab28b6cd7444086311c34c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 17:41:38 2013 +0000
+
+    [equo] utils: if sha1 or sha256 hashes are not available, print N/A
+
+commit a5f447431c694256b77321e5f71119526a70338b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 17:40:56 2013 +0000
+
+    [eit] utils: if sha1 or sha256 hashes are not available, print N/A
+
+commit 5aaaba1b3eba733f69a998b486643a95cb106b40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 29 12:12:51 2013 +0000
+
+    Tagging Entropy version 188
+
 commit 9493163db16c5b138cf401c373c05868e86ed8ca
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 29 12:12:51 2013 +0000
