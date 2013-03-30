@@ -10,5 +10,6 @@
 
 """
 
-from entropy.server.interfaces.main import Server, ServerSystemSettingsPlugin
+from entropy.server.interfaces.main import Server, \
+    ServerSystemSettingsPlugin, RepositoryConfigParser
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
