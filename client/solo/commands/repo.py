@@ -83,15 +83,18 @@ Manage Entropy Repositories.
 
         add_parser = subparsers.add_parser("add",
             help=_("add a repository"))
-        add_parser.add_argument("--id", metavar="<repository>",
+        add_parser.add_argument("id", metavar="<repository>",
                                 help=_("repository identifier"))
         add_parser.add_argument("--desc", metavar="<description>",
+                                required=True,
                                 help=_("repository description"))
         add_parser.add_argument("--repo", nargs='+',
                                 metavar="<repo url>",
+                                required=True,
                                 help=_("repository database URL"))
         add_parser.add_argument("--pkg", nargs='+',
                                 metavar="<pkg url>",
+                                required=True,
                                 help=_("repository packages URL"))
         add_parser.add_argument("--cformat",
                                 default=etpConst['etpdatabasefileformat'],
@@ -367,9 +370,17 @@ Manage Entropy Repositories.
         toc.append(" ")
         print_table(entropy_client, toc)
 
-        repodata = settings._generate_repository_metadata(
-            repository_id, desc, pkgs, repos, current_product,
-            current_branch)
+        try:
+            repodata = settings._generate_repository_metadata(
+                repository_id, desc, pkgs, repos, current_product,
+                current_branch)
+        except AttributeError as err:
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(repository_id),
+                    err,),
+                level="error", importance=1)
+            return 1
 
         added = entropy_client.add_repository(repodata)
         if added:
