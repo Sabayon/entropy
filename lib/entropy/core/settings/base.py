@@ -2003,47 +2003,50 @@ class SystemSettings(Singleton, EntropyPluginStore):
             func(line, value)
 
         # .ini-like file support.
-        _conf_dir, setting_files, _skipped_files, _auto_upd = \
+        _conf_dir, setting_files, skipped_files, _auto_upd = \
             self.__setting_dirs["repositories_conf_d"]
         candidate_inis = [x for x, y in setting_files]
+        disabled_candidate_inis = [x for x, y in skipped_files]
 
-        ini_parser = RepositoryConfigParser(encoding = enc)
-        try:
-            ini_parser.read(candidate_inis)
-        except (IOError, OSError) as err:
-            sys.stderr.write("Cannot parse %s: %s\n" % (
-                    " ".join(candidate_inis),
-                    err))
-            ini_parser = None
+        for inis in (candidate_inis, disabled_candidate_inis):
+            ini_parser = RepositoryConfigParser(encoding = enc)
+            try:
+                ini_parser.read(inis)
+            except (IOError, OSError) as err:
+                sys.stderr.write("Cannot parse %s: %s\n" % (
+                        " ".join(inis),
+                        err))
+                ini_parser = None
 
-        if ini_parser:
-            ini_repositories = ini_parser.repositories()
-            for ini_repository in ini_repositories:
-                if ini_repository in repoids:
-                    # double syntax is not supported.
-                    continue
+            if ini_parser:
+                ini_conf_excluded = inis is disabled_candidate_inis
+                ini_repositories = ini_parser.repositories()
+                for ini_repository in ini_repositories:
+                    if ini_repository in repoids:
+                        # double syntax is not supported.
+                        continue
 
-                repoids.add(ini_repository)
-                ini_dbs = ini_parser.repo(ini_repository)
-                try:
-                    ini_pkgs = ini_parser.pkgs(ini_repository)
-                except KeyError:
-                    ini_pkgs = []
+                    repoids.add(ini_repository)
+                    ini_dbs = ini_parser.repo(ini_repository)
+                    try:
+                        ini_pkgs = ini_parser.pkgs(ini_repository)
+                    except KeyError:
+                        ini_pkgs = []
 
-                try:
-                    ini_desc = ini_parser.desc(ini_repository)
-                except KeyError:
-                    ini_desc = _("No description")
+                    try:
+                        ini_desc = ini_parser.desc(ini_repository)
+                    except KeyError:
+                        ini_desc = _("No description")
 
-                ini_excluded = not ini_parser.enabled(ini_repository)
-                ini_data = self._generate_repository_metadata(
-                    ini_repository, ini_desc, ini_pkgs, ini_dbs,
-                    data['product'], data['branch'])
-                if ini_excluded:
-                    data['excluded'][ini_repository] = ini_data
-                else:
-                    data['available'][ini_repository] = ini_data
-                    data['order'].append(ini_repository)
+                    ini_excluded = not ini_parser.enabled(ini_repository)
+                    ini_data = self._generate_repository_metadata(
+                        ini_repository, ini_desc, ini_pkgs, ini_dbs,
+                        data['product'], data['branch'])
+                    if ini_excluded or ini_conf_excluded:
+                        data['excluded'][ini_repository] = ini_data
+                    else:
+                        data['available'][ini_repository] = ini_data
+                        data['order'].append(ini_repository)
 
         try:
             tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))
