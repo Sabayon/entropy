@@ -75,7 +75,7 @@ This commands opens repository ChangeLog.bz2 using *bzless*.
                 importance=1, level="error")
             return 1
 
-        proc = subprocess.Popen(["/bin/bzless", changelog_path])
+        proc = subprocess.Popen(["bzless", changelog_path])
         return proc.wait()
 
 
