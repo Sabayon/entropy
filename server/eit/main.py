@@ -110,8 +110,8 @@ def main():
             allowed = False
 
     func, func_args = cmd_obj.parse()
-    exit_st = func(*func_args)
     if allowed:
+        exit_st = func(*func_args)
         raise SystemExit(exit_st)
     else:
         print_error(_("superuser access required"))
