@@ -6,17 +6,17 @@ eit-repo(1)
 
 NAME
 ----
-eit-repo - show current repository
+eit-repo - manage repositories
 
 
 SYNOPSIS
 --------
-eit repo [-h]
+eit repo [-h] {show,add,remove} ...
 
 
 INTRODUCTION
 ------------
-Show current repository, its branch and configured mirrors.
+Manage Entropy Server Repositories.
 
 
 
@@ -29,6 +29,17 @@ OPTIONAL ARGUMENTS
 ~~~~~~~~~~~~~~~~~~
 *--help*::
     show this help message and exit
+
+ACTION
+~~~~~~
+*show*::
+    show repositories and mirrors status
+
+*add*::
+    add a repository
+
+*remove*::
+    remove a repository
 
 
 

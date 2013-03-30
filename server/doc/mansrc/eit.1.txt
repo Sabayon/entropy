@@ -127,7 +127,7 @@ COMMANDS
     rebuild packages in repository
 
 *repo*::
-    show current repository
+    manage repositories
 
 *reset*::
     reset repository to remote status
