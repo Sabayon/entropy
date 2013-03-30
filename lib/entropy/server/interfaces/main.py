@@ -641,7 +641,8 @@ class RepositoryConfigParser(BaseConfigParser):
         @type repo_only: list
         @param pkg_only: list of "pkg-only=" uris
         @type pkg_only: list
-        @param base: True, if this is the base repository
+        @param base: True, if this is the base repository, False if not, None
+            if unset.
         @type base: bool
         @keyword enabled: True, if the repository is enabled
         @type enabled: bool
@@ -652,9 +653,11 @@ class RepositoryConfigParser(BaseConfigParser):
             enabled_str = "false"
 
         if base:
-            base_str = "true"
+            base_str = "base = true"
+        elif base is None:
+            base_str = "# base = false"
         else:
-            base_str = "false"
+            base_str = "base = false"
 
         repos_str = ""
         for r in repo:
@@ -663,10 +666,14 @@ class RepositoryConfigParser(BaseConfigParser):
         repo_only_str = ""
         for r in repo_only:
             repo_only_str += "repo-only = %s\n" % (r,)
+        if not repo_only_str:
+            repo_only_str = "# repo-only = "
 
         pkg_only_str = ""
         for pkg in pkg_only:
             pkg_only_str += "pkg-only = %s\n" % (pkg,)
+        if not pkg_only_str:
+            pkg_only_str = "# pkg-only = "
 
         meta = {
             "repository_id": repository_id,
@@ -683,12 +690,12 @@ class RepositoryConfigParser(BaseConfigParser):
 # by Entropy Server on your behalf.
 
 [server=%(repository_id)s]
+%(base)s
 desc = %(desc)s
 %(repos)s
 %(repo_only)s
 %(pkg_only)s
 enabled = %(enabled)s
-base = %(base)s
 """ % meta
 
         entropy.tools.atomic_write(path, config, self._encoding)
