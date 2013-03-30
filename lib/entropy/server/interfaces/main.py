@@ -484,6 +484,11 @@ class RepositoryConfigParser(BaseConfigParser):
     _DEFAULT_ENABLED_VALUE = True
     _DEFAULT_BASE_VALUE = False
 
+    # Repository configuration file suggested prefix. If config files
+    # are prefixed with this string, they can be automatically handled
+    # by Entropy.
+    FILENAME_PREFIX = "entropysrv_"
+
     def __init__(self, encoding = None):
         super(RepositoryConfigParser, self).__init__(encoding = encoding)
 
@@ -530,6 +535,94 @@ class RepositoryConfigParser(BaseConfigParser):
         if base is None and repositories:
             base = repositories[0]
         return base
+
+    def add(self, repository_id, desc, repo, repo_only, pkg_only,
+            base, enabled = True):
+        """
+        Add a repository to the repository configuration files directory.
+        Older repository configuration may get overwritten. This method
+        only writes repository configuration in the new .ini format and to
+        /etc/entropy/repositories.conf.d/<filename prefix><repository id>.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param desc: repository description
+        @type desc: string
+        @param repo: list of "repo=" uris
+        @type repo: list
+        @param repo_only: list of "repo-only=" uris
+        @type repo_only: list
+        @param pkg_only: list of "pkg-only=" uris
+        @type pkg_only: list
+        @param base: True, if this is the base repository
+        @type base: bool
+        @keyword enabled: True, if the repository is enabled
+        @type enabled: bool
+        """
+        settings = SystemSettings()
+        repo_d_conf = settings.get_setting_dirs_data()['repositories_conf_d']
+        conf_d_dir, _conf_files_mtime, _skipped_files, _auto_upd = repo_d_conf
+        # as per specifications, enabled config files handled by
+        # Entropy Server (see repositories.conf.d/README) start with
+        # entropysrv_ prefix.
+        base_name = self.FILENAME_PREFIX + repository_id
+        enabled_conf_file = os.path.join(conf_d_dir, base_name)
+        # while disabled config files start with _
+        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
+
+        self.write(enabled_conf_file, repository_id, desc, repo, repo_only,
+                   pkg_only, base, enabled = enabled)
+
+        # if any disabled entry file is around, kill it with fire!
+        try:
+            os.remove(disabled_conf_file)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+        return True
+
+    def remove(self, repository_id):
+        """
+        Remove a repository from the repositories configuration files directory.
+
+        This method only removes repository configuration at
+        /etc/entropy/repositories.conf.d/<filename prefix><repository id>.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True, if success
+        @rtype: bool
+        """
+        settings = SystemSettings()
+        repo_d_conf = settings.get_setting_dirs_data()['repositories_conf_d']
+        conf_d_dir, _conf_files_mtime, _skipped_files, _auto_upd = repo_d_conf
+        # as per specifications, enabled config files handled by
+        # Entropy Server (see repositories.conf.d/README) start with
+        # entropysrv_ prefix.
+        base_name = self.FILENAME_PREFIX + repository_id
+        enabled_conf_file = os.path.join(conf_d_dir, base_name)
+        # while disabled config files start with _
+        disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
+
+        accomplished = False
+        try:
+            os.remove(enabled_conf_file)
+            accomplished = True
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+        # since we want to remove, also drop disabled
+        # config files
+        try:
+            os.remove(disabled_conf_file)
+            accomplished = True
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+        return accomplished
 
     def write(self, path, repository_id, desc, repo, repo_only,
               pkg_only, base, enabled = True):
@@ -2077,7 +2170,6 @@ class Server(Client):
         Return the current repository marked as default.
         """
         return self._repository
-
 
     def QA(self):
         """

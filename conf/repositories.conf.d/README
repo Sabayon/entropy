@@ -1,5 +1,5 @@
 This directory should contain distribution-provided configuration files
-extending /etc/entropy/repositories.conf content (only for "repository ="
+extending /etc/entropy/repositories.conf content (only for repository
 statements).
 
 Files are processed in lexical order. Filenames: ".keep", "README" are
@@ -10,3 +10,7 @@ Files ending with ".example" are never considered.
 Files created by Entropy Client are prefixed with
 "entropy_". So, for example, for "sabayon-limbo" you will get:
 "entropy_sabayon-limbo".
+
+Files created by Entropy Server are prefixed with
+"entropysrv_". So, for example, for "sabayon-limbo" you will get:
+"entropysrv_sabayon-limbo".
