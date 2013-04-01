@@ -175,10 +175,6 @@ Match package names.
                 multi_repo = self._multirepo,
                 mask_filter = False)
 
-        # filter functions
-        is_injected = lambda (x, y): entropy_client.open_repository(
-            y).isInjected(x)
-
         _matches = []
         if match[1] != 1:
             if not self._multimatch:
@@ -191,6 +187,10 @@ Match package names.
 
         # apply filters
         if self._injected:
+
+            def is_injected(x, y):
+                return entropy_client.open_repository(y).isInjected(x)
+
             _matches = filter(is_injected, _matches)
 
         matches.extend(_matches)
