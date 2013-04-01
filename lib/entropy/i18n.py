@@ -132,7 +132,7 @@ RAW_ENCODING = "raw_unicode_escape"
 _FALLBACK_LOCALE = "en_US.UTF-8"
 _DETECTED_ENC = sys.getfilesystemencoding()
 
-_VALID_LOCALE = ENCODING == _DETECTED_ENC
+_VALID_LOCALE = ENCODING.lower() == _DETECTED_ENC.lower()
 
 # if locale is invalid, we call change_language and switch
 # to a reliable one that we assume it's always present: _FALLBACK_LOCALE.
