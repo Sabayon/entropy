@@ -3816,9 +3816,8 @@ class PortagePlugin(SpmPlugin):
             return cached
 
         try:
-            # settings=self._portage.settings
-            mytree = self._portage.portagetree(root=None,
-                settings=self._portage.settings)
+            settings = self._get_portage_config(os.path.sep, root)
+            mytree = self._portage.portagetree(settings=settings)
         except Exception as err:
             raise self.Error(err)
         PortagePlugin.CACHE['portagetree'][root] = mytree
