@@ -1219,7 +1219,7 @@ class RSS:
             rss_f.flush()
 
 
-class FastRSS:
+class FastRSS(object):
 
     """
 
@@ -1537,7 +1537,7 @@ class FastRSS:
             meta = self.__items.pop(0)
             item = doc.createElement("item")
 
-            for key in meta.keys():
+            for key in sorted(meta.keys()):
                 obj = doc.createElement(key)
                 obj.appendChild(doc.createTextNode(meta[key]))
                 item.appendChild(obj)
