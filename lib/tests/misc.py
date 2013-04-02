@@ -152,80 +152,37 @@ class MiscTest(unittest.TestCase):
         fast_rss.append("title2", "link2", "description2", "2")
         fast_rss.commit()
 
-        expected_outcome = """\
+        expected_outcome = """
 <?xml version="1.0" ?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-        <title>
-            title
-        </title>
-        <link>
-            http://url
-        </link>
-        <description>
-            description
-        </description>
-        <language>
-            en-EN
-        </language>
-        <copyright>
-            Sabayon Linux - (C) 2011
-        </copyright>
-        <managingEditor>
-            editor
-        </managingEditor>
-        <item>
-            <guid>
-                link1
-            </guid>
-            <link>
-                link1
-            </link>
-            <description>
-                description1
-            </description>
-            <pubDate>
-                1
-            </pubDate>
-            <title>
-                title1
-            </title>
-        </item>
-        <item>
-            <guid>
-                link
-            </guid>
-            <link>
-                link
-            </link>
-            <description>
-                description
-            </description>
-            <pubDate>
-                0
-            </pubDate>
-            <title>
-                title
-            </title>
-        </item>
-        <item>
-            <guid>
-                link2
-            </guid>
-            <link>
-                link2
-            </link>
-            <description>
-                description2
-            </description>
-            <pubDate>
-                2
-            </pubDate>
-            <title>
-                title2
-            </title>
-        </item>
-    </channel>
+  <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>title</title>
+    <link>http://url</link>
+    <description>description</description>
+    <language>en-EN</language>
+    <copyright>Sabayon Linux - (C) 2011</copyright>
+    <managingEditor>editor</managingEditor>
+    <item>
+      <description>description1</description>
+      <guid>link1</guid>
+      <link>link1</link>
+      <pubDate>1</pubDate>
+      <title>title1</title>
+    </item>
+    <item>
+      <description>description</description>
+      <guid>link</guid>
+      <link>link</link><pubDate>0</pubDate>
+      <title>title</title>
+    </item>
+    <item>
+      <description>description2</description>
+      <guid>link2</guid>
+      <link>link2</link>
+      <pubDate>2</pubDate>
+      <title>title2</title>
+    </item>
+  </channel>
 </rss>"""
         with open(tmp_path, "r") as tmp_f:
             self.assertEqual(
