@@ -158,10 +158,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         del db_data['original_repository']
         del db_data['extra_download']
         self.assertEqual(data, db_data)
-        pkg_deps = self.test_db.retrieveDependencies(idpackage, extended = True)
-        orig_pkg_deps = (('=dev-libs/apr-1*', 0),
+        pkg_deps = sorted(self.test_db.retrieveDependencies(
+            idpackage, extended = True))
+        orig_pkg_deps = sorted((('=dev-libs/apr-1*', 0),
             ('dev-libs/openssl', 0), ('dev-libs/libpcre', 0),
-            ('=dev-libs/apr-util-1*', 0))
+            ('=dev-libs/apr-util-1*', 0)))
         self.assertEqual(pkg_deps, orig_pkg_deps)
 
     def test_use_dependencies(self):
@@ -187,7 +188,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         del db_data['original_repository']
         del db_data['extra_download']
         self.assertEqual(data, db_data)
-        content = self.test_db.retrieveContent(idpackage, extended = True)
+        content = self.test_db.retrieveContent(
+            idpackage, extended = True, order_by="file")
         orig_content = (('/usr/sbin/ab2-ssl', 'sym'),
             ('/usr/sbin/logresolve2', 'sym'),
             ('/usr/sbin/log_server_status', 'obj'),
@@ -224,7 +226,9 @@ class EntropyRepositoryTest(unittest.TestCase):
             ('/usr/sbin/ab2', 'sym'),
             ('/usr/share/man/man8/rotatelogs.8.bz2', 'obj')
         )
-        self.assertEqual(content, orig_content)
+        self.assertEqual(
+            content,
+            tuple(sorted(orig_content, key = lambda x: x[0])))
 
     def test_db_creation(self):
         self.assertTrue(isinstance(self.test_db, EntropyRepository))
@@ -777,8 +781,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = self.test_db.addPackage(data)
-        out = self.test_db.listAllFiles()
-        self.assertEqual(out, (
+        out = sorted(self.test_db.listAllFiles())
+        self.assertEqual(out, sorted([
             '/lib64/libz.so', '/usr/share/doc/zlib-1.2.3-r1',
             '/usr/share/doc/zlib-1.2.3-r1/algorithm.txt.bz2',
             '/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2',
@@ -788,7 +792,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             '/usr/share', '/usr/share/doc/zlib-1.2.3-r1/README.bz2',
             '/usr/lib64/libz.so', '/usr/share/man', '/usr/include/zconf.h',
             '/lib64/libz.so.1.2.3', '/usr/include/zlib.h', '/usr/share/doc',
-            '/usr/share/man/man3', '/lib64/libz.so.1')
+            '/usr/share/man/man3', '/lib64/libz.so.1'])
         )
 
     def test_list_categories(self):
