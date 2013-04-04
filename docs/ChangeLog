@@ -1,3 +1,88 @@
+commit cda889539a4a0d79e5c153a85fa77058e39117c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 00:41:22 2013 +0100
+
+    Release Entropy 190
+
+commit d84738cb8b2673bd0c6e0e6fdc8ac378ffd5cc53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 00:37:32 2013 +0100
+
+    [entropy.client.dep] fix library based reverse deps calculation
+    
+    Before adding a reverse dependency to the list, through library
+    metadata in _generate_reverse_dependency_tree(), take into consideration
+    all the available library providers.
+
+commit 3f862615e18e53f1f0fbcb95f83b803f5f899cb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 4 14:13:42 2013 +0100
+
+    [entropy.client.interfaces.package] add auto-conflict support
+    
+    The generation of the list of conflicting packages must also take
+    auto-conflicts into consideration, as the dependency calculation
+    code does. (This solves systemd vs openrc-settingsd when the former
+    doesn't say anything about the latter).
+
+commit fe76a9a28c4a287c3ea956d98caba86301234471
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 4 14:13:02 2013 +0100
+
+    [entropy.client.interfaces.dep] move auto-conflict support to its own method
+    
+    entropy.client.interfaces.package must use it during the install process as well
+
+commit b6e028cf2440d1cdc8ffb4d495c184a0b28103cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 2 23:35:34 2013 +0100
+
+    [tests] misc: fix FastRSS tests
+
+commit 5881bab5a2b07dd80516abe1a8b9690430bee575
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 2 23:35:23 2013 +0100
+
+    [entropy.misc] FastRSS: fix tests
+
+commit 4183fe9b6c953fb9cde063c513625ff5e40e131e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 2 23:23:42 2013 +0100
+
+    [tests] db: fix some tests to accomodate Python 3.3
+
+commit 4996488f9dcb5b587b4ebc9fa0960bef2127f24e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 2 22:58:56 2013 +0100
+
+    [entropy.spm] PortagePlugin: fix deprecation warning in portage.portagetree() usage
+
+commit ad3a191b9d5060da45f745a1385e1af82966b3c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 1 12:40:20 2013 +0100
+
+    [entropy.i18n] execute a lowecase comparison for the encoding
+    
+    Python 3.3 is returning a lowercase string in sys.getfilesystemencoding()
+
+commit 3c926c6651941b55701a83613fbdbd4577587266
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 1 12:38:39 2013 +0100
+
+    [solo.commands.match] restore Python3 compatibility
+
+commit 8d0229d3c982aa26f50f75567b5879771ab2cc7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 23:20:53 2013 +0000
+
+    [eit.commands.log] fix bzless path, bzless moved from /bin to /usr/bin
+
+commit 6d40cb0f0301f361a2985416a7ca265f818189aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 30 12:56:19 2013 +0000
+
+    Tagging Entropy version 189
+
 commit 086d440f41e2afeeff9e8956a82c752c5417215f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Mar 30 12:56:19 2013 +0000
