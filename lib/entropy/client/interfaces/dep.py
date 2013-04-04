@@ -1221,36 +1221,9 @@ class CalculatorsMixin:
 
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
 
-        # XXX Experimental feature, make possible to override it XXX
-        if self.DISABLE_AUTOCONFLICT is None:
-            # check if there are unwritten conflicts? inside the installed
-            # packages repository
-            pkg_key = entropy.dep.dep_getkey(repo_db.retrieveAtom(pkg_id))
-            potential_conflicts = self._installed_repository.searchConflict(
-                pkg_key)
-
-            for dep_package_id, conflict_str in potential_conflicts:
-                confl_pkg_ids, confl_pkg_rc = repo_db.atomMatch(
-                    conflict_str, multiMatch = True)
-
-                # is this really me? ignore the rc, just go straight to ids
-                if pkg_id not in confl_pkg_ids:
-                    continue
-
-                # yes, this is really me!
-                dep_key_slot = self._installed_repository.retrieveKeySlot(
-                    dep_package_id)
-                if dep_key_slot is not None:
-                    dep_key, dep_slot = dep_key_slot
-                    dep_confl_str = "!%s%s%s" % (dep_key,
-                        etpConst['entropyslotprefix'], dep_slot)
-                    my_conflicts.add(dep_confl_str)
-                    if const_debug_enabled():
-                        const_debug_write(__name__,
-                        "__generate_dependency_tree_analyze_deplist "
-                        "adding auto-conflict => %s, conflict_str was: %s" % (
-                            dep_confl_str, conflict_str,))
-                    break
+        auto_conflicts = self._generate_dependency_inverse_conflicts(
+            pkg_match)
+        my_conflicts |= auto_conflicts
 
         # check conflicts
         if my_conflicts:
@@ -1331,6 +1304,64 @@ class CalculatorsMixin:
                 stack.push((match_pkg_id, match_repo_id))
 
         return deps, post_deps_matches
+
+    def _generate_dependency_inverse_conflicts(self, package_match,
+                                               just_id = False):
+        """
+        Given a package match, generate a list of conflicts by looking
+        at the installed packages repository and its "!<dep>" dependency
+        strings. This is useful because sometimes, packages miss conflict
+        information on both sides. A hates B, but B doesn't say anything about
+        A, A is the installed package.
+
+        @param package_match: an Entropy package match
+        @type package_match: tuple
+        @keyword just_id: if True, return installed package ids instead of
+          conflict dependency strings
+        @type just_id: bool
+        @return: a list (set) of conflicts
+        @rtype: set
+        """
+        conflicts = set()
+        # XXX Experimental feature, make possible to override it XXX
+        if self.DISABLE_AUTOCONFLICT is not None:
+            return conflicts
+
+        pkg_id, repository_id = package_match
+        repo_db = self.open_repository(repository_id)
+
+        pkg_key = entropy.dep.dep_getkey(repo_db.retrieveAtom(pkg_id))
+        potential_conflicts = self._installed_repository.searchConflict(
+            pkg_key)
+
+        for dep_package_id, conflict_str in potential_conflicts:
+            confl_pkg_ids, confl_pkg_rc = repo_db.atomMatch(
+                conflict_str, multiMatch = True)
+
+            # is this really me? ignore the rc, just go straight to ids
+            if pkg_id not in confl_pkg_ids:
+                continue
+
+            if just_id:
+                conflicts.add(dep_package_id)
+                break
+            else:
+                # yes, this is really me!
+                dep_key_slot = self._installed_repository.retrieveKeySlot(
+                    dep_package_id)
+                if dep_key_slot is not None:
+                    dep_key, dep_slot = dep_key_slot
+                    dep_confl_str = "!%s%s%s" % (dep_key,
+                        etpConst['entropyslotprefix'], dep_slot)
+                    conflicts.add(dep_confl_str)
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
+                        "_generate_dependency_inverse_conflict "
+                        "adding auto-conflict => %s, conflict_str was: %s" % (
+                            dep_confl_str, conflict_str,))
+                    break
+
+        return conflicts
 
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
