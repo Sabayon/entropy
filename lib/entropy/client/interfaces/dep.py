@@ -2383,6 +2383,7 @@ class CalculatorsMixin:
         not_removable_deps = set()
         deep_dep_map = {}
         filter_multimatch_cache = {}
+        needed_providers_left = {}
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
@@ -2523,8 +2524,35 @@ class CalculatorsMixin:
             reverse_deps = set()
 
             for needed, path, elfclass in provided_libs:
-                reverse_deps |= set((x, repo_id) for x in \
-                    repo_db.searchNeeded(needed, elfclass = elfclass))
+                # let's see what package is actually resolving
+                # this library, if there are more than one, we
+                # can still be happy.
+                needed_key = (needed, elfclass)
+                needed_providers = needed_providers_left.get(needed_key)
+                if needed_providers is None:
+                    needed_providers = set(repo_db.resolveNeeded(
+                        needed, elfclass = elfclass))
+                    needed_providers_left[needed_key] = needed_providers
+
+                # remove myself
+                needed_providers.discard(pkg_id)
+                if needed_providers:
+                    # another package is providing the same library
+                    # so it's not a problem to skip this package.
+                    if const_debug_enabled():
+                        const_debug_write(
+                            __name__,
+                            "_generate_reverse_dependency_tree.get_revdeps_lib:"
+                            " skipping needed dependencies for (%s, %s, %s),"
+                            " still having: %s" % (
+                                needed, path, elfclass,
+                                [repo_db.retrieveAtom(x)
+                                 for x in needed_providers]))
+                    continue
+
+                for needed_package_id in repo_db.searchNeeded(
+                        needed, elfclass = elfclass):
+                    reverse_deps.add((needed_package_id, repo_id))
 
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
