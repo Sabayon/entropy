@@ -4721,6 +4721,10 @@ class Package:
                 if match_data != installed_match_data:
                     found_conflicts.add(my_m_id)
 
+        # auto conflicts support
+        found_conflicts |= self._entropy._generate_dependency_inverse_conflicts(
+            match, just_id=True)
+
         return found_conflicts
 
     def __setup_package_to_remove(self, package_key, slot):
