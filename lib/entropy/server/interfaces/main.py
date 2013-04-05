@@ -1677,6 +1677,9 @@ class Server(Client):
     # SystemSettings class variables
     SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
 
+    # Make possible to disable tree updates completely.
+    _inhibit_treeupdates = False
+
     def init_singleton(self, default_repository = None, save_repository = False,
             fake_default_repo = False, fake_default_repo_id = None,
             fake_default_repo_desc = None, handle_uninitialized = True,
@@ -5454,10 +5457,19 @@ class Server(Client):
             # sometimes, when filling a new server db
             # we need to avoid tree updates
             if valid:
-                if do_treeupdates and not conn.readonly():
+                if self._inhibit_treeupdates:
+                    # treeupdates are disabled
+                    pass
+                elif not do_treeupdates:
+                    # requested not to run treeupdates
+                    pass
+                elif conn.readonly():
+                    # repository is readonly, no shit
                     # readonly() always returns the effective
                     # write access to repository (despire what is
                     # really set during instantiation)
+                    pass
+                else:
                     self._repository_packages_spm_sync(repository_id, conn,
                         branch = use_branch)
             elif warnings and not is_new:
