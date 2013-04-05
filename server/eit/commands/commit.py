@@ -37,6 +37,8 @@ class EitCommit(EitCommand):
         self._ask = True
         # interactively ask for packages to be staged, etc
         self._interactive = False
+        # execute package name and slot updates
+        self._conservative = False
         # list of package dependencies to re-package, if any
         self._repackage = []
         # execute actions only for given atoms, if any
@@ -52,6 +54,10 @@ class EitCommit(EitCommand):
 
         parser.add_argument("repo", nargs='?', default=None,
                             metavar="<repo>", help=_("repository"))
+        parser.add_argument("--conservative", action="store_true",
+                            help=_("do not execute implicit package name "
+                                   "and slot updates"),
+                            default=self._conservative)
         parser.add_argument("--interactive", action="store_true",
                             default=False,
                             help=_("selectively pick changes"))
@@ -75,7 +81,7 @@ class EitCommit(EitCommand):
                 # already given a repo
                 outcome = []
                 break
-        outcome += ["--interactive", "--quick"]
+        outcome += ["--conservative", "--interactive", "--quick"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -121,6 +127,7 @@ If you would like to selectively add certain packages, please see
         self._interactive = nsargs.interactive
         if not self._interactive:
             self._ask = not nsargs.quick
+        self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
         return self._call_locked, [self._commit, nsargs.repo]
 

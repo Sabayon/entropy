@@ -48,6 +48,10 @@ Entropy package scope is given by the following tuple:
 
         parser.add_argument("packages", nargs='+', metavar="<package>",
                             help=_("package names"))
+        parser.add_argument("--conservative", action="store_true",
+                            help=_("do not execute implicit package name "
+                                   "and slot updates"),
+                            default=self._conservative)
         parser.add_argument("--to", metavar="<repository>",
                             help=_("add to given repository"),
                             default=None)
@@ -66,6 +70,7 @@ Entropy package scope is given by the following tuple:
 
         # setup atoms variable before spawning commit
         self._ask = not nsargs.quick
+        self._entropy_class()._inhibit_treeupdates = nsargs.conservative
         self._packages = nsargs.packages[:]
         return self._call_locked, [self._commit, nsargs.to]
 
