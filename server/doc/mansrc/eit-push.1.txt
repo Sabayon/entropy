@@ -11,7 +11,8 @@ eit-push - push repository packages and metadata
 
 SYNOPSIS
 --------
-eit push [-h] [--quick] [--all | --as <repo>] [--pretend] [<repo>]
+eit push [-h] [--conservative] [--quick] [--all | --as <repo>] [--pretend]
+         [<repo>]
 
 
 INTRODUCTION
@@ -35,6 +36,9 @@ OPTIONAL ARGUMENTS
 ~~~~~~~~~~~~~~~~~~
 *--help*::
     show this help message and exit
+
+*--conservative*::
+    do not execute implicit package name and slot updates
 
 *--quick*::
     no stupid questions
