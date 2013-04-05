@@ -918,6 +918,27 @@ class PortagePlugin(SpmPlugin):
         move = vartree.dbapi.move_ent
         slotmove = vartree.dbapi.move_slot_ent
 
+        def prepare_move(command):
+            cmd, old, new = command
+            try:
+                return [
+                    cmd,
+                    self._portage.dep.Atom(old),
+                    self._portage.dep.Atom(new)]
+            except self._portage.exception.InvalidAtom:
+                return None
+
+        def prepare_slotmove(command):
+            cmd, atom, old, new = command
+            try:
+                return [
+                    cmd,
+                    self._portage.dep.Atom(atom),
+                    old,
+                    new]
+            except self._portage.exception.InvalidAtom:
+                return None
+
         commands = []
         for action in actions:
             mytxt = "%s: %s: %s." % (
@@ -934,9 +955,15 @@ class PortagePlugin(SpmPlugin):
 
             command = action.split()
             if command[0] == "move":
+                command = prepare_move(command)
+                if command is None:
+                    continue
                 move(command)
                 commands.append(command)
             elif command[0] == "slotmove":
+                command = prepare_slotmove(command)
+                if command is None:
+                    continue
                 slotmove(command)
                 commands.append(command)
 
