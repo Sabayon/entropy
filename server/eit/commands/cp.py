@@ -35,6 +35,8 @@ class EitCp(EitCommand):
         self._deps = False
         self._packages = []
         self._copy = True
+        # execute package name and slot updates
+        self._conservative = False
 
     def _get_parser(self):
         """ Overridden from EitCp """
@@ -51,6 +53,10 @@ class EitCp(EitCommand):
         parser.add_argument("dest", nargs=1,
                             metavar="<dest>",
                             help=_("destination repository"))
+        parser.add_argument("--conservative", action="store_true",
+                            help=_("do not execute implicit package name "
+                                   "and slot updates"),
+                            default=self._conservative)
         parser.add_argument("--deps", action="store_true",
                             default=False,
                             help=_("include dependencies"))
@@ -75,7 +81,7 @@ class EitCp(EitCommand):
                     # already given a repo
                     outcome = []
                     break
-        outcome += ["--deps"]
+        outcome += ["--deps", "--conservative"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -118,6 +124,8 @@ Copy packages from source repository to destination repository.
         self._dest = nsargs.dest[0]
         self._deps = nsargs.deps
         self._packages += nsargs.package
+        self._entropy_class()._inhibit_treeupdates = nsargs.conservative
+
         return self._call_locked, [self._move_copy, self._source]
 
     def _move_copy(self, entropy_server):

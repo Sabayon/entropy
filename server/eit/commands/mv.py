@@ -40,6 +40,10 @@ class EitMv(EitCp):
                             help=_("source repository"))
         parser.add_argument("dest", metavar="<dest>",
                             help=_("destination repository"))
+        parser.add_argument("--conservative", action="store_true",
+                            help=_("do not execute implicit package name "
+                                   "and slot updates"),
+                            default=self._conservative)
         parser.add_argument("--deps", action="store_true",
                             default=False,
                             help=_("include dependencies"))
@@ -75,6 +79,8 @@ then is removed from source.
         self._deps = nsargs.deps
         self._packages += nsargs.packages
         self._copy = False
+        self._entropy_class()._inhibit_treeupdates = nsargs.conservative
+
         return self._call_locked, [self._move_copy, self._source]
 
 
