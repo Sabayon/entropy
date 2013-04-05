@@ -1,3 +1,45 @@
+commit 032bb9a96d2cb8880ac0dcc1bf3d1b885619decd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:38:43 2013 +0100
+
+    Release Entropy 192
+
+commit fa634ad2e177da4ec8fae99c25133d3a6cb49cdc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:37:45 2013 +0100
+
+    [eit.commands.{cp,mv}] add --conservative flag that disables implicit tree updates
+
+commit 35252b91e6289c3c70be636e2f49216b29277636
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:34:53 2013 +0100
+
+    [eit.commands.{add,commit}] add --conservative flag that disables implicit tree updates
+
+commit 763ca45a54c84e21f59280737b3f1514b14e67f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:32:33 2013 +0100
+
+    [eit.commands.command] add _entropy_class() method
+
+commit 677b5c734f83fc272ab97a778fbc810fd1c9538f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:17:06 2013 +0100
+
+    [entropy.server] Server: add support for treeupdates inhibition
+
+commit a3e717f0315e95a0342cd3a16a2976a3f7b02add
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 13:01:04 2013 +0100
+
+    [eit.commands.pull] make sure to generate the database index when pulling
+
+commit 57a0cb88356027444e2528718e19043e0631936f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 08:58:21 2013 +0100
+
+    Tagging Entropy version 191
+
 commit e7e02ec050db5977e29f1ef5e84129f30847f0f4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 5 08:58:20 2013 +0100
