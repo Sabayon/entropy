@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-30 12:50+0000\n"
-"PO-Revision-Date: 2013-03-30 11:51+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2013-03-31 06:04+0000\n"
+"Last-Translator: Peruvian_Torch <peruvian.torch550@gmail.com>\n"
 "Language-Team: Swedish (http://www.transifex.com/projects/p/sabayon-entropy/language/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -102,11 +102,11 @@ msgstr "Lägger till post"
 
 #: ../../lib/entropy/core/settings/base.py:2039
 msgid "No description"
-msgstr ""
+msgstr "Ingen beskrivning"
 
 #: ../../lib/kswitch/__init__.py:119
 msgid "has been installed."
-msgstr ""
+msgstr "har installerats."
 
 #: ../../lib/kswitch/__init__.py:120
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3358
@@ -125,11 +125,11 @@ msgstr "Uppmärksamma"
 
 #: ../../lib/kswitch/__init__.py:121
 msgid "some external drivers cannot work across multiple kernels."
-msgstr ""
+msgstr "vissa externa drivare fungerar inte över flera kärnor"
 
 #: ../../lib/kswitch/__init__.py:122
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Var god och starta om systemet nu!"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:247
 msgid "Accessibility"
@@ -249,7 +249,7 @@ msgstr "Startar om Portage moduler"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:945
 msgid "updating metadata"
-msgstr ""
+msgstr "uppdaterar metadata"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1112
 msgid "error"
@@ -1065,15 +1065,15 @@ msgstr "pumpar in hämtad dump"
 
 #: ../../lib/entropy/client/interfaces/db.py:397
 msgid "Scanning URL"
-msgstr ""
+msgstr "Skannar URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:415
 msgid "Selected URL"
-msgstr ""
+msgstr "Vald URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:439
 msgid "repository is not available at the database URLs"
-msgstr ""
+msgstr "förrådet är inte tillgängligt i databasens URLs"
 
 #: ../../lib/entropy/client/interfaces/db.py:446
 msgid "Looking for an alternate route using package mirrors"
@@ -1947,11 +1947,11 @@ msgstr "Kontrollsumma"
 
 #: ../../client/solo/utils.py:427
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:429
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:435 ../../client/solo/commands/status.py:133
 msgid "GPG"
@@ -3617,19 +3617,19 @@ msgstr "lägg till ett förråd"
 
 #: ../../client/solo/commands/repo.py:90
 msgid "repository description"
-msgstr ""
+msgstr "förrådets beskrivning"
 
 #: ../../client/solo/commands/repo.py:94
 msgid "repository database URL"
-msgstr ""
+msgstr "förrådets databas URL"
 
 #: ../../client/solo/commands/repo.py:98
 msgid "repository packages URL"
-msgstr ""
+msgstr "förrådets paket URL"
 
 #: ../../client/solo/commands/repo.py:102
 msgid "repository compression format"
-msgstr ""
+msgstr "förrådets komprimerade format"
 
 #: ../../client/solo/commands/repo.py:107
 msgid "remove a repository"
@@ -4335,7 +4335,7 @@ msgstr "Installera eller uppdatera paket eller dess filer"
 msgid ""
 "remove unmaintained packages, if any. This will respect --ask, --pretend and"
 " other switches."
-msgstr ""
+msgstr "ta bort paket som inte längre underhålls om det finns. Detta kommer acceptera --ask, --pretend och andra argument."
 
 #: ../../client/solo/commands/upgrade.py:198
 msgid "Calculating System Updates"
@@ -4371,7 +4371,7 @@ msgstr "Även om dom oftast är harmlösa är det ändå rekommenderat (efter ri
 
 #: ../../client/solo/commands/upgrade.py:281
 msgid "To automatically remove them, please run equo with --purge."
-msgstr ""
+msgstr "För att automatiskt ta bort dessa, kör equo med --purge"
 
 #: ../../client/solo/commands/upgrade.py:292
 msgid "Selective"
