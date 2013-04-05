@@ -11,7 +11,8 @@ eit-mv - move packages from a repository to another
 
 SYNOPSIS
 --------
-eit mv [-h] [--deps] <source> <dest> [<package> [<package> ...]]
+eit mv [-h] [--conservative] [--deps]
+       <source> <dest> [<package> [<package> ...]]
 
 
 INTRODUCTION
@@ -42,6 +43,9 @@ OPTIONAL ARGUMENTS
 ~~~~~~~~~~~~~~~~~~
 *--help*::
     show this help message and exit
+
+*--conservative*::
+    do not execute implicit package name and slot updates
 
 *--deps*::
     include dependencies
