@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 msgid ""
 msgstr ""
@@ -10,12 +10,11 @@ msgstr ""
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
 "PO-Revision-Date: 2013-03-07 08:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/sk/)\n"
-"Language: sk\n"
+"Language-Team: Slovak (http://www.transifex.com/projects/p/sabayon-rigo/language/sk/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sk\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../RigoDaemon/app.py:113
@@ -290,8 +289,7 @@ msgstr ""
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:2380
@@ -801,8 +799,8 @@ msgstr "Zavrieť"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
 msgstr ""
 

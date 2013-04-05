@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 #   <the_neo_2@hotmail.com>, 2012.
 msgid ""
@@ -11,12 +11,11 @@ msgstr ""
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
 "PO-Revision-Date: 2013-03-07 08:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Spanish (Argentina) (http://www.transifex.com/projects/p/"
-"sabayon-rigo/language/es_AR/)\n"
-"Language: es_AR\n"
+"Language-Team: Spanish (Argentina) (http://www.transifex.com/projects/p/sabayon-rigo/language/es_AR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_AR\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:113
@@ -283,28 +282,21 @@ msgstr "Ok entonces"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"es parte del Sistema Base and <b>no puede</b> ser eliminado "
+msgstr "<b>%s</b>\nes parte del Sistema Base and <b>no puede</b> ser eliminado "
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"no puede ser instalado en este momento, ya que existen dependencias <b>no "
-"encontradas/enmascaradas</b> o dependecias con <b>conflictos</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nno puede ser instalado en este momento, ya que existen dependencias <b>no encontradas/enmascaradas</b> o dependecias con <b>conflictos</b>"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"Instalar <b>%s</b> causaría la eliminación de las siguientes aplicaciones: %s"
+msgstr "Instalar <b>%s</b> causaría la eliminación de las siguientes aplicaciones: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -317,8 +309,7 @@ msgstr "Ok"
 
 #: ../rigo/controllers/daemon.py:2841
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-"<b>Actualización del Sistema</b> ha comenzado, es hora de tomar unos mates"
+msgstr "<b>Actualización del Sistema</b> ha comenzado, es hora de tomar unos mates"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
@@ -377,9 +368,7 @@ msgstr "No se puede <b>editar</b> el archivo de configuración"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
-"No se puede <b>mostrar</b> las diferencias entre los archivos de "
-"configuración"
+msgstr "No se puede <b>mostrar</b> las diferencias entre los archivos de configuración"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
@@ -396,9 +385,7 @@ msgstr "Limpiar Sesión de Servicios Web Entropy"
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Descartar cualquier credencial de conexión registrada usada para enviar "
-"votos y comentarios. "
+msgstr "Descartar cualquier credencial de conexión registrada usada para enviar votos y comentarios. "
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -490,8 +477,7 @@ msgstr "_Enviar ahora"
 
 #: ../rigo/ui/gtk3/controllers/application.py:654
 msgid "Login failed. Your <b>comment</b> hasn't been added"
-msgstr ""
-"No ha sido posible iniciar sesión. Tu <b>comentario</b> no ha sido recibido"
+msgstr "No ha sido posible iniciar sesión. Tu <b>comentario</b> no ha sido recibido"
 
 #: ../rigo/ui/gtk3/controllers/application.py:677
 msgid "<i>No <b>comments</b> for this Application, yet!</i>"
@@ -593,9 +579,7 @@ msgstr "Mostrar Actualizaciones de Archivos de Configuración "
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Mostrar (si la hay) la lista pendiente de actualizaciones de archivos de "
-"configuración "
+msgstr "Mostrar (si la hay) la lista pendiente de actualizaciones de archivos de configuración "
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -701,8 +685,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
-"La lista de Aplicaiones disponibles es antigua, ¿<b>la actualizamos</b>?"
+msgstr "La lista de Aplicaiones disponibles es antigua, ¿<b>la actualizamos</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:259
 msgid "Repositories should be downloaded, <b>update now</b>?"
@@ -753,9 +736,7 @@ msgstr "<b>error</b> de conexión !"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"No se pudo conectar a los Servicios Web de Entropy, ¿estás conectado a "
-"<b>internet</b>?"
+msgstr "No se pudo conectar a los Servicios Web de Entropy, ¿estás conectado a <b>internet</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -774,18 +755,14 @@ msgstr "El que espera desespera"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Es necesario que <b>revises</b> y <b>aceptes</b> las siguientes licencias "
-"antes de continuar: %s"
+msgstr "Es necesario que <b>revises</b> y <b>aceptes</b> las siguientes licencias antes de continuar: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"La aplicación <b>%s</b> o una de sus dependencias está distribuida bajo las "
-"siguientes licencias: %s"
+msgstr "La aplicación <b>%s</b> o una de sus dependencias está distribuida bajo las siguientes licencias: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -816,14 +793,10 @@ msgstr "Cerrar"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"En tu <b>Sistema</b> se encontraron <b>Aplicaciones</b> que ya no son "
-"mantenidas por esta distribución. Algunas de ellas pueden requerir "
-"<b>revisión manual</b> antes de ser eliminadas. Haz click en las "
-"Aplicaciones para ver las opciones."
+msgstr "En tu <b>Sistema</b> se encontraron <b>Aplicaciones</b> que ya no son mantenidas por esta distribución. Algunas de ellas pueden requerir <b>revisión manual</b> antes de ser eliminadas. Haz click en las Aplicaciones para ver las opciones."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -838,9 +811,7 @@ msgstr "Su eliminación es segura"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
-"La Aplicación <b>%s</b> requiere la instalación de las siguientes "
-"Aplicaciones: %s"
+msgstr "La Aplicación <b>%s</b> requiere la instalación de las siguientes Aplicaciones: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:801
 msgid "Show full list"
@@ -850,9 +821,7 @@ msgstr "Mostrar lista completa"
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
-"La Aplicación <b>%s</b> requiere la eliminación de las siguientes "
-"Aplicaciones: %s"
+msgstr "La Aplicación <b>%s</b> requiere la eliminación de las siguientes Aplicaciones: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:908
 msgid "Confirm"
@@ -867,12 +836,8 @@ msgstr "Deshacer"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-"La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> "
-"segundo"
-msgstr[1] ""
-"La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> "
-"segundos"
+msgstr[0] "La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> segundo"
+msgstr[1] "La acción para la Aplicación <b>%s</b> comenzará en <big><b>%d</b></big> segundos"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1016
 #, python-format
@@ -885,9 +850,7 @@ msgstr[1] "Hay <b>%d</b> actualizaciones para archivos de configuración"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Es en <b>extremo</b> importante la actualización de estos archivos de "
-"configuración previo <b>reinicio</b> del Sistema."
+msgstr "Es en <b>extremo</b> importante la actualización de estos archivos de configuración previo <b>reinicio</b> del Sistema."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083

@@ -1,32 +1,32 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 #   <dicker_karl@web.de>, 2012.
+#  <foren@alpenbazi.de>, 2013.
 # Mario Fetka <mario.fetka@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: German (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/de/)\n"
-"Language: de\n"
+"PO-Revision-Date: 2013-03-12 18:41+0000\n"
+"Last-Translator: Hamulo <foren@alpenbazi.de>\n"
+"Language-Team: German (http://www.transifex.com/projects/p/sabayon-rigo/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:113
 msgid "Downloading"
-msgstr ""
+msgstr "Lader herunter"
 
 #: ../RigoDaemon/app.py:115
 msgid "Uploading"
-msgstr ""
+msgstr "Lade hoch"
 
 #: ../RigoDaemon/app.py:1223 ../rigo_app.py:766
 msgid "Not authorized"
@@ -141,7 +141,7 @@ msgstr "Viel Glück!"
 
 #: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr ""
+msgstr "Repository-Einstellungen <b> konnten nicht</b> geändert werden."
 
 #: ../rigo/controllers/daemon.py:629
 #, python-format
@@ -205,9 +205,7 @@ msgstr "<b>%s</b> Abhängigkeiten nicht entfernbar Fehler"
 
 #: ../rigo/controllers/daemon.py:772
 msgid "Disk full, cannot download nor unpack Applications"
-msgstr ""
-"Festplatte ist voll, nicht möglich Anwendungen herunterzuladen oder zu "
-"entpacken."
+msgstr "Festplatte ist voll, nicht möglich Anwendungen herunterzuladen oder zu entpacken."
 
 #: ../rigo/controllers/daemon.py:776
 msgid "An error occurred"
@@ -226,7 +224,7 @@ msgstr "Ok, Dankeschön"
 #: ../rigo/ui/gtk3/controllers/notifications.py:244
 #: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:521
 msgid "Show me"
-msgstr "Zeig mir mal"
+msgstr "Anzeigen"
 
 #: ../rigo/controllers/daemon.py:884
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
@@ -241,19 +239,19 @@ msgstr[1] "Es gibt <b>%i</b> weitere Updates"
 
 #: ../rigo/controllers/daemon.py:1120
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
-msgstr ""
+msgstr "Spiegel-Server erfolgreich <b>optimiert</>!"
 
 #: ../rigo/controllers/daemon.py:1124
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Spiegel-Server konnten <b>nicht optimiert</b> werden!"
 
 #: ../rigo/controllers/daemon.py:1534
 msgid "Mirrors will be optimized in <b>background</b>..."
-msgstr ""
+msgstr "Spiegel-Server werden <b>im Hintergrund</b> optimiert..."
 
 #: ../rigo/controllers/daemon.py:1538
 msgid "Mirrors optimization <b>not available</b> at this time"
-msgstr ""
+msgstr "Optimierung der Spiegel-Server zur Zeit <b>nicht möglich</b>"
 
 #: ../rigo/controllers/daemon.py:1958
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
@@ -286,29 +284,21 @@ msgstr "Ok dann"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"ist Teil des Grundsystems und <b>kann auf keinen Fall</b> entfernt werden"
+msgstr "<b>%s</b>\nist Teil des Grundsystems und <b>kann auf keinen Fall</b> entfernt werden"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"kann momentan nicht installiert werden auf Grund von <b>fehlenden/"
-"maskierten</b> Abhängigkeiten oder Abhängigkeits<b>konflikten</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nkann momentan nicht installiert werden auf Grund von <b>fehlenden/maskierten</b> Abhängigkeiten oder Abhängigkeits<b>konflikten</b>"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"Die Installation von <b>%s</b> würde zur Entfernung von folgenden "
-"Anwendungen führen: %s"
+msgstr "Die Installation von <b>%s</b> würde zur Entfernung von folgenden Anwendungen führen: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -334,7 +324,7 @@ msgstr "<b>Anwendungs Management</b> im Gange..."
 #: ../rigo/ui/gtk3/controllers/notifications.py:245
 #: ../rigo/ui/gtk3/controllers/notifications.py:263
 msgid "Activity"
-msgstr ""
+msgstr "Aktivität"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:246
 #: ../rigo/ui/gtk3/controllers/notifications.py:264
@@ -347,11 +337,11 @@ msgstr "<b>System Upgrade</b> im Gange..."
 
 #: ../rigo/ui/gtk3/controllers/work.py:74
 msgid "Black on White"
-msgstr ""
+msgstr "Schwarz auf Weiß"
 
 #: ../rigo/ui/gtk3/controllers/work.py:79
 msgid "White on Black"
-msgstr ""
+msgstr "Weiß auf Schwarz"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
@@ -397,9 +387,7 @@ msgstr "Säubere Entropy Webservice Sitzung"
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Verwerfe sämtliche registrierte Anmeldedaten, die für Wahlen und Kommentare "
-"benötigt werden."
+msgstr "Verwerfe sämtliche registrierte Anmeldedaten, die für Wahlen und Kommentare benötigt werden."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -593,25 +581,23 @@ msgstr "Zeige Konfigurationsdatei Updates"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Zeige (falls vorhanden) die Liste der ausstehenden Updates von "
-"Konfigurationsdateien."
+msgstr "Zeige (falls vorhanden) die Liste der ausstehenden Updates von Konfigurationsdateien."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
-msgstr ""
+msgstr "Zeige installierte Anwendungen"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:757
 msgid "Browse through the currently Installed Applications."
-msgstr ""
+msgstr "Durch bereits installierte Anwendungen blättern."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Optimize Download Speed"
-msgstr ""
+msgstr "Optimiere Downloadgeschwindigkeit"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
+msgstr "Überprüfe die Spiegel-Server um die Installation der Anwendungen zu beschleunigen."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -677,7 +663,7 @@ msgstr[1] "und <b>%d</b> Sicherheitsupdates"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:194
 msgid "What to do?"
-msgstr "Wass soll ich tun?"
+msgstr "Was soll ich tun?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:198
 msgid "Updates available, how about installing them?"
@@ -685,7 +671,7 @@ msgstr "Updates verfügbar, sollen sie installiert werden?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Update"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -697,7 +683,7 @@ msgstr "_Ignorieren"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Ignorieren"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -752,9 +738,7 @@ msgstr "Login <b>Fehler</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Nicht möglich Kontakt zu den Entropy Webdiensten herzustellen, hast du "
-"Verbindung mit dem <b>interweb</b>?"
+msgstr "Nicht möglich Kontakt zu den Entropy Webdiensten herzustellen, hast du Verbindung mit dem <b>interweb</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -773,18 +757,14 @@ msgstr "Ungeduld führt nicht zum Ziel"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Es wird von dir verlangt folgende Lizenzen zu <b>lesen</b> und zu "
-"<b>akzeptieren</b>, bevor du fortfährst: %s"
+msgstr "Es wird von dir verlangt folgende Lizenzen zu <b>lesen</b> und zu <b>akzeptieren</b>, bevor du fortfährst: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> Anwendung oder eine seiner Abhängigkeiten wird mit folgenden "
-"Lizenzen ausgeteilt: %s"
+msgstr "<b>%s</b> Anwendung oder eine seiner Abhängigkeiten wird mit folgenden Lizenzen ausgeteilt: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -815,14 +795,10 @@ msgstr "Schließen"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Mehrere <b>Anwendungen</b>, die von dieser Distribution nicht weiter "
-"gepflegt werden, wurden auf deinem <b>System</b> gefunden. Manche von ihnen "
-"erfordern <b>manuelle überprüfung</b> bevor sie entfernt werden. Klicke auf "
-"die Apps zum aufklappen."
+msgstr "Mehrere <b>Anwendungen</b>, die von dieser Distribution nicht weiter gepflegt werden, wurden auf deinem <b>System</b> gefunden. Manche von ihnen erfordern <b>manuelle überprüfung</b> bevor sie entfernt werden. Klicke auf die Apps zum aufklappen."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -837,8 +813,7 @@ msgstr "Sicher entfernbar"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
-"<b>%s</b> Anwendung benötigt die Installation folgender Anwendungen: %s"
+msgstr "<b>%s</b> Anwendung benötigt die Installation folgender Anwendungen: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:801
 msgid "Show full list"
@@ -877,9 +852,7 @@ msgstr[1] "Es gibt <b>%d</b> Updates für Konfigurationsdateien"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Es ist <b>unglaublich</b> wichtig, diese Konfigurationsdateien vor dem "
-"<b>Systemneustart</b> zu aktualisieren."
+msgstr "Es ist <b>unglaublich</b> wichtig, diese Konfigurationsdateien vor dem <b>Systemneustart</b> zu aktualisieren."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -907,27 +880,27 @@ msgstr "Hör auf mich zu nerven"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1132
 msgid "You are about to rename a Repository"
-msgstr ""
+msgstr "Du bist dabei ein Repository umzubenennen"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1136
 msgid "_Rename"
-msgstr ""
+msgstr "_Umbenennen"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1151
 msgid "Repository name"
-msgstr ""
+msgstr "Name des Repositories"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1183
 msgid "<b>Invalid</b> Repository name!"
-msgstr ""
+msgstr "<b>Ungültiger</> Repository-Name"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1193
 msgid "Repository rename <b>not allowed</b>!"
-msgstr ""
+msgstr "Umbennen des Repositories <b>nicht erlaubt</b>!"
 
 #: ../rigo/ui/gtk3/widgets/noticeboardtreeview.py:55
 msgid "Show"
-msgstr ""
+msgstr "Anzeigen"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:83
 msgid "Edit"
@@ -963,7 +936,7 @@ msgstr "Rigo arbeitet gerade, bist du sicher?"
 
 #: ../rigo_app.py:152
 msgid "Search"
-msgstr ""
+msgstr "Suche"
 
 #: ../rigo_app.py:155 ../rigo_app.py:877 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
@@ -971,27 +944,27 @@ msgstr "Rigo Anwendungs Browser"
 
 #: ../rigo_app.py:161
 msgid "Working Hard"
-msgstr ""
+msgstr "In Arbeit"
 
 #: ../rigo_app.py:164
 msgid "Wake Up"
-msgstr ""
+msgstr "Aufwachen"
 
 #: ../rigo_app.py:167
 msgid "Important Stuff"
-msgstr ""
+msgstr "Wichtige Meldungen"
 
 #: ../rigo_app.py:170
 msgid "Breaking Stuff"
-msgstr ""
+msgstr "Eilige Meldungen"
 
 #: ../rigo_app.py:173
 msgid "Repository Stuff"
-msgstr ""
+msgstr "Repository Meldungen"
 
 #: ../rigo_app.py:176
 msgid "Application Groups"
-msgstr ""
+msgstr "Anwendungsgruppe"
 
 #: ../rigo_app.py:454
 msgid "Activity Interruption"
@@ -1001,9 +974,7 @@ msgstr "Aktivitätsunterbrechung"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Sicher, dass die momentane Aktivität unterbrochen werden soll? Die "
-"Unterbrechung tritt so früh wie möglich ein, wahrscheinlich nicht sofort."
+msgstr "Sicher, dass die momentane Aktivität unterbrochen werden soll? Die Unterbrechung tritt so früh wie möglich ein, wahrscheinlich nicht sofort."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"
@@ -1019,7 +990,7 @@ msgstr "Anwendungs Verwaltungs Fehler"
 
 #: ../rigo_app.py:504
 msgid "please check the management log"
-msgstr ""
+msgstr "bitte das Verwaltungs-Log überprüfen"
 
 #: ../rigo_app.py:507
 msgid "System Upgrade Error"
@@ -1027,7 +998,7 @@ msgstr "Systemupgrade Fehler"
 
 #: ../rigo_app.py:508
 msgid "please check the upgrade log"
-msgstr ""
+msgstr "bitte das Upgrade-Log überprüfen"
 
 #: ../rigo_app.py:512
 msgid "Applications managed <b>successfully</b>!"
@@ -1039,7 +1010,7 @@ msgstr "System <b>erfolgreich</b> aktualisiert!"
 
 #: ../rigo_app.py:767
 msgid "You are not authorized to run Rigo"
-msgstr ""
+msgstr "Keine Berechtigung, Rigo auszuführen"
 
 #: ../rigo_app.py:775 ../rigo_app.py:786 ../rigo_app.py:804 ../rigo_app.py:859
 #: ../rigo_app.py:870 ../rigo_app.py:898
@@ -1052,7 +1023,7 @@ msgstr "RigoDaemon Dienst nicht verfügbar"
 
 #: ../rigo_app.py:788
 msgid "API mismatch, please update Rigo and RigoDaemon"
-msgstr ""
+msgstr "API Diskrepanz, bitte Rigo und RigoDaemon aktualisieren"
 
 #: ../rigo_app.py:805
 msgid "Another Application Manager is active"
@@ -1092,4 +1063,4 @@ msgstr "Woot, danke"
 
 #: ../data/ui/gtk3/rigo.ui.h:2
 msgid "_Write a <b>comment</b>"
-msgstr ""
+msgstr "_Schreibe einen <b>Kommentar</b>"

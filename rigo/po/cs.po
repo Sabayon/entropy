@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012-2013.
 msgid ""
@@ -9,14 +9,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/cs/)\n"
-"Language: cs\n"
+"PO-Revision-Date: 2013-04-04 06:23+0000\n"
+"Last-Translator: Tomáš Chvátal <tomas.chvatal@gmail.com>\n"
+"Language-Team: Czech (http://www.transifex.com/projects/p/sabayon-rigo/language/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cs\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
 #: ../RigoDaemon/app.py:113
@@ -285,20 +284,14 @@ msgstr "Dobrá"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"je částí základního systému a <b>nelze</b> odstranit"
+msgstr "<b>%s</b>\nje částí základního systému a <b>nelze</b> odstranit"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"nemůže být nainstalován, z důvodů <b>chybějících/skrytých</b> závislostí, "
-"nebo <b>konfliktu</b> závislostí"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nnemůže být nainstalován, z důvodů <b>chybějících/skrytých</b> závislostí, nebo <b>konfliktu</b> závislostí"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
@@ -318,8 +311,7 @@ msgstr "Ok"
 
 #: ../rigo/controllers/daemon.py:2841
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-"<b>Aktualizace systému</b> byla zahájena, a teď si běžte udělat nějakou kávu"
+msgstr "<b>Aktualizace systému</b> byla zahájena, a teď si běžte udělat nějakou kávu"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
@@ -591,9 +583,7 @@ msgstr "Zobrazit aktualizace konfiguračních souborů"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Zobrazit (pokud existuje) seznam nezpracovaných aktualizací konfiguračních "
-"souborů."
+msgstr "Zobrazit (pokud existuje) seznam nezpracovaných aktualizací konfiguračních souborů."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -686,7 +676,7 @@ msgstr "Jsou dostupné aktualizace, co je nainstalovat?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Aktualizovat"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -698,7 +688,7 @@ msgstr "_Ignorovat"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Opravdu, ignoruj."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -753,9 +743,7 @@ msgstr "<b>Chyba</b> přihlášení!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Nemohu se připojit k webovým službám Entropy, jste připojen k <b>internetu</"
-"b>?"
+msgstr "Nemohu se připojit k webovým službám Entropy, jste připojen k <b>internetu</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -774,18 +762,14 @@ msgstr "Sledovaný hrnec se nikdy neuvaří"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Než budete pokračovat, musíte <b>zkontrolovat</b> a <b>přijmout</b> "
-"následující licence: %s"
+msgstr "Než budete pokračovat, musíte <b>zkontrolovat</b> a <b>přijmout</b> následující licence: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"Aplikace <b>%s</b>, nebo jedna z jejích závislostí, je distribuována "
-"snásledujícími licencemi: %s"
+msgstr "Aplikace <b>%s</b>, nebo jedna z jejích závislostí, je distribuována snásledujícími licencemi: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -816,13 +800,10 @@ msgstr "Zavřít"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Několik <b>aplikací</b>, které již nejsou udržovány touto distribucí, bylo "
-"nalezeno na Vašem <b>systému</b>. Některé mohou potřebovat <b>manuální "
-"kontrolu</b> před odebráním. Klikněte na aplikace pro rozbalení."
+msgstr "Několik <b>aplikací</b>, které již nejsou udržovány touto distribucí, bylo nalezeno na Vašem <b>systému</b>. Některé mohou potřebovat <b>manuální kontrolu</b> před odebráním. Klikněte na aplikace pro rozbalení."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -878,9 +859,7 @@ msgstr[2] "Je dostupná aktualizace pro <b>%d</b> konfiguračních souborů"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Je <b>velmi</b> důležité aktualizovat tyto konfigurační soubory před "
-"<b>restartem</b> systému."
+msgstr "Je <b>velmi</b> důležité aktualizovat tyto konfigurační soubory před <b>restartem</b> systému."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -1003,9 +982,7 @@ msgstr "Přerušení činnosti"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Jste si jisti, že chcete přerušit probíhající činnost? Přerušení nastane co "
-"nejdříve, možná ne okamžitě."
+msgstr "Jste si jisti, že chcete přerušit probíhající činnost? Přerušení nastane co nejdříve, možná ne okamžitě."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"

@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 #   <rcalvoi@yahoo.com>, 2012.
 # Roger Calvó <rcalvoi@yahoo.com>, 2008, 2009, 2010, 2011.
@@ -12,12 +12,11 @@ msgstr ""
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
 "PO-Revision-Date: 2013-03-07 08:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Catalan (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/ca/)\n"
-"Language: ca\n"
+"Language-Team: Catalan (http://www.transifex.com/projects/p/sabayon-rigo/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:113
@@ -228,8 +227,7 @@ msgstr "Mostra'm"
 
 #: ../rigo/controllers/daemon.py:884
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
-msgstr ""
-"L'activitat d'<b>actualització del sistema</b> s'està <i>reiniciant</i>"
+msgstr "L'activitat d'<b>actualització del sistema</b> s'està <i>reiniciant</i>"
 
 #: ../rigo/controllers/daemon.py:885
 #, python-format
@@ -285,29 +283,21 @@ msgstr "Entesos, doncs"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"és part del sistema base i <b>no</b> es pot eliminar"
+msgstr "<b>%s</b>\nés part del sistema base i <b>no</b> es pot eliminar"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"no es pot instal·lar ara degut a dependències <b>no resoltes/emmascarades</"
-"b> o <b>en conflicte</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nno es pot instal·lar ara degut a dependències <b>no resoltes/emmascarades</b> o <b>en conflicte</b>"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"La instal·lació de <b>%s</b> provocarà l'eliminació de les aplicacions "
-"següents: %s"
+msgstr "La instal·lació de <b>%s</b> provocarà l'eliminació de les aplicacions següents: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -320,8 +310,7 @@ msgstr "D'acord"
 
 #: ../rigo/controllers/daemon.py:2841
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-"L'<b>actualització del sistema</b> ha començat, aneu a prendre-us un cafè"
+msgstr "L'<b>actualització del sistema</b> ha començat, aneu a prendre-us un cafè"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
@@ -380,8 +369,7 @@ msgstr "No es pot <b>editar</b> el fitxer de configuració"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
-"No es pot <b>mostrar</b> la diferència entre els fitxers de configuració"
+msgstr "No es pot <b>mostrar</b> la diferència entre els fitxers de configuració"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
@@ -592,9 +580,7 @@ msgstr "Mostra les actualitzacions dels fitxers de configuració"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Mostra la llista de fitxers de configuració pendents d'actualitzar (si n'hi "
-"ha)."
+msgstr "Mostra la llista de fitxers de configuració pendents d'actualitzar (si n'hi ha)."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -610,9 +596,7 @@ msgstr "Optimitza la velocitat de baixada"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Prova de referència de les rèpliques de baixada per fer més ràpida la "
-"instal·lació d'aplicacions."
+msgstr "Prova de referència de les rèpliques de baixada per fer més ràpida la instal·lació d'aplicacions."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -702,9 +686,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
-"La llista d'actualitzacions disponibles és antiga, <b>voleu actualitzar-la "
-"ara</b>?"
+msgstr "La llista d'actualitzacions disponibles és antiga, <b>voleu actualitzar-la ara</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:259
 msgid "Repositories should be downloaded, <b>update now</b>?"
@@ -755,9 +737,7 @@ msgstr "<b>Error</b> d'acreditació!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"No es pot connectar amb el Servei Web Entropy, esteu connectat a "
-"<b>interweb</b>?"
+msgstr "No es pot connectar amb el Servei Web Entropy, esteu connectat a <b>interweb</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -776,18 +756,14 @@ msgstr "Un pot al foc no bull mai"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Heu de <b>llegir</b> i <b>acceptar</b> les llicències següents abans de "
-"continuar: %s"
+msgstr "Heu de <b>llegir</b> i <b>acceptar</b> les llicències següents abans de continuar: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> aplicació o una de les seves dependències es distribueix amb les "
-"llicències següents: %s"
+msgstr "<b>%s</b> aplicació o una de les seves dependències es distribueix amb les llicències següents: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -818,14 +794,10 @@ msgstr "Tancar"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Algunes <b>aplicacions</b>, que ja no es mantenen en aquesta distribució, "
-"s'han trobat en el vostre <b>sistema</b>. Algunes podrien requerir una "
-"<b>revisió manual</b> abans de desinstal·lar-les. Feu clic a les aplicacions "
-"per expandir."
+msgstr "Algunes <b>aplicacions</b>, que ja no es mantenen en aquesta distribució, s'han trobat en el vostre <b>sistema</b>. Algunes podrien requerir una <b>revisió manual</b> abans de desinstal·lar-les. Feu clic a les aplicacions per expandir."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -840,9 +812,7 @@ msgstr "Segures per eliminar"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
-"L'aplicació <b>%s</b> requereix la instal·lació de les següents aplicacions: "
-"%s"
+msgstr "L'aplicació <b>%s</b> requereix la instal·lació de les següents aplicacions: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:801
 msgid "Show full list"
@@ -852,8 +822,7 @@ msgstr "Mostra la llista sencera"
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
-msgstr ""
-"L'aplicació <b>%s</b> requereix l'eliminació de les aplicacions següents: %s"
+msgstr "L'aplicació <b>%s</b> requereix l'eliminació de les aplicacions següents: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:908
 msgid "Confirm"
@@ -868,10 +837,8 @@ msgstr "Desfés"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-"L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segon"
-msgstr[1] ""
-"L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segons"
+msgstr[0] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segon"
+msgstr[1] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segons"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1016
 #, python-format
@@ -884,9 +851,7 @@ msgstr[1] "Hi ha <b>%d</b> fitxers de configuració per actualitzar"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"És <b>extremadament</b> important que actualitzeu els fitxers de "
-"configuració abans de <b>reiniciar</b> el sistema."
+msgstr "És <b>extremadament</b> important que actualitzeu els fitxers de configuració abans de <b>reiniciar</b> el sistema."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -1008,9 +973,7 @@ msgstr "Interrupció d'activitat"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Esteu segur que voleu interrompre l'activitat en procés? La interrupció es "
-"produirà el més aviat possible, no inmediatament."
+msgstr "Esteu segur que voleu interrompre l'activitat en procés? La interrupció es produirà el més aviat possible, no inmediatament."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"

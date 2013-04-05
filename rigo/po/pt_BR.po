@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Alberto Federman Neto <mrtabac@gmail.com>, 2012-2013.
 # Alberto Neto <mrtabac@gmail.com>, 2012.
@@ -13,14 +13,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/"
-"sabayon-rigo/language/pt_BR/)\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2013-03-17 14:13+0000\n"
+"Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
+"Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-rigo/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: ../RigoDaemon/app.py:113
@@ -144,8 +143,7 @@ msgstr "Boa Sorte!"
 
 #: ../rigo/controllers/daemon.py:583
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
-msgstr ""
-"Desculpe, Paramêtros dos repositórios <b>não puderam</b> ser modificados ."
+msgstr "Desculpe, Paramêtros dos repositórios <b>não puderam</b> ser modificados ."
 
 #: ../rigo/controllers/daemon.py:629
 #, python-format
@@ -288,28 +286,21 @@ msgstr "OK, então"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"é parte do sistema básico e por isso, <b>não</b> pode ser removido"
+msgstr "<b>%s</b>\né parte do sistema básico e por isso, <b>não</b> pode ser removido"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"não pode ser instalado no momento, devido a <b>conflito<b> de dependência ou "
-"dependências <b>faltando/mascaradas</b> "
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nnão pode ser instalado no momento, devido a <b>conflito<b> de dependência ou dependências <b>faltando/mascaradas</b> "
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"A instalação de <b>%s</b> causará a remoção dos seguintes Aplicativos: %s"
+msgstr "A instalação de <b>%s</b> causará a remoção dos seguintes Aplicativos: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -322,9 +313,7 @@ msgstr "Certo!"
 
 #: ../rigo/controllers/daemon.py:2841
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
-msgstr ""
-" A <b>Atualização do Sistema</b> começou mas pode demorar, por isso vá tomar "
-"um Café!"
+msgstr " A <b>Atualização do Sistema</b> começou mas pode demorar, por isso vá tomar um Café!"
 
 #: ../rigo/ui/gtk3/controllers/notifications.py:224
 msgid "Repositories Update in <b>progress</b>..."
@@ -383,9 +372,7 @@ msgstr "Não foi possível <b>editar</b> o arquivo de configuração"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:112
 msgid "Cannot <b>show</b> configuration files difference"
-msgstr ""
-"Não foi possível <b>mostrar</b> as diferenças entre os arquivos de "
-"configuração"
+msgstr "Não foi possível <b>mostrar</b> as diferenças entre os arquivos de configuração"
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:132
 msgid "Cannot <b>merge</b> configuration file"
@@ -402,8 +389,7 @@ msgstr "Limpa sessão Web do Entropy "
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Descarta qualquer registro de Login usado para enviar votos e-ou comentários."
+msgstr "Descarta qualquer registro de Login usado para enviar votos e-ou comentários."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -597,9 +583,7 @@ msgstr "Mostra as atualizações nos arquivos de configuração"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Mostra a lista das atualizações pendentes nos arquivos de configuração, se a "
-"houver."
+msgstr "Mostra a lista das atualizações pendentes nos arquivos de configuração, se a houver."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -615,9 +599,7 @@ msgstr "Otimize velocidade de download"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Cálculo de velocidade dos Espelhos, para acelerar a instalação dos "
-"Aplicativos."
+msgstr "Cálculo de velocidade dos Espelhos, para acelerar a instalação dos Aplicativos."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -691,7 +673,7 @@ msgstr "Existem atualizações disponíveis, você quer instalá-las?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Atualização"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -703,12 +685,11 @@ msgstr "_Ignora"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Não precisa, ignore!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
-msgstr ""
-"A lista de Aplicativos disponíveis é obsoleta, <b>deseja atualizá-la</b>?"
+msgstr "A lista de Aplicativos disponíveis é obsoleta, <b>deseja atualizá-la</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:259
 msgid "Repositories should be downloaded, <b>update now</b>?"
@@ -759,9 +740,7 @@ msgstr "Login  <b>errado</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Não foi possível logar aos serviços do Entropy, tem certeza que está "
-"conectado à <b>interweb</b>?"
+msgstr "Não foi possível logar aos serviços do Entropy, tem certeza que está conectado à <b>interweb</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -780,18 +759,14 @@ msgstr "Enquanto você olha a panela, parece que ela nunca ferve. Rrsrsrs!"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Vôce deve <b>revisar</b> e <b>aceitar</b> estas licenças antes de continuar: "
-"%s"
+msgstr "Vôce deve <b>revisar</b> e <b>aceitar</b> estas licenças antes de continuar: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-" O Aplicativo <b>%s</b> ou uma de suas dependências, é distribuído com as "
-"seguintes licenças: %s"
+msgstr " O Aplicativo <b>%s</b> ou uma de suas dependências, é distribuído com as seguintes licenças: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -822,13 +797,10 @@ msgstr "Fechar"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Vários <b> Aplicativos </b> que foram instalados antes, no seu <b>Sistema</"
-"b>, agora  não são mais mantidos pela distribuição e alguns deles podem "
-"precisar de <b>revisão manual</b>. Vôce pode mantê-los ou desinstalá-los. "
+msgstr "Vários <b> Aplicativos </b> que foram instalados antes, no seu <b>Sistema</b>, agora  não são mais mantidos pela distribuição e alguns deles podem precisar de <b>revisão manual</b>. Vôce pode mantê-los ou desinstalá-los. "
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -843,8 +815,7 @@ msgstr "É seguro remover"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
-" O Aplicativo <b>%s</b>  requer a instalação dos seguintes pacotes:  %s"
+msgstr " O Aplicativo <b>%s</b>  requer a instalação dos seguintes pacotes:  %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:801
 msgid "Show full list"
@@ -883,10 +854,7 @@ msgstr[1] "Existem <b>%d</b> arquivos de configuração para atualizar "
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"É <b>extremamente</b> importante atualizar esses arquivos de configuração "
-"antes de <b>resetar</b> o Sistema. Obs: se você usa também Portage, NTP "
-"etc.. NÂO atualize mais os arquivos correspondentes"
+msgstr "É <b>extremamente</b> importante atualizar esses arquivos de configuração antes de <b>resetar</b> o Sistema. Obs: se você usa também Portage, NTP etc.. NÂO atualize mais os arquivos correspondentes"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -1008,10 +976,7 @@ msgstr "Interrupção de Atividade"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Tem certeza de que deseja interromper a atividade em andamento? A "
-"interrupção vai ocorrer o mais rápido possível, potencialmente não "
-"imediatamente."
+msgstr "Tem certeza de que deseja interromper a atividade em andamento? A interrupção vai ocorrer o mais rápido possível, potencialmente não imediatamente."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"

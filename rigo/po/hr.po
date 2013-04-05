@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Ivica  Kolić <ikoli@yahoo.com>, 2012-2013.
 msgid ""
@@ -9,16 +9,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/hr/)\n"
-"Language: hr\n"
+"PO-Revision-Date: 2013-03-30 01:56+0000\n"
+"Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
+"Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/language/hr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"Language: hr\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: ../RigoDaemon/app.py:113
 msgid "Downloading"
@@ -245,7 +243,7 @@ msgstr "Čestitamo, zrcala su <b>optimizirana</b>!"
 
 #: ../rigo/controllers/daemon.py:1124
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
-msgstr ""
+msgstr "Jao, zrcala <b>nisu optimizirana</b>, oprostite!"
 
 #: ../rigo/controllers/daemon.py:1534
 msgid "Mirrors will be optimized in <b>background</b>..."
@@ -292,8 +290,7 @@ msgstr "<b>%s</b>⏎ je dio Osnovnog sustava i <b>ne može</b> biti uklonjen"
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr ""
 
 #: ../rigo/controllers/daemon.py:2380
@@ -301,8 +298,7 @@ msgstr ""
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"Instaliranje <b>%s</b> će uzrokovati uklanjanje slijedećih programa: %s"
+msgstr "Instaliranje <b>%s</b> će uzrokovati uklanjanje slijedećih programa: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -349,7 +345,7 @@ msgstr "Bijelo na crnom"
 
 #: ../rigo/ui/gtk3/controllers/work.py:93
 msgid "<i>Show <b>Application Management</b> Progress</i>"
-msgstr ""
+msgstr "<i>Pokaži <b>napredak</b> upravljanja programima</i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:283
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:73
@@ -603,8 +599,7 @@ msgstr "Optimiziraj brzinu preuzimanja"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Mjerenje performansi zrcala preuzimanja zbog ubrzanja instalacije programa."
+msgstr "Mjerenje performansi zrcala preuzimanja zbog ubrzanja instalacije programa."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -693,7 +688,7 @@ msgstr "_Zanemari"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Ozbiljno, zanemari!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -767,18 +762,14 @@ msgstr ""
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Morate <b>pregledati</b> i <b>prihvatiti</b> slijedeće licence prije nego "
-"što nastavite: %s"
+msgstr "Morate <b>pregledati</b> i <b>prihvatiti</b> slijedeće licence prije nego što nastavite: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> Program ili jedna njegova zavisnost distribuirani su sa slijedećim "
-"licencama: %s"
+msgstr "<b>%s</b> Program ili jedna njegova zavisnost distribuirani su sa slijedećim licencama: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -809,8 +800,8 @@ msgstr "Zatvori"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
 msgstr ""
 
@@ -868,7 +859,7 @@ msgstr[2] "Postoje<b>%d</b> ažuriranja konfiguracijske datoteke"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
+msgstr "Od <b>izuzetne</b> je važnosti da ažurirate ove konfiguracijske datoteke prije<b>ponovnog podizanja</b> sustava."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -889,7 +880,7 @@ msgstr[2] "Postoje <b>%d</b> obavijesti iz repozitorija"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1073
 msgid "It is <b>extremely</b> important to always read them."
-msgstr ""
+msgstr "Od <b>izuzetne</b> je važnosti uvijek ih pročitati."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1084
 msgid "Stop annoying me"
@@ -991,9 +982,7 @@ msgstr "Prekid aktivnosti"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Jeste li sigurni da želite prekinuti tekuću aktivnost?Do prekida će doći što "
-"je moguće prije, vjerojatno ne odmah."
+msgstr "Jeste li sigurni da želite prekinuti tekuću aktivnost?Do prekida će doći što je moguće prije, vjerojatno ne odmah."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"
@@ -1038,7 +1027,7 @@ msgstr "Rigo"
 
 #: ../rigo_app.py:776
 msgid "RigoDaemon service is not available"
-msgstr ""
+msgstr "RigoDaemon usluga nije dostupna"
 
 #: ../rigo_app.py:788
 msgid "API mismatch, please update Rigo and RigoDaemon"
@@ -1054,7 +1043,7 @@ msgstr "Pozadinski servis trenutno nije dostupan"
 
 #: ../rigo_app.py:852
 msgid "Background Service is currently busy"
-msgstr ""
+msgstr "Pozadinska usluga je trenutno zauzeta"
 
 #: ../rigo_app.py:854
 msgid "Background Service is incompatible with Rigo"

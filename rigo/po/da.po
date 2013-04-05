@@ -1,8 +1,9 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
+#  <Danielbygmarsh@gmail.com>, 2013.
 #   <Danielbygmarsh@gmail.com>, 2012.
 #   <niclasoverby@gmail.com>, 2012.
 # Niclas Overby <niclasoverby@gmail.com>, 2012.
@@ -12,23 +13,22 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Danish (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/da/)\n"
-"Language: da\n"
+"PO-Revision-Date: 2013-03-17 07:06+0000\n"
+"Last-Translator: GigoloJoe <Danielbygmarsh@gmail.com>\n"
+"Language-Team: Danish (http://www.transifex.com/projects/p/sabayon-rigo/language/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: da\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:113
 msgid "Downloading"
-msgstr ""
+msgstr "Henter"
 
 #: ../RigoDaemon/app.py:115
 msgid "Uploading"
-msgstr ""
+msgstr "Sender"
 
 #: ../RigoDaemon/app.py:1223 ../rigo_app.py:766
 msgid "Not authorized"
@@ -286,28 +286,21 @@ msgstr "Okay så"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"er en del af Grundsystemet og kan <b>ikke</b> fjernes"
+msgstr "<b>%s</b>\ner en del af Grundsystemet og kan <b>ikke</b> fjernes"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"kan ikke installeres på nuværende tidspunkt på grund af <b>manglende/"
-"maskerede</b> afhængigheder eller på grund af <b>afhængighedskonflikt</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nkan ikke installeres på nuværende tidspunkt på grund af <b>manglende/maskerede</b> afhængigheder eller på grund af <b>afhængighedskonflikt</b>"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"Installering af <b>%s</b> vil medføre fjernelsen af følgende Programmer: %s"
+msgstr "Installering af <b>%s</b> vil medføre fjernelsen af følgende Programmer: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -396,9 +389,7 @@ msgstr "Ryd op i Entropy Web Tjeneste Session"
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Kasser alle registrerede login legitimationsoplysninger, der er brugt til at "
-"sende stemmer og kommentarer."
+msgstr "Kasser alle registrerede login legitimationsoplysninger, der er brugt til at sende stemmer og kommentarer."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -463,8 +454,7 @@ msgstr "Fejl ved afstemning: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:494
 msgid "Entropy Web Services not available for repository"
-msgstr ""
-"Entropy Web Tjenester er ikke tilgængelig for de nuværende Programarkiver"
+msgstr "Entropy Web Tjenester er ikke tilgængelig for de nuværende Programarkiver"
 
 #: ../rigo/ui/gtk3/controllers/application.py:506
 #, python-format
@@ -593,9 +583,7 @@ msgstr "Vis Konfigurationsfil Opdateringer"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Vis (hvis der er nogen) en liste over uafklarede konfigurationsfil "
-"opdateringer."
+msgstr "Vis (hvis der er nogen) en liste over uafklarede konfigurationsfil opdateringer."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -611,9 +599,7 @@ msgstr "Optimer Download Hastighed"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Benchmark download spejle til at optimere download-hastigheden ved "
-"installation af programmer."
+msgstr "Benchmark download spejle til at optimere download-hastigheden ved installation af programmer."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -687,7 +673,7 @@ msgstr "Opdateringer er tilgængelige. Vil du installere dem?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Opdater"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -699,7 +685,7 @@ msgstr "_Ignorer"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Seriøst, ignorer!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -754,9 +740,7 @@ msgstr "Login <b>fejl</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Kan ikke forbinde til Entropy Web Tjenester. Er du forbundet til "
-"<b>internettet</b>?"
+msgstr "Kan ikke forbinde til Entropy Web Tjenester. Er du forbundet til <b>internettet</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -775,18 +759,14 @@ msgstr "En overvåget gryde koger aldrig over"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Du er nød til at <b>gennemlæse</b> og <b>acceptere</b> følgende licenser for "
-"at fortsætte: %s"
+msgstr "Du er nød til at <b>gennemlæse</b> og <b>acceptere</b> følgende licenser for at fortsætte: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> Programmet eller en af dens afhængigheder er distribrueret med "
-"følgende licenser: %s"
+msgstr "<b>%s</b> Programmet eller en af dens afhængigheder er distribrueret med følgende licenser: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -817,14 +797,10 @@ msgstr "Luk"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Flere <b>Programmer</b>, som ikke vedligeholdes længere af denne "
-"distribution, er blevet fundet i dit <b>System</b>. Nogle af dem kræver "
-"måske en <b>manuel revurdering</b> før de bliver afinstalleret. Klik på "
-"Programmerne for mere info."
+msgstr "Flere <b>Programmer</b>, som ikke vedligeholdes længere af denne distribution, er blevet fundet i dit <b>System</b>. Nogle af dem kræver måske en <b>manuel revurdering</b> før de bliver afinstalleret. Klik på Programmerne for mere info."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -864,10 +840,8 @@ msgstr "Fortryd"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-"<b>%s</b> Program Handlingen vil starte om <big><b>%d</b></big> sekund"
-msgstr[1] ""
-"<b>%s</b> Program Handlingen vil starte om <big><b>%d</b></big> sekunder"
+msgstr[0] "<b>%s</b> Program Handlingen vil starte om <big><b>%d</b></big> sekund"
+msgstr[1] "<b>%s</b> Program Handlingen vil starte om <big><b>%d</b></big> sekunder"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1016
 #, python-format
@@ -880,9 +854,7 @@ msgstr[1] "Der er <b>%d</b> konfigureringsfil opdateringer"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Det er <b></b> important to update these configuration files before "
-"<b>rebooting</b> the System."
+msgstr "Det er <b></b> important to update these configuration files before <b>rebooting</b> the System."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -994,7 +966,7 @@ msgstr "Programarkiv Stuff"
 
 #: ../rigo_app.py:176
 msgid "Application Groups"
-msgstr ""
+msgstr "Program Grupper"
 
 #: ../rigo_app.py:454
 msgid "Activity Interruption"
@@ -1004,9 +976,7 @@ msgstr "Aktivitetsafbrydelse"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Er du ikke på, at du vil afbryde den igangværende Aktivitet? Afbrydelsen vil "
-"ske hurtigst muligt men ikke nødvendigvis med det samme."
+msgstr "Er du ikke på, at du vil afbryde den igangværende Aktivitet? Afbrydelsen vil ske hurtigst muligt men ikke nødvendigvis med det samme."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"

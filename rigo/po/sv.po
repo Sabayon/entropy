@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 # Patrik Karlsson <patrik@trixon.se>, 2010,2012.
 #   <peruvian.torch550@gmail.com>, 2012.
@@ -10,14 +10,13 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Swedish (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/sv/)\n"
-"Language: sv\n"
+"PO-Revision-Date: 2013-03-31 06:05+0000\n"
+"Last-Translator: Peruvian_Torch <peruvian.torch550@gmail.com>\n"
+"Language-Team: Swedish (http://www.transifex.com/projects/p/sabayon-rigo/language/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: ../RigoDaemon/app.py:113
@@ -284,20 +283,14 @@ msgstr "Okej då"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>\n"
-"Är en del av bassystemet och  <b>kan inte</b> tas bort"
+msgstr "<b>%s</b>\nÄr en del av bassystemet och  <b>kan inte</b> tas bort"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>\n"
-"Kan inte installeras på grund utav <b>saknade/maskerade</b> beroenden eller "
-"beroende <b>konflikt</b> "
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>\nKan inte installeras på grund utav <b>saknade/maskerade</b> beroenden eller beroende <b>konflikt</b> "
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
@@ -393,15 +386,12 @@ msgstr "Rensa Enteropys Session av WebbTjänster "
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Ta bort dina registrerade inloggningsuppgifter som använts för att skicka "
-"betyg och kommentarer."
+msgstr "Ta bort dina registrerade inloggningsuppgifter som använts för att skicka betyg och kommentarer."
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
 msgid "Logged in as <b>%s</b>! How about your <b>vote</b>?"
-msgstr ""
-"Inloggad som <b>%s</b>! Hur skulle det vara att sätta ett <b>betyg</b>?"
+msgstr "Inloggad som <b>%s</b>! Hur skulle det vara att sätta ett <b>betyg</b>?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:319
 msgid "_Vote now"
@@ -475,8 +465,7 @@ msgstr "Din kommentar har lagts till, Tack!"
 #: ../rigo/ui/gtk3/controllers/application.py:578
 #, python-format
 msgid "Comment submit error: <i>%s</i>"
-msgstr ""
-"Fel uppstod när din kommentar skulle läggas till, testa igen: <i>%s</i>"
+msgstr "Fel uppstod när din kommentar skulle läggas till, testa igen: <i>%s</i>"
 
 #: ../rigo/ui/gtk3/controllers/application.py:639
 #, python-format
@@ -607,9 +596,7 @@ msgstr "Optimera hämtningshastigheten"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Sortera speglarna för att optimera hastigeten och på så sätt snabba upp "
-"installationer."
+msgstr "Sortera speglarna för att optimera hastigeten och på så sätt snabba upp installationer."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -683,7 +670,7 @@ msgstr "Uppdateringar tillgängliga, hur vore det att installera dem?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Uppdatera"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -695,7 +682,7 @@ msgstr "_Ignorera"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Herregud! Ignorera!!!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -750,9 +737,7 @@ msgstr "Inloggnings<b>fel</b>!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Kan inte ansluta till Entropys Webbjänst, är du ansluten till <b>internet</"
-"b>?"
+msgstr "Kan inte ansluta till Entropys Webbjänst, är du ansluten till <b>internet</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -764,9 +749,7 @@ msgstr "_Självklart inte"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:439
 msgid "A watched pot never boils"
-msgstr ""
-"Hur skulle du gilla om jag tittade dig över axeln när du jobbar? Låt mig "
-"va!!!"
+msgstr "Hur skulle du gilla om jag tittade dig över axeln när du jobbar? Låt mig va!!!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:498
 #, python-format
@@ -780,9 +763,7 @@ msgstr "Du måste <b>granska</b> och <b>acceptera</b> följande licenser: %s"
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"<b>%s</b> Programmet eller något av dess beroenden är distributerade med "
-"följande licenser: %s"
+msgstr "<b>%s</b> Programmet eller något av dess beroenden är distributerade med följande licenser: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -813,13 +794,10 @@ msgstr "Stäng"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-" <b>Program</b>som inte längre underhålls av Sabayon har hittats på ditt "
-"<b>System</b>. Du bör <b>granska</b> dessa innan om du tänker avinstallera "
-"dom. Klicka på programmet för att öppna."
+msgstr " <b>Program</b>som inte längre underhålls av Sabayon har hittats på ditt <b>System</b>. Du bör <b>granska</b> dessa innan om du tänker avinstallera dom. Klicka på programmet för att öppna."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -834,8 +812,7 @@ msgstr "Säkert att släppa"
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
-msgstr ""
-"<b>%s</b> Installationen kräver att följande program också installeras: %s"
+msgstr "<b>%s</b> Installationen kräver att följande program också installeras: %s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:801
 msgid "Show full list"
@@ -874,9 +851,7 @@ msgstr[1] "Det finns <b>%d</b> uppdateringar för konfigurationsfiler"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Det är <b>extremt</b> viktigt att uppdatera dom innan du <b>startar om</b> "
-"systemet."
+msgstr "Det är <b>extremt</b> viktigt att uppdatera dom innan du <b>startar om</b> systemet."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -936,7 +911,7 @@ msgstr "Skillnader"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:101
 msgid "Discard"
-msgstr "Förkasta"
+msgstr "Kasta"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
@@ -998,9 +973,7 @@ msgstr "Aktivitetsavbrott"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Är du säker på att du vill avbryta pågående aktivitet? Avbrottet kommer ske "
-"snarast möjligt, om än inte omgående"
+msgstr "Är du säker på att du vill avbryta pågående aktivitet? Avbrottet kommer ske snarast möjligt, om än inte omgående"
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"

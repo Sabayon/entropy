@@ -1,7 +1,7 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#
+# 
 # Translators:
 #   <dmfkun@gmail.com>, 2012.
 #   <lxnay@sabayon.org>, 2012.
@@ -14,14 +14,12 @@ msgstr ""
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
 "PO-Revision-Date: 2013-03-07 08:54+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: Romanian (http://www.transifex.com/projects/p/sabayon-rigo/"
-"language/ro/)\n"
-"Language: ro\n"
+"Language-Team: Romanian (http://www.transifex.com/projects/p/sabayon-rigo/language/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?"
-"2:1));\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #: ../RigoDaemon/app.py:113
 msgid "Downloading"
@@ -289,30 +287,21 @@ msgstr "Bine atunci"
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
-msgstr ""
-"<b>%s</b>⏎\n"
-"face parte din Sistemul de Baza si <b>nu poate fi</b> inlaturat"
+msgstr "<b>%s</b>⏎\nface parte din Sistemul de Baza si <b>nu poate fi</b> inlaturat"
 
 #: ../rigo/controllers/daemon.py:2318
 #, python-format
 msgid ""
 "<b>%s</b>\n"
-"cannot be installed at this time due to <b>missing/masked</b> dependencies "
-"or dependency <b>conflict</b>"
-msgstr ""
-"<b>%s</b>⏎\n"
-"nu poate fi instalat deoarece in acest timp datorita unui fisier <b>sters/"
-"mascat</b>, dependenta sau dependentele sunt in <b>conflict</b>"
+"cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
+msgstr "<b>%s</b>⏎\nnu poate fi instalat deoarece in acest timp datorita unui fisier <b>sters/mascat</b>, dependenta sau dependentele sunt in <b>conflict</b>"
 
 #: ../rigo/controllers/daemon.py:2380
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
-msgstr ""
-"Instalarea aplicatiei <b>%s</b> ar putea cauza inlaturarea urmatoarelor "
-"elemente:\n"
-"Aplicatii: %s"
+msgstr "Instalarea aplicatiei <b>%s</b> ar putea cauza inlaturarea urmatoarelor elemente:\nAplicatii: %s"
 
 #: ../rigo/controllers/daemon.py:2567
 #, python-format
@@ -402,9 +391,7 @@ msgstr "Curata Sesiunea Entropy Web Services"
 #: ../rigo/ui/gtk3/controllers/application.py:173
 msgid ""
 "Discard any registered login credential used to send votes and comments."
-msgstr ""
-"Renunta la orice credential de utilizator logat folosit pentru a trimite "
-"voturi si comentarii"
+msgstr "Renunta la orice credential de utilizator logat folosit pentru a trimite voturi si comentarii"
 
 #: ../rigo/ui/gtk3/controllers/application.py:312
 #, python-format
@@ -436,12 +423,9 @@ msgstr "_Ok, multumesc"
 #, python-format
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
-msgstr[0] ""
-"Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
-msgstr[1] ""
-"Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
-msgstr[2] ""
-"Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
+msgstr[0] "Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
+msgstr[1] "Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
+msgstr[2] "Apreciaza <b>%s</b> ca si <b>%s</b> sau ca si <b>%d</b> cu o steluta ?"
 
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
@@ -602,9 +586,7 @@ msgstr "Arata actualizarea configuratiilor fisierelor"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:747
 msgid "Show (if any) the list of pending configuration file updates."
-msgstr ""
-"Arata (daca este vreouna) lista unor actualizari de configuratii ale "
-"fisierelor in asteptare"
+msgstr "Arata (daca este vreouna) lista unor actualizari de configuratii ale fisierelor in asteptare"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:756
 msgid "Show Installed Applications"
@@ -620,9 +602,7 @@ msgstr "Optimizează viteza de descărcare"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:770
 msgid "Benchmark the download mirrors to speed up Application installation."
-msgstr ""
-"Testați oglinzile de descărcare pentru a îmbunătații viteza de instalare a "
-"aplicațiilor."
+msgstr "Testați oglinzile de descărcare pentru a îmbunătații viteza de instalare a aplicațiilor."
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
 #, python-format
@@ -766,8 +746,7 @@ msgstr "<b>Eroare</b> de logare!"
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
-msgstr ""
-"Nu se poate conecta la Entropy Web Services, sunteti conectat la <b>web</b>?"
+msgstr "Nu se poate conecta la Entropy Web Services, sunteti conectat la <b>web</b>?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:428
 msgid "Don't ask me..."
@@ -786,18 +765,14 @@ msgstr "Un cazan supravegheat, niciodata nu fierbe"
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
-msgstr ""
-"Trebuie sa <b>analizati</b> si sa <b>acceptati</b> urmatoarele licente "
-"inainte de a continua:%s"
+msgstr "Trebuie sa <b>analizati</b> si sa <b>acceptati</b> urmatoarele licente inainte de a continua:%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:503
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
-msgstr ""
-"Aplicatia <b>%s</b> sau una din dependentele ei este distribuita sub licenta:"
-"%s"
+msgstr "Aplicatia <b>%s</b> sau una din dependentele ei este distribuita sub licenta:%s"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:521
 msgid "Make sure to review all the licenses"
@@ -828,13 +803,10 @@ msgstr "Inchide"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:672
 msgid ""
-"Several <b>Applications</b>, no longer maintained by this distribution, have "
-"been found on your <b>System</b>. Some of them might require <b>manual "
+"Several <b>Applications</b>, no longer maintained by this distribution, have"
+" been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
-"Mai multe <b>Aplicatii</b>, ce nu mai sunt sustinute in aceasta distributie "
-"au fost gasite in <b>Sistemul</b> tau. Unele pot avea nevoie de <b>recenzie "
-"manuala</b> inainte de a fi dezinstalate. Apasati pe Apps pentru extindere."
+msgstr "Mai multe <b>Aplicatii</b>, ce nu mai sunt sustinute in aceasta distributie au fost gasite in <b>Sistemul</b> tau. Unele pot avea nevoie de <b>recenzie manuala</b> inainte de a fi dezinstalate. Apasati pe Apps pentru extindere."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -874,12 +846,9 @@ msgstr "Anulati"
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
-msgstr[0] ""
-"Actiunea Aplicatiilor <b>%s</b> va incepe in <big><b>%d</b></big> secunde"
-msgstr[1] ""
-"Actiunile Aplicatiilor <b>%s</b> vor incepe in <big><b>%d</b></big>  secunde"
-msgstr[2] ""
-"Actiunile Aplicatiilor <b>%s</b> vor incepe in <big><b>%d</b></big>  secunde"
+msgstr[0] "Actiunea Aplicatiilor <b>%s</b> va incepe in <big><b>%d</b></big> secunde"
+msgstr[1] "Actiunile Aplicatiilor <b>%s</b> vor incepe in <big><b>%d</b></big>  secunde"
+msgstr[2] "Actiunile Aplicatiilor <b>%s</b> vor incepe in <big><b>%d</b></big>  secunde"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1016
 #, python-format
@@ -893,9 +862,7 @@ msgstr[2] "Este nevoie de actualizarea configurarilor fisierelor <b>%d</b>"
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
-msgstr ""
-"Este <b>extrem</b> de importanta actualizarea fisierelor de configuratie "
-"inainte de <b>repornirea</b> Sistemului"
+msgstr "Este <b>extrem</b> de importanta actualizarea fisierelor de configuratie inainte de <b>repornirea</b> Sistemului"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1033
 #: ../rigo/ui/gtk3/widgets/notifications.py:1083
@@ -1018,9 +985,7 @@ msgstr "Interupere de Activitate"
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
-msgstr ""
-"Sunteti sigur ca vreti sa intrerupeti Activitatea ? Interuperea ei se va "
-"petrece cat se poate de repede, dar posibil nu instant."
+msgstr "Sunteti sigur ca vreti sa intrerupeti Activitatea ? Interuperea ei se va petrece cat se poate de repede, dar posibil nu instant."
 
 #: ../rigo_app.py:481
 msgid "Repositories update error"
