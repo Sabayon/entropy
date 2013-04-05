@@ -16,7 +16,7 @@ import tempfile
 import codecs
 
 from entropy.const import etpConst, const_convert_to_unicode
-from entropy.exceptions import OnlineMirrorError
+from entropy.exceptions import OnlineMirrorError, RepositoryError
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, red, darkred, brown, blue, \
     bold, purple
@@ -173,6 +173,22 @@ repository) by pulling updated data.
                 "%s: %s" % (darkred(_("Error")), err.value),
                 importance=1, level="error")
             return 1
+
+        # try (best-effort) to generate the index of the newly
+        # downloaded repository (indexing=True).
+        repo = None
+        try:
+            if sts == 0:
+                repo = entropy_server.open_server_repository(
+                    repository_id, read_only=False, indexing=True,
+                    lock_remote=False, do_treeupdates=False)
+        except RepositoryError:
+            repo = None
+        finally:
+            if repo is not None:
+                repo.commit()
+                entropy_server.close_repository(repo)
+
         EitPush.print_repository_status(entropy_server, repository_id)
         return sts
 
