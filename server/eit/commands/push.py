@@ -52,6 +52,7 @@ class EitPush(EitCommand):
         self._repositories = []
         self._cleanup_only = False
         self._as_repository_id = None
+        self._conservative = False
 
     def _get_parser(self):
         self._real_command = sys.argv[0]
@@ -64,6 +65,10 @@ class EitPush(EitCommand):
 
         parser.add_argument("repo", nargs='?', default=None,
                             metavar="<repo>", help=_("repository"))
+        parser.add_argument("--conservative", action="store_true",
+                            help=_("do not execute implicit package name "
+                                   "and slot updates"),
+                            default=self._conservative)
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
@@ -96,7 +101,7 @@ class EitPush(EitCommand):
                 if last_arg != "--as":
                     outcome = []
                     break
-        outcome += ["--quick", "--all", "--as"]
+        outcome += ["--conservative", "--quick", "--all", "--as"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -141,6 +146,7 @@ repository) by pushing updated data.
             self._repositories.append(nsargs.repo)
         self._as_repository_id = nsargs.asrepo
         self._pretend = nsargs.pretend
+        self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
         return self._call_locked, [self._push, nsargs.repo]
 
