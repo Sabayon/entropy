@@ -1,3 +1,21 @@
+commit e7e02ec050db5977e29f1ef5e84129f30847f0f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 08:58:20 2013 +0100
+
+    Release Entropy 191
+
+commit 9b69dfba4baf2fcb33bedaa2f98de93d715052fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 08:56:32 2013 +0100
+
+    [entropy.spm] PortagePlugin: update_ents() expects Atom objects
+
+commit 532d81bbf64ac6e6997971cec15d0bc5033def48
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 00:41:23 2013 +0100
+
+    Tagging Entropy version 190
+
 commit cda889539a4a0d79e5c153a85fa77058e39117c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 5 00:41:22 2013 +0100
