@@ -180,6 +180,14 @@ class EitCommand(object):
         """
         return Server(*args, **kwargs)
 
+    @classmethod
+    def _entropy_class(cls):
+        """
+        Return the Entropy Server class object.
+        This method is not thread safe.
+        """
+        return Server
+
     def _call_locked(self, func, repo):
         """
         Execute the given function at func after acquiring Entropy
