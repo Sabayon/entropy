@@ -641,7 +641,10 @@ def movefile(src, dest, src_basedir = None):
                 os.unlink(dest)
             os.symlink(target, dest)
             os.lchown(dest, sstat[stat.ST_UID], sstat[stat.ST_GID])
-            os.unlink(src)
+            try:
+                os.unlink(src)
+            except OSError:
+                pass
             return True
         except SystemExit:
             raise
