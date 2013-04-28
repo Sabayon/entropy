@@ -1,3 +1,75 @@
+commit 7fa078a0f8d29bc1eb01b8e278a6fdfd7bf7fcb8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 29 00:53:34 2013 +0200
+
+    Release Entropy 193
+
+commit 47dd7c58d9050f343c2162277f5c06135cf2748a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 29 00:53:04 2013 +0200
+
+    [entropy.misc] LogFile: add isatty()
+
+commit 5353746890d871ca82253e8a4d64dcea84f4373f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 16 20:03:46 2013 +0100
+
+    [entropy.tools] movefile: catch OSError when unlinking src symlink, no need to fail
+
+commit 520e9e38fc4d8dbcfff4d687ebaa239814b968fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 16 10:50:00 2013 +0200
+
+    [entropy.tools] movefile: eventually remove src if it's a symlink
+
+commit 1655f8d6924ff72e58fa62c49ef35e87b3513a75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:10:10 2013 +0100
+
+    [Rigo] update translations
+
+commit 91f5f3f79866cbced89f696797b0d4488e00cd1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:09:58 2013 +0100
+
+    [server] update translations
+
+commit 01c163bec4fef9a39dade780ecc0d398089ba3d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:09:38 2013 +0100
+
+    [client] update translations
+
+commit 1df9e92578c1475ae3dddc3f17bfbe8175a6e191
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:08:00 2013 +0100
+
+    [eit] update man pages
+
+commit 75254b5602db5325da334fed5ecd63c5d4a06d1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:07:45 2013 +0100
+
+    [eit.commands.{push,pull}] add --conservative support
+
+commit 956205b2b8f0681ea0f049f1d9f7bb68727adc2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:05:35 2013 +0100
+
+    [server] update entropy-server.pot
+
+commit fc15caafcde9352a9a15da2c40a42201e2246a34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 16:05:14 2013 +0100
+
+    [eit] update man pages
+
+commit 904bb37b257af53715d86912358046802ca70da9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 5 14:38:43 2013 +0100
+
+    Tagging Entropy version 192
+
 commit 032bb9a96d2cb8880ac0dcc1bf3d1b885619decd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 5 14:38:43 2013 +0100
