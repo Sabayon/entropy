@@ -1629,6 +1629,9 @@ class LogFile:
     def fileno(self):
         return self.__handler.stream.fileno()
 
+    def isatty(self):
+        return False
+
     def flush(self):
         """ Flush log buffer """
         if hasattr(self.__handler, 'flush'):
