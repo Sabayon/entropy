@@ -11,7 +11,7 @@ equo-repo - manage repositories
 
 SYNOPSIS
 --------
-equo repo [-h] {enable,disable,add,remove,list,mirrorsort,merge} ...
+equo repo [-h] {enable,disable,add,remove,rename,list,mirrorsort,merge} ...
 
 
 INTRODUCTION
@@ -43,6 +43,9 @@ ACTION
 
 *remove*::
     remove a repository
+
+*rename*::
+    rename a repository
 
 *list*::
     list active repositories

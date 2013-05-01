@@ -19,6 +19,8 @@ from entropy.output import darkred, red, brown, purple, teal, blue, \
     darkgreen, bold
 from entropy.const import etpConst
 
+import entropy.tools
+
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand
 from solo.utils import print_table
@@ -111,6 +113,17 @@ Manage Entropy Repositories.
         remove_parser.set_defaults(func=self._remove)
         _commands.append("remove")
 
+        rename_parser = subparsers.add_parser("rename",
+            help=_("rename a repository"))
+        rename_parser.add_argument("from_repo",
+                                   metavar="<from>",
+                                   help=_("from repository"))
+        rename_parser.add_argument("to_repo",
+                                   metavar="<to>",
+                                   help=_("to repository"))
+        rename_parser.set_defaults(func=self._rename)
+        _commands.append("rename")
+
         list_parser = subparsers.add_parser("list",
             help=_("list active repositories"))
         list_parser.set_defaults(func=self._list)
@@ -194,7 +207,7 @@ Manage Entropy Repositories.
         elif command == "add":
             outcome.extend(["--desc", "--id", "--repo", "--pkg"])
 
-        elif command == "remove":
+        elif command in ("remove", "rename"):
             settings = self._entropy_bashcomp().Settings()
             avail_repos = list(settings['repositories']['available'])
             excluded_repos = list(settings['repositories']['excluded'])
@@ -441,6 +454,89 @@ Manage Entropy Repositories.
             "[%s] %s" % (
                 purple(repo),
                 blue(_("cannot remove repository")),),
+            level="warning", importance=1)
+        return 1
+
+    def _rename(self, entropy_client):
+        """
+        Solo Repo Rename command.
+        """
+        exit_st = 0
+        settings = entropy_client.Settings()
+        excluded_repos = settings['repositories']['excluded']
+        available_repos = settings['repositories']['available']
+        repos = {}
+        repos.update(excluded_repos)
+        repos.update(available_repos)
+
+        from_repo = self._nsargs.from_repo
+        to_repo = self._nsargs.to_repo
+
+        if from_repo not in repos:
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(from_repo),
+                    blue(_("repository id not available")),),
+                level="error", importance=1)
+            return 1
+
+        if to_repo in repos:
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(to_repo),
+                    blue(_("repository id already available")),),
+                level="error", importance=1)
+            return 1
+
+        if not entropy.tools.validate_repository_id(to_repo):
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(to_repo),
+                    blue(_("repository id is invalid")),),
+                level="error", importance=1)
+            return 1
+
+        current_product = settings['repositories']['product']
+        current_branch = settings['repositories']['branch']
+        desc = repos[from_repo].get('description', _("N/A"))
+        pkgs = repos[from_repo]['plain_packages']
+
+        plain_dbs = repos[from_repo]['plain_databases']
+        dbs = []
+        for meta in plain_dbs:
+            dbcformat = meta.get("dbcformat", "")
+            if dbcformat:
+                dbcformat = "#%s" % (dbcformat,)
+            dbs.append("%s%s" % (meta['uri'], dbcformat))
+
+        try:
+            repodata = settings._generate_repository_metadata(
+                to_repo, desc, pkgs, dbs, current_product,
+                current_branch)
+        except AttributeError as err:
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(to_repo),
+                    err,),
+                level="error", importance=1)
+            return 1
+
+        added = entropy_client.add_repository(repodata)
+        if added:
+            entropy_client.output(
+                "[%s] %s" % (
+                    purple(to_repo),
+                    blue(_("repository added succesfully")),))
+
+            exit_st = self._remove_repo(entropy_client, from_repo)
+            if exit_st != 0:
+                return exit_st
+            return 0
+
+        entropy_client.output(
+            "[%s] %s" % (
+                purple(to_repo),
+                blue(_("cannot add repository")),),
             level="warning", importance=1)
         return 1
 
