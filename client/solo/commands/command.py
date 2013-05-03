@@ -350,7 +350,7 @@ class SoloCommand(object):
                           "Lock, please wait...")),
                               back=True)
             acquired = entropy.tools.acquire_entropy_locks(
-                client, blocking=blocking)
+                client, blocking=blocking, spinner=True)
             if not acquired:
                 client.output(
                     darkgreen(_("Another Entropy is currently running.")),
