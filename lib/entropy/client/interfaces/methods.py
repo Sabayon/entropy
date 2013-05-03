@@ -1806,7 +1806,8 @@ class MiscMixin:
         self._cacher.sync()
 
     def _wait_resource(self, lock_func, sleep_seconds = 1.0,
-                       max_lock_count = 300, shared = False):
+                       max_lock_count = 300, shared = False,
+                       spinner = False):
         """
         Poll on a given resource hoping to get its lock.
         """
@@ -1823,22 +1824,31 @@ class MiscMixin:
                         header = darkred(" @@ ")
                     )
                 break
-            if lock_count >= max_lock_count:
+
+            if spinner:
+                header = teal("|/-\\"[lock_count % 4] + " ")
+                count = None
+            else:
+                header = darkred(" @@ ")
+                count = (lock_count + 1, max_lock_count)
+
+            if lock_count >= max_lock_count and not spinner:
                 self.output(
                     blue(_("Resources still locked, giving up!")),
                     importance = 1,
                     level = "warning",
-                    header = darkred(" @@ ")
+                    header = header
                 )
                 return True # gave up
+
             lock_count += 1
             self.output(
                 blue(_("Resources locked, sleeping...")),
                 importance = 1,
                 level = "warning",
-                header = darkred(" @@ "),
+                header = header,
                 back = True,
-                count = (lock_count, max_lock_count)
+                count = count
             )
             time.sleep(sleep_seconds)
         return False # yay!
@@ -1883,7 +1893,7 @@ class MiscMixin:
         return self._unlock_resource(lock_path)
 
     def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300,
-                       shared = False):
+                       shared = False, spinner = False):
         """
         Wait until Entropy resources are unlocked.
         This method polls over the available repositories lock and
@@ -1895,12 +1905,16 @@ class MiscMixin:
         @type max_lock_count: int
         @keyword shared: acquire a shared lock? (default is False)
         @type shared: bool
+        @keyword spinner: if True, a spinner will be used to wait indefinitely
+            and max_lock_count will be ignored in non-blocking mode.
+        @type spinner: bool
         @return: True, if lock hasn't been released, False otherwise.
         @rtype: bool
         """
         return self._wait_resource(
             self.lock_resources, sleep_seconds=sleep_seconds,
-            max_lock_count=max_lock_count, shared=shared)
+            max_lock_count=max_lock_count, shared=shared,
+            spinner=spinner)
 
     def switch_chroot(self, chroot):
         """
