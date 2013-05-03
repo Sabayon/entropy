@@ -202,7 +202,8 @@ class EitCommand(object):
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            acquired = entropy.tools.acquire_entropy_locks(server)
+            acquired = entropy.tools.acquire_entropy_locks(
+                server, spinner=True)
             if not acquired:
                 server.output(
                     darkgreen(_("Another Entropy is currently running.")),
