@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Michał Plichta <mplichta@gmail.com>, 2013.
-#   <mplichta@gmail.com>, 2012.
-#   <slawomir.nizio@sabayon.org>, 2012.
+# emc <mplichta@gmail.com>, 2013
+# emc <mplichta@gmail.com>, 2012
+# Enlik <slawomir.nizio@sabayon.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-30 12:50+0000\n"
-"PO-Revision-Date: 2013-04-03 18:01+0000\n"
-"Last-Translator: emc <mplichta@gmail.com>\n"
+"POT-Creation-Date: 2013-05-01 23:51+0200\n"
+"PO-Revision-Date: 2013-05-01 21:51+0000\n"
+"Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/sabayon-entropy/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -31,8 +31,8 @@ msgstr "Eksport bazy zakończony."
 #: ../../lib/entropy/db/sqlite.py:2103 ../../lib/entropy/db/sqlite.py:2207
 #: ../../lib/entropy/db/sqlite.py:2315 ../../lib/entropy/db/sqlite.py:2328
 #: ../../lib/entropy/db/sql.py:5437 ../../lib/entropy/db/sql.py:5450
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2583
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2721
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2610
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2748
 #: ../../lib/entropy/client/interfaces/client.py:950
 msgid "ATTENTION"
 msgstr "UWAGA"
@@ -54,8 +54,8 @@ msgid "Spm Unique Identifier not found for"
 msgstr "Unikatowy identyfikator SPM nieznaleziony dla"
 
 #: ../../lib/entropy/db/skel.py:1662
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:924
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:944
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:945
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:971
 msgid "SPM"
 msgstr "SPM"
 
@@ -73,7 +73,7 @@ msgid "Entropy"
 msgstr "Entropy"
 
 #: ../../lib/entropy/db/skel.py:1684
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:925
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:946
 msgid "action"
 msgstr "czynność"
 
@@ -111,7 +111,7 @@ msgid "has been installed."
 msgstr "zostało zainstalowane"
 
 #: ../../lib/kswitch/__init__.py:120
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3358
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3385
 #: ../../lib/entropy/client/interfaces/db.py:438
 #: ../../lib/entropy/client/interfaces/db.py:625
 #: ../../lib/entropy/client/interfaces/db.py:1986
@@ -249,141 +249,141 @@ msgstr "Programy i biblioteki dla X11"
 msgid "Reloading Portage modules"
 msgstr "Przeładowywanie modułów Portage"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:945
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:972
 msgid "updating metadata"
 msgstr "aktualizacja metadanych"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1112
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1139
 msgid "error"
 msgstr "błąd"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1114
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1141
 #: ../../lib/entropy/client/interfaces/package.py:692
 #: ../../lib/entropy/client/interfaces/package.py:1373
 msgid "not found"
 msgstr "nie znaleziono"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2542
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2569
 msgid "package not available on system"
 msgstr "pakiet niedostępny w systemie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2551
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2578
 msgid "repackaging"
 msgstr "ponowne paczkowanie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2563
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2758
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2590
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2785
 msgid "WARNING"
 msgstr "UWAGA"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2564
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2591
 msgid "Cannot complete quickpkg for atom"
 msgstr "Nie można ukończyć quickpkg dla atomu"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2566
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2761
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2593
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2788
 msgid "do it manually"
 msgstr "zrób to ręcznie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2584
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2611
 msgid "package files rebuild did not run properly"
 msgstr "przebudowanie plików pakietu nie zostało wykonane pomyślnie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2585
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2612
 msgid "Please update packages manually"
 msgstr "Proszę uaktualnić pakiety ręcznie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2722
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2749
 msgid "forcing package updates"
 msgstr "wymuszanie aktualizacji pakietów"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2723
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2750
 msgid "Syncing with"
 msgstr "Synchronizowanie z"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2759
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2786
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Nie można ukończyć quickpkg dla atomów"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3115
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4798
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3142
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4824
 #: ../../lib/entropy/client/interfaces/trigger.py:286
 #: ../../lib/entropy/client/interfaces/trigger.py:549
 msgid "QA"
 msgstr "QA"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3116
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3143
 msgid "Cannot update Portage package metadata"
 msgstr "Nie można zaktalizować metadanych paczek Portage"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3142
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3169
 msgid "SPM uid update error"
 msgstr "Błąd przy aktualizacji SPM UID"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3211
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3238
 msgid "Cannot update SPM installed pkgs file"
 msgstr "Nie można zaktualizować pliku zawierającego pakiety zainstalowane przez SPM"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3304
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3331
 msgid "Portage world file is corrupted"
 msgstr "Plik \"world\" Portage jest uszkodzony"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3359
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3386
 msgid "preserved libraries have been found on system"
 msgstr "znaleziono w systemie biblioteki oznaczone jako \"preserved\""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3500
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3650
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3527
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3677
 msgid "does not exist"
 msgstr "nie istnieje"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3500
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3527
 msgid "Overwriting"
 msgstr "Nadpisywanie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3546
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3573
 msgid "variable differs"
 msgstr "zmienna różni się"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3546
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3635
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3573
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3662
 msgid "Updating"
 msgstr "Aktualizowanie"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3561
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3588
 msgid "updating critical variables"
 msgstr "aktualizowanie ważnych zmiennych"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3635
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3662
 msgid "differs"
 msgstr "różni się"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3650
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3677
 msgid "Reverting"
 msgstr "Cofanie zmiany"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3665
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3692
 msgid "Skipping configuration files update, you are not root."
 msgstr "Pomijanie aktualizację plików konfiguracyjnych, nie jesteś rootem."
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3926
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3952
 msgid "Error calculating dependencies"
 msgstr "Błąd przy obliczaniu zależności"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4485
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4511
 msgid "not supported"
 msgstr "nieobsługiwana"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4486
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4512
 msgid "Probably Portage API has changed"
 msgstr "Możliwe, że API Portage się zmieniło"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4549
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4642
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4575
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4668
 msgid "IOError while reading"
 msgstr "Błąd IOERrror podczas odczytywania"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4799
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4825
 msgid "illegal Entropy package tag in ebuild"
 msgstr "niedozwolony tag pakietu Entropy w pliku ebuild"
 
@@ -1445,15 +1445,15 @@ msgstr "Zestaw nieznaleziony albo nie można usunąć"
 msgid "Checking %s"
 msgstr "Sprawdzanie %s"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2155
+#: ../../lib/entropy/client/interfaces/dep.py:2186
 msgid "Sorting dependencies"
 msgstr "Sortowanie zależności"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2359
+#: ../../lib/entropy/client/interfaces/dep.py:2391
 msgid "Calculating inverse dependencies for"
 msgstr "Obliczanie odwrotnych zależności dla"
 
-#: ../../lib/entropy/client/interfaces/dep.py:2982
+#: ../../lib/entropy/client/interfaces/dep.py:3041
 msgid "Calculating updates"
 msgstr "Obliczanie aktualizacji"
 
@@ -1881,7 +1881,8 @@ msgstr "pliki i katalogi"
 
 #: ../../client/solo/utils.py:184 ../../client/solo/utils.py:327
 #: ../../client/solo/utils.py:328 ../../client/solo/utils.py:424
-#: ../../client/solo/utils.py:426 ../../client/solo/commands/repo.py:460
+#: ../../client/solo/utils.py:426 ../../client/solo/commands/repo.py:501
+#: ../../client/solo/commands/repo.py:556
 msgid "N/A"
 msgstr "niedostępne"
 
@@ -2172,7 +2173,7 @@ msgstr "wykonaj zaawansowane działania na pakietach"
 #: ../../client/solo/commands/security.py:69
 #: ../../client/solo/commands/cache.py:61 ../../client/solo/commands/ugc.py:72
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
-#: ../../client/solo/commands/repo.py:66 ../../client/solo/commands/conf.py:76
+#: ../../client/solo/commands/repo.py:68 ../../client/solo/commands/conf.py:76
 #: ../../client/solo/commands/rescue.py:72 ../kernel-switcher:48
 msgid "available commands"
 msgstr "dostępne polecenia"
@@ -2537,6 +2538,7 @@ msgid "Matched"
 msgstr "Dopasowany"
 
 #: ../../client/solo/commands/query.py:572
+#: ../../client/solo/commands/repo.py:120
 msgid "from repository"
 msgstr "z repozytorium"
 
@@ -3168,7 +3170,7 @@ msgid "search keyword"
 msgstr "słowo kluczowe wyszukiwania"
 
 #: ../../client/solo/commands/search.py:72
-#: ../../client/solo/commands/repo.py:120
+#: ../../client/solo/commands/repo.py:133
 #: ../../client/solo/commands/match.py:86
 msgid "quiet output, for scripting purposes"
 msgstr "tryb cichy, przydatny dla skryptów"
@@ -3301,10 +3303,10 @@ msgstr "zaloguj się w podanym repozytorium"
 
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
-#: ../../client/solo/commands/repo.py:72 ../../client/solo/commands/repo.py:80
-#: ../../client/solo/commands/repo.py:87
-#: ../../client/solo/commands/repo.py:110
-#: ../../client/solo/commands/repo.py:127
+#: ../../client/solo/commands/repo.py:74 ../../client/solo/commands/repo.py:82
+#: ../../client/solo/commands/repo.py:89
+#: ../../client/solo/commands/repo.py:112
+#: ../../client/solo/commands/repo.py:140
 msgid "repository name"
 msgstr "nazwa repozytorium"
 
@@ -3606,172 +3608,191 @@ msgstr "wymuś używanie kolorów"
 msgid "this help"
 msgstr "ta pomoc"
 
-#: ../../client/solo/commands/repo.py:65
-#: ../../client/solo/commands/repo.py:637
+#: ../../client/solo/commands/repo.py:67
+#: ../../client/solo/commands/repo.py:733
 msgid "manage repositories"
 msgstr "zarządzaj repozytoriami"
 
-#: ../../client/solo/commands/repo.py:69
+#: ../../client/solo/commands/repo.py:71
 msgid "enable repositories"
 msgstr "aktywuj repozytoria"
 
-#: ../../client/solo/commands/repo.py:77
+#: ../../client/solo/commands/repo.py:79
 msgid "disable repositories"
 msgstr "dezaktywuj repozytoria"
 
-#: ../../client/solo/commands/repo.py:85
+#: ../../client/solo/commands/repo.py:87
 msgid "add a repository"
 msgstr "dodaj repozytorium"
 
-#: ../../client/solo/commands/repo.py:90
+#: ../../client/solo/commands/repo.py:92
 msgid "repository description"
 msgstr "opis repozytorium"
 
-#: ../../client/solo/commands/repo.py:94
+#: ../../client/solo/commands/repo.py:96
 msgid "repository database URL"
 msgstr "adres URL bazy danych repozytorium"
 
-#: ../../client/solo/commands/repo.py:98
+#: ../../client/solo/commands/repo.py:100
 msgid "repository packages URL"
 msgstr "adres URL repozytorium paczek"
 
-#: ../../client/solo/commands/repo.py:102
+#: ../../client/solo/commands/repo.py:104
 msgid "repository compression format"
 msgstr ""
 
-#: ../../client/solo/commands/repo.py:107
+#: ../../client/solo/commands/repo.py:109
 msgid "remove a repository"
 msgstr "usuń repozytorium"
 
-#: ../../client/solo/commands/repo.py:115
+#: ../../client/solo/commands/repo.py:117
+msgid "rename a repository"
+msgstr ""
+
+#: ../../client/solo/commands/repo.py:123
+msgid "to repository"
+msgstr ""
+
+#: ../../client/solo/commands/repo.py:128
 msgid "list active repositories"
 msgstr "wypisz listę aktywnych repozytoriów"
 
-#: ../../client/solo/commands/repo.py:124
+#: ../../client/solo/commands/repo.py:137
 msgid "reorder mirrors basing on response time"
 msgstr "posortuj serwery lustrzane bazując na czasie odpowiedzi"
 
-#: ../../client/solo/commands/repo.py:130
+#: ../../client/solo/commands/repo.py:143
 msgid "simulate execution"
 msgstr "symuluj wykonanie"
 
-#: ../../client/solo/commands/repo.py:135
+#: ../../client/solo/commands/repo.py:148
 msgid "merge content of source repository to destination"
 msgstr "połącz zawartość repozytorium źródłowego z docelowym"
 
-#: ../../client/solo/commands/repo.py:137
+#: ../../client/solo/commands/repo.py:150
 msgid "source repository"
 msgstr "repozytorium źródłowe"
 
-#: ../../client/solo/commands/repo.py:139
+#: ../../client/solo/commands/repo.py:152
 msgid "destination repository"
 msgstr "repozytorium docelowe"
 
-#: ../../client/solo/commands/repo.py:143
+#: ../../client/solo/commands/repo.py:156
 msgid "also remove dependency conflicts during merge"
 msgstr "usuń też konflikty zależności podczas łączenia"
 
-#: ../../client/solo/commands/repo.py:235
+#: ../../client/solo/commands/repo.py:248
 msgid "repository already enabled"
 msgstr "repozytorium już jest włączone"
 
-#: ../../client/solo/commands/repo.py:244
-#: ../../client/solo/commands/repo.py:298
-#: ../../client/solo/commands/repo.py:500
+#: ../../client/solo/commands/repo.py:257
+#: ../../client/solo/commands/repo.py:311
+#: ../../client/solo/commands/repo.py:596
 msgid "repository not available"
 msgstr "repozytorium niedostępne"
 
-#: ../../client/solo/commands/repo.py:264
+#: ../../client/solo/commands/repo.py:277
 msgid "repository enabled"
 msgstr "repozytorium włączone"
 
-#: ../../client/solo/commands/repo.py:270
+#: ../../client/solo/commands/repo.py:283
 msgid "cannot enable repository"
 msgstr "włączenie repozytorium nie powiodło się"
 
-#: ../../client/solo/commands/repo.py:289
+#: ../../client/solo/commands/repo.py:302
 msgid "repository already disabled"
 msgstr "repozytorium już jest wyłączone"
 
-#: ../../client/solo/commands/repo.py:320
-#: ../../client/solo/commands/repo.py:334
+#: ../../client/solo/commands/repo.py:333
+#: ../../client/solo/commands/repo.py:347
 msgid "cannot disable repository"
 msgstr "nie można wyłączyć repozytorium"
 
-#: ../../client/solo/commands/repo.py:328
+#: ../../client/solo/commands/repo.py:341
 msgid "repository disabled"
 msgstr "repozytorium wyłączone"
 
-#: ../../client/solo/commands/repo.py:356
+#: ../../client/solo/commands/repo.py:369
 msgid "Repository id:"
 msgstr "ID repozytorium:"
 
-#: ../../client/solo/commands/repo.py:359
+#: ../../client/solo/commands/repo.py:372
 msgid "Description:"
 msgstr "Opis:"
 
-#: ../../client/solo/commands/repo.py:362
+#: ../../client/solo/commands/repo.py:375
 msgid "Repository format:"
 msgstr "Format repozytorium:"
 
-#: ../../client/solo/commands/repo.py:366
+#: ../../client/solo/commands/repo.py:379
 msgid "Packages URL:"
 msgstr "URL pakietów:"
 
-#: ../../client/solo/commands/repo.py:368
+#: ../../client/solo/commands/repo.py:381
 msgid "Repository URL:"
 msgstr "URL repozytorium:"
 
-#: ../../client/solo/commands/repo.py:390
+#: ../../client/solo/commands/repo.py:403
+#: ../../client/solo/commands/repo.py:529
 msgid "repository added succesfully"
 msgstr "repozytorium dodane pomyślnie"
 
-#: ../../client/solo/commands/repo.py:395
+#: ../../client/solo/commands/repo.py:408
+#: ../../client/solo/commands/repo.py:539
 msgid "cannot add repository"
 msgstr "dodanie repozytorium nie powiodło się"
 
-#: ../../client/solo/commands/repo.py:417
+#: ../../client/solo/commands/repo.py:430
+#: ../../client/solo/commands/repo.py:479
 msgid "repository id not available"
 msgstr "ID repozytorium niedostępne"
 
-#: ../../client/solo/commands/repo.py:437
+#: ../../client/solo/commands/repo.py:450
 msgid "repository removed succesfully"
 msgstr "repozytorium pomyślnie usunięte"
 
-#: ../../client/solo/commands/repo.py:443
+#: ../../client/solo/commands/repo.py:456
 msgid "cannot remove repository"
 msgstr "usunięcie repozytorium nie powiodło się"
 
-#: ../../client/solo/commands/repo.py:514
+#: ../../client/solo/commands/repo.py:487
+msgid "repository id already available"
+msgstr ""
+
+#: ../../client/solo/commands/repo.py:495
+msgid "repository id is invalid"
+msgstr ""
+
+#: ../../client/solo/commands/repo.py:610
 msgid "mirror order:"
 msgstr "kolejność serwerów lustrzanych:"
 
-#: ../../client/solo/commands/repo.py:524
+#: ../../client/solo/commands/repo.py:620
 msgid "mirrors sorted successfully"
 msgstr "serwery lustrzane pomyślnie posortowane"
 
-#: ../../client/solo/commands/repo.py:543
-#: ../../client/solo/commands/repo.py:550
+#: ../../client/solo/commands/repo.py:639
+#: ../../client/solo/commands/repo.py:646
 msgid "repository not found"
 msgstr "nie znaleziono repozytorium"
 
-#: ../../client/solo/commands/repo.py:559
+#: ../../client/solo/commands/repo.py:655
 msgid "repository cannot be source and destination"
 msgstr "repozytorium nie może być źródłem i celem"
 
-#: ../../client/solo/commands/repo.py:567
+#: ../../client/solo/commands/repo.py:663
 msgid "merging repositories"
 msgstr "łączenie repozytoriów"
 
-#: ../../client/solo/commands/repo.py:583
+#: ../../client/solo/commands/repo.py:679
 msgid "working on repository"
 msgstr "pracowanie na repozytorium"
 
-#: ../../client/solo/commands/repo.py:600
+#: ../../client/solo/commands/repo.py:696
 msgid "merging package"
 msgstr "scalanie pakietu"
 
-#: ../../client/solo/commands/repo.py:624
+#: ../../client/solo/commands/repo.py:720
 msgid "done merging packages"
 msgstr "ukończono scalanie pakietu"
 
