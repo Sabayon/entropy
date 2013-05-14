@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012.
+# Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"

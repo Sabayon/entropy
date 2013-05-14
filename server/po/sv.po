@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Patrik Karlsson <patrik@trixon.se>, 2010.
+# Patrik Karlsson <patrik@trixon.se>, 2010
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"

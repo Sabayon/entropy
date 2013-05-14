@@ -3,15 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Alberto Federman Neto <mrtabac@gmail.com>, 2013.
-# Alberto Neto <mrtabac@gmail.com>, 2012.
+# Alberto Federman Neto <mrtabac@gmail.com>, 2013
+# Alberto Federman Neto <mrtabac@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-05 16:05+0100\n"
-"PO-Revision-Date: 2013-03-30 11:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2013-04-17 14:28+0000\n"
+"Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-entropy-server/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -97,7 +97,7 @@ msgstr "Adicionando entrada"
 #: ../../lib/entropy/core/settings/base.py:2039
 #: ../../lib/entropy/server/interfaces/main.py:1328
 msgid "No description"
-msgstr ""
+msgstr "Sem Descrição"
 
 #: ../../lib/entropy/server/transceivers.py:91
 msgid "verifying upload (if supported)"
@@ -1945,15 +1945,15 @@ msgstr "Soma de Checagem"
 
 #: ../../server/eit/utils.py:189
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../server/eit/utils.py:191
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../server/eit/utils.py:197
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../server/eit/utils.py:202
 msgid "Dependencies"

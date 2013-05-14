@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <albfneto@fcfrp.usp.br>, 2012.
+#   <albfneto@fcfrp.usp.br>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"

@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Parhan <dyingmuppet@sabayon.org>, 2008.
+# Parhan <dyingmuppet@sabayon.org>, 2008
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"

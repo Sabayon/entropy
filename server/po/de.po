@@ -3,10 +3,10 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <dicker_karl@web.de>, 2012.
-#   <dirk@deimeke.net>, 2012.
-#   <felixkeppner@web.de>, 2012.
-#   <penguinized@ymail.com>, 2012.
+# fleischie <dicker_karl@web.de>, 2012
+# ddeimeke <dirk@deimeke.net>, 2012
+# AtomEnte <felixkeppner@web.de>, 2012
+# penguinized <penguinized@ymail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"

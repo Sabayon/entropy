@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <rcalvoi@yahoo.com>, 2012.
-# Roger Calvó <rcalvoi@yahoo.com>, 2008, 2009, 2010, 2011.
+# rogerc, 2012
+# rogerc, 2008, 2009, 2010, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
