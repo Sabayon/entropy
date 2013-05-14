@@ -3,17 +3,17 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Alberto Federman Neto <mrtabac@gmail.com>, 2012-2013.
-# Alberto Neto <mrtabac@gmail.com>, 2012.
-# Julio Mario Jr. <juliomario.jr@hotmail.com>, 2012.
-# Pablo Diehl <pablodiehl@ymail.com>, 2012.
-#   <pablodiehl@ymail.com>, 2012.
+# Alberto Federman Neto <mrtabac@gmail.com>, 2012-2013
+# Alberto Federman Neto <mrtabac@gmail.com>, 2012
+# Julio Mario Jr. <juliomario.jr@hotmail.com>, 2012
+# Pablo Diehl <pablodiehl@ymail.com>, 2012
+# Pablo Diehl <pablodiehl@ymail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-17 14:13+0000\n"
+"PO-Revision-Date: 2013-04-17 15:27+0000\n"
 "Last-Translator: Alberto Federman Neto <mrtabac@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/projects/p/sabayon-rigo/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
@@ -681,11 +681,11 @@ msgstr "_Mostra"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:203
 msgid "_Ignore"
-msgstr "_Ignora"
+msgstr "_Ignore"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:204
 msgid "Srsly, ignore!"
-msgstr "Não precisa, ignore!"
+msgstr "Apenas ignore!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:256
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -863,7 +863,7 @@ msgstr "Deixe-me ver..."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1034
 msgid "Happily ignore"
-msgstr "Ignorando"
+msgstr "Tranquilo, ignore"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1067
 #, python-format

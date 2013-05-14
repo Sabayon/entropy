@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011.
-# Danilo Riffo <danriffo@gmail.com>, 2012.
-#   <the_neo_2@hotmail.com>, 2012.
+# Daniel Halens Rodriguez <DanielHalens@gmail.com>, 2011
+# Danilo Riffo <danriffo@gmail.com>, 2012
+# neo2drummer <the_neo_2@hotmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Patrik Karlsson <patrik@trixon.se>, 2010,2012.
-#   <peruvian.torch550@gmail.com>, 2012.
+# Patrik Karlsson <patrik@trixon.se>, 2010,2012
+# Peruvian_Torch <peruvian.torch550@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

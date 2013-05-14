@@ -3,8 +3,8 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Petar Petrov <petrakis.petrov@gmail.com>, 2012.
-#   <tblu@autistici.org>, 2012.
+# Petar Petrov <petrakis.petrov@gmail.com>, 2012
+# tblu <tblu@autistici.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

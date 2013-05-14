@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <dicker_karl@web.de>, 2012.
-#  <foren@alpenbazi.de>, 2013.
-# Mario Fetka <mario.fetka@gmail.com>, 2012.
+# fleischie <dicker_karl@web.de>, 2012
+# Hamulo <foren@alpenbazi.de>, 2013
+# Mario Fetka <mario.fetka@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

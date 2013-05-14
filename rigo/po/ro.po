@@ -3,10 +3,10 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <dmfkun@gmail.com>, 2012.
-#   <lxnay@sabayon.org>, 2012.
-# Stefan Cristian <stevencristian@hotmail.com>, 2012.
-#   <unknerror@alternativefuse.com>, 2012.
+# dmfkun <dmfkun@gmail.com>, 2012
+# lxnay <lxnay@sabayon.org>, 2012
+# Stefan Cristian <stevencristian@hotmail.com>, 2012
+# unknerror <unknerror@alternativefuse.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

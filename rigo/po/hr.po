@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# Ivica  Kolić <ikoli@yahoo.com>, 2012-2013.
+# Ivica  Kolić <ikoli@yahoo.com>, 2012-2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-30 01:56+0000\n"
+"PO-Revision-Date: 2013-04-26 09:29+0000\n"
 "Last-Translator: Ivica  Kolić <ikoli@yahoo.com>\n"
 "Language-Team: Croatian (http://www.transifex.com/projects/p/sabayon-rigo/language/hr/)\n"
 "MIME-Version: 1.0\n"
@@ -672,11 +672,11 @@ msgstr "Što učiniti?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:198
 msgid "Updates available, how about installing them?"
-msgstr ""
+msgstr "Dostupne su dopune, kako bi bilo da ih instalirate?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Update"
-msgstr ""
+msgstr "_Dopuna"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Show"
@@ -803,7 +803,7 @@ msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
-msgstr ""
+msgstr "Nekoliko <b>Programa</b>, koje ova distribucija više ne održava, nađeni su u vašem <b>Sustavu</b>. Neki od njih možda zahtjevaju <b>ručni pregled</b> prije nego ih se deinstalira. Klikni na Programe za proširenje."
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:680
 msgid "Manual review"
@@ -920,7 +920,7 @@ msgstr "Razlika"
 
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:101
 msgid "Discard"
-msgstr ""
+msgstr "Odbaci"
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"

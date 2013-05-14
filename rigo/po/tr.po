@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <fthpl@hotmail.com>, 2012.
-# Hüsamettin Ertürk <hsmertk@gmail.com>, 2013.
-#   <onder.y@msn.com>, 2012.
+# fthpl <fthpl@hotmail.com>, 2012
+# husam <hsmertk@gmail.com>, 2013
+# 80s <onder.y@msn.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"

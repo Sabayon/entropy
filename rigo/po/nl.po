@@ -3,9 +3,9 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-#   <joostruis@sabayon.org>, 2012.
-#   <mali.laurent@cronosproject.org>, 2012.
-# Parhan <dyingmuppet@sabayon.org>, 2008.
+# joost_op <joostruis@sabayon.org>, 2012
+# mali.laurent <mali.laurent@cronosproject.org>, 2012
+# Parhan <dyingmuppet@sabayon.org>, 2008
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
