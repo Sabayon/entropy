@@ -1,3 +1,63 @@
+commit 8d095c74cd1893b550713c8ab22e81eda8ec91f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 14 06:38:08 2013 +0200
+
+    Release Entropy 194
+
+commit 2925d8c462f9f7c8d73615ed65f7dbb8ef7b527e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 14 06:37:43 2013 +0200
+
+    [server] update translations
+
+commit 6931a303b3a907a2b85ee83ee95954b55dd18331
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 14 06:36:08 2013 +0200
+
+    [client] update translations
+
+commit 1e339b64016df42803e27741369f5c8bd5adf7b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 14 06:34:28 2013 +0200
+
+    [Rigo] update translations
+
+commit 897799201ffca08c1e8d70ff14e8e12f8ee61e48
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 3 09:12:51 2013 +0200
+
+    [eit] wait indefinitely to acquire the resources lock using a spinner
+
+commit 93debd109df295fa2e5b4f583d05c41c8d4e5436
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 3 09:12:04 2013 +0200
+
+    [equo] wait indefinitely to acquire the resources lock using a spinner
+
+commit eaae9bdfe7a90aae66b89f5058cc0280d72acd2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 3 09:10:45 2013 +0200
+
+    [entropy.tools] add spinner support to acquire_entropy_locks()
+
+commit c4ebb40b29fb958ebe42aff99c090b83499af7a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 3 08:09:58 2013 +0100
+
+    [entropy.client] add spinner support to Client.wait_resources()
+
+commit 0ffe7a9f9f7830d321127c19e7979ca28a08b5ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 1 23:51:23 2013 +0200
+
+    [equo] implement "equo repo rename" command
+
+commit b48ca566c5d9b16e84b53a16edf8f809517a7bcf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 29 00:53:35 2013 +0200
+
+    Tagging Entropy version 193
+
 commit 7fa078a0f8d29bc1eb01b8e278a6fdfd7bf7fcb8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 29 00:53:34 2013 +0200
