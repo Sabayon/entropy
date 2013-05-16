@@ -47,6 +47,7 @@ Match package names.
         self._showrepo = False
         self._showdesc = False
         self._showslot = False
+        self._showdownload = False
         self._packages = []
 
     def man(self):
@@ -63,7 +64,7 @@ Match package names.
             "--quiet", "-q", "--verbose", "-v",
             "--installed", "--injected", "--available",
             "--multimatch", "--multirepo",
-            "--showrepo", "--showslot"]
+            "--showdownload", "--showrepo", "--showslot"]
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)
 
@@ -113,6 +114,10 @@ Match package names.
 
         # only if --quiet
         parser.add_argument(
+            "--showdownload", action="store_true",
+            default=self._showdownload,
+            help=_('print download URIs (w/--quiet)'))
+        parser.add_argument(
             "--showrepo", action="store_true",
             default=self._showrepo,
             help=_('print repository information (w/--quiet)'))
@@ -145,6 +150,7 @@ Match package names.
         self._packages = nsargs.string
         self._multimatch = nsargs.multimatch
         self._multirepo = nsargs.multirepo
+        self._showdownload = nsargs.showdownload
         self._showrepo = nsargs.showrepo
         self._showdesc = nsargs.showdesc
         self._showslot = nsargs.showslot
@@ -241,6 +247,7 @@ Match package names.
             from_client = isinstance(dbconn, inst_repo_class)
             print_package_info(
                 pkg_id, entropy_client, dbconn,
+                show_download_if_quiet = self._showdownload,
                 show_repo_if_quiet = self._showrepo,
                 show_desc_if_quiet = self._showdesc,
                 show_slot_if_quiet = self._showslot,

@@ -12,7 +12,8 @@ equo-match - match packages in repositories
 SYNOPSIS
 --------
 equo match [-h] [--quiet] [--verbose] [--injected] [--installed | --available]
-           [--multimatch] [--multirepo] [--showrepo] [--showdesc] [--showslot]
+           [--multimatch] [--multirepo] [--showdownload] [--showrepo]
+           [--showdesc] [--showslot]
            <string> [<string> ...]
 
 
@@ -57,6 +58,9 @@ OPTIONAL ARGUMENTS
 
 *--multirepo*::
     return matches found in every repository
+
+*--showdownload*::
+    print download URIs (w/--quiet)
 
 *--showrepo*::
     print repository information (w/--quiet)
