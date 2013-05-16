@@ -1,3 +1,24 @@
+commit 942ff7151f33d4c744dfd4b13f066f7a18f2031d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 16 11:37:25 2013 +0200
+
+    Release Entropy 195
+
+commit 4149e6effff973d4e4108628614c92259941bc64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 16 11:35:24 2013 +0200
+
+    [solo.commands.match] add "--showdownload" to "equo match"
+    
+    While we don't have an "equo metadata" command yet, this command
+    may be used to determine the package file name belonging to a package
+
+commit 379a575feff8a19d514718a48521541869f2331e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 14 06:38:08 2013 +0200
+
+    Tagging Entropy version 194
+
 commit 8d095c74cd1893b550713c8ab22e81eda8ec91f9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue May 14 06:38:08 2013 +0200
