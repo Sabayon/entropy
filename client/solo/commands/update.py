@@ -232,29 +232,11 @@ Update Entropy Repositories.
                 level="error", importance=1)
             return 127
 
-        def _spawn_ugc():
-            for repository in repos:
-                try:
-                    webserv = self._entropy_ws(
-                        entropy_client, repository)
-                except WebService.UnsupportedService:
-                    continue
-                try:
-                    webserv.add_downloads([repository],
-                        clear_available_cache = True)
-                except WebService.WebServiceException as err:
-                    const_debug_write(__name__, repr(err))
-                    continue
-
-        ugc_th = ParallelTask(_spawn_ugc)
-        ugc_th.start()
-
         rc = repo_intf.sync()
         if not rc:
             for repository in repos:
                 self._show_notice_board_summary(
                     entropy_client, repository)
-        ugc_th.join()
         return rc
 
     def _check_notice_board_availability(self, entropy_client, repository):
