@@ -1,3 +1,21 @@
+commit 01e7fa7db6022a94b01dcbfbca0fb3f367c2170c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:26:44 2013 +0200
+
+    Release Entropy 198
+
+commit 7c77c6e2df292b85de92b8920da4499e15ff9755
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:26:26 2013 +0200
+
+    [entropy.client.services] fix typo in method call
+
+commit 05d94e7e3b8fb1cfee27b8b37882e3ea2a643d30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:24:46 2013 +0200
+
+    Tagging Entropy version 197
+
 commit 56a7c9fa3a9fa644f77aada24714763361f8ce9e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 27 11:24:45 2013 +0200
