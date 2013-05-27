@@ -245,7 +245,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return False
 
         try:
-            available = webserv.service_available(cache = False)
+            available = webserv.update_service_available(cache = False)
         except WebService.WebServiceException:
             available = False
         return available

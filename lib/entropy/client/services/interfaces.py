@@ -20,7 +20,7 @@ import hashlib
 import time
 import codecs
 
-from entropy.const import const_is_python3
+from entropy.const import const_is_python3, const_debug_write
 
 if const_is_python3():
     from io import StringIO
@@ -1516,6 +1516,42 @@ class RepositoryWebService(WebService):
     # at once by RepositoryWebService.get_packages_metadata()
     MAXIMUM_PACKAGE_REQUEST_SIZE = 10
 
+    def update_service_available(self, cache = True, cached = False):
+        """
+        Return whether the Web Service is supporting repositories update
+        through the WebService. In general, this is true if service_available()
+        returns True, but the feature can be disabled client side through
+        packages.db.webservices.
+
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
+        @return: True, if service is available
+        @rtype: bool
+
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
+        """
+        repo_eapi = self._config['update_eapi']
+        if repo_eapi < 3:
+            const_debug_write(
+                __name__,
+                "repository configuration blocks updates "
+                "through Entropy WebServices")
+            return False
+        return self.service_available(self, cache = cache, cached = cached)
+
     def service_available(self, cache = True, cached = False):
         """
         Return whether the Web Service is correctly able to answer our
@@ -1541,6 +1577,11 @@ class RepositoryWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
+        repo_eapi = self._config['repo_eapi']
+        if repo_eapi < 3:
+            const_debug_write(
+                __name__, "repository configuration blocks Entropy WebServices")
+            return False
         params = {
             'arch': etpConst['currentarch'],
             'product': self._settings['repositories']['product'],

@@ -1,0 +1,27 @@
+https://packages.sabayon.org/service
+
+# For historical and backward compatibility reasons,
+# the first line of this file must point to a Entropy
+# WebServices compatible web service that is used by clients
+# to retrieve extended repository and packages metadata.
+# If not webservice is available, the first line must be set to
+# '-'.
+# The second and further lines can be a set of variable=value
+# statements.
+#
+# The currently supported variable values are:
+# - UPDATE_EAPI=<int>
+#   indicates the maximum Entropy API value to use for
+#   repository updates. This can be used to disable EAPI >= 3,
+#   thus Entropy WebServices support, during repository updates.
+# - REPO_EAPI=<int>
+#   indicates the maximum Entropy API value to use for
+#   User Generated Content. This can be used to disable
+#   its support while keeping EAPI=3 repository updates. If the
+#   value is less than 3, UGC won't be available.
+#
+# Please note that this file will be migrated to .ini format
+# at some point in the future.
+#
+# The webservice support is optional and is needed
+# to erogate user generated content for packages.

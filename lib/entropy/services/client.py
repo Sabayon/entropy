@@ -264,38 +264,93 @@ class WebService(object):
         # if this is set, cache will be considered invalid if older than
         self._cache_aging_days = None
 
-        # check availability
-        _repository_data = self._settings['repositories']['available'].get(
-            self._repository_id)
-        if _repository_data is None:
-            raise WebService.UnsupportedService("unsupported")
-        self._repository_data = _repository_data
-        web_services_conf = self._repository_data.get('webservices_config')
-        if web_services_conf is None:
-            # then it's unsupported
-            # .etp and .tbz2 repos can be in this status atm
-            raise WebService.UnsupportedService(
-                "unsupported, no config provided")
+        config = self.config(repository_id)
+        if config is None:
+            raise WebService.UnsupportedService("unsupported service [1]")
 
-        try:
-            with open(web_services_conf, "r") as web_f:
-                # currently, in this file there is only the remote base URL
-                _remote_url = web_f.readline().strip()
-        except (OSError, IOError) as err:
-            const_debug_write(__name__, "WebService.__init__ error: %s" % (
-                err,))
-            raise WebService.UnsupportedService(err)
+        remote_url = config['url']
+        if remote_url is None:
+            raise WebService.UnsupportedService("unsupported service [2]")
+        url_obj = config['_url_obj']
 
-        url_obj = entropy.tools.spliturl(_remote_url)
-        if url_obj.scheme not in WebService.SUPPORTED_URL_SCHEMAS:
-            raise WebService.UnsupportedService("unsupported url")
-        self._request_url = _remote_url
+        self._request_url = remote_url
         self._request_protocol = url_obj.scheme
         self._request_host = url_obj.netloc
         self._request_path = url_obj.path
+        self._config = config
 
         const_debug_write(__name__, "WebService loaded, url: %s" % (
             self._request_url,))
+
+    @classmethod
+    def config(cls, repository_id):
+        """
+        Return the WebService configuration for the given repository.
+        The object returned is a dictionary containing the following
+        items:
+          - url: the Entropy WebService base URL (or None, if not supported)
+          - update_eapi: the maximum supported EAPI for repository updates.
+          - repo_eapi: the maximum supported EAPI for User Generate Content.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        """
+        settings = SystemSettings()
+        _repository_data = settings['repositories']['available'].get(
+            repository_id)
+        if _repository_data is None:
+            const_debug_write(__name__, "WebService.config error: no repo")
+            return None
+
+        web_services_conf = _repository_data.get('webservices_config')
+        if web_services_conf is None:
+            const_debug_write(__name__, "WebService.config error: no metadata")
+            return None
+
+        data = {
+            'url': None,
+            '_url_obj': None,
+            'update_eapi': None,
+            'repo_eapi': None,
+            }
+
+        content = []
+        try:
+            content += entropy.tools.generic_file_content_parser(
+                web_services_conf, encoding = etpConst['conf_encoding'])
+        except (OSError, IOError) as err:
+            const_debug_write(__name__, "WebService.config error: %s" % (
+                err,))
+            return None
+
+        if not content:
+            const_debug_write(
+                __name__, "WebService.config error: empty config")
+            return None
+
+        remote_url = content.pop(0)
+        if remote_url == "-":  # as per specs
+            remote_url = None
+        elif not remote_url:
+            remote_url = None
+        data['url'] = remote_url
+
+        if data['url']:
+            url_obj = entropy.tools.spliturl(data['url'])
+            if url_obj.scheme in WebService.SUPPORTED_URL_SCHEMAS:
+                data['_url_obj'] = url_obj
+            else:
+                data['url'] = None
+
+        for line in content:
+            for k in ("UPDATE_EAPI", "REPO_EAPI"):
+                if line.startswith(k + "="):
+                    try:
+                        data[k.lower()] = int(line.split("=", 1)[-1])
+                    except (IndexError, ValueError):
+                        pass
+
+        return data
 
     def _set_timeout(self, secs):
         """
