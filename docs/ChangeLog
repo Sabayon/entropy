@@ -1,3 +1,42 @@
+commit 4902974b21bf97f341dcab04b0e6eaf1de4a93f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:20:47 2013 +0200
+
+    Release Entropy 196
+
+commit af046cb92d1bfd3fd171337e6450f0f335baee79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:20:11 2013 +0200
+
+    [entropy.services] make possible to block Entropy WebServices support client-side
+
+commit df6c71698399eec49bbf6517c0c4fcb75018cfba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 10:24:37 2013 +0200
+
+    [solo.commands.update] drop download accounting for repositories, no longer used
+
+commit b4a6c405aa62374228a122cfadbe99e2dcf13a46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 10:17:53 2013 +0200
+
+    [entropy.client.interfaces.db] lazily set _repo_eapi
+    
+    __get_repo_eapi() may be expensive and should only be called if
+    really needed.
+
+commit 93728a577491c630354dd470c12edf66dae918f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 06:18:58 2013 +0200
+
+    [entropy.spm] PortagePlugin: add support for the new make.conf location
+
+commit c7f03d2e1a60a3066aa3e5bec4924820cd26ee39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 16 11:37:25 2013 +0200
+
+    Tagging Entropy version 195
+
 commit 942ff7151f33d4c744dfd4b13f066f7a18f2031d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 16 11:37:25 2013 +0200
