@@ -1,3 +1,21 @@
+commit 56a7c9fa3a9fa644f77aada24714763361f8ce9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:24:45 2013 +0200
+
+    Release Entropy 197
+
+commit ccca9b2365e6c4765a1c2f0974535b942d1ea51d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:24:05 2013 +0200
+
+    [entropy.client.services] eapi value can be None if unset
+
+commit f8ac43d697f369654c9b8af0272f91d2e992c0d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:20:48 2013 +0200
+
+    Tagging Entropy version 196
+
 commit 4902974b21bf97f341dcab04b0e6eaf1de4a93f1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 27 11:20:47 2013 +0200
