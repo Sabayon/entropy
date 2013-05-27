@@ -408,7 +408,7 @@ class ServerPackagesRepositoryUpdater(object):
 
         # all mirrors are empty ? I rule
         if not [x for x in remote_status if x[1]]:
-            upload_queue = remote_status[:]
+            upload_queue = [x for x in remote_status]
         else:
             highest_remote_revision = max([x[1] for x in remote_status])
 
