@@ -184,11 +184,21 @@ class AvailablePackagesRepositoryUpdater(object):
                 "__init__: developer repo mode enabled")
         self.__webservices = None
         self.__webservice = None
-        self._repo_eapi = self.__get_repo_eapi()
+        self.__repo_eapi = None
 
         avail_data = self._settings['repositories']['available']
         if self._repository_id not in avail_data:
             raise KeyError("Repository not available")
+
+    @property
+    def _repo_eapi(self):
+        if self.__repo_eapi is None:
+            self.__repo_eapi = self.__get_repo_eapi()
+        return self.__repo_eapi
+
+    @_repo_eapi.setter
+    def _repo_eapi(self, value):
+        self.__repo_eapi = value
 
     @property
     def _webservices(self):
