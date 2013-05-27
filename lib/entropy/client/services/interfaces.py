@@ -1543,13 +1543,14 @@ class RepositoryWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
-        repo_eapi = self._config['update_eapi']
-        if repo_eapi < 3:
-            const_debug_write(
-                __name__,
-                "repository configuration blocks updates "
-                "through Entropy WebServices")
-            return False
+        eapi = self._config['update_eapi']
+        if eapi is not None:
+            if eapi < 3:
+                const_debug_write(
+                    __name__,
+                    "repository configuration blocks updates "
+                    "through Entropy WebServices")
+                return False
         return self.service_available(self, cache = cache, cached = cached)
 
     def service_available(self, cache = True, cached = False):
@@ -1577,11 +1578,13 @@ class RepositoryWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
-        repo_eapi = self._config['repo_eapi']
-        if repo_eapi < 3:
-            const_debug_write(
-                __name__, "repository configuration blocks Entropy WebServices")
-            return False
+        eapi = self._config['repo_eapi']
+        if eapi is not None:
+            if eapi < 3:
+                const_debug_write(
+                    __name__,
+                    "repository configuration blocks Entropy WebServices")
+                return False
         params = {
             'arch': etpConst['currentarch'],
             'product': self._settings['repositories']['product'],
