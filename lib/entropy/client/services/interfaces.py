@@ -1551,7 +1551,7 @@ class RepositoryWebService(WebService):
                     "repository configuration blocks updates "
                     "through Entropy WebServices")
                 return False
-        return self.service_available(self, cache = cache, cached = cached)
+        return self.service_available(cache = cache, cached = cached)
 
     def service_available(self, cache = True, cached = False):
         """
