@@ -543,6 +543,7 @@ class PortagePlugin(SpmPlugin):
 
     _config_files_map = {
         'global_make_conf': "/etc/make.conf",
+        'global_make_conf_new': "/etc/portage/make.conf",
         'global_package_keywords': "/etc/portage/package.keywords",
         'global_package_use': "/etc/portage/package.use",
         'global_package_mask': "/etc/portage/package.mask",
@@ -3504,8 +3505,13 @@ class PortagePlugin(SpmPlugin):
     @staticmethod
     def _config_updates_make_conf(entropy_client, repo):
 
+        config_map = PortagePlugin._config_files_map
+
         ## WARNING: it doesn't handle multi-line variables, yet. remember this.
-        system_make_conf = PortagePlugin._config_files_map['global_make_conf']
+        system_make_conf = config_map['global_make_conf']
+        if not os.path.isfile(system_make_conf):
+            # default to the new location then
+            system_make_conf = config_map['global_make_conf_new']
 
         sys_settings = SystemSettings()
         avail_data = sys_settings['repositories']['available']
