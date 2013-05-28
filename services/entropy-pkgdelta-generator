@@ -147,12 +147,16 @@ def cleanup_package_deltas(directory, quiet):
     """
     Cleanup old Entropy package delta files.
     """
-    def _list_delta_packages(delta_dir):
-        return set([os.path.join(delta_dir, x) for x in os.listdir(delta_dir) \
+    def _list_delta_packages(d_dir):
+        return set([os.path.join(d_dir, x) for x in os.listdir(d_dir) \
             if x.endswith(etpConst['packagesdeltaext'])])
 
-    avail_deltas = _list_delta_packages(os.path.join(directory,
-        etpConst['packagesdeltasubdir']))
+    delta_dir = os.path.join(directory, etpConst['packagesdeltasubdir'])
+    if os.path.isdir(delta_dir):
+        avail_deltas = _list_delta_packages(delta_dir)
+    else:
+        avail_deltas = set()
+
     required_deltas = set()
     for (cat, name), items in generate_pkg_map(directory).items():
         # sort items, then generate deltas in one direction only
