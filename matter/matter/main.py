@@ -179,21 +179,21 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                     exit_st = _rc
 
     # print summary
-    print_info("")
-    print_info("Summary")
-    print_info("Packages built:\n  %s" % (
+    print_generic("")
+    print_generic("Summary")
+    print_generic("Packages built:\n  %s" % (
         "\n  ".join(sorted(completed)),))
-    print_info("Packages not built:\n  %s" % (
+    print_generic("Packages not built:\n  %s" % (
         "\n  ".join(sorted(not_merged)),))
-    print_info("Packages not found:\n  %s" % (
+    print_generic("Packages not found:\n  %s" % (
         "\n  ".join(sorted(not_found)),))
-    print_info("Packages not installed:\n  %s" % (
+    print_generic("Packages not installed:\n  %s" % (
         "\n  ".join(sorted(not_installed)),))
-    print_info("Packages uninstalled:\n  %s" % (
+    print_generic("Packages uninstalled:\n  %s" % (
         "\n  ".join(sorted(uninstalled)),))
 
     if missing_use:
-        print_info("Packages not built due to missing USE flags:")
+        print_generic("Packages not built due to missing USE flags:")
         for atom in sorted(missing_use.keys()):
             use_data = missing_use[atom]
             use_l = []
@@ -202,12 +202,12 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                     use_l.append(use)
                 else:
                     use_l.append("-" + use)
-            print_info("%s %s" % (
+            print_generic("%s %s" % (
                     use_data["pkg"].slot_atom, " ".join(use_l)))
 
-    print_info("Preserved libs: %s" % (
+    print_generic("Preserved libs: %s" % (
         preserved_libs,))
-    print_info("")
+    print_generic("")
 
     return _teardown(exit_st)
 
