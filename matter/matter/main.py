@@ -85,6 +85,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     not_installed = []
     not_merged = []
     uninstalled = []
+    missing_use = {}
     tainted_repositories = set()
     spec_count = 0
     tot_spec = len(specs)
@@ -113,6 +114,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_not_merged_packages())
             uninstalled.extend(
                 builder.get_uninstalled_packages())
+            missing_use.update(
+                builder.get_missing_use_packages())
             preserved_libs = binary_pms.check_preserved_libraries(
                 emerge_config)
 
@@ -188,6 +191,20 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         "\n  ".join(sorted(not_installed)),))
     print_info("Packages uninstalled:\n  %s" % (
         "\n  ".join(sorted(uninstalled)),))
+
+    if missing_use:
+        print_info("Packages not built due to missing USE flags:")
+        for atom in sorted(missing_use.keys()):
+            use_data = missing_use[atom]
+            use_l = []
+            for use in sorted(use_data["changes"]):
+                if use_data["changes"][use]:
+                    use_l.append(use)
+                else:
+                    use_l.append("-" + use)
+            print_info("%s %s" % (
+                    use_data["pkg"].slot_atom, " ".join(use_l)))
+
     print_info("Preserved libs: %s" % (
         preserved_libs,))
     print_info("")

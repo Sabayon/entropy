@@ -81,6 +81,7 @@ class PackageBuilder(object):
         self._not_found_packages = []
         self._not_installed_packages = []
         self._not_merged_packages = []
+        self._missing_use_packages = {}
 
     @classmethod
     def _build_standard_environment(cls, repository=None):
@@ -158,6 +159,13 @@ class PackageBuilder(object):
         Return the list of packages that haven't been able to compile.
         """
         return self._not_merged_packages
+
+    def get_missing_use_packages(self):
+        """
+        Return the list of packages that haven't been merged due to missing
+        USE flags.
+        """
+        return self._missing_use_packages
 
     def run(self):
         """
@@ -686,6 +694,28 @@ class PackageBuilder(object):
             # print issues to stdout and give up
             print_warning("dependencies calculation failed, aborting")
             graph.display_problems()
+
+            # try to collect some info about the failure
+            bt_config = (graph.get_backtrack_infos() or {}).get("config", {})
+            supported_info = ["needed_use_config_changes"]
+            for k, v in bt_config.items():
+                if k not in supported_info:
+                    print_warning("unsupported backtrack info: %s -> %s" % (
+                            k, v,))
+                    continue
+                if k == "needed_use_config_changes":
+                    for tup in v:
+                        try:
+                            pkg, (new_use, new_changes) = tup
+                        except (ValueError, TypeError):
+                            print_error(
+                                "unsupported needed_use_config_changes: %s" % (
+                                    tup,))
+                            continue
+                        obj = self._missing_use_packages.setdefault(pkg.cpv, {})
+                        obj["pkg"] = pkg
+                        obj["changes"] = new_changes
+
             return 0
         print_info("dependency graph generated successfully")
 
