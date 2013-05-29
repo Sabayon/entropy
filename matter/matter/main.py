@@ -20,7 +20,7 @@ from matter.binpms.base import BaseBinaryPMS, BaseBinaryResourceLock
 from matter.builder import PackageBuilder
 from matter.lock import MatterResourceLock
 from matter.output import purple, darkgreen, print_info, \
-    print_warning, print_error, is_stdout_a_tty, nocolor
+    print_generic, print_warning, print_error, is_stdout_a_tty, nocolor
 from matter.spec import SpecParser, MatterSpec
 from matter.utils import print_exception
 
