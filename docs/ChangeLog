@@ -1,3 +1,63 @@
+commit 6c802a88d6e0de83457e2d8b9c21d42d7a931c3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 10:24:03 2013 +0200
+
+    Release Entropy 199
+
+commit f8d5d062abc4b05a62767b46cdea72993a64cd72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 10:23:31 2013 +0200
+
+    [entropy.const] const_convert_to_{rawstring,unicode}: add float support
+
+commit 6d94e8687015b3607771f86880223f83572412ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 00:31:00 2013 +0200
+
+    [matter] add a final \n to the missing USE output
+
+commit 45ce99a0aa119f98b0c4c0d25f04368f3284f013
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 00:27:11 2013 +0200
+
+    [matter] import print_generic
+
+commit 9a5062648a4df734e33ab6c63467014536df7039
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 00:24:10 2013 +0200
+
+    [matter] print final status report using print_generic, avoids the timestamp prefix
+
+commit 7022d5cccc947bbff59cf3f67e5fd630d6086671
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 00:18:44 2013 +0200
+
+    [matter] log and report packages not built due to missing USE flags
+
+commit 414bb45243eeebfc5e6aec14ff04feba5e551159
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 28 10:39:29 2013 +0200
+
+    [services] entropy-pkgdelta-generator: check if "deltas" subdir exists before scanning
+
+commit 90f5b6e6863f8b5eba4b3722d374ffc54445ff93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 22:19:03 2013 +0200
+
+    [entropy.spm] convert string to bytes before passing it to hashlib objects
+
+commit b71cea2ed5606625f637c9bb2e45cbd40b0825b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 22:01:55 2013 +0200
+
+    [entropy.server] _calculate_sync_queues: generate upload_queue by interating over dict_items
+
+commit 5feee2abf0841077a5422fa3af3d73ff422a479a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 27 11:26:45 2013 +0200
+
+    Tagging Entropy version 198
+
 commit 01e7fa7db6022a94b01dcbfbca0fb3f367c2170c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 27 11:26:44 2013 +0200
