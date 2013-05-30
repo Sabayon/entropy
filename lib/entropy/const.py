@@ -1301,30 +1301,28 @@ def const_convert_to_unicode(obj, enctype = RAW_ENCODING):
         else:
             return unicode("None")
 
-    # int support
-    if isinstance(obj, const_get_int()):
+    if const_isnumber(obj) or isinstance(obj, float):
         if const_is_python3():
             return str(obj)
         else:
             return unicode(obj)
 
-    # buffer support
     if isinstance(obj, const_get_buffer()):
         if const_is_python3():
             return str(obj.tobytes(), enctype)
         else:
             return unicode(obj, enctype)
 
-    # string/unicode support
     if const_isunicode(obj):
         return obj
+
     if hasattr(obj, 'decode'):
         return obj.decode(enctype)
+
+    if const_is_python3():
+        return str(obj, enctype)
     else:
-        if const_is_python3():
-            return str(obj, enctype)
-        else:
-            return unicode(obj, enctype)
+        return unicode(obj, enctype)
 
 def const_convert_to_rawstring(obj, from_enctype = RAW_ENCODING):
     """
@@ -1340,18 +1338,20 @@ def const_convert_to_rawstring(obj, from_enctype = RAW_ENCODING):
     """
     if obj is None:
         return const_convert_to_rawstring("None")
-    if const_isnumber(obj):
+
+    if const_isnumber(obj) or isinstance(obj, float):
         if const_is_python3():
             return bytes(str(obj), from_enctype)
-        else:
-            return str(obj)
+        return str(obj)
+
     if isinstance(obj, const_get_buffer()):
         if const_is_python3():
             return obj.tobytes()
-        else:
-            return str(obj)
+        return str(obj)
+
     if not const_isunicode(obj):
         return obj
+
     return obj.encode(from_enctype)
 
 def const_get_buffer():
