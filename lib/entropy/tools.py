@@ -39,6 +39,10 @@ from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_mkstemp
 from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
+
+_READ_SIZE = 1024000
+
+
 def is_root():
     """
     Return whether running process has root priviledges.
@@ -834,10 +838,10 @@ def md5sum(filepath):
     """
     m = hashlib.md5()
     with open(filepath, "rb") as readfile:
-        block = readfile.read(16384)
+        block = readfile.read(_READ_SIZE)
         while block:
             m.update(block)
-            block = readfile.read(16384)
+            block = readfile.read(_READ_SIZE)
     return m.hexdigest()
 
 def sha512(filepath):
@@ -851,10 +855,10 @@ def sha512(filepath):
     """
     m = hashlib.sha512()
     with open(filepath, "rb") as readfile:
-        block = readfile.read(16384)
+        block = readfile.read(_READ_SIZE)
         while block:
             m.update(block)
-            block = readfile.read(16384)
+            block = readfile.read(_READ_SIZE)
     return m.hexdigest()
 
 def sha256(filepath):
@@ -868,10 +872,10 @@ def sha256(filepath):
     """
     m = hashlib.sha256()
     with open(filepath, "rb") as readfile:
-        block = readfile.read(16384)
+        block = readfile.read(_READ_SIZE)
         while block:
             m.update(block)
-            block = readfile.read(16384)
+            block = readfile.read(_READ_SIZE)
     return m.hexdigest()
 
 def sha1(filepath):
@@ -885,10 +889,10 @@ def sha1(filepath):
     """
     m = hashlib.sha1()
     with open(filepath, "rb") as readfile:
-        block = readfile.read(16384)
+        block = readfile.read(_READ_SIZE)
         while block:
             m.update(block)
-            block = readfile.read(16384)
+            block = readfile.read(_READ_SIZE)
     return m.hexdigest()
 
 def md5sum_directory(directory):
@@ -911,10 +915,10 @@ def md5sum_directory(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
             with open(myfile, "rb") as readfile:
-                block = readfile.read(16384)
+                block = readfile.read(_READ_SIZE)
                 while block:
                     m.update(block)
-                    block = readfile.read(16384)
+                    block = readfile.read(_READ_SIZE)
     return m.hexdigest()
 
 def md5obj_directory(directory):
@@ -937,10 +941,10 @@ def md5obj_directory(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
             with open(myfile, "rb") as readfile:
-                block = readfile.read(16384)
+                block = readfile.read(_READ_SIZE)
                 while block:
                     m.update(block)
-                    block = readfile.read(16384)
+                    block = readfile.read(_READ_SIZE)
     return m
 
 def uncompress_file(file_path, destination_path, opener):
@@ -957,10 +961,10 @@ def uncompress_file(file_path, destination_path, opener):
     """
     with open(destination_path, "wb") as f_out:
         f_in = opener(file_path, "rb")
-        data = f_in.read(16384)
+        data = f_in.read(_READ_SIZE)
         while data:
             f_out.write(data)
-            data = f_in.read(16384)
+            data = f_in.read(_READ_SIZE)
         f_in.close()
         f_out.flush()
 
@@ -985,10 +989,10 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
                 compresslevel = compress_level)
         else:
             f_out = opener(destination_path, "wb")
-        data = f_in.read(16384)
+        data = f_in.read(_READ_SIZE)
         while data:
             f_out.write(data)
-            data = f_in.read(16384)
+            data = f_in.read(_READ_SIZE)
         if hasattr(f_out, 'flush'):
             f_out.flush()
         f_out.close()
@@ -1167,10 +1171,10 @@ def unpack_gzip(gzipfilepath):
     fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filegz = gzip.GzipFile(gzipfilepath, "rb")
-        chunk = filegz.read(8192)
+        chunk = filegz.read(_READ_SIZE)
         while chunk:
             item.write(chunk)
-            chunk = filegz.read(8192)
+            chunk = filegz.read(_READ_SIZE)
         filegz.close()
         item.flush()
     os.rename(tmp_path, filepath)
@@ -1189,10 +1193,10 @@ def unpack_bzip2(bzip2filepath):
     fd, tmp_path = const_mkstemp(dir=os.path.dirname(filepath))
     with os.fdopen(fd, "wb") as item:
         filebz2 = bz2.BZ2File(bzip2filepath, "rb")
-        chunk = filebz2.read(16384)
+        chunk = filebz2.read(_READ_SIZE)
         while chunk:
             item.write(chunk)
-            chunk = filebz2.read(16384)
+            chunk = filebz2.read(_READ_SIZE)
         filebz2.close()
         item.flush()
     os.rename(tmp_path, filepath)
@@ -1221,10 +1225,10 @@ def generate_entropy_delta_file_name(pkg_name_a, pkg_name_b, hash_tag):
 def _delta_extract_bz2(bz2_path, new_path_fd):
     with os.fdopen(new_path_fd, "wb") as item:
         filebz2 = bz2.BZ2File(bz2_path, "rb")
-        chunk = filebz2.read(16384)
+        chunk = filebz2.read(_READ_SIZE)
         while chunk:
             item.write(chunk)
-            chunk = filebz2.read(16384)
+            chunk = filebz2.read(_READ_SIZE)
         filebz2.close()
         item.flush()
         item.close()
@@ -1232,10 +1236,10 @@ def _delta_extract_bz2(bz2_path, new_path_fd):
 def _delta_extract_gzip(gzip_path, new_path_fd):
     with os.fdopen(new_path_fd, "wb") as item:
         file_gz = gzip.GzipFile(gzip_path, "rb")
-        chunk = file_gz.read(16384)
+        chunk = file_gz.read(_READ_SIZE)
         while chunk:
             item.write(chunk)
-            chunk = file_gz.read(16384)
+            chunk = file_gz.read(_READ_SIZE)
         file_gz.close()
         item.flush()
         item.close()
@@ -1470,9 +1474,9 @@ def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
 
                 while True:
                     if mmap_f is not None:
-                        chunk = mmap_f.read(1024000)
+                        chunk = mmap_f.read(_READ_SIZE)
                     else:
-                        chunk = g.read(16384)
+                        chunk = g.read(_READ_SIZE)
                     if not chunk:
                         break
                     f.write(chunk)
@@ -1523,9 +1527,9 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
             with open(entropy_metadata_file, "wb") as db:
                 while True:
                     if old_mmap is None:
-                        data = old.read(16384)
+                        data = old.read(_READ_SIZE)
                     else:
-                        data = old_mmap.read(1024000)
+                        data = old_mmap.read(_READ_SIZE)
                     if not data:
                         break
                     db.write(data)
