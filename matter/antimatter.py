@@ -323,6 +323,7 @@ class AntiMatter(object):
         """
         vardb, portdb = self._get_dbs()
         new_days_old_secs = self._nsargs.new_days_old * 3600 * 24
+        not_installed = self._nsargs.not_installed
         result = []
 
         cp_all = portdb.cp_all()
@@ -337,15 +338,16 @@ class AntiMatter(object):
                 print_warning("%s :: %s" % (count_str, package),
                               back=True)
 
-            cp_dir = os.path.join(root, package)
-            try:
-                mtime = os.path.getmtime(cp_dir)
-            except (OSError, IOError):
-                mtime = 0.0
+            if not not_installed:
+                cp_dir = os.path.join(root, package)
+                try:
+                    mtime = os.path.getmtime(cp_dir)
+                except (OSError, IOError):
+                    mtime = 0.0
 
-            if abs(time.time() - mtime) >= new_days_old_secs:
-                # not new enough
-                continue
+                if abs(time.time() - mtime) >= new_days_old_secs:
+                    # not new enough
+                    continue
 
             best_installed = portage.best(vardb.match(package))
             if best_installed:
@@ -448,7 +450,7 @@ class AntiMatter(object):
         Execute a scan of the system and return a BaseAntiMatterResult
         object.
         """
-        if self._nsargs.new:
+        if self._nsargs.new or self._nsargs.not_installed:
             result = self._new_scan()
         else:
             result = self._scan()
