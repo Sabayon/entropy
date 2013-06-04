@@ -237,6 +237,8 @@ class HtmlAntiMatterResult(BaseAntiMatterResult):
             txt = txt % ("downgradable",)
         elif self._nsargs.new:
             txt = txt % ("new",)
+        elif self._nsargs.not_installed:
+            txt = txt % ("not installed",)
         print_generic(txt)
 
         print_generic("<ul class='result'>")
@@ -457,6 +459,8 @@ class AntiMatter(object):
             result = [x for x in result if x.upgrade()]
         elif self._nsargs.downgrade:
             result = [x for x in result if x.downgrade()]
+        elif self._nsargs.not_installed:
+            result = [x for x in result if not x.installed()]
 
         def _regex_filter(regex, x):
             target = x.target()
@@ -518,6 +522,9 @@ if __name__ == "__main__":
                           default=False,
                           help="list packages that have been recently "
                           "added")
+    mg_group.add_argument("--not-installed", "-i", action="store_true",
+                          default=False,
+                          help="list packages that haven't been installed")
 
     nsargs = None
     try:
