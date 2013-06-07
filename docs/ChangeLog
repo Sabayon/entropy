@@ -1,3 +1,54 @@
+commit 08bd609d8749e7eb3ed8082a4aa137329bfc2142
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 7 21:59:44 2013 +0200
+
+    Release Entropy 200
+
+commit b8f22b4956120297ca14098bba6f78b2acfd9b0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 7 21:32:03 2013 +0200
+
+    [matter] initialize a dict for new_changes
+
+commit c3517825e85e3470e844a66791e40472c08a2359
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 7 21:27:54 2013 +0200
+
+    [matter] use copy.deepcopy with get_backtrack_infos() Portage data
+    
+    A memory leak has been observed and may be related to keeping
+    Portage objects references alive.
+
+commit 14d131904ba46287ae4d6a4aac0a5763d5d95339
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 4 11:18:18 2013 +0200
+
+    [antimatter] use _new_scan() when --not-installed is selected
+
+commit dcbdb8d0f42dcf7f6ed240765ebd2f7c94ff5888
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 4 11:00:25 2013 +0200
+
+    [antimatter] add --not-installed flag support
+
+commit f3828597e5c98a587cc3b903b999c363c68b80f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 3 19:38:25 2013 +0200
+
+    [entropy.tools] increase read() buffer size to 1M
+
+commit 85302b72539f422cf4b8337166a18ce6f99f9cd6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 3 13:14:13 2013 +0200
+
+    [eit] dump local variables for every stack frame if an exception occurs
+
+commit 071fce7d6c5072b16ca8b92f56442bd8ed91ba4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 30 10:24:03 2013 +0200
+
+    Tagging Entropy version 199
+
 commit 6c802a88d6e0de83457e2d8b9c21d42d7a931c3b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 30 10:24:03 2013 +0200
