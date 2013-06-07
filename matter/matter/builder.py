@@ -715,7 +715,7 @@ class PackageBuilder(object):
                             continue
                         obj = self._missing_use_packages.setdefault(pkg.cpv, {})
                         obj["cp:slot"] = pkg.slot_atom
-                        obj.get("changes", set()).update(
+                        obj.get("changes", {}).update(
                             copy.deepcopy(new_changes))
 
             return 0
