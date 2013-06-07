@@ -9,6 +9,7 @@
     B{Matter TinderBox Toolkit}.
 
 """
+import copy
 import os
 import shlex
 import shutil
@@ -713,8 +714,9 @@ class PackageBuilder(object):
                                     tup,))
                             continue
                         obj = self._missing_use_packages.setdefault(pkg.cpv, {})
-                        obj["pkg"] = pkg
-                        obj["changes"] = new_changes
+                        obj["cp:slot"] = pkg.slot_atom
+                        obj.get("changes", set()).update(
+                            copy.deepcopy(new_changes))
 
             return 0
         print_info("dependency graph generated successfully")

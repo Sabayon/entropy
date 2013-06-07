@@ -203,7 +203,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 else:
                     use_l.append("-" + use)
             print_generic("%s %s" % (
-                    use_data["pkg"].slot_atom, " ".join(use_l)))
+                    use_data["cp:slot"], " ".join(use_l)))
         print_generic("")
 
     print_generic("Preserved libs: %s" % (
