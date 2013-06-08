@@ -1,3 +1,21 @@
+commit 72bc9ca4521691be7760b0047ed02b64b58f9a03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 8 07:13:49 2013 +0200
+
+    Release Entropy 201
+
+commit 7eb9bfd611fbbd220780a099e8e62a705e56f882
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 8 07:13:21 2013 +0200
+
+    [matter] fix "changes" metadata objects handling
+
+commit 64a8d76ace7ccf5cbdbc74281c0aa21ea8d39954
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 7 21:59:45 2013 +0200
+
+    Tagging Entropy version 200
+
 commit 08bd609d8749e7eb3ed8082a4aa137329bfc2142
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 7 21:59:44 2013 +0200
