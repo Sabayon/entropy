@@ -13,6 +13,7 @@ import shutil
 import warnings
 import hashlib
 import codecs
+import collections
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
@@ -544,19 +545,64 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             worked out
         @rtype: list
         """
-        new_actions = []
+
+        # pre-filter:
+        # discard any f(a -> b) if f(b -> a)
+        filtered_actions = collections.OrderedDict()
+        filtered_cache = set()
         for action in actions:
 
+            # filter duplicates
+            if action in filtered_cache:
+                continue
+            filtered_cache.add(action)
+
+            parts = action.split()
+            try:
+                cmd, args = parts[0], parts[1:]
+            except (IndexError, ValueError):
+                entropy.tools.print_traceback()
+                continue
+
+            action_key = (cmd, tuple(sorted(args)))
+            filtered_action = filtered_actions.get(action_key)
+            if filtered_action is None:
+                filtered_actions[action_key] = (action, cmd, args)
+                continue
+
+            # cases:
+            # a -> b and a -> b already stored: skip
+            # a -> b and b -> a already stored: replace
+            _ignore, _ignore, act_args = filtered_action
+            replace = False
+            if act_args == args:
+                # a -> b and a -> b already stored
+                # this is unlikely to happen, but better safe than sorry
+                pass
+            elif cmd == "move":
+                replace = args == list(reversed(act_args))
+            elif cmd == "slotmove":
+                dep, from_slot, to_slot = args
+                replace = [dep, to_slot, from_slot] == act_args
+
+            if replace:
+                const_debug_write(__name__, "%s: replacing: %s with %s" % (
+                    self.name, act_args, args))
+                # a -> b and b -> a already stored
+                del filtered_actions[action_key]  # discard order
+                filtered_actions[action_key] = (action, cmd, args)
+
+        new_actions = []
+        for action_key in filtered_actions:
+
+            action, cmd, args = filtered_actions[action_key]
             if action in new_actions: # skip dupies
                 continue
 
-            doaction = action.split()
-            if doaction[0] == "slotmove":
+            if cmd == "slotmove":
 
                 # slot move
-                atom = doaction[1]
-                from_slot = doaction[2]
-                to_slot = doaction[3]
+                atom, from_slot, to_slot = args
                 atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
@@ -588,9 +634,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 if dep_atoms:
                     new_actions.append(action)
 
-            elif doaction[0] == "move":
+            elif cmd == "move":
 
-                atom = doaction[1] # usually a key
+                atom = args[0]  # usually a key
                 atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, m_rc = self.atomMatch(atom, multiMatch = True,
