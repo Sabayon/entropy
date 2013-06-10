@@ -358,7 +358,10 @@ class ApplicationMetadata(object):
 
             # once here, check if file has been already downloaded
             _local_path = document.local_document()
-            if os.path.isfile(_local_path):
+            _local_path_exists = False
+            if _local_path:
+                _local_path_exists = os.path.isfile(_local_path)
+            if _local_path_exists:
                 _complete()
                 return _local_path
 
@@ -543,7 +546,10 @@ class ApplicationMetadata(object):
                 return
             icon = _pick_icon(icons)
             local_path = icon.local_document()
-            if not os.path.isfile(local_path):
+            local_path_exists = False
+            if local_path:
+                local_path_exists = os.path.isfile(local_path)
+            if not local_path_exists:
                 local_path = ApplicationMetadata._download_document(
                     webserv, icon)
             if local_path:
@@ -579,7 +585,10 @@ class ApplicationMetadata(object):
         # check if we have the file on-disk, otherwise
         # spawn the fetch in parallel.
         icon_path = icon.local_document()
-        if not os.path.isfile(icon_path):
+        icon_path_exists = False
+        if icon_path:
+            icon_path_exists = os.path.isfile(icon_path)
+        if not icon_path_exists:
             task = ParallelTask(_icon_callback, [icons], time.time())
             task.daemon = True
             task.name = "FetchIconCb{(%s, %s)}" % ((package_key, repository_id))
@@ -625,7 +634,10 @@ class ApplicationMetadata(object):
                 # check if we have the file on-disk, otherwise
                 # spawn the fetch in parallel.
                 icon_path = icon.local_document()
-                if not os.path.isfile(icon_path):
+                icon_path_exists = False
+                if icon_path:
+                    icon_path_exists = os.path.isfile(icon_path)
+                if not icon_path_exists:
                     local_path = ApplicationMetadata._download_document(
                         webserv, icon)
                     if local_path:
@@ -728,7 +740,10 @@ class ApplicationMetadata(object):
                     # check if we have the file on-disk, otherwise
                     # spawn the fetch in parallel.
                     image_path = image.local_document()
-                    if not os.path.isfile(image_path):
+                    image_path_exists = False
+                    if image_path:
+                        image_path_exists = os.path.isfile(image_path)
+                    if not image_path_exists:
                         local_path = ApplicationMetadata._download_document(
                             webserv, image)
                         if local_path:

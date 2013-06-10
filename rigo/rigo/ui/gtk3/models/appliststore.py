@@ -166,7 +166,10 @@ class AppListStore(Gtk.ListStore):
             return self._missing_icon
 
         icon_path = icon.local_document()
-        if not os.path.isfile(icon_path):
+        icon_path_exists = False
+        if icon_path:
+            icon_path_exists = os.path.isfile(icon_path)
+        if not icon_path_exists:
             return self._missing_icon
 
         try:
