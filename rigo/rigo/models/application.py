@@ -22,8 +22,9 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 import os
 import time
+import random
 from collections import deque
-from threading import Semaphore, Lock
+from threading import Semaphore, Lock, Timer
 
 from gi.repository import GObject
 
@@ -115,6 +116,9 @@ class ApplicationMetadata(object):
     For example, they can allocate metadata requests, passing
     a callback method that will be called when the data is available.
     """
+
+    _REQUEST_COUNT = 0
+    _REQUEST_COUNT_L = Lock()
 
     @staticmethod
     def start():
@@ -271,6 +275,10 @@ class ApplicationMetadata(object):
                         # don't query the remote service
                         uncached_requests = []
 
+                    with ApplicationMetadata._REQUEST_COUNT_L:
+                        ApplicationMetadata._REQUEST_COUNT += \
+                            len(uncached_requests)
+
                     for request in uncached_requests:
 
                         request_outcome = outcome[request]
@@ -378,9 +386,70 @@ class ApplicationMetadata(object):
             _complete()
             return local_path
 
+    RATING_RLIMIT = {
+        "t": None,
+        "l": Lock(),
+        "s": 2.0,
+        }
+    ICON_RLIMIT = {
+        "t": None,
+        "l": Lock(),
+        "s": 2.0,
+        }
+
+    @staticmethod
+    def _rate_limited(rlimit_s, webservice, package_key, repository_id,
+                      resched_count):
+        """
+        Determine if an enqueue action request needs to be rate
+        limited.
+        """
+        limit = None
+        with rlimit_s["l"]:
+            last_t = rlimit_s["t"]
+            delta_s = rlimit_s["s"]
+            cur_t = time.time()
+            if last_t is not None:
+                if cur_t <= (last_t + delta_s):
+                    limit = abs(cur_t - last_t)
+
+            if not limit:
+                rlimit_s["t"] = cur_t
+
+        if limit is not None:
+            limit += random.randint(3, 10)
+            resched_count -= 1
+            if resched_count < 0:
+                # do not reschedule anymore
+                return True
+
+            const_debug_write(
+                __name__,
+                "_rate_limited: %s, %s: rlimited, resched: %s, count: %d" % (
+                    package_key, repository_id, limit, resched_count))
+            const_debug_write(
+                __name__,
+                "_rate_limited stats: remote reqs: %d" % (
+                    ApplicationMetadata._REQUEST_COUNT,))
+
+        if limit is not None:
+            in_flight = ApplicationMetadata._RATING_IN_FLIGHT
+            flight_key = (package_key, repository_id)
+            in_flight.add(flight_key)
+            task = Timer(
+                limit,
+                in_flight.discard,
+                args=(flight_key,))
+            task.name = "DropInFlight"
+            task.daemon = True
+            task.start()
+            return True
+
+        return False
+
     @staticmethod
     def _enqueue_rating(webservice, package_key, repository_id, callback,
-                        _still_visible_cb):
+                        _still_visible_cb, _resched_count=1):
         """
         Enqueue the retrieval of the Rating for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -395,6 +464,14 @@ class ApplicationMetadata(object):
             const_debug_write(
                 __name__,
                 "_enqueue_rating: %s, %s" % (package_key, repository_id))
+
+        limited = ApplicationMetadata._rate_limited(
+            ApplicationMetadata.RATING_RLIMIT,
+            webservice, package_key, repository_id,
+            _resched_count)
+        if limited:
+            return
+
         request_time = time.time()
         in_flight = ApplicationMetadata._RATING_IN_FLIGHT
         queue = ApplicationMetadata._RATING_QUEUE
@@ -407,7 +484,7 @@ class ApplicationMetadata(object):
 
     @staticmethod
     def _enqueue_icon(webservice, package_key, repository_id, callback,
-                      _still_visible_cb):
+                      _still_visible_cb, _resched_count=1):
         """
         Enqueue the retrieval of the Icon for package key in given repository.
         Once the data is ready, callback() will be called passing the
@@ -422,6 +499,13 @@ class ApplicationMetadata(object):
             const_debug_write(
                 __name__,
                 "_enqueue_icon: %s, %s" % (package_key, repository_id))
+
+        limited = ApplicationMetadata._rate_limited(
+            ApplicationMetadata.ICON_RLIMIT,
+            webservice, package_key, repository_id,
+            _resched_count)
+        if limited:
+            return
 
         request_time = time.time()
         in_flight = ApplicationMetadata._ICON_IN_FLIGHT
@@ -570,6 +654,7 @@ class ApplicationMetadata(object):
             with ApplicationMetadata._ICON_LOCK:
                 if flight_key not in ApplicationMetadata._ICON_IN_FLIGHT:
                     # enqueue a new rating then
+                    
                     ApplicationMetadata._enqueue_icon(
                         webserv, package_key,
                         repository_id, _icon_callback,
