@@ -1,3 +1,27 @@
+commit b36c55573c669f4a5e1e55065034418aaa2c1a14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 19:27:26 2013 +0200
+
+    Release Entropy 203
+
+commit 96293b934f8ea39ab8fa14320e090be724dd211c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 19:26:49 2013 +0200
+
+    [Rigo] rate limit requests towards the web service
+
+commit 43392858043969da46396841da515c9dd6d25476
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 18:06:07 2013 +0200
+
+    [Rigo] cope with invalid icon data path
+
+commit de6fdd723ebb695a2b0636325c2c448491134b12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 14:32:28 2013 +0200
+
+    Tagging Entropy version 202
+
 commit 37342904d6a6c048383f87089a6a209cce399100
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jun 10 14:32:27 2013 +0200
