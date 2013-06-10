@@ -2581,11 +2581,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
         if no_ids_repos:
             cur = self._cursor().execute("""
             SELECT command, branch, date FROM treeupdatesactions
+            ORDER BY CAST(date AS FLOAT)
             """)
         else:
             cur = self._cursor().execute("""
             SELECT idupdate, repository, command, branch, date
-            FROM treeupdatesactions
+            FROM treeupdatesactions ORDER BY CAST(date AS FLOAT)
             """)
         return tuple(cur)
 
@@ -2597,7 +2598,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
 
         cur = self._cursor().execute("""
         SELECT command FROM treeupdatesactions WHERE
-        repository = ? ORDER BY date""", params)
+        repository = ? ORDER BY CAST(date AS FLOAT)""", params)
         return self._cur2tuple(cur)
 
     def bumpTreeUpdatesActions(self, updates):

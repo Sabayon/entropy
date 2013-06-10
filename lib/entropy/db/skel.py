@@ -2003,6 +2003,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         audience.
         List all the available "treeupdates" (package names/slots changes
             directives) actions.
+        Actions must be sorted by date (FLOAT).
 
         @keyword no_ids_repos: if True, it will just return a tuple of 3-length
             tuples containing ((command, branch, unix_time,), ...)
@@ -2018,6 +2019,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         audience.
         Return all the available "treeupdates (package names/slots changes
             directives) actions for provided repository.
+        Actions must be sorted by date (FLOAT).
 
         @param repository: repository identifier
         @type repository: string
