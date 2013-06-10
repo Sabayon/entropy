@@ -1136,7 +1136,7 @@ Name:    %s
         one being worked out.
         """
         all_actions_cache = set()
-        all_actions = set()
+        all_actions = []
         for repository_id in self._entropy.repositories():
 
             # avoid __default__
@@ -1152,7 +1152,7 @@ Name:    %s
                 if key in all_actions_cache:
                     continue
                 all_actions_cache.add(key)
-                all_actions.add((command, branch, date))
+                all_actions.append((command, branch, date))
 
         backed_up_entries = entropy_repository.listAllTreeUpdatesActions()
         # clear first
