@@ -1135,20 +1135,24 @@ Name:    %s
         reading across all the available repositories and writing to the
         one being worked out.
         """
+        all_actions_cache = set()
         all_actions = set()
-        for myrepo in self._entropy.repositories():
+        for repository_id in self._entropy.repositories():
 
             # avoid __default__
-            if myrepo == InstalledPackagesRepository.NAME:
+            if repository_id == InstalledPackagesRepository.NAME:
                 continue
 
-            mydbc = self._entropy.open_server_repository(myrepo,
-                just_reading = True)
-            actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
-            for data in actions:
-                all_actions.add(data)
-            if not actions:
-                continue
+            repo = self._entropy.open_repository(repository_id)
+            actions = repo.listAllTreeUpdatesActions(no_ids_repos = True)
+            for command, branch, date in actions:
+                # filter duplicates and respect the original order
+                # keep the first entry.
+                key = (command, branch)
+                if key in all_actions_cache:
+                    continue
+                all_actions_cache.add(key)
+                all_actions.add((command, branch, date))
 
         backed_up_entries = entropy_repository.listAllTreeUpdatesActions()
         # clear first
