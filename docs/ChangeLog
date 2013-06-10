@@ -1,3 +1,59 @@
+commit 37342904d6a6c048383f87089a6a209cce399100
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 14:32:27 2013 +0200
+
+    Release Entropy 202
+
+commit 7ff15f22eb959ead25162a7da64a71e2948fc26e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 11:07:18 2013 +0200
+
+    [RigoDaemon] randomize _auto_repositories_update to avoid bursts of requests
+
+commit d8f55890feb3d975e7d85416ba6ba5870f8b09d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 10:49:47 2013 +0200
+
+    [entropy.server.interfaces.db] _rewrite_treeupdates: use list instead of set
+    
+    We want to preserve the order and all_actions_cache is already filtering
+    out the duplicates.
+
+commit 40cf8faaeb96bf6af41d0279c45b525eea2745a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 10:39:14 2013 +0200
+
+    [entropy.server] _rewrite_treeupdates: filter out duplicated actions
+
+commit b8b958604f471fa3060745fd025fc1bbdfdeb792
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 10:37:35 2013 +0200
+
+    [entropy.db.sql] retrieveTreeUpdatesActions, listAllTreeUpdatesActions: order results by date
+
+commit 3dcbe492813e3444f57c80eb3c286cb648af5527
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 9 20:00:25 2013 +0200
+
+    [entropy.client.interfaces.db] reduce delta threshold for EAPI3 to 100
+
+commit 536797ee5ba252abdda400f58a294672b5ca6727
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 9 15:52:05 2013 +0200
+
+    [entropy.db] delete inverse actions from treeupdates actions
+    
+    For instance, if we have moved a to b and then we decided to move
+    b back to a, Entropy will keep flip flopping from one to another.
+    This commit makes possible to filter such actions so that only
+    the last one is considered in the end.
+
+commit 086b59f0947a8673bb795dccdaa4de066db541f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 8 07:13:49 2013 +0200
+
+    Tagging Entropy version 201
+
 commit 72bc9ca4521691be7760b0047ed02b64b58f9a03
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jun 8 07:13:49 2013 +0200
