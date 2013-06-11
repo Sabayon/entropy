@@ -21,9 +21,9 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 """
-from gi.repository import Gtk, Gdk, GObject, Pango
+from gi.repository import GLib, Gtk, Gdk, GObject, Pango
 
-from threading import Lock
+from threading import Lock, Timer
 
 from rigo.em import Ems
 from rigo.utils import escape_markup
@@ -62,8 +62,16 @@ class CellRendererAppView(Gtk.CellRendererText):
                          GObject.PARAM_READWRITE),
                      }
 
-    def __init__(self, icons, layout, show_ratings, overlay_icon_name):
+    def __init__(self, icons, layout, show_ratings,
+                 overlay_icon_name, scrolling_cb=None):
         super(CellRendererAppView, self).__init__()
+
+        self._is_scrolling = scrolling_cb
+        if scrolling_cb is None:
+            def _is_scrolling(): return False
+            self._is_scrolling = _is_scrolling
+        else:
+            self._is_scrolling = scrolling_cb
 
         # geometry-state values
         self.pixbuf_width = 0
@@ -93,7 +101,6 @@ class CellRendererAppView(Gtk.CellRendererText):
             # icon not present in theme, probably because running uninstalled
             self._installed = icons.load_icon('emblem-system',
                                               self.OVERLAY_SIZE, 0)
-        return
 
     def _layout_get_pixel_width(self, layout):
         return layout.get_size()[0] / Pango.SCALE
@@ -104,7 +111,7 @@ class CellRendererAppView(Gtk.CellRendererText):
     def _render_icon(self, cr, app, cell_area, xpad, ypad, is_rtl):
 
         # calc offsets so icon is nicely centered
-        icon = self.model.get_icon(app)
+        icon = self.model.get_icon(app, cached=self._is_scrolling())
         xo = (self.pixbuf_width - icon.get_width())/2
 
         if not is_rtl:
@@ -142,11 +149,7 @@ class CellRendererAppView(Gtk.CellRendererText):
 
         max_layout_width = cell_area.width - self.pixbuf_width - 3*xpad
 
-        def _still_visible():
-            return self.model.visible(app.get_details().pkg)
-        stats = app.get_review_stats(_still_visible_cb=_still_visible)
-
-        if self.show_ratings and stats:
+        if self.show_ratings:
             max_layout_width -= star_width+6*xpad
 
         if self.props.isactive:
@@ -187,7 +190,10 @@ class CellRendererAppView(Gtk.CellRendererText):
 
         def _still_visible():
             return self.model.visible(app.get_details().pkg)
-        stats = app.get_review_stats(_still_visible_cb=_still_visible)
+        stats = app.get_review_stats(
+            _still_visible_cb=_still_visible,
+            cached=self._is_scrolling())
+
         if not stats:
             return
         sr = self._stars

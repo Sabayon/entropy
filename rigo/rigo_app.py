@@ -272,6 +272,7 @@ class Rigo(Gtk.Application):
             self._entropy, self._service, self._app_view_c, icons,
             True, AppListStore.ICON_SIZE, store=None)
         self._scrolled_view.add(self._view)
+        self._view.set_scrolled_view(self._scrolled_view)
 
         self._app_store = AppListStore(
             self._entropy, self._entropy_ws,

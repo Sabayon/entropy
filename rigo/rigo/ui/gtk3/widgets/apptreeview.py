@@ -20,6 +20,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 """
 from gi.repository import Gtk, Gdk, GObject
 import os
+from threading import Timer
 
 from entropy.i18n import _
 
@@ -48,6 +49,12 @@ class AppTreeView(GenericTreeView):
                  icon_size, store=None):
         Gtk.TreeView.__init__(self)
 
+        self._scrolling_timer = None
+        self._scrolled_view = None
+        self._scrolled_view_vadj = None
+        def _is_scrolling():
+            return self._scrolling_timer is not None
+
         self._entropy = entropy_client
         self._apc = apc
         self._service = rigo_service
@@ -55,7 +62,8 @@ class AppTreeView(GenericTreeView):
         tr = CellRendererAppView(icons,
                                  self.create_pango_layout(""),
                                  show_ratings,
-                                 Icons.INSTALLED_OVERLAY)
+                                 Icons.INSTALLED_OVERLAY,
+                                 scrolling_cb=_is_scrolling)
         tr.set_pixbuf_width(icon_size)
 
         # create buttons and set initial strings
@@ -104,6 +112,51 @@ class AppTreeView(GenericTreeView):
         self.set_search_column(0)
         self.set_search_equal_func(self._app_search, None)
         self.set_property("enable-search", True)
+
+    def _scrolling_event(self, vadj):
+        """
+        Event received from the Gtk.VAdjustment of the
+        Gtk.ScrolledView containing this widget.
+        We expose the scrolling state to upper and lower layers.
+        """
+        if self._scrolling_timer:
+            return
+
+        def unset():
+            # This may cause a race condition
+            # because an event of the past can
+            # reset the state right after scrolling_timer
+            # has been back set. But we don't really care in
+            # this case. We don't want to be *that* precise.
+            self._scrolling_timer = None
+
+        def set_timer():
+            t = Timer(1.0, unset)
+            t.name = "UnsetScrollingTimer"
+            t.daemon = True
+            return t
+
+        t = self._scrolling_timer
+        if t is not None:
+            t.cancel()
+
+        t = set_timer()
+        t.start()
+        self._scrolling_timer = t
+
+    def set_scrolled_view(self, scrolled_view):
+        """
+        Set the Gtk.ScrolledView container of this TreeView.
+        """
+        vadj = scrolled_view.get_vadjustment()
+        vadj.connect("value-changed", self._scrolling_event)
+        self._scrolled_view = scrolled_view
+        self._scrolled_view_vadj = vadj
+
+    def get_vadjustment(self):
+        sv = self._scrolled_view
+        if sv:
+            return sv.get_vadjustment()
 
     def _row_activated_callback(self, path, rowref):
         self._apc.emit("application-activated",
