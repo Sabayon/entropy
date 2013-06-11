@@ -1,3 +1,36 @@
+commit bddea392f3d683829785f2798017108ad55c1ada
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 17:18:38 2013 +0200
+
+    Release Entropy 205
+
+commit 8527e65e29b6ce4a03ac048fc9fded18b795cbad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 17:17:21 2013 +0200
+
+    [Rigo] use only cached UGC metadata if user is scrolling the TreeView
+    
+    This improves the scrolling speed greatly and reduces the network
+    pressure.
+
+commit 757f3008146d5520a339cc3cec4a24e9cdf64920
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 17:16:44 2013 +0200
+
+    [rigo.ui.gtk3.models] add cached keyword argument to get_icon
+
+commit 9cf9e45a1187e544b327581693ca7a2952c34dbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 17:16:05 2013 +0200
+
+    [rigo.models.application] add cached argument to avoid querying the WS
+
+commit 9bc6b9212ed3a06e57e82caec369b971050a6703
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 10 19:27:27 2013 +0200
+
+    Tagging Entropy version 203
+
 commit b36c55573c669f4a5e1e55065034418aaa2c1a14
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jun 10 19:27:26 2013 +0200
