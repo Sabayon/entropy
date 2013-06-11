@@ -519,7 +519,7 @@ class ApplicationMetadata(object):
 
     @staticmethod
     def lazy_get_rating(entropy_ws, package_key, repository_id,
-                        callback=None, _still_visible_cb=None):
+                        callback=None, _still_visible_cb=None, cached=False):
         """
         Return the Rating (stars) for given package key, if it's available
         in local cache. At the same time, if not available and not already
@@ -539,17 +539,19 @@ class ApplicationMetadata(object):
         except WebService.CacheMiss as exc:
             if const_debug_enabled():
                 const_debug_write(__name__,
-                    "lazy_get_rating: cache miss for: %s, %s" % (
-                        package_key, repository_id))
-            # not in cache
-            flight_key = (package_key, repository_id)
-            with ApplicationMetadata._RATING_LOCK:
-                if flight_key not in ApplicationMetadata._RATING_IN_FLIGHT:
-                    # enqueue a new rating then
-                    ApplicationMetadata._enqueue_rating(
-                        webserv, package_key,
-                        repository_id, callback,
-                        _still_visible_cb)
+                    "lazy_get_rating: cache miss for: %s, %s, %s" % (
+                        package_key, repository_id, cached))
+
+            if not cached:
+                flight_key = (package_key, repository_id)
+                with ApplicationMetadata._RATING_LOCK:
+                    if flight_key not in ApplicationMetadata._RATING_IN_FLIGHT:
+                        # enqueue a new rating then
+                        ApplicationMetadata._enqueue_rating(
+                            webserv, package_key,
+                            repository_id, callback,
+                            _still_visible_cb)
+
             # let caller handle this
             raise exc
 
@@ -604,7 +606,8 @@ class ApplicationMetadata(object):
 
     @staticmethod
     def lazy_get_icon(entropy_ws, package_key, repository_id,
-                        callback=None, _still_visible_cb=None):
+                      callback=None, _still_visible_cb=None,
+                      cached=False):
         """
         Return a DocumentList of Icons for given package key, if it's available
         in local cache. At the same time, if not available and not already
@@ -647,18 +650,19 @@ class ApplicationMetadata(object):
         except WebService.CacheMiss as exc:
             if const_debug_enabled():
                 const_debug_write(__name__,
-                    "lazy_get_icon: cache miss for: %s, %s" % (
-                        package_key, repository_id))
-            # not in cache
-            flight_key = (package_key, repository_id)
-            with ApplicationMetadata._ICON_LOCK:
-                if flight_key not in ApplicationMetadata._ICON_IN_FLIGHT:
-                    # enqueue a new rating then
-                    
-                    ApplicationMetadata._enqueue_icon(
-                        webserv, package_key,
-                        repository_id, _icon_callback,
-                        _still_visible_cb)
+                    "lazy_get_icon: cache miss for: %s, %s, %s" % (
+                        package_key, repository_id, cached))
+
+            if not cached:
+                flight_key = (package_key, repository_id)
+                with ApplicationMetadata._ICON_LOCK:
+                    if flight_key not in ApplicationMetadata._ICON_IN_FLIGHT:
+                        # enqueue a new rating then
+                        ApplicationMetadata._enqueue_icon(
+                            webserv, package_key,
+                            repository_id, _icon_callback,
+                            _still_visible_cb)
+
             # let caller handle this
             raise exc
 
@@ -1571,7 +1575,7 @@ class Application(object):
         finally:
             self._entropy.rwsem().reader_release()
 
-    def get_review_stats(self, _still_visible_cb=None):
+    def get_review_stats(self, _still_visible_cb=None, cached=False):
         """
         Return ReviewStats object containing user review
         information about this Application, like
@@ -1592,7 +1596,8 @@ class Application(object):
                     self._entropy_ws, key,
                     self._source_repository_id(repo),
                     callback=self._redraw_callback,
-                    _still_visible_cb=_still_visible_cb)
+                    _still_visible_cb=_still_visible_cb,
+                    cached=False)
             except WebService.CacheMiss:
                 # not in cache, return empty stats
                 return stat
@@ -1610,7 +1615,7 @@ class Application(object):
         finally:
             self._entropy.rwsem().reader_release()
 
-    def get_icon(self, _still_visible_cb=None):
+    def get_icon(self, _still_visible_cb=None, cached=False):
         """
         Return Application Icon image Entropy Document object.
         In case of missing icon, None is returned.
@@ -1632,7 +1637,8 @@ class Application(object):
                     self._entropy_ws, key,
                     self._source_repository_id(repo),
                     callback=self._redraw_callback,
-                    _still_visible_cb=_still_visible_cb)
+                    _still_visible_cb=_still_visible_cb,
+                    cached=cached)
             except WebService.CacheMiss:
                 cache_hit = False
                 icon = None
