@@ -141,17 +141,22 @@ class AppListStore(Gtk.ListStore):
 
         return s_data['res']
 
-    def get_icon(self, app):
+    def get_icon(self, app, cached=False):
 
         pkg_match = app.get_details().pkg
-        cached = AppListStore._ICON_CACHE.get(pkg_match)
-        if cached is not None:
-            return cached
+        cached_icon = AppListStore._ICON_CACHE.get(pkg_match)
+        if cached_icon is not None:
+            return cached_icon
+        if cached:
+            # then return the default icon
+            return self._missing_icon
 
         def _still_visible():
             return self.visible(pkg_match)
 
-        icon, cache_hit = app.get_icon(_still_visible_cb=_still_visible)
+        icon, cache_hit = app.get_icon(
+            _still_visible_cb=_still_visible,
+            cached=cached)
         if const_debug_enabled():
             const_debug_write(__name__,
                               "get_icon({%s, %s}) = %s, hit: %s" % (
