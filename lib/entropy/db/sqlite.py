@@ -134,6 +134,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
     _INSERT_OR_REPLACE = "INSERT OR REPLACE"
     _INSERT_OR_IGNORE = "INSERT OR IGNORE"
     _UPDATE_OR_REPLACE = "UPDATE OR REPLACE"
+    _CACHE_SIZE = 8192
 
     SETTING_KEYS = ("arch", "on_delete_cascade", "schema_revision",
         "_baseinfo_extrainfo_2010")
@@ -508,8 +509,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("_doesColumnInTableExist")
         self._setupInitialSettings()
         # set cache size
-        self.__setCacheSize(8192)
-        self.__setDefaultCacheSize(8192)
+        self.__setCacheSize(self._CACHE_SIZE)
+        self.__setDefaultCacheSize(self._CACHE_SIZE)
         self._databaseStructureUpdates()
 
         self.commit()
