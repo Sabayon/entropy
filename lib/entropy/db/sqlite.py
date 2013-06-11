@@ -434,7 +434,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
     def __unicode__(self):
         return self.__show_info()
 
-    def __setCacheSize(self, size):
+    def _setCacheSize(self, size):
         """
         Change low-level, storage engine based cache size.
 
@@ -443,7 +443,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self._cursor().execute('PRAGMA cache_size = %s' % (size,))
 
-    def __setDefaultCacheSize(self, size):
+    def _setDefaultCacheSize(self, size):
         """
         Change default low-level, storage engine based cache size.
 
@@ -509,8 +509,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("_doesColumnInTableExist")
         self._setupInitialSettings()
         # set cache size
-        self.__setCacheSize(self._CACHE_SIZE)
-        self.__setDefaultCacheSize(self._CACHE_SIZE)
+        self._setCacheSize(self._CACHE_SIZE)
+        self._setDefaultCacheSize(self._CACHE_SIZE)
         self._databaseStructureUpdates()
 
         self.commit()
