@@ -1,0 +1,217 @@
+<!ELEMENT packages (package+)>
+<!ELEMENT package (
+          atom, category, name, version, versiontag,
+          revision, branch, slot, licenses?, trigger?,
+          description, homepage, size, chost,
+          cflags, cxxflags,  content?, provides?,
+          dependencies?, sources?, useflags?,
+          keywords?, config-protect?, config-protect-mask?,
+          needed-libs?, provided-libs?, changelog?, desktop-mimes?,
+          download, extra-downloads?, provided-mimes?, signatures?,
+          spm-phases?, spm-payload?)>
+<!--
+    @system: is the package part of the system set?
+    @injected: is the package injected (emerge -B)
+    @creationdate: seconds (float) since epoch
+    @etpapi: Entropy Package API revision (integer expected)
+-->
+<!ATTLIST package
+          id ID #REQUIRED
+          system (true | false) "false"
+          injected (true | false) "false"
+          creationdate CDATA #REQUIRED
+          etpapi CDATA #REQUIRED
+          spm-repository CDATA #IMPLIED>
+
+<!-- The package atom, for example:
+     - app-office/libreoffice-4.1-r2
+     - x11-drivers/nvidia-drivers-304.88#3.4.0-sabayon
+  -->
+<!ELEMENT atom (#PCDATA)>
+
+<!-- The package category, for example: app-office -->
+<!ELEMENT category (#PCDATA)>
+
+<!-- The package name -->
+<!ELEMENT name (#PCDATA)>
+
+<!-- The natural name of a package, for example: LibreOffice
+     (for app-office/libreoffice)-->
+<!ATTLIST name natural-name CDATA #IMPLIED>
+
+<!-- The package version, for example: 1.2.3-r1 -->
+<!ELEMENT version (#PCDATA)>
+
+<!-- The package tag, for example: 3.10.0-sabayon -->
+<!ELEMENT versiontag (#PCDATA)>
+
+<!-- The package Entropy revision, for example: 2 -->
+<!ELEMENT revision (#PCDATA)>
+
+<!-- The branch in where the package is published, for example: 1 -->
+<!ELEMENT branch (#PCDATA)>
+
+<!-- The package slot, for example: 0
+  Please note that the tuple (category, name, slot, versiontag) form
+  a key for the installed packages repository. In other words, you
+  cannot have more than one package installed having the same tuple. -->
+<!ELEMENT slot (#PCDATA)>
+
+<!-- The package licenses, for example: GPL-2, LGPL-2
+  Multiple license elements can be specified. The license
+  name points to a license text. -->
+<!ELEMENT licenses (license+)>
+<!ELEMENT license (#PCDATA)> <!-- the license text, base64 encoded. -->
+<!ATTLIST license name CDATA #REQUIRED>
+
+<!-- The package trigger code, in base64 format. -->
+<!ELEMENT trigger (#PCDATA)>
+
+<!-- The package description -->
+<!ELEMENT description (#PCDATA)>
+
+<!-- The package WWW home page -->
+<!ELEMENT homepage (#PCDATA)>
+
+<!-- The main package file size, in bytes, for example: 1223121 -->
+<!ELEMENT size (#PCDATA)>
+
+<!-- The CHOST this package is compiled with, for
+     example: x86_64-pc-linux-gnu -->
+<!ELEMENT chost (#PCDATA)>
+
+<!-- The CFLAGS this package is compiled with -->
+<!ELEMENT cflags (#PCDATA)>
+
+<!-- The CXXFLAGS this package is compiled with -->
+<!ELEMENT cxxflags (#PCDATA)>
+
+<!-- The package content -->
+<!ELEMENT content (path)+>
+<!ELEMENT path (#PCDATA)>
+<!ATTLIST path
+          type (obj | sym | fif | dev | dir) #REQUIRED
+          mtime CDATA #IMPLIED
+          sha256 CDATA #IMPLIED>
+
+<!-- The package provides other package names that can be used
+     to resolve it. For instance, postfix can provide the
+     virtual/mta and virtual/mda packages. This metadata is
+     deprecated and real packages should be used. -->
+<!ELEMENT provides (provide)+>
+<!ELEMENT provide (#PCDATA)>
+<!-- If a package provides more virtuals, one can be set as
+     default. More default types can be added in future, this
+     is why it's not a (true | false) enum. -->
+<!ATTLIST provide default (0 | 1) "0">
+
+<!-- The package dependencies. Please note that <dependency> must be
+  escaped because it may contain illegal characters for #PCDATA (><). -->
+<!ELEMENT dependencies (dependency)+>
+<!ELEMENT dependency (#PCDATA)>
+<!ATTLIST dependency
+          type (buildtime | runtime | post-runtime | manual) #REQUIRED
+          conflict (true | false) "false">
+
+<!-- The package source code tarball URLs. It is possible that the
+     URL is in a mirror://<name> encoded form. You can speed up the
+     mirror URL resolution by providing a static relation to its
+     mirror name. -->
+<!ELEMENT sources (source)+>
+<!ELEMENT source (#PCDATA)>
+<!ATTLIST source source-mirror-id IDREF #IMPLIED>
+
+<!-- The package USE flags, disabled USE flags shall start with "-" -->
+<!ELEMENT useflags (useflag)+>
+<!ELEMENT useflag EMPTY>
+<!ATTLIST useflag name CDATA #REQUIRED>
+
+<!-- The package arch keywords, for example: ~amd64 -->
+<!ELEMENT keywords (keyword)+>
+<!ELEMENT keyword EMPTY>
+<!ATTLIST keyword arch CDATA #REQUIRED>
+
+<!-- CONFIG_PROTECT and CONFIG_PROTECT_MASK values for the package -->
+<!ELEMENT config-protect (#PCDATA)>
+<!ELEMENT config-protect-mask (#PCDATA)>
+
+<!-- The list of ELF libraries required by the package -->
+<!ELEMENT needed-libs (needed-lib)+>
+<!ELEMENT needed-lib EMPTY>
+<!ATTLIST needed-lib
+          name CDATA #REQUIRED
+          elfclass CDATA #REQUIRED>
+
+<!-- The list of ELF libraries provided by the package -->
+<!ELEMENT provided-libs (provided-lib)+>
+<!ELEMENT provided-lib (#PCDATA)> <!-- #PCDATA contains the path -->
+<!ATTLIST provided-lib
+          name CDATA #REQUIRED
+          elfclass CDATA #REQUIRED>
+
+<!-- The package ChangeLog content -->
+<!ELEMENT changelog EMPTY>
+<!ATTLIST changelog pkg-changelog-id IDREF #REQUIRED>
+
+<!-- The package published .desktop mime metadata -->
+<!ELEMENT desktop-mimes (desktop-mime)+>
+<!ELEMENT desktop-mime (#PCDATA)> <!-- #PCDATA contains the executable path -->
+<!ATTLIST desktop-mime
+          name CDATA #REQUIRED
+          mimetype CDATA #REQUIRED
+          icon CDATA #REQUIRED>
+
+<!-- The main package file download URL.-->
+<!ELEMENT download EMPTY>
+<!ATTLIST download signature-id IDREF #REQUIRED>
+
+<!-- Extra package download file paths. -->
+<!ELEMENT extra-downloads (extra-download)+>
+<!ELEMENT extra-download EMPTY>
+<!ATTLIST extra-download
+          type CDATA #REQUIRED
+          size CDATA #REQUIRED
+          disksize CDATA #REQUIRED
+          signature-id IDREF #REQUIRED>
+
+<!ELEMENT provided-mimes (provided-mime)+>
+<!ELEMENT provided-mime EMPTY>
+<!ATTLIST provided-mime mimetype CDATA #REQUIRED>
+
+<!-- The signatures of the package files of the package.
+     The <url> element contains
+     a relative URL that will be prefixed by the mirror.
+  -->
+<!ELEMENT signatures (signature)+>
+<!ELEMENT signature (url, md5, sha1, sha256, sha512, gpg?)>
+<!ATTLIST signature id ID #REQUIRED>
+<!ELEMENT url (#PCDATA)>
+<!ELEMENT md5 (#PCDATA)>
+<!ELEMENT sha1 (#PCDATA)>
+<!ELEMENT sha256 (#PCDATA)>
+<!ELEMENT sha512 (#PCDATA)>
+<!ELEMENT gpg (#PCDATA)> <!-- base64 encoded. -->
+
+<!-- The Source Package Manager exported phases, for example: pkg_setup. -->
+<!ELEMENT spm-phases (spm-phase)+>
+<!ELEMENT spm-phase (#PCDATA)>
+
+<!-- Unspecified Source Package Manager payload data (can be binary).
+     base64 encoded.
+-->
+<!ELEMENT spm-payload (#PCDATA)>
+
+<!--
+   Other separate metadata that is referenced inside <package>
+-->
+
+<!ELEMENT source-mirrors (source-mirror)*>
+<!ELEMENT source-mirror (mirror)+>
+<!ATTLIST source-mirror
+          id ID #REQUIRED
+          name CDATA #REQUIRED>
+<!ELEMENT mirror (#PCDATA)>
+
+<!ELEMENT pkg-changelogs (pkg-changelog)*>
+<!ELEMENT pkg-changelog (#PCDATA)>
+<!ATTLIST pkg-changelog id ID #REQUIRED>
