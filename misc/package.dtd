@@ -1,6 +1,6 @@
 <!ELEMENT packages (package+)>
 <!ELEMENT package (
-          atom, category, name, version, versiontag,
+          atom, category, name, version, versiontag?,
           revision, branch, slot, licenses?, trigger?,
           description, homepage, size, chost,
           cflags, cxxflags,  content?, provides?,
