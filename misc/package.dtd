@@ -1,4 +1,4 @@
-<!ELEMENT packages (package+)>
+<!ELEMENT packages (package+,source-mirrors?,pkg-changelogs?)>
 <!ELEMENT package (
           atom, category, name, version, versiontag?,
           revision, branch, slot, licenses?, trigger?,
