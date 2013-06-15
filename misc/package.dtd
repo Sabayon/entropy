@@ -7,7 +7,7 @@
           dependencies?, sources?, useflags?,
           keywords?, config-protect?, config-protect-mask?,
           needed-libs?, provided-libs?, changelog?, desktop-mimes?,
-          download, extra-downloads?, provided-mimes?, signatures?,
+          download, extra-downloads?, signatures?, provided-mimes?,
           spm-phases?, spm-payload?)>
 <!--
     @system: is the package part of the system set?
