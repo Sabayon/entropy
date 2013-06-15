@@ -11,8 +11,8 @@
     <branch>5</branch>
     <slot>0,3.9.0-sabayon</slot>
     <licenses>
-      <license name="GPL-2">This is foo bar.</license>
-      <license name="NVIDIA">This is bar baz.</license>
+      <license name="GPL-2" enc="plain">This is foo bar.</license>
+      <license name="NVIDIA" enc="plain">This is bar baz.</license>
     </licenses>
     <trigger>0</trigger>
     <description>NVIDIA GPUs kernel drivers</description>

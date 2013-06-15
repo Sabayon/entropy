@@ -61,8 +61,10 @@
   Multiple license elements can be specified. The license
   name points to a license text. -->
 <!ELEMENT licenses (license+)>
-<!ELEMENT license (#PCDATA)> <!-- the license text, base64 encoded. -->
-<!ATTLIST license name CDATA #REQUIRED>
+<!ELEMENT license (#PCDATA?)> <!-- the license text, base64 encoded. -->
+<!ATTLIST license
+          name CDATA #REQUIRED
+          enc (plain | base64) #REQUIRED>
 
 <!-- The package trigger code, in base64 format. -->
 <!ELEMENT trigger (#PCDATA)>
