@@ -8,6 +8,7 @@
 
     B{Entropy Framework repository database prototype classes module}.
 """
+import base64
 import os
 import shutil
 import warnings
@@ -18,7 +19,7 @@ import collections
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
 from entropy.const import etpConst, const_cmp, const_debug_write, \
-    const_mkstemp, const_is_python3
+    const_convert_to_rawstring, const_mkstemp, const_is_python3
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
     darkred
 from entropy.cache import EntropyCacher
@@ -1561,6 +1562,413 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         }
 
         return data
+
+    def getPackageXmlData(self, package_ids, get_content=True,
+                          get_changelog=True, get_content_safety=True):
+        """
+        Generate the XML of the packages passed through package_ids. It is
+        possible to validate the schema using either package.dtd or package.xsd.
+        The returned string does not contain any xml header and the root tag is
+        <packages>.
+        Please note that the current implementation generates the
+        XML tree in RAM and doesn't do any kind of "streaming".
+
+        @param package_ids: list of package identifiers
+        @type package_ids: list
+        @keyword get_content: include the package content in the XML
+        @type get_content: bool
+        @keyword get_changelog: include the package changelog in the XML
+        @type get_changelog: bool
+        @keyword get_content_safety: include the content safety metadata in the
+            XML
+        @type get_content_safety: bool
+        @return: valid XML data
+        @rtype: string
+        """
+        from xml.dom import minidom
+        doc = minidom.Document()
+        packages = doc.createElement("packages")
+        source_mirror_id = 1
+        source_mirrors = {}
+        package_changelogs_id = 1
+        package_changelogs = {}
+
+        for package_id in package_ids:
+            data = self.getPackageData(
+                package_id, get_content = get_content,
+                get_changelog = get_changelog,
+                get_content_safety = get_content_safety)
+
+            package = doc.createElement("package")
+            package.setAttribute("id", "id-%d" % (package_id,))
+
+            is_system = "false"
+            if data['systempackage']:
+                is_system = "true"
+            package.setAttribute("system", is_system)
+
+            is_injected = "false"
+            if data['injected']:
+                is_injected = "true"
+            package.setAttribute("injected", is_injected)
+
+            package.setAttribute("creationdate", data['datecreation'])
+            package.setAttribute("etpapi", "%d" % (data['etpapi'],))
+            package.setAttribute("spm-repository", data['spm_repository'])
+
+            atom = doc.createElement("atom")
+            atom.appendChild(doc.createTextNode(data['atom']))
+            package.appendChild(atom)
+
+            category = doc.createElement("category")
+            category.appendChild(doc.createTextNode(data['category']))
+            package.appendChild(category)
+
+            name = doc.createElement("name")
+            name.appendChild(doc.createTextNode(data['name']))
+            name.setAttribute("natural-name", data['name'].capitalize())
+            package.appendChild(name)
+
+            version = doc.createElement("version")
+            version.appendChild(doc.createTextNode(data['version']))
+            package.appendChild(version)
+
+            if data['versiontag']:
+                versiontag = doc.createElement("versiontag")
+                versiontag.appendChild(doc.createTextNode(data['versiontag']))
+                package.appendChild(versiontag)
+
+            revision = doc.createElement("revision")
+            revision.appendChild(doc.createTextNode("%d" % (data['revision'],)))
+            package.appendChild(revision)
+
+            branch = doc.createElement("branch")
+            branch.appendChild(doc.createTextNode(data['branch']))
+            package.appendChild(branch)
+
+            slot = doc.createElement("slot")
+            slot.appendChild(doc.createTextNode(data['slot']))
+            package.appendChild(slot)
+
+            lics = data['license'].split()
+            lic_data = data['licensedata']
+            licenses = doc.createElement("licenses")
+            for lic in lics:
+                lic_el = doc.createElement("license")
+
+                lic_text = lic_data.get(lic, " ")
+                if lic_text:
+                    lic_text = base64.b64encode(
+                        const_convert_to_rawstring(
+                            lic_text, from_enctype = "utf-8"))
+                    lic_el.appendChild(doc.createTextNode(lic_text))
+                lic_el.setAttribute("name", lic)
+                lic_el.setAttribute("enc", "base64")
+                licenses.appendChild(lic_el)
+            if lics:
+                package.appendChild(licenses)
+
+            if data['trigger']:
+                trigger = doc.createElement("trigger")
+                trigger.appendChild(doc.createTextNode(
+                    base64.b64encode(data['trigger'])))
+                package.appendChild(trigger)
+
+            description = doc.createElement("description")
+            description.appendChild(doc.createTextNode(data['description']))
+            package.appendChild(description)
+
+            homepage = doc.createElement("homepage")
+            homepage.appendChild(doc.createTextNode(data['homepage']))
+            package.appendChild(homepage)
+
+            size = doc.createElement("size")
+            size.appendChild(doc.createTextNode("%s" % (data['size'],)))
+            package.appendChild(size)
+
+            chost = doc.createElement("chost")
+            chost.appendChild(doc.createTextNode(data['chost']))
+            package.appendChild(chost)
+
+            cflags = doc.createElement("cflags")
+            cflags.appendChild(doc.createTextNode(data['cflags']))
+            package.appendChild(cflags)
+
+            cxxflags = doc.createElement("cxxflags")
+            cxxflags.appendChild(doc.createTextNode(data['cxxflags']))
+            package.appendChild(cxxflags)
+
+            content = doc.createElement("content")
+            if data['content']:
+                for path in sorted(data['content']):
+                    con_type = data['content'][path]
+                    path_el = doc.createElement("path")
+                    path_el.setAttribute("type", con_type)
+                    path_cs = data['content_safety'].get(path)
+                    if path_cs:
+                        path_el.setAttribute(
+                            "mtime", "%f" % (path_cs['mtime'],))
+                        path_el.setAttribute("sha256", path_cs['sha256'])
+                    path_el.appendChild(doc.createTextNode(path))
+                    content.appendChild(path_el)
+                package.appendChild(content)
+
+            provides = doc.createElement("provides")
+            if data['provide_extended']:
+                for provide, is_default in sorted(data['provide_extended']):
+                    provide_el = doc.createElement("provide")
+                    default = "0"
+                    if is_default:
+                        default = "1"
+                    provide_el.setAttribute("default", default)
+                    provides.appendChild(provide_el)
+                package.appendChild(provides)
+
+            dependencies = doc.createElement("dependencies")
+            if data['dependencies']:
+                dep_type_ids = etpConst['dependency_type_ids']
+                dep_type_map = {
+                    dep_type_ids['bdepend_id']: "buildtime",
+                    dep_type_ids['rdepend_id']: "runtime",
+                    dep_type_ids['pdepend_id']: "post-runtime",
+                    dep_type_ids['mdepend_id']: "manual",
+                }
+                for dep in sorted(data['conflicts']):
+                    dependency = doc.createElement("dependency")
+                    dependency.appendChild(doc.createTextNode(dep))
+                    dependency.setAttribute("type", "runtime")
+                    dependency.setAttribute("conflict", "true")
+                    dependencies.appendChild(dependency)
+
+                for dep in sorted(data['dependencies']):
+                    dep_type = dep_type_map[data['dependencies'][dep]]
+                    dependency = doc.createElement("dependency")
+                    dependency.appendChild(doc.createTextNode(dep))
+                    dependency.setAttribute("type", dep_type)
+                    dependency.setAttribute("conflict", "false")
+                    dependencies.appendChild(dependency)
+
+                package.appendChild(dependencies)
+
+            for mirror_name, mirrors in data['mirrorlinks']:
+                obj = source_mirrors.setdefault(mirror_name, {})
+                if not obj:
+                    obj.update({'id': source_mirror_id,
+                                'mirrors': set(mirrors),})
+                    source_mirror_id += 1
+                else:
+                    obj['mirrors'].update(mirrors)
+
+            sources = doc.createElement("sources")
+            if data['sources']:
+                for source in sorted(data['sources']):
+                    source_el = doc.createElement("source")
+                    source_el.appendChild(doc.createTextNode(source))
+                    sources.appendChild(source_el)
+                package.appendChild(sources)
+
+            useflags = doc.createElement("useflags")
+            if data['useflags']:
+                for useflag in sorted(data['useflags']):
+                    useflag_el = doc.createElement("useflag")
+                    useflag_el.setAttribute("name", useflag)
+                    useflags.appendChild(useflag_el)
+                package.appendChild(useflags)
+
+            keywords = doc.createElement("keywords")
+            if data['keywords']:
+                for keyword in sorted(data['keywords']):
+                    keyword_el = doc.createElement("keyword")
+                    keyword_el.setAttribute("arch", keyword)
+                    keywords.appendChild(keyword_el)
+                package.appendChild(keywords)
+
+            if data['config_protect']:
+                config_protect = doc.createElement("config-protect")
+                config_protect.appendChild(
+                    doc.createTextNode(data['config_protect']))
+                package.appendChild(config_protect)
+
+            if data['config_protect_mask']:
+                config_protect_mask = doc.createElement("config-protect-mask")
+                config_protect_mask.appendChild(
+                    doc.createTextNode(data['config_protect_mask']))
+                package.appendChild(config_protect_mask)
+
+            needed_libs = doc.createElement("needed-libs")
+            if data['needed']:
+                for needed, elf_class in sorted(data['needed']):
+                    needed_el = doc.createElement("needed-lib")
+                    needed_el.setAttribute("name", needed)
+                    needed_el.setAttribute("elfclass", "%d" % (elf_class,))
+                    needed_libs.appendChild(needed_el)
+                package.appendChild(needed_libs)
+
+            provided_libs = doc.createElement("provided-libs")
+            if data['provided_libs']:
+                for libname, path, elf_class in sorted(data['provided_libs']):
+                    provided_el = doc.createElement("provided-lib")
+                    provided_el.setAttribute("name", libname)
+                    provided_el.setAttribute("elfclass", "%d" % (elf_class,))
+                    provided_el.appendChild(doc.createTextNode(path))
+                    provided_libs.appendChild(provided_el)
+                package.appendChild(provided_libs)
+
+            if data['changelog']:
+                changelog_key = (data['category'], data['name'])
+                obj = package_changelogs.setdefault(changelog_key, {})
+                if not obj:
+                    obj.update({
+                        'id': package_changelogs_id,
+                        'changelog': data['changelog'],
+                    })
+                    package_changelogs_id += 1
+
+                changelog = doc.createElement("changelog")
+                changelog.setAttribute("pkg-changelog-id", "%d" % (obj['id'],))
+                package.appendChild(changelog)
+
+            desktop_mimes = doc.createElement("desktop-mimes")
+            if data['desktop_mime']:
+                for mime in data['desktop_mime']:
+                    mime_el = doc.createElement("desktop-mime")
+                    mime_el.setAttribute("name", mime['name'])
+                    mime_el.setAttribute("mimetype", mime['mimetype'])
+                    mime_el.setAttribute("icon", mime['icon'])
+                    mime_el.appendChild(doc.createTextNode(mime['executable']))
+                    desktop_mimes.appendChild(mime_el)
+                package.appendChild(desktop_mimes)
+
+            signature_id = 1
+            signatures = {}
+            download = doc.createElement("download")
+            download.setAttribute("signature-id", "sign-%d-%d" % (
+                package_id, signature_id,))
+            package.appendChild(download)
+            signatures[1] = {
+                'url': data['download'],
+                'md5': data['digest'],
+                'sha1': data['signatures']['sha1'],
+                'sha256': data['signatures']['sha256'],
+                'sha512': data['signatures']['sha512'],
+                'gpg': data['signatures']['gpg'],
+            }
+            signature_id += 1
+
+            extra_downloads = doc.createElement("extra-downloads")
+            if data['extra_download']:
+                for extra_download in data['extra_download']:
+                    extra_download_el = doc.createElement("extra-download")
+                    extra_download_el.setAttribute(
+                        "type", extra_download['type'])
+                    extra_download_el.setAttribute(
+                        "size", "%d" % (extra_download['size'],))
+                    extra_download_el.setAttribute(
+                        "disksize", "%d" % (extra_download['disksize'],))
+                    extra_download_el.setAttribute(
+                        "signature-id",
+                        "sign-%d-%d" % (package_id, signature_id,))
+                    signatures[signature_id] = {
+                        'url': extra_download['download'],
+                        'md5': extra_download['md5'],
+                        'sha1': extra_download['sha1'],
+                        'sha256': extra_download['sha256'],
+                        'sha512': extra_download['sha512'],
+                        'gpg': extra_download['gpg'],
+                    }
+                    signature_id += 1
+                    extra_downloads.appendChild(extra_download_el)
+                package.appendChild(extra_downloads)
+
+            signatures_el = doc.createElement("signatures")
+            for signature_id in sorted(signatures):
+                sign_data = signatures[signature_id]
+                signature_el = doc.createElement("signature")
+                signature_el.setAttribute("id", "sign-%d-%d" % (
+                    package_id, signature_id,))
+
+                sign_url = doc.createElement("url")
+                sign_url.appendChild(doc.createTextNode(sign_data['url']))
+                signature_el.appendChild(sign_url)
+
+                sign_md5 = doc.createElement("md5")
+                sign_md5.appendChild(doc.createTextNode(sign_data['md5']))
+                signature_el.appendChild(sign_md5)
+
+                sha1 = sign_data['sha1'] or ""
+                sign_sha1 = doc.createElement("sha1")
+                sign_sha1.appendChild(doc.createTextNode(sha1))
+                signature_el.appendChild(sign_sha1)
+
+                sha256 = sign_data['sha256'] or ""
+                sign_sha256 = doc.createElement("sha256")
+                sign_sha256.appendChild(doc.createTextNode(sha256))
+                signature_el.appendChild(sign_sha256)
+
+                sha512 = sign_data['sha256'] or ""
+                sign_sha512 = doc.createElement("sha512")
+                sign_sha512.appendChild(doc.createTextNode(sha512))
+                signature_el.appendChild(sign_sha512)
+
+                gpg = sign_data['gpg'] or ""
+                sign_gpg = doc.createElement("gpg")
+                sign_gpg.appendChild(doc.createTextNode(gpg))
+                signature_el.appendChild(sign_gpg)
+
+                signatures_el.appendChild(signature_el)
+
+            package.appendChild(signatures_el)
+
+            provided_mimes = doc.createElement("provided-mimes")
+            if data['provided_mime']:
+                for mime in sorted(data['provided_mime']):
+                    provided_mime = doc.createElement("provided-mime")
+                    provided_mime.setAttribute("mimetype", mime)
+                    provided_mimes.appendChild(provided_mime)
+                package.appendChild(provided_mimes)
+
+            spm_phases = doc.createElement("spm-phases")
+            if data['spm_phases']:
+                for spm_phase in data['spm_phases'].split():
+                    spm_phase_el = doc.createElement("spm-phase")
+                    spm_phase_el.appendChild(doc.createTextNode(spm_phase))
+                    spm_phases.appendChild(spm_phase_el)
+                package.appendChild(spm_phases)
+
+            spm_payload_el = doc.createElement("spm-payload")
+            spm_payload = self.retrieveSpmMetadata(package_id)
+            if spm_payload:
+                spm_payload = base64.b64encode(spm_payload)
+                spm_payload_el.appendChild(doc.createTextNode(spm_payload))
+                package.appendChild(spm_payload_el)
+
+            packages.appendChild(package)
+
+        source_mirrors_el = doc.createElement("source-mirrors")
+        if source_mirrors:
+            for mirror_name in sorted(source_mirrors):
+                obj = source_mirrors[mirror_name]
+                source_mirror = doc.createElement("source-mirror")
+                source_mirror.setAttribute(
+                    "id", "source-mirror-%d" % (obj['id'],))
+                source_mirror.setAttribute("name", mirror_name)
+                for mirror in sorted(obj['mirrors']):
+                    mirror_el = doc.createElement("mirror")
+                    mirror_el.appendChild(doc.createTextNode(mirror))
+                    source_mirror.appendChild(mirror_el)
+                source_mirrors_el.appendChild(source_mirror)
+            packages.appendChild(source_mirrors_el)
+
+        pkg_changelogs_el = doc.createElement("pkg-changelogs")
+        if package_changelogs:
+            for changelog_key, cl in package_changelogs.items():
+                pkg_changelog = doc.createElement("pkg-changelog")
+                pkg_changelog.appendChild(doc.createTextNode(cl['changelog']))
+                pkg_changelog.setAttribute("id", "%d" % (cl['id'],))
+                pkg_changelogs_el.appendChild(pkg_changelog)
+            packages.appendChild(pkg_changelogs_el)
+
+        return packages.toprettyxml(indent="  ")
 
     def clearCache(self):
         """
