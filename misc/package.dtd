@@ -176,10 +176,6 @@
           disksize CDATA #REQUIRED
           signature-id IDREF #REQUIRED>
 
-<!ELEMENT provided-mimes (provided-mime)+>
-<!ELEMENT provided-mime EMPTY>
-<!ATTLIST provided-mime mimetype CDATA #REQUIRED>
-
 <!-- The signatures of the package files of the package.
      The <url> element contains
      a relative URL that will be prefixed by the mirror.
@@ -192,7 +188,11 @@
 <!ELEMENT sha1 (#PCDATA)>
 <!ELEMENT sha256 (#PCDATA)>
 <!ELEMENT sha512 (#PCDATA)>
-<!ELEMENT gpg (#PCDATA)> <!-- base64 encoded. -->
+<!ELEMENT gpg (#PCDATA)>
+
+<!ELEMENT provided-mimes (provided-mime)+>
+<!ELEMENT provided-mime EMPTY>
+<!ATTLIST provided-mime mimetype CDATA #REQUIRED>
 
 <!-- The Source Package Manager exported phases, for example: pkg_setup. -->
 <!ELEMENT spm-phases (spm-phase)+>
