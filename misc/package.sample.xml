@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE packages SYSTEM "package.dtd">
+<packages>
+  <package id="pkg-1" etpapi="3" creationdate="1371071605.00">
+    <atom>x11-drivers/nvidia-drivers-313.30#3.9.0-sabayon</atom>
+    <category>x11-drivers</category>
+    <name natural-name="NVIDIA Drivers">nvidia-drivers</name>
+    <version>313.30</version>
+    <versiontag>3.9.0-sabayon</versiontag>
+    <revision>4</revision>
+    <branch>5</branch>
+    <slot>0,3.9.0-sabayon</slot>
+    <licenses>
+      <license name="GPL-2">This is foo bar.</license>
+      <license name="NVIDIA">This is bar baz.</license>
+    </licenses>
+    <trigger>0</trigger>
+    <description>NVIDIA GPUs kernel drivers</description>
+    <homepage>http://www.nvidia.com/</homepage>
+    <size>3686400</size>
+    <chost>x86_64-pc-linux-gnu</chost>
+    <cflags>-O2 -march=x86-64 -pipe</cflags>
+    <cxxflags>-O2 -march=x86-64 -pipe</cxxflags>
+    <content>
+      <path type="dir">/etc</path>
+      <path type="obj">/etc/nvidia.conf</path>
+    </content>
+    <download signature-id="sign1"/>
+    <signatures>
+      <signature id="sign1">
+        <url>packages-nonfree/amd64/5/foobar.tbz2</url>
+        <md5>2b213f07fd69e856688c2d9964be610c</md5>
+        <sha1>c85320d9ddb90c13f4a215f1f0a87b531ab33310</sha1>
+        <sha256>dc460da4ad72c482231e28e688e01f2778a88ce31a08826899d54ef7183998b5</sha256>
+        <sha512>85d2a87a70feb0e595dde83b487f1c549c3ef26e7338f39259c81094077479864fac537ec05152510ae7b9735c672033031f267add03410950c721a8e55a2a9c</sha512>
+      </signature>
+    </signatures>
+  </package>
+</packages>
