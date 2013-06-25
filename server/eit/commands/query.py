@@ -243,8 +243,8 @@ tools.
 
         exit_st = 0
         for package in self._nsargs.packages:
-            pkg_id, repo_id = entropy_server.atom_match(package)
-            if pkg_id == -1:
+            package_id, repository_id = entropy_server.atom_match(package)
+            if package_id == -1:
                 if not self._quiet:
                     entropy_server.output(
                         "%s: %s" % (
@@ -252,10 +252,10 @@ tools.
                         level="warning", importance=1)
                 exit_st = 1
                 continue
-            repo = entropy_server.open_repository(repo_id)
+            repo = entropy_server.open_repository(repository_id)
 
             key_sorter = lambda x: repo.retrieveAtom(x)
-            results = repo.retrieveReverseDependencies(pkg_id,
+            results = repo.retrieveReverseDependencies(package_id,
                 exclude_deptypes = excluded_dep_types)
             for pkg_id in sorted(results, key = key_sorter):
                 print_package_info(pkg_id, entropy_server, repo,
@@ -263,10 +263,10 @@ tools.
                     extended = self._verbose, quiet = self._quiet)
 
             if not self._quiet:
-                atom = repo.retrieveAtom(pkg_id)
+                atom = repo.retrieveAtom(package_id)
                 entropy_server.output(
                     "[%s] %s: %s %s" % (
-                        purple(repo_id),
+                        purple(repository_id),
                         darkgreen(atom),
                         bold(str(len(results))),
                         teal(_("revdep(s) found"))))
