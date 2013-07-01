@@ -30,6 +30,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
 from entropy.core import Singleton, EntropyPluginStore, BaseConfigParser
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
+from entropy.output import nocolor
 from entropy.i18n import _
 
 import entropy.tools
@@ -1609,6 +1610,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
         def _name(setting):
             data['name'] = setting.strip()
 
+        def _colors(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if (bool_setting is not None) and not bool_setting:
+                nocolor()
+
         def _spm_backend(setting):
             data['spm_backend'] = setting.strip()
 
@@ -1623,6 +1629,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         settings_map = {
             'loglevel': _loglevel,
+            'colors': _colors,
             'ftp-proxy': _ftp_proxy,
             'http-proxy': _http_proxy,
             'rsync-proxy': _rsync_proxy,
