@@ -4623,6 +4623,69 @@ class Server(Client):
 
         return set(missing_map.keys())
 
+    def removed_reverse_dependencies_test(self):
+        """
+        Test repositories against packages that have been removed
+        from system (but not stored in an injected state) and are
+        still in the repositories. For each of them, print a list
+        of direct reverse dependencies that should be fixed.
+
+        @return: an ordered list of orphaned package matches
+            (sorted by atom).
+        @rtype: list
+        """
+        _ignore, removed, _ignore = self.scan_package_changes()
+        if not removed:
+            return []
+
+        self.output(
+            "[%s] %s:" % (
+                red(_("test")),
+                blue(_("these packages haven't been removed yet")),
+            ),
+            importance = 1,
+            level = "warning",
+            header = purple(" @@ ")
+        )
+
+        rsort = lambda x: self.open_repository(
+            x[1]).retrieveAtom(x[0])
+        r_matches = sorted(removed, key = rsort)
+
+        for package_id, repository_id in r_matches:
+            repo = self.open_repository(repository_id)
+            r_atom = repo.retrieveAtom(package_id)
+
+            self.output(
+                "[%s] %s" % (
+                    brown(repository_id),
+                    purple(r_atom),
+                ),
+                importance = 1,
+                level = "warning",
+                header = teal("  # ")
+            )
+
+            reverse_package_as = repo.retrieveReverseDependencies(
+                package_id, atoms = True)
+            if reverse_package_as:
+                self.output(
+                    "%s:" %(
+                        red(_("Needed by")),
+                    ),
+                    level = "warning",
+                    header = purple("    # ")
+                )
+
+            for rev_atom in reverse_package_as:
+                self.output(
+                    purple(rev_atom),
+                    level = "warning",
+                    header = purple("    # ")
+                )
+
+        return r_matches
+
     def extended_dependencies_test(self, repository_ids):
         """
         Test repository against missing dependencies.
@@ -4651,6 +4714,9 @@ class Server(Client):
         # test draining and merging as well, since we don't want
         # to get surprises when stuff is moved.
         unsatisfied_deps |= self.drained_dependencies_test(all_repositories)
+        # check whethere there are packages no longer installed
+        # that are still dependencies of other packages.
+        self.removed_reverse_dependencies_test()
 
         # test library-level linking for injected packages as well.
         injected_matches = self.injected_library_dependencies_test(
