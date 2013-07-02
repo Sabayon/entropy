@@ -1,3 +1,99 @@
+commit 26556828b257d36cb828efaa14988f2337ab6d7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 2 07:25:03 2013 +0200
+
+    Release Entropy 206
+
+commit 15b3bd63b5d56bac6edd780ef2e65135f93554d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 1 19:06:31 2013 +0200
+
+    [entropy.server] add removed_reverse_dependencies_test() to repo tests
+
+commit bc8b23525db58e80acd9db9234b117f9a80babf9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 1 18:25:39 2013 +0200
+
+    [entropy.core] expose the coloured output setting to entropy.conf, fix bug #4283
+
+commit 6d741292b657974ddf3f6e00ee2074d5b88ebb5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 25 09:36:54 2013 +0200
+
+    [eit.commands.query] fix variable name clashing
+
+commit fdad68cace07c159971bf28d9dcf7bc0321dffc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 20:26:03 2013 +0200
+
+    Fix license element syntax in package.dtd
+
+commit 183ae6ed8b96366e980c717db4bc50bc610d095b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 20:25:38 2013 +0200
+
+    Fix element order in package.dtd, signatures must follow extra-downloads
+
+commit 258b24ead69c836993843be78a32b09109659af1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 20:12:23 2013 +0200
+
+    Add EntropyRepository.getPackageXmlData() method to output xml package metadata
+
+commit b191de90f298f7aa6246d83a85560aea9843311a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 20:11:45 2013 +0200
+
+    Place <provided-mime> after <signatures> in package.dtd
+
+commit e3c5486a51d234b9e90a05d985db4e84b85cdb93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 17:30:28 2013 +0200
+
+    package.dtd: add enc attribute to <license>
+
+commit 695ed32745722ad6743be51dfa48b8e2e2ab7778
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 16:44:04 2013 +0200
+
+    Add a sample package metadata xml using package.dtd as schema
+
+commit ff238c6843b654c2a6a3a756a2e171b321f4da67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 15 16:43:35 2013 +0200
+
+    Complete package.dtd, add source-mirrors and pkg-changelogs elements
+
+commit 0281e65a8369458d9893a3fedc680043e2319a4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 14 21:40:29 2013 +0200
+
+    [entropy.misc] update package.dtd, make versiontag optional
+
+commit 3c68c46fbffd92087e5259bbaa8fd81f11eff2a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 13 13:15:24 2013 +0200
+
+    Add a DTD for the Entropy Package metadata.
+
+commit 60a0548f2056d02e7b3601ae017aacad3f1a1ff1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 22:41:23 2013 +0200
+
+    [entropy.db.sqlite] make _setCacheSize() and _setDefaultCacheSize() protected methods
+
+commit ee83063ed7981752a4185a6e5e4d9147529eaa4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 22:39:12 2013 +0200
+
+    [entropy.db.sqlite] expose default cache size to _CACHE_SIZE
+
+commit 7b9a2e88c7e1360c86389d47a64ba1ef9475223a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 11 17:18:39 2013 +0200
+
+    Tagging Entropy version 205
+
 commit bddea392f3d683829785f2798017108ad55c1ada
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jun 11 17:18:38 2013 +0200
