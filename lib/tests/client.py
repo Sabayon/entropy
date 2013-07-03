@@ -22,6 +22,7 @@ from entropy.exceptions import RepositoryError, EntropyPackageException
 import entropy.tools
 import tests._misc as _misc
 
+
 class EntropyClientTest(unittest.TestCase):
 
     def setUp(self):
@@ -29,10 +30,10 @@ class EntropyClientTest(unittest.TestCase):
         sys.stdout.flush()
         self.mem_repoid = "mem_repo"
         self.mem_repo_desc = "This is a testing repository"
-        self.Client = Client(installed_repo = -1, indexing = False,
-            xcache = False, repo_validation = False)
+        self.Client = Client(installed_repo=-1, indexing=False,
+                             xcache=False, repo_validation=False)
         self.Client._installed_repository = self.Client.open_temp_repository(
-            name = InstalledPackagesRepository.NAME, temp_file = ":memory:")
+            name=InstalledPackagesRepository.NAME, temp_file=":memory:")
         # as per GenericRepository specifications, enable generic handlePackage
         self.Client._installed_repository.override_handlePackage = True
         self.Spm = self.Client.Spm()
@@ -53,13 +54,13 @@ class EntropyClientTest(unittest.TestCase):
         self.Client.shutdown()
 
     def test_singleton(self):
-        myclient = Client(installed_repo = -1)
+        myclient = Client(installed_repo=-1)
         self.assertTrue(myclient is self.Client)
         myclient.shutdown()
         self.assertTrue(myclient.is_destroyed())
         self.assertTrue(self.Client.is_destroyed())
-        myclient2 = Client(installed_repo = -1, indexing = False,
-            xcache = False, repo_validation = False)
+        myclient2 = Client(installed_repo=-1, indexing=False,
+                           xcache=False, repo_validation=False)
         self.assertTrue(myclient is not myclient2)
         myclient2.shutdown()
         self.assertTrue(myclient2.is_destroyed())
@@ -107,8 +108,10 @@ class EntropyClientTest(unittest.TestCase):
                 self.assertTrue(cacher._EntropyCacher__enter_context_lock._is_owned())
                 cacher.discard()
                 # even if cacher is paused, this must be saved
-                cacher.save("foo", "bar", cache_dir = tmp_dir)
-                self.assertEqual(cacher.pop("foo", cache_dir = tmp_dir), "bar")
+                cacher.save("foo", "bar",
+                            cache_dir=tmp_dir)
+                self.assertEqual(cacher.pop("foo",
+                                            cache_dir=tmp_dir), "bar")
         finally:
             cacher.stop()
             shutil.rmtree(tmp_dir, True)
@@ -124,11 +127,11 @@ class EntropyClientTest(unittest.TestCase):
                 self.assertTrue(
                     cacher._EntropyCacher__enter_context_lock._is_owned())
                 cacher.discard()
-                cacher.push("bar", "foo", cache_dir = tmp_dir)
+                cacher.push("bar", "foo", cache_dir=tmp_dir)
                 self.assertTrue(cacher._EntropyCacher__cache_buffer)
                 self.assertTrue(cacher._EntropyCacher__stashing_cache)
             cacher.sync()
-            self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), "foo")
+            self.assertEqual(cacher.pop("bar", cache_dir=tmp_dir), "foo")
         finally:
             EntropyCacher.STASHING_CACHE = st_val
             cacher.stop()
@@ -139,10 +142,10 @@ class EntropyClientTest(unittest.TestCase):
         tmp_dir = tempfile.mkdtemp()
         cacher.stop()
         try:
-            cacher.push("bar", "foo", async = False, cache_dir = tmp_dir)
+            cacher.push("bar", "foo", async=False, cache_dir=tmp_dir)
             # must return None
             cacher.sync()
-            self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), None)
+            self.assertEqual(cacher.pop("bar", cache_dir=tmp_dir), None)
         finally:
             shutil.rmtree(tmp_dir, True)
 
@@ -156,10 +159,10 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_contentsafety(self):
         dbconn = self.Client._init_generic_temp_repository(
-            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+            self.mem_repoid, self.mem_repo_desc, temp_file=":memory:")
         test_pkg = _misc.get_test_entropy_package5()
         tmp_dir = tempfile.mkdtemp()
-        rc = entropy.tools.uncompress_tarball(test_pkg, extract_path = tmp_dir)
+        rc = entropy.tools.uncompress_tarball(test_pkg, extract_path=tmp_dir)
         self.assertEqual(rc, 0)
 
         data = self.Spm.extract_package_metadata(test_pkg)
@@ -176,7 +179,7 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_memory_repository(self):
         dbconn = self.Client._init_generic_temp_repository(
-            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+            self.mem_repoid, self.mem_repo_desc, temp_file=":memory:")
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
@@ -187,6 +190,7 @@ class EntropyClientTest(unittest.TestCase):
         self.Client.remove_repository(self.mem_repoid)
         self.assertNotEqual(
             self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
+
         def test_load():
             set_mute(True)
             self.Client.open_repository(self.mem_repoid)
@@ -216,7 +220,7 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_shell_trigger(self):
         dbconn = self.Client._init_generic_temp_repository(
-            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+            self.mem_repoid, self.mem_repo_desc, temp_file=":memory:")
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
@@ -243,7 +247,7 @@ exit 42
 
     def test_python_trigger(self):
         dbconn = self.Client._init_generic_temp_repository(
-            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+            self.mem_repoid, self.mem_repo_desc, temp_file=":memory:")
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
@@ -268,7 +272,7 @@ my_ext_status = 42
 
     def test_python_trigger2(self):
         dbconn = self.Client._init_generic_temp_repository(
-            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+            self.mem_repoid, self.mem_repo_desc, temp_file=":memory:")
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
