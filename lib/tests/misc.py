@@ -10,6 +10,7 @@ from entropy.const import const_convert_to_unicode
 from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
     FastRSS, FlockFile
 
+
 class MiscTest(unittest.TestCase):
 
     def setUp(self):
@@ -23,8 +24,8 @@ class MiscTest(unittest.TestCase):
         self._lifo_item5 = (1, 2, 3, 4,)
         self._lifo_item6 = '------'
         self._lifo_items = [self._lifo_item1, self._lifo_item2,
-            self._lifo_item3, self._lifo_item4, self._lifo_item5,
-            self._lifo_item6]
+                            self._lifo_item3, self._lifo_item4,
+                            self._lifo_item5, self._lifo_item6]
 
     def tearDown(self):
         """
@@ -91,6 +92,7 @@ class MiscTest(unittest.TestCase):
     def test_parallel_task(self):
 
         self.t_sched_run = False
+
         def do_t():
             import time
             time.sleep(1)
@@ -108,7 +110,7 @@ class MiscTest(unittest.TestCase):
         tmp_fd, tmp_path = None, None
         try:
             tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.test")
-            mf = FlockFile(tmp_path, fd = tmp_fd)
+            mf = FlockFile(tmp_path, fd=tmp_fd)
             mf.acquire_exclusive()
             mf.demote()
             mf.promote()
@@ -136,11 +138,12 @@ class MiscTest(unittest.TestCase):
 
         sender = EmailSender()
         sender.default_sender = def_send
-        sender.send_text_email(mail_sender, mail_recipients, mail_sub, mail_msg)
+        sender.send_text_email(mail_sender, mail_recipients,
+                               mail_sub, mail_msg)
 
     def test_fast_rss(self):
         tmp_fd, tmp_path = tempfile.mkstemp()
-        os.close(tmp_fd) # who cares
+        os.close(tmp_fd)  # who cares
         os.remove(tmp_path)
 
         fast_rss = FastRSS(tmp_path)
