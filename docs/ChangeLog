@@ -1,3 +1,27 @@
+commit 2e350056bcdf72d123c4d7f37cd5123bacd598f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 5 12:18:48 2013 +0200
+
+    Release Entropy 207
+
+commit 8bfcfd8e35f7431155f535a3ab98e624cbc692a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 5 12:17:06 2013 +0200
+
+    [entropy.spm] PortagePlugin: use returnpid=True with portage.doebuild()
+    
+    Latest Portage versions have problems with writing to proper stdout/stderr
+    fds and they don't either respect sys.{stdout,stderr} nor fd_pipes if
+    returnpid=False.
+    Workaround the situation by using returnpid=True as mandated by the
+    portage.doebuild() API specifications.
+
+commit d6497acb911253b9ba7e96dba996c583a481ad46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 2 07:25:03 2013 +0200
+
+    Tagging Entropy version 206
+
 commit 26556828b257d36cb828efaa14988f2337ab6d7f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 2 07:25:03 2013 +0200
