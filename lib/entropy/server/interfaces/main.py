@@ -6732,12 +6732,24 @@ class Server(Client):
         pkg_path = dbconn.retrieveDownloadURL(idpackage)
         return os.path.join(self._get_local_upload_directory(repo), pkg_path)
 
-    def scan_package_changes(self):
+    def scan_package_changes(self, repository_ids=None,
+                             removal_repository_ids=None):
         """
-        Scan, using Source Package Manager, for added/removed/updated packages.
-        Please note that in order to trigger SPM level package moves, it is better
-        to also call Spm().package_names_update() before this, or opening all the repos
-        in read/write (read_only=False).
+        Scan, using Source Package Manager, for added/removed/updated
+        packages.
+        Please note that in order to trigger SPM level package moves,
+        it is better to also call Spm().package_names_update() before
+        this, or opening all the repos in read/write
+        (read_only=False).
+
+        @keyword repository_ids: list of repository identifiers to
+        include in the scanning process. By default: the list of
+        available repositories.
+        @type repository_ids: list or iterable
+        @keyword removal_repository_ids: list of repository identifiers
+        to include in the list of removable packages.
+        By default, only the default repository.
+        @type removal_repository_ids: list or set
 
         @return: tuple composed of (1) list of spm package name and spm package
         id, (2) list of entropy package matches for packages to be removed (3)
@@ -6762,16 +6774,19 @@ class Server(Client):
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         exp_based_scope = my_settings['exp_based_scope']
 
-        server_repos = list(my_settings['repositories'].keys())
+        if repository_ids is None:
+            repository_ids = self.repositories()
+        if removal_repository_ids is None:
+            removal_repository_ids = set([self._repository])
 
         # packages to be added
         for spm_atom, spm_counter in installed_packages:
             found = False
-            for server_repo in server_repos:
+            for repository_id in repository_ids:
                 installed_counters.add(spm_counter)
-                server_dbconn = self.open_server_repository(server_repo,
-                    read_only = True, no_upload = True)
-                counter = server_dbconn.isSpmUidAvailable(spm_counter)
+                repo = self.open_server_repository(
+                    repository_id, read_only = True, no_upload = True)
+                counter = repo.isSpmUidAvailable(spm_counter)
                 if counter:
                     found = True
                     break
@@ -6780,15 +6795,15 @@ class Server(Client):
 
         # packages to be removed from the database
         database_counters = {}
-        for server_repo in server_repos:
-            server_dbconn = self.open_server_repository(server_repo,
-                read_only = True, no_upload = True)
-            database_counters[server_repo] = server_dbconn.listAllSpmUids()
+        for repository_id in repository_ids:
+            repo = self.open_server_repository(
+                repository_id, read_only = True, no_upload = True)
+            database_counters[repository_id] = repo.listAllSpmUids()
 
         ordered_counters = set()
-        for server_repo in database_counters:
-            for data in database_counters[server_repo]:
-                ordered_counters.add((data, server_repo))
+        for repository_id in database_counters:
+            for data in database_counters[repository_id]:
+                ordered_counters.add((data, repository_id))
         database_counters = ordered_counters
 
         # do some memoization to speed up the scanning
@@ -6806,7 +6821,7 @@ class Server(Client):
             except KeyError:
                 continue
 
-        for (counter, idpackage), xrepo in database_counters:
+        for (counter, idpackage), repository_id in database_counters:
 
             if counter < 0:
                 continue # skip packages without valid counter
@@ -6814,7 +6829,8 @@ class Server(Client):
             if counter in installed_counters:
                 continue
 
-            dbconn = self.open_server_repository(xrepo, read_only = True,
+            repo = self.open_server_repository(
+                repository_id, read_only = True,
                 no_upload = True)
 
             dorm = True
@@ -6822,10 +6838,10 @@ class Server(Client):
             if to_be_added:
 
                 dorm = False
-                atom = dbconn.retrieveAtom(idpackage)
+                atom = repo.retrieveAtom(idpackage)
                 atomkey = entropy.dep.dep_getkey(atom)
                 atomtag = entropy.dep.dep_gettag(atom)
-                atomslot = dbconn.retrieveSlot(idpackage)
+                atomslot = repo.retrieveSlot(idpackage)
                 add = True
 
                 spm_slots = _spm_key_slot_map.get(atomkey, [])
@@ -6839,14 +6855,14 @@ class Server(Client):
                 dorm = True
 
             # checking if we are allowed to remove stuff on this repo
-            # if xrepo is not the default one, we MUST skip this to
+            # if repository_id is not the default one, we MUST skip this to
             # avoid touching what developer doesn't expect
-            if dorm and (xrepo == self._repository):
+            if dorm and (repository_id in removal_repository_ids):
                 trashed = self._is_spm_uid_trashed(counter)
                 if trashed:
                     # search into portage then
                     try:
-                        key, slot = dbconn.retrieveKeySlot(idpackage)
+                        key, slot = repo.retrieveKeySlot(idpackage)
                         slot = slot.split(",")[0]
                         try:
                             trashed = spm.match_installed_package(
@@ -6857,40 +6873,40 @@ class Server(Client):
                         trashed = True
                 if not trashed:
 
-                    dbtag = dbconn.retrieveTag(idpackage)
+                    dbtag = repo.retrieveTag(idpackage)
                     if dbtag:
-                        is_injected = dbconn.isInjected(idpackage)
+                        is_injected = repo.isInjected(idpackage)
                         if not is_injected:
-                            to_be_injected.add((idpackage, xrepo))
+                            to_be_injected.add((idpackage, repository_id))
 
                     elif exp_based_scope:
 
                         # check if support for this is set
                         plg_id = self.sys_settings_fatscope_plugin_id
                         exp_data = self._settings[plg_id]['repos'].get(
-                            xrepo, set())
+                            repository_id, set())
 
                         # only some packages are set, check if our is
                         # in the list
                         if (idpackage not in exp_data) and (-1 not in exp_data):
-                            to_be_removed.add((idpackage, xrepo))
+                            to_be_removed.add((idpackage, repository_id))
                             continue
 
                         idpackage_expired = self._is_match_expired((idpackage,
-                            xrepo,))
+                            repository_id,))
 
                         if idpackage_expired:
                             # expired !!!
                             # add this and its depends (reverse deps)
 
-                            rm_match = (idpackage, xrepo)
+                            rm_match = (idpackage, repository_id)
                             #to_be_removed.add(rm_match)
                             revdep_matches = self.get_reverse_queue([rm_match],
                                 system_packages = False)
                             to_be_removed.update(revdep_matches)
 
                     else:
-                        to_be_removed.add((idpackage, xrepo))
+                        to_be_removed.add((idpackage, repository_id))
 
         return to_be_added, to_be_removed, to_be_injected
 
