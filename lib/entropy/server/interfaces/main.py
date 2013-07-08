@@ -4662,11 +4662,11 @@ class Server(Client):
             self.output(
                 "[%s] %s" % (
                     brown(repository_id),
-                    purple(r_atom),
+                    teal(r_atom),
                 ),
                 importance = 1,
                 level = "warning",
-                header = teal("  # ")
+                header = purple("  # ")
             )
 
             reverse_package_as = repo.retrieveReverseDependencies(
@@ -4682,7 +4682,7 @@ class Server(Client):
 
             for rev_atom in reverse_package_as:
                 self.output(
-                    purple(rev_atom),
+                    darkgreen(rev_atom),
                     level = "warning",
                     header = purple("    # ")
                 )
