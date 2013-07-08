@@ -4634,7 +4634,10 @@ class Server(Client):
             (sorted by atom).
         @rtype: list
         """
-        _ignore, removed, _ignore = self.scan_package_changes()
+        repository_ids = self.repositories()
+        _ignore, removed, _ignore = self.scan_package_changes(
+            repository_ids = repository_ids,
+            removal_repository_ids = repository_ids)
         if not removed:
             return []
 
