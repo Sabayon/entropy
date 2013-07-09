@@ -27,7 +27,7 @@ import warnings
 from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
-    const_get_int, const_debug_enabled, const_mkdtemp, const_mkstemp
+    const_debug_enabled, const_mkdtemp, const_mkstemp
 from entropy.exceptions import FileNotFound, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
@@ -2162,7 +2162,6 @@ class PortagePlugin(SpmPlugin):
             oldsysstderr = sys.stderr
             splitter_out = None
             splitter_err = None
-            fd_pipes = None
             try:
                 if is_mute():
                     tmp_fd, tmp_file = const_mkstemp(
@@ -2175,13 +2174,10 @@ class PortagePlugin(SpmPlugin):
                         mydo, logger, sys.stdout)
                     splitter_err = StdoutSplitter(
                         mydo, logger, sys.stderr)
-                    fd_pipes = {
-                        0: sys.stdin.fileno(),
-                        1: splitter_out.fileno(),
-                        2: splitter_err.fileno(),
-                        }
+                    sys.stdout = splitter_out
+                    sys.stderr = splitter_err
 
-                pids = self._portage.doebuild(
+                rc = self._portage.doebuild(
                     str(myebuild),
                     str(mydo),
                     root,
@@ -2189,9 +2185,7 @@ class PortagePlugin(SpmPlugin):
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
-                    debug = const_debug_enabled(),
-                    fd_pipes = fd_pipes,
-                    returnpid=True,
+                    debug = const_debug_enabled()
                 )
 
             except self._portage.exception.UnsupportedAPIException as err:
@@ -2237,28 +2231,9 @@ class PortagePlugin(SpmPlugin):
                 del metadata
                 del keys
 
-        if isinstance(pids, const_get_int()):
-            raise self.PhaseFailure(
-                "Phase spawn failure: %s" % (pids,),
-                pids)
-
-        rc = 0
-        for pid in pids:
-            p_rc = os.waitpid(pid, 0)[1]
-            if p_rc != 0:
-                rc = p_rc
-            try:
-                self._portage.process.spawned_pids.remove(pid)
-            except ValueError:
-                # x not in list, ignore
-                pass
-            except AttributeError:
-                # spawned_pids will be removed in future
-                pass
-
         if rc != 0:
             raise self.PhaseFailure(
-                "Phase terminated with exit status: %s" % (rc,),
+                "Phase terminated with exit status: %d" % (rc,),
                 rc)
 
     @staticmethod
