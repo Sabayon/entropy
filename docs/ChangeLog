@@ -1,3 +1,43 @@
+commit 575d5929dcf7e5a21bc019c42b6184f236858b6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 9 11:21:38 2013 +0200
+
+    Release Entropy 208
+
+commit 233cee986a2401e9f5214d82c54964dc2a91cba3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 9 11:21:13 2013 +0200
+
+    Revert "[entropy.spm] PortagePlugin: use returnpid=True with portage.doebuild()"
+    
+    This reverts commit 8bfcfd8e35f7431155f535a3ab98e624cbc692a6.
+
+commit 4eeb6c7c0f04ee5f455511f37527f092bca03695
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 8 11:45:24 2013 +0200
+
+    [entropy.server] fix colors
+
+commit 5d137796865aa0352cc72d171bf04707a3b7842f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 8 11:24:00 2013 +0200
+
+    [entropy.server] removed_reverse_dependencies_test: return complete information
+
+commit 10f90b0b64dae3b11155cc99fea61a68feccb5f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 8 11:21:08 2013 +0200
+
+    [entropy.server] scan_package_changes: add new keyword arguments
+    
+    Add repository_ids and removal_repository_ids arguments.
+
+commit b95635e4b06ecaba1c235c599fa685ce03999131
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 5 12:18:48 2013 +0200
+
+    Tagging Entropy version 207
+
 commit 2e350056bcdf72d123c4d7f37cd5123bacd598f8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 5 12:18:48 2013 +0200
