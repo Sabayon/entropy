@@ -79,31 +79,22 @@ class System:
     class UpdateError(EntropyException):
         """Raised when security advisories couldn't be updated correctly"""
 
-    def __init__(self, entropy_client_instance):
+    def __init__(self, entropy_client):
 
         """
         Instance constructor.
 
-        @param entropy_client_instance: a valid entropy.client.interfaces.Client
+        @param entropy_client: a valid entropy.client.interfaces.Client
             instance
-        @type entropy_client_instance: entropy.client.interfaces.Client instance
+        @type entropy_client: entropy.client.interfaces.Client instance
         """
-
-        # disabled for now
-        from entropy.client.interfaces import Client
-        if not isinstance(entropy_client_instance, Client):
-            raise AttributeError(
-                "entropy.client.interfaces.Client instance expected")
-
-        self._entropy = entropy_client_instance
-
+        self._entropy = entropy_client
         self.__cacher = EntropyCacher()
         self._settings = SystemSettings()
-        self.lastfetch = None
-        self.previous_checksum = "0"
-        self.advisories_changed = None
-        self.adv_metadata = None
-        self.affected_atoms = set()
+        self._previous_checksum = "0"
+        self._advisories_changed = None
+        self._adv_metadata = None
+        self._affected_pkgs = set()
         self.__gpg_keystore_dir = os.path.join(etpConst['confdir'],
             "security-advisories-keys")
 
@@ -111,9 +102,6 @@ class System:
         env_gpg = os.getenv('ETP_DISBLE_GPG')
         if env_gpg is not None:
             self._gpg_feature = False
-
-        from xml.dom import minidom
-        self.minidom = minidom
 
         self.op_mappings = {
             "le": "<=",
@@ -136,27 +124,27 @@ class System:
         md5_ext = etpConst['packagesmd5fileext']
         sec_dir = System.SECURITY_DIR
 
-        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],
+        self._unpackdir = os.path.join(etpConst['entropyunpackdir'],
             "security-%s" % (entropy.tools.get_random_number(),))
-        self.security_url = security_url
-        self.unpacked_package = os.path.join(self.unpackdir, "glsa_package")
-        self.security_url_checksum = security_url + md5_ext
-        self.security_url_gpg_pubkey = os.path.join(
+        self._url = security_url
+        self.unpacked_package = os.path.join(self._unpackdir, "glsa_package")
+        self._url_checksum = security_url + md5_ext
+        self._url_gpg_pubkey = os.path.join(
             os.path.dirname(security_url), etpConst['etpdatabasegpgfile'])
-        self.security_url_gpg_sign = security_url + etpConst['etpgpgextension']
+        self._url_gpg_sign = security_url + etpConst['etpgpgextension']
 
-        self.download_package = os.path.join(self.unpackdir, security_file)
-        self.download_package_checksum = self.download_package + md5_ext
-        self.download_package_gpg_pubkey = os.path.join(self.unpackdir,
+        self._package = os.path.join(self._unpackdir, security_file)
+        self._package_checksum = self._package + md5_ext
+        self._package_gpg_pubkey = os.path.join(self._unpackdir,
             "security-advisories#" + etpConst['etpdatabasegpgfile'])
-        self.download_package_gpg_sign = self.download_package + \
+        self._package_gpg_sign = self._package + \
             etpConst['etpgpgextension']
-        self.old_download_package_checksum = os.path.join(
+        self._old_package_checksum = os.path.join(
             System._CACHE_DIR, os.path.basename(security_url)) + md5_ext
 
-        self.security_package = os.path.join(sec_dir,
+        self._security_package = os.path.join(sec_dir,
             os.path.basename(security_url))
-        self.security_package_checksum = self.security_package + md5_ext
+        self._security_package_checksum = self._security_package + md5_ext
 
         try:
             if os.path.isfile(sec_dir) or os.path.islink(sec_dir):
@@ -174,66 +162,65 @@ class System:
             pass
         const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
 
-        if os.access(self.old_download_package_checksum, os.R_OK) and \
-            os.path.isfile(self.old_download_package_checksum):
+        if os.access(self._old_package_checksum, os.R_OK) and \
+            os.path.isfile(self._old_package_checksum):
 
-            with open(self.old_download_package_checksum, "r") as f_down:
+            with open(self._old_package_checksum, "r") as f_down:
                 try:
-                    self.previous_checksum = \
+                    self._previous_checksum = \
                         f_down.readline().strip().split()[0]
                 except (IndexError, OSError, IOError,):
                     pass
-
 
     def __prepare_unpack(self):
         """
         Prepare GLSAs unpack directory and its permissions.
         """
-        if os.path.isfile(self.unpackdir) or os.path.islink(self.unpackdir):
-            os.remove(self.unpackdir)
+        if os.path.isfile(self._unpackdir) or os.path.islink(self._unpackdir):
+            os.remove(self._unpackdir)
 
-        if os.path.isdir(self.unpackdir):
-            shutil.rmtree(self.unpackdir, True)
+        if os.path.isdir(self._unpackdir):
+            shutil.rmtree(self._unpackdir, True)
             try:
-                os.rmdir(self.unpackdir)
+                os.rmdir(self._unpackdir)
             except OSError:
                 pass
 
-        os.makedirs(self.unpackdir, 0o775)
-        const_setup_perms(self.unpackdir, etpConst['entropygid'])
+        os.makedirs(self._unpackdir, 0o775)
+        const_setup_perms(self._unpackdir, etpConst['entropygid'])
 
     def __download_glsa_package(self):
         """
         Download GLSA compressed package from a trusted source.
         """
-        return self.__generic_download(self.security_url, self.download_package)
+        return self.__generic_download(self._url, self._package)
 
     def __download_glsa_package_cksum(self):
         """
         Download GLSA compressed package checksum (md5) from a trusted source.
         """
-        return self.__generic_download(self.security_url_checksum,
-            self.download_package_checksum, show_speed = False)
+        return self.__generic_download(self._url_checksum,
+            self._package_checksum, show_speed = False)
 
     def __download_glsa_package_gpg_sign(self):
         """
         Download GLSA compressed package checksum (md5) from a trusted source.
         """
         # remove old
-        if os.path.isfile(self.download_package_gpg_sign):
-            os.remove(self.download_package_gpg_sign)
-        return self.__generic_download(self.security_url_gpg_sign,
-            self.download_package_gpg_sign, show_speed = False)
+        if os.path.isfile(self._package_gpg_sign):
+            os.remove(self._package_gpg_sign)
+        return self.__generic_download(self._url_gpg_sign,
+            self._package_gpg_sign, show_speed = False)
 
     def __download_glsa_package_gpg_pubkey(self):
         """
         Download GLSA compressed package checksum (md5) from a trusted source.
         """
         # remove old
-        if os.path.isfile(self.download_package_gpg_pubkey):
-            os.remove(self.download_package_gpg_pubkey)
-        return self.__generic_download(self.security_url_gpg_pubkey,
-            self.download_package_gpg_pubkey, show_speed = False)
+        if os.path.isfile(self._package_gpg_pubkey):
+            os.remove(self._package_gpg_pubkey)
+        return self.__generic_download(self._url_gpg_pubkey,
+            self._package_gpg_pubkey, show_speed = False)
 
     def __generic_download(self, url, save_to, show_speed = True):
         """
@@ -274,13 +261,15 @@ class System:
     def __install_gpg_key(self, repo_sec):
         pk_expired = False
         try:
-            pk_avail = repo_sec.is_pubkey_available(self.security_url)
+            pk_avail = repo_sec.is_pubkey_available(self._url)
         except repo_sec.KeyExpired:
             pk_avail = False
             pk_expired = True
 
         def do_warn_user(fingerprint):
-            mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
+            mytxt = purple(
+                _("Make sure to verify the imported "
+                  "key and set an appropriate trust level"))
             self._entropy.output(
                 mytxt + ":",
                 level = "warning",
@@ -296,7 +285,7 @@ class System:
             )
 
         easy_url = "N/A"
-        splitres = entropy.tools.spliturl(self.security_url)
+        splitres = entropy.tools.spliturl(self._url)
         if hasattr(splitres, 'netloc'):
             easy_url = splitres.netloc
 
@@ -308,12 +297,12 @@ class System:
             # try to install and get fingerprint
             try:
                 downloaded_key_fp = repo_tmp_sec.install_key(
-                    self.security_url, self.download_package_gpg_pubkey)
+                    self._url, self._package_gpg_pubkey)
             except repo_sec.GPGError:
                 downloaded_key_fp = None
 
             fingerprint = repo_sec.get_key_metadata(
-                self.security_url)['fingerprint']
+                self._url)['fingerprint']
             shutil.rmtree(tmp_dir, True)
 
             if downloaded_key_fp != fingerprint and \
@@ -372,8 +361,8 @@ class System:
             back = True
         )
         try:
-            fingerprint = repo_sec.install_key(self.security_url,
-                self.download_package_gpg_pubkey)
+            fingerprint = repo_sec.install_key(self._url,
+                self._package_gpg_pubkey)
         except repo_sec.GPGError as err:
             mytxt = "%s: %s" % (
                 darkred(_("Error during GPG key installation")),
@@ -417,12 +406,12 @@ class System:
             return None
 
         # verify GPG now
-        gpg_good, err_msg = repo_sec.verify_file(self.security_url,
-            self.download_package, self.download_package_gpg_sign)
+        gpg_good, err_msg = repo_sec.verify_file(self._url,
+            self._package, self._package_gpg_sign)
         if not gpg_good:
             mytxt = "%s: %s" % (
                 purple(_("Error during GPG verification of")),
-                os.path.basename(self.download_package),
+                os.path.basename(self._package),
             )
             self._entropy.output(
                 mytxt,
@@ -454,11 +443,11 @@ class System:
 
     def __get_downloaded_package_checksum(self):
 
-        if not os.path.isfile(self.download_package_checksum) or \
-            not os.access(self.download_package_checksum, os.R_OK):
+        if not os.path.isfile(self._package_checksum) or \
+            not os.access(self._package_checksum, os.R_OK):
             return None
 
-        with open(self.download_package_checksum, "r") as f_down:
+        with open(self._package_checksum, "r") as f_down:
             try:
                 return f_down.readline().strip().split()[0]
             except (OSError, IOError, IndexError,):
@@ -474,11 +463,11 @@ class System:
         if checksum is None:
             return 1
 
-        self.advisories_changed = True
-        if checksum == self.previous_checksum:
-            self.advisories_changed = False
+        self._advisories_changed = True
+        if checksum == self._previous_checksum:
+            self._advisories_changed = False
 
-        md5res = entropy.tools.compare_md5(self.download_package, checksum)
+        md5res = entropy.tools.compare_md5(self._package, checksum)
         if not md5res:
             return 3
         return 0
@@ -488,7 +477,7 @@ class System:
         Unpack downloaded GLSA package containing GLSA advisories.
         """
         rc_unpack = entropy.tools.uncompress_tarball(
-            self.download_package,
+            self._package,
             extract_path = self.unpacked_package,
             catch_empty = True
         )
@@ -505,7 +494,7 @@ class System:
                 os.makedirs(System.SECURITY_DIR, 0o775)
                 const_setup_perms(System.SECURITY_DIR,
                     etpConst['entropygid'])
-            const_setup_perms(self.unpackdir, etpConst['entropygid'])
+            const_setup_perms(self._unpackdir, etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
         """
@@ -525,7 +514,7 @@ class System:
         """
         Remove GLSA unpack directory.
         """
-        shutil.rmtree(self.unpackdir, True)
+        shutil.rmtree(self._unpackdir, True)
 
     def __validate_cache(self):
         """
@@ -545,7 +534,7 @@ class System:
         """
         Clear instance cache (RAM and on-disk).
         """
-        self.adv_metadata = None
+        self._adv_metadata = None
         self.__cacher.discard()
         EntropyCacher.clear_cache_item(System._CACHE_ID,
             cache_dir = System._CACHE_DIR)
@@ -575,8 +564,8 @@ class System:
         them from RAM and, in case of failure, it tries to gather the info
         from disk, using EntropyCacher.
         """
-        if self.adv_metadata is not None:
-            return self.adv_metadata
+        if self._adv_metadata is not None:
+            return self._adv_metadata
 
         # validate cache
         self.__validate_cache()
@@ -585,8 +574,8 @@ class System:
         adv_metadata = self.__cacher.pop(c_hash,
             cache_dir = System._CACHE_DIR)
         if adv_metadata is not None:
-            self.adv_metadata = adv_metadata.copy()
-            return self.adv_metadata
+            self._adv_metadata = adv_metadata.copy()
+            return self._adv_metadata
 
     def set_advisories_cache(self, adv_metadata):
         """
@@ -595,7 +584,7 @@ class System:
         @param adv_metadata: advisories metadata to store
         @type adv_metadata: dict
         """
-        self.adv_metadata = None
+        self._adv_metadata = None
         c_hash = self._get_advisories_cache_hash()
         # async false to allow 3rd-party applications to not wait
         # before getting cached results. A straight example: sulfur
@@ -676,7 +665,7 @@ class System:
 
         adv_metadata = self._filter_advisories(adv_metadata)
         self.set_advisories_cache(adv_metadata)
-        self.adv_metadata = adv_metadata.copy()
+        self._adv_metadata = adv_metadata.copy()
         return adv_metadata
 
     def _filter_advisories(self, adv_metadata):
@@ -766,7 +755,7 @@ class System:
             for atom in vul_atoms:
                 match = self._entropy.installed_repository().atomMatch(atom)
                 if (match[0] != -1) and (match not in unaffected_atoms):
-                    self.affected_atoms.add(atom)
+                    self._affected_pkgs.add(atom)
                     return True
         return False
 
@@ -815,7 +804,7 @@ class System:
                 atoms = adv_data[adv]['affected'][key][0]['vul_atoms']
                 applicable = True
                 for atom in atoms:
-                    if atom in self.affected_atoms:
+                    if atom in self._affected_pkgs:
                         applicable = False
                         break
                 if applicable == affected:
@@ -832,10 +821,10 @@ class System:
         adv_data = self.get_advisories_metadata()
         adv_data_keys = list(adv_data.keys())
         del adv_data
-        self.affected_atoms.clear()
+        self._affected_pkgs.clear()
         for key in adv_data_keys:
             self.is_affected(key)
-        return self.affected_atoms
+        return self._affected_pkgs
 
     def __get_xml_metadata(self, xmlfilename):
         """
@@ -846,10 +835,12 @@ class System:
         @return: advisory metadata extracted
         @rtype: dict
         """
+        from xml.dom import minidom
+
         xml_data = {}
         xmlfile = os.path.join(System.SECURITY_DIR, xmlfilename)
         try:
-            xmldoc = self.minidom.parse(xmlfile)
+            xmldoc = minidom.parse(xmlfile)
         except (IOError, OSError, TypeError, AttributeError,):
             return None
 
@@ -968,7 +959,7 @@ class System:
 
     def __make_version(self, vnode):
         """
-        creates from the information in the I{versionNode} a 
+        creates from the information in the I{versionNode} a
         version string (format <op><version>).
 
         @param vnode: a <vulnerable> or <unaffected> Node that
@@ -982,7 +973,7 @@ class System:
 
     def __make_atom(self, pkgname, vnode):
         """
-        creates from the given package name and information in the 
+        creates from the given package name and information in the
         I{versionNode} a (syntactical) valid portage atom.
 
         @param pkgname: the name of the package for this atom
@@ -1029,7 +1020,7 @@ class System:
 
         rc_lock = self.__run_fetch(force = force)
         if rc_lock == 0:
-            if self.advisories_changed:
+            if self._advisories_changed:
                 advtext = "%s: %s" % (
                     bold(_("Security Advisories")),
                     darkgreen(_("updated successfully")),
@@ -1093,14 +1084,13 @@ class System:
 
         # check if we need to go further
         checksum = self.__get_downloaded_package_checksum()
-        if (checksum == self.previous_checksum) and not force:
+        if (checksum == self._previous_checksum) and not force:
             # we're done
-            self.advisories_changed = False
+            self._advisories_changed = False
             return 0
 
         # download package
         status = self.__download_glsa_package()
-        self.lastfetch = status
         if not status:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
@@ -1201,16 +1191,16 @@ class System:
                     return 7
 
         # save downloaded md5
-        if os.path.isfile(self.download_package_checksum):
+        if os.path.isfile(self._package_checksum):
             try:
-                os.rename(self.download_package_checksum,
-                    self.old_download_package_checksum)
+                os.rename(self._package_checksum,
+                    self._old_package_checksum)
             except OSError as err:
                 if err.errno != errno.EXDEV:
                     raise
-                shutil.copy2(self.download_package_checksum,
-                    self.old_download_package_checksum)
-            const_setup_file(self.old_download_package_checksum,
+                shutil.copy2(self._package_checksum,
+                    self._old_package_checksum)
+            const_setup_file(self._old_package_checksum,
                 etpConst['entropygid'], 0o664)
 
         # now unpack in place
