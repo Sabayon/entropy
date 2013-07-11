@@ -32,7 +32,7 @@ from entropy.fetchers import UrlFetcher
 
 import entropy.tools
 
-class System:
+class System(object):
 
     """
     ~~ GIVES YOU WINGS ~~
