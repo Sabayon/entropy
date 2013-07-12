@@ -32,6 +32,7 @@ from entropy.fetchers import UrlFetcher
 
 import entropy.tools
 
+
 class System(object):
 
     """
@@ -103,7 +104,7 @@ class System(object):
         if env_gpg is not None:
             self._gpg_feature = False
 
-        self.op_mappings = {
+        self._op_mappings = {
             "le": "<=",
             "lt": "<",
             "eq": "=",
@@ -968,7 +969,7 @@ class System(object):
         @return: the version string
         @rtype: string
         """
-        return self.op_mappings[vnode.getAttribute("range")] + \
+        return self._op_mappings[vnode.getAttribute("range")] + \
             vnode.firstChild.data.strip()
 
     def __make_atom(self, pkgname, vnode):
@@ -984,7 +985,7 @@ class System(object):
         @return: the portage atom
         @rtype: string
         """
-        return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + \
+        return str(self._op_mappings[vnode.getAttribute("range")] + pkgname + \
             "-" + vnode.firstChild.data.strip())
 
     def check_advisories_availability(self):
