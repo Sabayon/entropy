@@ -11,19 +11,20 @@
     This module contains Entropy GLSA-based Security interfaces.
 
 """
-import os
-import sys
+import codecs
+import datetime
 import errno
+import os
 import shutil
 import subprocess
-import datetime
+import sys
 import time
-import codecs
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, const_setup_perms, const_mkdtemp, \
-    const_debug_write, const_setup_file, const_convert_to_unicode, \
-    const_convert_to_rawstring, const_is_python3, const_debug_enabled
+    const_debug_write, const_setup_file, const_setup_directory, \
+    const_convert_to_unicode, const_convert_to_rawstring, const_is_python3, \
+    const_debug_enabled
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -90,17 +91,15 @@ class System(object):
         @type entropy_client: entropy.client.interfaces.Client instance
         """
         self._entropy = entropy_client
-        self.__cacher = EntropyCacher()
-        self._settings = SystemSettings()
-        self._previous_checksum = "0"
-        self._advisories_changed = None
+        self.__cacher = None
+        self.__settings = None
         self._adv_metadata = None
         self._affected_pkgs = set()
-        self.__gpg_keystore_dir = os.path.join(etpConst['confdir'],
+        self._gpg_keystore_dir = os.path.join(etpConst['confdir'],
             "security-advisories-keys")
 
         self._gpg_feature = True
-        env_gpg = os.getenv('ETP_DISBLE_GPG')
+        env_gpg = os.getenv('ETP_DISABLE_GPG')
         if env_gpg is not None:
             self._gpg_feature = False
 
@@ -117,113 +116,43 @@ class System(object):
         }
 
         if System.SECURITY_URL is None:
-            security_url = \
+            self._url = \
                 self._settings['repositories']['security_advisories_url']
         else:
-            security_url = System.SECURITY_URL
-        security_file = os.path.basename(security_url)
-        md5_ext = etpConst['packagesmd5fileext']
-        sec_dir = System.SECURITY_DIR
+            self._url = System.SECURITY_URL
 
-        self._unpackdir = os.path.join(etpConst['entropyunpackdir'],
-            "security-%s" % (entropy.tools.get_random_number(),))
-        self._url = security_url
-        self.unpacked_package = os.path.join(self._unpackdir, "glsa_package")
-        self._url_checksum = security_url + md5_ext
-        self._url_gpg_pubkey = os.path.join(
-            os.path.dirname(security_url), etpConst['etpdatabasegpgfile'])
-        self._url_gpg_sign = security_url + etpConst['etpgpgextension']
-
-        self._package = os.path.join(self._unpackdir, security_file)
-        self._package_checksum = self._package + md5_ext
-        self._package_gpg_pubkey = os.path.join(self._unpackdir,
-            "security-advisories#" + etpConst['etpdatabasegpgfile'])
-        self._package_gpg_sign = self._package + \
-            etpConst['etpgpgextension']
-        self._old_package_checksum = os.path.join(
-            System._CACHE_DIR, os.path.basename(security_url)) + md5_ext
-
-        self._security_package = os.path.join(sec_dir,
-            os.path.basename(security_url))
-        self._security_package_checksum = self._security_package + md5_ext
-
-        try:
-            if os.path.isfile(sec_dir) or os.path.islink(sec_dir):
-                os.remove(sec_dir)
-            if not os.path.isdir(sec_dir):
-                os.makedirs(sec_dir, 0o775)
-        except OSError:
-            pass
-        const_setup_perms(sec_dir, etpConst['entropygid'])
-
-        try:
-            if not os.path.isdir(System._CACHE_DIR):
-                os.makedirs(System._CACHE_DIR, 0o775)
-        except OSError:
-            pass
-        const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
-
-        if os.access(self._old_package_checksum, os.R_OK) and \
-            os.path.isfile(self._old_package_checksum):
-
-            with open(self._old_package_checksum, "r") as f_down:
-                try:
-                    self._previous_checksum = \
-                        f_down.readline().strip().split()[0]
-                except (IndexError, OSError, IOError,):
-                    pass
-
-    def __prepare_unpack(self):
+    @property
+    def _cacher(self):
         """
-        Prepare GLSAs unpack directory and its permissions.
+        Return an EntropyCacher instance, not thread-safe.
         """
-        if os.path.isfile(self._unpackdir) or os.path.islink(self._unpackdir):
-            os.remove(self._unpackdir)
+        if self.__cacher is None:
+            self.__cacher = EntropyCacher()
+        return self.__cacher
 
-        if os.path.isdir(self._unpackdir):
-            shutil.rmtree(self._unpackdir, True)
+    @property
+    def _settings(self):
+        """
+        Return a SystemSettings instance, not thread-safe.
+        """
+        if self.__settings is None:
+            self.__settings = SystemSettings()
+        return self.__settings
+
+    @classmethod
+    def _read_checksum_file(cls, path, enc=None, maxlen=4096):
+        """
+        Read checksum file at path, return content as string.
+        """
+        if enc is None:
+            enc = etpConst['conf_encoding']
+        with codecs.open(path, "r", encoding=enc) as f_down:
             try:
-                os.rmdir(self._unpackdir)
-            except OSError:
-                pass
+                return f_down.read(maxlen).strip().split()[0]
+            except (OSError, IOError, IndexError,):
+                return None
 
-        os.makedirs(self._unpackdir, 0o775)
-        const_setup_perms(self._unpackdir, etpConst['entropygid'])
-
-    def __download_glsa_package(self):
-        """
-        Download GLSA compressed package from a trusted source.
-        """
-        return self.__generic_download(self._url, self._package)
-
-    def __download_glsa_package_cksum(self):
-        """
-        Download GLSA compressed package checksum (md5) from a trusted source.
-        """
-        return self.__generic_download(self._url_checksum,
-            self._package_checksum, show_speed = False)
-
-    def __download_glsa_package_gpg_sign(self):
-        """
-        Download GLSA compressed package checksum (md5) from a trusted source.
-        """
-        # remove old
-        if os.path.isfile(self._package_gpg_sign):
-            os.remove(self._package_gpg_sign)
-        return self.__generic_download(self._url_gpg_sign,
-            self._package_gpg_sign, show_speed = False)
-
-    def __download_glsa_package_gpg_pubkey(self):
-        """
-        Download GLSA compressed package checksum (md5) from a trusted source.
-        """
-        # remove old
-        if os.path.isfile(self._package_gpg_pubkey):
-            os.remove(self._package_gpg_pubkey)
-        return self.__generic_download(self._url_gpg_pubkey,
-            self._package_gpg_pubkey, show_speed = False)
-
-    def __generic_download(self, url, save_to, show_speed = True):
+    def _generic_download(self, url, save_to, show_speed = True):
         """
         Generic, secure, URL download method.
 
@@ -244,22 +173,14 @@ class System(object):
         fetcher = self._entropy._url_fetcher(url, save_to, resume = False,
             show_speed = show_speed)
         rc_fetch = fetcher.download()
-        del fetcher
         if rc_fetch in fetch_errors:
             return False
         # setup permissions
         const_setup_file(save_to, etpConst['entropygid'], 0o664)
         return True
 
-    def __load_gpg(self):
-        try:
-            repo_sec = self._entropy.RepositorySecurity(
-                keystore_dir = self.__gpg_keystore_dir)
-        except Repository.GPGError:
-            return None # GPG not available
-        return repo_sec
+    def _install_gpg_key(self, repo_sec, package_gpg_pubkey):
 
-    def __install_gpg_key(self, repo_sec):
         pk_expired = False
         try:
             pk_avail = repo_sec.is_pubkey_available(self._url)
@@ -277,7 +198,7 @@ class System(object):
                 header = red("   # ")
             )
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
-                self.__gpg_keystore_dir, fingerprint,)
+                self._gpg_keystore_dir, fingerprint,)
             )
             self._entropy.output(
                 "$ " + mytxt,
@@ -298,7 +219,7 @@ class System(object):
             # try to install and get fingerprint
             try:
                 downloaded_key_fp = repo_tmp_sec.install_key(
-                    self._url, self._package_gpg_pubkey)
+                    self._url, package_gpg_pubkey)
             except repo_sec.GPGError:
                 downloaded_key_fp = None
 
@@ -363,7 +284,7 @@ class System(object):
         )
         try:
             fingerprint = repo_sec.install_key(self._url,
-                self._package_gpg_pubkey)
+                package_gpg_pubkey)
         except repo_sec.GPGError as err:
             mytxt = "%s: %s" % (
                 darkred(_("Error during GPG key installation")),
@@ -397,22 +318,25 @@ class System(object):
         do_warn_user(fingerprint)
         return True
 
-    def __verify_gpg(self):
+    def _verify_gpg(self, package, package_gpg_pubkey, package_gpg_sign):
 
-        repo_sec = self.__load_gpg()
-        if repo_sec is None:
-            return None
-        installed = self.__install_gpg_key(repo_sec)
+        try:
+            repo_sec = self._entropy.RepositorySecurity(
+                keystore_dir = self._gpg_keystore_dir)
+        except Repository.GPGError:
+            return None # GPG not available
+
+        installed = self._install_gpg_key(repo_sec, package_gpg_pubkey)
         if not installed:
             return None
 
         # verify GPG now
         gpg_good, err_msg = repo_sec.verify_file(self._url,
-            self._package, self._package_gpg_sign)
+            package, package_gpg_sign)
         if not gpg_good:
             mytxt = "%s: %s" % (
                 purple(_("Error during GPG verification of")),
-                os.path.basename(self._package),
+                os.path.basename(package),
             )
             self._entropy.output(
                 mytxt,
@@ -442,82 +366,7 @@ class System(object):
 
         return True
 
-    def __get_downloaded_package_checksum(self):
-
-        if not os.path.isfile(self._package_checksum) or \
-            not os.access(self._package_checksum, os.R_OK):
-            return None
-
-        with open(self._package_checksum, "r") as f_down:
-            try:
-                return f_down.readline().strip().split()[0]
-            except (OSError, IOError, IndexError,):
-                return None
-
-    def __verify_checksum(self):
-        """
-        Verify downloaded GLSA checksum against downloaded GLSA package.
-        """
-        # read checksum
-
-        checksum = self.__get_downloaded_package_checksum()
-        if checksum is None:
-            return 1
-
-        self._advisories_changed = True
-        if checksum == self._previous_checksum:
-            self._advisories_changed = False
-
-        md5res = entropy.tools.compare_md5(self._package, checksum)
-        if not md5res:
-            return 3
-        return 0
-
-    def __unpack_advisories(self):
-        """
-        Unpack downloaded GLSA package containing GLSA advisories.
-        """
-        rc_unpack = entropy.tools.uncompress_tarball(
-            self._package,
-            extract_path = self.unpacked_package,
-            catch_empty = True
-        )
-        const_setup_perms(self.unpacked_package, etpConst['entropygid'])
-        return rc_unpack
-
-    def __clear_previous_advisories(self):
-        """
-        Remove previously installed GLSA advisories.
-        """
-        if os.listdir(System.SECURITY_DIR):
-            shutil.rmtree(System.SECURITY_DIR, True)
-            if not os.path.isdir(System.SECURITY_DIR):
-                os.makedirs(System.SECURITY_DIR, 0o775)
-                const_setup_perms(System.SECURITY_DIR,
-                    etpConst['entropygid'])
-            const_setup_perms(self._unpackdir, etpConst['entropygid'])
-
-    def __put_advisories_in_place(self):
-        """
-        Place unpacked advisories in place (into System.SECURITY_DIR).
-        """
-        for advfile in os.listdir(self.unpacked_package):
-            from_file = os.path.join(self.unpacked_package, advfile)
-            to_file = os.path.join(System.SECURITY_DIR, advfile)
-            try:
-                os.rename(from_file, to_file)
-            except OSError as err:
-                if err.errno != errno.EXDEV:
-                    raise
-                shutil.move(from_file, to_file)
-
-    def __cleanup_garbage(self):
-        """
-        Remove GLSA unpack directory.
-        """
-        shutil.rmtree(self._unpackdir, True)
-
-    def __validate_cache(self):
+    def _validate_cache(self):
         """
         Validate cache by looking at some checksum data
         """
@@ -526,27 +375,27 @@ class System(object):
         repo_cksum = self._entropy._repositories_hash()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
-        cached = self.__cacher.pop(sys_hash, cache_dir = System._CACHE_DIR)
+        cached = self._cacher.pop(sys_hash, cache_dir = self._CACHE_DIR)
         if cached is None:
             self.clear() # kill the cache
-        self.__cacher.push(sys_hash, True, cache_dir = System._CACHE_DIR)
+        self._cacher.push(sys_hash, True, cache_dir = self._CACHE_DIR)
 
     def clear(self):
         """
         Clear instance cache (RAM and on-disk).
         """
         self._adv_metadata = None
-        self.__cacher.discard()
+        self._cacher.discard()
         EntropyCacher.clear_cache_item(System._CACHE_ID,
-            cache_dir = System._CACHE_DIR)
-        if not os.path.isdir(System._CACHE_DIR):
+            cache_dir = self._CACHE_DIR)
+        if not os.path.isdir(self._CACHE_DIR):
             try:
-                os.makedirs(System._CACHE_DIR, 0o775)
+                os.makedirs(self._CACHE_DIR, 0o775)
             except OSError as err:
                 # race condition handling
                 if err.errno != errno.EEXIST:
                     raise
-            const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
+            const_setup_perms(self._CACHE_DIR, etpConst['entropygid'])
 
     def _get_advisories_cache_hash(self):
         dir_checksum = entropy.tools.md5sum_directory(
@@ -569,11 +418,11 @@ class System(object):
             return self._adv_metadata
 
         # validate cache
-        self.__validate_cache()
+        self._validate_cache()
 
         c_hash = self._get_advisories_cache_hash()
-        adv_metadata = self.__cacher.pop(c_hash,
-            cache_dir = System._CACHE_DIR)
+        adv_metadata = self._cacher.pop(c_hash,
+            cache_dir = self._CACHE_DIR)
         if adv_metadata is not None:
             self._adv_metadata = adv_metadata.copy()
             return self._adv_metadata
@@ -590,8 +439,8 @@ class System(object):
         # async false to allow 3rd-party applications to not wait
         # before getting cached results. A straight example: sulfur
         # and its security cache generation separate thread.
-        self.__cacher.push(c_hash, adv_metadata,
-            cache_dir = System._CACHE_DIR, async = False)
+        self._cacher.push(c_hash, adv_metadata,
+            cache_dir = self._CACHE_DIR, async = False)
 
     def _get_advisories_list(self):
         """
@@ -1019,9 +868,30 @@ class System(object):
             header = red(" @@ ")
         )
 
-        rc_lock = self.__run_fetch(force = force)
+        workdir = None
+        try:
+            try:
+                workdir = const_mkdtemp(prefix="security-")
+            except (OSError, IOError) as err:
+                self._entropy.output(
+                    "%s: %s" % (
+                        darkred(_("cannot create temporary directory")),
+                        err,
+                    ),
+                    importance = 2,
+                    level = "error",
+                    header = red(" @@ ")
+                )
+                return 1
+
+            rc_lock, updated = self._fetch(workdir, force = force)
+
+        finally:
+            if workdir is not None:
+                shutil.rmtree(workdir, True)
+
         if rc_lock == 0:
-            if self._advisories_changed:
+            if updated:
                 advtext = "%s: %s" % (
                     bold(_("Security Advisories")),
                     darkgreen(_("updated successfully")),
@@ -1064,12 +934,48 @@ class System(object):
             self._entropy.unlock_resources()
         return 0
 
-    def __run_fetch(self, force = False):
-        # prepare directories
-        self.__prepare_unpack()
+    def _setup_paths(self):
+        """
+        Setup Entropy Security directory and file paths.
+        """
+        sec_dir = self.SECURITY_DIR
+        if not os.path.isdir(sec_dir) and os.path.lexists(sec_dir):
+            os.remove(sec_dir)
+        const_setup_directory(sec_dir)
 
-        # download digest
-        status = self.__download_glsa_package_cksum()
+        cache_dir = self._CACHE_DIR
+        if not os.path.isdir(cache_dir) and os.path.lexists(cache_dir):
+            os.remove(cache_dir)
+        const_setup_directory(cache_dir)
+
+    def _fetch(self, tempdir, force = False):
+        """
+        Download the GLSA advisories, verify their integrity and origin.
+        """
+        self._setup_paths()
+
+        md5_ext = etpConst['packagesmd5fileext']
+        url_checksum = self._url + md5_ext
+        security_file = os.path.basename(self._url)
+        updated = False
+
+        package = os.path.join(tempdir, security_file)
+        package_checksum = package + md5_ext
+        old_package_checksum = os.path.join(
+            self._CACHE_DIR, package_checksum)
+
+        url_gpg_sign = self._url + etpConst['etpgpgextension']
+        package_gpg_sign = package + etpConst['etpgpgextension']
+
+        url_gpg_pubkey = os.path.join(
+            os.path.dirname(self._url),
+            etpConst['etpdatabasegpgfile'])
+        package_gpg_pubkey = os.path.join(
+            tempdir, "security-advisories#" + etpConst['etpdatabasegpgfile'])
+
+        status = self._generic_download(
+            url_checksum, package_checksum,
+            show_speed = False)
         if not status:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
@@ -1081,17 +987,15 @@ class System(object):
                 level = "error",
                 header = red("   ## ")
             )
-            return 2
+            return 2, updated
 
-        # check if we need to go further
-        checksum = self.__get_downloaded_package_checksum()
-        if (checksum == self._previous_checksum) and not force:
-            # we're done
-            self._advisories_changed = False
-            return 0
+        previous_checksum = self._read_checksum_file(old_package_checksum)
+        checksum = self._read_checksum_file(package_checksum)
+        if (checksum == previous_checksum) and not force:
+            return 0, updated
 
         # download package
-        status = self.__download_glsa_package()
+        status =  self._generic_download(self._url, package)
         if not status:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
@@ -1103,7 +1007,7 @@ class System(object):
                 level = "error",
                 header = red("   ## ")
             )
-            return 1
+            return 1, updated
 
         mytxt = "%s: %s %s" % (
             bold(_("Security Advisories")),
@@ -1119,45 +1023,12 @@ class System(object):
         )
 
         # verify digest
-        status = self.__verify_checksum()
+        checksum = self._read_checksum_file(package_checksum)
+        if checksum != previous_checksum:
+            updated = True
 
-        if status == 1:
-            mytxt = "%s: %s." % (
-                bold(_("Security Advisories")),
-                darkred(_("cannot open packages, sorry")),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 2,
-                level = "error",
-                header = red("   ## ")
-            )
-            return 3
-        elif status == 2:
-            mytxt = "%s: %s." % (
-                bold(_("Security Advisories")),
-                darkred(_("cannot read the checksum, sorry")),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 2,
-                level = "error",
-                header = red("   ## ")
-            )
-            return 4
-        elif status == 3:
-            mytxt = "%s: %s." % (
-                bold(_("Security Advisories")),
-                darkred(_("digest verification failed, sorry")),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 2,
-                level = "error",
-                header = red("   ## ")
-            )
-            return 5
-        elif status == 0:
+        md5res = entropy.tools.compare_md5(package, package_checksum)
+        if md5res:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkgreen(_("verification successful")),
@@ -1169,15 +1040,30 @@ class System(object):
                 header = red("   # ")
             )
         else:
-            raise System.UpdateError("Unhandled return code: %s" % (status,))
+            mytxt = "%s: %s." % (
+                bold(_("Security Advisories")),
+                darkred(_("checksum verification failed, sorry")),
+            )
+            self._entropy.output(
+                mytxt,
+                importance = 2,
+                level = "error",
+                header = red("   ## ")
+            )
+            return 5, updated
 
         # download GPG key and package signature in a row
         # env hook, disable GPG check
         if self._gpg_feature:
-            gpg_sign_sts = self.__download_glsa_package_gpg_sign()
-            gpg_key_sts = self.__download_glsa_package_gpg_pubkey()
+            gpg_sign_sts = self._generic_download(
+                url_gpg_sign, package_gpg_sign,
+                show_speed = False)
+            gpg_key_sts = self._generic_download(
+                url_gpg_pubkey, package_gpg_pubkey,
+                show_speed = False)
             if gpg_sign_sts and gpg_key_sts:
-                verify_sts = self.__verify_gpg()
+                verify_sts = self._verify_gpg(
+                    package, package_gpg_pubkey, package_gpg_sign)
                 if verify_sts is None:
                     mytxt = "%s: %s." % (
                         bold(_("Security Advisories")),
@@ -1189,23 +1075,26 @@ class System(object):
                         header = red("   # ")
                     )
                 elif not verify_sts:
-                    return 7
+                    return 7, updated
 
         # save downloaded md5
-        if os.path.isfile(self._package_checksum):
+        if os.path.isfile(package_checksum):
             try:
-                os.rename(self._package_checksum,
-                    self._old_package_checksum)
+                os.rename(package_checksum, old_package_checksum)
             except OSError as err:
                 if err.errno != errno.EXDEV:
                     raise
-                shutil.copy2(self._package_checksum,
-                    self._old_package_checksum)
-            const_setup_file(self._old_package_checksum,
+                shutil.copy2(package_checksum, old_package_checksum)
+            const_setup_file(old_package_checksum,
                 etpConst['entropygid'], 0o664)
 
         # now unpack in place
-        status = self.__unpack_advisories()
+        unpacked_package = os.path.join(tempdir, "glsa_package")
+        status = entropy.tools.uncompress_tarball(
+            package,
+            extract_path = unpacked_package,
+            catch_empty = True
+        )
         if status != 0:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
@@ -1217,7 +1106,9 @@ class System(object):
                 level = "error",
                 header = red("   ## ")
             )
-            return 6
+            return 6, updated
+
+        const_setup_perms(unpacked_package, etpConst['entropygid'])
 
         mytxt = "%s: %s %s" % (
             bold(_("Security Advisories")),
@@ -1232,14 +1123,28 @@ class System(object):
         )
 
         # clear previous
-        self.__clear_previous_advisories()
+        if os.listdir(System.SECURITY_DIR):
+            shutil.rmtree(System.SECURITY_DIR, True)
+            if not os.path.isdir(System.SECURITY_DIR):
+                os.makedirs(System.SECURITY_DIR, 0o775)
+                const_setup_perms(System.SECURITY_DIR,
+                    etpConst['entropygid'])
+            const_setup_perms(tempdir, etpConst['entropygid'])
+
         # copy over
-        self.__put_advisories_in_place()
-        # remove temp stuff
-        self.__cleanup_garbage()
+        for advfile in os.listdir(unpacked_package):
+            from_file = os.path.join(unpacked_package, advfile)
+            to_file = os.path.join(System.SECURITY_DIR, advfile)
+            try:
+                os.rename(from_file, to_file)
+            except OSError as err:
+                if err.errno != errno.EXDEV:
+                    raise
+                shutil.move(from_file, to_file)
+
         # clear cache
         self.clear()
-        return 0
+        return 0, updated
 
 
 class Repository:
