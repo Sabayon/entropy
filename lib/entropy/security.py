@@ -399,9 +399,9 @@ class System(object):
 
     def _get_advisories_cache_hash(self):
         dir_checksum = entropy.tools.md5sum_directory(
-            System.SECURITY_DIR)
+            self.SECURITY_DIR)
         c_hash = "%s%s" % (
-            System._CACHE_ID, hash("%s|%s|%s" % (
+            self._CACHE_ID, hash("%s|%s|%s" % (
                 hash(self._settings['repositories']['branch']),
                 hash(dir_checksum),
                 hash(etpConst['systemroot']),
@@ -448,7 +448,7 @@ class System(object):
         """
         if not self.check_advisories_availability():
             return []
-        xmls = os.listdir(System.SECURITY_DIR)
+        xmls = os.listdir(self.SECURITY_DIR)
         xmls = sorted([x for x in xmls if x.endswith(".xml") and \
             x.startswith("glsa-")])
         return xmls
@@ -688,7 +688,7 @@ class System(object):
         from xml.dom import minidom
 
         xml_data = {}
-        xmlfile = os.path.join(System.SECURITY_DIR, xmlfilename)
+        xmlfile = os.path.join(self.SECURITY_DIR, xmlfilename)
         try:
             xmldoc = minidom.parse(xmlfile)
         except (IOError, OSError, TypeError, AttributeError,):
@@ -844,7 +844,7 @@ class System(object):
         @return: availability
         @rtype: bool
         """
-        return os.path.isdir(System.SECURITY_DIR)
+        return os.path.isdir(self.SECURITY_DIR)
 
     def unlocked_sync(self, do_cache = True, force = False):
         """
@@ -1123,18 +1123,18 @@ class System(object):
         )
 
         # clear previous
-        if os.listdir(System.SECURITY_DIR):
-            shutil.rmtree(System.SECURITY_DIR, True)
-            if not os.path.isdir(System.SECURITY_DIR):
-                os.makedirs(System.SECURITY_DIR, 0o775)
-                const_setup_perms(System.SECURITY_DIR,
+        if os.listdir(self.SECURITY_DIR):
+            shutil.rmtree(self.SECURITY_DIR, True)
+            if not os.path.isdir(self.SECURITY_DIR):
+                os.makedirs(self.SECURITY_DIR, 0o775)
+                const_setup_perms(self.SECURITY_DIR,
                     etpConst['entropygid'])
             const_setup_perms(tempdir, etpConst['entropygid'])
 
         # copy over
         for advfile in os.listdir(unpacked_package):
             from_file = os.path.join(unpacked_package, advfile)
-            to_file = os.path.join(System.SECURITY_DIR, advfile)
+            to_file = os.path.join(self.SECURITY_DIR, advfile)
             try:
                 os.rename(from_file, to_file)
             except OSError as err:
