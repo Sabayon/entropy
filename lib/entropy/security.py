@@ -386,16 +386,10 @@ class System(object):
         """
         self._adv_metadata = None
         self._cacher.discard()
-        EntropyCacher.clear_cache_item(System._CACHE_ID,
+        EntropyCacher.clear_cache_item(self._CACHE_ID,
             cache_dir = self._CACHE_DIR)
-        if not os.path.isdir(self._CACHE_DIR):
-            try:
-                os.makedirs(self._CACHE_DIR, 0o775)
-            except OSError as err:
-                # race condition handling
-                if err.errno != errno.EEXIST:
-                    raise
-            const_setup_perms(self._CACHE_DIR, etpConst['entropygid'])
+
+        self._setup_paths()
 
     def _get_advisories_cache_hash(self):
         dir_checksum = entropy.tools.md5sum_directory(
@@ -415,7 +409,7 @@ class System(object):
         from disk, using EntropyCacher.
         """
         if self._adv_metadata is not None:
-            return self._adv_metadata
+            return self._adv_metadata.copy()
 
         # validate cache
         self._validate_cache()
@@ -424,8 +418,8 @@ class System(object):
         adv_metadata = self._cacher.pop(c_hash,
             cache_dir = self._CACHE_DIR)
         if adv_metadata is not None:
-            self._adv_metadata = adv_metadata.copy()
-            return self._adv_metadata
+            self._adv_metadata = adv_metadata
+            return self._adv_metadata.copy()
 
     def set_advisories_cache(self, adv_metadata):
         """
@@ -948,11 +942,24 @@ class System(object):
             os.remove(cache_dir)
         const_setup_directory(cache_dir)
 
+    def _clear_security_dir(self):
+        """
+        Remove the content of the security directory.
+        """
+        sec_dir = self.SECURITY_DIR
+        for name in os.listdir(sec_dir):
+            path = os.path.join(sec_dir, name)
+            if os.path.isfile(path) or os.path.islink(path):
+                os.remove(path)
+            else:
+                shutil.rmtree(path, True)
+
     def _fetch(self, tempdir, force = False):
         """
         Download the GLSA advisories, verify their integrity and origin.
         """
         self._setup_paths()
+        self._clear_security_dir()
 
         md5_ext = etpConst['packagesmd5fileext']
         url_checksum = self._url + md5_ext
@@ -1027,7 +1034,7 @@ class System(object):
         if checksum != previous_checksum:
             updated = True
 
-        md5res = entropy.tools.compare_md5(package, package_checksum)
+        md5res = entropy.tools.compare_md5(package, checksum)
         if md5res:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
@@ -1077,22 +1084,18 @@ class System(object):
                 elif not verify_sts:
                     return 7, updated
 
-        # save downloaded md5
-        if os.path.isfile(package_checksum):
-            try:
-                os.rename(package_checksum, old_package_checksum)
-            except OSError as err:
-                if err.errno != errno.EXDEV:
-                    raise
-                shutil.copy2(package_checksum, old_package_checksum)
-            const_setup_file(old_package_checksum,
-                etpConst['entropygid'], 0o664)
+        try:
+            os.rename(package_checksum, old_package_checksum)
+        except OSError as err:
+            if err.errno != errno.EXDEV:
+                raise
+            shutil.copy2(package_checksum, old_package_checksum)
+        const_setup_file(old_package_checksum,
+            etpConst['entropygid'], 0o664)
 
-        # now unpack in place
-        unpacked_package = os.path.join(tempdir, "glsa_package")
         status = entropy.tools.uncompress_tarball(
             package,
-            extract_path = unpacked_package,
+            extract_path = self.SECURITY_DIR,
             catch_empty = True
         )
         if status != 0:
@@ -1108,41 +1111,6 @@ class System(object):
             )
             return 6, updated
 
-        const_setup_perms(unpacked_package, etpConst['entropygid'])
-
-        mytxt = "%s: %s %s" % (
-            bold(_("Security Advisories")),
-            blue(_("installing")),
-            red("..."),
-        )
-        self._entropy.output(
-            mytxt,
-            importance = 1,
-            level = "info",
-            header = red("   # ")
-        )
-
-        # clear previous
-        if os.listdir(self.SECURITY_DIR):
-            shutil.rmtree(self.SECURITY_DIR, True)
-            if not os.path.isdir(self.SECURITY_DIR):
-                os.makedirs(self.SECURITY_DIR, 0o775)
-                const_setup_perms(self.SECURITY_DIR,
-                    etpConst['entropygid'])
-            const_setup_perms(tempdir, etpConst['entropygid'])
-
-        # copy over
-        for advfile in os.listdir(unpacked_package):
-            from_file = os.path.join(unpacked_package, advfile)
-            to_file = os.path.join(self.SECURITY_DIR, advfile)
-            try:
-                os.rename(from_file, to_file)
-            except OSError as err:
-                if err.errno != errno.EXDEV:
-                    raise
-                shutil.move(from_file, to_file)
-
-        # clear cache
         self.clear()
         return 0, updated
 
