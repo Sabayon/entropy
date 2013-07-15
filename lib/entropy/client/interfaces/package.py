@@ -1985,9 +1985,9 @@ class Package:
             try:
                 os.lstat(sys_root_item_encoded)
             except OSError as err:
-                if err.errno != errno.ENOENT:
-                    raise
-                continue # skip file, does not exist
+                if err.errno in (errno.ENOENT, errno.ENOTDIR):
+                    continue # skip file, does not exist
+                raise
 
             except UnicodeEncodeError:
                 msg = _("This package contains a badly encoded file !!!")
