@@ -56,6 +56,13 @@ class ServerRepositoryStatus(Singleton):
         self.__data = {}
         self.__updates_log = {}
 
+    def reset(self):
+        """
+        Reset the object to its initial state.
+        """
+        self.__data.clear()
+        self.__updates_log.clear()
+
     def __create_if_necessary(self, db):
         if db not in self.__data:
             self.__data[db] = {}
