@@ -1787,17 +1787,19 @@ class MiscMixin:
             if not acquired:
                 return False, None
 
-        self._clear_resource_live_cache()
+        self._clear_resources_after_lock()
         return True, flock_f
 
-    def _clear_resource_live_cache(self):
+    def _clear_resources_after_lock(self):
         """
-        Clear in-RAM cache after having acquired a resource lock.
+        Clear resources that could have become stale after
+        the Entropy Lock acquisition.
         """
         with self._cacher:
             # clear repositories live cache
             if self._installed_repository is not None:
                 self._installed_repository.clearCache()
+
             with self._repodb_cache_mutex:
                 for repo in self._repodb_cache.values():
                     repo.clearCache()
