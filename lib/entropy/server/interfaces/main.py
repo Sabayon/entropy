@@ -6885,55 +6885,66 @@ class Server(Client):
             # if repository_id is not the default one, we MUST skip this to
             # avoid touching what developer doesn't expect
             if dorm and (repository_id in removal_repository_ids):
+
+                tag = repo.retrieveTag(idpackage)
+                if tag:
+                    is_injected = repo.isInjected(idpackage)
+                    if not is_injected:
+                        to_be_injected.add((idpackage, repository_id))
+                        continue
+
                 trashed = self._is_spm_uid_trashed(counter)
                 if trashed:
                     # search into portage then
                     try:
                         key, slot = repo.retrieveKeySlot(idpackage)
+                    except TypeError:
+                        key, slot = None, None
+
+                    if (key is not None) and (slot is not None):
                         slot = slot.split(",")[0]
                         try:
-                            trashed = spm.match_installed_package(
-                                key + ":" + slot)
+                            if spm.match_installed_package(key + ":" + slot):
+                                trashed = True
+                            else:
+                                trashed = False
                         except KeyError:
-                            trashed = True
-                    except TypeError: # referred to retrieveKeySlot
-                        trashed = True
-                if not trashed:
+                            pass
 
-                    dbtag = repo.retrieveTag(idpackage)
-                    if dbtag:
-                        is_injected = repo.isInjected(idpackage)
-                        if not is_injected:
-                            to_be_injected.add((idpackage, repository_id))
+                if trashed:
+                    # spm uid is trashed, and it is still installed,
+                    # so there is nothing to do, really.
+                    continue
 
-                    elif exp_based_scope:
+                if not exp_based_scope:
+                    # expiration based scope is not enabled, so
+                    # the package must be accounted for removal.
+                    to_be_removed.add((idpackage, repository_id))
+                    continue
 
-                        # check if support for this is set
-                        plg_id = self.sys_settings_fatscope_plugin_id
-                        exp_data = self._settings[plg_id]['repos'].get(
-                            repository_id, set())
+                # check if support for this is set
+                plg_id = self.sys_settings_fatscope_plugin_id
+                exp_data = self._settings[plg_id]['repos'].get(
+                    repository_id, set())
 
-                        # only some packages are set, check if our is
-                        # in the list
-                        if (idpackage not in exp_data) and (-1 not in exp_data):
-                            to_be_removed.add((idpackage, repository_id))
-                            continue
+                # only some packages are set, check if our is
+                # in the list
+                if (idpackage not in exp_data) and (-1 not in exp_data):
+                    to_be_removed.add((idpackage, repository_id))
+                    continue
 
-                        idpackage_expired = self._is_match_expired((idpackage,
-                            repository_id,))
+                idpackage_expired = self._is_match_expired((idpackage,
+                    repository_id,))
 
-                        if idpackage_expired:
-                            # expired !!!
-                            # add this and its depends (reverse deps)
+                if idpackage_expired:
+                    # expired !!!
+                    # add this and its depends (reverse deps)
 
-                            rm_match = (idpackage, repository_id)
-                            #to_be_removed.add(rm_match)
-                            revdep_matches = self.get_reverse_queue([rm_match],
-                                system_packages = False)
-                            to_be_removed.update(revdep_matches)
-
-                    else:
-                        to_be_removed.add((idpackage, repository_id))
+                    rm_match = (idpackage, repository_id)
+                    #to_be_removed.add(rm_match)
+                    revdep_matches = self.get_reverse_queue([rm_match],
+                        system_packages = False)
+                    to_be_removed.update(revdep_matches)
 
         return to_be_added, to_be_removed, to_be_injected
 
