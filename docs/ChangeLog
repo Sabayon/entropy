@@ -1,3 +1,74 @@
+commit a37ebf1ae9c54dca36ce9d6dcedbc4db474d2411
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 09:47:04 2013 +0200
+
+    Release Entropy 209
+
+commit 77aadac429d0a89880ac538220bee91329621a0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 09:31:56 2013 +0200
+
+    [entropy.server] complete the improvements to removed_reverse_dependencies_test
+    
+    The method will now print 100% broken dependencies only
+
+commit 5611aa0f178f667b90b6b6f54895c3ac3c17e3ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 08:26:51 2013 +0200
+
+    [entropy.server] improve the report of reverse dependencies for removed packages
+
+commit 60377dee8d95ca2e2bd0498030208794b02c98c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 15 23:25:13 2013 +0200
+
+    [entropy.client] handle errno.ENOTDIR when using lstat
+
+commit b009b304d54dfb4ceed14ec00b096b910f51356b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 12 16:24:52 2013 +0200
+
+    [entropy.security] simplify the Security advisories and fetch code
+
+commit 54a56b92344c185ba63805cdd70011c96833d42d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 12 15:56:38 2013 +0200
+
+    [entropy.security] System: complete migration to self.SECURITY_DIR
+
+commit 316c25e10a87e8a55d048c1525ab4a3a200f7181
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 12 15:52:34 2013 +0200
+
+    [entropy.security] start System class refactoring, clean __init__
+    
+    __init__ was fat and slow, this commit cleans the whole class code
+    and dramatically improves the initialization speed.
+
+commit ffbe47bd913bb0c3c386cf19ae48992c7c4659a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 12 14:32:07 2013 +0200
+
+    [entropy.security] make op_mappings protected
+
+commit 9785c3167926bcb78e7c931a22385049730c89b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 11 23:07:21 2013 +0200
+
+    [entropy.security] System: make it a new-style class
+
+commit ac718eb14f403478207b2612802ae9013c3d62eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 11 23:06:22 2013 +0200
+
+    [entropy.security] make instance variables protected
+
+commit 3c45ded29280e3bb9481dbe776a70b09c534ecf0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 9 11:21:39 2013 +0200
+
+    Tagging Entropy version 208
+
 commit 575d5929dcf7e5a21bc019c42b6184f236858b6c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 9 11:21:38 2013 +0200
