@@ -15,6 +15,7 @@ from entropy.i18n import _
 from entropy.output import darkgreen, print_error, print_generic
 from entropy.exceptions import PermissionDenied
 from entropy.server.interfaces import Server
+from entropy.server.interfaces.db import ServerRepositoryStatus
 from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
@@ -210,6 +211,15 @@ class EitCommand(object):
                     level="error", importance=1
                 )
                 return 1
+
+            # make sure that repositories are closed now
+            # to reset their internal states, which could have
+            # become stale.
+            # We cannot do this inside the API because we don't
+            # know the lifecycle of EntropyRepository objects there.
+            server.close_repositories()
+            ServerRepositoryStatus().reset()
+
             return func(server)
         finally:
             if server is not None:
@@ -240,6 +250,15 @@ class EitCommand(object):
                     level="error", importance=1
                 )
                 return 1
+
+            # make sure that repositories are closed now
+            # to reset their internal states, which could have
+            # become stale.
+            # We cannot do this inside the API because we don't
+            # know the lifecycle of EntropyRepository objects there.
+            server.close_repositories()
+            ServerRepositoryStatus().reset()
+
             return func(server)
         finally:
             if server is not None:
