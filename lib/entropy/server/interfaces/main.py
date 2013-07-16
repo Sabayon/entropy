@@ -4669,9 +4669,34 @@ class Server(Client):
                 header = purple("  # ")
             )
 
-            reverse_package_as = repo.retrieveReverseDependencies(
-                package_id, atoms = True)
-            if reverse_package_as:
+            reverse_package_ids = repo.retrieveReverseDependencies(
+                package_id)
+
+            # filter out packages pointing to multiple slots
+            sure_reverse_package_ids = set()
+            for pkg_id in reverse_package_ids:
+                pkg_deps_size = 0
+                for pkg_dep in repo.retrieveDependencies(pkg_id):
+                    pkg_dep_ids, _rc = repo.atomMatch(
+                        pkg_dep, multiMatch = True)
+                    if package_id in pkg_dep_ids:
+                        # found my dependency back
+                        pkg_deps_slots = set(
+                            [repo.retrieveSlot(x) for x in pkg_dep_ids])
+                        pkg_deps_size = max(pkg_deps_size, len(pkg_deps_slots))
+
+                if pkg_deps_size < 2:
+                    # 0:
+                    # keep the reference if we were not able to
+                    # find the package in the dependencies.
+                    # This is unlikely to happen though.
+                    # 1:
+                    # if there is only one slot, then it's likely that the
+                    # offending package will get its dependencies broken
+                    # if removed.
+                    sure_reverse_package_ids.add(pkg_id)
+
+            if reverse_package_ids:
                 self.output(
                     "%s:" %(
                         red(_("Needed by")),
@@ -4680,10 +4705,22 @@ class Server(Client):
                     header = purple("    # ")
                 )
 
-            for rev_atom in reverse_package_as:
+            for rev_pkg_id in reverse_package_ids:
+                rev_atom = repo.retrieveAtom(rev_pkg_id)
+                if rev_atom is None:
+                    continue
+
+                likelyhood_str = brown(_("unlikely"))
+                msg_level = "info"
+                if rev_pkg_id in sure_reverse_package_ids:
+                    likelyhood_str = purple(_("for sure"))
+                    msg_level = "warning"
                 self.output(
-                    darkgreen(rev_atom),
-                    level = "warning",
+                    "[%s] %s" % (
+                        likelyhood_str,
+                        darkgreen(rev_atom),
+                    ),
+                    level = msg_level,
                     header = purple("    # ")
                 )
 
