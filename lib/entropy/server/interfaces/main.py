@@ -4685,18 +4685,13 @@ class Server(Client):
                             [repo.retrieveSlot(x) for x in pkg_dep_ids])
                         pkg_deps_size = max(pkg_deps_size, len(pkg_deps_slots))
 
-                if pkg_deps_size < 2:
-                    # 0:
-                    # keep the reference if we were not able to
-                    # find the package in the dependencies.
-                    # This is unlikely to happen though.
-                    # 1:
+                if pkg_deps_size == 1:
                     # if there is only one slot, then it's likely that the
                     # offending package will get its dependencies broken
                     # if removed.
                     sure_reverse_package_ids.add(pkg_id)
 
-            if reverse_package_ids:
+            if sure_reverse_package_ids:
                 self.output(
                     "%s:" %(
                         red(_("Needed by")),
@@ -4705,22 +4700,14 @@ class Server(Client):
                     header = purple("    # ")
                 )
 
-            for rev_pkg_id in reverse_package_ids:
+            for rev_pkg_id in sure_reverse_package_ids:
                 rev_atom = repo.retrieveAtom(rev_pkg_id)
                 if rev_atom is None:
-                    continue
+                    rev_atom = _("corrupted entry")
 
-                likelyhood_str = brown(_("unlikely"))
-                msg_level = "info"
-                if rev_pkg_id in sure_reverse_package_ids:
-                    likelyhood_str = purple(_("for sure"))
-                    msg_level = "warning"
                 self.output(
-                    "[%s] %s" % (
-                        likelyhood_str,
-                        darkgreen(rev_atom),
-                    ),
-                    level = msg_level,
+                    darkgreen(rev_atom),
+                    level = "warning",
                     header = purple("    # ")
                 )
 
