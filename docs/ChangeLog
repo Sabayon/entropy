@@ -1,3 +1,26 @@
+commit 4883d8f86e86aa3591b960ba6f0c064dfe3b159a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 15:07:02 2013 +0200
+
+    Release Entropy 210
+
+commit b4c8f69c3dbfd5c1693e90a0fb4577adf0875782
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 15:01:34 2013 +0200
+
+    [entropy.server] tentatively fix injected/trashed packages in scan_package_changes
+    
+    It turns out that packages were never accounted for being marked as
+    injected because the trashed vs injected priority was wrong.
+    This commit is supposed to fix this, but more real-world testing should
+    be done.
+
+commit ce94f8251194473bedc76c838240398308ee1ed9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 09:47:04 2013 +0200
+
+    Tagging Entropy version 209
+
 commit a37ebf1ae9c54dca36ce9d6dcedbc4db474d2411
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 16 09:47:04 2013 +0200
