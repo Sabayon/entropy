@@ -63,31 +63,11 @@ class EntropySshUriHandler(EntropyUriHandler):
         self.__user, self.__port, self.__dir = self.__extract_scp_data(
             self._uri)
 
-        # as documentation suggests
-        # test out connection first
-        self.__test_connection()
-
     def __enter__(self):
         pass
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.close()
-
-    def __test_connection(self):
-        tries = 5
-        while tries:
-            tries -= 1
-            try:
-                sock = self._socket.create_connection(
-                    (self.__host, self.__port), 5)
-                sock.close()
-                return
-            except self._socket.error:
-                time.sleep(5)
-                continue
-
-        raise TransceiverConnectionError("cannot connect to %s on port %s" % (
-            self.__host, self.__port,))
 
     def __extract_scp_data(self, uri):
 

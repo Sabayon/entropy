@@ -71,11 +71,6 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         self._init_vars()
 
-        # as documentation suggests
-        # test out connection first
-        self._connect()
-        self._disconnect()
-
     def __enter__(self):
         pass # self.__connect_if_not()
 

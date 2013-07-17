@@ -30,9 +30,6 @@ class EntropyUriHandler(TextInterface):
     def __init__(self, uri):
         """
         EntropyUriHandler constructor.
-        When constructor is called, instance should perform a connection and
-        permissions check and raise TransceiverConnectionError in case
-        of issues.
 
         @param uri: URI to handle
         @type uri: string
