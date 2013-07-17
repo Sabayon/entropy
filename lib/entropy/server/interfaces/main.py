@@ -4672,21 +4672,23 @@ class Server(Client):
 
         return set(missing_map.keys())
 
-    def removed_reverse_dependencies_test(self):
+    def removed_reverse_dependencies_test(self, repository_ids):
         """
         Test repositories against packages that have been removed
         from system (but not stored in an injected state) and are
         still in the repositories. For each of them, print a list
         of direct reverse dependencies that should be fixed.
 
+        @param repository_ids: repository identifiers to consider
+        @type repository_ids: list
         @return: an ordered list of orphaned package matches
             (sorted by atom).
         @rtype: list
         """
-        repository_ids = self.repositories()
+        all_repositories = self.repositories()
         _ignore, removed, _ignore = self.scan_package_changes(
-            repository_ids = repository_ids,
-            removal_repository_ids = repository_ids)
+            repository_ids = all_repositories,
+            removal_repository_ids = all_repositories)
         if not removed:
             return []
 
@@ -4702,9 +4704,15 @@ class Server(Client):
 
         rsort = lambda x: self.open_repository(
             x[1]).retrieveAtom(x[0])
-        r_matches = sorted(removed, key = rsort)
+        rfilter = lambda x: x[1] in repository_ids
+
+        # do not consider the repository if it's not
+        # in the list.
+        r_matches = list(filter(rfilter, removed)))
+        r_matches.sort(key = rsort)
 
         for package_id, repository_id in r_matches:
+
             repo = self.open_repository(repository_id)
             r_atom = repo.retrieveAtom(package_id)
 
@@ -4794,7 +4802,7 @@ class Server(Client):
         unsatisfied_deps |= self.drained_dependencies_test(all_repositories)
         # check whethere there are packages no longer installed
         # that are still dependencies of other packages.
-        self.removed_reverse_dependencies_test()
+        self.removed_reverse_dependencies_test(all_repositories)
 
         # test library-level linking for injected packages as well.
         injected_matches = self.injected_library_dependencies_test(
