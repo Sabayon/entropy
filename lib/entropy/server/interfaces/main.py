@@ -4708,7 +4708,7 @@ class Server(Client):
 
         # do not consider the repository if it's not
         # in the list.
-        r_matches = list(filter(rfilter, removed)))
+        r_matches = list(filter(rfilter, removed))
         r_matches.sort(key = rsort)
 
         for package_id, repository_id in r_matches:
