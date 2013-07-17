@@ -96,8 +96,6 @@
                         <property name="primary_icon_sensitive">True</property>
                         <property name="secondary_icon_sensitive">True</property>
                         <accelerator key="f" signal="grab-focus" modifiers="GDK_CONTROL_MASK"/>
-                        <accelerator key="a" signal="move-cursor" modifiers="GDK_CONTROL_MASK"/>
-                        <accelerator key="k" signal="delete-from-cursor" modifiers="GDK_CONTROL_MASK"/>
                         <accelerator key="b" signal="backspace" modifiers="GDK_CONTROL_MASK"/>
                       </object>
                       <packing>
