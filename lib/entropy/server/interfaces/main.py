@@ -476,12 +476,16 @@ class RepositoryConfigParser(BaseConfigParser):
               with "base = true" will be considered. The base repository is the
               repository that is considered base for all the others
               (the main one).
+    - "exclude-qa": if set, its value can be either "true" or "false".
+                    The default value is "false". If "true", the repository is
+                    excluded from QA checks.
     """
 
     _SUPPORTED_KEYS = ("desc", "repo", "repo-only", "pkg-only",
-                       "base", "enabled")
+                       "base", "enabled", "exclude-qa")
 
     _DEFAULT_ENABLED_VALUE = True
+    _DEFAULT_QA_VALUE = False
     _DEFAULT_BASE_VALUE = False
 
     # Repository configuration file suggested prefix. If config files
@@ -537,7 +541,7 @@ class RepositoryConfigParser(BaseConfigParser):
         return base
 
     def add(self, repository_id, desc, repo, repo_only, pkg_only,
-            base, enabled = True):
+            base, enabled = True, exclude_qa = False):
         """
         Add a repository to the repository configuration files directory.
         Older repository configuration may get overwritten. This method
@@ -558,6 +562,8 @@ class RepositoryConfigParser(BaseConfigParser):
         @type base: bool
         @keyword enabled: True, if the repository is enabled
         @type enabled: bool
+        @keyword exclude_qa: True, if the repository should be excluded from QA
+        @type exclude_qa: bool
         """
         settings = SystemSettings()
         repo_d_conf = settings.get_setting_dirs_data()['repositories_conf_d']
@@ -571,7 +577,7 @@ class RepositoryConfigParser(BaseConfigParser):
         disabled_conf_file = os.path.join(conf_d_dir, "_" + base_name)
 
         self.write(enabled_conf_file, repository_id, desc, repo, repo_only,
-                   pkg_only, base, enabled = enabled)
+                   pkg_only, base, enabled = enabled, exclude_qa = exclude_qa)
 
         # if any disabled entry file is around, kill it with fire!
         try:
@@ -625,7 +631,7 @@ class RepositoryConfigParser(BaseConfigParser):
         return accomplished
 
     def write(self, path, repository_id, desc, repo, repo_only,
-              pkg_only, base, enabled = True):
+              pkg_only, base, enabled = True, exclude_qa = False):
         """
         Write the repository configuration to the given file.
 
@@ -646,11 +652,18 @@ class RepositoryConfigParser(BaseConfigParser):
         @type base: bool
         @keyword enabled: True, if the repository is enabled
         @type enabled: bool
+        @keyword exclude_qa: True, if the repository should be excluded from QA
+        @type exclude_qa: bool
         """
         if enabled:
             enabled_str = "true"
         else:
             enabled_str = "false"
+
+        if exclude_qa:
+            qa_str = "true"
+        else:
+            qa_str = "false"
 
         if base:
             base_str = "base = true"
@@ -682,6 +695,7 @@ class RepositoryConfigParser(BaseConfigParser):
             "repo_only": repo_only_str.rstrip(),
             "pkg_only": pkg_only_str.rstrip(),
             "enabled": enabled_str,
+            "exclude_qa": qa_str,
             "base": base_str,
         }
 
@@ -691,6 +705,7 @@ class RepositoryConfigParser(BaseConfigParser):
 
 [server=%(repository_id)s]
 %(base)s
+exclude-qa = %(exclude_qa)s
 desc = %(desc)s
 %(repos)s
 %(repo_only)s
@@ -789,6 +804,21 @@ enabled = %(enabled)s
         except KeyError:
             return self._DEFAULT_ENABLED_VALUE
 
+    def exclude_qa(self, repository_id):
+        """
+        Return whether the repository is excluded from QA.
+
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @return: the repository QA exclusion status
+        @rtype: bool
+        """
+        try:
+            exclude = self[repository_id]["exclude-qa"][0]
+            return exclude.strip().lower() == "true"
+        except KeyError:
+            return self._DEFAULT_QA_VALUE
+
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -838,6 +868,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         repository_id = repo_split[0].strip()
         desc = repo_split[1].strip()
         uris = repo_split[2].strip().split()
+        exclude_qa = False  # not supported through server.conf
 
         repo_mirrors = []
         pkg_mirrors = []
@@ -864,11 +895,12 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 pkg_mirrors.append(uri)
 
         return repository_id, cls._generate_repository_metadata(
-            repository_id, desc, repo_mirrors, pkg_mirrors)
+            repository_id, desc, repo_mirrors, pkg_mirrors, exclude_qa)
 
     @classmethod
     def _generate_repository_metadata(cls, repository_id, desc,
-                                      repo_mirrors, pkg_mirrors):
+                                      repo_mirrors, pkg_mirrors,
+                                      exclude_qa):
         """
         Generate the repository metadata given raw information.
 
@@ -880,6 +912,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         @type repo_mirrors: list
         @param pkg_mirrors: list of repository packages mirrors
         @type pkg_mirrors: list
+        @param exclude_qa: exclude from QA checks
+        @type exclude_qa: bool
         @return: the repository metadata
         @rtype: dict
         """
@@ -889,6 +923,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         data['pkg_mirrors'] = pkg_mirrors[:]
         data['repo_mirrors'] = repo_mirrors[:]
         data['community'] = False
+        data['exclude_qa'] = exclude_qa
         return data
 
     def __generic_parser(self, filepath):
@@ -1322,6 +1357,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 if not ini_enabled:
                     continue
 
+                ini_exclude_qa = ini_parser.exclude_qa(ini_repository)
+
                 try:
                     ini_desc = ini_parser.desc(ini_repository)
                 except KeyError:
@@ -1346,7 +1383,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     pass
 
                 repo_data = srv_plugin_class._generate_repository_metadata(
-                    ini_repository, ini_desc, repo_mirrors, pkg_mirrors)
+                    ini_repository, ini_desc, repo_mirrors, pkg_mirrors,
+                    ini_exclude_qa)
                 data['repositories'][ini_repository] = repo_data
 
         env_community_mode = os.getenv("ETP_COMMUNITY_MODE")
@@ -1358,14 +1396,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         # add system database if community repository mode is enabled
         if data['community_mode']:
             client_repository_id = InstalledPackagesRepository.NAME
-            data['repositories'][client_repository_id] = {}
-            mydata = {}
-            mydata['description'] = const_convert_to_unicode(
-                "Community Repositories System Repository")
-            mydata['pkg_mirrors'] = []
-            mydata['repo_mirrors'] = []
-            mydata['community'] = False
-            data['repositories'][client_repository_id].update(mydata)
+
+            mydata = srv_plugin_class._generate_repository_metadata(
+                client_repository_id,
+                const_convert_to_unicode(
+                    "Community Repositories System Repository"),
+                [],[], False)
+
+            data['repositories'][client_repository_id] = mydata
             srv_plugin_class.REPOSITORIES[client_repository_id] = \
                 mydata
             # installed packages repository is now the base repository
@@ -2174,6 +2212,17 @@ class Server(Client):
         """
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return sorted(srv_set['repositories'])
+
+    def qa_repositories(self):
+        """
+        Return a list of QA-testable available Entropy Server repositories.
+
+        @return: list of QA-testable available Entropy Server repositories
+        @rtype: list
+        """
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        repos = srv_set['repositories']
+        return sorted([x for x, y in repos.items() if not y['exclude_qa']])
 
     def repository(self):
         """
@@ -4737,7 +4786,9 @@ class Server(Client):
             unsatisfied_deps |= self.dependencies_test(base_repository_id,
                 match_repo = [base_repository_id])
 
-        all_repositories = self.repositories()
+        # given that we test all the repos, at least pick those where
+        # QA is allowed
+        all_repositories = self.qa_repositories()
         # test draining and merging as well, since we don't want
         # to get surprises when stuff is moved.
         unsatisfied_deps |= self.drained_dependencies_test(all_repositories)
@@ -5330,15 +5381,13 @@ class Server(Client):
         self._memory_db_srv_instances[repository_id] = repo
 
         # add to settings
-        repodata = {
-            'repoid': repository_id,
-            'description': description,
-            'pkg_mirrors': pkg_mirrors,
-            'repo_mirrors': repo_mirrors,
+        repodata = ServerSystemSettingsPlugin._generate_repository_metadata(
+            repository_id, description, repo_mirrors, pkg_mirrors, False)
+        repodata.update({
             'community': community_repo,
             'handler': '', # not supported
             '__temporary__': True,
-        }
+            })
         ServerSystemSettingsPlugin.extend_repository_metadata(
             self._settings, repository_id, repodata)
 

@@ -50,6 +50,9 @@
 # - "base": if set, its value can be either "true" or "false". The default
 #           value is "false". If no repository has the flag set, the first
 #           listed repository will be the base one.
+# - "exclude-qa": if set, its value can be either "true" or "false". The default
+#                 value is "false". If "true", the repository is excluded from
+#                 QA checks.
 
 # [server=<example repository>]
 # desc = Entropy Server Example Repository
