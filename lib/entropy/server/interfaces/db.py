@@ -222,12 +222,13 @@ class ServerPackagesRepository(CachedRepository):
         return srv.remote_repository_revision(repository_id)
 
     @staticmethod
-    def update(entropy_client, repository_id, enable_upload, enable_download):
+    def update(entropy_client, repository_id, enable_upload, enable_download,
+               force = False):
         """
         Reimplemented from EntropyRepository
         """
         return ServerPackagesRepositoryUpdater(entropy_client, repository_id,
-            enable_upload, enable_download).update()
+            enable_upload, enable_download, force = force).update()
 
     def _runConfigurationFilesUpdate(self, actions, files,
         protect_overwrite = False):
@@ -340,7 +341,8 @@ class ServerPackagesRepositoryUpdater(object):
     inside ServerPackagesRepository class.
     """
 
-    def __init__(self, entropy_server, repository_id, enable_upload, enable_download):
+    def __init__(self, entropy_server, repository_id, enable_upload,
+                 enable_download, force = False):
         """
         ServerPackagesRepositoryUpdater constructor, called by
         ServerPackagesRepository.
@@ -359,6 +361,7 @@ class ServerPackagesRepositoryUpdater(object):
         self._repository_id = repository_id
         self._enable_upload = enable_upload
         self._enable_download = enable_download
+        self._force = force
 
     def __get_repo_security_intf(self):
         try:
@@ -1815,7 +1818,9 @@ Name:    %s
                             level = "error",
                             header = brown("  # ")
                         )
-                    return 5, set(), set()
+
+                    if not self._force:
+                        return 5, set(), set()
 
             # missing dependencies QA test
             deps_not_found = self._entropy.extended_dependencies_test(
@@ -1833,7 +1838,8 @@ Name:    %s
                     level = "error",
                     header = darkred(" !!! ")
                 )
-                return 3, set(), set()
+                if not self._force:
+                    return 3, set(), set()
 
             # ask Spm to scan system
             spm_class = self._entropy.Spm_class()
@@ -1850,6 +1856,8 @@ Name:    %s
                     level = "error",
                     header = darkred(" !!! ")
                 )
+                # do not use self._force, because packages are badly broken if
+                # we get here.
                 return 4, set(), set()
 
             uris = [x[0] for x in upload_queue]

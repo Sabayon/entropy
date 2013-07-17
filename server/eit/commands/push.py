@@ -49,6 +49,7 @@ class EitPush(EitCommand):
         self._ask = True
         self._pretend = False
         self._all = False
+        self._force = False
         self._repositories = []
         self._cleanup_only = False
         self._as_repository_id = None
@@ -72,6 +73,9 @@ class EitPush(EitCommand):
         parser.add_argument("--quick", action="store_true",
                             default=False,
                             help=_("no stupid questions"))
+        parser.add_argument("--force", action="store_true",
+                            default=False,
+                            help=_("force push in case of QA errors"))
 
         group = parser.add_mutually_exclusive_group()
         group.add_argument("--all", action="store_true",
@@ -101,7 +105,7 @@ class EitPush(EitCommand):
                 if last_arg != "--as":
                     outcome = []
                     break
-        outcome += ["--conservative", "--quick", "--all", "--as"]
+        outcome += ["--conservative", "--quick", "--all", "--as", "--force"]
 
         def _startswith(string):
             if last_arg is not None:
@@ -146,6 +150,7 @@ repository) by pushing updated data.
             self._repositories.append(nsargs.repo)
         self._as_repository_id = nsargs.asrepo
         self._pretend = nsargs.pretend
+        self._force = nsargs.force
         self._entropy_class()._inhibit_treeupdates = nsargs.conservative
 
         return self._call_locked, [self._push, nsargs.repo]
@@ -254,7 +259,7 @@ repository) by pushing updated data.
         try:
             sts = entropy_server.Mirrors.sync_repository(
                 repository_id, enable_upload = True,
-                enable_download = False)
+                enable_download = False, force = self._force)
         except OnlineMirrorError as err:
             entropy_server.output(
                 "%s: %s" % (darkred(_("Error")), err.value),
