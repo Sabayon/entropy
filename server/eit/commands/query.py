@@ -74,6 +74,19 @@ class EitQuery(EitCommand):
                                  help=_("package names"))
         needed_parser.set_defaults(func=self._needed)
 
+        required_parser = subparsers.add_parser(
+            "required",
+            help=_("show packages requiring the given library name"))
+        required_parser.add_argument(
+            "libraries", nargs='+', metavar="<library>",
+            help=_("library name (example: libdl.so.2)"))
+        required_parser.add_argument("--quiet", "-q", action="store_true",
+            default=self._quiet,
+            help=_('quiet output, for scripting purposes'))
+        required_parser.add_argument("inrepo", action="store_const",
+                                     const=None)
+        required_parser.set_defaults(func=self._required)
+
         revdeps_parser = subparsers.add_parser("revdeps",
             help=_("show reverse dependencies of packages"))
         revdeps_parser.add_argument("--quiet", "-q", action="store_true",
@@ -228,6 +241,52 @@ tools.
                         darkgreen(atom),
                         bold(str(len(neededs))),
                         teal(_("libraries found"))))
+
+        return exit_st
+
+    def _required(self, entropy_server):
+        """
+        Eit query required code.
+        """
+        repository_ids = []
+        if self._repository_id is None:
+            repository_ids += entropy_server.repositories()
+        else:
+            repository_ids.append(self._repository_id)
+
+        exit_st = 0
+        key_sorter = lambda x: entropy_server.open_repository(
+            x[1]).retrieveAtom(x[0])
+        for library in self._nsargs.libraries:
+
+            pkg_matches = set()
+            for repository_id in repository_ids:
+                repo = entropy_server.open_repository(repository_id)
+                package_ids = repo.searchNeeded(library, like=True)
+                pkg_matches.update(
+                    [(x, repository_id) for x in package_ids])
+
+            matches = sorted(pkg_matches, key=key_sorter)
+            for package_id, repository_id in matches:
+                repo = entropy_server.open_repository(repository_id)
+                if self._quiet:
+                    atom = repo.retrieveAtom(package_id)
+                    entropy_server.output(atom, level="generic")
+                else:
+                    print_package_info(
+                        package_id, entropy_server,
+                        repo, quiet=False)
+
+            if not matches and not self._quiet:
+                entropy_server.output(
+                    "%s: %s" % (
+                        purple(_("Nothing found for")),
+                        teal(library)
+                    ),
+                    importance=1,
+                    level="warning")
+            if not matches:
+                exit_st = 1
 
         return exit_st
 

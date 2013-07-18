@@ -11,7 +11,7 @@ eit-query - miscellaneous package metadata queries
 
 SYNOPSIS
 --------
-eit query [-h] {tags,needed,revdeps,sets,desc} ...
+eit query [-h] {tags,needed,required,revdeps,sets,desc} ...
 
 
 INTRODUCTION
@@ -38,6 +38,9 @@ ACTION
 
 *needed*::
     show libraries (.so) required by matched packages
+
+*required*::
+    show packages requiring the given library name
 
 *revdeps*::
     show reverse dependencies of packages
