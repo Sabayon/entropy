@@ -11,7 +11,8 @@ eit-push - push repository packages and metadata
 
 SYNOPSIS
 --------
-eit push [-h] [--conservative] [--quick] [--all | --as <repo>] [--pretend]
+eit push [-h] [--conservative] [--quick] [--force] [--all | --as <repo>]
+         [--pretend]
          [<repo>]
 
 
@@ -42,6 +43,9 @@ OPTIONAL ARGUMENTS
 
 *--quick*::
     no stupid questions
+
+*--force*::
+    force push in case of QA errors
 
 *--all*::
     push all the repositories
