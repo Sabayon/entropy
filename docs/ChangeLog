@@ -1,3 +1,91 @@
+commit 0df198c97671fcb8d71807bd7398e920b613e02a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 22 10:59:54 2013 +0200
+
+    Release Entropy 211
+
+commit bc4d4bd49ff3a763584170e4df6028b9771802c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 18 19:02:25 2013 +0200
+
+    [eit] add "eit query required" command
+
+commit d1c36ff84817fdb4b2e4bfdca2e80ffaa29a1a65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 18 19:01:55 2013 +0200
+
+    [eit] update man page for eit-push(1)
+
+commit e727ec7719749a83ded0e6e9740c7c0fb704e860
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 12:00:56 2013 +0200
+
+    [entropy.server] fix syntax error caused by the last commit
+
+commit fa4cee147e1935a54cc7e25b886c149a40453366
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 12:00:11 2013 +0200
+
+    [entropy.server] removed_reverse_dependencies_test: only consider qa_repositories()
+
+commit f23ac9936b2919838748d95cdac9c92472a435b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 11:32:53 2013 +0200
+
+    [Rigo] drop unavailable signal handling for GtkEntry
+
+commit 8336ca0f475d76b50a13721a31f0792da22d739b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 11:28:11 2013 +0200
+
+    [entropy.server,conf] add support for exclude-qa repo config parameter
+    
+    "exclude-qa", if true, makes possible to exclude a repository from
+    non-disruptive QA tests executed on it while managing another repository.
+    This is useful for supporting sabayon-weekly cherry-picks
+
+commit aefbb2d66548499937ad2259e6f89807cd20cd15
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 10:51:52 2013 +0200
+
+    [entropy.server,eit] add support for eit push --force
+
+commit 4e482dc339ec0322ad76d2da85b601a3da4d4025
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 17 09:47:28 2013 +0200
+
+    [entropy.transceivers] do not mandate to test the connection on __init__()
+    
+    Besides making context support complex, it doesn't do any good because
+    connectivity errors are generally transient anyway (apart from misconfigs).
+
+commit 5afdea550d0fdfab915015612a5f2f78bc840a00
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 16:07:32 2013 +0200
+
+    [eit.commands] EitCommand: reset repositories states after lock acquisition
+
+commit 73bf33161cc40923c94ef0af9e18b1d05d26da4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 16:06:40 2013 +0200
+
+    [entropy.server.db] ServerRepositoryStatus: add reset() method
+
+commit 7dbdbb14912885b8c58a505720854c9f0a2f3b3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 16:05:56 2013 +0200
+
+    [entropy.client] better name _clear_resources_live_cache
+    
+    The new name is _clear_resources_after_lock. docstring has been
+    updated as well.
+
+commit a5da017cad3abfbc6b3b8f1b6f40984403303e7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 16 15:07:03 2013 +0200
+
+    Tagging Entropy version 210
+
 commit 4883d8f86e86aa3591b960ba6f0c064dfe3b159a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 16 15:07:02 2013 +0200
