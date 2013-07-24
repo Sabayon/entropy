@@ -1754,7 +1754,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         return os.path.getmtime(self._db)
 
     def checksum(self, do_order = False, strict = True,
-        strings = True, include_signatures = False):
+                 strings = True, include_signatures = False,
+                 include_dependencies = False):
         """
         Reimplemented from EntropySQLRepository.
         We have to handle _baseinfo_extrainfo_2010.
@@ -1779,15 +1780,19 @@ class EntropySQLiteRepository(EntropySQLRepository):
         # avoid memleak with python3.x
         del cached
 
-        package_id_order = ''
-        category_order = ''
-        license_order = ''
-        flags_order = ''
+        package_id_order = ""
+        category_order = ""
+        license_order = ""
+        flags_order = ""
+        depenenciesref_order = ""
+        dependencies_order = ""
         if do_order:
-            package_id_order = 'order by idpackage'
-            category_order = 'order by category'
-            license_order = 'order by license'
-            flags_order = 'order by chost'
+            package_id_order = "order by idpackage"
+            category_order = "order by category"
+            license_order = "order by license"
+            flags_order = "order by chost"
+            dependenciesref_order = "order by iddependency"
+            dependencies_order = "order by idpackage"
 
         def do_update_hash(m, cursor):
             # this could slow things down a lot, so be careful
@@ -1850,8 +1855,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         else:
             c_hash = hash(tuple(cur))
 
-        d_hash = '0'
-        e_hash = '0'
+        d_hash = "0"
+        e_hash = "0"
         if strict:
             cur = self._cursor().execute("""
             SELECT * FROM licenses %s""" % (license_order,))
@@ -1886,7 +1891,24 @@ class EntropySQLiteRepository(EntropySQLRepository):
             if strings:
                 do_update_hash(m, cur)
             else:
-                b_hash = "%s%s" % (b_hash, hash(tuple(cur)),)
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+
+        if include_dependencies:
+            cur = self._cursor().execute("""
+            SELECT * from dependenciesreference %s
+            """ % (dependenciesref_order,))
+            if strings:
+                do_update_hash(m, cur)
+            else:
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+
+            cur = self._cursor().execute("""
+            SELECT * from dependencies %s
+            """ % (dependencies_order,))
+            if strings:
+                do_update_hash(m, cur)
+            else:
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
 
         if strings:
             result = m.hexdigest()

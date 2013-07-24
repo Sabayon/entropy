@@ -4867,27 +4867,27 @@ class EntropySQLRepository(EntropyRepositoryBase):
         raise NotImplementedError()
 
     def checksum(self, do_order = False, strict = True,
-        strings = True, include_signatures = False):
+                 strings = True, include_signatures = False,
+                 include_dependencies = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cache_key = "checksum_%s_%s_%s_%s" % (do_order, strict, strings,
-            include_signatures)
+        cache_key = "checksum_%s_%s_%s_%s_%s" % (
+            do_order, strict, strings,
+            include_signatures, include_dependencies)
         cached = self._getLiveCache(cache_key)
         if cached is not None:
             return cached
         # avoid memleak with python3.x
         del cached
 
-        package_id_order = ''
-        category_order = ''
-        license_order = ''
-        flags_order = ''
+        package_id_order = ""
+        depenenciesref_order = ""
+        dependencies_order = ""
         if do_order:
-            package_id_order = 'order by idpackage'
-            category_order = 'order by category'
-            license_order = 'order by license'
-            flags_order = 'order by chost'
+            package_id_order = "order by idpackage"
+            dependenciesref_order = "order by iddependency"
+            dependencies_order = "order by idpackage"
 
         def do_update_hash(m, cursor):
             # this could slow things down a lot, so be careful
@@ -4941,10 +4941,6 @@ class EntropySQLRepository(EntropyRepositoryBase):
         else:
             b_hash = hash(tuple(cur))
 
-        c_hash = '0'
-        d_hash = '0'
-        e_hash = '0'
-
         if include_signatures:
             # be optimistic and delay if condition,
             # _doesColumnInTableExist
@@ -4955,13 +4951,29 @@ class EntropySQLRepository(EntropyRepositoryBase):
             if strings:
                 do_update_hash(m, cur)
             else:
-                b_hash = "%s%s" % (b_hash, hash(tuple(cur)),)
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+
+        if include_dependencies:
+            cur = self._cursor().execute("""
+            SELECT * from dependenciesreference %s
+            """ % (dependenciesref_order,))
+            if strings:
+                do_update_hash(m, cur)
+            else:
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+
+            cur = self._cursor().execute("""
+            SELECT * from dependencies %s
+            """ % (dependencies_order,))
+            if strings:
+                do_update_hash(m, cur)
+            else:
+                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
 
         if strings:
             result = m.hexdigest()
         else:
-            result = "%s:%s:%s:%s:%s" % (
-                a_hash, b_hash, c_hash, d_hash, e_hash)
+            result = "%s:%s:0:0:0" % (a_hash, b_hash,)
 
         self._setLiveCache(cache_key, result)
         return result
