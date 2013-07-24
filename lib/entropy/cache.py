@@ -246,8 +246,8 @@ class EntropyCacher(Singleton):
                 del massive_data[:]
                 del massive_data
 
-    @staticmethod
-    def current_directory():
+    @classmethod
+    def current_directory(cls):
         """
         Return the path to current EntropyCacher cache storage directory.
         """
@@ -335,7 +335,7 @@ class EntropyCacher(Singleton):
         @type cache_dir: string
         """
         if cache_dir is None:
-            cache_dir = EntropyCacher.current_directory()
+            cache_dir = self.current_directory()
         try:
             with self.__dump_data_lock:
                 entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
@@ -363,7 +363,7 @@ class EntropyCacher(Singleton):
             return
 
         if cache_dir is None:
-            cache_dir = EntropyCacher.current_directory()
+            cache_dir = self.current_directory()
 
         if async:
             try:
@@ -404,7 +404,7 @@ class EntropyCacher(Singleton):
         @return: object stored into the stack or None (if stack is empty)
         """
         if cache_dir is None:
-            cache_dir = EntropyCacher.current_directory()
+            cache_dir = self.current_directory()
 
         if EntropyCacher.STASHING_CACHE:
             # object is being saved on disk, it's in RAM atm
@@ -417,8 +417,8 @@ class EntropyCacher(Singleton):
             return
         return l_o(key, dump_dir = cache_dir, aging_days = aging_days)
 
-    @staticmethod
-    def clear_cache_item(cache_item, cache_dir = None):
+    @classmethod
+    def clear_cache_item(cls, cache_item, cache_dir = None):
         """
         Clear Entropy Cache item from on-disk cache.
 
@@ -428,7 +428,7 @@ class EntropyCacher(Singleton):
         @type cache_dir: string
         """
         if cache_dir is None:
-            cache_dir = EntropyCacher.current_directory()
+            cache_dir = cls.current_directory()
         dump_path = os.path.join(cache_dir, cache_item)
 
         dump_dir = os.path.dirname(dump_path)
@@ -447,8 +447,8 @@ class EntropyCacher(Singleton):
             except (OSError, IOError,):
                 pass
 
-    @staticmethod
-    def clear_cache(excluded_items = None, cache_dir = None):
+    @classmethod
+    def clear_cache(cls, excluded_items = None, cache_dir = None):
         """
         Clear all the on-disk cache items included in EntropyCacher.CACHE_IDS.
 
@@ -462,7 +462,7 @@ class EntropyCacher(Singleton):
         for key, value in EntropyCacher.CACHE_IDS.items():
             if key in excluded_items:
                 continue
-            EntropyCacher.clear_cache_item(value, cache_dir = cache_dir)
+            cls.clear_cache_item(value, cache_dir = cache_dir)
 
 class MtimePingus(object):
 
