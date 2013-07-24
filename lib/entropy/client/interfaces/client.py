@@ -882,6 +882,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         This method should be called when the whole process is going to be
         killed. It calls destroy() and stops any running thread
         """
+        self._cacher.sync()  # enforce, destroy() may kill the current content
         self.destroy(_from_shutdown = True)
         self._cacher.stop()
         entropy.tools.kill_threads()
