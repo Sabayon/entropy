@@ -4409,8 +4409,7 @@ class Server(Client):
 
     def _deps_tester(self, default_repository_id, match_repo = None):
 
-        sys_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        server_repos = list(sys_set['repositories'].keys())
+        server_repos = self.repositories()
         if match_repo is None:
             match_repo = server_repos
         installed_packages = set()
@@ -4418,11 +4417,10 @@ class Server(Client):
         if default_repository_id:
             server_repos = [default_repository_id]
 
-        for repo in server_repos:
-            dbconn = self.open_server_repository(repo, read_only = True,
-                no_upload = True, do_treeupdates = False)
-            installed_packages |= set([(x, repo) for x in \
-                dbconn.listAllPackageIds()])
+        for repository_id in server_repos:
+            repo = self.open_repository(repository_id)
+            installed_packages |= set([(x, repository_id) for x in \
+                repo.listAllPackageIds()])
 
         deps_not_satisfied = set()
         length = str((len(installed_packages)))
@@ -4430,13 +4428,12 @@ class Server(Client):
         mytxt = _("Checking")
         _deps_cache = set()
 
-        for idpackage, repo in installed_packages:
+        for idpackage, repository_id in installed_packages:
             count += 1
-            dbconn = self.open_server_repository(repo, read_only = True,
-                no_upload = True, do_treeupdates = False)
+            repo = self.open_repository(repository_id)
 
             if (count%150 == 0) or (count == length) or (count == 1):
-                atom = dbconn.retrieveAtom(idpackage)
+                atom = repo.retrieveAtom(idpackage)
                 self.output(
                     darkgreen(mytxt)+" "+bold(atom),
                     importance = 0,
@@ -4448,7 +4445,7 @@ class Server(Client):
 
             # NOTE: this must also test build dependencies to make sure
             # that every packages comes out with all of them.
-            xdeps = dbconn.retrieveDependencies(idpackage)
+            xdeps = repo.retrieveDependencies(idpackage)
             xdeps = [x for x in xdeps if x not in _deps_cache]
             _deps_cache.update(xdeps)
             for xdep in xdeps:
@@ -4978,29 +4975,25 @@ class Server(Client):
             header = red(" @@ ")
         )
 
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        server_repos = list(srv_set['repositories'].keys())
-        if match_repo is not None:
-            server_repo = match_repo
         deps_not_matched = self._deps_tester(repository_id,
             match_repo = match_repo)
 
         if deps_not_matched:
-
+            repository_ids = self.repositories()
             crying_atoms = {}
+
             for atom in deps_not_matched:
-                for repo in server_repos:
-                    dbconn = self.open_server_repository(repo,
-                        just_reading = True, do_treeupdates = False)
-                    riddep = dbconn.searchDependency(atom)
+                for repository_id in repository_ids:
+                    repo = self.open_repository(repository_id)
+                    riddep = repo.searchDependency(atom)
                     if riddep == -1:
                         continue
-                    ridpackages = dbconn.searchPackageIdFromDependencyId(riddep)
+                    ridpackages = repo.searchPackageIdFromDependencyId(riddep)
                     for i in ridpackages:
-                        iatom = dbconn.retrieveAtom(i)
+                        iatom = repo.retrieveAtom(i)
                         if atom not in crying_atoms:
                             crying_atoms[atom] = set()
-                        crying_atoms[atom].add((iatom, repo))
+                        crying_atoms[atom].add((iatom, repository_id))
 
             mytxt = blue("%s:") % (_("These are the dependencies not found"),)
             self.output(
