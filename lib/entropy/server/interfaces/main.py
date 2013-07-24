@@ -4912,7 +4912,7 @@ class Server(Client):
 
         return [(x, y) for x, y, _z in result]
 
-    def extended_dependencies_test(self, repository_ids):
+    def extended_dependencies_test(self, repository_ids, use_cache = True):
         """
         Test repository against missing dependencies.
         Moreover, the base repository (the first listed in server.conf)
@@ -4920,6 +4920,8 @@ class Server(Client):
 
         @param repository_ids: list of repository identifiers to test
         @type repository_ids: list
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
         @return: list (set) of unsatisfied dependencies
         @rtype: set
         """
@@ -4941,14 +4943,16 @@ class Server(Client):
         all_repositories = self.qa_repositories()
         # test draining and merging as well, since we don't want
         # to get surprises when stuff is moved.
-        unsatisfied_deps |= self.drained_dependencies_test(all_repositories)
+        unsatisfied_deps |= self.drained_dependencies_test(
+            all_repositories, use_cache = use_cache)
         # check whethere there are packages no longer installed
         # that are still dependencies of other packages.
-        self.removed_reverse_dependencies_test(all_repositories)
+        self.removed_reverse_dependencies_test(
+            all_repositories, use_cache = use_cache)
 
         # test library-level linking for injected packages as well.
         injected_matches = self.injected_library_dependencies_test(
-            all_repositories)
+            all_repositories, use_cache = use_cache)
         for package_id, repository_id in injected_matches:
             repo = self.open_repository(repository_id)
             unsatisfied_deps.add(repo.retrieveAtom(package_id))
