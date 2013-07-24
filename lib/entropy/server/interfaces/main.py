@@ -4481,7 +4481,7 @@ class Server(Client):
 
             for repository_id in merged:
                 repo = self.open_repository(repository_id)
-                ck = repo.checksum()
+                ck = repo.checksum(include_dependencies = True)
                 repo_ck[repository_id] = ck
                 checksum_m.append(ck)
 
@@ -4489,10 +4489,10 @@ class Server(Client):
                 ck = repo_ck.get(repository_id)
                 if ck is None:
                     repo = self.open_repository(repository_id)
-                    ck = repo.checksum()
+                    ck = repo.checksum(include_dependencies = True)
                 checksum_d.append(ck)
 
-            c_hash = "%s|%s~%s|%s" % (
+            c_hash = "%s|%s~%s|%s|v2" % (
                 ",".join(merged),
                 ",".join(checksum_m),
                 ",".join(drained),
@@ -4682,9 +4682,9 @@ class Server(Client):
             checksum_r = []
             for repository_id in sorted_r:
                 repo = self.open_repository(repository_id)
-                checksum_r.append(repo.checksum())
+                checksum_r.append(repo.checksum(include_dependencies = True))
 
-            c_hash = "%s|%s" % (
+            c_hash = "%s|%s|v2" % (
                 ",".join(sorted_r),
                 ",".join(checksum_r),
             )
@@ -4787,7 +4787,7 @@ class Server(Client):
             sorted_r = sorted(repository_ids)
             for repository_id in sorted_r:
                 repo = self.open_repository(repository_id)
-                ck = repo.checksum()
+                ck = repo.checksum(include_dependencies = True)
                 repo_ck[repository_id] = ck
                 checksum_r.append(ck)
 
@@ -4796,10 +4796,10 @@ class Server(Client):
                 ck = repo_ck.get(repository_id)
                 if ck is None:
                     repo = self.open_repository(repository_id)
-                    ck = repo.checksum()
+                    ck = repo.checksum(include_dependencies = True)
                 checksum_r_all.append(ck)
 
-            c_hash = "%s|%s~%s|%s" % (
+            c_hash = "%s|%s~%s|%s|v2" % (
                 ",".join(sorted_r),
                 ",".join(checksum_r),
                 ",".join(sorted_r_all),
@@ -4986,7 +4986,7 @@ class Server(Client):
         cache_key = None
         if use_cache:
             repo = self.open_repository(repository_id)
-            checksum_r = repo.checksum()
+            checksum_r = repo.checksum(include_dependencies = True)
 
             match_repo_s = "None"
             checksum_m = ["~"]
@@ -4995,9 +4995,10 @@ class Server(Client):
                 del checksum_m[:]
                 for repository_id in match_repo:
                     repo = self.open_repository(repository_id)
-                    checksum_m.append(repo.checksum())
+                    checksum_m.append(
+                        repo.checksum(include_dependencies = True))
 
-            c_hash = "%s|%s~%s|%s" % (
+            c_hash = "%s|%s~%s|%s|v2" % (
                 repository_id,
                 checksum_r,
                 match_repo_s,
