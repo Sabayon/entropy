@@ -4594,14 +4594,6 @@ class Server(Client):
                             darkgreen(dependency),
                             header = "   - ")
 
-                if not missing:
-                    self.output(
-                        blue(_("No missing dependencies. Lucky bastard...")),
-                        importance = 1,
-                        level = "info",
-                        header = brown(" @@ ")
-                    )
-
         return missing_dependencies
 
     def injected_library_dependencies_test(self, repository_ids,
@@ -4621,15 +4613,6 @@ class Server(Client):
         @return: list (set) of package matches with broken dependencies
         @rtype: set
         """
-        txt = "%s..." % (
-            teal(_("Calculating library dependencies of injected packages")),)
-        self.output(
-            txt,
-            importance = 2,
-            level = "info",
-            header = brown(" @@ ")
-        )
-
         missing_map = None
         cached = None
         cache_key = None
@@ -4701,13 +4684,6 @@ class Server(Client):
                 importance = 2,
                 level = "error",
                 header = red(" @@ "))
-        else:
-            self.output(
-                blue(_("Injected packages are healthy. You lucky...")),
-                importance = 1,
-                level = "info",
-                header = brown(" @@ ")
-            )
 
         if use_cache and cached is None and cache_key is not None:
             self._cacher.push(cache_key, missing_map)
