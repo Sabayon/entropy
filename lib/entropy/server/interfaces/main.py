@@ -27,7 +27,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
     const_debug_enabled, const_convert_to_rawstring, const_mkdtemp, \
-    const_mkstemp
+    const_mkstemp, const_get_caller
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -1850,6 +1850,20 @@ class Server(Client):
         Return whether the singleton instance is destroyed.
         """
         return self.__instance_destroyed
+
+    def _cache_prefix(self, caller=None):
+        """
+        Generate a cache object key prefix to use with EntropyCacher.
+
+        @keyword caller: a custom function caller name
+        @type caller: string
+        @return: the cache prefix
+        @rtype: string
+        """
+        if caller is None:
+            caller = const_get_caller()
+        return "%s/%s/%s" % (
+            __name__, self.__class__.__name__, caller)
 
     def _get_branch_from_download_relative_uri(self, db_download_uri):
         return db_download_uri.split("/")[2]
