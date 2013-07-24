@@ -1530,10 +1530,14 @@ def const_get_caller():
     @rtype: string
     """
     import inspect
+    stack = inspect.stack()
     try:
-        return inspect.stack()[3][3]
+        func = stack[3][3]
+        if func != "<module>":
+            return func
+        raise IndexError("module wtf?")
     except IndexError:
-        return inspect.stack()[2][3]
+        return stack[2][3]
 
 def const_get_stack():
     """
