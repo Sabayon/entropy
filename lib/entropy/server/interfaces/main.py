@@ -1737,7 +1737,6 @@ class Server(Client):
         self.fake_default_repo = fake_default_repo
         self.fake_default_repo_id = fake_default_repo_id
         self._indexing = False
-        self.xcache = False
         self.Mirrors = None
         self._settings_to_backup = []
         self._save_repository = save_repository
@@ -1820,7 +1819,6 @@ class Server(Client):
             kwargs["repo_validation"] = False
         Client.init_singleton(self,
             indexing = self._indexing,
-            xcache = self.xcache,
             **kwargs
         )
 
