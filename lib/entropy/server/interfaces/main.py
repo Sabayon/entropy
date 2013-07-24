@@ -4925,15 +4925,18 @@ class Server(Client):
         # just run this to make dev aware
         unsatisfied_deps = set()
         for repository_id in repository_ids:
-            unsatisfied_deps |= self.dependencies_test(repository_id)
+            unsatisfied_deps |= self.dependencies_test(
+                repository_id, use_cache = use_cache)
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         base_repository_id = srv_set['base_repository_id']
         if base_repository_id is not None:
             # dependency test base repository, which must always be
             # self-contained
-            unsatisfied_deps |= self.dependencies_test(base_repository_id,
-                match_repo = [base_repository_id])
+            unsatisfied_deps |= self.dependencies_test(
+                base_repository_id,
+                match_repo = [base_repository_id],
+                use_cache = use_cache)
 
         # given that we test all the repos, at least pick those where
         # QA is allowed
@@ -4956,7 +4959,8 @@ class Server(Client):
 
         return unsatisfied_deps
 
-    def dependencies_test(self, repository_id, match_repo = None):
+    def dependencies_test(self, repository_id, match_repo = None,
+                          use_cache = True):
         """
         Test repository against missing dependencies.
 
@@ -4964,6 +4968,8 @@ class Server(Client):
         @type repository_id: string
         @keyword match_repo: list of repositories to look for missing deps
         @type match_repo: list
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
         @return: list (set) of unsatisfied dependencies
         @rtype: set
         """
@@ -4975,8 +4981,37 @@ class Server(Client):
             header = red(" @@ ")
         )
 
-        deps_not_matched = self._deps_tester(repository_id,
-            match_repo = match_repo)
+        deps_not_matched = None
+        cached = None
+        cache_key = None
+        if use_cache:
+            repo = self.open_repository(repository_id)
+            checksum_r = repo.checksum()
+
+            match_repo_s = "None"
+            checksum_m = ["~"]
+            if match_repo is not None:
+                match_repo_s = ",".join(match_repo)
+                del checksum_m[:]
+                for repository_id in match_repo:
+                    repo = self.open_repository(repository_id)
+                    checksum_m.append(repo.checksum())
+
+            c_hash = "%s|%s~%s|%s" % (
+                repository_id,
+                checksum_r,
+                match_repo_s,
+                ",".join(checksum_m),
+            )
+            sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
+
+            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cached = self._cacher.pop(cache_key)
+            deps_not_matched = cached
+
+        if deps_not_matched is None:
+            deps_not_matched = self._deps_tester(
+                repository_id, match_repo = match_repo)
 
         if deps_not_matched:
             repository_ids = self.repositories()
@@ -5029,7 +5064,6 @@ class Server(Client):
                             header = blue("      # ")
                         )
         else:
-
             mytxt = blue(_("Every dependency is satisfied. It's all fine."))
             self.output(
                 mytxt,
@@ -5037,6 +5071,9 @@ class Server(Client):
                 level = "info",
                 header = red(" @@ ")
             )
+
+        if use_cache and cached is None and cache_key is not None:
+            self._cacher.push(cache_key, deps_not_matched)
 
         return deps_not_matched
 
