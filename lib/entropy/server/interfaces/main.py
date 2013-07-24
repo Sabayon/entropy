@@ -4604,7 +4604,8 @@ class Server(Client):
 
         return missing_dependencies
 
-    def injected_library_dependencies_test(self, repository_ids):
+    def injected_library_dependencies_test(self, repository_ids,
+                                           use_cache = True):
         """
         Test repositories against missing library dependencies
         for injected packages.
@@ -4615,6 +4616,8 @@ class Server(Client):
         @param repository_ids: ordered list of repository identifiers
             to test, like the output of Server.repositories()
         @type repository_ids: list
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
         @return: list (set) of package matches with broken dependencies
         @rtype: set
         """
@@ -4627,47 +4630,71 @@ class Server(Client):
             header = brown(" @@ ")
         )
 
-        # this is the system-wide blacklist
-        blacklisted_deps = \
-            self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-        blacklist = set()
+        missing_map = None
+        cached = None
+        cache_key = None
+        # check if result is cached
+        if use_cache:
 
-        injected = []
-        for repository_id in repository_ids:
-            repo = self.open_repository(repository_id)
-            repo_injected = repo.listAllInjectedPackageIds()
-            injected.extend(((x, repository_id) for x in repo_injected))
+            sorted_r = sorted(repository_ids)
+            checksum_r = []
+            for repository_id in sorted_r:
+                repo = self.open_repository(repository_id)
+                checksum_r.append(repo.checksum())
 
-            # this is the repository-specific blacklist. pack everything
-            # together
-            blacklist.update(self._get_missing_dependencies_blacklist(
-                    repository_id))
+            c_hash = "%s|%s" % (
+                ",".join(sorted_r),
+                ",".join(checksum_r),
+            )
+            sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
-        # reorder package matches per repository to speed up the
-        # generation of the per-package blacklist.
-        pkg_map = {}
-        for pkg_id, pkg_repo in injected:
-            obj = pkg_map.setdefault(pkg_repo, [])
-            obj.append(pkg_id)
+            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cached = self._cacher.pop(cache_key)
+            missing_map = cached
 
-        # this is per-package dependency blacklist support
-        per_package_blacklist = set()
-        for repository_id, package_ids in pkg_map.items():
-            repo = self.open_repository(repository_id)
+        if missing_map is None:
+            # this is the system-wide blacklist
+            blacklisted_deps = \
+                self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
+            blacklist = set()
 
-            for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
-                pkg_ids, rc = repo.atomMatch(pkg_dep, multiMatch = True)
-                for package_id in package_ids:
-                    if package_id in pkg_ids:
-                        per_package_blacklist.update(bl_pkg_deps)
-                        break
+            injected = []
+            for repository_id in repository_ids:
+                repo = self.open_repository(repository_id)
+                repo_injected = repo.listAllInjectedPackageIds()
+                injected.extend(((x, repository_id) for x in repo_injected))
 
-        # merge with the rest of the metadata
-        blacklist |= per_package_blacklist
+                # this is the repository-specific blacklist. pack everything
+                # together
+                blacklist.update(self._get_missing_dependencies_blacklist(
+                        repository_id))
 
-        qa = self.QA()
-        missing_map = qa.test_missing_dependencies(
-            self, injected, blacklist = blacklist)
+            # reorder package matches per repository to speed up the
+            # generation of the per-package blacklist.
+            pkg_map = {}
+            for pkg_id, pkg_repo in injected:
+                obj = pkg_map.setdefault(pkg_repo, [])
+                obj.append(pkg_id)
+
+            # this is per-package dependency blacklist support
+            per_package_blacklist = set()
+            for repository_id, package_ids in pkg_map.items():
+                repo = self.open_repository(repository_id)
+
+                for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
+                    pkg_ids, rc = repo.atomMatch(pkg_dep, multiMatch = True)
+                    for package_id in package_ids:
+                        if package_id in pkg_ids:
+                            per_package_blacklist.update(bl_pkg_deps)
+                            break
+
+            # merge with the rest of the metadata
+            blacklist |= per_package_blacklist
+
+            qa = self.QA()
+            missing_map = qa.test_missing_dependencies(
+                self, injected, blacklist = blacklist)
+
         if missing_map:
             self.output(
                 darkred(_("There are broken injected packages. Please fix.")),
@@ -4681,6 +4708,9 @@ class Server(Client):
                 level = "info",
                 header = brown(" @@ ")
             )
+
+        if use_cache and cached is None and cache_key is not None:
+            self._cacher.push(cache_key, missing_map)
 
         return set(missing_map.keys())
 
