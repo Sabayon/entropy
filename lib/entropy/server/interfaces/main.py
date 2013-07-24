@@ -4746,6 +4746,13 @@ class Server(Client):
                 importance = 2,
                 level = "error",
                 header = red(" @@ "))
+        else:
+            self.output(
+                blue(_("Injected packages are healthy. You lucky...")),
+                importance = 1,
+                level = "info",
+                header = brown(" @@ ")
+            )
 
         if use_cache and cached is None and cache_key is not None:
             self._cacher.push(cache_key, missing_map)
