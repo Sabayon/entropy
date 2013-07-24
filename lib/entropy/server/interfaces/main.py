@@ -4714,7 +4714,8 @@ class Server(Client):
 
         return set(missing_map.keys())
 
-    def removed_reverse_dependencies_test(self, repository_ids):
+    def removed_reverse_dependencies_test(self, repository_ids,
+                                          use_cache = True):
         """
         Test repositories against packages that have been removed
         from system (but not stored in an injected state) and are
@@ -4723,37 +4724,110 @@ class Server(Client):
 
         @param repository_ids: repository identifiers to consider
         @type repository_ids: list
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
         @return: an ordered list of orphaned package matches
             (sorted by atom).
         @rtype: list
         """
         all_repositories = self.repositories()
-        _ignore, removed, _ignore = self.scan_package_changes(
-            repository_ids = all_repositories,
-            removal_repository_ids = all_repositories)
-        if not removed:
-            return []
 
-        self.output(
-            "[%s] %s:" % (
-                red(_("test")),
-                blue(_("these packages haven't been removed yet")),
-            ),
-            importance = 1,
-            level = "warning",
-            header = purple(" @@ ")
-        )
+        result = None
+        cached = None
+        cache_key = None
+        # check if result is cached
+        if use_cache:
 
-        rsort = lambda x: self.open_repository(
-            x[1]).retrieveAtom(x[0])
-        rfilter = lambda x: x[1] in repository_ids
+            checksum_r = []
+            checksum_r_all = []
+            repo_ck = {}
 
-        # do not consider the repository if it's not
-        # in the list.
-        r_matches = list(filter(rfilter, removed))
-        r_matches.sort(key = rsort)
+            sorted_r = sorted(repository_ids)
+            for repository_id in sorted_r:
+                repo = self.open_repository(repository_id)
+                ck = repo.checksum()
+                repo_ck[repository_id] = ck
+                checksum_r.append(ck)
 
-        for package_id, repository_id in r_matches:
+            sorted_r_all = sorted(all_repositories)
+            for repository_id in sorted_r_all:
+                ck = repo_ck.get(repository_id)
+                if ck is None:
+                    repo = self.open_repository(repository_id)
+                    ck = repo.checksum()
+                checksum_r_all.append(ck)
+
+            c_hash = "%s|%s~%s|%s" % (
+                ",".join(sorted_r),
+                ",".join(checksum_r),
+                ",".join(sorted_r_all),
+                ",".join(checksum_r_all),
+            )
+            sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
+
+            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cached = self._cacher.pop(cache_key)
+            result = cached
+
+        if result is None:
+            _ignore, removed, _ignore = self.scan_package_changes(
+                repository_ids = all_repositories,
+                removal_repository_ids = all_repositories)
+
+            rsort = lambda x: self.open_repository(
+                x[1]).retrieveAtom(x[0])
+            rfilter = lambda x: x[1] in repository_ids
+
+            # do not consider the repository if it's not
+            # in the list.
+            r_matches = list(filter(rfilter, removed))
+            r_matches.sort(key = rsort)
+
+            result = []
+            for package_id, repository_id in r_matches:
+
+                repo = self.open_repository(repository_id)
+                reverse_package_ids = repo.retrieveReverseDependencies(
+                    package_id)
+
+                # filter out packages pointing to multiple slots
+                sure_reverse_package_ids = set()
+                for pkg_id in reverse_package_ids:
+                    pkg_deps_size = 0
+                    for pkg_dep in repo.retrieveDependencies(pkg_id):
+                        pkg_dep_ids, _rc = repo.atomMatch(
+                            pkg_dep, multiMatch = True)
+                        if package_id in pkg_dep_ids:
+                            # found my dependency back
+                            pkg_deps_slots = set(
+                                [repo.retrieveSlot(x) for x in pkg_dep_ids])
+                            pkg_deps_size = max(
+                                pkg_deps_size, len(pkg_deps_slots)
+                            )
+
+                    if pkg_deps_size == 1:
+                        # if there is only one slot, then it's likely that the
+                        # offending package will get its dependencies broken
+                        # if removed.
+                        sure_reverse_package_ids.add(pkg_id)
+
+                result.append(
+                    (package_id, repository_id, sure_reverse_package_ids))
+
+            result = tuple(result)  # for caching
+
+        if result:
+            self.output(
+                "[%s] %s:" % (
+                    red(_("test")),
+                    blue(_("these packages haven't been removed yet")),
+                ),
+                importance = 1,
+                level = "warning",
+                header = purple(" @@ ")
+            )
+
+        for package_id, repository_id, rev_deps in result:
 
             repo = self.open_repository(repository_id)
             r_atom = repo.retrieveAtom(package_id)
@@ -4768,29 +4842,7 @@ class Server(Client):
                 header = purple("  # ")
             )
 
-            reverse_package_ids = repo.retrieveReverseDependencies(
-                package_id)
-
-            # filter out packages pointing to multiple slots
-            sure_reverse_package_ids = set()
-            for pkg_id in reverse_package_ids:
-                pkg_deps_size = 0
-                for pkg_dep in repo.retrieveDependencies(pkg_id):
-                    pkg_dep_ids, _rc = repo.atomMatch(
-                        pkg_dep, multiMatch = True)
-                    if package_id in pkg_dep_ids:
-                        # found my dependency back
-                        pkg_deps_slots = set(
-                            [repo.retrieveSlot(x) for x in pkg_dep_ids])
-                        pkg_deps_size = max(pkg_deps_size, len(pkg_deps_slots))
-
-                if pkg_deps_size == 1:
-                    # if there is only one slot, then it's likely that the
-                    # offending package will get its dependencies broken
-                    # if removed.
-                    sure_reverse_package_ids.add(pkg_id)
-
-            if sure_reverse_package_ids:
+            if rev_deps:
                 self.output(
                     "%s:" %(
                         red(_("Needed by")),
@@ -4799,7 +4851,7 @@ class Server(Client):
                     header = purple("    # ")
                 )
 
-            for rev_pkg_id in sure_reverse_package_ids:
+            for rev_pkg_id in rev_deps:
                 rev_atom = repo.retrieveAtom(rev_pkg_id)
                 if rev_atom is None:
                     rev_atom = _("corrupted entry")
@@ -4810,7 +4862,10 @@ class Server(Client):
                     header = purple("    # ")
                 )
 
-        return r_matches
+        if use_cache and cached is None and cache_key is not None:
+            self._cacher.push(cache_key, result)
+
+        return [(x, y) for x, y, _z in result]
 
     def extended_dependencies_test(self, repository_ids):
         """
