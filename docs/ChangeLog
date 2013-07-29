@@ -1,3 +1,147 @@
+commit ca4a27f8f915bb2c51e817f112ae4b50199252c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 29 18:40:17 2013 +0200
+
+    Release Entropy 212
+
+commit 718a474a76f4d85c66158b393ca76b1592143b46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 29 18:39:18 2013 +0200
+
+    [entropy.spm] PortagePlugin: pass fd_pipes to doebuild()
+    
+    This will redirect portage.doebuild() output to our log file
+
+commit 3eb52ffda91b55bf9dec32a573b660e9ac465d43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 16:42:07 2013 +0200
+
+    [entropy.client] shutdown: make sure to sync() caches before destroy()
+
+commit b00259a1dcb4543313e151f851f6c30933d36e62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 16:22:17 2013 +0200
+
+    [entropy.server] extended_dependencies_test: use checksum(include_dependencies=True)
+
+commit db8cc4abfb67ef466483f15f240bd2471bdaaa43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 16:21:25 2013 +0200
+
+    [entropy.db] EntropyRepository.checksum: add "include_dependencies" argument
+    
+    include_dependencies can be used to include dependencies information
+    into the computed checksum.
+
+commit 2c06899eb3c87b699b37da87824c683329ea94cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 16:02:43 2013 +0200
+
+    [entropy.server] extended_dependencies_test: add disk caching
+    
+    The test phase is called frequently in both commit and push phases.
+    However, between commit and push there are no changes to the repository
+    database content and caching out this test greatly improves speed.
+
+commit af0acdbaf44179fb5bd85dd28e49526cb299a86e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 15:30:42 2013 +0200
+
+    [entropy.server] refactor dependencies_test() and _deps_tester()
+
+commit 52bb429773d1a6380f4e3d7f2690cc5d4f9c1c7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 15:11:35 2013 +0200
+
+    [entropy.server] extended_dependencies_test: add use_cache parameter
+
+commit 16809d5df8afc28c822ad0369737fa8ec8cd0aec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 15:08:54 2013 +0200
+
+    [entropy.server] injected_library_dependencies_test: add status output back
+
+commit c8c07ab8333fab31c2072a03d0e9984925040f47
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 14:52:55 2013 +0200
+
+    [entropy.server] drained_dependencies_test: add disk caching
+    
+    The test phase is called frequently in both commit and push phases.
+    However, between commit and push there are no changes to the repository
+    database content and caching out this test greatly improves speed.
+
+commit 41883ea305d96e7e83910f179be39fbb73f7c12b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 12:09:59 2013 +0200
+
+    [entropy.server] drained_dependencies_test: split method into two
+    
+    This allows for easier caching implementation
+
+commit 68d41fd6e6a3f059a9083924b2ec72e9c90acfa8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 12:00:51 2013 +0200
+
+    [entropy.server] drop verbose output messages in deptest functions
+
+commit 2d1761677e16e399dd2ee195ee6ced142ae04009
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 11:54:43 2013 +0200
+
+    [entropy.server] removed_reverse_dependencies_cache: add disk caching
+    
+    The test phase is called frequently in both commit and push phases.
+    However, between commit and push there are no changes to the repository
+    database content and caching out this test greatly improves speed.
+
+commit 91b9c4ead7e245aa1dc93dceb5d2d59b5291c49c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 11:09:39 2013 +0200
+
+    [entropy.server] injected_library_dependencies_test: add disk caching
+    
+    The test phase is called frequently in both commit and push phases.
+    However, between commit and push there are no changes to the repository
+    database content and caching out this test greatly improves speed.
+
+commit 9aeae36585f4e398ec6bb19d113d4f447630b631
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 11:07:01 2013 +0200
+
+    [entropy.server] add _cache_prefix()
+    
+    _cache_prefix() will be used for computing a fixed and function
+    dependent cache key prefix that contains the module name, class name
+    and method name (retrieved via const_get_caller()).
+
+commit b355a868b0e94686e19b974752e56556adf0d87c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 10:54:53 2013 +0200
+
+    [entropy.const] const_get_caller(): make it work inside test modules
+
+commit d6802a2703ca1b6d59cfe5d43a85379d71991879
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 10:34:54 2013 +0200
+
+    [entropy.cache] EntropyCacher: promote methods to @classmethod
+
+commit fc12c7942f6342176e75b97958f67f8b66e31426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 24 10:26:40 2013 +0200
+
+    [entropy.server] do not force disable xcache
+    
+    This hopefully makes possible to use EntropyCacher in entropy.server
+    as well.
+
+commit 4d8b14769f62fbc7a0f1e3c9bdee40869b93fd94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 22 10:59:54 2013 +0200
+
+    Tagging Entropy version 211
+
 commit 0df198c97671fcb8d71807bd7398e920b613e02a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jul 22 10:59:54 2013 +0200
