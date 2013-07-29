@@ -2167,15 +2167,21 @@ class PortagePlugin(SpmPlugin):
                     tmp_fd, tmp_file = const_mkstemp(
                         prefix="entropy.spm.portage._portage_doebuild")
                     tmp_fw = os.fdopen(tmp_fd, "w")
-                    sys.stdout = tmp_fw
-                    sys.stderr = tmp_fw
+                    fd_pipes = {
+                        0: sys.stdin.fileno(),
+                        1: tmp_fw.fileno(),
+                        2: tmp_fw.fileno(),
+                    }
                 else:
                     splitter_out = StdoutSplitter(
                         mydo, logger, sys.stdout)
                     splitter_err = StdoutSplitter(
                         mydo, logger, sys.stderr)
-                    sys.stdout = splitter_out
-                    sys.stderr = splitter_err
+                    fd_pipes = {
+                        0: sys.stdin.fileno(),
+                        1: splitter_out.fileno(),
+                        2: splitter_err.fileno(),
+                    }
 
                 rc = self._portage.doebuild(
                     str(myebuild),
@@ -2185,7 +2191,8 @@ class PortagePlugin(SpmPlugin):
                     tree = tree,
                     mydbapi = mydbapi,
                     vartree = vartree,
-                    debug = const_debug_enabled()
+                    debug = const_debug_enabled(),
+                    fd_pipes = fd_pipes
                 )
 
             except self._portage.exception.UnsupportedAPIException as err:
