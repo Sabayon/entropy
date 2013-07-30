@@ -4471,6 +4471,7 @@ class Server(Client):
         @return: a list (set) of missing dependency strings
         @rtype: set
         """
+        spm = self.Spm()
         cached = None
         cache_key = None
         if use_cache:
@@ -4492,11 +4493,12 @@ class Server(Client):
                     ck = repo.checksum(include_dependencies = True)
                 checksum_d.append(ck)
 
-            c_hash = "%s|%s~%s|%s|v2" % (
+            c_hash = "%s|%s~%s|%s|%f|v3" % (
                 ",".join(merged),
                 ",".join(checksum_m),
                 ",".join(drained),
                 ",".join(checksum_d),
+                spm.installed_mtime(),
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
@@ -4506,7 +4508,6 @@ class Server(Client):
                 return cached
 
         missing_dependencies = set()
-        spm = self.Spm()
         deps_cache = set()  # used for memoization
         for repository_id in merged:
 
@@ -4772,6 +4773,7 @@ class Server(Client):
         @rtype: list
         """
         all_repositories = self.repositories()
+        spm = self.Spm()
 
         result = None
         cached = None
@@ -4798,11 +4800,12 @@ class Server(Client):
                     ck = repo.checksum(include_dependencies = True)
                 checksum_r_all.append(ck)
 
-            c_hash = "%s|%s~%s|%s|v2" % (
+            c_hash = "%s|%s~%s|%s|%f|v3" % (
                 ",".join(sorted_r),
                 ",".join(checksum_r),
                 ",".join(sorted_r_all),
                 ",".join(checksum_r_all),
+                spm.installed_mtime(),
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
