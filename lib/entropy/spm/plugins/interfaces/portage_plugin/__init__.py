@@ -3845,8 +3845,10 @@ class PortagePlugin(SpmPlugin):
             mtime = 0.0
         for cpv in dbapi.cpv_all():
             vdb_entry = os.path.join(vdb_path, cpv)
+            vdb_entry_parent = os.path.dirname(vdb_entry)
             try:
                 mtime = max(mtime, os.path.getmtime(vdb_entry))
+                mtime = max(mtime, os.path.getmtime(vdb_entry_parent))
             except OSError:
                 pass
         return mtime
