@@ -24,7 +24,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 11
+    BASE_PLUGIN_API_VERSION = 12
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -991,5 +991,17 @@ class SpmPlugin(Singleton):
         @type package_metadata: dict
         @return: execution status
         @rtype: int
+        """
+        raise NotImplementedError()
+
+    def installed_mtime(self, root = None):
+        """
+        Return the installed packages repository mtime that can be used
+        for cache validation.
+
+        @keyword root: specify an alternative root directory "/"
+        @type root: string
+        @return: the installed repository mtime value
+        @rtype: float
         """
         raise NotImplementedError()

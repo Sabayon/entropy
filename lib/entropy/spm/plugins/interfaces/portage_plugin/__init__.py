@@ -551,7 +551,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 11
+    PLUGIN_API_VERSION = 12
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -3832,6 +3832,24 @@ class PortagePlugin(SpmPlugin):
             os.path.join(portage_db_fakedir, "image"))
 
         return 0
+
+    def installed_mtime(self, root = None):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        dbapi = self._get_portage_vartree(root = root).dbapi
+        vdb_path = self._get_vdb_path(root = root)
+        try:
+            mtime = max(0.0, os.path.getmtime(vdb_path))
+        except OSError:
+            mtime = 0.0
+        for cpv in dbapi.cpv_all():
+            vdb_entry = os.path.join(vdb_path, cpv)
+            try:
+                mtime = max(mtime, os.path.getmtime(vdb_entry))
+            except OSError:
+                pass
+        return mtime
 
     def _get_portage_vartree(self, root = None):
 
