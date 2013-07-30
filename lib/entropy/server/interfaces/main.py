@@ -4652,7 +4652,6 @@ class Server(Client):
             missing_dependencies |= self._drained_dependencies_test_scan(
                 merged, drained, use_cache = use_cache)
 
-
         return missing_dependencies
 
     def injected_library_dependencies_test(self, repository_ids,
