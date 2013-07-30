@@ -1,3 +1,36 @@
+commit 0f9a34133a83a48823652420994a624cfa457dbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 10:42:02 2013 +0200
+
+    Release Entropy 213
+
+commit f3d8d342332416ddc1abd4f183300032fdb2b0d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 10:39:46 2013 +0200
+
+    [entropy.server] extended_dependencies_test: use SpmPlugin.installed_mtime()
+    
+    Cache validation must use SpmPlugin.installed_mtime() as part of the
+    cache key when Spm() installed packages repository is used.
+
+commit bb59c1b0103d32d3f99ad61bb108995ae0841f51
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 10:33:37 2013 +0200
+
+    [entropy.spm] SpmPlugin: add installed_mtime() public method, bump API
+
+commit 5e722e62a74418177c1563fde77a5d5172a0e5c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 10:33:13 2013 +0200
+
+    [entropy.server] nit: drop useless empty line
+
+commit 6dec4df08c9e2cf518ec5739c8b637d82973aeb3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 29 18:40:17 2013 +0200
+
+    Tagging Entropy version 212
+
 commit ca4a27f8f915bb2c51e817f112ae4b50199252c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jul 29 18:40:17 2013 +0200
