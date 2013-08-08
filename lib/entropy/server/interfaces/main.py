@@ -4871,6 +4871,13 @@ class Server(Client):
                 header = purple(" @@ ")
             )
 
+        # generate atom_set for output purposes
+        atom_set = set()
+        for package_id, repository_id, _ignore in result:
+            repo = self.open_repository(repository_id)
+            r_atom = repo.retrieveAtom(package_id)
+            atom_set.add(r_atom)
+
         for package_id, repository_id, rev_deps in result:
 
             repo = self.open_repository(repository_id)
@@ -4900,8 +4907,15 @@ class Server(Client):
                 if rev_atom is None:
                     rev_atom = _("corrupted entry")
 
+                if rev_atom in atom_set:
+                    atom_str = "%s (%s)" % (
+                        brown(rev_atom),
+                        darkgreen(_("removed")),)
+                else:
+                    atom_str = darkgreen(rev_atom)
+
                 self.output(
-                    darkgreen(rev_atom),
+                    atom_str,
                     level = "warning",
                     header = purple("    # ")
                 )
