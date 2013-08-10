@@ -1,3 +1,111 @@
+commit 8604b84280bd9437713f2c8939d3cdaca0080645
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:45:29 2013 +0200
+
+    Release Entropy 214
+
+commit e4d5eba18efe27002e1ba0a7282e32489ea01166
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:40:40 2013 +0200
+
+    [entropy.security] drop hash() usage through the module
+    
+    Replace hash() usage with SHA1 for improved reliability.
+
+commit b5d7dfeb90a14bb39185930654cd289fec28232d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:33:02 2013 +0200
+
+    [entropy.db] drop strings= keyword arg from checksum()
+    
+    This is no longer in use.
+
+commit 2f4884a4ad84922a728501aa8ffb8c388b6ed355
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:23:03 2013 +0200
+
+    [entropy.client] check_package_update: rewrite cache key generation code
+    
+    We now rely on SHA1 rather than hash() and string magic, which is
+    likely to give us a lot more collisions.
+
+commit 74993fa2e149db6e056ceec98fe52f289573a6dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:19:22 2013 +0200
+
+    [entropy.client] _generate_reverse_dependency_tree: rewrite cache key generation code
+    
+    We now rely on SHA1 rather than hash() and string magic, which is
+    likely to give us a lot more collisions.
+
+commit d73cbeb75d3232b8f7d1f0bc3eb50e5759dea8b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:11:39 2013 +0200
+
+    [entropy.client] tentatively remove __validate_atom_match_cache()
+    
+    Now that we rely on a better hashing algorithm, with bigger hash
+    values, it might be interesting to see if __validate_atom_match_cache()
+    is still needed.
+
+commit eeb079b2e9af70fc6272ad4dafd596b28fe54c11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:10:44 2013 +0200
+
+    [entropy.client] atom_search: rewrite cache key generation code
+    
+    We now rely on SHA1 rather than hash() and string magic, which is
+    likely to give us a lot more collisions.
+
+commit cd55a7a043a4301fe0ddea6c2ba5988d66b91116
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:03:24 2013 +0200
+
+    [solo.commands.command] call shutdown() before releasing locks
+    
+    shutdown() calls EntropyCacher.sync() and stop()...
+
+commit 6a249d4f11dc0347f6a793ee72c2ebb44cd46e72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:02:17 2013 +0200
+
+    [eit.commands.command] call shutdown() before releasing locks
+    
+    shutdown() calls EntropyCacher.sync() and stop()...
+
+commit a3245563584ec02ac15ff81bdd908ca7f3513aeb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:00:30 2013 +0200
+
+    [entropy.client] atom_match: rewrite cache key generation code
+    
+    We now rely on SHA1 rather than hash() and string magic, which is
+    likely to give us a lot more collisions.
+
+commit cfaece40951583289b75ec06f12a2603ea203832
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 07:55:16 2013 +0200
+
+    [entropy.server] do not use const_get_caller(), which is buggy
+
+commit e96b1643b5513f194fe98ee0ea76c18c70d197c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 8 21:38:37 2013 +0200
+
+    [entropy.server] removed_reverse_dependencies_test: highlight removed pkgs
+
+commit 4647541d30d96ec636691397b5f69150afb03157
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 12:32:40 2013 +0200
+
+    [entropy.spm] PortagePlugin.installed_mtime: consider parent dir mtime
+
+commit e38e52907617b902f105874b45d11099e584fa36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 30 10:42:02 2013 +0200
+
+    Tagging Entropy version 213
+
 commit 0f9a34133a83a48823652420994a624cfa457dbf
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 30 10:42:02 2013 +0200
