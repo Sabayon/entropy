@@ -1,3 +1,21 @@
+commit 7a02df16a1ed1bc4b582a91330ad7ad78be8c0f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:48:19 2013 +0200
+
+    Release Entropy 215
+
+commit 98b5afaf2b73950ae2ce9ecbc4701715e82c1e14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:47:56 2013 +0200
+
+    [entropy.*] call EntropyRepository.checksum() without strings=
+
+commit 70dfc59b78ab2d600395fda68bebbdeabbaac586
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:45:29 2013 +0200
+
+    Tagging Entropy version 214
+
 commit 8604b84280bd9437713f2c8939d3cdaca0080645
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 10 11:45:29 2013 +0200
