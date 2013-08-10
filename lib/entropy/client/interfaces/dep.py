@@ -214,26 +214,26 @@ class CalculatorsMixin:
         atom, repos = entropy.dep.dep_get_match_in_repos(atom)
         if (match_repo is None) and (repos is not None):
             match_repo = repos
+        if match_repo is None:
+            match_repo = tuple()
 
-        u_hash = ""
-        k_ms = "//"
-        if isinstance(match_repo, (list, tuple, set)):
-            u_hash = hash(tuple(match_repo))
-        if const_isstring(match_slot):
-            k_ms = match_slot
-        repos_ck = self._all_repositories_hash()
-
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
-            repos_ck,
-            atom, k_ms, mask_filter,
-            str(tuple(self._enabled_repos)),
-            str(tuple(self._settings['repositories']['available'])),
-            multi_match, multi_repo, extended_results, u_hash,
-        )
-        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
-
+        cache_key = None
         if self.xcache and use_cache:
-            cached = self._cacher.pop(c_hash)
+            sha = hashlib.sha1()
+
+            cache_s = "a{%s}mr{%s}ms{%s}rh{%s}mf{%s}er{%s}ar{%s}s{%s;%s;%s}" % (
+                atom, ";".join(match_repo), match_slot,
+                self._all_repositories_hash(), mask_filter,
+                ";".join(self._enabled_repos),
+                ";".join(self._settings['repositories']['available']),
+                multi_match, multi_repo, extended_results,
+                )
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['atom_match'], sha.hexdigest(),)
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 try:
                     cached = self.__validate_atom_match_cache(cached,
@@ -371,8 +371,8 @@ class CalculatorsMixin:
                         dbpkginfo = (
                             set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
-        if self.xcache and use_cache:
-            self._cacher.push(c_hash, dbpkginfo)
+        if cache_key is not None:
+            self._cacher.push(cache_key, dbpkginfo)
 
         return dbpkginfo
 
