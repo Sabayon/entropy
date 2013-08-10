@@ -3336,12 +3336,18 @@ class CalculatorsMixin:
 
     def check_package_update(self, atom, deep = False):
 
-        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['check_package_update'],
-                hash("%s|%s" % (atom, deep,)
-            ),
-        )
+        cache_key = None
         if self.xcache:
-            cached = self._cacher.pop(c_hash)
+            sha = hashlib.sha1()
+
+            cache_s = "{%s;%s}" % (atom, deep,)
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['check_package_update'],
+                sha.hexdigest(),)
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -3366,8 +3372,9 @@ class CalculatorsMixin:
                     found = True
             matched = self.atom_match(pkg_match)
 
-        if self.xcache:
-            self._cacher.push(c_hash, (found, matched))
+        if cache_key is not None:
+            self._cacher.push(cache_key, (found, matched))
+
         return found, matched
 
     def validate_package_removal(self, package_id, repo_id = None):
