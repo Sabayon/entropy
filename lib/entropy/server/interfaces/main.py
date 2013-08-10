@@ -27,7 +27,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
     const_debug_enabled, const_convert_to_rawstring, const_mkdtemp, \
-    const_mkstemp, const_get_caller
+    const_mkstemp
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -1851,17 +1851,15 @@ class Server(Client):
         """
         return self.__instance_destroyed
 
-    def _cache_prefix(self, caller=None):
+    def _cache_prefix(self, caller):
         """
         Generate a cache object key prefix to use with EntropyCacher.
 
-        @keyword caller: a custom function caller name
+        @param caller: a custom function caller name
         @type caller: string
         @return: the cache prefix
         @rtype: string
         """
-        if caller is None:
-            caller = const_get_caller()
         return "%s/%s/%s" % (
             __name__, self.__class__.__name__, caller)
 
@@ -4502,7 +4500,9 @@ class Server(Client):
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
-            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cache_key = "%s/%s" % (
+                self._cache_prefix("drained_dependencies_test"),
+                sha.hexdigest())
             cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
@@ -4690,7 +4690,9 @@ class Server(Client):
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
-            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cache_key = "%s/%s" % (
+                self._cache_prefix("injected_library_dependencies_test"),
+                sha.hexdigest())
             cached = self._cacher.pop(cache_key)
             missing_map = cached
 
@@ -4809,7 +4811,9 @@ class Server(Client):
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
-            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cache_key = "%s/%s" % (
+                self._cache_prefix("removed_reverse_dependencies_test"),
+                sha.hexdigest())
             cached = self._cacher.pop(cache_key)
             result = cached
 
@@ -5022,7 +5026,9 @@ class Server(Client):
             )
             sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
 
-            cache_key = "%s/%s" % (self._cache_prefix(), sha.hexdigest())
+            cache_key = "%s/%s" % (
+                self._cache_prefix("dependencies_test"),
+                sha.hexdigest())
             cached = self._cacher.pop(cache_key)
             deps_not_matched = cached
 
