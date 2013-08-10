@@ -2315,14 +2315,20 @@ class CalculatorsMixin:
                         for x in matched_atoms], deep, recursive, empty,
                         system_packages, elf_needed_scanning))
 
-        c_hash = "%s%s" % (
-            EntropyCacher.CACHE_IDS['depends_tree'],
-                hash("%s|%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
-                    recursive, empty, system_packages, elf_needed_scanning,),
-            ),
-        )
+        cache_key = None
         if self.xcache:
-            cached = self._cacher.pop(c_hash)
+            sha = hashlib.sha1()
+
+            cache_s = "ma{%s}s{%s;%s;%s;%s;%s}" % (
+                ";".join(sorted(matched_atoms)), deep,
+                recursive, empty, system_packages,
+                elf_needed_scanning,)
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['depends_tree'], sha.hexdigest(),)
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -2717,8 +2723,9 @@ class CalculatorsMixin:
 
         graph.destroy()
 
-        if self.xcache:
-            self._cacher.push(c_hash, deptree)
+        if cache_key is not None:
+            self._cacher.push(cache_key, deptree)
+
         return deptree
 
     def calculate_masked_packages(self, use_cache = True):
