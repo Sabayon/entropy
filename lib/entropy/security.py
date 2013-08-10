@@ -19,6 +19,7 @@ import shutil
 import subprocess
 import sys
 import time
+import hashlib
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, const_setup_perms, const_mkdtemp, \
@@ -373,12 +374,15 @@ class System(object):
         inst_pkgs_cksum = self._entropy.installed_repository().checksum(
             do_order = True, strict = False, strings = True)
         repo_cksum = self._entropy._repositories_hash()
-        sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
-        cached = self._cacher.pop(sys_hash, cache_dir = self._CACHE_DIR)
+        sha = hashlib.sha1()
+        sha.update(const_convert_to_rawstring(repo_cksum + inst_pkgs_cksum))
+        cache_key = "_security_validate_cache_%s" % (sha.hexdigest(),)
+
+        cached = self._cacher.pop(cache_key, cache_dir = self._CACHE_DIR)
         if cached is None:
             self.clear() # kill the cache
-        self._cacher.push(sys_hash, True, cache_dir = self._CACHE_DIR)
+        self._cacher.push(cache_key, True, cache_dir = self._CACHE_DIR)
 
     def clear(self):
         """
@@ -394,13 +398,17 @@ class System(object):
     def _get_advisories_cache_hash(self):
         dir_checksum = entropy.tools.md5sum_directory(
             self.SECURITY_DIR)
-        c_hash = "%s%s" % (
-            self._CACHE_ID, hash("%s|%s|%s" % (
-                hash(self._settings['repositories']['branch']),
-                hash(dir_checksum),
-                hash(etpConst['systemroot']),
-            ),))
-        return c_hash
+
+        sha = hashlib.sha1()
+
+        cache_s = "b{%s}dc{%s}r{%s}" % (
+            self._settings['repositories']['branch'],
+            dir_checksum, etpConst['systemroot'],
+        )
+        sha.update(const_convert_to_rawstring(cache_s))
+
+        cache_key = "%s%s" % (self._CACHE_ID, sha.hexdigest(),)
+        return cache_key
 
     def get_advisories_cache(self):
         """
