@@ -4279,8 +4279,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         raise NotImplementedError()
 
     def checksum(self, do_order = False, strict = True,
-                 strings = True, include_signatures = False,
-                 include_dependencies = False):
+                 include_signatures = False, include_dependencies = False):
         """
         Get Repository metadata checksum, useful for integrity verification.
         Note: result is cached in EntropyRepository.live_cache (dict).
@@ -4289,8 +4288,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type do_order: bool
         @keyword strict: improve checksum accuracy
         @type strict: bool
-        @keyword strings: return checksum in md5 hex form
-        @type strings: bool
         @keyword include_signatures: also include packages signatures (GPG,
             SHA1, SHA2, etc) into the returned hash
         @type include_signatures: bool

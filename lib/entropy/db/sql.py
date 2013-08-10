@@ -4867,14 +4867,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
         raise NotImplementedError()
 
     def checksum(self, do_order = False, strict = True,
-                 strings = True, include_signatures = False,
+                 include_signatures = False,
                  include_dependencies = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cache_key = "checksum_%s_%s_%s_%s_%s" % (
-            do_order, strict, strings,
-            include_signatures, include_dependencies)
+        cache_key = "checksum_%s_%s_True_%s_%s" % (
+            do_order, strict, include_signatures, include_dependencies)
         cached = self._getLiveCache(cache_key)
         if cached is not None:
             return cached
@@ -4902,16 +4901,11 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 for record in cursor:
                     m.update(repr(record))
 
-        if strings:
-            m = hashlib.sha1()
+        m = hashlib.sha1()
 
         if not self._doesTableExist("baseinfo"):
-            if strings:
-                m.update(const_convert_to_rawstring("~empty~"))
-                result = m.hexdigest()
-            else:
-                result = "~empty_db~"
-            return result
+            m.update(const_convert_to_rawstring("~empty~"))
+            return m.hexdigest()
 
         if strict:
             cur = self._cursor().execute("""
@@ -4922,10 +4916,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
             SELECT idpackage, atom, name, version, versiontag, revision,
             branch, slot, etpapi, `trigger` FROM baseinfo
             %s""" % (package_id_order,))
-        if strings:
-            do_update_hash(m, cur)
-        else:
-            a_hash = hash(tuple(cur))
+
+        do_update_hash(m, cur)
 
         if strict:
             cur = self._cursor().execute("""
@@ -4936,10 +4928,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
             SELECT idpackage, description, homepage, download, size,
             digest, datecreation FROM extrainfo %s
             """ % (package_id_order,))
-        if strings:
-            do_update_hash(m, cur)
-        else:
-            b_hash = hash(tuple(cur))
+
+        do_update_hash(m, cur)
 
         if include_signatures:
             # be optimistic and delay if condition,
@@ -4948,34 +4938,22 @@ class EntropySQLRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, sha1, gpg FROM
             packagesignatures %s""" % (package_id_order,))
-            if strings:
-                do_update_hash(m, cur)
-            else:
-                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+            do_update_hash(m, cur)
 
         if include_dependencies:
             cur = self._cursor().execute("""
             SELECT * from dependenciesreference %s
             """ % (dependenciesref_order,))
-            if strings:
-                do_update_hash(m, cur)
-            else:
-                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+            do_update_hash(m, cur)
 
             cur = self._cursor().execute("""
             SELECT * from dependencies %s
             """ % (dependencies_order,))
-            if strings:
-                do_update_hash(m, cur)
-            else:
-                b_hash = "%s-%s" % (b_hash, hash(tuple(cur)),)
+            do_update_hash(m, cur)
 
-        if strings:
-            result = m.hexdigest()
-        else:
-            result = "%s:%s:0:0:0" % (a_hash, b_hash,)
-
+        result = m.hexdigest()
         self._setLiveCache(cache_key, result)
+
         return result
 
     def storeInstalledPackage(self, package_id, repoid, source = 0):
