@@ -223,9 +223,9 @@ class EitCommand(object):
             return func(server)
         finally:
             if server is not None:
+                server.shutdown()
                 if acquired:
                     entropy.tools.release_entropy_locks(server)
-                server.shutdown()
 
     def _call_unlocked(self, func, repo):
         """
@@ -262,9 +262,9 @@ class EitCommand(object):
             return func(server)
         finally:
             if server is not None:
+                server.shutdown()
                 if acquired:
                     entropy.tools.release_entropy_locks(server)
-                server.shutdown()
 
     def _settings(self):
         """
