@@ -1631,7 +1631,7 @@ class RepositoryWebService(WebService):
         "treeupdates_digest" => EntropyRepositoryBase.retrieveRepositoryUpdatesDigest()
         "revision" => <the actual repository revision, string form>
         "checksum" => EntropyRepositoryBase.checksum(do_order = True,
-                strict = False, strings = True, include_signatures = True)
+                strict = False, include_signatures = True)
         Please note that this method doesn't do any caching.
 
         @return: the repository metadata

@@ -372,7 +372,7 @@ class System(object):
         Validate cache by looking at some checksum data
         """
         inst_pkgs_cksum = self._entropy.installed_repository().checksum(
-            do_order = True, strict = False, strings = True)
+            do_order = True, strict = False)
         repo_cksum = self._entropy._repositories_hash()
 
         sha = hashlib.sha1()

@@ -1871,7 +1871,7 @@ class AvailablePackagesRepositoryUpdater(object):
         # now verify if both checksums match
         result = False
         mychecksum = mydbconn.checksum(do_order = True,
-            strict = False, strings = True, include_signatures = True)
+            strict = False, include_signatures = True)
         if repo_metadata['checksum'] == mychecksum:
             result = True
         else:
