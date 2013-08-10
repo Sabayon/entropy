@@ -360,9 +360,9 @@ class SoloCommand(object):
             return func(client)
         finally:
             if client is not None:
+                client.shutdown()
                 if acquired:
                     entropy.tools.release_entropy_locks(client)
-                client.shutdown()
 
     def _call_unlocked(self, func):
         """
@@ -390,9 +390,9 @@ class SoloCommand(object):
             return func(client)
         finally:
             if client is not None:
+                client.shutdown()
                 if acquired:
                     entropy.tools.release_entropy_locks(client)
-                client.shutdown()
 
     def _settings(self):
         """
