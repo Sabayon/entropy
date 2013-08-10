@@ -167,42 +167,6 @@ class CalculatorsMixin:
             if reponame in conflictingRevisions:
                 return (results[reponame], reponame)
 
-    def __validate_atom_match_cache(self, cached_obj, multi_match,
-        extended_results, multi_repo):
-
-        data, rc = cached_obj
-        if rc == 1:
-            return cached_obj
-
-        if multi_repo or multi_match:
-            # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
-            matches = data
-            if extended_results:
-                # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
-                matches = [(x[0][0], x[1],) for x in data]
-            for m_id, m_repo in matches:
-                # NOTE: there is a bug up the queue somewhere
-                # but current error report tool didn't provide full
-                # stack variables (only for the innermost frame)
-                #if isinstance(m_id, tuple):
-                #    m_id = m_id[0]
-                m_db = self.open_repository(m_repo)
-                if not m_db.isPackageIdAvailable(m_id):
-                    return None
-        else:
-            # (14479, 'sabayonlinux.org')
-            m_id, m_repo = cached_obj
-            if extended_results:
-                # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
-                m_id, m_repo = cached_obj[0][0], cached_obj[1]
-            m_db = self.open_repository(m_repo)
-            if not const_isnumber(m_id):
-                return None
-            if not m_db.isPackageIdAvailable(m_id):
-                return None
-
-        return cached_obj
-
     def atom_match(self, atom, match_slot = None, mask_filter = True,
             multi_match = False, multi_repo = False, match_repo = None,
             extended_results = False, use_cache = True):
@@ -234,12 +198,6 @@ class CalculatorsMixin:
                 EntropyCacher.CACHE_IDS['atom_match'], sha.hexdigest(),)
 
             cached = self._cacher.pop(cache_key)
-            if cached is not None:
-                try:
-                    cached = self.__validate_atom_match_cache(cached,
-                        multi_match, extended_results, multi_repo)
-                except (TypeError, ValueError, IndexError, KeyError,):
-                    cached = None
             if cached is not None:
                 return cached
 
