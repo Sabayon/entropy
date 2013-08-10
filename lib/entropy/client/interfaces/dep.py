@@ -398,25 +398,22 @@ class CalculatorsMixin:
             repositories = self.repositories()[:]
             repositories.insert(0, InstalledPackagesRepository.NAME)
 
-        u_hash = ""
-        if isinstance(repositories, (list, tuple, set)):
-            u_hash = hash(tuple(repositories))
-        repos_ck = self._all_repositories_hash()
-
-        c_hash = "%s|%s|%s|%s|%s|%s" % (
-            repos_ck,
-            keyword,
-            description,
-            str(tuple(repositories)),
-            str(tuple(self._settings['repositories']['available'])),
-            u_hash
-        )
-        c_hash = "%s%s" % (
-            EntropyCacher.CACHE_IDS['atom_search'],
-            hash(c_hash),)
-
+        cache_key = None
         if self.xcache and use_cache:
-            cached = self._cacher.pop(c_hash)
+            sha = hashlib.sha1()
+
+            cache_s = "k{%s}re{%s}de{%s}rh{%s}er{%s}ar{%s}" % (
+                keyword, ";".join(repositories), description,
+                self._all_repositories_hash(),
+                ";".join(self._enabled_repos),
+                ";".join(self._settings['repositories']['available']),
+                )
+            sha.update(const_convert_to_rawstring(cache_s))
+
+            cache_key = "%s%s" % (
+                EntropyCacher.CACHE_IDS['atom_search'], sha.hexdigest(),)
+
+            cached = self._cacher.pop(cache_key)
             if cached is not None:
                 return cached
 
@@ -466,8 +463,8 @@ class CalculatorsMixin:
 
             matches_cache.clear()
 
-        if self.xcache and use_cache:
-            self._cacher.push(c_hash, matches)
+        if cache_key is not None:
+            self._cacher.push(cache_key, matches)
 
         return matches
 
