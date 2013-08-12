@@ -2320,8 +2320,8 @@ class CalculatorsMixin:
             sha = hashlib.sha1()
 
             cache_s = "ma{%s}s{%s;%s;%s;%s;%s}" % (
-                ";".join(sorted(matched_atoms)), deep,
-                recursive, empty, system_packages,
+                ";".join(["%s" % (x,) for x in sorted(matched_atoms)]),
+                deep, recursive, empty, system_packages,
                 elf_needed_scanning,)
             sha.update(const_convert_to_rawstring(cache_s))
 
