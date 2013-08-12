@@ -1,3 +1,23 @@
+commit e929e6f440118a944173def93d3978816dec48e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 12 15:38:07 2013 +0200
+
+    Release Entropy 216
+
+commit e9c9b0e7de7415622e4cebcced9a48a433a82b40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 12 15:36:26 2013 +0200
+
+    [entropy.client] fix _generate_reverse_dependency_tree cache generation
+    
+    matched_atoms is a list of tuples.
+
+commit 4b73dc7b94c4a22bc91a5fc2e1ed6bf964c24a03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 10 11:48:20 2013 +0200
+
+    Tagging Entropy version 215
+
 commit 7a02df16a1ed1bc4b582a91330ad7ad78be8c0f3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 10 11:48:19 2013 +0200
