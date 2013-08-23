@@ -169,6 +169,10 @@ Execute advanced tasks on Entropy packages and the running system.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
+        # Python 3.3 bug #16308
+        if not hasattr(nsargs, "func"):
+            return parser.print_help, []
+
         self._nsargs = nsargs
         return self._call_locked, [nsargs.func]
 

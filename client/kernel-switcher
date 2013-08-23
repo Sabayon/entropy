@@ -163,6 +163,11 @@ if __name__ == "__main__":
         parser.print_help()
         raise SystemExit(1)
 
+    # Python 3.3 bug #16308
+    if not hasattr(nsargs, "func"):
+        parser.print_help()
+        raise SystemExit(1)
+
     try:
         rc = nsargs.func(nsargs)
     except KeyboardInterrupt:
