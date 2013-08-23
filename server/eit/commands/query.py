@@ -159,6 +159,10 @@ tools.
             sys.stderr.write("%s\n" % (err,))
             return parser.print_help, []
 
+        # Python 3.3 bug #16308
+        if not hasattr(nsargs, "func"):
+            return parser.print_help, []
+
         self._repository_id = nsargs.inrepo
         self._quiet = nsargs.quiet
         self._verbose = getattr(nsargs, "verbose", self._verbose)
