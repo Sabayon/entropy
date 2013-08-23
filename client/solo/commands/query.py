@@ -1549,7 +1549,7 @@ Repository query tools.
                 brown(_("Available Updates")),
                 header=darkred(" @@ "))
 
-        outcome = entropy_client.calculate_updates(quiet=quiet)
+        outcome = entropy_client.calculate_updates(quiet=True)
         update, remove = outcome['update'], outcome['remove']
         fine, critical_f = outcome['fine'], outcome['critical_found']
 
