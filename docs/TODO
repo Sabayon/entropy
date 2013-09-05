@@ -1,5 +1,9 @@
 Short term:
 
+- drop all the os.access() calls, since it uses the real UID
+- eit cache clean
+- drop all the EntropyCacher.CACHE_IDS
+
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
   Test package generation and entropy client behaviour
