@@ -41,7 +41,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
               "Please re-generate it")),
             importance=1,
             level="error")
-        raise SystemExit(101)
+        os._exit(101)
 
     generic_exc_classes = (OnlineMirrorError, RepositoryError,
         PermissionDenied, FileNotFound, SPMError, SystemError)
@@ -50,7 +50,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
             "%s: %s" % (exc_instance, darkred(_("Cannot continue")),),
             importance=1,
             level="error")
-        raise SystemExit(1)
+        os._exit(1)
 
     if exc_class is SystemExit:
         return
@@ -60,7 +60,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
             return
 
     if exc_class is KeyboardInterrupt:
-        raise SystemExit(1)
+        os._exit(1)
 
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
     if const_debug_enabled():
@@ -79,7 +79,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
                     darkred(_("Your hard drive is full! Your fault!")),),
                 importance=1,
                 level="error")
-            raise SystemExit(5)
+            os._exit(5)
         elif exc_instance.errno == errno.ENOMEM:
             print_generic(t_back)
             _text.output(
@@ -88,7 +88,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
                     darkred(_("No more memory dude! Your fault!")),),
                 importance=1,
                 level="error")
-            raise SystemExit(5)
+            os._exit(5)
 
     _text.output(
         darkred(_("Hi. My name is Bug Reporter. "
@@ -150,7 +150,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
                       "mail lxnay@sabayon.org."))),
             importance=1,
             level="error")
-        raise SystemExit(1)
+        os._exit(1)
     finally:
         if error_fd is not None:
             try:
@@ -169,7 +169,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         _text.output(
             darkgreen(_("Ok, ok ok ok... Sorry!")),
             level="error")
-        raise SystemExit(2)
+        os._exit(2)
 
     _text.output(
         darkgreen(
@@ -184,7 +184,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         email = readtext(_("Your E-Mail address:"))
         description = readtext(_("What you were doing:"))
     except EOFError:
-        raise SystemExit(2)
+        os._exit(2)
 
     try:
         from entropy.client.interfaces.qa import UGCErrorReportInterface
