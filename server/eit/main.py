@@ -29,12 +29,12 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     entropy.tools.kill_threads()
 
     if exc_class is KeyboardInterrupt:
-        raise SystemExit(1)
+        os._exit(1)
 
     if exc_class is OnlineMirrorError:
         print_error("Mirror error: %s" % (
                 exc_instance,))
-        raise SystemExit(1)
+        os._exit(1)
 
     # always slap exception data (including stack content)
     entropy.tools.print_exception(tb_data=exc_tb, all_frame_data=True)
