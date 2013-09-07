@@ -866,7 +866,11 @@ class EmailSender:
 
         # attach files
         for myfile in files:
-            if not (os.path.isfile(myfile) and os.access(myfile, os.R_OK)):
+
+            try:
+                with open(myfile, "r") as my_f:
+                    pass
+            except (OSError, IOError):
                 continue
 
             ctype, encoding = self.mimetypes.guess_type(myfile)
@@ -1269,8 +1273,12 @@ class FastRSS(object):
         from xml.dom import minidom
         self.__minidom = minidom
 
-        self.__newly_created = not (os.path.isfile(self.__file) and \
-            os.access(self.__file, os.R_OK | os.F_OK))
+        try:
+            with open(self.__file, "r") as f:
+                newly_created = False
+        except (OSError, IOError):
+            newly_creted = True
+        self.__newly_created = newly_created
 
     def is_new(self):
         """
