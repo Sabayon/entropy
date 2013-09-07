@@ -989,10 +989,24 @@ class SystemSettings(Singleton, EntropyPluginStore):
         # user defined package sets
         sets_dir = SystemSettings.packages_sets_directory()
         pkg_set_data = {}
-        if (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
-            set_files = [x for x in os.listdir(sets_dir) if \
-                (os.path.isfile(os.path.join(sets_dir, x)) and \
-                os.access(os.path.join(sets_dir, x), os.R_OK))]
+
+        try:
+            dir_list = list(os.listdir(sets_dir))
+        except (OSError, IOError):
+            dir_list = None
+
+        if dir_list is not None:
+
+            set_files = []
+            for item in dir_list:
+                set_file = os.path.join(sets_dir, item)
+
+                try:
+                    with open(set_file, "r"):
+                        set_files.append(set_file)
+                except (OSError, IOError):
+                    continue
+
             for set_file in set_files:
                 try:
                     set_file = const_convert_to_unicode(
