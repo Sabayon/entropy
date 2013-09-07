@@ -730,21 +730,31 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 in conf_d_descriptors:
             conf_dir = base_dir + os.path.sep + rel_dir
             self.__setting_dirs[setting_id] = [conf_dir, [], [], auto_update]
-            if not (os.path.isdir(conf_dir) and \
-                        os.access(conf_dir, os.R_OK)):
+
+            try:
+                dir_cont = list(os.listdir(conf_dir))
+            except (OSError, IOError):
                 continue
 
             conf_files = []
-            try:
-                conf_files += [os.path.join(conf_dir, x) for x in \
-                                      os.listdir(conf_dir)]
-            except (OSError, IOError):
-                continue
-            conf_files = [x for x in conf_files if \
-                os.path.isfile(x) and os.access(x, os.R_OK) \
-                and not os.path.basename(x).startswith(".keep") \
-                and os.path.basename(x) != "README" \
-                and not os.path.basename(x).endswith(".example")]
+            for item in dir_cont:
+                if item == "README":
+                    continue
+                if item.startswith(".keep"):
+                    continue
+                if item.endswith(".example"):
+                    continue
+
+                conf_file = os.path.join(conf_dir, item)
+                if not os.path.isfile(conf_file):
+                    continue
+
+                try:
+                    with open(conf_file, "r") as conf_f:
+                        conf_files.append(conf_file)
+                except (OSError, IOError):
+                    continue
+
             # ignore files starting with _
             skipped_conf_files = [x for x in conf_files if \
                 os.path.basename(x).startswith("_")]
