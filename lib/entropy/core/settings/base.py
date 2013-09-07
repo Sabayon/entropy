@@ -1606,11 +1606,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'spm_backend': None,
         }
 
-        if not (os.path.isfile(etp_conf) and \
-            os.access(etp_conf, os.R_OK)):
-            cache_obj['data'] = data
-            self.__mtime_cache[cache_key] = cache_obj
-            return data
+        try:
+            with open(etp_conf, "r") as etp_r:
+                cache_obj['data'] = data
+                self.__mtime_cache[cache_key] = cache_obj
+                return data
+        except (OSError, IOError):
+            pass
 
         const_secure_config_file(etp_conf)
         enc = etpConst['conf_encoding']
