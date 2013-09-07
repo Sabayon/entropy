@@ -1828,11 +1828,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
         data['dbrevision'] = "0"
         dbrevision_file = os.path.join(data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
-        if os.path.isfile(dbrevision_file) and \
-            os.access(dbrevision_file, os.R_OK):
+
+        try:
             enc = etpConst['conf_encoding']
             with codecs.open(dbrevision_file, "r", encoding=enc) as dbrev_f:
                 data['dbrevision'] = dbrev_f.readline().strip()
+        except (OSError, IOError):
+            pass
 
         # setup GPG key path
         data['gpg_pubkey'] = data['dbpath'] + os.path.sep + \
@@ -1888,8 +1890,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'differential_update': True,
         }
 
-        if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
-            return data
+        try:
+            with open(repo_conf, "r") as repo_f:
+                return data
+        except (OSError, IOError):
+            pass
 
         enc = etpConst['conf_encoding']
         # TODO: repository = statements in repositories.conf
@@ -2133,8 +2138,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 data['product'],)
 
             repo_db_path_mtime = os.path.join(dmp_path, repo_mtime_fn)
-            if os.path.isfile(repo_db_path) and \
-                os.access(repo_db_path, os.R_OK):
+            if os.path.isfile(repo_db_path):
                 valid = self.validate_entropy_cache(repo_db_path,
                     repo_db_path_mtime, repoid = repoid)
                 if not valid:
@@ -2154,11 +2158,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
             mirrors_file = os.path.join(obj['dbpath'],
                 etpConst['etpdatabasemirrorsfile'])
 
-            raw_mirrors = []
-            if (os.path.isfile(mirrors_file) and \
-                os.access(mirrors_file, os.R_OK)):
+            try:
                 raw_mirrors = entropy.tools.generic_file_content_parser(
                     mirrors_file, encoding = etpConst['conf_encoding'])
+            except (OSError, IOError):
+                raw_mirrors = []
 
             mirrors_data = []
             for mirror in raw_mirrors:
@@ -2179,11 +2183,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
             # they are listed on top.
             fallback_mirrors_file = os.path.join(obj['dbpath'],
                 etpConst['etpdatabasefallbackmirrorsfile'])
-            fallback_mirrors = []
-            if os.path.isfile(fallback_mirrors_file) and \
-                os.access(fallback_mirrors_file, os.R_OK):
+
+            try:
                 fallback_mirrors = entropy.tools.generic_file_content_parser(
                     fallback_mirrors_file, encoding = etpConst['conf_encoding'])
+            except (OSError, IOError):
+                fallback_mirrors = []
 
             pkgs_map = {}
             if fallback_mirrors:
