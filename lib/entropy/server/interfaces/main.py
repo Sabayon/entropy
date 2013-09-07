@@ -4466,8 +4466,8 @@ class Server(Client):
         @type drained: list
         @keyword use_cache: use on-disk cache
         @type use_cache: bool
-        @return: a list (set) of missing dependency strings
-        @rtype: set
+        @return: missing dependencies dict
+        @rtype: dict
         """
         spm = self.Spm()
         cached = None
@@ -4491,7 +4491,7 @@ class Server(Client):
                     ck = repo.checksum(include_dependencies = True)
                 checksum_d.append(ck)
 
-            c_hash = "%s|%s~%s|%s|%f|v3" % (
+            c_hash = "%s|%s~%s|%s|%f|v4" % (
                 ",".join(merged),
                 ",".join(checksum_m),
                 ",".join(drained),
@@ -4507,13 +4507,11 @@ class Server(Client):
             if cached is not None:
                 return cached
 
-        missing_dependencies = set()
+        outcome = {}
         deps_cache = set()  # used for memoization
         for repository_id in merged:
 
-            repo = self.open_server_repository(
-                repository_id, read_only = True,
-                no_upload = True, do_treeupdates = False)
+            repo = self.open_repository(repository_id)
 
             package_ids = repo.listAllPackageIds()
             total = len(package_ids)
@@ -4581,24 +4579,12 @@ class Server(Client):
                     obj = missing.setdefault(package_id, set())
                     obj.add(dependency)
 
-            for package_id, dependencies in missing.items():
-                atom = repo.retrieveAtom(package_id)
-                mytxt = "[%s] %s, %s:" % (
-                    brown(repository_id),
-                    teal(atom),
-                    darkgreen(_("missing dependencies")))
-                self.output(mytxt, header = " @@ ")
-
-                missing_dependencies |= dependencies
-                for dependency in sorted(dependencies):
-                    self.output(
-                        darkgreen(dependency),
-                        header = "   - ")
+            outcome[repository_id] = missing
 
         if use_cache and cache_key is not None:
-            self._cacher.push(cache_key, missing_dependencies)
+            self._cacher.push(cache_key, outcome)
 
-        return missing_dependencies
+        return outcome
 
     def drained_dependencies_test(self, repository_ids, use_cache = True):
         """
@@ -4650,8 +4636,24 @@ class Server(Client):
             )
 
             # merged, drained, repos
-            missing_dependencies |= self._drained_dependencies_test_scan(
+            data = self._drained_dependencies_test_scan(
                 merged, drained, use_cache = use_cache)
+
+            for repo_id, m_data in data.items():
+                for pkg_id, deps in m_data.items():
+                    missing_dependencies.update(deps)
+
+                    p_repo = self.open_repository(repo_id)
+                    atom = p_repo.retrieveAtom(pkg_id)
+                    mytxt = "[%s] %s, %s:" % (
+                        brown(repo_id),
+                        teal(atom),
+                        darkgreen(_("missing dependencies")))
+                    self.output(mytxt, header = " @@ ")
+
+                    for dependency in sorted(deps):
+                        self.output(darkgreen(dependency),
+                                    header = "   - ")
 
         return missing_dependencies
 
