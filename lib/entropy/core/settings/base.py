@@ -1506,36 +1506,56 @@ class SystemSettings(Singleton, EntropyPluginStore):
         cache_obj = {'mtime': mtime,}
 
         enc = etpConst['conf_encoding']
+        hash_data = None
         try:
             with codecs.open(hw_hash_file, "r", encoding=enc) as hash_f:
                 hash_data = hash_f.readline().strip()
-            cache_obj['data'] = hash_data
-            self.__mtime_cache[cache_key] = cache_obj
-            return hash_data
+
         except IOError as err:
             if err.errno not in (errno.ENOENT, errno.EPERM):
                 raise
 
+        if hash_data is not None:
+            cache_obj['data'] = hash_data
+            self.__mtime_cache[cache_key] = cache_obj
+            return hash_data
+
         hash_file_dir = os.path.dirname(hw_hash_file)
         hw_hash_exec = etpConst['etp_hw_hash_gen']
-        if os.access(hash_file_dir, os.W_OK) and \
-            os.access(hw_hash_exec, os.X_OK | os.R_OK) and \
-            os.path.isfile(hw_hash_exec):
 
-            pipe = os.popen('{ ' + hw_hash_exec + '; } 2>&1', 'r')
+        pipe = None
+        try:
+            try:
+                pipe = os.popen('{ ' + hw_hash_exec + '; } 2>&1', 'r')
+            except (OSError, IOError):
+                return None
+
             hash_data = pipe.read().strip()
             sts = pipe.close()
+            pipe = None
+
             if sts is not None:
                 cache_obj['data'] = None
                 self.__mtime_cache[cache_key] = cache_obj
                 return None
 
+            # expecting ascii cruft, don't worry about hash_data type
             with codecs.open(hw_hash_file, "w", encoding=enc) as hash_f:
                 hash_f.write(hash_data)
                 hash_f.flush()
+
             cache_obj['data'] = hash_data
             self.__mtime_cache[cache_key] = cache_obj
             return hash_data
+
+        finally:
+            if pipe is not None:
+                try:
+                    pipe.close()
+                except (OSError, IOError):
+                    # this handles the gap between .close()
+                    # and = None
+                    pass
 
     def _system_rev_symlinks_parser(self):
         """
