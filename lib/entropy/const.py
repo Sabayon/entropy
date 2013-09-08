@@ -1114,6 +1114,22 @@ def const_file_readable(path):
     except (OSError, IOError):
         return False
 
+def const_dir_readable(dir_path):
+    """
+    Return whether path points to a readable directory.
+    Readable directory is one that you can read the content.
+
+    @param path: path to a directory
+    @type path: string
+    @return: True, if directory exists and is readable
+    @rtype: bool
+    """
+    try:
+        os.listdir(dir_path)
+        return True
+    except (OSError, IOError):
+        return False
+
 def const_get_entropy_gid():
     """
     This function tries to retrieve the "entropy" user group
