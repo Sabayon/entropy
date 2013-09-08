@@ -26,7 +26,7 @@ import codecs
 import threading
 
 from entropy.const import etpConst, const_setup_file, const_mkdtemp, \
-    const_mkstemp, const_convert_to_unicode
+    const_mkstemp, const_convert_to_unicode, const_file_readable
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
@@ -666,7 +666,7 @@ class ServerPackagesRepositoryUpdater(object):
             if os.path.islink(myfile):
                 spm_syms[myname] = myfile
                 continue # we don't want symlinks
-            if os.path.isfile(myfile) and os.access(myfile, os.R_OK):
+            if const_file_readable(myfile):
                 extra_text_files.append(myfile)
 
         # NOTE: for symlinks, we read their link and send a file with that
@@ -1400,7 +1400,7 @@ Name:    %s
         for item_id, item_path in upload_data.items():
             if item_path not in to_sign_files:
                 continue
-            if os.path.isfile(item_path) and os.access(item_path, os.R_OK):
+            if const_file_readable(item_path):
                 gpg_item_id = item_id + "_gpg_sign_part"
                 if gpg_item_id in upload_data:
                     raise KeyError("wtf!")
@@ -1411,7 +1411,7 @@ Name:    %s
     def _create_metafiles_file(self, compressed_dest_path, file_list):
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
-            os.path.isfile(x) and os.access(x, os.R_OK)]
+            const_file_readable(x)]
 
         not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
             file_list if x not in found_file_list]
@@ -1507,12 +1507,15 @@ Name:    %s
         # now we can safely copy it
 
         # backup current database to avoid re-indexing
-        old_dbpath = self._entropy._get_local_repository_file(self._repository_id)
+        old_dbpath = self._entropy._get_local_repository_file(
+            self._repository_id)
         backup_dbpath = old_dbpath + ".up_backup"
         try:
-            if os.access(backup_dbpath, os.R_OK) and \
-                os.path.isfile(backup_dbpath):
+            try:
                 os.remove(backup_dbpath)
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
             shutil.copy2(old_dbpath, backup_dbpath)
             copy_back = True
@@ -1692,10 +1695,12 @@ Name:    %s
                 mylock_file = self._entropy._get_repository_lockfile(
                     self._repository_id)
 
-                if os.access(mylock_file, os.W_OK) and \
-                    os.path.isfile(mylock_file):
+                try:
                     os.remove(mylock_file)
                     continue
+                except (OSError, IOError) as err:
+                    if err.errno != errno.ENOENT:
+                        raise
 
             break
 
