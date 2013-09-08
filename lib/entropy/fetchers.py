@@ -23,7 +23,7 @@ import socket
 import pty
 import subprocess
 
-from entropy.const import const_is_python3
+from entropy.const import const_is_python3, const_file_readable
 
 if const_is_python3():
     import urllib.request as urlmod
@@ -177,14 +177,11 @@ class UrlFetcher(TextInterface):
     def __setup_urllib_resume_support(self):
 
         # resume support
-        if os.path.isfile(self.__path_to_save) and \
-            os.access(self.__path_to_save, os.W_OK) and self.__resume:
-
+        if const_file_readable(self.__path_to_save) and self.__resume:
             self.__urllib_open_local_file("ab")
             self.__localfile.seek(0, os.SEEK_END)
             self.__startingposition = int(self.__localfile.tell())
             self.__last_downloadedsize = self.__startingposition
-
         else:
             self.__urllib_open_local_file("wb")
 
