@@ -22,7 +22,7 @@ from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
 from entropy.const import etpConst, const_get_int, const_get_cpus, \
-    const_mkdtemp, const_mkstemp
+    const_mkdtemp, const_mkstemp, const_file_readable, const_dir_readable
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS, ParallelTask
@@ -549,8 +549,7 @@ class Server(object):
                     header = darkgreen(" * ")
                 )
 
-                if (not os.path.isdir(download_dir)) and \
-                    (not os.access(download_dir, os.R_OK)):
+                if not const_dir_readable(download_dir):
                     self._entropy._ensure_dir_path(download_dir)
 
                 rc_download = handler.download(remote_path, download_path)
@@ -699,8 +698,7 @@ class Server(object):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-                if os.access(rev_tmp_path, os.R_OK) and \
-                    os.path.isfile(rev_tmp_path):
+                if const_file_readable(rev_tmp_path):
 
                     enc = etpConst['conf_encoding']
                     with codecs.open(rev_tmp_path, "r", encoding=enc) as f_rev:
@@ -2760,7 +2758,7 @@ class Server(object):
             repository_id)
         if do_download:
             self.download_notice_board(repository_id)
-        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
+        if not const_file_readable(rss_path):
             return None
         rss_main = RSS(rss_path, '', '')
         return rss_main.get_entries()
@@ -2782,7 +2780,7 @@ class Server(object):
             repository_id)
         rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
-        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
+        if not const_file_readable(rss_path):
             return False
         rss_main = RSS(rss_path, rss_title, rss_description)
         counter = rss_main.remove_entry(identifier)
