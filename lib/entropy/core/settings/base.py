@@ -26,7 +26,7 @@ import threading
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring, \
-    const_debug_write, const_is_python3
+    const_debug_write, const_is_python3, const_file_readable
 from entropy.core import Singleton, EntropyPluginStore, BaseConfigParser
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -749,11 +749,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 if not os.path.isfile(conf_file):
                     continue
 
-                try:
-                    with open(conf_file, "r") as conf_f:
-                        conf_files.append(conf_file)
-                except (OSError, IOError):
-                    continue
+                if const_file_readable(conf_file):
+                    conf_files.append(conf_file)
 
             # ignore files starting with _
             skipped_conf_files = [x for x in conf_files if \
@@ -1000,12 +997,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             set_files = []
             for item in dir_list:
                 set_file = os.path.join(sets_dir, item)
-
-                try:
-                    with open(set_file, "r"):
-                        set_files.append(set_file)
-                except (OSError, IOError):
-                    continue
+                if const_file_readable(set_file):
+                    set_files.append(set_file)
 
             for set_file in set_files:
                 try:
@@ -1606,13 +1599,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'spm_backend': None,
         }
 
-        try:
-            with open(etp_conf, "r") as etp_r:
-                cache_obj['data'] = data
-                self.__mtime_cache[cache_key] = cache_obj
-                return data
-        except (OSError, IOError):
-            pass
+        if const_file_readable(etp_conf):
+            cache_obj['data'] = data
+            self.__mtime_cache[cache_key] = cache_obj
+            return data
 
         const_secure_config_file(etp_conf)
         enc = etpConst['conf_encoding']
@@ -1890,11 +1880,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'differential_update': True,
         }
 
-        try:
-            with open(repo_conf, "r") as repo_f:
-                return data
-        except (OSError, IOError):
-            pass
+        if const_file_readable(repo_conf):
+            return data
 
         enc = etpConst['conf_encoding']
         # TODO: repository = statements in repositories.conf
