@@ -1099,6 +1099,21 @@ def const_set_chmod(myfile, chmod):
     if cur_mod != oct(chmod):
         os.chmod(myfile, chmod)
 
+def const_file_readable(path):
+    """
+    Return whether path points to a readable file.
+
+    @param path: path to a file
+    @type path: string
+    @return: True, if file exists and is readble
+    @rtype: bool
+    """
+    try:
+        with open(path, "r") as f:
+            return True
+    except (OSError, IOError):
+        return False
+
 def const_get_entropy_gid():
     """
     This function tries to retrieve the "entropy" user group
