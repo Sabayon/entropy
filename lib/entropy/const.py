@@ -1105,7 +1105,7 @@ def const_file_readable(path):
 
     @param path: path to a file
     @type path: string
-    @return: True, if file exists and is readble
+    @return: True, if file exists and is readable
     @rtype: bool
     """
     try:
