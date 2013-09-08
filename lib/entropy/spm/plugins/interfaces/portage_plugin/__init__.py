@@ -27,7 +27,8 @@ import warnings
 from entropy.const import etpConst, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, \
     const_setup_perms, const_setup_file, const_is_python3, \
-    const_debug_enabled, const_mkdtemp, const_mkstemp
+    const_debug_enabled, const_mkdtemp, const_mkstemp, \
+    const_file_readable, const_dir_readable
 from entropy.exceptions import FileNotFound, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, teal, \
@@ -694,9 +695,12 @@ class PortagePlugin(SpmPlugin):
         ebuild_path = self.get_package_build_script_path(package)
         if isinstance(ebuild_path, const_get_stringtype()):
             clog_path = os.path.join(os.path.dirname(ebuild_path), "ChangeLog")
-            if os.access(clog_path, os.R_OK) and os.path.isfile(clog_path):
+            try:
                 with open(clog_path, "rb") as clog_f:
                     return clog_f.read()
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
     def get_package_build_script_path(self, package):
         """
@@ -762,7 +766,7 @@ class PortagePlugin(SpmPlugin):
         data = {}
         portdir = self._portage.settings['PORTDIR']
         myfile = os.path.join(portdir, category, "metadata.xml")
-        if os.access(myfile, os.R_OK) and os.path.isfile(myfile):
+        if const_file_readable(myfile):
             doc = minidom.parse(myfile)
             longdescs = doc.getElementsByTagName("longdescription")
             for longdesc in longdescs:
@@ -798,12 +802,14 @@ class PortagePlugin(SpmPlugin):
         if security_property == "new":
 
             checklist = []
-            if os.access(glsaconfig["CHECKFILE"], os.R_OK) and \
-                os.path.isfile(glsaconfig["CHECKFILE"]):
+            try:
                 enc = etpConst['conf_encoding']
                 with codecs.open(glsaconfig["CHECKFILE"], "r", encoding=enc) \
                         as check_f:
                     checklist.extend([x.strip() for x in check_f.readlines()])
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
             glsalist = [x for x in completelist if x not in checklist]
 
         elif security_property == "all":
@@ -1133,13 +1139,12 @@ class PortagePlugin(SpmPlugin):
                     generated_package_files.append(debug_file_save_path)
 
             for package_file in generated_package_files:
-                if not (os.path.isfile(package_file) and \
-                    os.access(package_file, os.F_OK | os.R_OK)):
+                if not const_file_readable(package_file):
                     raise self.Error(
                         "Spm:generate_package %s: %s %s" % (
                             _("error"),
                             package_file,
-                            _("not found"),
+                            _("not readable"),
                         )
                     )
 
@@ -1352,7 +1357,7 @@ class PortagePlugin(SpmPlugin):
 
         env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
         uncompressed_env_file = None
-        if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
+        if const_file_readable(env_bz2):
             # when extracting fake metadata, env_bz2 can be unavailable
             uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
 
@@ -1533,9 +1538,13 @@ class PortagePlugin(SpmPlugin):
         triggers_dir = SpmPlugin.external_triggers_dir()
         trigger_file = os.path.join(triggers_dir, data['category'],
             data['name'], etpConst['triggername'])
-        if os.access(trigger_file, os.R_OK) and os.path.isfile(trigger_file):
+
+        try:
             with open(trigger_file, "rb") as trig_f:
                 data['trigger'] = trig_f.read()
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         # Get Spm ChangeLog
         pkgatom = "%s/%s-%s" % (data['category'], data['name'],
@@ -1883,7 +1892,7 @@ class PortagePlugin(SpmPlugin):
         counter_name = PortagePlugin.xpak_entries['counter']
         counter_path = os.path.join(counter_dir, counter_name)
 
-        if not os.access(counter_dir, os.W_OK):
+        if const_dir_readable(counter_dir):
             raise self.Error("SPM package directory not found")
 
         enc = etpConst['conf_encoding']
@@ -1911,14 +1920,14 @@ class PortagePlugin(SpmPlugin):
         atom_counter_path = os.path.join(os.path.dirname(build_path),
             counter_path)
 
-        if not (os.access(atom_counter_path, os.R_OK) and \
-            os.path.isfile(atom_counter_path)):
-            return None # not found
-
         enc = etpConst['conf_encoding']
         try:
             with codecs.open(atom_counter_path, "r", encoding=enc) as f:
                 counter = int(f.readline().strip())
+        except (OSError, IOError) as err:
+            if err.errno == errno.ENOENT:
+                return None
+            raise
         except ValueError:
             raise self.Error("invalid Unique Identifier found")
         except Exception as e:
@@ -1947,7 +1956,7 @@ class PortagePlugin(SpmPlugin):
 
         # if qfile is avail, it's much faster than using Portage API
         qfile_exec = "/usr/bin/qfile"
-        if os.access(qfile_exec, os.X_OK):
+        if os.path.lexists(qfile_exec):
 
             qfile_args = (qfile_exec, "-q", "-C", "-R", root,)
             if exact_match:
@@ -2038,9 +2047,12 @@ class PortagePlugin(SpmPlugin):
 
         for key in keys:
             mykeypath = os.path.join(myebuilddir, key)
-            if os.path.isfile(mykeypath) and os.access(mykeypath, os.R_OK):
+            try:
                 with codecs.open(mykeypath, "r", encoding=enc) as f:
                     metadata[key] = f.readline().strip()
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
         ### END SETUP ENVIRONMENT
 
@@ -2125,10 +2137,14 @@ class PortagePlugin(SpmPlugin):
         ### ACCEPT_LICENSE
         for lic in licenses:
             lic_path = os.path.join(portdir_lic, lic)
-            if os.access(portdir_lic, os.W_OK | os.R_OK) and \
-                os.path.isdir(portdir_lic):
+            try:
                 with codecs.open(lic_path, "w", encoding=enc) as lic_f:
                     pass
+            except (OSError, IOError) as err:
+                if err.errno not in (
+                        errno.EACCES, errno.EISDIR,
+                        errno.ENOENT, errno.ENOTDIR):
+                    raise
 
         cpv = str(cpv)
         mydbapi = self._portage.fakedbapi(settings=mysettings)
@@ -2314,7 +2330,7 @@ class PortagePlugin(SpmPlugin):
         for item in items:
             myfrom = os.path.join(ebuild_dir, item)
             myto = os.path.join(dest_dir, item)
-            if os.path.isfile(myfrom) and os.access(myfrom, os.R_OK):
+            if const_file_readable(myfrom):
                 # make sure it is readable before copying
                 shutil.copy2(myfrom, myto)
 
@@ -2338,7 +2354,7 @@ class PortagePlugin(SpmPlugin):
 
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         # is ebuild available ?
-        if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
+        if not const_file_readable(ebuild):
             self.log_message(
                 "[SETUP] ATTENTION Cannot properly run SPM setup"
                 " phase for %s. Ebuild path: %s not found." % (
@@ -2374,7 +2390,7 @@ class PortagePlugin(SpmPlugin):
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
 
         # is ebuild available ?
-        if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
+        if not const_file_readable(ebuild):
             self.log_message(
                 "[PRE] ATTENTION Cannot properly run SPM %s"
                 " phase for %s. Ebuild path: %s not found." % (
@@ -2885,8 +2901,7 @@ class PortagePlugin(SpmPlugin):
 
     def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
 
-        if not (os.path.isfile(contents_path) and \
-            os.access(contents_path, os.R_OK)):
+        if not const_file_readable(contents_path):
             return
 
         # Portage metadata is encoded using raw_unicode_escape.
@@ -3215,16 +3230,16 @@ class PortagePlugin(SpmPlugin):
 
             with self._PortageWorldSetLocker(self):
 
-                if os.access(world_file, os.R_OK) and \
-                    os.path.isfile(world_file):
-
+                try:
                     with codecs.open(world_file, "r", encoding=enc) \
                             as world_f:
                         world_atoms |= set((x.strip() for x in \
                             world_f.readlines() if x.strip()))
+                except (OSError, IOError) as err:
+                    if err.errno != errno.ENOENT:
+                        raise
 
                 if keyslot not in world_atoms and \
-                    os.access(world_dir, os.W_OK) and \
                     entropy.tools.istextfile(world_file):
 
                     world_atoms.discard(key)
@@ -3352,7 +3367,8 @@ class PortagePlugin(SpmPlugin):
         world_file = self.get_user_installed_packages_file()
         world_file_tmp = world_file + ".entropy.tmp"
         enc = etpConst['conf_encoding']
-        if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
+
+        try:
             with codecs.open(world_file_tmp, "w", encoding=enc) as new:
                 with codecs.open(world_file, "r", encoding=enc) as old:
                     line = old.readline()
@@ -3369,6 +3385,12 @@ class PortagePlugin(SpmPlugin):
                         line = old.readline()
 
                 new.flush()
+
+        except (OSError, IOError) as err:
+            if err.errno not in (errno.ENOENT, errno.EACCES):
+                raise
+        else:
+            # this must complete successfully
             os.rename(world_file_tmp, world_file)
 
     @staticmethod
@@ -3458,7 +3480,7 @@ class PortagePlugin(SpmPlugin):
 
             # make sure we have the environment.bz2 file to check
             env_file = os.path.join(tmp_path, PortagePlugin.ENV_FILE_COMP)
-            if not (os.path.isfile(env_file) and os.access(env_file, os.R_OK)):
+            if not const_file_readable(env_file):
                 return 2, "unable to locate %s file" % (
                     PortagePlugin.ENV_FILE_COMP,)
 
@@ -3527,8 +3549,7 @@ class PortagePlugin(SpmPlugin):
             os.path.basename(system_make_conf))
         enc = etpConst['conf_encoding']
 
-        if not (os.path.isfile(repo_make_conf) and \
-            os.access(repo_make_conf, os.R_OK)):
+        if not const_file_readable(repo_make_conf):
             return
 
         make_conf_variables_check = ["CHOST"]
@@ -3551,7 +3572,7 @@ class PortagePlugin(SpmPlugin):
                 )
             shutil.copy2(repo_make_conf, system_make_conf)
 
-        elif os.access(system_make_conf, os.W_OK):
+        elif const_file_readable(system_make_conf):
 
             with codecs.open(repo_make_conf, "r", encoding=enc) as repo_f:
                 repo_make_c = [x.strip() for x in repo_f.readlines()]
@@ -3650,8 +3671,7 @@ class PortagePlugin(SpmPlugin):
 
         repo_make_profile = os.path.join(repo_dbpath, profile_link_name)
 
-        if not (os.path.isfile(repo_make_profile) and \
-            os.access(repo_make_profile, os.R_OK)):
+        if not const_file_readable(repo_make_profile):
             return
 
         system_make_profile = \
@@ -3662,7 +3682,7 @@ class PortagePlugin(SpmPlugin):
             repo_profile_link_data = f.readline().strip()
         current_profile_link = ''
         if os.path.islink(system_make_profile) and \
-            os.access(system_make_profile, os.R_OK):
+            const_file_readable(system_make_profile):
 
             current_profile_link = os.readlink(system_make_profile)
 
@@ -4635,7 +4655,7 @@ class PortagePlugin(SpmPlugin):
             if not os.path.isfile(ownlib):
                 # wtf? how can this be a dir or something else ??
                 continue
-            if os.access(ownlib, os.R_OK):
+            if const_file_readable(ownlib):
                 ownelf = entropy.tools.read_elf_class(ownlib)
             for lib in needed[4].split(","):
                 pkg_needed.add((lib, ownelf))
@@ -4659,7 +4679,7 @@ class PortagePlugin(SpmPlugin):
             if len(needed) == 2:
                 ownlib = needed[0]
                 ownelf = -1
-                if os.access(ownlib, os.R_OK):
+                if const_file_readable(ownlib):
                     ownelf = entropy.tools.read_elf_class(ownlib)
                 for lib in needed[1].split(","):
                     #if lib.find(".so") != -1:
@@ -4737,8 +4757,7 @@ class PortagePlugin(SpmPlugin):
             return raw_desk_meta
 
         for desktop_path in sorted(valid_paths):
-            if not (os.path.isfile(desktop_path) and \
-                os.access(desktop_path, os.R_OK)):
+            if not const_file_readable(desktop_path):
                 continue
 
             try:
@@ -4782,8 +4801,7 @@ class PortagePlugin(SpmPlugin):
             for license_dir in license_dirs:
                 licfile = os.path.join(license_dir, mylicense)
 
-                if not (os.access(licfile, os.R_OK | os.F_OK) and \
-                    os.path.isfile(licfile)):
+                if not const_file_readable(licfile):
                     continue
 
                 if not entropy.tools.istextfile(licfile):
