@@ -36,7 +36,7 @@ from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
     const_israwstring, const_secure_config_file, const_is_python3, \
-    const_mkstemp
+    const_mkstemp, const_file_readable
 from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
 
@@ -1267,8 +1267,7 @@ def is_entropy_delta_available():
     """
     if os.getenv("ETP_NO_EDELTA") is not None:
         return False
-    if os.access(_BSDIFF_EXEC, os.X_OK) and os.access(_BSPATCH_EXEC, os.X_OK) \
-        and os.path.isfile(_BSDIFF_EXEC) and os.path.isfile(_BSPATCH_EXEC):
+    if os.path.isfile(_BSDIFF_EXEC) and os.path.isfile(_BSPATCH_EXEC):
         return True
     return False
 
@@ -1831,13 +1830,19 @@ def generic_file_content_parser(filepath, comment_tag = "#",
     @rtype: list
     """
     data = []
-    if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
+    content = []
+
+    try:
         if encoding is None:
             with open(filepath, "r") as gen_f:
-                content = gen_f.readlines()
+                content += gen_f.readlines()
         else:
             with codecs.open(filepath, "r", encoding=encoding) as gen_f:
-                content = gen_f.readlines()
+                content += gen_f.readlines()
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
+    else:
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
             in content if x.strip()]
@@ -1849,6 +1854,7 @@ def generic_file_content_parser(filepath, comment_tag = "#",
             if line in data:
                 continue
             data.append(line)
+
     return data
 
 def isnumber(x):
@@ -2346,46 +2352,52 @@ def write_parameter_to_file(config_file, name, data):
     @return: True, if executed properly
     @rtype: bool
     """
-
-    # check write perms
-    if not os.access(os.path.dirname(config_file), os.W_OK):
-        return False
-
     content = []
     enc = etpConst['conf_encoding']
-    if os.path.isfile(config_file):
+    try:
         with codecs.open(config_file, "r", encoding=enc) as f:
             content = [x.strip() for x in f.readlines()]
+    except (OSError, IOError) as err:
+        if err.errno == errno.ENOENT:
+            return False
+        raise
 
     # write new
-    config_file_tmp = config_file+".tmp"
-    with codecs.open(config_file_tmp, "w", encoding=enc) as f:
-        param_found = False
-        if data:
-            proposed_line = const_convert_to_unicode("%s = %s" % (name, data,))
-        else:
-            proposed_line = const_convert_to_unicode("# %s =" % (name,))
+    config_file_tmp = config_file + ".tmp"
+    try:
+        with codecs.open(config_file_tmp, "w", encoding=enc) as f:
+            param_found = False
+            if data:
+                proposed_line = const_convert_to_unicode(
+                    "%s = %s" % (name, data,))
+            else:
+                proposed_line = const_convert_to_unicode("# %s =" % (name,))
 
-            new_content = []
-            # remove older setting
+                new_content = []
+                # remove older setting
+                for line in content:
+                    key, value = extract_setting(line)
+                    if key == name:
+                        continue
+                    new_content.append(line)
+                content = new_content
+
             for line in content:
                 key, value = extract_setting(line)
                 if key == name:
-                    continue
-                new_content.append(line)
-            content = new_content
+                    param_found = True
+                    line = proposed_line
+                f.write(line)
+                f.write("\n")
+            if (not param_found) and data:
+                f.write(proposed_line)
+                f.write("\n")
+            f.flush()
 
-        for line in content:
-            key, value = extract_setting(line)
-            if key == name:
-                param_found = True
-                line = proposed_line
-            f.write(line)
-            f.write("\n")
-        if (not param_found) and data:
-            f.write(proposed_line)
-            f.write("\n")
-        f.flush()
+    except (OSError, IOError) as err:
+        if err.errno == errno.ENOENT:
+            return False
+        raise
 
     try:
         os.rename(config_file_tmp, config_file)
@@ -2689,9 +2701,9 @@ def resolve_dynamic_library(library, requiring_executable):
         found_path = None
         for ld_dir in mypaths:
             mypath = os.path.join(ld_dir, library)
-            if not os.access(mypath, os.R_OK):
-                continue
             if os.path.isdir(mypath):
+                continue
+            if not const_file_readable(mypath):
                 continue
             if not is_elf_file(mypath):
                 continue
@@ -2724,7 +2736,7 @@ def read_elf_dynamic_libraries(elf_file):
     """
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access("/usr/bin/readelf", os.X_OK):
+        if not const_file_readable("/usr/bin/readelf"):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     return set([x.strip().split()[-1][1:-1] for x in \
@@ -2749,7 +2761,7 @@ def read_elf_real_dynamic_libraries(elf_file):
     """
     global ldd_avail_check
     if not ldd_avail_check:
-        if not os.access("/usr/bin/ldd", os.X_OK):
+        if not const_file_readable("/usr/bin/ldd"):
             FileNotFound('FileNotFound: no ldd')
     sts, output = getstatusoutput('/usr/bin/ldd "%s"' % (elf_file,))
     if sts != 0:
@@ -2770,7 +2782,7 @@ def read_elf_broken_symbols(elf_file):
     """
     global ldd_avail_check
     if not ldd_avail_check:
-        if not os.access("/usr/bin/ldd", os.X_OK):
+        if not const_file_readable("/usr/bin/ldd"):
             FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in \
@@ -2788,7 +2800,7 @@ def read_elf_linker_paths(elf_file):
     """
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access("/usr/bin/readelf", os.X_OK):
+        if not const_file_readable("/usr/bin/readelf"):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     data = [x.strip().split()[-1][1:-1].split(":") for x in \
