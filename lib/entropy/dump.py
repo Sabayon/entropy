@@ -249,39 +249,38 @@ def loadobj(name, complete_path = False, dump_dir = None, aging_days = None):
             dump_path = os.path.join(dump_dir, name)
             dmpfile = dump_path + D_EXT
 
-        if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
-            if aging_days is not None:
-                cur_t = time.time()
-                try:
-                    mtime = os.path.getmtime(dmpfile)
-                except (IOError, OSError,):
-                    mtime = 0.0
-                if abs(cur_t - mtime) > (aging_days * 86400):
-                    # do not unlink since other consumers might
-                    # have different aging settings.
-                    #try:
-                    #    os.remove(dmpfile)
-                    #except (OSError, IOError):
-                    #    # did my best
-                    #    pass
-                    return None
-
+        if aging_days is not None:
+            cur_t = time.time()
             try:
-                with open(dmpfile, "rb") as dmp_f:
-                    obj = None
-                    try:
-                        if const_is_python3():
-                            obj = pickle.load(dmp_f, fix_imports = True,
-                                encoding = etpConst['conf_raw_encoding'])
-                        else:
-                            obj = pickle.load(dmp_f)
-                    except (ValueError, EOFError, IOError,
-                        OSError, pickle.UnpicklingError, TypeError,
-                        AttributeError, ImportError, SystemError,):
-                        pass
-                    return obj
-            except (IOError, OSError,):
-                pass
+                mtime = os.path.getmtime(dmpfile)
+            except (IOError, OSError):
+                mtime = 0.0
+            if abs(cur_t - mtime) > (aging_days * 86400):
+                # do not unlink since other consumers might
+                # have different aging settings.
+                #try:
+                #    os.remove(dmpfile)
+                #except (OSError, IOError):
+                #    # did my best
+                #    pass
+                return None
+
+        try:
+            with open(dmpfile, "rb") as dmp_f:
+                obj = None
+                try:
+                    if const_is_python3():
+                        obj = pickle.load(dmp_f, fix_imports = True,
+                            encoding = etpConst['conf_raw_encoding'])
+                    else:
+                        obj = pickle.load(dmp_f)
+                except (ValueError, EOFError, IOError,
+                    OSError, pickle.UnpicklingError, TypeError,
+                    AttributeError, ImportError, SystemError,):
+                    pass
+                return obj
+        except (IOError, OSError,):
+            pass
         break
 
 def getobjmtime(name, dump_dir = None):
@@ -322,7 +321,10 @@ def removeobj(name, dump_dir = None):
     if dump_dir is None:
         dump_dir = D_DIR
     filepath = dump_dir + os.path.sep + name + D_EXT
-    if os.path.isfile(filepath) and os.access(filepath, os.W_OK):
+    try:
         os.remove(filepath)
         return True
-    return False
+    except (OSError, IOError) as err:
+        if err.errno not in (errno.ENOENT, errno.ENOTDIR):
+            raise
+        return False
