@@ -25,7 +25,7 @@ from entropy.exceptions import EntropyException
 from entropy.const import etpConst, const_setup_perms, const_mkdtemp, \
     const_debug_write, const_setup_file, const_setup_directory, \
     const_convert_to_unicode, const_convert_to_rawstring, const_is_python3, \
-    const_debug_enabled
+    const_debug_enabled, const_file_readable
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -1235,7 +1235,7 @@ class Repository:
             raise Repository.GPGServiceNotAvailable(
                 "cannot setup permissions for %s" % (self.__keystore,))
 
-        if not os.access(Repository._GPG_EXEC, os.X_OK):
+        if not const_file_readable(Repository._GPG_EXEC):
             raise Repository.GPGServiceNotAvailable("no gnupg installed")
 
         import socket
