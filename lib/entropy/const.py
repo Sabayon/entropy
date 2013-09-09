@@ -747,12 +747,14 @@ def const_read_entropy_release():
     if not os.path.isfile(revision_file):
         revision_file = os.path.join(etpConst['installdir'],
             'lib/entropy/revision')
-    if os.path.isfile(revision_file) and \
-        os.access(revision_file, os.R_OK):
 
+    try:
         with codecs.open(revision_file, "r", encoding=ENCODING) as rev_f:
             myrev = rev_f.readline().strip()
             etpConst['entropyversion'] = myrev
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
 
 def const_pid_exists(pid):
     """
