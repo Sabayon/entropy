@@ -27,7 +27,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_convert_to_unicode, \
     const_setup_file, const_get_stringtype, const_debug_write, \
     const_debug_enabled, const_convert_to_rawstring, const_mkdtemp, \
-    const_mkstemp
+    const_mkstemp, const_file_readable
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -1547,17 +1547,19 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                 # ignore
                 continue
 
-            if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
-                pkgs = entropy.tools.generic_file_content_parser(
+            pkgs = []
+            if const_file_readable(exp_fp):
+                # don't worry about the race.
+                pkgs += entropy.tools.generic_file_content_parser(
                     exp_fp, encoding = etpConst['conf_encoding'])
-                if '*' in pkgs: # wildcard support
-                    idpackages.add(-1)
-                else:
-                    for pkg in pkgs:
-                        idpackage, rc_match = dbconn.atomMatch(pkg)
-                        if rc_match:
-                            continue
-                        idpackages.add(idpackage)
+            if '*' in pkgs: # wildcard support
+                idpackages.add(-1)
+            else:
+                for pkg in pkgs:
+                    idpackage, rc_match = dbconn.atomMatch(pkg)
+                    if rc_match:
+                        continue
+                    idpackages.add(idpackage)
 
             data[repoid] = idpackages
 
@@ -2370,8 +2372,9 @@ class Server(Client):
         mask_file = self._get_local_repository_mask_file(repository_id)
         current_packages = []
 
-        if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
-            current_packages = entropy.tools.generic_file_content_parser(
+        if const_file_readable(mask_file):
+            # don't worry about the race.
+            current_packages += entropy.tools.generic_file_content_parser(
                 mask_file, comment_tag = "##", filter_comments = False,
                 encoding = etpConst['conf_encoding'])
         # this is untrusted input, it's fine because that config file is
@@ -2403,8 +2406,9 @@ class Server(Client):
         mask_file = self._get_local_repository_mask_file(repository_id)
         current_packages = []
 
-        if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
-            current_packages = entropy.tools.generic_file_content_parser(
+        if const_file_readable(mask_file):
+            # don't worry about the race.
+            current_packages += entropy.tools.generic_file_content_parser(
                 mask_file, comment_tag = "##", filter_comments = False,
                 encoding = etpConst['conf_encoding'])
 
@@ -6500,10 +6504,9 @@ class Server(Client):
         """
         qa_exec = os.path.join(SystemSettings.packages_config_directory(),
                                "packages.server.qa.exec")
-        if not os.path.isfile(qa_exec):
+        if not const_file_readable(qa_exec):
             return True
-        if not os.access(qa_exec, os.X_OK | os.R_OK | os.F_OK):
-            return True
+
         # avoid privs escalation
         st = os.stat(qa_exec)
         file_uid = st[stat.ST_UID]
@@ -6991,13 +6994,18 @@ class Server(Client):
             branch = self._settings['repositories']['branch']
         wl_file = self._get_missing_dependencies_blacklist_file(repository_id,
             branch = branch)
-        wl_data = []
-        if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
-            f_wl = codecs.open(wl_file, "r", encoding=etpConst['conf_encoding'])
-            wl_data = [x.strip() for x in f_wl.readlines() if x.strip() and \
-                not x.strip().startswith("#")]
-            f_wl.close()
-        return set(wl_data)
+
+        wl_data = set()
+        enc = etpConst['conf_encoding']
+        try:
+            with codecs.open(wl_file, "r", encoding = enc) as f_wl:
+                wl_data.update([x.strip() for x in f_wl.readlines() if
+                            x.strip() and not x.strip().startswith("#")])
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+        return wl_data
 
     def _get_package_path(self, repo, dbconn, idpackage):
         """
@@ -7451,11 +7459,15 @@ class Server(Client):
             branch = self._settings['repositories']['branch']
         sets_dir = self._get_local_database_sets_dir(repository_id,
             branch = branch)
-        if not (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
-            return {}
+
+        items = []
+        try:
+            items += os.listdir(sets_dir)
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         mydata = {}
-        items = os.listdir(sets_dir)
         for item in items:
 
             try:
@@ -7463,11 +7475,15 @@ class Server(Client):
             except (UnicodeEncodeError, UnicodeDecodeError,):
                 continue
             item_path = os.path.join(sets_dir, item)
-            if not (os.path.isfile(item_path) and \
-                os.access(item_path, os.R_OK)):
-                continue
-            item_elements = self._settings._extract_packages_from_set_file(
-                item_path)
+
+            try:
+                item_elements = self._settings._extract_packages_from_set_file(
+                    item_path)
+            except (OSError, IOError) as err:
+                if err.errno == errno.ENOENT:
+                    continue
+                raise
+
             if item_elements:
                 mydata[item_clean] = item_elements.copy()
 
