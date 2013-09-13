@@ -1969,11 +1969,15 @@ class Package:
             if in_mask:
 
                 oldprot_md5 = automerge_metadata.get(item)
-                if oldprot_md5 and os.path.exists(protected_item_test) and \
-                    os.access(protected_item_test, os.R_OK):
+                if oldprot_md5:
 
-                    in_system_md5 = entropy.tools.md5sum(
-                        protected_item_test)
+                    try:
+                        in_system_md5 = entropy.tools.md5sum(
+                            protected_item_test)
+                    except (OSError, IOError) as err:
+                        if err.errno != errno.ENOENT:
+                            raise
+                        in_system_md5 = "?"
 
                     if oldprot_md5 == in_system_md5:
                         prot_msg = _("Removing config file, never modified")
