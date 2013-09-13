@@ -2838,8 +2838,7 @@ class Package:
                     if not _symfail:
                         os.symlink(tolink, rootdir)
 
-            elif not os.path.isdir(rootdir) and not \
-                os.access(rootdir, os.R_OK):
+            elif not os.path.isdir(rootdir):
                 # directory not found, we need to create it
 
                 try:
@@ -2849,17 +2848,15 @@ class Package:
                     os.makedirs(rootdir)
 
 
-            if not os.path.islink(rootdir) and os.access(rootdir, os.W_OK):
+            if not os.path.islink(rootdir):
 
                 # symlink doesn't need permissions, also
                 # until os.walk ends they might be broken
-                # NOTE: also, added os.access() check because
-                # there might be directories/files unwritable
-                # what to do otherwise?
                 user = os.stat(imagepath_dir)[stat.ST_UID]
                 group = os.stat(imagepath_dir)[stat.ST_GID]
                 try:
                     os.chown(rootdir, user, group)
+                    shutil.copystat(imagepath_dir, rootdir)
                 except (OSError, IOError) as err:
                     self._entropy.logger.log(
                         "[Package]",
@@ -2868,22 +2865,26 @@ class Package:
                         "%s, %s, errno: %s" % (
                                 rootdir,
                                 err,
-                                getattr(err, "errno", -1),
+                                err.errno,
                             )
                     )
-                    mytxt = "%s: %s, %s, %s" % (
-                        brown("Error during workdir setup"),
-                        purple(rootdir), err,
-                        getattr(err, "errno", -1)
-                    )
-                    self._entropy.output(
-                        mytxt,
-                        importance = 1,
-                        level = "error",
-                        header = darkred(" !!! ")
-                    )
-                    return 4
-                shutil.copystat(imagepath_dir, rootdir)
+                    # skip some errors because we may have
+                    # unwritable directories
+                    if err.errno not in (
+                            errno.EPERM, errno.ENOENT,
+                            errno.ENOTDIR):
+                        mytxt = "%s: %s, %s, %s" % (
+                            brown("Error during workdir setup"),
+                            purple(rootdir), err,
+                            err.errno
+                        )
+                        self._entropy.output(
+                            mytxt,
+                            importance = 1,
+                            level = "error",
+                            header = darkred(" !!! ")
+                        )
+                        return 4
 
             item_dir, item_base = os.path.split(rootdir)
             item_dir = os.path.realpath(item_dir)
@@ -2974,14 +2975,14 @@ class Package:
                 oldprot_md5 = self.pkgmeta['already_protected_config_files'].get(
                     prot_old_tofile)
 
-                if oldprot_md5 and os.path.exists(pre_tofile) and \
-                    os.access(pre_tofile, os.R_OK):
+                if oldprot_md5:
 
                     try:
                         in_system_md5 = entropy.tools.md5sum(pre_tofile)
-                    except (IOError,):
-                        # which is a clearly invalid value
-                        in_system_md5 = "0000"
+                    except (OSError, IOError) as err:
+                        if err.errno != errno.ENOENT:
+                            raise
+                        in_system_md5 = "?"
 
                     if oldprot_md5 == in_system_md5:
                         # we can merge it, files, even if
@@ -3268,11 +3269,9 @@ class Package:
             protected = False # file doesn't exist
 
         # check if it's a text file
-        if protected and os.path.isfile(tofile) and os.access(tofile, os.R_OK):
+        if protected:
             protected = entropy.tools.istextfile(tofile)
             in_mask = protected
-        else:
-            protected = False # it's not a file
 
         if fromfile is not None:
             if protected and os.path.lexists(fromfile) and \
