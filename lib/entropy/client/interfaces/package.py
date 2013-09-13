@@ -844,28 +844,43 @@ class Package:
         download_url = inst_repo.retrieveDownloadURL(pkg_id)
         installed_fetch_path = self.__get_fetch_disk_path(download_url)
 
-        if os.path.isfile(installed_fetch_path) and \
-            os.access(installed_fetch_path, os.R_OK | os.F_OK):
-            copied = False
+        try:
+            shutil.copyfile(installed_fetch_path, fetch_path)
+        except (OSError, IOError, shutil.Error) as err:
+            const_debug_write(
+                __name__,
+                "_setup_differential_download(%s), copyfile error: %s" % (
+                    url, err))
             try:
-                shutil.copyfile(installed_fetch_path, fetch_path)
-                user = os.stat(installed_fetch_path)[stat.ST_UID]
-                group = os.stat(installed_fetch_path)[stat.ST_GID]
-                os.chown(fetch_path, user, group)
-                shutil.copystat(installed_fetch_path, fetch_path)
-                copied = True
-            except (OSError, IOError, shutil.Error):
-                try:
-                    os.remove(fetch_path)
-                except OSError:
-                    pass
-            const_debug_write(__name__,
-                "_setup_differential_download(%s) %s %s => %s" % (
-                    url, "copied", copied, fetch_path))
-        else:
-            const_debug_write(__name__,
-                "_setup_differential_download(%s) %s" % (
-                    url, "no installed package file found"))
+                os.remove(fetch_path)
+            except OSError:
+                pass
+            return
+
+        try:
+            user = os.stat(installed_fetch_path)[stat.ST_UID]
+            group = os.stat(installed_fetch_path)[stat.ST_GID]
+            os.chown(fetch_path, user, group)
+        except (OSError, IOError) as err:
+            const_debug_write(
+                __name__,
+                "_setup_differential_download(%s), chown error: %s" % (
+                    url, err))
+            return
+
+        try:
+            shutil.copystat(installed_fetch_path, fetch_path)
+        except (OSError, IOError, shutil.Error) as err:
+            const_debug_write(
+                __name__,
+                "_setup_differential_download(%s), copystat error: %s" % (
+                    url, err))
+            return
+
+        const_debug_write(
+            __name__,
+            "_setup_differential_download(%s) copied to %s" % (
+                url, fetch_path))
 
     def __approve_edelta(self, url, installed_package_id, package_digest):
         """
