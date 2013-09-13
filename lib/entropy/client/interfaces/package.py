@@ -1443,32 +1443,39 @@ class Package:
         pkg_disk_path_mtime = pkg_disk_path + etpConst['packagemtimefileext']
 
         def do_mtime_validation():
-            if not (os.path.isfile(pkg_disk_path_mtime) and \
-                os.access(pkg_disk_path_mtime, os.R_OK)):
-                return 1
-            if not (os.path.isfile(pkg_disk_path) and \
-                os.access(pkg_disk_path, os.R_OK)):
-                return 2
-
             enc = etpConst['conf_encoding']
-            with codecs.open(pkg_disk_path_mtime, "r", encoding=enc) as mt_f:
-                stored_mtime = mt_f.read().strip()
+            try:
+                with codecs.open(pkg_disk_path_mtime,
+                                 "r", encoding=enc) as mt_f:
+                    stored_mtime = mt_f.read().strip()
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                return 1
 
             # get pkg mtime
-            cur_mtime = str(os.path.getmtime(pkg_disk_path))
+            try:
+                cur_mtime = str(os.path.getmtime(pkg_disk_path))
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                return 2
+
             if cur_mtime == stored_mtime:
                 return 0
             return 1
 
         def do_store_mtime():
-            if not (os.path.isfile(pkg_disk_path) and \
-                os.access(pkg_disk_path, os.R_OK)):
-                return
             enc = etpConst['conf_encoding']
-            with codecs.open(pkg_disk_path_mtime, "w", encoding=enc) as mt_f:
-                cur_mtime = str(os.path.getmtime(pkg_disk_path))
-                mt_f.write(cur_mtime)
-                mt_f.flush()
+            try:
+                with codecs.open(pkg_disk_path_mtime,
+                                 "w", encoding=enc) as mt_f:
+                    cur_mtime = str(os.path.getmtime(pkg_disk_path))
+                    mt_f.write(cur_mtime)
+                    mt_f.flush()
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
         def do_compare_gpg(pkg_path, hash_val):
 
