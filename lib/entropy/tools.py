@@ -1885,8 +1885,11 @@ def istextfile(filename, blocksize = 512):
     @return: True, if text file
     @rtype: bool
     """
-    with open(filename, "r") as f:
-        r = istext(f.read(blocksize))
+    try:
+        with open(filename, "r") as f:
+            r = istext(f.read(blocksize))
+    except (OSError, IOError):
+        return False
     return r
 
 def istext(mystring):
