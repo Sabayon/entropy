@@ -896,21 +896,27 @@ class Package:
         installed_digest = inst_repo.retrieveDigest(installed_package_id)
         installed_fetch_path = self.__get_fetch_disk_path(download_url)
 
-        if os.path.isfile(installed_fetch_path) and \
-            os.access(installed_fetch_path, os.R_OK | os.F_OK):
-
+        edelta_local_approved = False
+        try:
             edelta_local_approved = entropy.tools.compare_md5(
                 installed_fetch_path, installed_digest)
+        except (OSError, IOError) as err:
+            const_debug_write(
+                __name__, "__approve_edelta, error: %s" % (err,))
+            return
 
-            if edelta_local_approved:
-                hash_tag = installed_digest + package_digest
-                edelta_file_name = \
-                    entropy.tools.generate_entropy_delta_file_name(
-                        os.path.basename(download_url),
-                        os.path.basename(url), hash_tag)
-                edelta_url = os.path.join(os.path.dirname(url),
-                    etpConst['packagesdeltasubdir'], edelta_file_name)
-                return edelta_url, installed_fetch_path
+        if edelta_local_approved:
+            hash_tag = installed_digest + package_digest
+            edelta_file_name = entropy.tools.generate_entropy_delta_file_name(
+                os.path.basename(download_url),
+                os.path.basename(url),
+                hash_tag)
+            edelta_url = os.path.join(
+                os.path.dirname(url),
+                etpConst['packagesdeltasubdir'],
+                edelta_file_name)
+
+            return edelta_url, installed_fetch_path
 
     def __try_edelta_multifetch(self, url_data, resume):
 
