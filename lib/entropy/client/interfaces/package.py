@@ -5121,13 +5121,13 @@ class Package:
 
         def _check_matching_size(download, size):
             d_path = self.__get_fetch_disk_path(download)
-            if os.access(d_path, os.R_OK) and os.path.isfile(d_path):
-                # check size first
-                with open(d_path, "rb") as f:
-                    f.seek(0, os.SEEK_END)
-                    disk_size = f.tell()
-                return size == disk_size
-            return False
+            try:
+                st = os.stat(d_path)
+                return size == st.st_size
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                return False
 
         matching_size = _check_matching_size(self.pkgmeta['download'],
             dbconn.retrieveSize(idpackage))
