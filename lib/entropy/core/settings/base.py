@@ -1880,15 +1880,18 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'differential_update': True,
         }
 
-        if const_file_readable(repo_conf):
-            return data
-
         enc = etpConst['conf_encoding']
         # TODO: repository = statements in repositories.conf
         # will be deprecated by mid 2014
-        with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
-            repositoriesconf = [x.strip() for x in \
+        try:
+            with codecs.open(repo_conf, "r", encoding=enc) as repo_f:
+                repositoriesconf = [x.strip() for x in \
                                     repo_f.readlines() if x.strip()]
+        except (OSError, IOError) as err:
+            if err.errno not in (errno.ENOENT, errno.ENOTDIR, errno.EISDIR):
+                raise
+            return data
+
         repositories_d_conf = self.__generic_d_parser(
             "repositories_conf_d", None, validate=False)
 
