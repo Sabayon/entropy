@@ -20,7 +20,8 @@ import hashlib
 import time
 import codecs
 
-from entropy.const import const_is_python3, const_debug_write
+from entropy.const import const_is_python3, const_debug_write, \
+    const_dir_writable
 
 if const_is_python3():
     from io import StringIO
@@ -1363,7 +1364,7 @@ class ClientWebService(WebService):
             except (OSError, IOError):
                 raise ClientWebService.DocumentError(
                     "Insufficient privileges")
-        elif not os.access(local_dir, os.W_OK):
+        elif not const_dir_writable(local_dir):
             raise ClientWebService.DocumentError(
                 "Insufficient privileges (2)")
 
