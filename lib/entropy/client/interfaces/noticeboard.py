@@ -10,7 +10,8 @@
 
 """
 import os
-from entropy.const import const_isstring
+from entropy.const import const_isstring, const_file_readable, \
+    const_dir_writable
 from entropy.misc import RSS
 from entropy.dump import loadobj as dump_loadobj, dumpobj as dump_dumpobj
 from entropy.exceptions import RepositoryError
@@ -41,7 +42,7 @@ class NoticeBoardMixin:
         repo_data = self._settings['repositories']['available'][repository_id]
         nb_path = repo_data['local_notice_board']
 
-        if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
+        if not const_file_readable(nb_path):
             return {} # not found
 
         # load RSS metadata and return if valid
@@ -67,7 +68,7 @@ class NoticeBoardMixin:
         repo_data = self._settings['repositories']['available'][repository_id]
         nb_path = repo_data['local_notice_board_userdata']
 
-        if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
+        if not const_file_readable(nb_path):
             return {} # not found
 
         # load metadata
@@ -90,7 +91,7 @@ class NoticeBoardMixin:
 
         # check availability
         nb_dir = os.path.dirname(nb_path)
-        if not (os.path.isdir(nb_dir) and os.access(nb_dir, os.W_OK)):
+        if not const_dir_writable(nb_dir):
             raise RepositoryError(
                 "repository directory not available for %s" % (repository_id,))
 
