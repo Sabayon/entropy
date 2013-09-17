@@ -495,13 +495,6 @@ class Trigger:
                 "[POST] %s is not available" % (info_exec,)
             )
             return 0
-        if not os.access(info_exec, os.X_OK | os.R_OK):
-            self._entropy.logger.log(
-                "[Trigger]",
-                etpConst['logging']['normal_loglevel_id'],
-                "[POST] %s is not executable" % (info_exec,)
-            )
-            return 0
 
         env = os.environ.copy()
         for info_file in self._pkgdata['affected_infofiles']:
