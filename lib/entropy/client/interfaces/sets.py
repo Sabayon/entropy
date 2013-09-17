@@ -12,6 +12,7 @@
     set and user can install all of them by just choosing to @kde-5.1.
 
 """
+import errno
 import os
 import codecs
 
@@ -240,20 +241,17 @@ class Sets:
         _ensure_package_sets_dir()
         set_file = os.path.join(SystemSettings.packages_sets_directory(),
                                 set_name)
-        if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
-            try:
-                os.remove(set_file)
-            except OSError:
-                raise InvalidPackageSet(_("Cannot remove the old element"))
-        if not os.access(os.path.dirname(set_file), os.W_OK):
-            raise InvalidPackageSet(_("Cannot create the element"))
 
+        set_file_tmp = set_file + ".sets_add_tmp"
         enc = etpConst['conf_encoding']
-        with codecs.open(set_file, "w", encoding=enc) as f:
-            for x in set_atoms:
-                f.write(x)
-                f.write("\n")
-            f.flush()
+        try:
+            with codecs.open(set_file_tmp, "w", encoding=enc) as f:
+                for x in set_atoms:
+                    f.write(x)
+                    f.write("\n")
+            os.rename(set_file_tmp, set_file)
+        except (OSError, IOError) as err:
+            raise InvalidPackageSet(_("Cannot create the element"))
         self._settings['system_package_sets'][set_name] = set(set_atoms)
 
     def remove(self, set_name):
@@ -285,9 +283,11 @@ class Sets:
             raise InvalidPackageSet(_("Not defined by user"))
         set_file = os.path.join(SystemSettings.packages_sets_directory(),
                                 set_name)
-        if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
+
+        try:
             os.remove(set_file)
-            if set_name in self._settings['system_package_sets']:
-                del self._settings['system_package_sets'][set_name]
-            return
-        raise InvalidPackageSet(_("Set not found or unable to remove"))
+        except OSError:
+            if err.errno != errno.ENOENT:
+                raise InvalidPackageSet(_("Set not found or unable to remove"))
+
+        self._settings['system_package_sets'].pop(set_name, None)
