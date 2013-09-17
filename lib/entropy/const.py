@@ -1188,6 +1188,17 @@ def const_dir_readable(dir_path):
     """
     return _const_dir_something(dir_path, os.O_RDONLY)
 
+def const_dir_writable(dir_path):
+    """
+    Return whether path points to a writable directory.
+
+    @param path: path to a directory
+    @type path: string
+    @return: True, if directory exists and is writable
+    @rtype: bool
+    """
+    return _const_dir_something(dir_path, os.O_APPEND)
+
 def const_get_entropy_gid():
     """
     This function tries to retrieve the "entropy" user group
