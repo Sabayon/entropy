@@ -1135,11 +1135,20 @@ def const_dir_readable(dir_path):
     @return: True, if directory exists and is readable
     @rtype: bool
     """
+    fd = None
     try:
-        os.listdir(dir_path)
-        return True
+        fd = os.open(dir_path, os.O_RDONLY)
+        mode = os.fstat(fd).st_mode
+        if stat.S_ISDIR(mode):
+            # this also handles symlinks to files
+            # because we don't use O_NOFOLLOW
+            return True
+        return False
     except (OSError, IOError):
         return False
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 def const_get_entropy_gid():
     """
