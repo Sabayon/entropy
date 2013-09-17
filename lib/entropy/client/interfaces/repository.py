@@ -16,7 +16,7 @@ import subprocess
 import errno
 import time
 
-from entropy.const import const_debug_write, etpConst
+from entropy.const import const_debug_write, etpConst, const_file_readable
 from entropy.i18n import _, ngettext
 from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
@@ -89,8 +89,7 @@ class Repository:
                 "_run_post_update_repository_hook: not available")
             return 0
 
-        if not (os.path.isfile(post_update_script) and \
-            os.access(post_update_script, os.R_OK)):
+        if not const_file_readable(post_update_script):
             # not found!
             const_debug_write(__name__,
                 "_run_post_update_repository_hook: not found")
