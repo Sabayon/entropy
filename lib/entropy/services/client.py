@@ -21,7 +21,7 @@ import hashlib
 import socket
 
 from entropy.const import const_is_python3, const_convert_to_rawstring, \
-    const_get_int, const_mkstemp
+    const_get_int, const_mkstemp, const_dir_writable
 
 if const_is_python3():
     import http.client as httplib
@@ -1051,7 +1051,7 @@ class AuthenticationStorage(Singleton):
         home = os.getenv("HOME")
         auth_file = None
         if home is not None:
-            if os.path.isdir(home) and os.access(home, os.W_OK):
+            if const_dir_writable(home):
                 auth_file = os.path.join(home,
                     AuthenticationStorage._AUTH_FILE)
                 auth_dir = os.path.dirname(auth_file)
