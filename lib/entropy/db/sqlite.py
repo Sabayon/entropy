@@ -22,7 +22,7 @@ import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_buffer, const_convert_to_rawstring, const_pid_exists, \
-    const_is_python3, const_debug_write
+    const_is_python3, const_debug_write, const_file_writable
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
 
@@ -225,7 +225,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
             def _is_avail():
                 if self._db == ":memory:":
                     return True
-                return os.access(self._db, os.W_OK)
+                return const_file_writable(self._db)
 
             try:
                 if _is_avail() and self._doesTableExist('baseinfo') and \
@@ -325,7 +325,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 # make sure that user can write to file
                 # before returning False, override actual
                 # readonly status
-                return not os.access(self._db, os.W_OK)
+                return not const_file_writable(self._db)
         return self._readonly
 
     def _cursor(self):
