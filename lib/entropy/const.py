@@ -1149,19 +1149,21 @@ def const_file_writable(path):
     """
     return _const_file_something(path, os.O_APPEND)
 
-def const_dir_readable(dir_path):
+def _const_dir_something(path, flags):
     """
-    Return whether path points to a readable directory.
-    Readable directory is one that you can read the content.
+    Return whether dir can be opened and is a directory.
 
     @param path: path to a directory
     @type path: string
-    @return: True, if directory exists and is readable
+    @param flags: os.open() flags
+    @type flags: int
+    @return: True, if directory exists and can be opened with
+             the given flags
     @rtype: bool
     """
     fd = None
     try:
-        fd = os.open(dir_path, os.O_RDONLY)
+        fd = os.open(path, flags)
         mode = os.fstat(fd).st_mode
         if stat.S_ISDIR(mode):
             # this also handles symlinks to files
@@ -1173,6 +1175,18 @@ def const_dir_readable(dir_path):
     finally:
         if fd is not None:
             os.close(fd)
+
+def const_dir_readable(dir_path):
+    """
+    Return whether path points to a readable directory.
+    Readable directory is one that you can read the content.
+
+    @param path: path to a directory
+    @type path: string
+    @return: True, if directory exists and is readable
+    @rtype: bool
+    """
+    return _const_dir_something(dir_path, os.O_RDONLY)
 
 def const_get_entropy_gid():
     """
