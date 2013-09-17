@@ -20,7 +20,7 @@ from entropy.core.settings.base import SystemSettings
 from entropy.client.interfaces import Client
 from entropy.exceptions import CacheCorruptionError
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    const_convert_to_unicode, const_debug_write
+    const_convert_to_unicode, const_debug_write, const_file_readable
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput, rename_keep_permissions
 from entropy.i18n import _
@@ -450,15 +450,17 @@ class FileUpdates:
         self._backup(key)
         source_file = etpConst['systemroot'] + self._scandata[key]['source']
         dest_file = etpConst['systemroot'] + self._scandata[key]['destination']
-        if os.access(source_file, os.R_OK):
+        if const_file_readable(source_file):
             shutil.move(source_file, dest_file)
         self.ignore(key)
 
     def remove(self, key):
         self.scan(dcache = True)
         source_file = etpConst['systemroot'] + self._scandata[key]['source']
-        if os.path.isfile(source_file) and os.access(source_file, os.W_OK):
+        try:
             os.remove(source_file)
+        except OSError:
+            pass
         self.ignore(key)
 
     def _backup(self, key):
