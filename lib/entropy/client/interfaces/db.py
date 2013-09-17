@@ -20,7 +20,8 @@ import time
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     const_set_nice_level, const_setup_file, const_convert_to_unicode, \
-    const_debug_enabled, const_mkdtemp, const_mkstemp
+    const_debug_enabled, const_mkdtemp, const_mkstemp, const_file_readable, \
+    const_file_writable
 from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
     bold, TextInterface
 from entropy.dump import dumpobj, loadobj
@@ -325,7 +326,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __get_repo_eapi(self):
 
         eapi_env = os.getenv("FORCE_EAPI")
-        sqlite3_access = os.access("/usr/bin/sqlite3", os.X_OK)
+        sqlite3_access = os.path.lexists("/usr/bin/sqlite3")
         sqlite3_rc = subprocess.call("/usr/bin/sqlite3 -version > /dev/null",
             shell = True)
         try:
@@ -728,10 +729,12 @@ class AvailablePackagesRepositoryUpdater(object):
         else:
             raise AttributeError("EAPI must be = 1 or 2")
 
-        if not (os.access(md5file, os.R_OK) and os.path.isfile(md5file)):
+        try:
+            return self.__verify_file_checksum(dbfile, md5file)
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
             return -1
-
-        return self.__verify_file_checksum(dbfile, md5file)
 
     def __unpack_downloaded_database(self, uri, down_item, cmethod):
 
@@ -1153,7 +1156,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
             if item not in objects_to_unpack:
                 continue
-            if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
+            if not const_file_readable(mypath):
                 continue
 
             tmpdir = const_mkdtemp(prefix="_standard_items_download")
@@ -1176,21 +1179,23 @@ class AvailablePackagesRepositoryUpdater(object):
                     myfiles_to_move.remove(files_not_found_file)
                     fnf_path = os.path.join(tmpdir, files_not_found_file)
 
-                    if os.path.isfile(fnf_path) and \
-                        os.access(fnf_path, os.R_OK):
+                    f_nf = []
+                    try:
                         with codecs.open(fnf_path, "r", encoding=enc) as f:
-                            f_nf = [x.strip() for x in f.readlines()]
-
+                            f_nf += [x.strip() for x in f.readlines()]
+                    except (OSError, IOError) as err:
+                        if err.errno != errno.ENOENT:
+                            raise
+                    else:
                         for myfile in f_nf:
                             myfile = os.path.basename(myfile) # avoid lamerz
                             myfpath = os.path.join(repo_dir, myfile)
-                            if os.path.isfile(myfpath) and \
-                                os.access(myfpath, os.W_OK):
-                                try:
-                                    os.remove(myfpath)
-                                    my_show_file_rm(myfile)
-                                except OSError:
-                                    continue
+                            try:
+                                os.remove(myfpath)
+                                my_show_file_rm(myfile)
+                            except (OSError, IOError) as err:
+                                if err.errno != errno.ENOENT:
+                                    raise
 
                 for myfile in sorted(myfiles_to_move):
                     from_mypath = os.path.join(tmpdir, myfile)
@@ -1304,7 +1309,7 @@ class AvailablePackagesRepositoryUpdater(object):
         repo_data = avail_data[self._repository_id]
         gpg_path = repo_data['gpg_pubkey']
 
-        if not (os.path.isfile(gpg_path) and os.access(gpg_path, os.R_OK)):
+        if not const_file_readable(gpg_path):
             return False # gpg key not available
 
         def do_warn_user(fingerprint):
@@ -1509,15 +1514,13 @@ class AvailablePackagesRepositoryUpdater(object):
         gpg_sign_ext = etpConst['etpgpgextension']
         sign_files = [x for x in downloaded_files if \
             x.endswith(gpg_sign_ext)]
-        sign_files = [x for x in sign_files if os.path.isfile(x) and \
-            os.access(x, os.R_OK)]
+        sign_files = [x for x in sign_files if const_file_readable(x)]
 
         to_be_verified = []
 
         for sign_path in sign_files:
             target_path = sign_path[:-len(gpg_sign_ext)]
-            if os.path.isfile(target_path) and \
-                os.access(target_path, os.R_OK):
+            if const_file_readable(target_path):
                 to_be_verified.append((target_path, sign_path,))
 
         gpg_rc = 0
@@ -2055,8 +2058,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     self.__database_checksum_download(uri, cmethod)
                 break
 
-            elif self._repo_eapi == 3 and not \
-                (os.path.isfile(dbfile) and os.access(dbfile, os.W_OK)):
+            elif self._repo_eapi == 3 and not const_file_writable(dbfile):
                 do_db_update_transfer = None
                 self._repo_eapi -= 1
                 continue
@@ -2119,13 +2121,13 @@ class AvailablePackagesRepositoryUpdater(object):
             if (do_db_update_transfer is not None) and not \
                 do_db_update_transfer:
 
-                if os.access(dbfile, os.R_OK | os.W_OK) and \
-                    os.path.isfile(dbfile):
-                    try:
-                        os.rename(dbfile, dbfile_old)
-                        do_db_update_transfer = True
-                    except OSError:
-                        do_db_update_transfer = False
+                try:
+                    os.rename(dbfile, dbfile_old)
+                    do_db_update_transfer = True
+                except OSError as err:
+                    const_debug_write(
+                        __name__, "rename failed: %s" % (err,))
+                    do_db_update_transfer = False
 
             unpack_status, unpacked_item = \
                 self._downloaded_database_unpack(uri, cmethod)
@@ -2173,10 +2175,13 @@ class AvailablePackagesRepositoryUpdater(object):
         # permissions to avoid possible XSS and trust boundary problems.
         downloaded_files.append(dbfile)
         for downloaded_file in sorted(set(downloaded_files)):
-            if os.path.isfile(downloaded_file) and \
-                os.access(downloaded_file, os.W_OK | os.R_OK):
-                const_setup_file(downloaded_file, etpConst['entropygid'], 0o644,
-                    uid = etpConst['uid'])
+            try:
+                const_setup_file(downloaded_file,
+                                 etpConst['entropygid'], 0o644,
+                                 uid = etpConst['uid'])
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
 
         # remove garbage left around
         for path in files_to_remove:
@@ -2209,11 +2214,10 @@ class AvailablePackagesRepositoryUpdater(object):
                 level = "info", header = blue("  # "),)
 
         # remove garbage
-        if os.access(dbfile_old, os.R_OK) and os.path.isfile(dbfile_old):
-            try:
-                os.remove(dbfile_old)
-            except (OSError, IOError):
-                pass
+        try:
+            os.remove(dbfile_old)
+        except OSError:
+            pass
 
         return EntropyRepositoryBase.REPOSITORY_UPDATED_OK
 
@@ -2684,16 +2688,19 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         db_data = SystemSettings()['repositories']['available'][repository_id]
         fname = os.path.join(db_data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
-        revision = -1
 
+        revision = -1
         enc = etpConst['conf_encoding']
-        if os.path.isfile(fname) and os.access(fname, os.R_OK):
+        try:
             with codecs.open(fname, "r", encoding=enc) as f:
+                read_data = f.readline().strip()
                 try:
-                    read_data = f.readline().strip()
                     revision = int(read_data)
-                except (OSError, IOError, ValueError,):
+                except ValueError:
                     pass
+        except (OSError, IOError) as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         return revision
 
