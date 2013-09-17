@@ -1110,11 +1110,20 @@ def const_file_readable(path):
     @return: True, if file exists and is readable
     @rtype: bool
     """
+    fd = None
     try:
-        with open(path, "r") as f:
+        fd = os.open(path, os.O_RDONLY)
+        mode = os.fstat(fd).st_mode
+        if stat.S_ISREG(mode):
+            # this also handles symlinks to files
+            # because we don't use O_NOFOLLOW
             return True
+        return False
     except (OSError, IOError):
         return False
+    finally:
+        if fd is not None:
+            os.close(fd)
 
 def const_dir_readable(dir_path):
     """
