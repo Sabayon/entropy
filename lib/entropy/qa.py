@@ -28,7 +28,7 @@ from entropy.output import TextInterface
 from entropy.misc import Lifo
 from entropy.const import etpConst, etpSys, const_debug_write, const_mkdtemp, \
     const_mkstemp, const_debug_write, const_convert_to_rawstring, \
-    const_is_python3
+    const_is_python3, const_file_readable
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
     teal
 from entropy.exceptions import PermissionDenied, SystemDatabaseError
@@ -923,13 +923,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         # obviously, we're looking for another ELF object
                         my_real_exec_dir = os.path.dirname(real_exec_path)
                         mylib_guess = os.path.join(my_real_exec_dir, mylib)
-                        if os.access(mylib_guess, os.R_OK) and \
-                            os.path.isfile(mylib_guess):
+                        try:
                             if entropy.tools.is_elf_file(mylib_guess):
                                 # we have found the missing library,
                                 # which wasn't in LDPATH, booooo @ package
                                 # developers !! boooo!
                                 mylib_filter.add(mylib)
+                        except (OSError, IOError) as err:
+                            if err.errno != errno.ENOENT:
+                                raise
 
                 mylibs -= mylib_filter
 
@@ -1064,9 +1066,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         mylibs = {}
         for myfile in mycontent:
             myfile = const_convert_to_rawstring(myfile)
-            if not os.access(myfile, os.R_OK):
-                continue
-            if not os.path.isfile(myfile):
+            if not const_file_readable(myfile):
                 continue
             if not entropy.tools.is_elf_file(myfile):
                 continue
@@ -1125,7 +1125,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 return False
             if os.path.islink(path):
                 return False
-            if not os.access(path, os.X_OK | os.R_OK):
+            if not const_file_readable(path):
                 return False
             if not entropy.tools.is_elf_file(path):
                 return False
