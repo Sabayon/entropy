@@ -15,7 +15,7 @@ import hashlib
 
 from entropy.const import etpConst, const_debug_write, const_isstring, \
     const_isnumber, const_convert_to_rawstring, const_convert_to_unicode, \
-    const_debug_enabled
+    const_debug_enabled, const_file_readable
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
@@ -2833,8 +2833,7 @@ class CalculatorsMixin:
         # check if we are branch migrating
         # in this case, critical pkgs feature is disabled
         in_branch_upgrade = etpConst['etp_in_branch_upgrade_file']
-        if os.access(in_branch_upgrade, os.R_OK) and \
-            os.path.isfile(in_branch_upgrade):
+        if const_file_readable(in_branch_upgrade):
             return set(), []
 
         repo_hash = self._repositories_hash()
@@ -3176,8 +3175,10 @@ class CalculatorsMixin:
             # delete branch upgrade file if exists, since there are
             # no updates, this file does not deserve to be saved anyway
             br_path = etpConst['etp_in_branch_upgrade_file']
-            if os.access(br_path, os.W_OK) and os.path.isfile(br_path):
+            try:
                 os.remove(br_path)
+            except OSError:
+                pass
 
         return outcome
 
