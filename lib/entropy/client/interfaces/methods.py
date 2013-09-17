@@ -28,7 +28,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_setup_perms, const_isstring, const_convert_to_unicode, \
     const_isnumber, const_convert_to_rawstring, const_mkdtemp, \
-    const_mkstemp
+    const_mkstemp, const_file_readable, const_file_writable
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     RepositoryPluginError, SecurityError, EntropyPackageException
 from entropy.db.skel import EntropyRepositoryBase
@@ -1284,7 +1284,7 @@ class RepositoryMixin:
             path = os.path.join(repository_directory, fname)
             if not os.path.isfile(path):
                 continue
-            if not os.access(path, os.R_OK):
+            if not const_file_readable(path):
                 continue
             valid_backups.append(path)
         return valid_backups
@@ -1319,7 +1319,9 @@ class RepositoryMixin:
 
             if not os.path.isfile(pkg_path):
                 return False
-            if not os.access(pkg_path, os.R_OK | os.W_OK):
+            if not const_file_readable(pkg_path):
+                return False
+            if not const_file_writable(pkg_path):
                 return False
             try:
                 mtime = os.path.getmtime(pkg_path)
@@ -1455,10 +1457,10 @@ class RepositoryMixin:
 
             branch_mig_script = mydata['post_branch_hop_script']
             if branch_mig_script is not None:
-                branch_mig_md5sum = '0'
-                if os.access(branch_mig_script, os.R_OK) and \
-                    os.path.isfile(branch_mig_script):
+                try:
                     branch_mig_md5sum = entropy.tools.md5sum(branch_mig_script)
+                except (OSError, IOError):
+                    branch_mig_md5sum = '0'
 
             const_debug_write(__name__,
                 "run_repositories_post_branch_switch_hooks: script md5: %s" % (
@@ -1566,11 +1568,11 @@ class RepositoryMixin:
 
             # check if branch upgrade script exists
             branch_upg_script = mydata['post_branch_upgrade_script']
-            branch_upg_md5sum = '0'
             if branch_upg_script is not None:
-                if os.access(branch_upg_script, os.R_OK) and \
-                    os.path.isfile(branch_upg_script):
+                try:
                     branch_upg_md5sum = entropy.tools.md5sum(branch_upg_script)
+                except (OSError, IOError):
+                    branch_upg_md5sum = '0'
 
             if branch_upg_md5sum == '0':
                 # script not found, skip completely
@@ -2679,11 +2681,10 @@ class MatchMixin:
 
     def _mask_unmask_package_generic(self, keyword, m_file, dry_run = False):
         exist = False
-        if not os.path.isfile(m_file):
-            if not os.access(os.path.dirname(m_file), os.W_OK):
-                return False # cannot write
-        elif not os.access(m_file, os.W_OK):
-            return False
+        if not const_file_readable(m_file):
+            return False  # cannot read
+        if not const_file_writable(m_file):
+            return False  # cannot write
         elif not dry_run:
             exist = True
 
@@ -2725,8 +2726,7 @@ class MatchMixin:
         self._settings['live_packagemasking']['mask_matches'].discard(
             match)
 
-        new_mask_list = [x for x in masking_list if os.path.isfile(x) \
-            and os.access(x, os.W_OK)]
+        new_mask_list = [x for x in masking_list if const_file_writable(x)]
 
         enc = etpConst['conf_encoding']
         for mask_file in new_mask_list:
