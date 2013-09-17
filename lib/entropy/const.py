@@ -1138,6 +1138,17 @@ def const_file_readable(path):
     """
     return _const_file_something(path, os.O_RDONLY)
 
+def const_file_writable(path):
+    """
+    Return whether path points to a writable file.
+
+    @param path: path to a file
+    @type path: string
+    @return: True, if file exists and is writable
+    @rtype: bool
+    """
+    return _const_file_something(path, os.O_APPEND)
+
 def const_dir_readable(dir_path):
     """
     Return whether path points to a readable directory.
