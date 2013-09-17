@@ -1101,18 +1101,20 @@ def const_set_chmod(myfile, chmod):
     if cur_mod != oct(chmod):
         os.chmod(myfile, chmod)
 
-def const_file_readable(path):
+def _const_file_something(path, flags):
     """
-    Return whether path points to a readable file.
+    Return whether file can be opened and is a regular one.
 
     @param path: path to a file
     @type path: string
+    @param flags: os.open() flags
+    @type flags: int
     @return: True, if file exists and is readable
     @rtype: bool
     """
     fd = None
     try:
-        fd = os.open(path, os.O_RDONLY)
+        fd = os.open(path, flags)
         mode = os.fstat(fd).st_mode
         if stat.S_ISREG(mode):
             # this also handles symlinks to files
@@ -1124,6 +1126,17 @@ def const_file_readable(path):
     finally:
         if fd is not None:
             os.close(fd)
+
+def const_file_readable(path):
+    """
+    Return whether path points to a readable file.
+
+    @param path: path to a file
+    @type path: string
+    @return: True, if file exists and is readable
+    @rtype: bool
+    """
+    return _const_file_something(path, os.O_RDONLY)
 
 def const_dir_readable(dir_path):
     """
