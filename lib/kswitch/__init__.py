@@ -40,7 +40,7 @@ def _remove_tag_from_slot(slot):
 
 def _setup_kernel_symlink(target_tag):
     eselect_exec = "/usr/bin/eselect"
-    if os.access(eselect_exec, os.X_OK):
+    if os.path.lexists(eselect_exec):
         subprocess.call((eselect_exec, "kernel", "set", target_tag))
 
 
@@ -100,7 +100,7 @@ def _get_opengl_impl():
     eselect_exec = "/usr/bin/eselect"
     sts = 1
     out = "xorg-x11"
-    if os.access(eselect_exec, os.X_OK):
+    if os.path.lexists(eselect_exec):
         sts, xout = entropy.tools.getstatusoutput("%s opengl show" % (
             eselect_exec,))
         if sts == 0:
@@ -110,7 +110,7 @@ def _get_opengl_impl():
 
 def _set_opengl_impl(opengl):
     eselect_exec = "/usr/bin/eselect"
-    if os.access(eselect_exec, os.X_OK):
+    if os.path.lexists(eselect_exec):
         args = (eselect_exec, "opengl", "set", opengl)
         subprocess.call(args)
 
