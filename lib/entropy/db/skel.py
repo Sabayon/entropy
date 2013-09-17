@@ -2051,9 +2051,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         enc = etpConst['conf_encoding']
         for file_path in files:
-            if not (os.path.isfile(file_path) and \
-                os.access(file_path, os.W_OK)):
-                continue
             tmp_fd, tmp_path = None, None
             try:
                 with codecs.open(file_path, "r", encoding=enc) as source_f:
