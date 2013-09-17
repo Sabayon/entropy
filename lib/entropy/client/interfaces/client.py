@@ -24,7 +24,7 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.const import etpConst, const_debug_write, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_file_readable
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.misc import LogFile
@@ -147,32 +147,30 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             keywords_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasekeywordsfile'])
 
-            if os.access(maskpath, os.R_OK) and os.path.isfile(maskpath):
+            if const_file_readable(maskpath):
                 repos_mask_setting[repoid] = maskpath
                 repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
 
-            if os.access(wlpath, os.R_OK) and os.path.isfile(wlpath):
+            if const_file_readable(wlpath):
                 repos_lic_wl_setting[repoid] = wlpath
                 repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
                     ".mtime"
 
-            if os.access(sm_path, os.R_OK) and os.path.isfile(sm_path):
+            if const_file_readable(sm_path):
                 repos_sm_mask_setting[repoid] = sm_path
                 repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
                     ".mtime"
 
-            if os.access(critical_path, os.R_OK) and \
-                os.path.isfile(critical_path):
+            if const_file_readable(critical_path):
                 repos_critical_updates_setting[repoid] = critical_path
                 repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
                     ".mtime"
 
-            if os.access(keywords_path, os.R_OK) and \
-                os.path.isfile(keywords_path):
+            if const_file_readable(keywords_path):
                 repos_keywords_setting[repoid] = keywords_path
                 repos_keywords_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasekeywordsfile'] + \
@@ -296,8 +294,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         def delete_in_branch_upgrade():
             br_path = etpConst['etp_in_branch_upgrade_file']
-            if os.access(br_path, os.W_OK) and os.path.isfile(br_path):
+            try:
                 os.remove(br_path)
+            except OSError:
+                pass
 
         # actually execute this only if
         # there are no updates left
@@ -553,7 +553,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         cache_obj = {'mtime': mtime,}
 
-        if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
+        if not const_file_readable(cli_conf):
             if SystemSettings.DISK_DATA_CACHE:
                 cache_obj['data'] = data
                 self._mtime_cache[cache_key] = cache_obj
