@@ -14,7 +14,7 @@ import sys
 import argparse
 
 from entropy.const import etpConst, const_isstring, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_file_readable
 from entropy.i18n import _
 from entropy.output import bold, darkgreen, red, darkred, blue, \
     purple, brown, teal
@@ -561,7 +561,7 @@ Manage User Generate Content (votes, comments, files).
         def mycb(s):
             return s
         def path_cb(s):
-            return os.access(s, os.R_OK) and os.path.isfile(s)
+            return const_file_readable(s)
         def types_cb(s):
             return s in my_quick_types
 
