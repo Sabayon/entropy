@@ -331,7 +331,7 @@ Manage package file updates.
 
         print("")
         pager = os.getenv("PAGER", "/usr/bin/less")
-        if os.access(pager, os.X_OK):
+        if os.path.lexists(pager):
             if pager == "/usr/bin/less":
                 args = [pager, "-R", "--no-init",
                         "--QUIT-AT-EOF", tmp_path]
