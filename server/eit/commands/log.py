@@ -14,6 +14,7 @@ import os
 import subprocess
 import argparse
 
+from entropy.const import const_file_readable
 from entropy.i18n import _
 
 from eit.commands.descriptor import EitCommandDescriptor
@@ -68,8 +69,7 @@ This commands opens repository ChangeLog.bz2 using *bzless*.
             entropy_server._get_local_repository_compressed_changelog_file(
                 entropy_server.repository())
 
-        if not (os.path.isfile(changelog_path) and \
-                    os.access(changelog_path, os.R_OK)):
+        if not const_file_readable(changelog_path):
             entropy_server.output(
                 _("log is not available"),
                 importance=1, level="error")
