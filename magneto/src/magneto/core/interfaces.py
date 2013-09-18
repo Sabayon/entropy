@@ -380,7 +380,7 @@ class MagnetoCore(MagnetoCoreUI):
         @rtype: bool
         """
         ac_powa_exec = "/usr/bin/on_ac_power"
-        if not os.access(ac_powa_exec, os.X_OK):
+        if not os.path.lexists(ac_powa_exec):
             return False
         ex_rc = os.system(ac_powa_exec)
         if ex_rc:
