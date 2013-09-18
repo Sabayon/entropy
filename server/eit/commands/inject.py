@@ -13,6 +13,7 @@ import sys
 import os
 import argparse
 
+from entropy.const import const_file_readable
 from entropy.i18n import _
 from entropy.output import teal, purple
 
@@ -91,8 +92,7 @@ repositories as much as you can.
         for pkg_path in self._packages:
 
             pkg_path = os.path.realpath(pkg_path)
-            if not (os.path.isfile(pkg_path) and \
-                        os.access(pkg_path, os.R_OK)):
+            if not const_file_readable(pkg_path):
                 entropy_server.output(
                     "%s: %s" % (purple(pkg_path),
                                 teal(_("no such file or directory"))),
