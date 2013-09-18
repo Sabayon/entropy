@@ -1568,11 +1568,12 @@ class RepositoryMixin:
 
             # check if branch upgrade script exists
             branch_upg_script = mydata['post_branch_upgrade_script']
+            branch_upg_md5sum = '0'
             if branch_upg_script is not None:
                 try:
                     branch_upg_md5sum = entropy.tools.md5sum(branch_upg_script)
                 except (OSError, IOError):
-                    branch_upg_md5sum = '0'
+                    pass
 
             if branch_upg_md5sum == '0':
                 # script not found, skip completely
