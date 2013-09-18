@@ -28,6 +28,7 @@ from gi.repository import Gtk, GLib
 from rigo.utils import escape_markup, prepare_markup, open_editor
 from rigo.ui.gtk3.widgets.notifications import NotificationBox
 
+from entropy.const import const_file_writable
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 
@@ -124,8 +125,7 @@ class ConfigUpdate(object):
                     sem_data['res'] = False
                     return
 
-                if not (os.path.isfile(path) and \
-                            os.access(path, os.W_OK | os.R_OK)):
+                if not const_file_writable(path):
                     sem_data['res'] = False
                     return
 
@@ -178,8 +178,7 @@ class ConfigUpdate(object):
                     sem_data['res'] = False
                     return
 
-                if not (os.path.isfile(path) and \
-                            os.access(path, os.W_OK | os.R_OK)):
+                if not const_file_writable(path):
                     sem_data['res'] = False
                     return
 
