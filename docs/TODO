@@ -1,6 +1,5 @@
 Short term:
 
-- migrate entropy.db per-thread resources to TLS (threading.local())
 - eit cache clean
 - drop all the EntropyCacher.CACHE_IDS
 
