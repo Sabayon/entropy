@@ -1273,11 +1273,12 @@ class FastRSS(object):
         from xml.dom import minidom
         self.__minidom = minidom
 
+        newly_created = True
         try:
             with open(self.__file, "r") as f:
                 newly_created = False
         except (OSError, IOError):
-            newly_creted = True
+            pass
         self.__newly_created = newly_created
 
     def is_new(self):
