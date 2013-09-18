@@ -408,22 +408,6 @@ class ToolsTest(unittest.TestCase):
         end = ['http', 'www.sabayon.org', '/download', '', '']
         self.assertEqual(list(et.spliturl(begin)), end)
 
-    def test_spawn_function(self):
-        fd, tmp_path = tempfile.mkstemp()
-        def myfunc(fd):
-            os.write(fd, const_convert_to_rawstring("this is new"))
-            os.fsync(fd)
-            return "ok"
-
-        rc = et.spawn_function(myfunc, fd)
-        self.assertEqual(rc, "ok")
-        os.close(fd)
-
-        f = open(tmp_path, "r")
-        self.assertEqual("this is new", f.read())
-        f.close()
-        os.remove(tmp_path)
-
     def test_bytes_into_human(self):
         begin = 102400020
         end = '97.7MB'

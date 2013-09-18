@@ -1994,69 +1994,6 @@ def compress_tar_bz2(store_path, path_to_compress):
     else:
         return os.waitpid(pid, 0)[1] # return rc
 
-def spawn_function(f, *args, **kwds):
-    """
-    Spawn given function with given arguments in a separate process and
-    return back its value (using pipes).
-
-    @param f: function to call
-    @type f: callable
-    @param *args: function arguments
-    @type *args: tuple
-    @param **kwds: function keyword arguments
-    @type **kwds: dict
-    @return: function result
-    @rtype: Python object
-    """
-    uid = kwds.get('spf_uid')
-    if uid is not None:
-        kwds.pop('spf_uid')
-
-    gid = kwds.get('spf_gid')
-    if gid is not None:
-        kwds.pop('spf_gid')
-
-    write_pid_func = kwds.get('write_pid_func')
-    if write_pid_func is not None:
-        kwds.pop('write_pid_func')
-
-    try:
-        import cPickle as pickle
-    except ImportError:
-        import pickle
-    pread, pwrite = os.pipe()
-    pid = os.fork()
-    if pid > 0:
-        if write_pid_func is not None:
-            write_pid_func(pid)
-        os.close(pwrite)
-        f = os.fdopen(pread, 'rb')
-        status, result = pickle.load(f)
-        os.waitpid(pid, 0)
-        f.close()
-        if status == 0:
-            return result
-        raise result
-    else:
-        os.close(pread)
-        if gid is not None:
-            os.setgid(gid)
-        if uid is not None:
-            os.setuid(uid)
-        try:
-            result = f(*args, **kwds)
-            status = 0
-        except Exception as exc:
-            result = exc
-            status = 1
-        f = os.fdopen(pwrite, 'wb')
-        try:
-            pickle.dump((status, result), f, pickle.HIGHEST_PROTOCOL)
-        except pickle.PicklingError as exc:
-            pickle.dump((2, exc), f, pickle.HIGHEST_PROTOCOL)
-        f.close()
-        os._exit(0)
-
 def _fix_uid_gid(tarinfo, epath):
     # workaround for buggy tar files
     uname = tarinfo.uname
