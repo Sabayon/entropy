@@ -9,6 +9,7 @@
     B{Entropy Command Line Client}.
 
 """
+import errno
 import os
 import codecs
 import subprocess
@@ -35,16 +36,18 @@ def read_client_release():
     if not os.path.isfile(revision_file):
         revision_file = os.path.join(etpConst['installdir'],
             'client/revision')
-    if os.path.isfile(revision_file) and \
-        os.access(revision_file, os.R_OK):
 
-        enc = etpConst['conf_encoding']
+    enc = etpConst['conf_encoding']
+    rev = "0"
+    try:
         with codecs.open(revision_file, "r", encoding=enc) \
                 as rev_f:
-            myrev = rev_f.readline().strip()
-            return myrev
+            rev = rev_f.readline().strip()
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
 
-    return "0"
+    return rev
 
 def cleanup(entropy_client, directories):
     """
