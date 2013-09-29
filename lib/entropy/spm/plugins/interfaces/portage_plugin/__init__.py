@@ -1892,7 +1892,7 @@ class PortagePlugin(SpmPlugin):
         counter_name = PortagePlugin.xpak_entries['counter']
         counter_path = os.path.join(counter_dir, counter_name)
 
-        if const_dir_readable(counter_dir):
+        if not const_dir_readable(counter_dir):
             raise self.Error("SPM package directory not found")
 
         enc = etpConst['conf_encoding']
