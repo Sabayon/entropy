@@ -1172,6 +1172,10 @@ class PortagePlugin(SpmPlugin):
         kmod_pfx = "/lib/modules"
         kmox_sfx = ".ko"
 
+        # these have to be kept in sync with kswitch
+        kernels_dir = "/etc/kernels"
+        release_level = "RELEASE_LEVEL"
+
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
         content = [x for x in content if x.endswith(kmox_sfx)]
         enc = etpConst['conf_encoding']
@@ -1217,6 +1221,41 @@ class PortagePlugin(SpmPlugin):
 
             return modinfo_output.split()[0]
 
+        def find_kernel(vermagic):
+            k_dirs = []
+            try:
+                k_dirs += os.listdir(kernels_dir)
+            except (OSError, IOError):
+                pass
+
+            k_dirs = [os.path.join(kernels_dir, x) for x in k_dirs]
+            k_dirs = [x for x in k_dirs if os.path.isdir(x)]
+
+            for k_dir in k_dirs:
+                rl_path = os.path.join(k_dir, release_level)
+                if not os.path.lexists(rl_path):
+                    # skip without trying to open() it.
+                    continue
+
+                level = None
+                try:
+                    with codecs.open(rl_path, "r", encoding = enc) as rl_f:
+                        level = rl_f.read(512).strip()
+                except (OSError, IOError):
+                    continue
+
+                if level != vermagic:
+                    # not the vermagic we're looking for.
+                    continue
+
+                owners = self.search_paths_owners([rl_path])
+                if not owners:
+                    # wtf? ignore dependency then
+                    continue
+                atom_slot = sorted(owners.keys())[0]  # deterministic
+                return atom_slot  # (atom, slot) tuple
+
+        vermagic_cache = set()
         for item in content:
 
             # read vermagic
@@ -1224,6 +1263,11 @@ class PortagePlugin(SpmPlugin):
             kern_vermagic = read_kern_vermagic(item_pkg_path)
             if kern_vermagic is None:
                 continue
+
+            if kern_vermagic in vermagic_cache:
+                # skip, already processed
+                continue
+            vermagic_cache.add(kern_vermagic)
 
             if not entropy.dep.is_valid_package_tag(kern_vermagic):
                 # argh! wtf, this is invalid!
@@ -1235,28 +1279,14 @@ class PortagePlugin(SpmPlugin):
             pkg_data['slot'] = "%s,%s" % (pkg_data['slot'], kern_vermagic,)
 
             # now try to guess package providing that vermagic
-            possible_kernel_owned_path = os.path.join(kmod_pfx, kern_vermagic)
-            owners = self.search_paths_owners([possible_kernel_owned_path])
-            owner_data = None
-            k_atom = None
-            for k_atom, k_slot in owners:
-                k_cat, k_name, k_ver, k_rev = entropy.dep.catpkgsplit(k_atom)
-                if k_cat == PortagePlugin.KERNEL_CATEGORY:
-                    owner_data = (k_cat, k_name, k_ver, k_rev,)
-                    break
+            k_atom_slot = find_kernel(kern_vermagic)
+            if k_atom_slot is None:
+                # cannot bind a kernel package to this vermagic
+                continue
 
-            if owner_data is None:
-                # heh, user has broken deps, who cares!
-                return
-
-            # yippie, kernel dep installed also for SPM.
-            k_cat, k_name, k_ver, k_rev = owner_data
-            if k_rev != "r0":
-                k_ver += "-%s" % (k_rev,)
-            if k_atom is not None:
-                kern_dep_key = "=%s~-1" % (k_atom,)
-
-            return kern_dep_key
+            k_atom, _k_slot = k_atom_slot
+            # yippie, kernel dep installed also for SPM
+            return "=%s~-1" % (k_atom,)
 
     def _get_default_virtual_pkg(self, virtual_key):
         defaults = self._portage.settings.getvirtuals()[virtual_key]
