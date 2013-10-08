@@ -484,7 +484,7 @@ System security tools.
                     valid_matches.add((package_id, repository_id))
 
             if valid_matches:
-                rc = self._install_action(
+                rc, _show_cfgupd = self._install_action(
                     entropy_client, True, True,
                     pretend, ask, False, quiet, False,
                     False, False, fetch, False, False,
@@ -621,11 +621,12 @@ System security tools.
                 header=darkred(" @@ "))
             return 0
 
-        return self._install_action(
+        exit_st, _show_cfgupd = self._install_action(
             entropy_client, True, True,
             pretend, ask, False, quiet, False,
             False, False, fetch, False, False,
             False, 1, [], package_matches=list(valid_matches))
+        return exit_st
 
 
 SoloCommandDescriptor.register(

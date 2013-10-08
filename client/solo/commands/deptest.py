@@ -191,12 +191,13 @@ Test system integrity by checking installed packages dependencies.
             entropy_client.output(mytxt, header=darkred(" @@ "))
             time.sleep(10)
 
-        return self._install_action(
+        exit_st, _show_cfgupd = self._install_action(
             entropy_client, True, True,
             self._pretend, self._ask,
             False, self._quiet, False,
             False, False, False, False, False,
             False, 1, sorted(found_deps))
+        return exit_st
 
 
 SoloCommandDescriptor.register(

@@ -232,7 +232,7 @@ Test system integrity by looking for missing libraries.
                     mytxt, header=darkred(" @@ "))
                 time.sleep(10)
 
-            exit_st = self._install_action(
+            exit_st, _show_cfgupd = self._install_action(
                 entropy_client, True, True,
                 pretend, ask, False, quiet, False,
                 False, False, False, False, False,
