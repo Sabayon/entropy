@@ -31,7 +31,7 @@ sys.path.insert(0, "/usr/lib/entropy/lib")
 sys.path.insert(0, "../../../lib")
 sys.path.insert(0, "../lib")
 
-from entropy.exceptions import PermissionDenied
+from entropy.exceptions import PermissionDenied, OnlineMirrorError
 from entropy.server.interfaces import Server
 
 import entropy.dep
@@ -383,8 +383,14 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         etp_pkg_files = [(pkg_list, False) for pkg_list in package_paths]
         # NOTE: any missing runtime dependency will be added
         # (beside those blacklisted), since this execution is not interactive
-        package_ids = self._entropy.add_packages_to_repository(
-            repository, etp_pkg_files, ask=False)
+        try:
+            package_ids = self._entropy.add_packages_to_repository(
+                repository, etp_pkg_files, ask=False)
+        except OnlineMirrorError as err:
+            print_traceback()
+            print_error("problem during package commit: %s" % (err,))
+            return 1
+
         self._entropy.commit_repositories()
 
         if package_ids:
