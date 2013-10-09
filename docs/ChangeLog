@@ -1,3 +1,493 @@
+commit 5fead492a12cc32dc9f13b28f299db4bd5b4227f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 9 21:23:14 2013 +0200
+
+    Release Entropy 217
+
+commit 74169c1a8ad6473251e3ae66fbd23235c2418a2c
+Merge: 0b7423a cc0346b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 9 12:22:15 2013 -0700
+
+    Merge pull request #2 from dMaggot/master
+    
+    Removing Call to Deprecated vte_set_background_transparent()
+
+commit cc0346bb22c0229b2b098aa7fa0bfb71eb79a455
+Author: David E. Narváez <david.narvaez@computer.org>
+Date:   Wed Oct 9 09:31:19 2013 -0400
+
+    Removing Call to Deprecated vte_set_background_transparent()
+    
+    For some reason this has recently been causing rigo not to start
+    in my system, but the fact that it is already deprecated should
+    be enough to just get rid of it.
+
+commit 0b7423a7fd7be3c5dd94b62eb4de6c66b2525315
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 8 16:00:55 2013 +0200
+
+    [solo.commands.*] properly use the return value of _install_action()
+
+commit b1ac6994fa76cae67dc6057ee33e8cb779cc2d74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 8 15:55:36 2013 +0200
+
+    [matter] catch OnlineMirrorError during entropysrv commit()
+
+commit 978eccc78e94e9144dc66cc7392a5120943c32d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 1 13:17:38 2013 +0200
+
+    [entropy.spm] _add_kernel_dependency_to_pkg, rewrite to use /etc/kernels data
+    
+    Trying to figure out the kernel owning /lib/modules/vermagic doesn't work
+    in all cases. Packages like sys-kernel/spl may be returned as valid
+    kernel packages. Now that /etc/kernels/vermagic consolidated, it's time
+    to use it.
+
+commit 7bffbc34038acba00bb7bc85c0b7967a1dd84714
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 29 10:45:17 2013 +0200
+
+    [entropy.spm] PortagePlugin: fix const_dir_readable() if condition
+
+commit 941146c95b6cc4d6ea67684c0a42b46f701cc3b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 21:00:52 2013 +0200
+
+    [todo] update TODO, drop TLS proposal for now (due to _cleanup_all())
+
+commit 321ff3c0c8f90b45a587b2c1c8c8a860d4e419af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 20:56:19 2013 +0200
+
+    [entropy.tools] drop compress_tar_bz2, no longer needed
+
+commit 060c12193d204bd21cebb2b0192731261280bf6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 20:50:45 2013 +0200
+
+    [entropy.tools] drop spawn_function(), no longer needed
+
+commit e3542b23e476d00f5d58f5709a816814916a5438
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 10:53:49 2013 +0200
+
+    [entropy.misc] fix variable referenced before assignment
+
+commit fb810f290e72a4fcead09c4098e541a46babcdc0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 10:52:41 2013 +0200
+
+    [entropy.client.interfaces.methods] fix undefined reference
+
+commit 7d7284dfe3cb9cc569465f3c45756e7d3b81d09f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:58:09 2013 +0200
+
+    [todo] update TODO
+
+commit 9426900ccc3b7579024f16b9d70d99655a181be3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:57:32 2013 +0200
+
+    [eit.commands.log] drop access() usage
+
+commit fd981bacb951193d78ff380ccad93196968a6bd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:56:35 2013 +0200
+
+    [eit.commands.inject] drop access() usage
+
+commit 3e7608690fab27a39ffbf5374e1f9102e86e33ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:55:29 2013 +0200
+
+    [Rigo] drop access() usage
+
+commit 27659c6dc676943ffe82f0070ded6c2dbb9db380
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:53:44 2013 +0200
+
+    [RigoDaemon] drop access() usage
+
+commit d837c700812d2ff462a3ee8c24c740f606c30610
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:53:07 2013 +0200
+
+    [magneto.core.interfaces] drop access() usage
+
+commit d5dc497dcc78c836a96db1dde773446c5c60a218
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:52:18 2013 +0200
+
+    [solo.commands.conf] drop access() usage
+
+commit e836630db4ff8f96ccaee7824592ff0a5d0d3dd2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:51:30 2013 +0200
+
+    [solo.commands.ugc] drop access() usage
+
+commit 95e291bd6201948f20d6d8186646493f125fa9fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 18 08:50:46 2013 +0200
+
+    [solo.utils] drop access() usage
+
+commit fe83020ddd563544ba8ea53cef2193819bfca5c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:20:56 2013 +0200
+
+    [kswitch] drop access() usage
+
+commit 29a7854d935ce1486c1d386e8cef0bc5c1e5b8c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:19:56 2013 +0200
+
+    [entropy.client.misc] drop access() usage
+
+commit 933e792a56c71577e7f99b1f8f3f8a89560900d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:17:58 2013 +0200
+
+    [entropy.client.services.interfaces] drop access() usage
+
+commit c9b3195b68e8d7a765f63284cf00745a11657344
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:17:49 2013 +0200
+
+    [entropy.client.interfaces.repository] drop access() usage
+
+commit 0993913717f6d89c10512b23253022862cd135fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:16:12 2013 +0200
+
+    [entropy.client.interfaces.sets] drop access() usage
+
+commit b6c1668c419f1444850215a1e0ba3f76ef1640eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:09:38 2013 +0200
+
+    [entropy.client.interfaces.dep] drop access() usage
+
+commit 9297be600d0f14c0912f99c724f0414e33c9f06c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:08:16 2013 +0200
+
+    [entropy.client.interfaces.noticeboard] drop access() usage
+
+commit 723ccaa90e99c9c42bfc94b7b5ebf82bd5835de6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:06:26 2013 +0200
+
+    [entropy.services.client] drop access() usage
+
+commit 1a9566ddb7c6915dd6c460374ac2b7cf06304c81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:05:44 2013 +0200
+
+    [entropy.const] introduce const_dir_writable
+
+commit 8d6689baf726b7ec2b91ef864f95657d324149a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 18:04:38 2013 +0200
+
+    [entropy.const] move const_dir_readable logic to _const_dir_something
+
+commit 53fe36eb6ad45cdced90fa691af9324a996aac56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 17:59:39 2013 +0200
+
+    [entropy.client.interfaces.client] drop access() usage
+
+commit 5944218a50afb42937c454a1b3b30683030dac64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 17:56:49 2013 +0200
+
+    [entropy.client.interfaces.methods] drop access() usage
+
+commit 377cc38519d37e1bce7c62ff31306a907d205404
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 17:18:26 2013 +0200
+
+    [entropy.qa] drop access() usage
+
+commit d2a542ad728cd64c55fb29640cd92acc56b9962c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 17:12:43 2013 +0200
+
+    [entropy.db.skel] drop access() usage
+
+commit 5c16439cdf50446e7e3667523d3ce7da8f30af55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 17:11:10 2013 +0200
+
+    [entropy.client.interfaces.db] drop access() usage
+
+commit 93d3ddc87b85892c6a4d35943257409ff8d4255d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 14:21:40 2013 +0200
+
+    [entropy.db.sqlite] drop access() usage
+
+commit 9f3b532a6b3d385e69c5ba208f75299866576f05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 14:20:10 2013 +0200
+
+    [entropy.const] introduce const_file_writable()
+
+commit 0c5abdce77f91bed06779cd8bb43f26b01a12bac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 14:17:33 2013 +0200
+
+    [entropy.const] move const_file_readable logic to _const_file_something
+
+commit 689e96e06f6aaed3e0cea8e0e08b41abc0314811
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 14:06:07 2013 +0200
+
+    [entropy.const] const_dir_readable: use os.open instead of os.listdir
+
+commit 0c9890d1246a2e9ac1d34f7877d9cec4a0f3995b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 14:03:25 2013 +0200
+
+    [entropy.const] const_file_readable: use os.open() instead of open()
+
+commit 1d3551b917b586530795cb3c2b2d45f84dfbfe87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 17 12:37:32 2013 +0200
+
+    [entropy.client.interfaces.trigger] drop access() usage
+
+commit 2845a6fc62d0c9173ad20801d752021538be25e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 15 17:48:28 2013 +0200
+
+    [entropy.core] fix _repositories_parser() repo_conf readability check
+    
+    Commit c3bba9a10dbe977a71053d2c02200df6fb28a5f0 introduced a regression
+    in configuration files parsing. This commit fixes the regression and
+    properly handle the reading of repo_conf.
+
+commit 0aa435595fbd87b337028cadd11d57ae5865307d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 15 10:01:17 2013 +0200
+
+    [todo] update TODO
+
+commit 260f8aa439e5f6b31db53600948e98aca2454ad7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 15:35:24 2013 +0200
+
+    [entropy.client] __generate_fetch_metadata: drop access() usage
+
+commit 29c0f4cb9f562fb974500ffd017c8075f92966b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 15:29:23 2013 +0200
+
+    [entropy.client] _handle_config_protect: drop access() usage
+
+commit fb9fe3a8d09595c9d0568f7dc403bb70db08ebbe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 15:28:22 2013 +0200
+
+    [entropy.tools] istextfile: catch OSError and IOError exceptions
+
+commit 8e70eb0c17aef158ba6a1a046d993c7a064f707f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 15:11:47 2013 +0200
+
+    [entropy.client] _remove_content_from_system_loop: drop access() usage
+
+commit c62d3a7c47bf545b9e23554b3d90d69abd1b33ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 15:04:06 2013 +0200
+
+    [entropy.client] _match_checksum: drop access() usage
+
+commit 827ddc779c4e33ec3607894f46967a79edbee1bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 14:59:23 2013 +0200
+
+    [entropy.client] __approve_edelta: drop access() usage
+
+commit 5d7d951e048ce2c517fd10d5cc477a27eea44b46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 13 14:55:57 2013 +0200
+
+    [entropy.client] _setup_differential_download: drop access() usage
+
+commit f5950d10c1d0107c51d98a7cdfe04ccbc321c86e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 9 16:38:43 2013 +0200
+
+    [entropy.const] drop access() usage
+
+commit 18d7de08a82fe9ecc516eb907708bd648854e9a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 9 16:37:11 2013 +0200
+
+    [entropy.dump] drop access() usage
+
+commit 7eda14685df1dc04aad33a0dbbd91bb6ea366934
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 9 16:36:48 2013 +0200
+
+    [entropy.security] drop access() usage
+
+commit 33bb10ceb252f11ed00068a164e92fb97b578e4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 9 16:29:36 2013 +0200
+
+    [entropy.tools] drop access() usage
+
+commit 50798c04b1f0b02f0aa9febb95a9b3897c0dc599
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 9 16:16:23 2013 +0200
+
+    [entropy.server] drop access() usage
+
+commit ae456f9c3f1b1fac7fc49a9a378ee7fbbd63091f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 20:15:18 2013 +0200
+
+    [entropy.spm] drop access() usage
+
+commit 504ab3dd15069909ddea3172560613a0b066e962
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:45:31 2013 +0200
+
+    [entropy.server.interfaces.mirrors] drop access() usage
+
+commit 58d68118d4b385b65cc286cb49b42e01d7b898bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:45:14 2013 +0200
+
+    [entropy.const] introduce const_dir_readable()
+
+commit 4cc4908a115ddac0a415490364dc7f5fc10d2212
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:39:14 2013 +0200
+
+    [entropy.server.interfaces.db] use const_file_readable(), drop access() usage
+
+commit 8da31ad7a8e4bd2e20a50802412c4bfb81f0cc10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:33:39 2013 +0200
+
+    [entropy.const] const_file_readable: fix typo in docstring
+
+commit 1dccf0e6ef278e65dc148e5e058a0fb43b164a98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:32:53 2013 +0200
+
+    [entropy.fetchers] use const_file_readable(), drop access() usage
+
+commit 5faf14885bf41f3a8819ea9b3899bdba20499035
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:13:35 2013 +0200
+
+    [entropy.core] use const_file_readable()
+
+commit c6b6a29ca08f86450ffc49f9c5f63d587a7462ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 8 19:08:16 2013 +0200
+
+    [entropy.const] introduce const_file_readable()
+
+commit 36528e09063a4b9e6271d28ed3c7d142f173bd3e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 14:16:00 2013 +0200
+
+    [entropy.misc] EmailSender: drop access() usage
+
+commit d1b2fc91b4ec58b501f108c52784501ac5cfde94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 14:11:43 2013 +0200
+
+    [entropy.core] _repositories_parser: drop access() usage
+
+commit a2315b1c92504d85c6f3a9cd7e66088823bc0f2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 14:01:32 2013 +0200
+
+    [entropy.core] _system_parser: drop access() usage
+
+commit 95fd9126845eb95a823eff6aa52227c064f843bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 13:47:42 2013 +0200
+
+    [entropy.core] _hw_hash_parser: drop access() usage
+
+commit d58550306fbe9660bbbbf0435f46577cd156eaaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 13:36:47 2013 +0200
+
+    [entropy.core] __setup_package_sets_vars: drop access() usage
+
+commit 61f12d5599d2852d733922f5483bf522589191d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 13:30:40 2013 +0200
+
+    [entropy.core] __setup_const: drop access() usage
+
+commit 7e4bc4d98d8be7fc7162d29bd9785b132b95dff1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 7 07:55:04 2013 +0200
+
+    [entropy.server] fix drained_dependencies_test() output when data is cached
+
+commit 5793020aad1bf12852ae07144f09422066b735f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 5 19:22:40 2013 +0200
+
+    [eit.main] use _exit() rather than SystemExit() exception.
+    
+    The former is reentrant and safe to be used in signal handlers.
+
+commit 577fcf32c63ee1d43abbe8f83dc66ab9d24f3e99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 5 19:21:51 2013 +0200
+
+    [solo.main] use _exit() rather than SystemExit() exception.
+    
+    The former is reentrant and safe to be used in signal handlers.
+
+commit 1ded3747d40bbce985f71777c999fa80c6647719
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 5 14:41:14 2013 +0200
+
+    [todo] update TODO
+
+commit 51ea669c0208ec67cb73f176fcfa4ccd9ad6e726
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 23 10:58:04 2013 +0200
+
+    [server] deal with Python bug #16308
+
+commit 385c2934c57ad53fdd2823398dab645581c2cf60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 23 10:57:36 2013 +0200
+
+    [client] deal with Python bug #16308
+
+commit a0cd08d1ded62bcd0842dec7600b3a3007d65930
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 23 10:41:48 2013 +0200
+
+    [solo.commands.query] use quiet=True with calculate_updates()
+    
+    This avoids tainting stdout with unwanted output
+
+commit 390f0778d0eb3f0f9c417e6891dba2ec83742c43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 12 15:38:09 2013 +0200
+
+    Tagging Entropy version 216
+
 commit e929e6f440118a944173def93d3978816dec48e9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Aug 12 15:38:07 2013 +0200
