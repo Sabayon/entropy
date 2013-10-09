@@ -174,7 +174,6 @@ class TerminalWidget(Vte.Terminal):
         self.set_color_bold_rgba(fg_rgba)
 
     def _configure(self):
-        self.set_background_transparent(False)
         self.set_emulation("xterm")
         self.set_font_from_string("Monospace 9")
         self.set_scrollback_lines(10000)
