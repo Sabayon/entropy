@@ -1472,7 +1472,6 @@ class Package:
                                  "w", encoding=enc) as mt_f:
                     cur_mtime = str(os.path.getmtime(pkg_disk_path))
                     mt_f.write(cur_mtime)
-                    mt_f.flush()
             except (OSError, IOError) as err:
                 if err.errno != errno.ENOENT:
                     raise
@@ -1496,7 +1495,6 @@ class Package:
             tmp_fd, tmp_path = const_mkstemp(prefix="do_compare_gpg")
             with os.fdopen(tmp_fd, "w") as tmp_f:
                 tmp_f.write(hash_val)
-                tmp_f.flush()
 
             try:
                 # actually verify
