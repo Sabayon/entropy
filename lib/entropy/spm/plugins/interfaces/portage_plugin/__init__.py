@@ -1202,7 +1202,6 @@ class PortagePlugin(SpmPlugin):
                 with os.fdopen(tmp_fd, "w") as tmp_fw:
                     rc = subprocess.call((modinfo_path, "-F", "vermagic",
                         ko_path), stdout = tmp_fw, stderr = tmp_fw)
-                    tmp_fw.flush()
 
                 with codecs.open(tmp_file, "r", encoding=enc) as tmp_r:
                     modinfo_output = tmp_r.read().strip()
@@ -1930,7 +1929,6 @@ class PortagePlugin(SpmPlugin):
             with codecs.open(counter_path, "w", encoding=enc) as count_f:
                 new_counter = vartree.dbapi.counter_tick(root, mycpv = package)
                 count_f.write(const_convert_to_unicode(new_counter))
-                count_f.flush()
         finally:
             self._bump_vartree_mtime(package, root = root)
 
@@ -2702,7 +2700,6 @@ class PortagePlugin(SpmPlugin):
                 while block:
                     mdigest.update(block)
                     block = f.read(1024)
-                f.flush()
 
         return mdigest
 
@@ -2955,8 +2952,6 @@ class PortagePlugin(SpmPlugin):
                     cont_new_f.write(line)
                     line = cont_f.readline()
 
-                cont_new_f.flush()
-
         os.rename(contents_path+".tmp", contents_path)
 
     def _create_contents_file_if_not_available(self, pkg_dir,
@@ -3019,7 +3014,6 @@ class PortagePlugin(SpmPlugin):
         with codecs.open(cont_path, "w", encoding=enc) as cont_f:
             # NOTE: content_meta contains paths with ROOT prefix, it's ok
             write_contents(content_meta, utf_sys_root, cont_f)
-            cont_f.flush()
 
         del content_meta
         self._bump_vartree_mtime(portage_cpv, root = utf_sys_root)
@@ -3281,7 +3275,6 @@ class PortagePlugin(SpmPlugin):
                             as world_f:
                         for item in sorted(world_atoms):
                             world_f.write(item + newline)
-                        world_f.flush()
 
                     os.rename(world_file_tmp, world_file)
 
@@ -3413,8 +3406,6 @@ class PortagePlugin(SpmPlugin):
                             continue
                         new.write(line)
                         line = old.readline()
-
-                new.flush()
 
         except (OSError, IOError) as err:
             if err.errno not in (errno.ENOENT, errno.EACCES):
@@ -3674,7 +3665,6 @@ class PortagePlugin(SpmPlugin):
                     for line in sys_make_c:
                         f.write(line)
                         f.write("\n")
-                    f.flush()
                 shutil.move(tmp_make_conf, system_make_conf)
 
             # update environment
@@ -3838,7 +3828,6 @@ class PortagePlugin(SpmPlugin):
                     # save into a file
                     with open(xpak_path, "wb") as xpak_f:
                         xpak_f.write(xpakdata)
-                        xpak_f.flush()
                     package_metadata['xpakstatus'] = \
                         xpaktools.unpack_xpak(
                             xpak_path,
