@@ -1535,7 +1535,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
             # expecting ascii cruft, don't worry about hash_data type
             with codecs.open(hw_hash_file, "w", encoding=enc) as hash_f:
                 hash_f.write(hash_data)
-                hash_f.flush()
 
             cache_obj['data'] = hash_data
             self.__mtime_cache[cache_key] = cache_obj
@@ -2360,21 +2359,25 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 return
 
         enc = etpConst['conf_encoding']
+        mtime_f = None
         try:
-            mtime_f = codecs.open(tosaveinto, "w", encoding=enc)
-        except IOError as e: # unable to write?
-            if e.errno == errno.EROFS: # readonly filesystem
-                # readonly filesystem
-                # placeholder for possible future activities
-                pass
-            return
-        else:
+            try:
+                mtime_f = codecs.open(tosaveinto, "w", encoding=enc)
+            except IOError as e: # unable to write?
+                if e.errno == errno.EROFS: # readonly filesystem
+                    # readonly filesystem
+                    # placeholder for possible future activities
+                    pass
+                return
+
             mtime_f.write(str(currmtime))
-            mtime_f.flush()
-            mtime_f.close()
             os.chmod(tosaveinto, 0o664)
             if etpConst['entropygid'] is not None:
                 os.chown(tosaveinto, 0, etpConst['entropygid'])
+
+        finally:
+            if mtime_f is not None:
+                mtime_f.close()
 
 
     def validate_entropy_cache(self, settingfile, mtimefile, repoid = None):
