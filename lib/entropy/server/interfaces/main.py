@@ -189,7 +189,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         enc = etpConst['conf_encoding']
         with codecs.open(taint_file, "w", encoding=enc) as f:
             f.write("repository tainted\n")
-            f.flush()
+
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         dbs.set_tainted(dbfile)
 
@@ -215,7 +215,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             tmp_revision_file = revision_file + ".tmp"
             with codecs.open(tmp_revision_file, "w", encoding=enc) as rev_fw:
                 rev_fw.write(str(revision)+"\n")
-                rev_fw.flush()
+
             # atomic !
             os.rename(tmp_revision_file, revision_file)
 
@@ -2082,14 +2082,12 @@ class Server(Client):
         enc = etpConst['conf_encoding']
         with codecs.open(lock_file, "w", encoding=enc) as f_lock:
             f_lock.write("download locked")
-            f_lock.flush()
 
     def _create_local_repository_lockfile(self, repository_id):
         lock_file = self._get_repository_lockfile(repository_id)
         enc = etpConst['conf_encoding']
         with codecs.open(lock_file, "w", encoding=enc) as f_lock:
             f_lock.write("database locked")
-            f_lock.flush()
 
     def _remove_local_repository_lockfile(self, repository_id):
         lock_file = self._get_repository_lockfile(repository_id)
@@ -2386,7 +2384,7 @@ class Server(Client):
         with codecs.open(mask_file_tmp, "w", encoding=enc) as mask_f:
             for package in current_packages:
                 mask_f.write(package + "\n")
-            mask_f.flush()
+
         os.rename(mask_file_tmp, mask_file)
 
         return True
@@ -2434,7 +2432,7 @@ class Server(Client):
         with codecs.open(mask_file_tmp, "w", encoding=enc) as mask_f:
             for package in current_packages:
                 mask_f.write(package + "\n")
-            mask_f.flush()
+
         os.rename(mask_file_tmp, mask_file)
 
         return True
@@ -5207,7 +5205,7 @@ class Server(Client):
                 with codecs.open(pkg_list_path, "w", encoding=enc) as pkg_f:
                     for pkgstr in pkgstring_list:
                         pkg_f.write(pkgstr + "\n")
-                    pkg_f.flush()
+
             pkgstring = ' '.join(pkgstring_list)
             mytxt = "%s: %s" % (darkgreen(_("Packages string")), pkgstring,)
             self.output(
@@ -5403,7 +5401,6 @@ class Server(Client):
             with entropy.tools.codecs_fdopen(tmp_fd, "w", enc) as f_srv_t:
                 for line in new_content:
                     f_srv_t.write(line+"\n")
-                f_srv_t.flush()
 
             entropy.tools.rename_keep_permissions(
                 tmp_path, server_conf)
@@ -5411,7 +5408,6 @@ class Server(Client):
         else:
             with codecs.open(server_conf, "w", encoding=enc) as f_srv:
                 f_srv.write("default-repository = %s\n" % (repoid,))
-                f_srv.flush()
 
     def enable_repository(self, repository_id):
         """
@@ -5479,7 +5475,6 @@ class Server(Client):
                             line = "# repository = %s" % (value,)
                             status = True
                 f_tmp.write(line+"\n")
-            f_tmp.flush()
 
         if status:
             entropy.tools.rename_keep_permissions(
@@ -6312,7 +6307,6 @@ class Server(Client):
                     for editor_line in editor_lines:
                         tmp_f.write(editor_line)
                         tmp_f.write("\n")
-                    tmp_f.flush()
 
             success = self.edit_file(tmp_path)
             if not success:
@@ -6813,7 +6807,7 @@ class Server(Client):
         taint_file = self._get_local_repository_taint_file(repository_id)
         with codecs.open(taint_file, "w") as f:
             f.write("repository tainted\n")
-            f.flush()
+
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         ServerRepositoryStatus().set_tainted(db_file)
 
