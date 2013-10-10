@@ -367,7 +367,6 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
                 with open(tmp_save_path, "wb") as f:
                     rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
-                    f.flush()
 
                 self._update_progress(force = True)
                 done = rc.find("226") != -1
