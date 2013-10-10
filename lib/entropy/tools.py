@@ -779,7 +779,6 @@ def atomic_write(filepath, content_str, encoding):
         tmp_fd, tmp_path = const_mkstemp(prefix="atomic_write.")
         with codecs_fdopen(tmp_fd, "w", encoding) as tmp_f:
             tmp_f.write(content_str)
-            tmp_f.flush()
         rename_keep_permissions(tmp_path, filepath)
     finally:
         if tmp_fd is not None:
@@ -966,7 +965,6 @@ def uncompress_file(file_path, destination_path, opener):
             f_out.write(data)
             data = f_in.read(_READ_SIZE)
         f_in.close()
-        f_out.flush()
 
 def compress_file(file_path, destination_path, opener, compress_level = None):
     """
@@ -984,18 +982,20 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
     @type compress_level: int
     """
     with open(file_path, "rb") as f_in:
-        if compress_level is not None:
-            f_out = opener(destination_path, "wb",
-                compresslevel = compress_level)
-        else:
-            f_out = opener(destination_path, "wb")
-        data = f_in.read(_READ_SIZE)
-        while data:
-            f_out.write(data)
+        f_out = None
+        try:
+            if compress_level is not None:
+                f_out = opener(destination_path, "wb",
+                    compresslevel = compress_level)
+            else:
+                f_out = opener(destination_path, "wb")
             data = f_in.read(_READ_SIZE)
-        if hasattr(f_out, 'flush'):
-            f_out.flush()
-        f_out.close()
+            while data:
+                f_out.write(data)
+                data = f_in.read(_READ_SIZE)
+        finally:
+            if f_out is not None:
+                f_out.close()
 
 def compress_files(dest_file, files_to_compress, compressor = "bz2"):
     """
@@ -1176,7 +1176,6 @@ def unpack_gzip(gzipfilepath):
             item.write(chunk)
             chunk = filegz.read(_READ_SIZE)
         filegz.close()
-        item.flush()
     os.rename(tmp_path, filepath)
     return filepath
 
@@ -1198,7 +1197,6 @@ def unpack_bzip2(bzip2filepath):
             item.write(chunk)
             chunk = filebz2.read(_READ_SIZE)
         filebz2.close()
-        item.flush()
     os.rename(tmp_path, filepath)
     return filepath
 
@@ -1230,8 +1228,6 @@ def _delta_extract_bz2(bz2_path, new_path_fd):
             item.write(chunk)
             chunk = filebz2.read(_READ_SIZE)
         filebz2.close()
-        item.flush()
-        item.close()
 
 def _delta_extract_gzip(gzip_path, new_path_fd):
     with os.fdopen(new_path_fd, "wb") as item:
@@ -1241,8 +1237,6 @@ def _delta_extract_gzip(gzip_path, new_path_fd):
             item.write(chunk)
             chunk = file_gz.read(_READ_SIZE)
         file_gz.close()
-        item.flush()
-        item.close()
 
 _BSDIFF_EXEC = "/usr/bin/bsdiff"
 _BSPATCH_EXEC = "/usr/bin/bspatch"
@@ -1479,7 +1473,6 @@ def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
                     if not chunk:
                         break
                     f.write(chunk)
-                f.flush()
             finally:
                 if mmap_f is not None:
                     mmap_f.close()
@@ -1532,7 +1525,6 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
                     if not data:
                         break
                     db.write(data)
-                db.flush()
         finally:
             if old_mmap is not None:
                 old_mmap.close()
@@ -1616,8 +1608,6 @@ def remove_entropy_metadata(entropy_package_file, save_path):
                 new.write(xbytes)
                 counter += read_bytes
 
-            new.flush()
-
     return True
 
 def create_md5_file(filepath):
@@ -1638,7 +1628,6 @@ def create_md5_file(filepath):
         f.write("  ")
         f.write(name)
         f.write("\n")
-        f.flush()
     return hashfile
 
 def create_sha512_file(filepath):
@@ -1659,7 +1648,6 @@ def create_sha512_file(filepath):
         f.write("  ")
         f.write(fname)
         f.write("\n")
-        f.flush()
     return hashfile
 
 def create_sha256_file(filepath):
@@ -1680,7 +1668,6 @@ def create_sha256_file(filepath):
         f.write("  ")
         f.write(fname)
         f.write("\n")
-        f.flush()
     return hashfile
 
 def create_sha1_file(filepath):
@@ -1701,7 +1688,6 @@ def create_sha1_file(filepath):
         f.write("  ")
         f.write(fname)
         f.write("\n")
-        f.flush()
     return hashfile
 
 def compare_md5(filepath, checksum):
@@ -2307,7 +2293,6 @@ def write_parameter_to_file(config_file, name, data):
             if (not param_found) and data:
                 f.write(proposed_line)
                 f.write("\n")
-            f.flush()
 
     except (OSError, IOError) as err:
         if err.errno == errno.ENOENT:
