@@ -107,9 +107,10 @@ def suck_xpak(tbz2file, xpakpath):
     @return: 
     @rtype: 
     """
-    old = open(tbz2file, "rb")
-    db = open(xpakpath, "wb")
+    old, db = None, None
     try:
+        old = open(tbz2file, "rb")
+        db = open(xpakpath, "wb")
         # position old to the end
         old.seek(0, os.SEEK_END)
         # read backward until we find
@@ -170,9 +171,10 @@ def suck_xpak(tbz2file, xpakpath):
         return True
 
     finally:
-        old.close()
-        db.flush()
-        db.close()
+        if old is not None:
+            old.close()
+        if db is not None:
+            db.close()
 
 def aggregate_xpak(tbz2file, xpakfile):
     """

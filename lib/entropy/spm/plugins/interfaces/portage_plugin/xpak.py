@@ -237,7 +237,6 @@ def xpand(myid, mydest):
             os.makedirs(dirname)
         with open(myname, "wb") as mydat:
             mydat.write(mydata[datapos:datapos+datalen])
-            mydat.flush()
         startpos = startpos+namelen+12
 
 
@@ -286,8 +285,6 @@ class tbz2:
             myfile.seek(-self.xpaksize, os.SEEK_END)
             myfile.truncate()
             myfile.write(xpdata+encodeint(len(xpdata))+STOP)
-            myfile.flush()
-            myfile.close()
         return 1
 
     def cleanup(self, datadir):
@@ -392,7 +389,6 @@ class tbz2:
             a.seek(self.datapos + datapos)
             with open(myname, "wb") as mydat:
                 mydat.write(a.read(datalen))
-                mydat.flush()
             startpos = startpos + namelen + 12
 
         a.close()
