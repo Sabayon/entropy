@@ -86,6 +86,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     not_merged = []
     uninstalled = []
     missing_use = {}
+    unstable_keywords = set()
     tainted_repositories = set()
     spec_count = 0
     tot_spec = len(specs)
@@ -116,6 +117,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_uninstalled_packages())
             missing_use.update(
                 builder.get_missing_use_packages())
+            unstable_keywords.update(
+                builder.get_needed_unstable_keywords())
             preserved_libs = binary_pms.check_preserved_libraries(
                 emerge_config)
 
@@ -204,6 +207,11 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                     use_l.append("-" + use)
             print_generic("%s %s" % (
                     use_data["cp:slot"], " ".join(use_l)))
+        print_generic("")
+    if unstable_keywords:
+        print_generic("Packages not built due to missing unstable keywords:")
+        for atom in sorted(unstable_keywords):
+            print_generic("%s" % (atom,))
         print_generic("")
 
     print_generic("Preserved libs: %s" % (

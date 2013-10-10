@@ -82,7 +82,9 @@ class PackageBuilder(object):
         self._not_found_packages = []
         self._not_installed_packages = []
         self._not_merged_packages = []
+
         self._missing_use_packages = {}
+        self._needed_unstable_keywords = set()
 
     @classmethod
     def _build_standard_environment(cls, repository=None):
@@ -167,6 +169,14 @@ class PackageBuilder(object):
         USE flags.
         """
         return self._missing_use_packages
+
+    def get_needed_unstable_keywords(self):
+        """
+        Return the list of packages that haven't been merged due to the need
+        of unstable keywords. For instance, if a needed package is unstable
+        keyword masked in package.keywords, it will end up in this list.
+        """
+        return self._needed_unstable_keywords
 
     def run(self):
         """
@@ -698,12 +708,7 @@ class PackageBuilder(object):
 
             # try to collect some info about the failure
             bt_config = (graph.get_backtrack_infos() or {}).get("config", {})
-            supported_info = ["needed_use_config_changes"]
             for k, v in bt_config.items():
-                if k not in supported_info:
-                    print_warning("unsupported backtrack info: %s -> %s" % (
-                            k, v,))
-                    continue
                 if k == "needed_use_config_changes":
                     for tup in v:
                         try:
@@ -717,6 +722,12 @@ class PackageBuilder(object):
                         obj["cp:slot"] = pkg.slot_atom
                         changes = obj.setdefault("changes", {})
                         changes.update(copy.deepcopy(new_changes))
+                elif k == "needed_unstable_keywords":
+                    for pkg in v:
+                        self._needed_unstable_keywords.add(pkg.cpv)
+                else:
+                    print_warning("unsupported backtrack info: %s -> %s" % (
+                            k, v,))
 
             return 0
         print_info("dependency graph generated successfully")
