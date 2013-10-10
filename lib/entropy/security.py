@@ -1288,7 +1288,6 @@ class Repository:
         with codecs.open(tmp_path, "w", encoding=enc) as key_f:
             for key, fp in new_keymap.items():
                 key_f.write("%s %s\n" % (key, fp,))
-            key_f.flush()
         # atomic
         os.rename(tmp_path, self.__keymap_file)
         const_setup_perms(self.__keymap_file, etpConst['entropygid'])
