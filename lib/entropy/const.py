@@ -1336,7 +1336,6 @@ def _const_add_entropy_group(group_name):
         group_fw.seek(0, 2)
         app_line = "%s:x:%s:\n" % (group_name, new_id,)
         group_fw.write(app_line)
-        group_fw.flush()
 
 def const_get_stringtype():
     """
