@@ -991,10 +991,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         # close open files
         if syms_list_f:
-            syms_list_f.flush()
             syms_list_f.close()
         if files_list_f:
-            files_list_f.flush()
             files_list_f.close()
 
         del executables
