@@ -390,7 +390,7 @@ class ServerPackagesRepositoryUpdater(object):
         enc = etpConst['conf_encoding']
         with codecs.open(gpg_path, "w", encoding=enc) as gpg_f:
             gpg_f.write(pubkey)
-            gpg_f.flush()
+
         return gpg_path
 
     def update(self):
@@ -595,7 +595,7 @@ class ServerPackagesRepositoryUpdater(object):
                 self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabaseeapi3updates'])
             with open(something_new, "wb") as sn_f:
-                sn_f.flush()
+                pass
             data['~~something_new'] = something_new
             critical.append(data['~~something_new'])
 
@@ -604,7 +604,7 @@ class ServerPackagesRepositoryUpdater(object):
                 self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabasewebinstallupdates'])
             with open(something_new_webinstall, "wb") as sn_f:
-                sn_f.flush()
+                pass
             data['~~something_new_web'] = something_new_webinstall
             critical.append(data['~~something_new_web'])
 
@@ -682,7 +682,6 @@ class ServerPackagesRepositoryUpdater(object):
             mylink = os.readlink(symfile)
             with codecs.open(mytmpfile, "w", encoding=enc) as f_mkp:
                 f_mkp.write(mylink)
-                f_mkp.flush()
 
             extra_text_files.append(mytmpfile)
 
@@ -1054,8 +1053,6 @@ Name:    %s
                         raise
                     # otherwise ignore append, there is no file yet
 
-                tmp_f.flush()
-
             # someday unprivileged users will be able to push stuff
             const_setup_file(tmp_path, etpConst['entropygid'], 0o664)
             # atomicity
@@ -1076,7 +1073,6 @@ Name:    %s
         enc = etpConst['conf_encoding']
         with codecs.open(ts_file, "w", encoding=enc) as ts_f:
             ts_f.write(current_ts)
-            ts_f.flush()
 
     def _create_repository_pkglist(self):
         """
@@ -1099,14 +1095,14 @@ Name:    %s
             for pkg in pkglist:
                 pkg_f.write(pkg)
                 pkg_f.write("\n")
-            pkg_f.flush()
+
         os.rename(tmp_pkglist_file, pkglist_file)
 
         with codecs.open(tmp_extra_pkglist_file, "w", encoding=enc) as pkg_f:
             for pkg in extra_pkglist:
                 pkg_f.write(pkg)
                 pkg_f.write("\n")
-            pkg_f.flush()
+
         os.rename(tmp_extra_pkglist_file, extra_pkglist_file)
 
     def _cleanup_trashed_spm_uids(self, entropy_repository):
@@ -1368,7 +1364,7 @@ Name:    %s
             f_ck.write("  ")
             f_ck.write(fname)
             f_ck.write("\n")
-            f_ck.flush()
+
 
     def _compress_file(self, file_path, destination_path, opener):
         """
@@ -1434,7 +1430,7 @@ Name:    %s
         enc = etpConst['conf_encoding']
         with codecs.open(metafile_not_found_file, "w", encoding=enc) as f_meta:
             f_meta.writelines(not_found_file_list)
-            f_meta.flush()
+
         found_file_list.append(metafile_not_found_file)
         if os.path.isfile(compressed_dest_path):
             os.remove(compressed_dest_path)
