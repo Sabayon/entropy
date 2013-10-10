@@ -244,12 +244,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         def write_current_branch(branch):
             with codecs.open(old_branch_path, "w", encoding=enc) as old_brf:
                 old_brf.write(branch)
-                old_brf.flush()
 
         def write_in_branch_upgrade(branch):
             with codecs.open(in_branch_upgrade_path, "w", encoding=enc) as brf:
                 brf.write("in branch upgrade: %s" % (branch,))
-                brf.flush()
 
         if not os.path.isfile(old_branch_path):
             write_current_branch(current_branch)
