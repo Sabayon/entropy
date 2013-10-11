@@ -155,8 +155,17 @@ def enlightenatom(atom):
         entropy_tag = ''
     else:
         entropy_tag = '#%s' % (entropy_tag,)
+
+    slot = entropy.dep.dep_getslot(atom)
+    slot_pfx = ""
+    if slot is None:
+        slot = ""
+    else:
+        slot_pfx = etpConst['entropyslotprefix']
+
     clean_atom = entropy.dep.remove_entropy_revision(atom)
     clean_atom = entropy.dep.remove_tag(clean_atom)
+    clean_atom = entropy.dep.remove_slot(atom)
     only_cpv = entropy.dep.dep_getcpv(clean_atom)
     cpv_split = entropy.dep.catpkgsplit(only_cpv)
     if cpv_split is None:
@@ -172,8 +181,11 @@ def enlightenatom(atom):
         rev = ''
     else:
         rev = '-%s' % (rev,)
-    return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
-        darkgreen(name), purple(pv), purple(rev), brown(entropy_tag),
+
+    return "%s%s%s%s%s%s%s%s%s" % (
+        purple(operator), teal(cat + "/"),
+        darkgreen(name), purple(pv), bold(slot_pfx),
+        darkred(slot), purple(rev), brown(entropy_tag),
         teal(entropy_rev),)
 
 def show_dependencies_legend(entropy_client, indent = '',
