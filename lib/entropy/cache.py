@@ -17,6 +17,7 @@
 """
 import os
 import errno
+import hashlib
 import sys
 import tempfile
 
@@ -504,7 +505,7 @@ class MtimePingus(object):
         """
         Create a hash representation of string.
         """
-        return str(hash(key))
+        return hashlib.sha1(key).hexdigest()
 
     def ping(self, action_string):
         """
