@@ -18,6 +18,7 @@
     exceptions (errors) submission.
 
 """
+import errno
 import os
 import sys
 import subprocess
