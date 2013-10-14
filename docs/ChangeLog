@@ -1,3 +1,117 @@
+commit d842b47396b96cd287127e7f67ed0fb72f0f4851
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 14 12:37:08 2013 +0200
+
+    Release Entropy 218
+
+commit 64629bde8abee1ffd5b9c38e39bf2efdd561cae2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 14 12:23:17 2013 +0200
+
+    [entropy.qa] add missing import
+
+commit 0ae6d16483a86b3de37b58522a7d674555afee2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 13 11:51:46 2013 +0200
+
+    [entropy.cache] do not use hash() in MtimePingus, but SHA1
+
+commit 77db0cf3cdb3523d0316d06b3e7325b07551c4f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 12 17:21:02 2013 +0200
+
+    [entropy.client.interfaces.dep] add experimental multithreading support to calculate_updates()
+
+commit 4313baf4b6a4b35d339ceba0df2c449eeac4d1ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 11 16:16:46 2013 +0200
+
+    [solo.utils] enlightenatom: add slot substring support
+
+commit a079e57ccc6519815160ef0e514a51879b055dce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 18:54:48 2013 +0200
+
+    [matter] add Portagge backtrack info "needed_unstable_keywords" support
+
+commit 8aa8f1b3e436f07404079ccaee41223b43846f76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:22:12 2013 +0200
+
+    [entropy.transceivers] remove unneeded .flush() calls
+
+commit 78deb16b821fcc20a715ee4b0411be313bfd7542
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:21:57 2013 +0200
+
+    [entropy.spm] PortagePlugin: remove unneeded .flush() calls
+
+commit 31b35cd5203a65eccb8076d819b0fca6c28257b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:21:25 2013 +0200
+
+    [entropy.spm] PortagePlugin.xpak: remove unneeded .flush() calls
+
+commit 9c38a070d6a4e1f2b962fc67a65661248dfbdc24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:20:44 2013 +0200
+
+    [entropy.server.interfaces.main] remove unneeded .flush() calls
+
+commit 31528cd850f6e01cebc6acf113d9dd491f16328b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:20:23 2013 +0200
+
+    [entropy.server.interfaces.db] remove unneeded .flush() calls
+
+commit deba77f44ef6284425408839634f6ca8034a7365
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:20:03 2013 +0200
+
+    [entropy.client.interfaces.package] remove unneeded .flush() calls
+
+commit 913ad559e7ee2033c5aa00cbff351e64ba83a60a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:19:44 2013 +0200
+
+    [entropy.client.interfaces.client] remove unneeded .flush() calls
+
+commit 61307b21fa6d09fb3d730df616ba3808329851d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:19:27 2013 +0200
+
+    [entropy.core] remove unneeded .flush() calls
+
+commit e32b94dcce3505e12dd0cb8fc279bcdae40698ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:19:16 2013 +0200
+
+    [entropy.const] remove unneeded .flush() calls
+
+commit 670c9ae992536a70ca5bd2598bd5d3c9e27575c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:19:04 2013 +0200
+
+    [entropy.security] remove unneeded .flush() calls
+
+commit b317ffa0f339c49661fe3bbd04e7ced581329899
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:18:53 2013 +0200
+
+    [entropy.qa] remove unneeded .flush() calls
+
+commit c49924504a41c1a2dc4982217338f9bcd2d93bf5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 10 10:18:31 2013 +0200
+
+    [entropy.tools] remove unneeded .flush() calls
+
+commit ae1ff0b83558a46ded6b6f6c9abcbd89d088d11e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 9 21:23:14 2013 +0200
+
+    Tagging Entropy version 217
+
 commit 5fead492a12cc32dc9f13b28f299db4bd5b4227f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Oct 9 21:23:14 2013 +0200
