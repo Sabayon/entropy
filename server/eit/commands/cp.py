@@ -153,7 +153,8 @@ Copy packages from source repository to destination repository.
             return 1
 
         # match
-        for package in self._packages:
+        packages = entropy_server.packages_expand(self._packages)
+        for package in packages:
             p_matches, p_rc = entropy_server.atom_match(package,
                 match_repo = [self._source], multi_match = True)
             if not p_matches:
@@ -165,7 +166,7 @@ Copy packages from source repository to destination repository.
                 package_ids += [pkg_id for pkg_id, r_id in p_matches if \
                     (pkg_id not in package_ids)]
 
-        if (not self._packages) and (not package_ids):
+        if (not packages) and (not package_ids):
             entropy_server.output(
                 purple(_("Considering all the packages")),
                 importance=1, level="warning")
