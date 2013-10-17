@@ -2997,231 +2997,188 @@ class CalculatorsMixin:
             # client db is broken!
             raise SystemDatabaseError("installed packages repository is broken")
 
-        data = {
-            "package_ids": package_ids,
-            "package_ids_l": threading.Lock(),
-            "total_count": len(package_ids),
-            "count": 0,
-            "count_l": threading.Lock(),
-            "last_count": 0,
-            "last_count_l": threading.Lock(),
-            "update": set(),
-            "update_l": threading.Lock(),
-            "remove": collections.deque(),
-            "remove_l": threading.Lock(),
-            "fine": collections.deque(),
-            "fine_l": threading.Lock(),
-            "spm_fine": collections.deque(),
-            "spm_fine_l": threading.Lock(),
-        }
+        count = 0
+        total = len(package_ids)
+        last_count = 0
+        remove = collections.deque()
+        fine = collections.deque()
+        spm_fine = collections.deque()
+        update = set()
 
-        def processor():
+        while True:
+            try:
+                package_id = package_ids.pop()
+            except IndexError:
+                break
+            count += 1
+
+            if not quiet:
+
+                avg = int(float(count) / total * 100)
+                execute = avg % 10 == 9 and last_count < count
+                if not execute:
+                    execute = (count == total) or (count == 1)
+
+                if execute:
+                    last_count = count
+                    self.output(
+                        _("Calculating updates"),
+                        importance = 0,
+                        level = "info",
+                        back = True,
+                        header = ":: ",
+                        count = (count, total),
+                        percent = True,
+                        footer = " ::"
+                    )
+
+            try:
+                cl_pkgkey, cl_slot, cl_version, \
+                    cl_tag, cl_revision, \
+                    cl_atom = self._installed_repository.getStrictData(
+                        package_id)
+            except TypeError:
+                # check against broken entries, or removed during iteration
+                continue
+            use_match_cache = True
+            do_continue = False
+
+            # try to search inside package tag, if it's available,
+            # otherwise, do the usual duties.
+            cl_pkgkey_tag = None
+            if cl_tag:
+                cl_pkgkey_tag = "%s%s%s" % (
+                    cl_pkgkey,
+                    etpConst['entropytagprefix'],
+                    cl_tag)
+
             while True:
-                with data["package_ids_l"]:
-                    try:
-                        package_id = data["package_ids"].pop()
-                    except IndexError:
-                        return
-
-                count = 1
-                with data["count_l"]:
-                    data["count"] += 1
-                    count = data["count"]
-
-                if not quiet:
-                    with data["last_count_l"]:
-                        total = data["total_count"]
-
-                        avg = int(float(count) / total * 100)
-                        execute = avg % 10 == 9 and data["last_count"] < count
-                        if not execute:
-                            execute = (count == total) or (count == 1)
-
-                        if execute:
-                            data["last_count"] = count
-                            self.output(
-                                _("Calculating updates"),
-                                importance = 0,
-                                level = "info",
-                                back = True,
-                                header = ":: ",
-                                count = (count, total),
-                                percent = True,
-                                footer = " ::"
-                            )
-
                 try:
-                    cl_pkgkey, cl_slot, cl_version, \
-                        cl_tag, cl_revision, \
-                        cl_atom = self._installed_repository.getStrictData(
-                            package_id)
-                except TypeError:
-                    # check against broken entries, or removed during iteration
-                    continue
-                use_match_cache = True
-                do_continue = False
+                    match = None
+                    if cl_pkgkey_tag is not None:
+                        # search with tag first, if nothing
+                        # pops up, fallback
+                        # to usual search?
+                        match = self.atom_match(
+                            cl_pkgkey_tag,
+                            match_slot = cl_slot,
+                            extended_results = True,
+                            use_cache = use_match_cache,
+                            match_repo = match_repos
+                        )
+                        try:
+                            if const_isnumber(match[1]):
+                                match = None
+                        except TypeError:
+                            if not use_match_cache:
+                                raise
+                            use_match_cache = False
+                            continue
 
-                # try to search inside package tag, if it's available,
-                # otherwise, do the usual duties.
-                cl_pkgkey_tag = None
-                if cl_tag:
-                    cl_pkgkey_tag = "%s%s%s" % (
-                        cl_pkgkey,
-                        etpConst['entropytagprefix'],
-                        cl_tag)
-
-                while True:
-                    try:
-                        match = None
-                        if cl_pkgkey_tag is not None:
-                            # search with tag first, if nothing
-                            # pops up, fallback
-                            # to usual search?
-                            match = self.atom_match(
-                                cl_pkgkey_tag,
-                                match_slot = cl_slot,
-                                extended_results = True,
-                                use_cache = use_match_cache,
-                                match_repo = match_repos
-                            )
-                            try:
-                                if const_isnumber(match[1]):
-                                    match = None
-                            except TypeError:
-                                if not use_match_cache:
-                                    raise
-                                use_match_cache = False
-                                continue
-
-                        if match is None:
-                            match = self.atom_match(
-                                cl_pkgkey,
-                                match_slot = cl_slot,
-                                extended_results = True,
-                                use_cache = use_match_cache,
-                                match_repo = match_repos
-                            )
-                    except OperationalError:
-                        # ouch, but don't crash here
-                        do_continue = True
-                        break
-                    try:
-                        m_package_id = match[0][0]
-                    except TypeError:
-                        if not use_match_cache:
-                            raise
-                        use_match_cache = False
-                        continue
+                    if match is None:
+                        match = self.atom_match(
+                            cl_pkgkey,
+                            match_slot = cl_slot,
+                            extended_results = True,
+                            use_cache = use_match_cache,
+                            match_repo = match_repos
+                        )
+                except OperationalError:
+                    # ouch, but don't crash here
+                    do_continue = True
                     break
-
-                if do_continue:
+                try:
+                    m_package_id = match[0][0]
+                except TypeError:
+                    if not use_match_cache:
+                        raise
+                    use_match_cache = False
                     continue
+                break
 
-                # now compare
-                # version: cl_version
-                # tag: cl_tag
-                # revision: cl_revision
-                if (m_package_id != -1):
-                    repoid = match[1]
-                    version = match[0][1]
-                    tag = match[0][2]
-                    revision = match[0][3]
-                    if empty:
-                        with data["update_l"]:
-                            data["update"].add((m_package_id, repoid))
-                        continue
-                    if cl_revision != revision:
-                        # different revision
-                        if cl_revision == etpConst['spmetprev'] \
-                                and ignore_spm_downgrades:
-                            # no difference, we're ignoring revision 9999
-                            with data["fine_l"]:
-                                data["fine"].append(cl_atom)
-                            with data["spm_fine_l"]:
-                                data["spm_fine"].append(
-                                    (m_package_id, repoid))
-                            continue
-                        else:
-                            with data["update_l"]:
-                                data["update"].add(
-                                    (m_package_id, repoid))
-                            continue
-                    elif (cl_version != version):
-                        # different versions
-                        with data["update_l"]:
-                            data["update"].add((m_package_id, repoid))
-                        continue
-                    elif (cl_tag != tag):
-                        # different tags
-                        with data["update_l"]:
-                            data["update"].add((m_package_id, repoid))
+            if do_continue:
+                continue
+
+            # now compare
+            # version: cl_version
+            # tag: cl_tag
+            # revision: cl_revision
+            if (m_package_id != -1):
+                repoid = match[1]
+                version = match[0][1]
+                tag = match[0][2]
+                revision = match[0][3]
+                if empty:
+                    update.add((m_package_id, repoid))
+                    continue
+                if cl_revision != revision:
+                    # different revision
+                    if cl_revision == etpConst['spmetprev'] \
+                            and ignore_spm_downgrades:
+                        # no difference, we're ignoring revision 9999
+                        fine.append(cl_atom)
+                        spm_fine.append((m_package_id, repoid))
                         continue
                     else:
-
-                        # Note: this is a bugfix to improve branch migration
-                        # and really check if pkg has been repackaged
-                        # first check branch
-                        if package_id is not None:
-
-                            c_digest = self._installed_repository.retrieveDigest(
-                                package_id)
-                            # If the repo has been manually (user-side)
-                            # regenerated, digest == "0". In this case
-                            # skip the check.
-                            if c_digest != "0":
-                                c_repodb = self.open_repository(repoid)
-                                r_digest = c_repodb.retrieveDigest(m_package_id)
-
-                                if (r_digest != c_digest) and \
-                                   (r_digest is not None) \
-                                   and (c_digest is not None):
-                                    with data["update_l"]:
-                                        data["update"].add(
-                                            (m_package_id, repoid))
-                                    continue
-
-                        # no difference
-                        with data["fine_l"]:
-                            data["fine"].append(cl_atom)
+                        update.add((m_package_id, repoid))
                         continue
+                elif (cl_version != version):
+                    # different versions
+                    update.add((m_package_id, repoid))
+                    continue
+                elif (cl_tag != tag):
+                    # different tags
+                    update.add((m_package_id, repoid))
+                    continue
+                else:
 
-                # don't take action if it's just masked
-                maskedresults = self.atom_match(
-                    cl_pkgkey, match_slot = cl_slot,
-                    mask_filter = False, match_repo = match_repos)
-                if maskedresults[0] == -1:
-                    with data["remove_l"]:
-                        data["remove"].append(package_id)
+                    # Note: this is a bugfix to improve branch migration
+                    # and really check if pkg has been repackaged
+                    # first check branch
+                    if package_id is not None:
 
-        threads = []
-        num_threads = multiprocessing.cpu_count()
-        for idx in range(num_threads):
-            th = threading.Thread(target=processor,
-                                  name="CalculateUpdates{%s}" % (idx,))
-            threads.append(th)
+                        c_digest = self._installed_repository.retrieveDigest(
+                            package_id)
+                        # If the repo has been manually (user-side)
+                        # regenerated, digest == "0". In this case
+                        # skip the check.
+                        if c_digest != "0":
+                            c_repodb = self.open_repository(repoid)
+                            r_digest = c_repodb.retrieveDigest(m_package_id)
 
-        try:
-            for th in threads:
-                th.start()
-        finally:
-            for th in threads:
-                th.join()
+                            if (r_digest != c_digest) and \
+                               (r_digest is not None) \
+                               and (c_digest is not None):
+                                update.add((m_package_id, repoid))
+                                continue
+
+                    # no difference
+                    fine.append(cl_atom)
+                    continue
+
+            # don't take action if it's just masked
+            maskedresults = self.atom_match(
+                cl_pkgkey, match_slot = cl_slot,
+                mask_filter = False, match_repo = match_repos)
+            if maskedresults[0] == -1:
+                remove.append(package_id)
 
         # validate remove, do not return installed packages that are
         # still referenced by others as "removable"
         # check inverse dependencies at the cost of growing complexity
-        remove = list(data["remove"])
         if remove:
             remove = [
                 x for x in remove if not \
                     self._installed_repository.retrieveReverseDependencies(x)]
+        else:
+            remove = list(remove)
 
         # sort data
         upd_sorter = lambda (x, y): self.open_repository(y).retrieveAtom(x)
         rm_sorter = lambda x: self._installed_repository.retrieveAtom(x)
-        update = sorted(data["update"], key = upd_sorter)
-        fine = sorted(list(data["fine"]))
-        spm_fine = sorted(list(data["spm_fine"]), key = upd_sorter)
+        update = sorted(update, key = upd_sorter)
+        fine = sorted(fine)
+        spm_fine = sorted(spm_fine, key = upd_sorter)
         remove = sorted(remove, key = rm_sorter)
 
         outcome = {
