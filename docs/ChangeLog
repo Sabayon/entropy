@@ -1,3 +1,30 @@
+commit 85a653ba65efb87f2385ffb503874aa3804ccd90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 17 16:36:52 2013 +0200
+
+    Release Entropy 219
+
+commit ed6224576dc34bf4f352a9982cbb6f7bea2413ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 17 16:35:52 2013 +0200
+
+    [entropy.client.interfaces.dep] move calculate_updates() back to single threaded implem.
+    
+    As usual, Python and multithreading is a funny joke in terms of
+    performance.
+
+commit 764b2152787602aa9828d63e9b61f1a40a793672
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 16 11:46:44 2013 +0200
+
+    [eit.commands.{mv,cp}] add support for package sets
+
+commit 16ec9990e0f7d83af74df47efe64c14596886090
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 14 12:37:09 2013 +0200
+
+    Tagging Entropy version 218
+
 commit d842b47396b96cd287127e7f67ed0fb72f0f4851
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 14 12:37:08 2013 +0200
