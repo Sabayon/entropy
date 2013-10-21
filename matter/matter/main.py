@@ -117,8 +117,12 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_not_merged_packages())
             uninstalled.extend(
                 builder.get_uninstalled_packages())
-            missing_use.update(
-                builder.get_missing_use_packages())
+
+            # Merge at least the first layer of dicts.
+            for k, v in builder.get_missing_use_packages():
+                obj = missing_use.setdefault(k, {})
+                obj.update(v)
+
             unstable_keywords.update(
                 builder.get_needed_unstable_keywords())
             pmask_changes.update(
