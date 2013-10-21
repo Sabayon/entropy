@@ -88,6 +88,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
     missing_use = {}
     unstable_keywords = set()
     pmask_changes = set()
+    license_changes = {}
     tainted_repositories = set()
     spec_count = 0
     tot_spec = len(specs)
@@ -122,6 +123,14 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_needed_unstable_keywords())
             pmask_changes.update(
                 builder.get_needed_package_mask_changes())
+
+            # We need to merge the two dicts, not just update()
+            # or we can lose the full set of licenses associated
+            # to a single cpv.
+            for k, v in builder.get_needed_license_changes():
+                obj = license_changes.setdefault(k, set())
+                obj.update(v)
+
             preserved_libs = binary_pms.check_preserved_libraries(
                 emerge_config)
 

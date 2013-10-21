@@ -86,6 +86,7 @@ class PackageBuilder(object):
         self._missing_use_packages = {}
         self._needed_unstable_keywords = set()
         self._needed_package_mask_changes = set()
+        self._needed_license_changes = {}
 
     @classmethod
     def _build_standard_environment(cls, repository=None):
@@ -185,6 +186,13 @@ class PackageBuilder(object):
         of package.mask changes.
         """
         return self._needed_package_mask_changes
+
+    def get_needed_license_changes(self):
+        """
+        Return the list of packages that haven't been merged due to the need
+        of package.license changes.
+        """
+        return self._needed_license_changes
 
     def run(self):
         """
@@ -738,6 +746,11 @@ class PackageBuilder(object):
                     for pkg in v:
                         self._needed_package_mask_changes.add(
                             copy.deepcopy(pkg.cpv))
+                elif k == "needed_license_changes":
+                    for pkg, lics in v.items():
+                        obj = self._needed_license_changes.setdefault(
+                            copy.deepcopy(pkg.cpv), set())
+                        obj.update(lics)
                 else:
                     print_warning("unsupported backtrack info: %s -> %s" % (
                             k, v,))
