@@ -85,6 +85,7 @@ class PackageBuilder(object):
 
         self._missing_use_packages = {}
         self._needed_unstable_keywords = set()
+        self._needed_package_mask_changes = set()
 
     @classmethod
     def _build_standard_environment(cls, repository=None):
@@ -177,6 +178,13 @@ class PackageBuilder(object):
         keyword masked in package.keywords, it will end up in this list.
         """
         return self._needed_unstable_keywords
+
+    def get_needed_package_mask_changes(self):
+        """
+        Return the list of packages that haven't been merged due to the need
+        of package.mask changes.
+        """
+        return self._needed_package_mask_changes
 
     def run(self):
         """
@@ -725,6 +733,10 @@ class PackageBuilder(object):
                 elif k == "needed_unstable_keywords":
                     for pkg in v:
                         self._needed_unstable_keywords.add(
+                            copy.deepcopy(pkg.cpv))
+                elif k == "needed_p_mask_changes":
+                    for pkg in v:
+                        self._needed_package_mask_changes.add(
                             copy.deepcopy(pkg.cpv))
                 else:
                     print_warning("unsupported backtrack info: %s -> %s" % (
