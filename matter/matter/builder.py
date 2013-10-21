@@ -724,7 +724,8 @@ class PackageBuilder(object):
                         changes.update(copy.deepcopy(new_changes))
                 elif k == "needed_unstable_keywords":
                     for pkg in v:
-                        self._needed_unstable_keywords.add(pkg.cpv)
+                        self._needed_unstable_keywords.add(
+                            copy.deepcopy(pkg.cpv))
                 else:
                     print_warning("unsupported backtrack info: %s -> %s" % (
                             k, v,))
