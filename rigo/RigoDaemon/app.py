@@ -795,7 +795,7 @@ class RigoDaemonService(dbus.service.Object):
         update.
         """
         task = Timer(
-            random.randint(3600 * 2, 3600 * 12),
+            random.randint(3600 * 1, 3600 * 18),
             self._auto_repositories_update)
         task.daemon = True
         task.name = "AutoRepositoriesUpdateTimer"
