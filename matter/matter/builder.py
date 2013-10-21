@@ -734,8 +734,9 @@ class PackageBuilder(object):
                                 "unsupported needed_use_config_changes: %s" % (
                                     tup,))
                             continue
-                        obj = self._missing_use_packages.setdefault(pkg.cpv, {})
-                        obj["cp:slot"] = pkg.slot_atom
+                        obj = self._missing_use_packages.setdefault(
+                            copy.deepcopy(pkg.cpv), {})
+                        obj["cp:slot"] = copy.deepcopy(pkg.slot_atom)
                         changes = obj.setdefault("changes", {})
                         changes.update(copy.deepcopy(new_changes))
                 elif k == "needed_unstable_keywords":
