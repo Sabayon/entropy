@@ -441,13 +441,47 @@ class SoloManage(SoloCommand):
         for package in self._scan_packages_expand_tag(
             entropy_client, package_names):
 
-            # clear masking reasons
+            # match the package string inside available repositories
+            # if we find something, we're done, otherwise try to
+            # guess something.
             match = entropy_client.atom_match(package)
             if match[0] != -1:
                 if match not in final_package_names:
                     final_package_names.append(match)
                 continue
-            self._show_masked_package_info(entropy_client, package)
+
+            # determine if a category should be added and package
+            # matched. If removing the category we end up with the
+            # same name, then there is no category part.
+            if entropy.dep.remove_cat(package) != package:
+                self._show_masked_package_info(entropy_client, package)
+                continue
+
+            # try to match inside the installed packages repository
+            # and see if there is just one installed package with the same
+            # category.
+            inst_repo = entropy_client.installed_repository()
+            inst_pkg_id, inst_rc = inst_repo.atomMatch(package)
+            if inst_pkg_id == -1:
+                self._show_masked_package_info(entropy_client, package)
+                continue
+
+            # get the category and guard against stale data.
+            inst_pkg_cat = inst_repo.retrieveCategory(inst_pkg_id)
+            if not inst_pkg_cat:
+                self._show_masked_package_info(entropy_client, package)
+                continue
+
+            # match the package again, hope to find a good one
+            # inside available repositories, otherwise give up.
+            package = "%s/%s" % (inst_pkg_cat, package)
+            match = entropy_client.atom_match(package)
+            if match[0] == -1:
+                self._show_masked_package_info(entropy_client, package)
+                continue
+
+            if match not in final_package_names:
+                final_package_names.append(match)
 
         if package_files:
             for pkg in package_files:
