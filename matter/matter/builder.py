@@ -10,6 +10,8 @@
 
 """
 import copy
+import errno
+import fcntl
 import os
 import shlex
 import shutil
@@ -907,12 +909,27 @@ class PackageBuilder(object):
         """
         Execute Portage and Overlays sync
         """
-        sync_cmd = cls.PORTAGE_SYNC_CMD
-        std_env = cls._build_standard_environment()
-        exit_st = subprocess.call(sync_cmd, env = std_env)
-        if exit_st != 0:
-            return exit_st
+        portdir = os.getenv("PORTDIR", "/usr/portage")
+        portdir_lock_file = os.path.join(portdir, ".matter_sync.lock")
 
-        # overlays update
-        overlay_cmd = cls.OVERLAYS_SYNC_CMD
-        return subprocess.call(overlay_cmd, env = std_env)
+        print_info("synchronizing the repositories...")
+        print_info("About to acquire %s..." % (portdir_lock_file,))
+        with open(portdir_lock_file, "a+") as lock_f:
+            while True:
+                try:
+                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+                    break
+                except IOError as err:
+                    if err.errno == errno.EINTR:
+                        continue
+                    raise
+
+            sync_cmd = cls.PORTAGE_SYNC_CMD
+            std_env = cls._build_standard_environment()
+            exit_st = subprocess.call(sync_cmd, env = std_env)
+            if exit_st != 0:
+                return exit_st
+
+            # overlays update
+            overlay_cmd = cls.OVERLAYS_SYNC_CMD
+            return subprocess.call(overlay_cmd, env = std_env)
