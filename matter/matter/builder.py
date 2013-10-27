@@ -283,82 +283,114 @@ class PackageBuilder(object):
         allow_rebuild = self._params["rebuild"] == "yes"
         allow_not_installed = self._params["not-installed"] == "yes"
         allow_downgrade = self._params["downgrade"] == "yes"
+        accepted = []
 
-        try:
-            best_visible = portdb.xmatch("bestmatch-visible", package)
-        except portage.exception.InvalidAtom:
-            print_error("cannot match: %s, invalid atom" % (package,))
-            best_visible = None
-
-        if not best_visible:
-            # package not found, return error
-            print_error("cannot match: %s, ignoring this one" % (package,))
-            self._not_found_packages.append(package)
-            return None
-
-        print_info("matched: %s for %s" % (best_visible, package,))
         # now determine what's the installed version.
         best_installed = portage.best(vardb.match(package))
         if (not best_installed) and (not allow_not_installed):
             # package not installed
             print_error("package not installed: %s, ignoring this one" % (
-                package,))
+                    package,))
             self._not_installed_packages.append(package)
-            return None
+            return accepted
 
         if (not best_installed) and allow_not_installed:
             print_warning(
-                "package not installed: "
-                "%s, but 'not-installed: yes' provided" % (package,))
+                "%s not installed, but 'not-installed: yes' provided" % (
+                    package,))
 
-        build_only = self._params["build-only"] == "yes"
-        cmp_res = -1
-        if best_installed:
-            print_info("found installed: %s for %s" % (
-                    best_installed, package,))
-            # now compare
-            # -1 if best_installed is older than best_visible
-            # 1 if best_installed is newer than best_visible
-            # 0 if they are equal
-            cmp_res = portage.versions.pkgcmp(
-                portage.versions.pkgsplit(best_installed),
-                portage.versions.pkgsplit(best_visible))
-        elif (not best_installed) and build_only:
-            # package is not installed, and build-only
-            # is provided. We assume that the package
-            # is being built and added to repositories directly.
-            # This means that we need to query binpms to know
-            # about the current version.
-            print_info("package is not installed, and 'build-only: yes'. "
-                       "Asking the binpms about the package state.")
-            best_available = self._binpms.best_available(package)
-            print_info("found available: %s for %s" % (
-                    best_available, package))
-            if best_available:
+        best_visibles = []
+        try:
+            best_visibles += portdb.xmatch("match-visible", package)
+        except portage.exception.InvalidAtom:
+            print_error("cannot match: %s, invalid atom" % (package,))
+
+        # map all the cpvs to their slots
+        cpv_slot_map = {}
+        for pkg in best_visibles:
+            obj = cpv_slot_map.setdefault(pkg.slot, [])
+            obj.append(pkg)
+
+        # then pick the best for each slot
+        del best_visibles[:]
+        for slot, pkgs in cpv_slot_map.items():
+            pkg = portage.best(pkgs)
+            best_visibles.append(pkg)
+        best_visibles.sort()  # deterministic is better
+
+        if not best_visibles:
+            # package not found, return error
+            print_error("cannot match: %s, ignoring this one" % (package,))
+            self._not_found_packages.append(package)
+            return accepted
+
+        print_info("matched: %s for %s" % (", ".join(best_visibles), package,))
+
+        for best_visible in best_visibles:
+
+            cp = best_visible.cp
+            slot = best_visible.slot
+            cp_slot = "%s:%s" % (cp, slot)
+
+            # determine what's the installed version.
+            # we know that among all the best_visibles, there is one that
+            # is installed. The question is whether we got it now.
+            best_installed = portage.best(vardb.match(cp_slot))
+            if (not best_installed) and (not allow_not_installed):
+                # package not installed
+                print_warning("%s not installed, skipping" % (cp_slot,))
+                continue
+
+            build_only = self._params["build-only"] == "yes"
+            cmp_res = -1
+            if best_installed:
+                print_info("found installed: %s for %s" % (
+                        best_installed, package,))
+                # now compare
+                # -1 if best_installed is older than best_visible
+                # 1 if best_installed is newer than best_visible
+                # 0 if they are equal
                 cmp_res = portage.versions.pkgcmp(
-                    portage.versions.pkgsplit(best_available),
+                    portage.versions.pkgsplit(best_installed),
                     portage.versions.pkgsplit(best_visible))
+            elif (not best_installed) and build_only:
+                # package is not installed, and build-only
+                # is provided. We assume that the package
+                # is being built and added to repositories directly.
+                # This means that we need to query binpms to know
+                # about the current version.
+                print_info("package is not installed, and 'build-only: yes'. "
+                           "Asking the binpms about the package state.")
+                best_available = self._binpms.best_available(cp_slot)
+                print_info("found available: %s for %s" % (
+                        best_available, cp_slot))
+                if best_available:
+                    cmp_res = portage.versions.pkgcmp(
+                        portage.versions.pkgsplit(best_available),
+                        portage.versions.pkgsplit(best_visible))
 
-        is_rebuild = cmp_res == 0
+            is_rebuild = cmp_res == 0
 
-        if (cmp_res == 1) and (not allow_downgrade):
-            # downgrade in action and downgrade not allowed, aborting!
-            print_warning(
-                "package: %s, would be downgraded, %s to %s, ignoring" % (
-                    package, best_installed, best_visible,))
-            return None
+            if (cmp_res == 1) and (not allow_downgrade):
+                # downgrade in action and downgrade not allowed, aborting!
+                print_warning(
+                    "%s would be downgraded, %s to %s, ignoring" % (
+                        cp_slot, best_installed, best_visible,))
+                continue
 
-        if is_rebuild and (not allow_rebuild):
-            # rebuild in action and rebuild not allowed, aborting!
-            print_warning(
-                "package: %s, would be rebuilt to %s, ignoring" % (
-                    package, best_visible,))
-            return None
+            if is_rebuild and (not allow_rebuild):
+                # rebuild in action and rebuild not allowed, aborting!
+                print_warning(
+                    "%s would be rebuilt to %s, ignoring" % (
+                        cp_slot, best_visible,))
+                continue
 
-        # at this point we can go ahead accepting package in queue
-        print_info("package: %s [%s], accepted in queue" % (
-                best_visible, package,))
-        return best_visible
+            # at this point we can go ahead accepting package in queue
+            print_info("package: %s [%s], accepted in queue" % (
+                    best_visible, cp_slot,))
+            accepted.append(best_visible)
+
+        return accepted
 
     def _post_graph_filters(self, graph, vardb, portdb):
         """
@@ -676,9 +708,9 @@ class PackageBuilder(object):
                 expanded_pkgs.append(package)
 
             for exp_pkg in expanded_pkgs:
-                best_visible = self._pre_graph_filters(
+                accepted = self._pre_graph_filters(
                     exp_pkg, portdb, vardb)
-                if best_visible is not None:
+                for best_visible in accepted:
                     packages.append((exp_pkg, best_visible))
 
         if not packages:
