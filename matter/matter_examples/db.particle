@@ -1,0 +1,122 @@
+# Entropy Matter, Automated Entropy Packages Build Service, example spec file
+
+# List of packages required to be built.
+# Comma separated, example: app-foo/bar, bar-baz/foo
+# Mandatory, cannot be empty
+packages: sys-libs/db
+
+# Enforce stable or unstable packages on emerge.
+# yes = only stable packages are accepted
+# no  = both stable and unstable packages are accepted
+# inherit = inherit portage make.conf.* settings for ACCEPT_KEYWORDS
+# Valid values are either "yes" or "no", "inherit"
+# Default is: inherit
+stable: inherit
+
+# Entropy repository where to commit packages
+# Mandatory, cannot be empty
+repository: community0
+
+# Provide custom build arguments to Portage.
+# --ask and --buildpkgonly are not allowed and automatically filtered.
+# Default is: --verbose --nospinner
+build-args: --verbose --nospinner
+
+# Only build the packages without merging them into the system.
+# Valid values are either "yes" or "no"
+# Default is: no
+# build-only: no
+
+# Drop older packages in the same slot when adding an injected package.
+# Injected packages come into play when 'build-only: yes'
+# Default is: no
+# drop-old-injected: no
+
+# Allow Source Package Manager (Portage) repository change?
+# Valid values are either "yes" or "no"
+# Default is: no
+spm-repository-change: yes
+
+# In case of Source Package Manager repository change, allow
+# execution if the original repository does not contain
+# the package anymore?
+# Valid values are either "yes" or "no"
+# Default is: no
+spm-repository-change-if-upstreamed: yes
+
+# Allow compiling package even if it's not actually installed on system?
+# Valid values are either "yes" or "no"
+# Default is: no
+not-installed: no
+
+# Allow soft-blockers in the merge queue? Packages will be unmerged if yes.
+# Valid values are either "yes" or "no"
+# Default is: yes
+soft-blocker: yes
+
+# Allow package unmerges in the merge queue? Packages will be unmerged if yes.
+# Valid values are either "yes" or "no"
+# Default is: yes
+unmerge: yes
+
+# Allow dependencies to be pulled in?
+# Valid values are either "yes" or "no"
+# Default is: no
+dependencies: yes
+
+# Allow package downgrade?
+# Valid values are either "yes" or "no"
+# Default is: no
+downgrade: no
+
+# Allow package rebuild?
+# Valid values are either "yes" or "no"
+# Default is: no
+rebuild: no
+
+# Make possible to continue if one or more packages fail to build?
+# Valid values are either "yes" or "no"
+# Default is: no
+keep-going: yes
+
+# Allow new USE flags?
+# Valid values are either "yes" or "no"
+# Default is: no
+new-useflags: no
+
+# Allow removed USE flags?
+# Valid values are either "yes" or "no"
+# Default is: no
+removed-useflags: yes
+
+# Package pre execution script hook, executed for each package
+# Valid value is path to executable file
+# Env vars:
+# MATTER_PACKAGE_NAMES       = list of package names that would be built
+# pkgpre: /home/fabio/repos/entropy/services/matter_examples/pkgpre.sh
+
+# Package build post execution script hook, executed for each package
+# Valid value is path to executable file
+# Env vars:
+# MATTER_PACKAGE_NAMES       = list of package names that would be built
+# To the pkgpost hook, is given one argv parameter, corresponding to the
+# build exit status, which is 0 for no issues, != 0 for issue.
+# If pkgpost hook returns != 0 exit status, this will replace the exit status
+# of the build procedure, which gets returned by build caller (so you have a
+# good change of making the whole matter execution abort).
+# pkgpost: /home/fabio/repos/entropy/services/matter_examples/pkgpost.sh
+
+# Env vars:
+# MATTER_PACKAGE_NAMES       = list of package names that would be built. It
+# does not reflect the name of the failing packages, because they could be
+# just dependencies.
+# MATTER_PORTAGE_FAILED_PACKAGE_NAME = exact name (atom, CPV) of the failing
+# package, the one that triggered the buildfail hook.
+# MATTER_PORTAGE_REPOSITORY = Portage repository from where the package
+# comes from
+# MATTER_PORTAGE_BUILD_LOG_DIR = directory containing all the build logs of
+# the failed package
+# buildfail: /home/fabio/repos/entropy/services/matter_examples/buildfail.sh
+
+# For more info regarding exported environment variables, please see:
+# matter --help
