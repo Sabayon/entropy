@@ -1,3 +1,75 @@
+commit c95955c1ae8aa541c779628858fabf36977c027a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 27 18:35:00 2013 +0100
+
+    Release Entropy 220
+
+commit aa2a6520f4fb17aecb15c91be467e12c8b56ce0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 27 18:28:54 2013 +0100
+
+    [matter.builder] expand depstring to match all the available slots
+    
+    If a particle contains the depstring "www-apps/bugzilla", do not
+    just match the best available, which would include only the latest
+    slotted version but rather go through all the slotted versions
+    available and apply filters from there. The net result is that
+    we will never leave slotted packages behind.
+
+commit 594656e03d929d656a55af51314740d35d67c872
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 24 11:16:17 2013 +0200
+
+    [solo] try to append a category to package names in case of no match
+    
+    When matching strings like "entropy" against the available packages
+    repositories, entropy may not be able to find the right package due
+    to name collisions (packages with same name and different categories).
+    So, try to guess the category part by looking at the installed packages
+    repository.
+
+commit 79261d50861a465f2849cd16cbcd5885e8efd3d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 13:08:29 2013 +0200
+
+    [RigoDaemon] increase auto_repositories_update randomization space
+
+commit 78144d3a6606cdf669252ef92898479985b119ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 10:44:13 2013 +0200
+
+    [matter] use copy.deepcopy for every portage backtrack generated object
+
+commit 886c441850d73f23d2008239bb120b1bc1913396
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 10:43:43 2013 +0200
+
+    [matter.main] merge the use_changes dicts in a safer way
+
+commit 94d04cc1ef6014bcd50ef145dfac56370f43411c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 10:40:56 2013 +0200
+
+    [matter] add support for needed_license_changes backtrack info
+
+commit 4124a3e4e99c175c09c4221a91345c843f79d701
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 10:27:45 2013 +0200
+
+    [matter] add support for needed_p_mask_changes backtrack info
+
+commit 2594f3f1d2eac72b60900b0aacfd09c774b2cfff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 21 10:18:59 2013 +0200
+
+    [matter] use copy.deepcopy with Portage Package.pkg objects to avoid leaks
+
+commit 487bfc183d270ee1fa4d395f7add99b8791e4682
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 17 16:36:52 2013 +0200
+
+    Tagging Entropy version 219
+
 commit 85a653ba65efb87f2385ffb503874aa3804ccd90
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 17 16:36:52 2013 +0200
