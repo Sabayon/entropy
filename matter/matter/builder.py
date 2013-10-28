@@ -915,8 +915,13 @@ class PackageBuilder(object):
                         method_name,))
 
         root_tree["porttree"].dbapi.close_caches()
+        root_tree["porttree"].dbapi = portage.dbapi.porttree.portdbapi(
+            root_tree["porttree"].settings)
 
-        gc.collect()
+        for x in range(10):
+            count = gc.collect()
+            if not count:
+                break
 
     @classmethod
     def post_build(cls, spec, emerge_config):
