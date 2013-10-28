@@ -12,6 +12,7 @@
 import copy
 import errno
 import fcntl
+import gc
 import os
 import shlex
 import shutil
@@ -822,7 +823,7 @@ class PackageBuilder(object):
             myopts, spinner, favorites=favorites,
             graph_config=graph.schedulerGraph())
         del graph
-        clear_caches(emerge_trees)
+        self.clear_caches(self._emerge_config)
         retval = mergetask.merge()
 
         not_merged = []
@@ -893,6 +894,29 @@ class PackageBuilder(object):
 
         print_info("portage spawned, return value: %d" % (retval,))
         return retval
+
+    @classmethod
+    def clear_caches(cls, emerge_config):
+        """
+        Clear Portage and Binary PMS caches.
+        """
+        emerge_settings, emerge_trees, _mtimedb = emerge_config
+        clear_caches(emerge_trees)
+        # clearing vartree.dbapi.cpcache doesn't seem to make a big diff
+        root_tree = emerge_trees[emerge_settings["ROOT"]]
+        vdb = root_tree["vartree"].dbapi
+        for method_name in ("_clear_cache",):
+            method = getattr(vdb, method_name, None)
+            if method is not None:
+                method()
+            else:
+                print_error(
+                    "vartree does not have a %s method anymore" % (
+                        method_name,))
+
+        root_tree["porttree"].dbapi.close_caches()
+
+        gc.collect()
 
     @classmethod
     def post_build(cls, spec, emerge_config):
