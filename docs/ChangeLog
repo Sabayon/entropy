@@ -1,3 +1,60 @@
+commit 93bc50c5397a496420b28c553683a93b690a0792
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:28:04 2013 +0100
+
+    Release Entropy 221
+
+commit 5884c68bcdc8043401cddd73cbc636c69ee1e1f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:24:46 2013 +0100
+
+    [matter] use PackageBuilder.clear_caches()
+
+commit 66db77935dd71a72642e0755282224bb76c8f9ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:23:58 2013 +0100
+
+    [matter.builder] add PackageBuilder.clear_caches()
+    
+    This method is now responsible of clearing all the Portage and
+    Binary PMS caches.
+
+commit ee4452ff3131dc74ab0c82ef9c14cfbb018597cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:23:20 2013 +0100
+
+    [matter.builder] use copy.deepcopy to copy more objects, avoid circular references
+
+commit 47ea8c70cac135c32aec03fbd61b77d0e15c73d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:22:30 2013 +0100
+
+    [matter.builder] use vardb.match without cache, reduce memory usage
+
+commit 3ae112caae8baac4788959bdea7928d1050b8ab5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:20:34 2013 +0100
+
+    [matter] use collections.deque instead of lists, improve memory efficiency
+
+commit 274adb4c3e75afbc802d9669f58e2216b2b1ff7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 27 19:35:39 2013 +0100
+
+    [matter.builder] acquire a file lock before calling PackageBuilder.sync()
+
+commit b5dadd905ded82a24be88cd8a1359e73ad7facea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 27 18:35:13 2013 +0100
+
+    [matter] add another example particle
+
+commit 6969da5a3eccbb72f6cd6a9780b29f613c0a7d04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 27 18:35:00 2013 +0100
+
+    Tagging Entropy version 220
+
 commit c95955c1ae8aa541c779628858fabf36977c027a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Oct 27 18:35:00 2013 +0100
