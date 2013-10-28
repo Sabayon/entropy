@@ -169,7 +169,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                     break
 
         # call post-build cleanup operations
-        if local_compleded or local_uninstalled:
+        if local_completed or local_uninstalled:
             PackageBuilder.post_build(spec, emerge_config)
 
         completed.extend([x for x in local_completed \
