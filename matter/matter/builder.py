@@ -785,7 +785,7 @@ class PackageBuilder(object):
                         self._needed_package_mask_changes.add(
                             "%s" % (pkg.cpv,))
                 elif k == "needed_license_changes":
-                    for pkg, lics in v.items():
+                    for pkg, lics in v:
                         obj = self._needed_license_changes.setdefault(
                             "%s" % (pkg.cpv,), set())
                         obj.update(lics)
