@@ -1,3 +1,21 @@
+commit 28cb3980694e9266e1885c43d2418cc2033a27a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 16:51:52 2013 +0100
+
+    Release Entropy 223
+
+commit 1c2b6d01536e3000c3086666d0adccf7350f2392
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 14:48:50 2013 +0100
+
+    [matter] fix function calls wrt dict expansion
+
+commit f66aee8ef5cd4849d4ccf1c2df0ede9dc9adebb8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:52:33 2013 +0100
+
+    Tagging Entropy version 222
+
 commit d7b9cd30b779f19aa4a7abdf6c74d03e31f65f08
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 28 12:52:33 2013 +0100
