@@ -288,7 +288,7 @@ class PackageBuilder(object):
         accepted = []
 
         # now determine what's the installed version.
-        best_installed = portage.best(vardb.match(package))
+        best_installed = portage.best(vardb.match(package, use_cache=0))
         if (not best_installed) and (not allow_not_installed):
             # package not installed
             print_error("package not installed: %s, ignoring this one" % (
@@ -337,7 +337,7 @@ class PackageBuilder(object):
             # determine what's the installed version.
             # we know that among all the best_visibles, there is one that
             # is installed. The question is whether we got it now.
-            best_installed = portage.best(vardb.match(cp_slot))
+            best_installed = portage.best(vardb.match(cp_slot, use_cache=0))
             if (not best_installed) and (not allow_not_installed):
                 # package not installed
                 print_warning("%s not installed, skipping" % (cp_slot,))
@@ -469,7 +469,8 @@ class PackageBuilder(object):
             for pkg in real_queue:
                 # frozenset
                 enabled_flags = pkg.use.enabled
-                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                inst_atom = portage.best(
+                    vardb.match(pkg.slot_atom, use_cache=0))
                 if not inst_atom:
                     # new package, ignore check
                     continue
@@ -502,7 +503,8 @@ class PackageBuilder(object):
         if not allow_downgrade:
             allow_downgrade_give_ups = []
             for pkg in real_queue:
-                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                inst_atom = portage.best(
+                    vardb.match(pkg.slot_atom, use_cache=0))
                 cmp_res = -1
                 if inst_atom:
                     # -1 if inst_atom is older than pkg.cpv
@@ -526,7 +528,8 @@ class PackageBuilder(object):
         changing_repo_pkgs = []
         for pkg in real_queue:
             wanted_repo = pkg.repo
-            inst_atom = portage.best(vardb.match(pkg.slot_atom))
+            inst_atom = portage.best(
+                vardb.match(pkg.slot_atom, use_cache=0))
             current_repo = vardb.aux_get(inst_atom, ["repository"])[0]
             if current_repo:
                 if current_repo != wanted_repo:
