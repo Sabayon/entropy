@@ -101,6 +101,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
         spec_count += 1
         keep_going = spec["keep-going"] == "yes"
         local_completed = []
+        local_uninstalled = []
 
         tot_pkgs = len(spec["packages"])
         for pkg_count, packages in enumerate(spec["packages"], 1):
@@ -116,8 +117,9 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_not_installed_packages())
             not_merged.extend(
                 builder.get_not_merged_packages())
-            uninstalled.extend(
-                builder.get_uninstalled_packages())
+            uninstalled = builder.get_uninstalled_packages()
+            uninstalled.extend(uninstalled)
+            local_uninstalled.extend(uninstalled)
 
             # Merge at least the first layer of dicts.
             for k, v in builder.get_missing_use_packages().items():
@@ -166,9 +168,9 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 if not keep_going:
                     break
 
-        # call post-build cleanup operations,
-        # run it unconditionally
-        PackageBuilder.post_build(spec, emerge_config)
+        # call post-build cleanup operations
+        if local_compleded or local_uninstalled:
+            PackageBuilder.post_build(spec, emerge_config)
 
         completed.extend([x for x in local_completed \
             if x not in completed])
