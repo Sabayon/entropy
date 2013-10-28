@@ -928,13 +928,15 @@ class PackageBuilder(object):
         """
         Execute Portage post-build tasks.
         """
-        emerge_settings, emerge_trees, mtimedb = emerge_config
-        if "yes" == emerge_settings.get("AUTOCLEAN"):
-            print_info("executing post-build operations, please wait...")
-            build_args = list(cls._setup_build_args(spec))
-            _action, opts, _files = parse_opts(build_args)
-            unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
-                opts, "clean", [], mtimedb["ldpath"], autoclean=1)
+        print_info("executing post-build operations, please wait...")
+
+        if self._built_packages or self._uninstalled_packages:
+            emerge_settings, emerge_trees, mtimedb = emerge_config
+            if "yes" == emerge_settings.get("AUTOCLEAN"):
+                build_args = list(cls._setup_build_args(spec))
+                _action, opts, _files = parse_opts(build_args)
+                unmerge(emerge_trees[emerge_settings["ROOT"]]["root_config"],
+                        opts, "clean", [], mtimedb["ldpath"], autoclean=1)
 
     @classmethod
     def sync(cls):
