@@ -120,7 +120,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 builder.get_uninstalled_packages())
 
             # Merge at least the first layer of dicts.
-            for k, v in builder.get_missing_use_packages():
+            for k, v in builder.get_missing_use_packages().items():
                 obj = missing_use.setdefault(k, {})
                 obj.update(v)
 
@@ -132,7 +132,7 @@ def matter_main(binary_pms, nsargs, cwd, specs):
             # We need to merge the two dicts, not just update()
             # or we can lose the full set of licenses associated
             # to a single cpv.
-            for k, v in builder.get_needed_license_changes():
+            for k, v in builder.get_needed_license_changes().items():
                 obj = license_changes.setdefault(k, set())
                 obj.update(v)
 
