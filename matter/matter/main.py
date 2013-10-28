@@ -188,6 +188,8 @@ def matter_main(binary_pms, nsargs, cwd, specs):
                 if not keep_going:
                     break
 
+        PackageBuilder.clear_caches(emerge_config)
+
     if tainted_repositories and nsargs.push and nsargs.commit:
         if preserved_libs and nsargs.disable_preserved_libs:
             # cannot push anyway
