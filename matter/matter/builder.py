@@ -773,22 +773,21 @@ class PackageBuilder(object):
                                     tup,))
                             continue
                         obj = self._missing_use_packages.setdefault(
-                            copy.deepcopy(pkg.cpv), {})
-                        obj["cp:slot"] = copy.deepcopy(pkg.slot_atom)
+                            "%s" % (pkg.cpv,), {})
+                        obj["cp:slot"] = "%s" % (pkg.slot_atom,)
                         changes = obj.setdefault("changes", {})
                         changes.update(copy.deepcopy(new_changes))
                 elif k == "needed_unstable_keywords":
                     for pkg in v:
-                        self._needed_unstable_keywords.add(
-                            copy.deepcopy(pkg.cpv))
+                        self._needed_unstable_keywords.add("%s" % (pkg.cpv,))
                 elif k == "needed_p_mask_changes":
                     for pkg in v:
                         self._needed_package_mask_changes.add(
-                            copy.deepcopy(pkg.cpv))
+                            "%s" % (pkg.cpv,))
                 elif k == "needed_license_changes":
                     for pkg, lics in v.items():
                         obj = self._needed_license_changes.setdefault(
-                            copy.deepcopy(pkg.cpv), set())
+                            "%s" % (pkg.cpv,), set())
                         obj.update(lics)
                 else:
                     print_warning("unsupported backtrack info: %s -> %s" % (
@@ -832,6 +831,7 @@ class PackageBuilder(object):
         if retval != 0:
             merge_list = mtimedb.get("resume", {}).get("mergelist")
             for _merge_type, _merge_root, merge_atom, _merge_act in merge_list:
+                merge_atom = "%s" % (merge_atom,)
                 if failed_package is None:
                     # we consider the first encountered package the one
                     # that failed. It makes sense since packages are built
@@ -840,7 +840,7 @@ class PackageBuilder(object):
                     # package queue, so grab it from there.
                     failed_package = real_queue_map.get(merge_atom)
                 not_merged.append(merge_atom)
-                self._not_merged_packages.append(copy.deepcopy(merge_atom))
+                self._not_merged_packages.append(merge_atom)
 
         for pkg in real_queue:
             cpv = pkg.cpv
@@ -851,11 +851,11 @@ class PackageBuilder(object):
                 if pkg.operation == "merge":
                     # add to build queue
                     print_info("package: %s, successfully built" % (cpv,))
-                    self._built_packages.append(copy.deepcopy(cpv))
+                    self._built_packages.append("%s" % (cpv,))
                 else:
                     # add to uninstall queue
                     print_info("package: %s, successfully uninstalled" % (cpv,))
-                    self._uninstalled_packages.append(copy.deepcopy(cpv))
+                    self._uninstalled_packages.append("%s" % (cpv,))
 
         post_emerge(myaction, myopts, myfiles, settings["ROOT"],
             emerge_trees, mtimedb, retval)
