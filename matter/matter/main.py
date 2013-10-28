@@ -14,6 +14,7 @@ import os
 import sys
 import errno
 import argparse
+import collections
 
 # keep these before PackageBuilder due to the os.environ stuff inside
 from matter.binpms.base import BaseBinaryPMS, BaseBinaryResourceLock
@@ -80,11 +81,11 @@ def matter_main(binary_pms, nsargs, cwd, specs):
             return _teardown(_rc)
 
     exit_st = 0
-    completed = []
-    not_found = []
-    not_installed = []
-    not_merged = []
-    uninstalled = []
+    completed = collections.deque()
+    not_found = collections.deque()
+    not_installed = collections.deque()
+    not_merged = collections.deque()
+    uninstalled = collections.deque()
     missing_use = {}
     unstable_keywords = set()
     pmask_changes = set()
