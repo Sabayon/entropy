@@ -839,7 +839,7 @@ class PackageBuilder(object):
                     # package queue, so grab it from there.
                     failed_package = real_queue_map.get(merge_atom)
                 not_merged.append(merge_atom)
-                self._not_merged_packages.append(merge_atom)
+                self._not_merged_packages.append(copy.deepcopy(merge_atom))
 
         for pkg in real_queue:
             cpv = pkg.cpv
@@ -850,11 +850,11 @@ class PackageBuilder(object):
                 if pkg.operation == "merge":
                     # add to build queue
                     print_info("package: %s, successfully built" % (cpv,))
-                    self._built_packages.append(cpv)
+                    self._built_packages.append(copy.deepcopy(cpv))
                 else:
                     # add to uninstall queue
                     print_info("package: %s, successfully uninstalled" % (cpv,))
-                    self._uninstalled_packages.append(cpv)
+                    self._uninstalled_packages.append(copy.deepcopy(cpv))
 
         post_emerge(myaction, myopts, myfiles, settings["ROOT"],
             emerge_trees, mtimedb, retval)
