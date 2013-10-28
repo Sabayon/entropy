@@ -1,3 +1,27 @@
+commit d7b9cd30b779f19aa4a7abdf6c74d03e31f65f08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:52:33 2013 +0100
+
+    Release Entropy 222
+
+commit eeac4a7782ee23020dc8e51826b1c966d6c9ad22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:49:15 2013 +0100
+
+    [matter.builder] use __str__ or __unicode__ instead of copy.deepcopy() when possible
+
+commit c2c4647c860f3d2a2338fb921dc259e4ebe5f880
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:40:09 2013 +0100
+
+    [matter.builder] regenerate dbapi.auxdb objects after calling close_caches()
+
+commit b427d09f67be3a548723699323a8b4b62b49e0b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 12:28:05 2013 +0100
+
+    Tagging Entropy version 221
+
 commit 93bc50c5397a496420b28c553683a93b690a0792
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 28 12:28:04 2013 +0100
