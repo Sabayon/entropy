@@ -1,3 +1,39 @@
+commit 3d2eb09213bc6f0d9300c0497703e8487bcb8b6f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 29 23:31:40 2013 +0100
+
+    Release Entropy 224
+
+commit fa71378cca200d29283e58dab140eed4429b33c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 21:03:45 2013 +0100
+
+    [matter] fix typo in variable name
+
+commit 7680861cbbbea10857463811abed73465f940e0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 20:56:45 2013 +0100
+
+    [matter] fix post_build execution wrt collected statistics
+
+commit d8a4b741a52069c82bfd803decf6ebfd28cf47a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 20:51:03 2013 +0100
+
+    [matter.builder] fix needed_license_changes backtrack info handling
+
+commit fc56ba5be290c402e15402713070fc71432c4bac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 16:57:36 2013 +0100
+
+    [matter.builder] execute post-build operations iff there has been vdb activity
+
+commit 964b8ad7cf191f6cc1cce1d591465f1f3bb081fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 28 16:51:52 2013 +0100
+
+    Tagging Entropy version 223
+
 commit 28cb3980694e9266e1885c43d2418cc2033a27a4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Oct 28 16:51:52 2013 +0100
