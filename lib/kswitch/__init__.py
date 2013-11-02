@@ -175,6 +175,43 @@ class KernelSwitcher(object):
             tags = sorted(tags, reverse = True)
             return tags.pop(0)
 
+    def running_kernel_package(self):
+        """
+        Return the currently running kernel package by looking
+        at uname() release.
+        The release string is then used to search the corresponding
+        kernel package file (typically called RELEASE_LEVEL) and
+        match it against the installed packages files.
+        The installed package identifier is then returned or
+        CannotFindRunningKernel() exception is raised otherwise.
+
+        @return: the installed package identifier
+        @rtype: int
+        @raise CannotFindRunningKernel: if the package is not found
+        """
+        try:
+            uname_r = os.uname()[2]
+        except OSError:
+            uname_r = None
+        except IndexError:
+            uname_r = None
+
+        pkg_file = None
+        if uname_r is not None:
+            pkg_file = _guess_kernel_package_file(uname_r)
+
+        package_id = -1
+        if pkg_file is not None:
+            inst_repo = self._entropy.installed_repository()
+            pkg_ids = list(inst_repo.searchBelongs(pkg_file))
+            if pkg_ids:
+                # if more than one, get the latest
+                pkg_ids.sort(reverse=True)
+                return pkg_ids[0]
+
+        raise CannotFindRunningKernel(
+            "Cannot find the currently running kernel")
+
     def switch(self, kernel_match, installer, from_running=False):
         """
         Execute a kernel switch to the given kernel package.
@@ -210,24 +247,9 @@ class KernelSwitcher(object):
         latest_kernel = -1
         if from_running:
             try:
-                uname_r = os.uname()[2]
-            except OSError:
-                uname_r = None
-            except IndexError:
-                uname_r = None
-
-            pkg_file = None
-            if uname_r is not None:
-                pkg_file = _guess_kernel_package_file(uname_r)
-            if pkg_file is not None:
-                _pkg_ids = list(inst_repo.searchBelongs(pkg_file))
-                # if more than one, get the latest
-                _pkg_ids.sort(reverse=True)
-                if _pkg_ids:
-                    latest_kernel = _pkg_ids[0]
-            if latest_kernel == -1:
-                raise CannotFindRunningKernel(
-                    "Cannot find the currently running kernel")
+                latest_kernel = self.running_kernel_package()
+            except CannotFindRunningKernel:
+                raise
 
         if latest_kernel == -1:
             latest_kernel, _k_rc = inst_repo.atomMatch(
