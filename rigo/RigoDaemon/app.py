@@ -473,7 +473,7 @@ class RigoDaemonService(dbus.service.Object):
         Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
         Gio.FileMonitorEvent.CHANGED)
 
-    API_VERSION = 7
+    API_VERSION = 8
 
     """
     RigoDaemon is the dbus service Object in charge of executing
@@ -1198,7 +1198,7 @@ class RigoDaemonService(dbus.service.Object):
 
         GLib.idle_add(self.updates_available,
                       update, update_atoms,
-                      remove, remove_atoms)
+                      remove, remove_atoms, True)
 
     def _update_repositories(self, repositories, force, activity, pid,
                              authorized=False):
@@ -3718,9 +3718,9 @@ class RigoDaemonService(dbus.service.Object):
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
-        signature='a(is)asaias')
+        signature='a(is)asaiasb')
     def updates_available(self, update, update_atoms, remove,
-                          remove_atoms):
+                          remove_atoms, one_click_updatable):
         """
         Signal all the connected Clients that there are updates
         available.

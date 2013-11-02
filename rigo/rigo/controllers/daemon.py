@@ -188,7 +188,7 @@ class RigoServiceController(GObject.Object):
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
     _REPOS_SETTINGS_CHANGED_SIGNAL = "repositories_settings_changed"
     _MIRRORS_OPTIMIZED_SIGNAL = "mirrors_optimized"
-    _SUPPORTED_APIS = [6, 7]
+    _SUPPORTED_APIS = [6, 7, 8]
 
     def __init__(self, rigo_app, activity_rwsem,
                  entropy_client, entropy_ws):
@@ -914,11 +914,12 @@ class RigoServiceController(GObject.Object):
             self._nc.append(box, timeout=20)
 
     def _updates_available_signal(self, update, update_atoms, remove,
-                                  remove_atoms):
+                                  remove_atoms, one_click_update=False):
         const_debug_write(
             __name__,
             "_updates_available_signal: "
-            "update: %s, remove: %s" % (update, remove,))
+            "update: %s, remove: %s, one_click_update: %s" % (
+                update, remove, one_click_update))
         if not update:
             return
         update = [(int(x), self._dbus_to_unicode(y)) for x, y \

@@ -313,7 +313,8 @@ class MagnetoCore(MagnetoCoreUI):
         return dbus_string.decode(etpConst['conf_encoding'])
 
     def _updates_available_signal(self, update, update_atoms,
-                                  remove, remove_atoms):
+                                  remove, remove_atoms,
+                                  one_click_update=False):
         updates = [self._dbus_to_unicode(x) for x in update_atoms]
         self.new_updates_signal(updates)
 
