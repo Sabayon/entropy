@@ -1220,7 +1220,7 @@ class RigoServiceController(GObject.Object):
 
         if total > 1:
             text = "%s/%s kB @ %s/sec, %s" % (
-                round(float(downloaded_size)/1024, 1),
+                round(float(downloaded_size)/1000, 1),
                 total,
                 human_dt, time_remaining_secs)
         else:
