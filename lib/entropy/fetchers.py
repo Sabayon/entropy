@@ -952,8 +952,10 @@ class MultipleUrlFetcher(TextInterface):
             the value is read from Entropy configuration files.
         @type timeout: int
         """
+        self._progress_data = {}
+        self._url_path_list = url_path_list
+
         self.__system_settings = SystemSettings()
-        self.__url_path_list = url_path_list
         self.__resume = resume
         self.__checksum = checksum
         self.__show_speed = show_speed
@@ -977,8 +979,8 @@ class MultipleUrlFetcher(TextInterface):
             raise InterruptError("interrupted")
 
     def _init_vars(self):
-        self.__progress_data = {}
-        self.__progress_data_lock = threading.Lock()
+        self._progress_data.clear()
+        self._progress_data_lock = threading.Lock()
         self.__thread_pool = {}
         self.__download_statuses = {}
         self.__show_progress = False
@@ -1023,8 +1025,8 @@ class MultipleUrlFetcher(TextInterface):
         th_id = 0
         speed_limit = 0
         dsl = self.__system_settings['repositories']['transfer_limit']
-        if isinstance(dsl, int) and self.__url_path_list:
-            speed_limit = dsl/len(self.__url_path_list)
+        if isinstance(dsl, int) and self._url_path_list:
+            speed_limit = dsl/len(self._url_path_list)
 
         class MyFetcher(self.__url_fetcher):
 
@@ -1042,7 +1044,7 @@ class MultipleUrlFetcher(TextInterface):
                 return self.__multiple_fetcher.handle_statistics(*args,
                     **kwargs)
 
-        for url, path_to_save in self.__url_path_list:
+        for url, path_to_save in self._url_path_list:
             th_id += 1
             downloader = MyFetcher(self.__url_fetcher, self, url, path_to_save,
                 checksum = self.__checksum, show_speed = self.__show_speed,
@@ -1086,7 +1088,7 @@ class MultipleUrlFetcher(TextInterface):
             self.__stop_threads = True
             raise
 
-        if len(self.__url_path_list) != len(self.__download_statuses):
+        if len(self._url_path_list) != len(self.__download_statuses):
             # there has been an error (exception)
             # complete download_statuses with error info
             for th_id, th in self.__thread_pool.items():
@@ -1125,7 +1127,7 @@ class MultipleUrlFetcher(TextInterface):
 
     def __show_download_files_info(self):
         count = 0
-        pl = self.__url_path_list[:]
+        pl = self._url_path_list[:]
         TextInterface.output(self,
             "%s: %s %s" % (
                 darkblue(_("Aggregated download")),
@@ -1193,8 +1195,8 @@ class MultipleUrlFetcher(TextInterface):
             'time_remaining': time_remaining,
             'time_remaining_secs': time_remaining_secs,
         }
-        with self.__progress_data_lock:
-            self.__progress_data[th_id] = data
+        with self._progress_data_lock:
+            self._progress_data[th_id] = data
 
     def _push_progress_to_output(self, force = False):
 
@@ -1202,9 +1204,9 @@ class MultipleUrlFetcher(TextInterface):
         total_size = 0
         time_remaining = 0
 
-        with self.__progress_data_lock:
-            all_started = len(self.__progress_data) == len(self.__url_path_list)
-            for th_id, data in self.__progress_data.items():
+        with self._progress_data_lock:
+            all_started = len(self._progress_data) == len(self._url_path_list)
+            for th_id, data in self._progress_data.items():
                 downloaded_size += data.get('downloaded_size', 0)
                 total_size += data.get('total_size', 0)
                 # data_transfer from Python threading bullshit is not reliable
