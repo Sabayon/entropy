@@ -410,7 +410,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_bytes_into_human(self):
         begin = 102400020
-        end = '97.7MB'
+        end = '102.4MB'
         self.assertEqual(et.bytes_into_human(begin), end)
 
     """
