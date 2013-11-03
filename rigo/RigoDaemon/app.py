@@ -76,6 +76,8 @@ from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
 
+import kswitch
+
 import entropy.tools
 import entropy.dep
 
@@ -1196,9 +1198,68 @@ class RigoDaemonService(dbus.service.Object):
             if atom is not None:
                 remove_atoms.append(atom)
 
+        one_click_updatable = self._one_click_updatable_unlocked(
+            update, remove)
+
         GLib.idle_add(self.updates_available,
                       update, update_atoms,
-                      remove, remove_atoms, True)
+                      remove, remove_atoms,
+                      one_click_updatable)
+
+    def _one_click_updatable_unlocked(self, update, remove):
+        """
+        Determine whether it's possible to safely execute a
+        One Click Update of the system. This method will use
+        some euristics (maybe not in the currently implemented
+        version however) to determine if it's safe to do so.
+        """
+        enabled = self._one_click_updatable_kernel(update, remove)
+        if not enabled:
+            return False
+
+        return True
+
+    def _one_click_updatable_kernel(self, update, remove):
+        """
+        Determine whether One Click Update can be run basing
+        on the current running kernel state and its availability
+        inside repositories.
+        """
+        switcher = kswitch.KernelSwitcher(self._entropy)
+        try:
+            package_id = switcher.running_kernel_package()
+        except kswitch.CannotFindRunningKernel:
+            package_id = -1
+
+        # two cases here:
+        # 1. the running kernel is not installed.
+        #    In this case, we cannot safely determine what kernel
+        #    the user is using and thus, we will forcibly disable OCU.
+        # 2. the running kernel is installed.
+        #    In this case, we need to make sure that the kernel is
+        #    still available in the repositories, because we don't
+        #    want to allow OCU if the kernel should be bumped to a new
+        #    version.
+        if package_id == -1:
+            write_output("_one_click_updatable_kernel: not installed",
+                         debug=True)
+            return False
+
+        inst_repo = self._entropy.installed_repository()
+        key_slot = inst_repo.retrieveKeySlotAggregated(package_id)
+        if key_slot is None:
+            write_output("_one_click_updatable_kernel: corrupted entry",
+                         debug=True)
+            return False
+
+        repo_package_id, repository_id = self._entropy.atom_match(key_slot)
+        if repo_package_id == -1:
+            write_output(
+                "_one_click_updatable_kernel: %s not available" % (key_slot,),
+                debug=True)
+            return False
+
+        return True
 
     def _update_repositories(self, repositories, force, activity, pid,
                              authorized=False):
