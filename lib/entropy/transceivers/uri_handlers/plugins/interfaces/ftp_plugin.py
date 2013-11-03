@@ -260,7 +260,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
-            round_fsize = int(round(self.__filesize*1024, 0))
+            round_fsize = int(round(self.__filesize * 1000, 0))
             round_rsize = int(round(self.__transfersize, 0))
             self.__time_remaining_secs = int(round((round_fsize - \
                 round_rsize)/self.__datatransfer, 0))
@@ -271,14 +271,14 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
     def _speed_limit_loop(self):
         if self._speed_limit:
-            while self.__datatransfer > self._speed_limit * 1024:
+            while self.__datatransfer > self._speed_limit * 1000:
                 time.sleep(0.1)
                 self._update_speed()
                 self._update_progress()
 
     def _commit_buffer_update(self, buf_len):
         # get the buffer size
-        self.__filekbcount += float(buf_len)/1024
+        self.__filekbcount += float(buf_len) / 1000
         self.__transfersize += buf_len
 
     def _update_progress(self, force = False):
@@ -357,7 +357,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 # get the file size
                 self.__filesize = self._get_file_size_compat(path)
                 if (self.__filesize):
-                    self.__filesize = round(float(int(self.__filesize))/1024, 1)
+                    self.__filesize = round(float(int(self.__filesize))/1000, 1)
                     if (self.__filesize == 0):
                         self.__filesize = 1
                 elif not self.is_path_available(path):
@@ -430,7 +430,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             try:
 
                 file_size = get_file_size(load_path)
-                self.__filesize = round(float(file_size)/ 1024, 1)
+                self.__filesize = round(float(file_size)/ 1000, 1)
                 self.__filekbcount = 0
 
                 with open(load_path, "r") as f:
