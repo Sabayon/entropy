@@ -138,17 +138,12 @@ class Magneto(MagnetoCore):
                 return False
             Notify.init(_("System Updates"))
             n = Notify.Notification.new(
-                title, text, "dialog-information")
+                title, text, self._status_icon.get_icon_name())
             if urgency == 'critical':
                 n.set_urgency(Notify.Urgency.CRITICAL)
             elif urgency == 'low':
                 n.set_urgency(Notify.Urgency.LOW)
             self.last_alert = (title, text)
-            try:
-                # this has been dropped from libnotify 0.7
-                n.attach_to_status_icon(self._status_icon)
-            except AttributeError:
-                pass
             n.show()
             return False
 
