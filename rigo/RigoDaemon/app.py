@@ -64,7 +64,7 @@ from entropy.const import etpConst, const_convert_to_rawstring, \
     const_mkstemp
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
-    EntropyPackageException
+    EntropyPackageException, InterruptError
 from entropy.i18n import _
 from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
     ReadersWritersSemaphore
@@ -2098,6 +2098,14 @@ class RigoDaemonService(dbus.service.Object):
                 _atom = entropy.dep.dep_getkey(pkg.pkgmeta['atom'])
                 obj.add(_atom)
 
+        def _abort_check_function():
+            """
+            Check if the _interrupt_activity daemon flag is up and
+            raise InterruptError.
+            """
+            if self._interrupt_activity:
+                raise InterruptError("simulated")
+
         _settings = self._entropy.Settings()
         _plg_ids = etpConst['system_settings_plugins_ids']
         client_plg_id = _plg_ids['client_plugin']
@@ -2113,6 +2121,9 @@ class RigoDaemonService(dbus.service.Object):
         is_multifetch = False
         multifetch = misc_settings.get("multifetch", 1)
         mymultifetch = multifetch
+        metaopts = {
+            "fetch_abort_function": _abort_check_function,
+            }
         if multifetch > 1:
 
             start = 0
@@ -2153,7 +2164,7 @@ class RigoDaemonService(dbus.service.Object):
                 pkg = None
                 try:
                     pkg = self._entropy.Package()
-                    pkg.prepare(opaque, pkg_action, {})
+                    pkg.prepare(opaque, pkg_action, metaopts)
 
                     msg = ":: %s" % (purple(_("Application download")),)
                     self._entropy.output(msg, count=(_count, total),
