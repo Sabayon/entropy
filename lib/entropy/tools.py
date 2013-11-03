@@ -2168,13 +2168,13 @@ def bytes_into_human(xbytes):
     @return: number of bytes in human readable format
     @rtype: string
     """
-    size = str(round(float(xbytes)/1024, 1))
-    if xbytes < 1024:
+    size = str(round(float(xbytes) / 1000, 1))
+    if xbytes < 1000:
         size = str(round(float(xbytes)))+"b"
-    elif xbytes < 1023999:
+    elif xbytes < 1000000:
         size += "kB"
-    elif xbytes > 1023999:
-        size = str(round(float(size)/1024, 1))
+    elif xbytes >= 1000000:
+        size = str(round(float(size)/1000, 1))
         size += "MB"
     return size
 
