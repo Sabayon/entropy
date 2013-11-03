@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-03 15:47+0100\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
+"PO-Revision-Date: 2013-07-28 09:23+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: French (Canada) (http://www.transifex.com/projects/p/sabayon-rigo/language/fr_CA/)\n"
+"Language-Team: Vietnamese (http://www.transifex.com/projects/p/sabayon-rigo/language/vi/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fr_CA\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: vi\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../RigoDaemon/app.py:115
 msgid "Downloading"
@@ -65,15 +65,15 @@ msgstr ""
 #: ../rigo/models/application.py:1401 ../rigo/models/application.py:1433
 #: ../rigo/models/application.py:1503
 msgid "N/A"
-msgstr "N/A"
+msgstr ""
 
 #: ../rigo/models/application.py:1365 ../rigo/models/application.py:1424
 msgid "No description"
-msgstr "Pas de description"
+msgstr ""
 
 #: ../rigo/models/application.py:1438
 msgid "Installed"
-msgstr "Installé"
+msgstr ""
 
 #: ../rigo/models/application.py:1444
 #, python-format
@@ -82,11 +82,11 @@ msgstr ""
 
 #: ../rigo/models/application.py:1446
 msgid "from"
-msgstr "à partir de"
+msgstr ""
 
 #: ../rigo/models/application.py:1480
 msgid "License"
-msgstr "License"
+msgstr ""
 
 #: ../rigo/models/application.py:1491
 msgid "Required space"
@@ -94,15 +94,15 @@ msgstr ""
 
 #: ../rigo/models/application.py:1498
 msgid "Download size"
-msgstr "Taille du téléchargement"
+msgstr ""
 
 #: ../rigo/models/application.py:1505
 msgid "Checksum"
-msgstr "Somme de contrôle"
+msgstr ""
 
 #: ../rigo/models/application.py:1516
 msgid "USE flags"
-msgstr "Indicateurs USE"
+msgstr ""
 
 #: ../rigo/models/application.py:1520
 msgid "No use flags"
@@ -150,7 +150,6 @@ msgstr ""
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/controllers/daemon.py:757 ../rigo_app.py:158
 msgid "Application"
@@ -232,7 +231,6 @@ msgstr ""
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/controllers/daemon.py:1144
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
@@ -347,19 +345,18 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/work.py:283
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:81
 msgid "Installing"
-msgstr "Installation"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/work.py:285
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:82
 msgid "Removing"
-msgstr "Suppression"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/work.py:293
 #, python-format
 msgid ", and <b>%d</b> <i>more in queue</i>"
 msgid_plural ", and <b>%d</b> <i>more in queue</i>"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/controllers/confupdate.py:93
 msgid "Cannot <b>edit</b> configuration file"
@@ -417,7 +414,6 @@ msgstr ""
 msgid "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> star?"
 msgid_plural "Rate <b>%s</b> as <b>%s</b>, with <b>%d</b> stars?"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:349
 #: ../rigo/ui/gtk3/controllers/application.py:513
@@ -505,25 +501,25 @@ msgstr ""
 #: ../rigo/ui/gtk3/controllers/application.py:864
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:80
 msgid "Update"
-msgstr "Mettre à jour"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:874
 msgid "Reinstall"
-msgstr "Réinstaller"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:884
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:79
 msgid "Remove"
-msgstr "Supprimer"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:894
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:78
 msgid "Install"
-msgstr "Installer"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:909
 msgid "Not available"
-msgstr "Pas disponible"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/application.py:911
 msgid "Never downloaded"
@@ -562,7 +558,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:600
 msgid "Not found"
-msgstr "Introuvable"
+msgstr ""
 
 #: ../rigo/ui/gtk3/controllers/applications.py:735
 msgid "Update repositories"
@@ -601,7 +597,6 @@ msgstr ""
 msgid "%(nr_ratings)i rating"
 msgid_plural "%(nr_ratings)i ratings"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:500
 msgid "Hint: Click a star to rate this app"
@@ -638,7 +633,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/comments.py:128
 msgid "remove"
-msgstr "suppression"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/preferencestreeview.py:48
 msgid "Run"
@@ -649,14 +644,12 @@ msgstr ""
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:187
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "What to do?"
@@ -721,11 +714,11 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:326
 msgid "Username"
-msgstr "Nom d'utilisateur"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:336
 msgid "Password"
-msgstr "Mot de passe"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:369
 msgid "Login <b>error</b>!"
@@ -788,7 +781,7 @@ msgstr ""
 #: ../rigo/ui/gtk3/widgets/notifications.py:654
 #: ../rigo/ui/gtk3/widgets/notifications.py:1084
 msgid "Close"
-msgstr "Fermer"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:671
 msgid ""
@@ -836,14 +829,12 @@ msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
 "<b>%s</b> Application Action will start in <big><b>%d</b></big> seconds"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1015
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1021
 msgid ""
@@ -865,7 +856,6 @@ msgstr ""
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
 msgstr[0] ""
-msgstr[1] ""
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1072
 msgid "It is <b>extremely</b> important to always read them."
@@ -913,7 +903,7 @@ msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/images.py:208
 msgid "Keywords"
-msgstr "Mots-clé"
+msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/apptreeview.py:73
 msgid "More Info"

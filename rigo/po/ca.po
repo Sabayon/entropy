@@ -3,15 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# rogerc, 2013
 # rogerc, 2012
 # rogerc, 2008, 2009, 2010, 2011
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-07 09:50+0000\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"POT-Creation-Date: 2013-11-03 15:47+0100\n"
+"PO-Revision-Date: 2013-08-19 10:14+0000\n"
+"Last-Translator: rogerc\n"
 "Language-Team: Catalan (http://www.transifex.com/projects/p/sabayon-rigo/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,118 +20,118 @@ msgstr ""
 "Language: ca\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../RigoDaemon/app.py:113
-msgid "Downloading"
-msgstr ""
-
 #: ../RigoDaemon/app.py:115
-msgid "Uploading"
-msgstr ""
+msgid "Downloading"
+msgstr "Baixant"
 
-#: ../RigoDaemon/app.py:1223 ../rigo_app.py:766
+#: ../RigoDaemon/app.py:117
+msgid "Uploading"
+msgstr "Pujant"
+
+#: ../RigoDaemon/app.py:1277 ../rigo_app.py:767
 msgid "Not authorized"
 msgstr "No autoritzat"
 
-#: ../RigoDaemon/app.py:1259
+#: ../RigoDaemon/app.py:1313
 msgid "No repositories configured"
 msgstr "No hi ha repositoris configurats"
 
-#: ../RigoDaemon/app.py:1264
+#: ../RigoDaemon/app.py:1318
 msgid "Unhandled Exception"
 msgstr "Excepció no gestionada"
 
-#: ../RigoDaemon/app.py:1798
+#: ../RigoDaemon/app.py:1852
 msgid "Application Removal"
 msgstr "Eliminació d'aplicació"
 
-#: ../RigoDaemon/app.py:2104
+#: ../RigoDaemon/app.py:2169
 msgid "Application download"
 msgstr "Baixada d'aplicació"
 
-#: ../RigoDaemon/app.py:2204
+#: ../RigoDaemon/app.py:2269
 msgid "Application Install"
 msgstr "Instal·lació d'aplicació"
 
-#: ../rigo/models/configupdate.py:101
+#: ../rigo/models/configupdate.py:102
 msgid "Cannot save configuration file"
 msgstr "No es pot desar el fitxer de configuració"
 
-#: ../rigo/models/configupdate.py:300
+#: ../rigo/models/configupdate.py:299
 msgid "Destination"
 msgstr "Destí"
 
-#: ../rigo/models/configupdate.py:303
+#: ../rigo/models/configupdate.py:302
 msgid "Applications"
 msgstr "Aplicacions"
 
-#: ../rigo/models/application.py:881 ../rigo/models/application.py:1253
-#: ../rigo/models/application.py:1297 ../rigo/models/application.py:1329
-#: ../rigo/models/application.py:1399
+#: ../rigo/models/application.py:985 ../rigo/models/application.py:1357
+#: ../rigo/models/application.py:1401 ../rigo/models/application.py:1433
+#: ../rigo/models/application.py:1503
 msgid "N/A"
 msgstr "N/A"
 
-#: ../rigo/models/application.py:1261 ../rigo/models/application.py:1320
+#: ../rigo/models/application.py:1365 ../rigo/models/application.py:1424
 msgid "No description"
 msgstr "Cap descripció"
 
-#: ../rigo/models/application.py:1334
+#: ../rigo/models/application.py:1438
 msgid "Installed"
 msgstr "Instal·lat"
 
-#: ../rigo/models/application.py:1340
+#: ../rigo/models/application.py:1444
 #, python-format
 msgid "<b>%s</b> is installed"
 msgstr "<b>%s</b> està instal·lat"
 
-#: ../rigo/models/application.py:1342
+#: ../rigo/models/application.py:1446
 msgid "from"
 msgstr "des de"
 
-#: ../rigo/models/application.py:1376
+#: ../rigo/models/application.py:1480
 msgid "License"
 msgstr "Llicència"
 
-#: ../rigo/models/application.py:1387
+#: ../rigo/models/application.py:1491
 msgid "Required space"
 msgstr "Espai necessari"
 
-#: ../rigo/models/application.py:1394
+#: ../rigo/models/application.py:1498
 msgid "Download size"
 msgstr "Mida de baixada"
 
-#: ../rigo/models/application.py:1401
+#: ../rigo/models/application.py:1505
 msgid "Checksum"
 msgstr "Suma de verificació"
 
-#: ../rigo/models/application.py:1412
+#: ../rigo/models/application.py:1516
 msgid "USE flags"
 msgstr "Senyaladors d'US"
 
-#: ../rigo/models/application.py:1416
+#: ../rigo/models/application.py:1520
 msgid "No use flags"
 msgstr "Sense marcadors use"
 
-#: ../rigo/models/application.py:1434
+#: ../rigo/models/application.py:1538
 msgid "Runtime dependencies"
 msgstr "Dependències en temps d'execució"
 
-#: ../rigo/models/application.py:1435
+#: ../rigo/models/application.py:1539
 msgid "Build dependencies"
 msgstr "Dependències de construcció"
 
-#: ../rigo/models/application.py:1436
+#: ../rigo/models/application.py:1540
 msgid "Post dependencies"
 msgstr "Post dependències"
 
-#: ../rigo/models/application.py:1437
+#: ../rigo/models/application.py:1541
 msgid "Staff dependencies"
 msgstr "Dependències del personal"
 
-#: ../rigo/models/application.py:1459
+#: ../rigo/models/application.py:1563
 msgid "Click here for more details"
 msgstr "Cliqueu aquí per més detalls"
 
-#: ../rigo/models/application.py:1718
+#: ../rigo/models/application.py:1824
 msgid "Application not found"
 msgstr "L'aplicació no s'ha trobat"
 
@@ -138,177 +139,177 @@ msgstr "L'aplicació no s'ha trobat"
 msgid "Good luck!"
 msgstr "Bona sort!"
 
-#: ../rigo/controllers/daemon.py:583
+#: ../rigo/controllers/daemon.py:606
 msgid "Repositories Settings <b>could not</b> be changed. Sorry."
 msgstr "La configuració dels repositoris <b>no s'ha pogut</b> canviar."
 
-#: ../rigo/controllers/daemon.py:629
+#: ../rigo/controllers/daemon.py:652
 #, python-format
 msgid "<b>%s</b> action enqueued"
 msgstr "<b>%s</b> acció a la cua"
 
-#: ../rigo/controllers/daemon.py:633
+#: ../rigo/controllers/daemon.py:656
 #, python-format
 msgid ", <b>%i</b> Application enqueued so far..."
 msgid_plural ", <b>%i</b> Applications enqueued so far..."
 msgstr[0] "<b>%i</b> aplicació a la cua..."
 msgstr[1] "<b>%i</b> aplicacions a la cua..."
 
-#: ../rigo/controllers/daemon.py:734 ../rigo_app.py:158
+#: ../rigo/controllers/daemon.py:757 ../rigo_app.py:158
 msgid "Application"
 msgstr "Aplicació"
 
-#: ../rigo/controllers/daemon.py:737
+#: ../rigo/controllers/daemon.py:760
 msgid "An <b>unknown error</b> occurred"
 msgstr "S'ha produït un error <b>desconegut</b>"
 
-#: ../rigo/controllers/daemon.py:739
+#: ../rigo/controllers/daemon.py:762
 #, python-format
 msgid "<b>%s</b> download failed"
 msgstr "la baixada <b>%s</b> ha fallat"
 
-#: ../rigo/controllers/daemon.py:742
+#: ../rigo/controllers/daemon.py:765
 #, python-format
 msgid "<b>%s</b> install failed"
 msgstr "la instal·lació <b>%s</b> ha fallat"
 
-#: ../rigo/controllers/daemon.py:745
+#: ../rigo/controllers/daemon.py:768
 #, python-format
 msgid "<b>%s</b> removal failed"
 msgstr "l'eliminació <b>%s</b> ha fallat"
 
-#: ../rigo/controllers/daemon.py:749
+#: ../rigo/controllers/daemon.py:772
 #, python-format
 msgid "<b>%s</b>, not authorized"
 msgstr "<b>%s</b>, no autoritzat"
 
-#: ../rigo/controllers/daemon.py:752
+#: ../rigo/controllers/daemon.py:775
 #, python-format
 msgid "<b>%s</b>, internal error"
 msgstr "<b>%s</b> error intern"
 
-#: ../rigo/controllers/daemon.py:757
+#: ../rigo/controllers/daemon.py:780
 #, python-format
 msgid "<b>%s</b> dependencies not found"
 msgstr "<b>%s</b> dependències no trobades"
 
-#: ../rigo/controllers/daemon.py:762
+#: ../rigo/controllers/daemon.py:785
 #, python-format
 msgid "<b>%s</b> dependencies collision error"
 msgstr "<b>%s</b> error de colisió de dependències"
 
-#: ../rigo/controllers/daemon.py:767
+#: ../rigo/controllers/daemon.py:790
 #, python-format
 msgid "<b>%s</b> dependencies not removable error"
 msgstr "<b>%s</b> error de dependències no eliminables"
 
-#: ../rigo/controllers/daemon.py:772
+#: ../rigo/controllers/daemon.py:795
 msgid "Disk full, cannot download nor unpack Applications"
 msgstr "El disc és ple, no es poden ni baixar ni desempaquetar aplicacions"
 
-#: ../rigo/controllers/daemon.py:776
+#: ../rigo/controllers/daemon.py:799
 msgid "An error occurred"
 msgstr "S'ha produït un error"
 
-#: ../rigo/controllers/daemon.py:781
+#: ../rigo/controllers/daemon.py:804
 #: ../rigo/ui/gtk3/controllers/application.py:411
 #: ../rigo/ui/gtk3/controllers/application.py:498
-#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:491
-#: ../rigo_app.py:520
+#: ../rigo/ui/gtk3/controllers/application.py:581 ../rigo_app.py:492
+#: ../rigo_app.py:521
 msgid "Ok, thanks"
 msgstr "D'acord"
 
-#: ../rigo/controllers/daemon.py:782
+#: ../rigo/controllers/daemon.py:805
 #: ../rigo/ui/gtk3/controllers/notifications.py:228
 #: ../rigo/ui/gtk3/controllers/notifications.py:244
-#: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:521
+#: ../rigo/ui/gtk3/controllers/notifications.py:262 ../rigo_app.py:522
 msgid "Show me"
 msgstr "Mostra'm"
 
-#: ../rigo/controllers/daemon.py:884
+#: ../rigo/controllers/daemon.py:907
 msgid "<b>System Upgrade</b> Activity is being <i>restarted</i>"
 msgstr "L'activitat d'<b>actualització del sistema</b> s'està <i>reiniciant</i>"
 
-#: ../rigo/controllers/daemon.py:885
+#: ../rigo/controllers/daemon.py:908
 #, python-format
 msgid "There is <b>%i</b> more update"
 msgid_plural "There are <b>%i</b> more updates"
 msgstr[0] "Hi ha <b>%i</b> altra actualització"
 msgstr[1] "Hi ha <b>%i</b> actualitzacions més"
 
-#: ../rigo/controllers/daemon.py:1120
+#: ../rigo/controllers/daemon.py:1144
 msgid "Congratulations, mirrors have been <b>optimized</b>!"
 msgstr "Felicitats, les rèpliques s'han <b>optimitzat</b>!"
 
-#: ../rigo/controllers/daemon.py:1124
+#: ../rigo/controllers/daemon.py:1148
 msgid "Ouch, mirrors <b>not optimized</b>, sorry!"
 msgstr "Ups, les rèpliques <b> no s'han optimitzat</b>!"
 
-#: ../rigo/controllers/daemon.py:1534
+#: ../rigo/controllers/daemon.py:1558
 msgid "Mirrors will be optimized in <b>background</b>..."
 msgstr "Les rèpliques s'optimitzaràn en <b>segon terme</b>..."
 
-#: ../rigo/controllers/daemon.py:1538
+#: ../rigo/controllers/daemon.py:1562
 msgid "Mirrors optimization <b>not available</b> at this time"
 msgstr "L'optimització de les rèpliques <b>no està disponible</b> actualment"
 
-#: ../rigo/controllers/daemon.py:1958
+#: ../rigo/controllers/daemon.py:1982
 msgid "Waiting for <b>RigoDaemon</b>, please wait..."
 msgstr "S'està esperant el <b>Rigo Daemon</b>, espereu..."
 
-#: ../rigo/controllers/daemon.py:2029 ../rigo/controllers/daemon.py:2691
-#: ../rigo/controllers/daemon.py:2921
+#: ../rigo/controllers/daemon.py:2053 ../rigo/controllers/daemon.py:2715
+#: ../rigo/controllers/daemon.py:2945
 msgid "Another activity is currently in progress"
 msgstr "Hi ha una altra activitat en execució"
 
-#: ../rigo/controllers/daemon.py:2032 ../rigo/controllers/daemon.py:2695
-#: ../rigo/controllers/daemon.py:2925
+#: ../rigo/controllers/daemon.py:2056 ../rigo/controllers/daemon.py:2719
+#: ../rigo/controllers/daemon.py:2949
 msgid "K thanks"
 msgstr "D'acord"
 
-#: ../rigo/controllers/daemon.py:2171
+#: ../rigo/controllers/daemon.py:2195
 msgid "Yes, thanks"
 msgstr "Sí, gràcies"
 
-#: ../rigo/controllers/daemon.py:2172
+#: ../rigo/controllers/daemon.py:2196
 msgid "No, sorry"
 msgstr "No, ho sento"
 
-#: ../rigo/controllers/daemon.py:2189
+#: ../rigo/controllers/daemon.py:2213
 msgid "Ok then"
 msgstr "Entesos, doncs"
 
-#: ../rigo/controllers/daemon.py:2265
+#: ../rigo/controllers/daemon.py:2289
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "is part of the Base System and <b>cannot</b> be removed"
 msgstr "<b>%s</b>\nés part del sistema base i <b>no</b> es pot eliminar"
 
-#: ../rigo/controllers/daemon.py:2318
+#: ../rigo/controllers/daemon.py:2342
 #, python-format
 msgid ""
 "<b>%s</b>\n"
 "cannot be installed at this time due to <b>missing/masked</b> dependencies or dependency <b>conflict</b>"
 msgstr "<b>%s</b>\nno es pot instal·lar ara degut a dependències <b>no resoltes/emmascarades</b> o <b>en conflicte</b>"
 
-#: ../rigo/controllers/daemon.py:2380
+#: ../rigo/controllers/daemon.py:2404
 #, python-format
 msgid ""
 "Installing <b>%s</b> would cause the removal of the following Applications: "
 "%s"
 msgstr "La instal·lació de <b>%s</b> provocarà l'eliminació de les aplicacions següents: %s"
 
-#: ../rigo/controllers/daemon.py:2567
+#: ../rigo/controllers/daemon.py:2591
 #, python-format
 msgid "Package Install Error: <i>%s</i>"
 msgstr "Error en la instal·lació del paquet: <i>%s</i>"
 
-#: ../rigo/controllers/daemon.py:2572
+#: ../rigo/controllers/daemon.py:2596
 msgid "Okay"
 msgstr "D'acord"
 
-#: ../rigo/controllers/daemon.py:2841
+#: ../rigo/controllers/daemon.py:2865
 msgid "<b>System Upgrade</b> has begun, now go make some coffee"
 msgstr "L'<b>actualització del sistema</b> ha començat, aneu a prendre-us un cafè"
 
@@ -347,12 +348,12 @@ msgid "<i>Show <b>Application Management</b> Progress</i>"
 msgstr "<i>Mostra el progrés <b>del Gestor d'Apliacions</b></i>"
 
 #: ../rigo/ui/gtk3/controllers/work.py:283
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:73
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:81
 msgid "Installing"
 msgstr "S'està instal·lant"
 
 #: ../rigo/ui/gtk3/controllers/work.py:285
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:74
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:82
 msgid "Removing"
 msgstr "S'està eliminant"
 
@@ -505,7 +506,7 @@ msgid "Loading older images..."
 msgstr "S'estan carregant imatges anteriors"
 
 #: ../rigo/ui/gtk3/controllers/application.py:864
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:72
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:80
 msgid "Update"
 msgstr "Actualitza"
 
@@ -514,12 +515,12 @@ msgid "Reinstall"
 msgstr "Instal·la de nou"
 
 #: ../rigo/ui/gtk3/controllers/application.py:884
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:71
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:79
 msgid "Remove"
 msgstr "Elimina"
 
 #: ../rigo/ui/gtk3/controllers/application.py:894
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:70
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:78
 msgid "Install"
 msgstr "Instal·la"
 
@@ -646,193 +647,193 @@ msgstr "elimina"
 msgid "Run"
 msgstr "Executa"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:182
+#: ../rigo/ui/gtk3/widgets/notifications.py:181
 #, python-format
 msgid "There is <b>%d</b> update"
 msgid_plural "There are <b>%d</b> updates"
 msgstr[0] "Hi ha <b>%d</b> actualització"
 msgstr[1] "Hi ha <b>%d</b> actualitzacions"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:188
+#: ../rigo/ui/gtk3/widgets/notifications.py:187
 #, python-format
 msgid "and <b>%d</b> security update"
 msgid_plural "and <b>%d</b> security updates"
 msgstr[0] "i <b>%d</b> actualització de seguretat"
 msgstr[1] "i <b>%d</b> actualitzacions de seguretat"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:194
+#: ../rigo/ui/gtk3/widgets/notifications.py:193
 msgid "What to do?"
 msgstr "Què voleu fer?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:198
+#: ../rigo/ui/gtk3/widgets/notifications.py:197
 msgid "Updates available, how about installing them?"
 msgstr "Hi ha actualitzacions disponibles, les voleu instal·lar?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:201
+#: ../rigo/ui/gtk3/widgets/notifications.py:200
 msgid "_Update"
-msgstr ""
+msgstr "Act_ualitza"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:202
+#: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Show"
 msgstr "_Mostra"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:203
+#: ../rigo/ui/gtk3/widgets/notifications.py:202
 msgid "_Ignore"
 msgstr "_Ignora"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:204
+#: ../rigo/ui/gtk3/widgets/notifications.py:203
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Ignora-ho!"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:256
+#: ../rigo/ui/gtk3/widgets/notifications.py:255
 msgid "The list of available Applications is old, <b>update now</b>?"
 msgstr "La llista d'actualitzacions disponibles és antiga, <b>voleu actualitzar-la ara</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:259
+#: ../rigo/ui/gtk3/widgets/notifications.py:258
 msgid "Repositories should be downloaded, <b>update now</b>?"
 msgstr "S'haurien de baixar els repositoris, <b>els actualitzo ara</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:262
+#: ../rigo/ui/gtk3/widgets/notifications.py:261
 msgid "I dunno dude, I'd say Yes"
 msgstr "No ho sé, però diria que sí"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:265
+#: ../rigo/ui/gtk3/widgets/notifications.py:264
 msgid "_Yes, why not?"
 msgstr "_Sí, perquè no?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:266
+#: ../rigo/ui/gtk3/widgets/notifications.py:265
 msgid "_No, thanks"
 msgstr "_No, gràcies"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:306
+#: ../rigo/ui/gtk3/widgets/notifications.py:305
 msgid "You need to login to Entropy Web Services"
 msgstr "Heu d'acreditar-vos als Serveis Web d'Entropy"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:310
+#: ../rigo/ui/gtk3/widgets/notifications.py:309
 msgid "_Login"
 msgstr "_Entrada"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:311
+#: ../rigo/ui/gtk3/widgets/notifications.py:310
 msgid "Register"
 msgstr "Registre"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:316
-#: ../rigo/ui/gtk3/widgets/notifications.py:1141
+#: ../rigo/ui/gtk3/widgets/notifications.py:315
+#: ../rigo/ui/gtk3/widgets/notifications.py:1140
 msgid "_Cancel"
 msgstr "_Cancel·la"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:327
+#: ../rigo/ui/gtk3/widgets/notifications.py:326
 msgid "Username"
 msgstr "Nom d'usuari"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:337
+#: ../rigo/ui/gtk3/widgets/notifications.py:336
 msgid "Password"
 msgstr "Contrasenya"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:370
+#: ../rigo/ui/gtk3/widgets/notifications.py:369
 msgid "Login <b>error</b>!"
 msgstr "<b>Error</b> d'acreditació!"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:424
+#: ../rigo/ui/gtk3/widgets/notifications.py:423
 msgid ""
 "Cannot connect to Entropy Web Services, are you connected to the "
 "<b>interweb</b>?"
 msgstr "No es pot connectar amb el Servei Web Entropy, esteu connectat a <b>interweb</b>?"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:428
+#: ../rigo/ui/gtk3/widgets/notifications.py:427
 msgid "Don't ask me..."
 msgstr "No m'ho preguntis..."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:431
+#: ../rigo/ui/gtk3/widgets/notifications.py:430
 msgid "_Of course not"
 msgstr "É_s clar que no"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:439
+#: ../rigo/ui/gtk3/widgets/notifications.py:438
 msgid "A watched pot never boils"
 msgstr "Un pot al foc no bull mai"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:498
+#: ../rigo/ui/gtk3/widgets/notifications.py:497
 #, python-format
 msgid ""
 "You are required to <b>review</b> and <b>accept</b> the following licenses "
 "before continuing: %s"
 msgstr "Heu de <b>llegir</b> i <b>acceptar</b> les llicències següents abans de continuar: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:503
+#: ../rigo/ui/gtk3/widgets/notifications.py:502
 #, python-format
 msgid ""
 "<b>%s</b> Application or one of its dependencies is distributed with the "
 "following licenses: %s"
 msgstr "<b>%s</b> aplicació o una de les seves dependències es distribueix amb les llicències següents: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:521
+#: ../rigo/ui/gtk3/widgets/notifications.py:520
 msgid "Make sure to review all the licenses"
 msgstr "Assegureu-vos de llegir totes les llicències"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:525
-#: ../rigo/ui/gtk3/widgets/notifications.py:818
+#: ../rigo/ui/gtk3/widgets/notifications.py:524
+#: ../rigo/ui/gtk3/widgets/notifications.py:817
 #: ../rigo/ui/gtk3/widgets/confupdatetreeview.py:95
 msgid "Accept"
 msgstr "Accepta"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:526
+#: ../rigo/ui/gtk3/widgets/notifications.py:525
 msgid "Accept forever"
 msgstr "Accepta per sempre"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:528
-#: ../rigo/ui/gtk3/widgets/notifications.py:819
+#: ../rigo/ui/gtk3/widgets/notifications.py:527
+#: ../rigo/ui/gtk3/widgets/notifications.py:818
 msgid "Decline"
 msgstr "Declina"
 
 #. if apps:
 #. self.add_button(_("Remove safe"), self._on_remove_safe)
 #. self.add_button(_("Remove All"), self._on_remove_all)
-#: ../rigo/ui/gtk3/widgets/notifications.py:655
-#: ../rigo/ui/gtk3/widgets/notifications.py:1085
+#: ../rigo/ui/gtk3/widgets/notifications.py:654
+#: ../rigo/ui/gtk3/widgets/notifications.py:1084
 msgid "Close"
 msgstr "Tancar"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:672
+#: ../rigo/ui/gtk3/widgets/notifications.py:671
 msgid ""
 "Several <b>Applications</b>, no longer maintained by this distribution, have"
 " been found on your <b>System</b>. Some of them might require <b>manual "
 "review</b> before being uninstalled. Click on the Apps to expand."
 msgstr "Algunes <b>aplicacions</b>, que ja no es mantenen en aquesta distribució, s'han trobat en el vostre <b>sistema</b>. Algunes podrien requerir una <b>revisió manual</b> abans de desinstal·lar-les. Feu clic a les aplicacions per expandir."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:680
+#: ../rigo/ui/gtk3/widgets/notifications.py:679
 msgid "Manual review"
 msgstr "Revisió manual"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:684
+#: ../rigo/ui/gtk3/widgets/notifications.py:683
 msgid "Safe to drop"
 msgstr "Segures per eliminar"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:787
+#: ../rigo/ui/gtk3/widgets/notifications.py:786
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the installation of the following "
 "Applications: %s"
 msgstr "L'aplicació <b>%s</b> requereix la instal·lació de les següents aplicacions: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:801
+#: ../rigo/ui/gtk3/widgets/notifications.py:800
 msgid "Show full list"
 msgstr "Mostra la llista sencera"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:861
+#: ../rigo/ui/gtk3/widgets/notifications.py:860
 #, python-format
 msgid ""
 "<b>%s</b> Application requires the removal of the following Applications: %s"
 msgstr "L'aplicació <b>%s</b> requereix l'eliminació de les aplicacions següents: %s"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:908
+#: ../rigo/ui/gtk3/widgets/notifications.py:907
 msgid "Confirm"
 msgstr "Confirma"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:909
+#: ../rigo/ui/gtk3/widgets/notifications.py:908
 msgid "Undo"
 msgstr "Desfés"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:970
+#: ../rigo/ui/gtk3/widgets/notifications.py:969
 #, python-format
 msgid "<b>%s</b> Application Action will start in <big><b>%d</b></big> second"
 msgid_plural ""
@@ -840,60 +841,60 @@ msgid_plural ""
 msgstr[0] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segon"
 msgstr[1] "L'acció de <b>%s</b> l'aplicació començarà en <big><b>%d</b></big> segons"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1016
+#: ../rigo/ui/gtk3/widgets/notifications.py:1015
 #, python-format
 msgid "There is <b>%d</b> configuration file update"
 msgid_plural "There are <b>%d</b> configuration file updates"
 msgstr[0] "Hi ha <b>%d</b> fitxer de configuració per actualitzar"
 msgstr[1] "Hi ha <b>%d</b> fitxers de configuració per actualitzar"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1022
+#: ../rigo/ui/gtk3/widgets/notifications.py:1021
 msgid ""
 "It is <b>extremely</b> important to update these configuration files before "
 "<b>rebooting</b> the System."
 msgstr "És <b>extremadament</b> important que actualitzeu els fitxers de configuració abans de <b>reiniciar</b> el sistema."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1033
-#: ../rigo/ui/gtk3/widgets/notifications.py:1083
+#: ../rigo/ui/gtk3/widgets/notifications.py:1032
+#: ../rigo/ui/gtk3/widgets/notifications.py:1082
 msgid "Let me see"
 msgstr "A veure"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1034
+#: ../rigo/ui/gtk3/widgets/notifications.py:1033
 msgid "Happily ignore"
 msgstr "Ignora alegrement"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1067
+#: ../rigo/ui/gtk3/widgets/notifications.py:1066
 #, python-format
 msgid "There is <b>%d</b> notice from a repository"
 msgid_plural "There are <b>%d</b> notices from repositories"
 msgstr[0] "Hi ha <b>%d</b> notícia d'un repositori"
 msgstr[1] "Hi ha <b>%d</b> notícies dels repositoris"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1073
+#: ../rigo/ui/gtk3/widgets/notifications.py:1072
 msgid "It is <b>extremely</b> important to always read them."
 msgstr "És <b>extremadament</b> important que els llegiu."
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1084
+#: ../rigo/ui/gtk3/widgets/notifications.py:1083
 msgid "Stop annoying me"
 msgstr "Deixa d'empipar-me"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1132
+#: ../rigo/ui/gtk3/widgets/notifications.py:1131
 msgid "You are about to rename a Repository"
 msgstr "Esteu a punt de canviar el nom d'un repositori"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1136
+#: ../rigo/ui/gtk3/widgets/notifications.py:1135
 msgid "_Rename"
 msgstr "_Reanomena"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1151
+#: ../rigo/ui/gtk3/widgets/notifications.py:1150
 msgid "Repository name"
 msgstr "Nom del repositori"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1183
+#: ../rigo/ui/gtk3/widgets/notifications.py:1182
 msgid "<b>Invalid</b> Repository name!"
 msgstr "Nom de repositori <b>no vàlid</b>"
 
-#: ../rigo/ui/gtk3/widgets/notifications.py:1193
+#: ../rigo/ui/gtk3/widgets/notifications.py:1192
 msgid "Repository rename <b>not allowed</b>!"
 msgstr "Nom del respoitori <b>no permès</b>!"
 
@@ -917,7 +918,7 @@ msgstr "Descarta"
 msgid "Keywords"
 msgstr "Keywords"
 
-#: ../rigo/ui/gtk3/widgets/apptreeview.py:65
+#: ../rigo/ui/gtk3/widgets/apptreeview.py:73
 msgid "More Info"
 msgstr "Més informació"
 
@@ -937,7 +938,7 @@ msgstr "Rigo està treballant, n'esteu segur?"
 msgid "Search"
 msgstr "Cerca"
 
-#: ../rigo_app.py:155 ../rigo_app.py:877 ../data/ui/gtk3/rigo.ui.h:1
+#: ../rigo_app.py:155 ../rigo_app.py:878 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
 msgstr "Navegador d'aplicacions Rigo"
 
@@ -963,100 +964,100 @@ msgstr "Feines del repositori"
 
 #: ../rigo_app.py:176
 msgid "Application Groups"
-msgstr ""
+msgstr "Grups d'aplicacions"
 
-#: ../rigo_app.py:454
+#: ../rigo_app.py:455
 msgid "Activity Interruption"
 msgstr "Interrupció d'activitat"
 
-#: ../rigo_app.py:456
+#: ../rigo_app.py:457
 msgid ""
 "Are you sure you want to interrupt the ongoing Activity? The interruption "
 "will occur as soon as possible, potentially not immediately."
 msgstr "Esteu segur que voleu interrompre l'activitat en procés? La interrupció es produirà el més aviat possible, no inmediatament."
 
-#: ../rigo_app.py:481
+#: ../rigo_app.py:482
 msgid "Repositories update error"
 msgstr "Error en actualitzar els repositoris"
 
-#: ../rigo_app.py:485
+#: ../rigo_app.py:486
 msgid "Repositories updated <b>successfully</b>!"
 msgstr "Els repositoris s'han actualitzat <b>correctament</b>!"
 
-#: ../rigo_app.py:503
+#: ../rigo_app.py:504
 msgid "Application Management Error"
 msgstr "Error en el gestor d'aplicacions"
 
-#: ../rigo_app.py:504
+#: ../rigo_app.py:505
 msgid "please check the management log"
 msgstr "Comproveu el registre del gestor"
 
-#: ../rigo_app.py:507
+#: ../rigo_app.py:508
 msgid "System Upgrade Error"
 msgstr "Error en actualitzar el sistema"
 
-#: ../rigo_app.py:508
+#: ../rigo_app.py:509
 msgid "please check the upgrade log"
 msgstr "Comproveu el registre d'actualització"
 
-#: ../rigo_app.py:512
+#: ../rigo_app.py:513
 msgid "Applications managed <b>successfully</b>!"
 msgstr "Les aplicacions s'han gestionat <b>correctament</b>!"
 
-#: ../rigo_app.py:514
+#: ../rigo_app.py:515
 msgid "System Upgraded <b>successfully</b>!"
 msgstr "El sistema s'ha actualitzat <b>correctament</b>!"
 
-#: ../rigo_app.py:767
+#: ../rigo_app.py:768
 msgid "You are not authorized to run Rigo"
 msgstr "No esteu autoritzat per usar Rigo"
 
-#: ../rigo_app.py:775 ../rigo_app.py:786 ../rigo_app.py:804 ../rigo_app.py:859
-#: ../rigo_app.py:870 ../rigo_app.py:898
+#: ../rigo_app.py:776 ../rigo_app.py:787 ../rigo_app.py:805 ../rigo_app.py:860
+#: ../rigo_app.py:871 ../rigo_app.py:902
 msgid "Rigo"
 msgstr "Rigo"
 
-#: ../rigo_app.py:776
+#: ../rigo_app.py:777
 msgid "RigoDaemon service is not available"
 msgstr "El servei RigoDaemon no està disponible"
 
-#: ../rigo_app.py:788
+#: ../rigo_app.py:789
 msgid "API mismatch, please update Rigo and RigoDaemon"
 msgstr "La versió API no coincideix, actualitzeu Rigo i RigoDaemon"
 
-#: ../rigo_app.py:805
+#: ../rigo_app.py:806
 msgid "Another Application Manager is active"
 msgstr "Un altre gestor d'aplicacions està actiu"
 
-#: ../rigo_app.py:822
+#: ../rigo_app.py:823
 msgid "Background Service is currently not available"
 msgstr "El servei en segon pla no està disponible"
 
-#: ../rigo_app.py:852
+#: ../rigo_app.py:853
 msgid "Background Service is currently busy"
 msgstr "El servei en segon pla està ocupat"
 
-#: ../rigo_app.py:854
+#: ../rigo_app.py:855
 msgid "Background Service is incompatible with Rigo"
 msgstr "El servei en segon pla és incompatible amb Rigo"
 
-#: ../rigo_app.py:866
+#: ../rigo_app.py:867
 msgid "Background Service is currently unavailable"
 msgstr "El servei en segon pla no està disponible"
 
-#: ../rigo_app.py:928
+#: ../rigo_app.py:932
 msgid "Happy St. Valentine <3 <3 !"
 msgstr "Feliç dia de Sant Valentí <3 <3!"
 
-#: ../rigo_app.py:930
+#: ../rigo_app.py:934
 msgid "Merry Xmas \\o/ !"
 msgstr "Bon Nadal \\o/!"
 
-#: ../rigo_app.py:932
+#: ../rigo_app.py:936
 msgid "<=|=< (this is optimistically a fish)"
 msgstr "<=|=<(això, si som optimistes, és un peix)"
 
-#: ../rigo_app.py:937
+#: ../rigo_app.py:941
 msgid "Woot, thanks"
 msgstr "Uau, gràcies"
 
