@@ -257,26 +257,29 @@ class UrlFetcher(TextInterface):
         else:
             dead = False
             return_code = 1
-            std_r = os.fdopen(fd, "r")
-            while not dead:
+            srd_r = None
+            try:
+                std_r = os.fdopen(fd, "r")
+                while not dead:
 
-                try:
-                    dead, return_code = os.waitpid(pid, os.WNOHANG)
-                except OSError as e:
-                    if e.errno != errno.ECHILD:
-                        raise
-                    dead = True
+                    try:
+                        dead, return_code = os.waitpid(pid, os.WNOHANG)
+                    except OSError as e:
+                        if e.errno != errno.ECHILD:
+                            raise
+                        dead = True
 
-                # wait a bit
-                time.sleep(0.2)
-                _line_reader(std_r)
+                    # wait a bit
+                    time.sleep(0.2)
+                    _line_reader(std_r)
 
-                if self.__abort_check_func != None:
-                    self.__abort_check_func()
-                if self.__thread_stop_func != None:
-                    self.__thread_stop_func()
-
-            std_r.close()
+                    if self.__abort_check_func != None:
+                        self.__abort_check_func()
+                    if self.__thread_stop_func != None:
+                        self.__thread_stop_func()
+            finally:
+                if std_err is not None:
+                    std_r.close()
             return return_code
 
     @staticmethod
