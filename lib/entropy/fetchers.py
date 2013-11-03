@@ -458,7 +458,7 @@ class UrlFetcher(TextInterface):
             if len(data) == 5:
                 try:
                     # perms, size, date, time, file name
-                    self.__remotesize = float(data[1])/1024
+                    self.__remotesize = float(data[1])/1000
                 except ValueError:
                     pass
 
@@ -665,7 +665,7 @@ class UrlFetcher(TextInterface):
             return self.__status
 
         if self.__remotesize > 0:
-            self.__remotesize = float(int(self.__remotesize))/1024
+            self.__remotesize = float(int(self.__remotesize))/1000
         else:
             # this means we were not able to get Content-Length
             self.__remotesize = 0
@@ -719,7 +719,7 @@ class UrlFetcher(TextInterface):
                 self.update()
                 self.__oldaverage = self.__average
             if self.__speedlimit:
-                while self.__datatransfer > self.__speedlimit*1024:
+                while self.__datatransfer > self.__speedlimit*1000:
                     time.sleep(0.1)
                     self._update_speed()
                     if self.__show_speed:
@@ -736,7 +736,7 @@ class UrlFetcher(TextInterface):
         self.__md5_checksum.update(mybuffer)
         # update progress info
         self.__downloadedsize = self.__localfile.tell()
-        kbytecount = float(self.__downloadedsize)/1024
+        kbytecount = float(self.__downloadedsize)/1000
         # avoid race condition with test and eval not being atomic
         # this will always work
         try:
@@ -794,7 +794,7 @@ class UrlFetcher(TextInterface):
         if self.__datatransfer < 0:
             self.__datatransfer = 0.0
 
-        rounded_remote = int(round(self.__remotesize*1024, 0))
+        rounded_remote = int(round(self.__remotesize * 1000, 0))
         rounded_downloaded = int(round(self.__downloadedsize, 0))
         x_delta = rounded_remote - rounded_downloaded
         if self.__datatransfer > 0:
@@ -879,7 +879,7 @@ class UrlFetcher(TextInterface):
         sec_txt = _("sec") # as in XX kb/sec
 
         current_txt = darkred("    %s: " % (mytxt,)) + \
-            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" \
+            darkgreen(str(round(float(self.__downloadedsize)/1000, 1))) + "/" \
             + red(str(round(self.__remotesize, 1))) + " kB"
         # create progress bar
         barsize = 10
@@ -1228,7 +1228,7 @@ class MultipleUrlFetcher(TextInterface):
         # total_size is in kbytes
         # downloaded_size is in bytes
         if total_size > 0 and all_started:
-            average = int(float(downloaded_size/1024)/total_size * 100)
+            average = int(float(downloaded_size / 1000) / total_size * 100)
 
         if all_started:
             time_remaining_str = convert_seconds_to_fancy_output(time_remaining)
@@ -1270,7 +1270,7 @@ class MultipleUrlFetcher(TextInterface):
 
             eta_txt = _("ETA")
             sec_txt = _("sec") # as in XX kb/sec
-            down_size_txt = str(round(float(downloaded_size)/1024, 1))
+            down_size_txt = str(round(float(downloaded_size) / 1000, 1))
             total_size_txt = str(round(total_size, 1))
             current_txt = darkgreen(down_size_txt) + "/" + red(total_size_txt)
             current_txt += " kB"
