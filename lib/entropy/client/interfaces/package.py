@@ -495,6 +495,11 @@ class Package:
                 url_fetcher_class = self._entropy._url_fetcher,
                 checksum = checksum)
             try:
+                # make sure that we don't need to abort already
+                # doing the check here avoids timeouts
+                if fetch_abort_function != None:
+                    fetch_abort_function()
+
                 data = fetch_intf.download()
             except KeyboardInterrupt:
                 return -100, {}, 0
@@ -975,6 +980,11 @@ class Package:
             resume = resume, abort_check_func = fetch_abort_function,
             url_fetcher_class = self._entropy._url_fetcher)
         try:
+            # make sure that we don't need to abort already
+            # doing the check here avoids timeouts
+            if fetch_abort_function != None:
+                fetch_abort_function()
+
             data = fetch_intf.download()
         except KeyboardInterrupt:
             return [], 0.0, True
@@ -1084,6 +1094,11 @@ class Package:
                 abort_check_func = fetch_abort_function)
 
             try:
+                # make sure that we don't need to abort already
+                # doing the check here avoids timeouts
+                if fetch_abort_function != None:
+                    fetch_abort_function()
+
                 delta_checksum = delta_fetcher.download()
                 data_transfer = delta_fetcher.get_transfer_rate()
                 del delta_fetcher
@@ -1186,6 +1201,11 @@ class Package:
         data_transfer = 0
         resumed = False
         try:
+            # make sure that we don't need to abort already
+            # doing the check here avoids timeouts
+            if fetch_abort_function != None:
+                fetch_abort_function()
+
             fetch_checksum = fetch_intf.download()
             data_transfer = fetch_intf.get_transfer_rate()
             resumed = fetch_intf.is_resumed()
