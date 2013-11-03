@@ -201,15 +201,16 @@ Client.__singleton_class__ = Entropy
 
 class DaemonUrlFetcher(UrlFetcher):
 
-    daemon_last_avg = 100
-    __average = 0
-    __downloadedsize = 0
-    __remotesize = 0
-    __datatransfer = 0
-    __time_remaining = ""
-    __last_t = None
-
     _DAEMON = None
+
+    def __init__(self, *args, **kwargs):
+        UrlFetcher.__init__(self, *args, **kwargs)
+        self.__average = 0
+        self.__downloadedsize = 0
+        self.__remotesize = 0
+        self.__datatransfer = 0
+        self.__time_remaining = ""
+        self.__last_t = None
 
     @staticmethod
     def set_daemon(daemon):
@@ -248,16 +249,17 @@ class DaemonUrlFetcher(UrlFetcher):
 
 class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
 
-    daemon_last_avg = 100
-    __average = 0
-    __downloadedsize = 0
-    __remotesize = 0
-    __datatransfer = 0
-    __time_remaining = ""
-    __last_t = None
-    __last_t_mutex = Lock()
-
     _DAEMON = None
+
+    def __init__(self, *args, **kwargs):
+        MultipleUrlFetcher.__init__(self, *args, **kwargs)
+        self.__average = 0
+        self.__downloadedsize = 0
+        self.__remotesize = 0
+        self.__datatransfer = 0
+        self.__time_remaining = ""
+        self.__last_t = None
+        self.__last_t_mutex = Lock()
 
     @staticmethod
     def set_daemon(daemon):
