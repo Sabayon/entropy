@@ -255,6 +255,7 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
     __datatransfer = 0
     __time_remaining = ""
     __last_t = None
+    __last_t_mutex = Lock()
 
     _DAEMON = None
 
@@ -279,8 +280,7 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
             return
 
         # avoid flooding clients
-        average = self.__average
-        if average > 0.2 and average < 99.8:
+        with self.__last_t_mutex:
             last_t = self.__last_t
             cur_t = time.time()
             if last_t is not None:
