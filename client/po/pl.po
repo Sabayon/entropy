@@ -3,16 +3,16 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
-# emc <mplichta@gmail.com>, 2013
-# emc <mplichta@gmail.com>, 2012
+# Michal Plichta <mplichta@gmail.com>, 2013
+# Michal Plichta <mplichta@gmail.com>, 2012
 # Enlik <slawomir.nizio@sabayon.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-01 23:51+0200\n"
-"PO-Revision-Date: 2013-05-01 21:51+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2013-10-24 06:52+0000\n"
+"Last-Translator: Michal Plichta <mplichta@gmail.com>\n"
 "Language-Team: Polish (http://www.transifex.com/projects/p/sabayon-entropy/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1069,15 +1069,15 @@ msgstr "Wstrzykiwanie danych"
 
 #: ../../lib/entropy/client/interfaces/db.py:397
 msgid "Scanning URL"
-msgstr ""
+msgstr "Skanowanie"
 
 #: ../../lib/entropy/client/interfaces/db.py:415
 msgid "Selected URL"
-msgstr ""
+msgstr "Wybrany"
 
 #: ../../lib/entropy/client/interfaces/db.py:439
 msgid "repository is not available at the database URLs"
-msgstr ""
+msgstr "repozytorium nie jest doesępne w bazie danych"
 
 #: ../../lib/entropy/client/interfaces/db.py:446
 msgid "Looking for an alternate route using package mirrors"
@@ -3639,7 +3639,7 @@ msgstr "adres URL repozytorium paczek"
 
 #: ../../client/solo/commands/repo.py:104
 msgid "repository compression format"
-msgstr ""
+msgstr "format kopresji repozytorium"
 
 #: ../../client/solo/commands/repo.py:109
 msgid "remove a repository"
@@ -3647,11 +3647,11 @@ msgstr "usuń repozytorium"
 
 #: ../../client/solo/commands/repo.py:117
 msgid "rename a repository"
-msgstr ""
+msgstr "Zmień nazwę repozytorium"
 
 #: ../../client/solo/commands/repo.py:123
 msgid "to repository"
-msgstr ""
+msgstr "do repozytorium"
 
 #: ../../client/solo/commands/repo.py:128
 msgid "list active repositories"
@@ -3757,11 +3757,11 @@ msgstr "usunięcie repozytorium nie powiodło się"
 
 #: ../../client/solo/commands/repo.py:487
 msgid "repository id already available"
-msgstr ""
+msgstr "id repozytorium już dostępne"
 
 #: ../../client/solo/commands/repo.py:495
 msgid "repository id is invalid"
-msgstr ""
+msgstr "błędne id repozytorium"
 
 #: ../../client/solo/commands/repo.py:610
 msgid "mirror order:"
