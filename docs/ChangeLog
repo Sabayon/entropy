@@ -1,3 +1,222 @@
+commit ce8498a1fb2d33096db20d565784b93027998c7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 17:00:01 2013 +0100
+
+    Release Entropy 225
+
+commit 5f93a73f463017b4cae873db3a5b632cda9908aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 16:59:20 2013 +0100
+
+    [tests] update bytes_into_human() test case
+
+commit 82a2239c626029d1044f57c2aec0f8f23164373d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 16:58:31 2013 +0100
+
+    [magneto] implement One Click Update support for all the frontends
+
+commit ecc0cc9ca63fd24d054fddc361fad573aaabec94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 16:41:24 2013 +0100
+
+    [magneto.gtk] set the appropriate icon name on the notification object
+
+commit 7034a4570188da91bf91bd002236d147b9095cb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 16:14:31 2013 +0100
+
+    [magneto.gtk3] set the appropriate icon name on the notification object
+
+commit 71df773f5c2e0d7527802e192081dcc2a6e74d0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:49:44 2013 +0100
+
+    [server] update translations
+
+commit 4f4fed68196689eb90429c26151a7c227db62f4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:49:13 2013 +0100
+
+    [server] update entropy-server.pot and config
+
+commit bc0e366884dd90a07b51b8e5ab2746b5eb300fe9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:48:08 2013 +0100
+
+    [Rigo] update translations
+
+commit fc3dc5181a9bdcd080442896cdd45b6b05f77b0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:47:21 2013 +0100
+
+    [Rigo] update translations and config
+
+commit 819ea31c59d9519de1a09eacb9e1e98c002427f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:46:43 2013 +0100
+
+    [client] update translations
+
+commit 30d2a572bb6e412e1b78edb97e4ef36a0194ddd1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:46:34 2013 +0100
+
+    [client] update entropy.pot and config
+
+commit b71ede2b25d51d8bfedea317fd96c967940f2590
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:39:43 2013 +0100
+
+    [RigoDaemon] implement support for fetch_abort_function
+    
+    This makes possible to immediately interrupt the download process
+
+commit 51e7e03c0015664116a052862ed8ba3c8130adeb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:39:11 2013 +0100
+
+    [entropy.client.interfaces.package] call fetch_abort_function early
+    
+    This makes sure that the interruption will happen almost immediately
+
+commit c2feb6354db93001432d94640a06e27ed26b2aa1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 15:38:45 2013 +0100
+
+    [entropy.fetchers] do not leak a fd if the abort function raises an exception
+
+commit 1ebbae17fde66f80b127f0affb148d11d20c435f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:49:40 2013 +0100
+
+    [Rigo] 1kB is 1000 bytes
+
+commit acc96f1adad4e07d9a1a0836965a5dc594d4180a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:49:22 2013 +0100
+
+    [entropy.transceivers] 1kB is 1000 bytes
+
+commit 1b120b53ff41ef7bfc50e80a198ea94510e25339
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:47:36 2013 +0100
+
+    [entropy.fetchers] 1kB is 1000 bytes
+
+commit c752b7775a5f027a6fbec3f29dcff661b2620efa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:47:10 2013 +0100
+
+    [entropy.tools] 1kB is 1000 bytes
+
+commit a0f684b8aed253871c0c1f3a82f705068de44d84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:41:21 2013 +0100
+
+    [RigoDaemon] fix MultipleUrlFetcher stats computation
+    
+    Also introduce stale data handling.
+
+commit 880ec0588af0ead0a4fc754bf7800ac0d7573600
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:38:50 2013 +0100
+
+    [entropy.fetchers] MultipleUrlFetcher: move stats calculation to separate method
+    
+    _compute_progress_stats can now be used by subclasses to correctly compute
+    the aggregated statistics without code duplication
+
+commit 3fe20f1bd9147ca3f61228a85b631e0836167aa4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:16:09 2013 +0100
+
+    [entropy.fetchers] make url_path_list and transfer_data protected
+
+commit b1642ac2cb4e3ae7281ddfd5acd47c1acbc904c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 14:11:22 2013 +0100
+
+    [RigoDaemon] *UrlFetcher: move class variables inside instance
+
+commit 898a200479af7f1a3bcfdc69139fb14b1e965898
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:59:18 2013 +0100
+
+    [RigoDaemon] always avoid transfer_output() signal floods
+
+commit 23e18a9dfe69a2d7651454d0171a1e291a8eb9e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:52:35 2013 +0100
+
+    [entropy.fetchers] do not calculate any stats until all threads have computed theirs
+
+commit 0a7251bcbd43ab535a2a62a90359d50ef6d0037f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:37:47 2013 +0100
+
+    [entropy.fetchers] remove unused variable update_step
+
+commit 246863357b4c2b63654784e3ac853eac22251d7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:27:48 2013 +0100
+
+    [entropy.fetchers] MultipleUrlFetcher: protect __progress_data with a mutex
+    
+    Stale information may be used to perform progress calculation.
+    The mutex ensures that stale data is not used to compute it.
+
+commit a71e59cd663d17e899e103d9c6d6b72b8fd4695c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:17:10 2013 +0100
+
+    [Rigo] add --upgrade cmdline switch
+
+commit 747cfc9ad4383078d96410c13cd29356bbfd7625
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 13:16:56 2013 +0100
+
+    [Rigo] debug_rigo.sh: append argv at the end of exec()
+
+commit 60febda4f06a6a1bf0c5f2f0c9eecd48cd57a335
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 12:57:08 2013 +0100
+
+    [RigoDaemon] add initial One Click Update notification support
+
+commit d91a8d7c9ed29a088057600289c612360b824b46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 12:56:20 2013 +0100
+
+    [kswitch] fix _guess_kernel_package_file subdirs generation
+
+commit 91f6c24d9dfbbe2b8454a42748bf2df7e25a5622
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 2 14:37:33 2013 +0100
+
+    [kswitch] add new method KernelSwitcher.running_kernel_package()
+    
+    This public method can be used to determine the currently running
+    kernel package, if it comes from Entropy repositories.
+
+commit 5b9a5ee27345d1f4dd01a3685e9491def2dbbd91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 2 14:17:33 2013 +0100
+
+    [RigoDaemon] extend updates_available() signal with "One Click Update" information
+
+commit e02c8da563616af6cffaa3a0e360057f0c855c61
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 2 14:12:22 2013 +0100
+
+    [RigoDaemon] fix xml indentation
+
+commit 82ca6450d93a224fba322a4925896c9629d435ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 29 23:31:40 2013 +0100
+
+    Tagging Entropy version 224
+
 commit 3d2eb09213bc6f0d9300c0497703e8487bcb8b6f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Oct 29 23:31:40 2013 +0100
