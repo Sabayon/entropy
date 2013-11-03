@@ -967,7 +967,7 @@ class MultipleUrlFetcher(TextInterface):
         self.__data_transfer = 0
         self.__average = 0
         self.__old_average = 0
-        self.__time_remaining_sec = 0
+        self.__time_remaining_secs = 0
 
         self.__url_fetcher = url_fetcher_class
         if self.__url_fetcher == None:
@@ -989,7 +989,7 @@ class MultipleUrlFetcher(TextInterface):
         self.__data_transfer = 0
         self.__average = 0
         self.__old_average = 0
-        self.__time_remaining_sec = 0
+        self.__time_remaining_secs = 0
         self.__progress_update_t = time.time()
         self.__startup_time = time.time()
 
@@ -1123,7 +1123,7 @@ class MultipleUrlFetcher(TextInterface):
         @return: remaining download seconds
         @rtype: int
         """
-        return self.__time_remaining_sec
+        return self.__time_remaining_secs
 
     def __show_download_files_info(self):
         count = 0
@@ -1198,8 +1198,10 @@ class MultipleUrlFetcher(TextInterface):
         with self._progress_data_lock:
             self._progress_data[th_id] = data
 
-    def _push_progress_to_output(self, force = False):
-
+    def _compute_progress_stats(self):
+        """
+        Compute the progress statistics by reading individual ones.
+        """
         downloaded_size = 0
         total_size = 0
         time_remaining = 0
@@ -1220,21 +1222,43 @@ class MultipleUrlFetcher(TextInterface):
         elapsed_t = time.time() - self.__startup_time
         if elapsed_t < 0.1:
             elapsed_t = 0.1
-        data_transfer = downloaded_size / elapsed_t
-        self.__data_transfer = data_transfer
+        data_transfer = int(downloaded_size / elapsed_t)
 
         average = 0
         # total_size is in kbytes
         # downloaded_size is in bytes
         if total_size > 0 and all_started:
             average = int(float(downloaded_size/1024)/total_size * 100)
-        self.__average = average
 
         if all_started:
-            time_remaining = convert_seconds_to_fancy_output(time_remaining)
+            time_remaining_str = convert_seconds_to_fancy_output(time_remaining)
         else:
-            time_remaining = _("Infinity")
-        self.__time_remaining_sec = time_remaining
+            time_remaining_str = _("Infinity")
+
+        return {
+            "downloaded_size": downloaded_size,
+            "total_size": total_size,
+            "time_remaining": time_remaining,
+            "time_remaining_str": time_remaining_str,
+            "all_started": all_started,
+            "data_transfer": data_transfer,
+            "average": average,
+            }
+
+    def _push_progress_to_output(self, force = False):
+
+        stats = self._compute_progress_stats()
+        downloaded_size = stats["downloaded_size"]
+        total_size = stats["total_size"]
+        time_remaining = stats["time_remaining"]
+        all_started = stats["all_started"]
+        data_transfer = stats["data_transfer"]
+        average = stats["average"]
+        time_remaining_str = stats["time_remaining_str"]
+
+        self.__data_transfer = data_transfer
+        self.__average = average
+        self.__time_remaining_secs = time_remaining
 
         update_time_delta = 0.5
         cur_t = time.time()
@@ -1266,7 +1290,8 @@ class MultipleUrlFetcher(TextInterface):
                 diffbarsize -= 1
             if self.__show_speed:
                 bartext += "] => %s" % (bytes_into_human(data_transfer),)
-                bartext += "/%s : %s: %s" % (sec_txt, eta_txt, time_remaining,)
+                bartext += "/%s : %s: %s" % (
+                    sec_txt, eta_txt, time_remaining_str,)
             else:
                 bartext += "]"
             myavg = str(average)
