@@ -1,5 +1,5 @@
 [main]
-host = https://www.transifex.net
+host = https://www.transifex.com
 
 [sabayon-rigo.rigo-intltool-pot-file]
 file_filter = <lang>.po
