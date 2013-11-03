@@ -886,6 +886,9 @@ class Rigo(Gtk.Application):
             "--remove",
             metavar="<dep string>", help="remove given dependency")
         parser.add_argument(
+            "--upgrade", help="upgrade the system",
+            action="store_true", default=False)
+        parser.add_argument(
             "--dumper", help="enable the main thread dumper (debug)",
             action="store_true", default=False)
         parser.add_argument(
@@ -968,6 +971,13 @@ class Rigo(Gtk.Application):
             task = ParallelTask(
                 self._avc.install_package, path)
             task.name = "AppInstallPackage-%s" % (path,)
+            task.daemon = True
+            task.start()
+            managing = True
+
+        if self._nsargs.upgrade:
+            task = ParallelTask(self._avc.upgrade)
+            task.name = "SystemUpgrade"
             task.daemon = True
             task.start()
             managing = True
