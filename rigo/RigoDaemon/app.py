@@ -253,11 +253,6 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
 
     def __init__(self, *args, **kwargs):
         MultipleUrlFetcher.__init__(self, *args, **kwargs)
-        self.__average = 0
-        self.__downloadedsize = 0
-        self.__remotesize = 0
-        self.__datatransfer = 0
-        self.__time_remaining = ""
         self.__last_t = None
         self.__last_t_mutex = Lock()
 
@@ -267,15 +262,6 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
         Bind RigoDaemon instance to this class.
         """
         DaemonMultipleUrlFetcher._DAEMON = daemon
-
-    def handle_statistics(self, th_id, downloaded_size, total_size,
-            average, old_average, update_step, show_speed, data_transfer,
-            time_remaining, time_remaining_secs):
-        self.__average = average
-        self.__downloadedsize = downloaded_size
-        self.__remotesize = total_size
-        self.__datatransfer = data_transfer
-        self.__time_remaining = time_remaining
 
     def update(self):
         if self._DAEMON is None:
@@ -290,11 +276,14 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
                     return # dont flood
             self.__last_t = cur_t
 
-        GLib.idle_add(
-            self._DAEMON.transfer_output,
-            self.__average, self.__downloadedsize,
-            int(self.__remotesize), int(self.__datatransfer),
-            self.__time_remaining)
+        stats = self._compute_progress_stats()
+
+        if stats["all_started"]:
+            GLib.idle_add(
+                self._DAEMON.transfer_output,
+                stats["average"], stats["downloaded_size"],
+                stats["total_size"], stats["data_transfer"],
+                stats["time_remaining_str"])
 
 
 class FakeOutFile(object):
