@@ -22,6 +22,7 @@ import hashlib
 import socket
 import pty
 import subprocess
+import threading
 
 from entropy.const import const_is_python3, const_file_readable
 
@@ -977,6 +978,7 @@ class MultipleUrlFetcher(TextInterface):
 
     def _init_vars(self):
         self.__progress_data = {}
+        self.__progress_data_lock = threading.Lock()
         self.__thread_pool = {}
         self.__download_statuses = {}
         self.__show_progress = False
@@ -1191,7 +1193,8 @@ class MultipleUrlFetcher(TextInterface):
             'time_remaining': time_remaining,
             'time_remaining_secs': time_remaining_secs,
         }
-        self.__progress_data[th_id] = data
+        with self.__progress_data_lock:
+            self.__progress_data[th_id] = data
 
     def _push_progress_to_output(self, force = False):
 
@@ -1199,22 +1202,22 @@ class MultipleUrlFetcher(TextInterface):
         total_size = 0
         time_remaining = 0
         update_step = 0
-        pd = self.__progress_data.copy()
-        pdlen = len(pd)
 
         # calculation
-        for th_id in sorted(pd):
-            data = pd.get(th_id)
-            downloaded_size += data.get('downloaded_size', 0)
-            total_size += data.get('total_size', 0)
-            # data_transfer from Python threading bullshit is not reliable
-            # with multiple threads and causes inaccurate informations to be
-            # printed
-            # data_transfer += data.get('data_transfer', 0)
-            tr = data.get('time_remaining_secs', 0)
-            if tr > 0:
-                time_remaining += tr
-            update_step += data.get('update_step', 0)
+        with self.__progress_data_lock:
+            pdlen = len(self.__progress_data)
+            for th_id in sorted(self.__progress_data):
+                data = self.__progress_data.get(th_id)
+                downloaded_size += data.get('downloaded_size', 0)
+                total_size += data.get('total_size', 0)
+                # data_transfer from Python threading bullshit is not reliable
+                # with multiple threads and causes inaccurate informations to be
+                # printed
+                # data_transfer += data.get('data_transfer', 0)
+                tr = data.get('time_remaining_secs', 0)
+                if tr > 0:
+                    time_remaining += tr
+                update_step += data.get('update_step', 0)
 
         elapsed_t = time.time() - self.__startup_time
         if elapsed_t < 0.1:
