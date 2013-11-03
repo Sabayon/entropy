@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# rogerc, 2013
 # rogerc, 2012
 # rogerc, 2008, 2009, 2010, 2011
 msgid ""
@@ -10,9 +11,9 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-05 16:05+0100\n"
-"PO-Revision-Date: 2013-03-30 11:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2013-08-26 14:39+0000\n"
+"Last-Translator: rogerc\n"
+"Language-Team: Catalan (http://www.transifex.com/projects/p/sabayon-entropy-server/language/ca/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -64,7 +65,7 @@ msgstr "pot trigar una estona"
 #: ../../lib/entropy/db/skel.py:1683 ../../lib/entropy/db/skel.py:1708
 #: ../../lib/entropy/db/skel.py:1719
 msgid "Entropy"
-msgstr ""
+msgstr "Entropy"
 
 #: ../../lib/entropy/db/skel.py:1684
 msgid "action"
@@ -97,7 +98,7 @@ msgstr "S'està afegint l'entrada"
 #: ../../lib/entropy/core/settings/base.py:2039
 #: ../../lib/entropy/server/interfaces/main.py:1328
 msgid "No description"
-msgstr ""
+msgstr "Sense descripció"
 
 #: ../../lib/entropy/server/transceivers.py:91
 msgid "verifying upload (if supported)"
@@ -338,7 +339,7 @@ msgstr "Paquets a desplaçar localment"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1063
 msgid "Packages to be downloaded"
-msgstr ""
+msgstr "Paquets a baixar"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:1072
 msgid "Packages to be uploaded"
@@ -508,12 +509,12 @@ msgstr "almenys una rèplica s'ha sincronitzat correctament!"
 #: ../../lib/entropy/server/interfaces/mirrors.py:2069
 #: ../../lib/entropy/server/interfaces/mirrors.py:2382
 msgid "expire"
-msgstr ""
+msgstr "venç"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2146
 #: ../../lib/entropy/server/interfaces/mirrors.py:2404
 msgid "weaken"
-msgstr ""
+msgstr "afebleix"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2243
 msgid "tidy"
@@ -529,19 +530,19 @@ msgstr "s'estan recollint paquets que han vençut a les branques seleccionades"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2338
 msgid "nothing to clean on this branch"
-msgstr ""
+msgstr "no hi ha res a eliminar en aquesta branca"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2350
 msgid "these will be removed"
-msgstr ""
+msgstr "aquests s'eliminaran"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2372
 msgid "these will be marked as expired"
-msgstr ""
+msgstr "aquests es marcaran com a vençuts"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2394
 msgid "these will be removed and marked as weak"
-msgstr ""
+msgstr "aquests s'eliminaran i quedaran marcats com a afeblits"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:2417
 #: ../../lib/entropy/server/interfaces/main.py:2600
@@ -1155,39 +1156,39 @@ msgstr "S'està comprovant"
 
 #: ../../lib/entropy/server/interfaces/main.py:4427
 msgid "Calculating dependencies"
-msgstr ""
+msgstr "Calculant dependències"
 
 #: ../../lib/entropy/server/interfaces/main.py:4435
 msgid "if these repositories were merged"
-msgstr ""
+msgstr "si aquests repositoris es combinessin"
 
 #: ../../lib/entropy/server/interfaces/main.py:4442
 msgid "and if these repositories were drained"
-msgstr ""
+msgstr "i si aquests repositoris es drenessin"
 
 #: ../../lib/entropy/server/interfaces/main.py:4463
 msgid "checking repository"
-msgstr ""
+msgstr "verificant el repositori"
 
 #: ../../lib/entropy/server/interfaces/main.py:4527
 msgid "missing dependencies"
-msgstr ""
+msgstr "dependències no satisfetes"
 
 #: ../../lib/entropy/server/interfaces/main.py:4538
 msgid "No missing dependencies. Lucky bastard..."
-msgstr ""
+msgstr "No hi ha dependències no satisfetes. Afortunat..."
 
 #: ../../lib/entropy/server/interfaces/main.py:4561
 msgid "Calculating library dependencies of injected packages"
-msgstr ""
+msgstr "S'estan calculant dependències de llibreries dels fitxers injectats"
 
 #: ../../lib/entropy/server/interfaces/main.py:4612
 msgid "There are broken injected packages. Please fix."
-msgstr ""
+msgstr "Hi ha paquets injectats trencats. Arregleu-ho."
 
 #: ../../lib/entropy/server/interfaces/main.py:4618
 msgid "Injected packages are healthy. You lucky..."
-msgstr ""
+msgstr "Els paquets injectats estan sans. Afortunat..."
 
 #: ../../lib/entropy/server/interfaces/main.py:4675
 msgid "Running dependencies test"
@@ -1803,11 +1804,11 @@ msgstr "dependències a la llista negra !!!"
 
 #: ../../lib/entropy/qa.py:336
 msgid "requires libraries"
-msgstr ""
+msgstr "requereix les llibreries"
 
 #: ../../lib/entropy/qa.py:354
 msgid "library provided by"
-msgstr ""
+msgstr "llibreria proporcionada per"
 
 #: ../../lib/entropy/qa.py:400 ../../lib/entropy/qa.py:627
 msgid "no packages"
@@ -1945,15 +1946,15 @@ msgstr "Suma de verificació"
 
 #: ../../server/eit/utils.py:189
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../server/eit/utils.py:191
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../server/eit/utils.py:197
 msgid "GPG"
-msgstr ""
+msgstr "GPG"
 
 #: ../../server/eit/utils.py:202
 msgid "Dependencies"

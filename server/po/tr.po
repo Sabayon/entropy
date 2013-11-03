@@ -4,14 +4,15 @@
 # 
 # Translators:
 # doktordeman <doktordeman@hotmail.com>, 2012
+# emfi <emrefirat93@gmail.com>, 2013
 # fthpl <fthpl@hotmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Server\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-05 16:05+0100\n"
-"PO-Revision-Date: 2013-03-30 11:54+0000\n"
-"Last-Translator: lxnay <lxnay@sabayon.org>\n"
+"PO-Revision-Date: 2013-07-17 11:48+0000\n"
+"Last-Translator: emfi <emrefirat93@gmail.com>\n"
 "Language-Team: Turkish (http://www.transifex.com/projects/p/sabayon-entropy-server/language/tr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,7 +40,7 @@ msgstr "depo meta veri yerleşimi güncelleniyor,lütfen bekleyiniz!"
 
 #: ../../lib/entropy/db/sqlite.py:2316
 msgid "generating provided_libs metadata, please wait!"
-msgstr ""
+msgstr "provided_libs meta verileri oluşturuluyor, lütfen bekleyin!"
 
 #: ../../lib/entropy/db/sql.py:5438
 msgid "Spm error occured"
@@ -47,7 +48,7 @@ msgstr "Spm hatası oluştu"
 
 #: ../../lib/entropy/db/sql.py:5451
 msgid "Spm Unique Identifier not found for"
-msgstr ""
+msgstr "için Spm Benzersiz Tanımlayıcı bulunamadı"
 
 #: ../../lib/entropy/db/skel.py:1662
 msgid "SPM"
@@ -107,7 +108,7 @@ msgstr "doğrulayarak karşıya yükleme (eğer destekliyorsa)"
 #: ../../lib/entropy/server/transceivers.py:132
 #: ../../lib/entropy/server/transceivers.py:147
 msgid "digest verification"
-msgstr ""
+msgstr "Doğrulama özeti"
 
 #: ../../lib/entropy/server/transceivers.py:116
 msgid "so far, so good!"
@@ -119,7 +120,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/transceivers.py:149
 msgid "remote md5 is invalid"
-msgstr ""
+msgstr "uzak md5 geçersiz"
 
 #: ../../lib/entropy/server/transceivers.py:265
 msgid "successful"
@@ -150,7 +151,7 @@ msgstr "yansıya bağlanılıyor"
 
 #: ../../lib/entropy/server/transceivers.py:426
 msgid "setting directory to"
-msgstr ""
+msgstr "ayar dizini"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:59
 msgid "Entropy Server Mirrors Interface loaded"
@@ -166,7 +167,7 @@ msgstr "Paket yansısı"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:114
 msgid "looking for file in mirror"
-msgstr ""
+msgstr "Yansıda dosya aranıyor"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:201
 #: ../../lib/entropy/server/interfaces/mirrors.py:286
@@ -190,11 +191,11 @@ msgstr "İndirme için yansı"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:326
 msgid "mirror already locked for download"
-msgstr ""
+msgstr "Yansı indirmek için zaten kitli"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:339
 msgid "mirror already unlocked for download"
-msgstr ""
+msgstr "yansı indirmek için zaten kilidi açık"
 
 #. locking/unlocking mirror1 for download
 #: ../../lib/entropy/server/interfaces/mirrors.py:387
@@ -211,19 +212,19 @@ msgstr "yansı kilitlenemedi"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:464
 msgid "mirror successfully unlocked"
-msgstr ""
+msgstr "başarıyla ayna kilidi açıldı"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:483
 msgid "unlock error"
-msgstr ""
+msgstr "kilit açma hatası"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:485
 msgid "mirror not unlocked"
-msgstr ""
+msgstr "yansının kilidi açılmadı"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:522
 msgid "connecting to download package"
-msgstr ""
+msgstr "paketi indrimek için bağlanıyor"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:544
 msgid "downloading package"
@@ -241,15 +242,15 @@ msgstr "paket\n\npaketler"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:565
 msgid "does not exist"
-msgstr ""
+msgstr "Mevcut değil"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:584
 msgid "is not listed in the repository !"
-msgstr ""
+msgstr "Depodaki listede yok!"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:598
 msgid "verifying checksum of package"
-msgstr ""
+msgstr "Paket doğrulama kontrolü"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:616
 msgid "downloaded successfully"
@@ -257,7 +258,7 @@ msgstr "indirme başarılı"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:631
 msgid "checksum does not match. re-downloading..."
-msgstr ""
+msgstr "doğrulama uyuşmuyor. yeniden indiriliyor..."
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:648
 msgid "seems broken. Consider to re-package it. Giving up!"
@@ -277,7 +278,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:850
 msgid "mirror already locked"
-msgstr ""
+msgstr "yansı zaten kilitli"
 
 #: ../../lib/entropy/server/interfaces/mirrors.py:851
 msgid "waiting up to 2 minutes before giving up"
@@ -606,7 +607,7 @@ msgstr ""
 
 #: ../../lib/entropy/server/interfaces/db.py:728
 msgid "download path"
-msgstr ""
+msgstr "indirme yolu"
 
 #: ../../lib/entropy/server/interfaces/db.py:764
 #: ../../lib/entropy/server/interfaces/db.py:829
