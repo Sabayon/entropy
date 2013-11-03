@@ -14,6 +14,7 @@ import os
 import subprocess
 import errno
 import codecs
+import collections
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
@@ -71,9 +72,10 @@ def _guess_kernel_package_file(release_level):
     if not os.path.isdir(KERNELS_DIR):
         return None
 
-    subs = []
-    for _curdir, subs, _files in os.walk(KERNELS_DIR):
-        subs.extend(subs)
+    subs = collections.deque()
+    for _curdir, subdirs, _files in os.walk(KERNELS_DIR):
+        subs.extend(subdirs)
+        break
 
     for sub in subs:
         sub_path = os.path.join(KERNELS_DIR, sub)
