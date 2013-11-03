@@ -1201,13 +1201,10 @@ class MultipleUrlFetcher(TextInterface):
         downloaded_size = 0
         total_size = 0
         time_remaining = 0
-        update_step = 0
 
         # calculation
         with self.__progress_data_lock:
-            pdlen = len(self.__progress_data)
-            for th_id in sorted(self.__progress_data):
-                data = self.__progress_data.get(th_id)
+            for th_id, data in self.__progress_data.items():
                 downloaded_size += data.get('downloaded_size', 0)
                 total_size += data.get('total_size', 0)
                 # data_transfer from Python threading bullshit is not reliable
@@ -1217,7 +1214,6 @@ class MultipleUrlFetcher(TextInterface):
                 tr = data.get('time_remaining_secs', 0)
                 if tr > 0:
                     time_remaining += tr
-                update_step += data.get('update_step', 0)
 
         elapsed_t = time.time() - self.__startup_time
         if elapsed_t < 0.1:
@@ -1232,10 +1228,6 @@ class MultipleUrlFetcher(TextInterface):
             average = int(float(downloaded_size/1024)/total_size * 100)
 
         self.__average = average
-        if pdlen > 0:
-            update_step = update_step/pdlen
-        else:
-            update_step = 0
         time_remaining = convert_seconds_to_fancy_output(time_remaining)
         self.__time_remaining_sec = time_remaining
 
