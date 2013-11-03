@@ -140,15 +140,39 @@ class Magneto(MagnetoCore):
             self._menu_items["disable_applet"].setEnabled(True)
             self._menu_items["enable_applet"].setEnabled(False)
 
-    def show_alert(self, title, text, urgency = None, force = False):
+    def show_alert(self, title, text, urgency = None, force = False,
+                   buttons = None):
 
         if ((title, text) == self.last_alert) and not force:
             return
 
+        def _action_activate_cb(action_num):
+            if not buttons:
+                return
+
+            try:
+                action_info = buttons[action_num - 1]
+            except IndexError:
+                return
+
+            _action_id, _button_name, button_callback = action_info
+            button_callback()
+
         def do_show():
             notification = KNotification("Updates")
+
+            # Keep a reference or the callback of the actions added
+            # below will never work.
+            # See: https://bugzilla.redhat.com/show_bug.cgi?id=241531
+            self.__last_notification = notification
+
             notification.setFlags(KNotification.CloseOnTimeout)
             notification.setText("<b>%s</b><br/>%s" % (title, text,))
+            if buttons:
+                notification.setActions([x[1] for x in buttons])
+                notification.connect(
+                    notification,
+                    SIGNAL("activated(unsigned int)"), _action_activate_cb)
 
             icon_name = "okay"
             status = KStatusNotifierItem.Passive

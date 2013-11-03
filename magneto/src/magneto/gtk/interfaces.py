@@ -138,13 +138,20 @@ class Magneto(MagnetoCore):
     def applet_doubleclick(self, widget):
         super(Magneto, self).applet_doubleclick()
 
-    def show_alert(self, title, text, urgency = None, force = False):
+    def show_alert(self, title, text, urgency = None, force = False,
+                   buttons = None):
 
         def do_show():
             if ((title, text) == self.last_alert) and not force:
                 return False
             pynotify.init(_("System Updates"))
             n = pynotify.Notification(title, text)
+
+            # Keep a reference or the callback of the actions added
+            # below will never work.
+            # See: https://bugzilla.redhat.com/show_bug.cgi?id=241531
+            self.__last_notification = n
+
             pixbuf = self._status_icon.get_pixbuf()
             if pixbuf:
                 n.set_icon_from_pixbuf(pixbuf)
@@ -153,6 +160,11 @@ class Magneto(MagnetoCore):
             elif urgency == "low":
                 n.set_urgency(pynotify.URGENCY_LOW)
             self.last_alert = (title, text)
+
+            if buttons:
+                for action_id, button_name, button_callback in buttons:
+                    n.add_action(action_id, button_name, button_callback, None)
+
             n.show()
             return False
 
