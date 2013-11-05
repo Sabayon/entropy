@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-03 17:02+0100\n"
+"POT-Creation-Date: 2013-11-05 11:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4080,7 +4080,7 @@ msgstr ""
 
 #: ../../client/solo/commands/conf.py:225
 #: ../../client/solo/commands/notice.py:153
-#: ../../magneto/src/magneto/core/interfaces.py:195
+#: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "Exit"
 msgstr ""
 
@@ -4736,120 +4736,128 @@ msgstr ""
 msgid "Critical Information"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:182
+#: ../../magneto/src/magneto/core/interfaces.py:183
 msgid "_Disable Notification Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:183
+#: ../../magneto/src/magneto/core/interfaces.py:184
 msgid "Disable Notification Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:184
+#: ../../magneto/src/magneto/core/interfaces.py:185
 msgid "_Enable Notification Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:185
+#: ../../magneto/src/magneto/core/interfaces.py:186
 msgid "Enable Notification Applet"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:186
+#: ../../magneto/src/magneto/core/interfaces.py:187
 msgid "_Check for updates"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:187
+#: ../../magneto/src/magneto/core/interfaces.py:188
 msgid "Check for updates"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:188
+#: ../../magneto/src/magneto/core/interfaces.py:189
 msgid "_Launch Package Manager"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:189
+#: ../../magneto/src/magneto/core/interfaces.py:190
 msgid "Launch Package Manager"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:190
+#: ../../magneto/src/magneto/core/interfaces.py:191
 msgid "_Packages Website"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:191
+#: ../../magneto/src/magneto/core/interfaces.py:192
 msgid "Use Packages web interface"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:192
+#: ../../magneto/src/magneto/core/interfaces.py:193
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:193
+#: ../../magneto/src/magneto/core/interfaces.py:194
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:195
+#: ../../magneto/src/magneto/core/interfaces.py:196
 msgid "_Exit"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:328
+#: ../../magneto/src/magneto/core/interfaces.py:333
+msgid "System restart needed"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:334
+msgid "This system should be restarted at your earliest convenience"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:341
 msgid "Cannot monitor Sabayon updates"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:330
+#: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Entropy DBus service not available"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:331
+#: ../../magneto/src/magneto/core/interfaces.py:344
 msgid "unable to communicate with the updates service"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:349
+#: ../../magneto/src/magneto/core/interfaces.py:362
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:355
+#: ../../magneto/src/magneto/core/interfaces.py:368
 msgid "Sabayon updates available"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:356
+#: ../../magneto/src/magneto/core/interfaces.py:369
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:361
+#: ../../magneto/src/magneto/core/interfaces.py:374
 msgid "Upgrade now"
 msgstr ""
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:365
-#: ../../magneto/src/magneto/core/interfaces.py:367
+#: ../../magneto/src/magneto/core/interfaces.py:378
+#: ../../magneto/src/magneto/core/interfaces.py:380
 msgid "Your Sabayon is up-to-date"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:368
+#: ../../magneto/src/magneto/core/interfaces.py:381
 msgid "No updates available at this time, cool!"
 msgstr ""
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:379
+#: ../../magneto/src/magneto/core/interfaces.py:392
 msgid "Repositories are being updated"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:380
+#: ../../magneto/src/magneto/core/interfaces.py:393
 msgid "Sabayon repositories status"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:381
+#: ../../magneto/src/magneto/core/interfaces.py:394
 msgid "Repositories are being updated automatically"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:474
+#: ../../magneto/src/magneto/core/interfaces.py:487
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:484
+#: ../../magneto/src/magneto/core/interfaces.py:497
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 
