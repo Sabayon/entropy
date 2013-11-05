@@ -127,6 +127,7 @@ class MagnetoCore(MagnetoCoreUI):
     """
 
     _UPDATES_AVAILABLE_SIGNAL = "updates_available"
+    _SYSTEM_RESTART_SIGNAL = "system_restart_needed"
     _ACTIVITY_STARTED_SIGNAL = "activity_started"
     _REPOSITORIES_UPDATED_SIGNAL = "repositories_updated"
     _SHUTDOWN_SIGNAL = "shutdown"
@@ -238,6 +239,11 @@ class MagnetoCore(MagnetoCoreUI):
                     dbus_interface=self.DBUS_INTERFACE)
 
                 self.__entropy_bus.connect_to_signal(
+                    self._SYSTEM_RESTART_SIGNAL,
+                    self._system_restart_signal,
+                    dbus_interface=self.DBUS_INTERFACE)
+
+                self.__entropy_bus.connect_to_signal(
                     self._REPOSITORIES_UPDATED_SIGNAL,
                     self._repositories_updated_signal,
                     dbus_interface=self.DBUS_INTERFACE)
@@ -321,6 +327,13 @@ class MagnetoCore(MagnetoCoreUI):
                                   one_click_update=False):
         updates = [self._dbus_to_unicode(x) for x in update_atoms]
         self.new_updates_signal(updates, one_click_update=one_click_update)
+
+    def _system_restart_signal(self):
+        self.show_alert(
+            _("System restart needed"),
+            _("This system should be restarted at your earliest convenience"),
+            force = True,
+            )
 
     def show_service_not_available(self):
         # inform user about missing Entropy service
