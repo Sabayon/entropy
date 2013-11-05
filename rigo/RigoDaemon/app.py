@@ -1670,6 +1670,9 @@ class RigoDaemonService(dbus.service.Object):
                     self.unsupported_applications,
                     manual_remove, remove)
 
+            if update:
+                GLib.idle_add(self.system_restart_needed)
+
             return AppTransactionOutcome.SUCCESS
 
         finally:
@@ -3658,6 +3661,15 @@ class RigoDaemonService(dbus.service.Object):
         previous upgrade queue contained critical updates.
         """
         write_output("restarting_system_upgrade(): issued",
+                     debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='')
+    def system_restart_needed(self):
+        """
+        Notify that a System restart is needed.
+        """
+        write_output("system_restart_needed(): issued",
                      debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
