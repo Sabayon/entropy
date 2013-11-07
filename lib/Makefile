@@ -4,6 +4,7 @@ PREFIX = /usr
 VARDIR = /var
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
+TMPFILESDIR = /usr/lib/tmpfiles.d
 DESTDIR = 
 
 all:
@@ -18,6 +19,7 @@ install:
 	install -d $(DESTDIR)/etc/init.d
 	install -d $(DESTDIR)/etc/logrotate.d
 	install -d $(DESTDIR)/$(LIBDIR)/entropy/services
+	install -d $(DESTDIR)/$(TMPFILESDIR)
 
 	# Empty directories that should be created and kept
 	install -d -m 775 $(DESTDIR)$(VARDIR)/tmp/entropy
@@ -56,6 +58,8 @@ install:
 	install -m 644 ../misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
 
 	install -m 644 ../docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
+
+	install -m 644 ../conf/entropy-tmpfiles.d.conf $(DESTDIR)/$(TMPFILESDIR)/entropy.conf
 
 	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
 
