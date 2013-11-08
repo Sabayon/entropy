@@ -3,6 +3,7 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# lxnay <lxnay@sabayon.org>, 2013
 # lxnay <lxnay@sabayon.org>, 2012
 # unknerror <unknerror@alternativefuse.com>, 2012
 msgid ""
@@ -10,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Entropy Rigo App Manager\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-03 15:47+0100\n"
-"PO-Revision-Date: 2013-03-07 08:54+0000\n"
+"PO-Revision-Date: 2013-11-08 20:50+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sabayon-rigo/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -21,11 +22,11 @@ msgstr ""
 
 #: ../RigoDaemon/app.py:115
 msgid "Downloading"
-msgstr ""
+msgstr "Scaricamento"
 
 #: ../RigoDaemon/app.py:117
 msgid "Uploading"
-msgstr ""
+msgstr "Caricamento"
 
 #: ../RigoDaemon/app.py:1277 ../rigo_app.py:767
 msgid "Not authorized"
@@ -588,7 +589,7 @@ msgstr "Visualizza Applicazioni installate"
 
 #: ../rigo/ui/gtk3/controllers/applications.py:757
 msgid "Browse through the currently Installed Applications."
-msgstr "Sfoglia le Applicazioni correntemente installate"
+msgstr "Sfoglia le Applicazioni correntemente installate."
 
 #: ../rigo/ui/gtk3/controllers/applications.py:769
 msgid "Optimize Download Speed"
@@ -670,7 +671,7 @@ msgstr "Aggiornamenti disponibili, che ne dici di installarli?"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:200
 msgid "_Update"
-msgstr ""
+msgstr "_Aggiorna"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:201
 msgid "_Show"
@@ -682,7 +683,7 @@ msgstr "_Ignora"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:203
 msgid "Srsly, ignore!"
-msgstr ""
+msgstr "Davvero, ignora!"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:255
 msgid "The list of available Applications is old, <b>update now</b>?"
@@ -887,7 +888,7 @@ msgstr "_Rinomina"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1150
 msgid "Repository name"
-msgstr "Nome Repository."
+msgstr "Nome repository"
 
 #: ../rigo/ui/gtk3/widgets/notifications.py:1182
 msgid "<b>Invalid</b> Repository name!"
@@ -935,7 +936,7 @@ msgstr "Rigo sta lavorando, sei sicuro?"
 
 #: ../rigo_app.py:152
 msgid "Search"
-msgstr "Ricerca"
+msgstr "Cerca"
 
 #: ../rigo_app.py:155 ../rigo_app.py:878 ../data/ui/gtk3/rigo.ui.h:1
 msgid "Rigo Application Browser"
@@ -963,7 +964,7 @@ msgstr "Cose delle Repository"
 
 #: ../rigo_app.py:176
 msgid "Application Groups"
-msgstr ""
+msgstr "Gruppi Applicazioni"
 
 #: ../rigo_app.py:455
 msgid "Activity Interruption"
