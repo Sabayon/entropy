@@ -1,3 +1,65 @@
+commit 220e55045357a8ea7a7febe78066899fcbe6fc24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 8 22:04:30 2013 +0100
+
+    Release Entropy 226
+
+commit 52da3768739798885964e6c8f735bc750cf15644
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 8 22:04:07 2013 +0100
+
+    [client] update translations
+
+commit fd835e2c45c132bf3cb42ec9df23de69103aa751
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 8 22:03:17 2013 +0100
+
+    [Rigo] update translations
+
+commit 7a24bbc39b003b0533b826602113ab37b67a3ae6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 7 21:25:52 2013 +0100
+
+    [conf] protect /var/tmp/entropy from systemd-tmpfiles.d
+    
+    See Gentoo bug #490676
+
+commit fe225252539246c3640dae70312dd008dd3bfe8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 5 11:24:43 2013 +0100
+
+    [client] update translations
+
+commit 37fb558566e6af1923e90814cce7f23e6e45a755
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 5 11:23:44 2013 +0100
+
+    [client] update translations
+
+commit cef85712fcf1ba57c194ea9225ed2fb5c3ea52d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 5 11:23:22 2013 +0100
+
+    [magneto] connect to "system_restart_needed" signal
+
+commit a323563b227d3a9b0b4e9d496f9db1a29fd70e53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 5 11:17:32 2013 +0100
+
+    [RigoDaemon] add "system_restart_needed" signaling
+
+commit a7d90680de94545773d70a3888b317be276f7288
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 17:03:15 2013 +0100
+
+    [client] update entropy.pot
+
+commit 18364abe636053765c948c5d8bf35ed4ae7f5e9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 3 17:00:01 2013 +0100
+
+    Tagging Entropy version 225
+
 commit ce8498a1fb2d33096db20d565784b93027998c7e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 3 17:00:01 2013 +0100
