@@ -6,13 +6,14 @@
 # elvis <angelaccioelvis@libero.it>, 2013
 # elvis <angelaccioelvis@libero.it>, 2012
 # belcocco <belcocco@gmail.com>, 2012
+# lxnay <lxnay@sabayon.org>, 2013
 # lxnay <lxnay@sabayon.org>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-11-05 11:23+0100\n"
-"PO-Revision-Date: 2013-11-05 10:24+0000\n"
+"PO-Revision-Date: 2013-11-08 21:02+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Italian (http://www.transifex.com/projects/p/sabayon-entropy/language/it/)\n"
 "MIME-Version: 1.0\n"
@@ -105,11 +106,11 @@ msgstr "Aggiunta voce"
 
 #: ../../lib/entropy/core/settings/base.py:2086
 msgid "No description"
-msgstr ""
+msgstr "Nessuna descrizione"
 
 #: ../../lib/kswitch/__init__.py:121
 msgid "has been installed."
-msgstr ""
+msgstr "è stato installato."
 
 #: ../../lib/kswitch/__init__.py:122
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3436
@@ -128,11 +129,11 @@ msgstr "Attenzione"
 
 #: ../../lib/kswitch/__init__.py:123
 msgid "some external drivers cannot work across multiple kernels."
-msgstr ""
+msgstr "alcuni driver esterni non funzionano attraverso più kernel."
 
 #: ../../lib/kswitch/__init__.py:124
 msgid "Please reboot your computer now !"
-msgstr ""
+msgstr "Riavvia il computer ora!"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:248
 msgid "Accessibility"
@@ -252,7 +253,7 @@ msgstr "Ricaricamento moduli Portage"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:979
 msgid "updating metadata"
-msgstr ""
+msgstr "aggiornamento metadati"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1145
 msgid "error"
@@ -260,7 +261,7 @@ msgstr "errore"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1147
 msgid "not readable"
-msgstr ""
+msgstr "non leggibile"
 
 #: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2621
 msgid "package not available on system"
@@ -512,20 +513,20 @@ msgstr "Sto installando le informazioni"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:531
 msgid "Package phase"
-msgstr ""
+msgstr "Fase pacchetto"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:543
 msgid "Cannot run phase"
-msgstr ""
+msgstr "Impossibile eseguire fase"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:557
 #: ../../lib/entropy/client/interfaces/package.py:1882
 msgid "Source Package Manager is too old, please update it"
-msgstr ""
+msgstr "Il Source Package Manager è troppo vecchio, aggiornalo"
 
 #: ../../lib/entropy/client/interfaces/trigger.py:570
 msgid "Source Package Manager phase error"
-msgstr ""
+msgstr "Errore nell'esecuzione di una fase del Source Package Manager"
 
 #: ../../lib/entropy/client/interfaces/methods.py:81
 msgid "Please update your repositories now in order to remove this message!"
@@ -1071,15 +1072,15 @@ msgstr "Iniettamento dump scaricato"
 
 #: ../../lib/entropy/client/interfaces/db.py:408
 msgid "Scanning URL"
-msgstr ""
+msgstr "Scansione URL"
 
 #: ../../lib/entropy/client/interfaces/db.py:426
 msgid "Selected URL"
-msgstr ""
+msgstr "URL selezionato"
 
 #: ../../lib/entropy/client/interfaces/db.py:450
 msgid "repository is not available at the database URLs"
-msgstr ""
+msgstr "repository non disponibile agli URL database"
 
 #: ../../lib/entropy/client/interfaces/db.py:457
 msgid "Looking for an alternate route using package mirrors"
@@ -1481,7 +1482,7 @@ msgstr[1] "elementi"
 
 #: ../../lib/entropy/fetchers.py:1239
 msgid "Infinity"
-msgstr ""
+msgstr "Infinito"
 
 #: ../../lib/entropy/security.py:266
 msgid "GPG key EXPIRED for URL"
@@ -1526,7 +1527,7 @@ msgstr "scaricamento ultimi avvisi"
 
 #: ../../lib/entropy/security.py:880
 msgid "cannot create temporary directory"
-msgstr ""
+msgstr "impossibile creare directory temporanea"
 
 #: ../../lib/entropy/security.py:899
 msgid "updated successfully"
@@ -1554,7 +1555,7 @@ msgstr "verifica avvenuta con successo"
 
 #: ../../lib/entropy/security.py:1060
 msgid "checksum verification failed, sorry"
-msgstr ""
+msgstr "verifica checksum fallita, mi dispiace"
 
 #: ../../lib/entropy/security.py:1085
 msgid "GPG service not available"
@@ -1779,11 +1780,11 @@ msgstr "dipendenze blacklistate !!!"
 
 #: ../../lib/entropy/qa.py:337
 msgid "requires libraries"
-msgstr ""
+msgstr "librerie richieste"
 
 #: ../../lib/entropy/qa.py:355
 msgid "library provided by"
-msgstr ""
+msgstr "librerie fornite da"
 
 #: ../../lib/entropy/qa.py:401 ../../lib/entropy/qa.py:628
 msgid "no packages"
@@ -1945,11 +1946,11 @@ msgstr "Firma"
 
 #: ../../client/solo/utils.py:446
 msgid "SHA1"
-msgstr ""
+msgstr "SHA1"
 
 #: ../../client/solo/utils.py:448
 msgid "SHA256"
-msgstr ""
+msgstr "SHA256"
 
 #: ../../client/solo/utils.py:454 ../../client/solo/commands/status.py:133
 msgid "GPG"
@@ -2673,7 +2674,7 @@ msgstr "Pacchetti già aggiornati:"
 
 #: ../../client/solo/commands/query.py:1578
 msgid "Critical updates found:"
-msgstr ""
+msgstr "Aggiornamenti critici trovati:"
 
 #: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
@@ -2874,7 +2875,7 @@ msgstr "mostra informazioni riguardo gli identificatori di avvisi forniti"
 
 #: ../../client/solo/commands/security.py:148
 msgid "advisory indentifier"
-msgstr ""
+msgstr "identificatore avviso"
 
 #: ../../client/solo/commands/security.py:155
 msgid "automatically install all the available security updates"
@@ -2882,7 +2883,7 @@ msgstr "installa automaticamente tutti gli aggiornamenti di sicurezza disponibil
 
 #: ../../client/solo/commands/security.py:219
 msgid "Advisory Identifier"
-msgstr ""
+msgstr "Identificatore avviso"
 
 #: ../../client/solo/commands/security.py:251
 msgid "Background"
@@ -2978,7 +2979,7 @@ msgstr "Nessun avviso disponibile o applicabile"
 
 #: ../../client/solo/commands/security.py:574
 msgid "Advisory does not exist"
-msgstr ""
+msgstr "Avviso inesistente"
 
 #: ../../client/solo/commands/security.py:600
 msgid "Calculating security updates"
@@ -2990,11 +2991,11 @@ msgstr "Tutti gli aggiornamenti disponibile sono già installati"
 
 #: ../../client/solo/commands/moo.py:114
 msgid "moo at user"
-msgstr ""
+msgstr "moo all'utente"
 
 #: ../../client/solo/commands/moo.py:121
 msgid "bow to lxnay"
-msgstr ""
+msgstr "inchinati a lxnay"
 
 #: ../../client/solo/commands/yell.py:34
 msgid "You should run equo --help"
@@ -3036,7 +3037,7 @@ msgstr "Smettila, idiota."
 
 #: ../../client/solo/commands/yell.py:117
 msgid "yell at user"
-msgstr ""
+msgstr "urla all'utente"
 
 #: ../../client/solo/commands/remove.py:88
 #: ../../client/solo/commands/source.py:90
@@ -3288,7 +3289,7 @@ msgstr "gestisci gli User Generated Content"
 
 #: ../../client/solo/commands/ugc.py:75
 msgid "login against the given repository"
-msgstr ""
+msgstr "login sulla repository indicata"
 
 #: ../../client/solo/commands/ugc.py:77 ../../client/solo/commands/ugc.py:87
 #: ../../client/solo/commands/ugc.py:99 ../../client/solo/commands/ugc.py:140
@@ -3616,19 +3617,19 @@ msgstr "aggiungi una repository"
 
 #: ../../client/solo/commands/repo.py:92
 msgid "repository description"
-msgstr ""
+msgstr "descrizione repository"
 
 #: ../../client/solo/commands/repo.py:96
 msgid "repository database URL"
-msgstr ""
+msgstr "URL database repository"
 
 #: ../../client/solo/commands/repo.py:100
 msgid "repository packages URL"
-msgstr ""
+msgstr "URL pacchetti repository"
 
 #: ../../client/solo/commands/repo.py:104
 msgid "repository compression format"
-msgstr ""
+msgstr "formato compressione repository"
 
 #: ../../client/solo/commands/repo.py:109
 msgid "remove a repository"
@@ -3636,11 +3637,11 @@ msgstr "rimuovi una repository"
 
 #: ../../client/solo/commands/repo.py:117
 msgid "rename a repository"
-msgstr ""
+msgstr "rinomina una repository"
 
 #: ../../client/solo/commands/repo.py:123
 msgid "to repository"
-msgstr ""
+msgstr "a repository"
 
 #: ../../client/solo/commands/repo.py:128
 msgid "list active repositories"
@@ -3746,11 +3747,11 @@ msgstr "Impossibile rimuovere la repository"
 
 #: ../../client/solo/commands/repo.py:491
 msgid "repository id already available"
-msgstr ""
+msgstr "repository id già disponibile"
 
 #: ../../client/solo/commands/repo.py:499
 msgid "repository id is invalid"
-msgstr ""
+msgstr "repository id non valido"
 
 #: ../../client/solo/commands/repo.py:614
 msgid "mirror order:"
@@ -4019,7 +4020,7 @@ msgstr "Licenza salvata in"
 #: ../../client/solo/commands/install.py:116
 #: ../../client/solo/commands/download.py:95
 msgid "only include dependencies of selected packages"
-msgstr ""
+msgstr "includi solamente dipendenze dei pacchetti selezionati"
 
 #: ../../client/solo/commands/source.py:115
 #: ../../client/solo/commands/download.py:114
@@ -4232,7 +4233,7 @@ msgstr ""
 
 #: ../../client/solo/commands/match.py:95
 msgid "return only injected packages "
-msgstr ""
+msgstr "ritorna solamente pacchetti iniettati"
 
 #: ../../client/solo/commands/match.py:100
 msgid "match among installed packages only"
@@ -4252,7 +4253,7 @@ msgstr "ritorna i riscontri trovati in ogni repository"
 
 #: ../../client/solo/commands/match.py:119
 msgid "print download URIs (w/--quiet)"
-msgstr ""
+msgstr "stampa URI di download (con --quiet)"
 
 #: ../../client/solo/commands/match.py:123
 msgid "print repository information (w/--quiet)"
@@ -4357,7 +4358,7 @@ msgstr "installa o aggiorna pacchetti o file del pacchetto"
 msgid ""
 "remove unmaintained packages, if any. This will respect --ask, --pretend and"
 " other switches."
-msgstr ""
+msgstr "rimuovi pacchetti non più mantenuti, se presenti. Quest'opzione rispetterà --ask, --pretend e altre flag."
 
 #: ../../client/solo/commands/upgrade.py:198
 msgid "Calculating System Updates"
@@ -4393,7 +4394,7 @@ msgstr "Sebbene siano solitamente innocui, è suggerita (dopo verifica appropria
 
 #: ../../client/solo/commands/upgrade.py:281
 msgid "To automatically remove them, please run equo with --purge."
-msgstr ""
+msgstr "Per rimuoverli automaticamente, esegui equo con --purge"
 
 #: ../../client/solo/commands/upgrade.py:292
 msgid "Selective"
@@ -4435,7 +4436,7 @@ msgstr "rigenera la repository dei pacchetti installati usando il Source Package
 
 #: ../../client/solo/commands/rescue.py:111
 msgid "re-generate SPM<->Entropy package UIDs mapping"
-msgstr ""
+msgstr "rigenera la mappa SPM<->Entropy per gli UID pacchetto"
 
 #: ../../client/solo/commands/rescue.py:117
 msgid ""
@@ -4645,7 +4646,7 @@ msgstr "scarica pacchetti, essenzialmente"
 
 #: ../../client/solo/commands/version.py:59
 msgid "show equo version"
-msgstr ""
+msgstr "visualizza versione equo"
 
 #: ../../client/solo/commands/mask.py:53
 msgid "only show what would be done"
@@ -4795,11 +4796,11 @@ msgstr "_Esci"
 
 #: ../../magneto/src/magneto/core/interfaces.py:333
 msgid "System restart needed"
-msgstr ""
+msgstr "Riavvio del sistema necessario"
 
 #: ../../magneto/src/magneto/core/interfaces.py:334
 msgid "This system should be restarted at your earliest convenience"
-msgstr ""
+msgstr "Il sistema dovrebbe essere riavviato quanto prima"
 
 #: ../../magneto/src/magneto/core/interfaces.py:341
 msgid "Cannot monitor Sabayon updates"
@@ -4833,7 +4834,7 @@ msgstr[1] "Ci sono <b>%s</b> aggiornamenti disponibili"
 
 #: ../../magneto/src/magneto/core/interfaces.py:374
 msgid "Upgrade now"
-msgstr ""
+msgstr "Aggiorna ora"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:378
