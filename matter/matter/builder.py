@@ -609,11 +609,26 @@ class PackageBuilder(object):
         else:
             keywords = "%s ~%s" % (arch, arch)
 
+        settings.unlock()
+        backupenv = settings.configdict["backupenv"]
         if keywords is not None:
-            settings.unlock()
-            # do not backup.
+            # this is just FYI, if the below method fails
+            # this acts as a guard.
             settings["ACCEPT_KEYWORDS"] = keywords
-            settings.lock()
+
+            # this makes the trick, but might break in future
+            # Portage versions. However, that's what Portage uses
+            # internally.
+            backupenv["ACCEPT_KEYWORDS"] = keywords
+        else:
+            # reset keywords to the environment default, if any
+            env_keywords = os.getenv("ACCEPT_KEYWORDS")
+            if env_keywords:
+                backupenv["ACCEPT_KEYWORDS"] = env_keywords
+            else:
+                backupenv.pop("ACCEPT_KEYWORDS", None)
+
+        settings.lock()
 
     @classmethod
     def _setup_build_args(cls, spec):
@@ -657,7 +672,6 @@ class PackageBuilder(object):
 
         # reset settings to original state, variables will be reconfigured
         # while others may remain saved due to backup_changes().
-        # This is needed for _setup_keywords() to function properly.
         emerge_settings.unlock()
         emerge_settings.reset()
         emerge_settings.lock()
