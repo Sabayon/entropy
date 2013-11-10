@@ -465,7 +465,6 @@ class CalculatorsMixin:
             cache['set'] = keyslot_set
 
         selected = False
-        selected_matches_set = set(selected_matches)
         found_matches = []
         for dep in dependencies:
 
@@ -488,7 +487,7 @@ class CalculatorsMixin:
                 "filtered list: %s" % (found_matches,))
 
         for dep, matches in found_matches:
-            common = set(matches) & selected_matches_set
+            common = set(matches) & selected_matches
             if common:
                 if const_debug_enabled():
                     const_debug_write(
@@ -1341,7 +1340,7 @@ class CalculatorsMixin:
             post_deps_cache = {}
 
         if selected_matches is None:
-            selected_matches = []
+            selected_matches = set()
         deps_not_found = set()
         conflicts = set()
         first_element = True
@@ -2145,6 +2144,7 @@ class CalculatorsMixin:
         unsat_deps_cache = {}
         elements_cache = set()
         selected_matches_cache = {}
+        selected_matches_set = set(package_matches)
         post_deps_cache = {}
         matchfilter = set()
         for matched_atom in package_matches:
@@ -2179,7 +2179,8 @@ class CalculatorsMixin:
                     elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
                     post_deps_cache = post_deps_cache,
-                    recursive = recursive, selected_matches = package_matches,
+                    recursive = recursive,
+                    selected_matches = selected_matches_set,
                     selected_matches_cache = selected_matches_cache
                 )
             except DependenciesNotFound as err:
