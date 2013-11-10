@@ -1143,6 +1143,44 @@ class CalculatorsMixin:
 
         return set(map(_simple_or_dep_map, unsatisfied_deps))
 
+    DISABLE_REWRITE_SELECTED_MATCHES = os.getenv(
+        "ETP_DISABLE_REWRITE_SELECTED_MATCHES")
+
+    def __rewrite_selected_matches(self, unsatisfied_deps, selected_matches):
+        """
+        This function scans the unsatisfied dependencies and tries to rewrite
+        them if they are in the "selected_matches" set. This set contains the
+        unordered list of package matches requested by the user. We should
+        respect them as much as we can.
+
+        See Sabayon bug #4475. This is a fixup code and hopefully runs in
+        O(len(unsatisfied_deps)) thanks to memoization.
+        """
+        if (not selected_matches) or self.DISABLE_REWRITE_SELECTED_MATCHES:
+            return unsatisfied_deps
+
+        def _in_selected_matches(dep):
+            matches, m_rc = self.atom_match(
+                dep, multi_match = True, multi_repo = True)
+            common = selected_matches & matches
+            if common:
+                # we deterministically pick the first entry
+                # because the other ones will be pulled in anyway.
+                for package_id, repository_id in sorted(common):
+                    repo = self.open_repository(repository_id)
+                    keyslot = repo.retrieveKeySlotAggregated(package_id)
+                    if keyslot is None:
+                        continue
+
+                    const_debug_write(
+                        __name__,
+                        "__rewrite_selected_matches, rewritten: "
+                        "%s to %s" % (dep, keyslot,))
+                    return keyslot
+            return dep
+
+        return set(map(_in_selected_matches, unsatisfied_deps))
+
     DISABLE_AUTOCONFLICT = os.getenv("ETP_DISABLE_AUTOCONFLICT")
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
@@ -1200,6 +1238,8 @@ class CalculatorsMixin:
             myundeps = self._get_unsatisfied_dependencies(myundeps,
                 deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                 depcache = unsat_cache)
+            myundeps = self.__rewrite_selected_matches(
+                myundeps, selected_matches)
 
             if const_debug_enabled():
                 const_debug_write(__name__,
