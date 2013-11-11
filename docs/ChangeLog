@@ -1,3 +1,45 @@
+commit 2bbeae69e104d6f25b7c3eebc87ed1386f9655fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 11 09:12:13 2013 +0100
+
+    Release Entropy 227
+
+commit 000056afaa95b4a516213a18819403fdf02afa9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 10 19:42:44 2013 +0100
+
+    [matter] improve ACCEPT_KEYWORDS setup basing on the "stable" parameter
+    
+    This tweak makes possible to directly skip depgraph generation if
+    the root node (the dependency to check, last node of the toposorted
+    queue) is already up-to-date (wrt to stable: yes, for example).
+    
+    This is what Portage does internally (using backupenv) and may break
+    in future releases without notice. So, keep the settings["ACCEPT_KEYWORDS"]
+    setup as a guard, to ensure the safety property.
+
+commit 939367dec8dd40057c41798dd145ea21dc03bd8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 10 17:20:03 2013 +0100
+
+    [entropy.client.interfaces.dep] introduce rewrite_selected_matches fixup code
+    
+    See Sabayon bug #4475
+
+commit c54a6e54adf991cc7ebfc1819e47768cb847ff67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 10 17:14:54 2013 +0100
+
+    [entropy.client.interfaces.dep] use set type for internal selected_matches
+    
+    Given the current use cases, this is faster.
+
+commit f1ef265b2fc7b82782b56ad365890b688612bd8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 8 22:04:30 2013 +0100
+
+    Tagging Entropy version 226
+
 commit 220e55045357a8ea7a7febe78066899fcbe6fc24
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 8 22:04:30 2013 +0100
