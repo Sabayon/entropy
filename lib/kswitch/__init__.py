@@ -215,6 +215,104 @@ class KernelSwitcher(object):
         raise CannotFindRunningKernel(
             "Cannot find the currently running kernel")
 
+    def prepared_switch(self, kernel_match, installer, from_running=False):
+        """
+        Return a PreparedSwitch object that can be used to execute the kernel
+        switch process. API user should call, in order, pre(), run() and post().
+        post() should only be called if run() returns zero exit status.
+        """
+
+        class PreparedSwitch(object):
+
+            def __init__(self, switcher, entropy_client, kernel_match,
+                         installer, from_running):
+                self._switcher = switcher
+                self._entropy = entropy_client
+                self._kernel_match = kernel_match
+                self._installer = installer
+                self._from_running = from_running
+                self._opengl = None
+                self._matches = None
+                self._target_tag = None
+
+            def get_queue(self):
+                """
+                Return the install queue, this must be called after pre().
+                """
+                return self._matches
+
+            def pre(self):
+                pkg_id, pkg_repo = self._kernel_match
+
+                # this can be None !
+                self._target_tag = self._switcher._get_target_tag(
+                    self._kernel_match)
+
+                inst_repo = self._entropy.installed_repository()
+                # try to look for the currently running kernel first if
+                # --from-running is specified (use uname -r)
+                latest_kernel = -1
+                if self._from_running:
+                    try:
+                        latest_kernel = self._switcher.running_kernel_package()
+                    except CannotFindRunningKernel:
+                        raise
+
+                if latest_kernel == -1:
+                    latest_kernel, _k_rc = inst_repo.atomMatch(
+                        KERNEL_BINARY_VIRTUAL)
+                installed_revdeps = []
+                if (latest_kernel != -1) and self._target_tag:
+                    installed_revdeps = self._entropy.get_removal_queue(
+                        [latest_kernel], recursive = False)
+
+                # only pull in packages that are installed at this time.
+                def _installed_pkgs_translator(inst_pkg_id):
+                    if inst_pkg_id == latest_kernel:
+                        # will be added later
+                        return None
+                    key, slot = inst_repo.retrieveKeySlot(inst_pkg_id)
+                    target_slot = _remove_tag_from_slot(
+                        slot) + "," + self._target_tag
+
+                    pkg_id, pkg_repo = self._entropy.atom_match(key,
+                        match_slot = target_slot)
+                    if pkg_id == -1:
+                        return None
+                    return pkg_id, pkg_repo
+
+                matches = map(_installed_pkgs_translator, installed_revdeps)
+                matches = [x for x in matches if x is not None]
+                matches.append(kernel_match)
+                self._matches = matches
+
+                self._opengl = _get_opengl_impl()
+
+            def run(self):
+                if self._matches is None:
+                    raise TypeError("pre() not run")
+                return self._installer(self._entropy, self._matches)
+
+            def post(self):
+                pkg_id, pkg_repo = self._kernel_match
+
+                _set_opengl_impl(self._opengl)
+                if self._target_tag:
+                    # if target_tag is None, we are unable to set the symlink
+                    _setup_kernel_symlink(self._target_tag)
+                else:
+                    kernel_atom = self._entropy.open_repository(
+                        pkg_repo).retrieveAtom(pkg_id)
+                    # try to guess, sigh, for now
+                    guessed_kernel_name = _guess_kernel_name(
+                        kernel_atom)
+                    if guessed_kernel_name:
+                        _setup_kernel_symlink(guessed_kernel_name)
+                _show_kernel_warnings(kernel_atom)
+
+        return PreparedSwitch(self, self._entropy, kernel_match,
+                              installer, from_running)
+
     def switch(self, kernel_match, installer, from_running=False):
         """
         Execute a kernel switch to the given kernel package.
@@ -238,62 +336,12 @@ class KernelSwitcher(object):
         @return: the execution status, 0 means fine
         @rtype: int
         """
-        pkg_id, pkg_repo = kernel_match
-        kernel_atom = self._entropy.open_repository(
-            pkg_repo).retrieveAtom(pkg_id)
-        # this can be None !
-        target_tag = self._get_target_tag(kernel_match)
-
-        inst_repo = self._entropy.installed_repository()
-        # try to look for the currently running kernel first if
-        # --from-running is specified (use uname -r)
-        latest_kernel = -1
-        if from_running:
-            try:
-                latest_kernel = self.running_kernel_package()
-            except CannotFindRunningKernel:
-                raise
-
-        if latest_kernel == -1:
-            latest_kernel, _k_rc = inst_repo.atomMatch(
-                KERNEL_BINARY_VIRTUAL)
-        installed_revdeps = []
-        if (latest_kernel != -1) and target_tag:
-            installed_revdeps = self._entropy.get_removal_queue(
-                [latest_kernel], recursive = False)
-
-        # only pull in packages that are installed at this time.
-        def _installed_pkgs_translator(inst_pkg_id):
-            if inst_pkg_id == latest_kernel:
-                # will be added later
-                return None
-            key, slot = inst_repo.retrieveKeySlot(inst_pkg_id)
-            target_slot = _remove_tag_from_slot(slot) + "," + target_tag
-
-            pkg_id, pkg_repo = self._entropy.atom_match(key,
-                match_slot = target_slot)
-            if pkg_id == -1:
-                return None
-            return pkg_id, pkg_repo
-
-        matches = map(_installed_pkgs_translator, installed_revdeps)
-        matches = [x for x in matches if x is not None]
-        matches.append(kernel_match)
-
-        opengl = _get_opengl_impl()
-        rc = installer(self._entropy, matches)
+        switcher = self.prepared_switch(kernel_match, installer,
+                                        from_running=from_running)
+        switcher.pre()
+        rc = switcher.run()
         if rc == 0:
-            _set_opengl_impl(opengl)
-            if target_tag:
-                # if target_tag is None, we are unable to set the symlink
-                _setup_kernel_symlink(target_tag)
-            else:
-                # try to guess, sigh, for now
-                guessed_kernel_name = _guess_kernel_name(kernel_atom)
-                if guessed_kernel_name:
-                    _setup_kernel_symlink(guessed_kernel_name)
-            _show_kernel_warnings(kernel_atom)
-
+            switcher.post()
         return rc
 
     def list(self):
