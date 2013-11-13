@@ -932,6 +932,8 @@ class Rigo(Gtk.Application):
             msg = escape_markup(_("Happy St. Valentine <3 <3 !"))
         elif entropy.tools.is_xmas():
             msg = escape_markup(_("Merry Xmas \o/ !"))
+        elif entropy.tools.is_author_bday():
+            msg = escape_markup(_("Happy birthday to my authoooooor!"))
         elif entropy.tools.is_april_first():
             msg = escape_markup(_("<=|=< (this is optimistically a fish)"))
         if msg is not None:
