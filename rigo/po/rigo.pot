@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-03 15:47+0100\n"
+"POT-Creation-Date: 2013-11-13 10:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -38,15 +38,15 @@ msgstr ""
 msgid "Unhandled Exception"
 msgstr ""
 
-#: ../RigoDaemon/app.py:1852
+#: ../RigoDaemon/app.py:1855
 msgid "Application Removal"
 msgstr ""
 
-#: ../RigoDaemon/app.py:2169
+#: ../RigoDaemon/app.py:2172
 msgid "Application download"
 msgstr ""
 
-#: ../RigoDaemon/app.py:2269
+#: ../RigoDaemon/app.py:2272
 msgid "Application Install"
 msgstr ""
 
@@ -547,55 +547,71 @@ msgstr ""
 msgid "Loading comments..."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:259
-#: ../rigo/ui/gtk3/controllers/applications.py:320
+#: ../rigo/ui/gtk3/controllers/applications.py:261
+#: ../rigo/ui/gtk3/controllers/applications.py:322
 #, python-format
 msgid "Application <b>%s</b> not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:558
+#: ../rigo/ui/gtk3/controllers/applications.py:560
 msgid "Nothing found for"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:568
+#: ../rigo/ui/gtk3/controllers/applications.py:570
 #, python-format
 msgid "did you mean <a href=\"%s\">%s</a>?"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:600
+#: ../rigo/ui/gtk3/controllers/applications.py:602
 msgid "Not found"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:735
+#: ../rigo/ui/gtk3/controllers/applications.py:737
 msgid "Update repositories"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:736
+#: ../rigo/ui/gtk3/controllers/applications.py:738
 msgid "Force the update of the available repositories."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:746
+#: ../rigo/ui/gtk3/controllers/applications.py:748
 msgid "Show Configuration File Updates"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:747
+#: ../rigo/ui/gtk3/controllers/applications.py:749
 msgid "Show (if any) the list of pending configuration file updates."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:756
+#: ../rigo/ui/gtk3/controllers/applications.py:758
 msgid "Show Installed Applications"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:757
+#: ../rigo/ui/gtk3/controllers/applications.py:759
 msgid "Browse through the currently Installed Applications."
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:769
+#: ../rigo/ui/gtk3/controllers/applications.py:771
 msgid "Optimize Download Speed"
 msgstr ""
 
-#: ../rigo/ui/gtk3/controllers/applications.py:770
+#: ../rigo/ui/gtk3/controllers/applications.py:772
 msgid "Benchmark the download mirrors to speed up Application installation."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:781
+msgid "Show Available Kernels"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:782
+msgid "Browse through the available and installable Linux kernel binaries."
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:791
+msgid "Show Available Long-Term-Stable Kernels"
+msgstr ""
+
+#: ../rigo/ui/gtk3/controllers/applications.py:792
+msgid "Browse through the available and installable Linux LTS kernel binaries."
 msgstr ""
 
 #: ../rigo/ui/gtk3/widgets/stars.py:400
@@ -1053,10 +1069,14 @@ msgid "Merry Xmas \\o/ !"
 msgstr ""
 
 #: ../rigo_app.py:936
+msgid "Happy birthday to my authoooooor!"
+msgstr ""
+
+#: ../rigo_app.py:938
 msgid "<=|=< (this is optimistically a fish)"
 msgstr ""
 
-#: ../rigo_app.py:941
+#: ../rigo_app.py:943
 msgid "Woot, thanks"
 msgstr ""
 
