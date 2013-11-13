@@ -28,6 +28,7 @@ import entropy.tools
 
 
 KERNEL_BINARY_VIRTUAL = const_convert_to_unicode("virtual/linux-binary")
+KERNEL_BINARY_LTS_VIRTUAL = const_convert_to_unicode("virtual/linux-binary-lts")
 KERNELS_DIR = const_convert_to_rawstring("/etc/kernels")
 RELEASE_LEVEL = const_convert_to_rawstring("RELEASE_LEVEL")
 
