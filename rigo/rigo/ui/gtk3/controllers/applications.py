@@ -80,6 +80,8 @@ class ApplicationsViewController(GObject.Object):
     SHOW_INSTALLED_KEY = "in:installed"
     SHOW_CATEGORY_KEY = "in:category"
     SHOW_QUEUE_KEY = "in:queue"
+    SHOW_KERNEL_BINS_KEY = "virtual/linux-binary"
+    SHOW_KERNEL_LTS_BINS_KEY = "virtual/linux-binary-lts"
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
                  nc, bottom_nc, rigo_service, prefc, icons, nf_box,
@@ -770,6 +772,26 @@ class ApplicationsViewController(GObject.Object):
              _("Benchmark the download mirrors to speed up Application"
                " installation."),
              "browser-download", _optimize_mirrors)
+        self._prefc.append(pref)
+
+        def _show_kernel_bins():
+            self._search(ApplicationsViewController.SHOW_KERNEL_BINS_KEY,
+                         _force=True)
+        pref = Preference(
+            -2, _("Show Available Kernels"),
+             _("Browse through the available and installable Linux "
+               "kernel binaries."),
+             "applications-development", _show_kernel_bins)
+        self._prefc.append(pref)
+
+        def _show_kernel_lts_bins():
+            self._search(ApplicationsViewController.SHOW_KERNEL_LTS_BINS_KEY,
+                         _force=True)
+        pref = Preference(
+            -2, _("Show Available Long-Term-Stable Kernels"),
+             _("Browse through the available and installable Linux "
+               "LTS kernel binaries."),
+             "preferences-system", _show_kernel_lts_bins)
         self._prefc.append(pref)
 
         def _show_queue_view(widget):
