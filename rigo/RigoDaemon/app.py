@@ -1915,6 +1915,66 @@ class RigoDaemonService(dbus.service.Object):
                     count, total), debug=True)
             self._entropy.installed_repository().commit()
 
+    def _maybe_enqueue_kernel_switcher_actions(self, simulate, package_id,
+                                               repository_id, path):
+        """
+        Determine if the Application being processed for install is
+        a kernel binary package. If so, use kswitch to enqueue more
+        ActionQueueItems.
+        """
+        # it doesn't make sense to support kswitch for pkg installs.
+        if path is not None:
+            return
+
+        kernel_bin = kswitch.KERNEL_BINARY_VIRTUAL
+        matches, rc = self._entropy.atom_match(
+            kernel_bin, multi_match=True, multi_repo=True)
+
+        pkg_match = (package_id, repository_id)
+        is_kernel = pkg_match in matches
+        if not is_kernel:
+            return
+
+        write_output(
+            "_maybe_enqueue_kernel_switcher_actions: found kernel "
+            "binary package: %s" % (pkg_match,),
+            debug=True)
+
+        switcher = kswitch.KernelSwitcher(self._entropy)
+
+        def fake_installer(_entropy_client, matches):
+            return 0
+
+        prepared_s = switcher.prepared_switch(
+            pkg_match, fake_installer, from_running=False)
+
+        try:
+            prepared_s.pre()
+        except kswitch.CannotFindRunningKernel as cfrk:
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: cannot find "
+                "running kernel: %s" % (cfrk,),
+                debug=True)
+            return
+
+        pkg_matches = prepared_s.get_queue()
+        if not pkg_matches:
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: nothing in the queue",
+                debug=True)
+            return
+
+        for n, pkg_match in enumerate(pkg_matches, 1):
+            pkg_id, pkg_repo = pkg_match
+            repo = self._entropy.open_repository(pkg_repo)
+            atom = repo.retrieveAtom(pkg_id)
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: enqueueing %s, %s" % (
+                    pkg_match, atom,),
+                debug=True)
+
+        return pkg_matches, prepared_s.post
+
     def _process_install_action(self, activity, action, simulate,
                                 package_id, repository_id, path):
         """
@@ -1931,6 +1991,18 @@ class RigoDaemonService(dbus.service.Object):
             package_id, repository_id,
             AppActions.INSTALL,
             AppTransactionStates.DOWNLOAD)
+
+        hooks_callbacks_post = []
+        hooks_install = []
+
+        ks_data = self._maybe_enqueue_kernel_switcher_actions(
+            simulate, package_id, repository_id, path)
+
+        if ks_data is not None:
+            s_install, s_post = ks_data
+            hooks_callbacks_post.append(s_post)
+            hooks_install.extend(
+                [x for x in s_install if x not in hooks_install])
 
         try:
 
@@ -1962,6 +2034,9 @@ class RigoDaemonService(dbus.service.Object):
                     AppTransactionOutcome.DEPENDENCIES_COLLISION_ERROR
                 return outcome
 
+            # O(nm)
+            install.extend([x for x in hooks_install if x not in install])
+
             validated = self._process_install_disk_size_check(
                 install)
             if not validated:
@@ -1987,6 +2062,18 @@ class RigoDaemonService(dbus.service.Object):
             # Install
             outcome = self._process_install_merge_action(
                 install, activity, action, simulate, count, total)
+
+            if outcome == AppTransactionOutcome.SUCCESS:
+                for callback in hooks_callbacks_post:
+                    write_output(
+                        "_process_install_action, executing callback "
+                        "%s" % (callback,), debug=True)
+                    if not simulate:
+                        callback()
+                    write_output(
+                        "_process_install_action, callback complete"
+                        "%s" % (callback,), debug=True)
+
             return outcome
 
         finally:
