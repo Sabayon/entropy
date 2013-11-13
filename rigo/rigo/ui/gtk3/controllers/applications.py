@@ -40,6 +40,8 @@ from entropy.const import etpConst, const_debug_write, \
 from entropy.misc import ParallelTask
 from entropy.i18n import _
 
+import kswitch
+
 
 class ApplicationsViewController(GObject.Object):
 
@@ -80,8 +82,8 @@ class ApplicationsViewController(GObject.Object):
     SHOW_INSTALLED_KEY = "in:installed"
     SHOW_CATEGORY_KEY = "in:category"
     SHOW_QUEUE_KEY = "in:queue"
-    SHOW_KERNEL_BINS_KEY = "virtual/linux-binary"
-    SHOW_KERNEL_LTS_BINS_KEY = "virtual/linux-binary-lts"
+    SHOW_KERNEL_BINS_KEY = kswitch.KERNEL_BINARY_VIRTUAL
+    SHOW_KERNEL_LTS_BINS_KEY = kswitch.KERNEL_BINARY_LTS_VIRTUAL
 
     def __init__(self, activity_rwsem, entropy_client, entropy_ws,
                  nc, bottom_nc, rigo_service, prefc, icons, nf_box,
