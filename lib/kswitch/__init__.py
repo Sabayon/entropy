@@ -296,13 +296,14 @@ class KernelSwitcher(object):
             def post(self):
                 pkg_id, pkg_repo = self._kernel_match
 
+                kernel_atom = self._entropy.open_repository(
+                    pkg_repo).retrieveAtom(pkg_id)
+
                 _set_opengl_impl(self._opengl)
                 if self._target_tag:
                     # if target_tag is None, we are unable to set the symlink
                     _setup_kernel_symlink(self._target_tag)
                 else:
-                    kernel_atom = self._entropy.open_repository(
-                        pkg_repo).retrieveAtom(pkg_id)
                     # try to guess, sigh, for now
                     guessed_kernel_name = _guess_kernel_name(
                         kernel_atom)
