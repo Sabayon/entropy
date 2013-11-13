@@ -378,6 +378,19 @@ def is_xmas():
         return True
     return False
 
+def is_author_bday():
+    """
+    Return whether today is lxnay's birthday.
+
+    @return: True if November 15
+    @rtype: bool
+    """
+    xmas = "15-11"
+    cur_time = time.strftime("%d-%m")
+    if xmas == cur_time:
+        return True
+    return False
+
 def is_st_valentine():
     """
     Return whether today is April, 1st.
