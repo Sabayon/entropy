@@ -1928,6 +1928,27 @@ class RigoDaemonService(dbus.service.Object):
 
         pkg_match = (package_id, repository_id)
 
+        # determine if key+slot is already installed, if so, there
+        # is no need to trigger kernel-switcher
+        repo = self._entropy.open_repository(repository_id)
+        keyslot = repo.retrieveKeySlotAggregated(package_id)
+        if keyslot is None:
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: entry broken "
+                "for package match: %s" % (pkg_match,),
+            debug=True)
+            return
+
+        inst_repo = self._entropy.installed_repository()
+        inst_pkg_id, _rc = inst_repo.atomMatch(keyslot)
+        if inst_pkg_id != -1:
+            # kernel is already installed, not triggering kswitch
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: kernel "
+                "%s already installed" % (keyslot,),
+            debug=True)
+            return
+
         switcher = kswitch.KernelSwitcher(self._entropy)
 
         kernel_matches = set(switcher.list())
