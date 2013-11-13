@@ -1926,21 +1926,19 @@ class RigoDaemonService(dbus.service.Object):
         if path is not None:
             return
 
-        kernel_bin = kswitch.KERNEL_BINARY_VIRTUAL
-        matches, rc = self._entropy.atom_match(
-            kernel_bin, multi_match=True, multi_repo=True)
-
         pkg_match = (package_id, repository_id)
-        is_kernel = pkg_match in matches
-        if not is_kernel:
+
+        switcher = kswitch.KernelSwitcher(self._entropy)
+
+        kernel_matches = set(switcher.list())
+        if pkg_match not in kernel_matches:
+            # not a kernel package
             return
 
         write_output(
             "_maybe_enqueue_kernel_switcher_actions: found kernel "
             "binary package: %s" % (pkg_match,),
             debug=True)
-
-        switcher = kswitch.KernelSwitcher(self._entropy)
 
         def fake_installer(_entropy_client, matches):
             return 0
