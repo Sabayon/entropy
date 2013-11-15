@@ -10,6 +10,7 @@
 
 """
 import codecs
+import collections
 import copy
 import errno
 import hashlib
@@ -4933,6 +4934,105 @@ class Server(Client):
 
         return [(x, y) for x, y, _z in result]
 
+    def revision_downgrades_test(self, repository_ids,
+                                 use_cache = True):
+        """
+        Test against revision downgrades, we assume that if a package
+        in a repository x has a lesser revision than the same package in
+        repository x - 1, it might be a source of troubles. package equality
+        is when atom_1 = atom_2 for each couples of elements in x and x - 1.
+        There are O(nm) couples.
+
+        @param repository_ids: repository identifiers to consider
+        @type repository_ids: list
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
+        @return: an ordered list of package matches with problems
+            (sorted by atom).
+        @rtype: list
+        """
+        result = None
+        cached = None
+        cache_key = None
+        # check if result is cached
+        if use_cache:
+
+            checksum_r = []
+            repo_ck = {}
+
+            sorted_r = sorted(repository_ids)
+            for repository_id in sorted_r:
+                repo = self.open_repository(repository_id)
+                ck = repo.checksum()
+                repo_ck[repository_id] = ck
+                checksum_r.append(ck)
+
+            c_hash = "%s|%s|v1" % (
+                ",".join(sorted_r),
+                ",".join(checksum_r),
+            )
+            sha = hashlib.sha1(const_convert_to_rawstring(c_hash))
+
+            cache_key = "%s/%s" % (
+                self._cache_prefix("revision_downgrades_test"),
+                sha.hexdigest())
+            cached = self._cacher.pop(cache_key)
+            result = cached
+
+        if result is None:
+            atom_map = {}
+            faulty_matches = []
+
+            for repository_id in reversed(repository_ids):
+                repo = self.open_repository(repository_id)
+
+                for package_id in repo.listAllPackageIds():
+                    atom = repo.retrieveAtom(package_id)
+
+                    obj = atom_map.setdefault(atom, collections.deque())
+                    current_rev = repo.retrieveRevision(package_id)
+
+                    for o_pkg_id, o_repository_id, o_revision in obj:
+                        if current_rev < o_revision:
+                            faulty_matches.append(
+                                (package_id, repository_id, atom))
+                            break
+
+                    obj.append((package_id, repository_id, current_rev))
+
+            # order by atom
+            faulty_matches.sort(key = lambda x: x[2])
+            result = tuple(faulty_matches)
+
+        if result:
+            self.output(
+                "[%s] %s:" % (
+                    red(_("test")),
+                    blue(_("these packages have lower than"
+                           " expected revisions")),
+                ),
+                importance = 1,
+                level = "warning",
+                header = purple(" @@ ")
+            )
+
+        for package_id, repository_id, atom in result:
+
+            self.output(
+                "[%s] %s" % (
+                    brown(repository_id),
+                    teal(atom),
+                ),
+                importance = 1,
+                level = "warning",
+                header = purple("  # ")
+            )
+
+        if use_cache and cached is None and cache_key is not None:
+            self._cacher.push(cache_key, result)
+
+        return [(x, y) for x, y, _z in result]
+
     def extended_dependencies_test(self, repository_ids, use_cache = True):
         """
         Test repository against missing dependencies.
@@ -4980,6 +5080,9 @@ class Server(Client):
         for package_id, repository_id in injected_matches:
             repo = self.open_repository(repository_id)
             unsatisfied_deps.add(repo.retrieveAtom(package_id))
+
+        # test against revision downgrades
+        self.revision_downgrades_test(all_repositories, use_cache = use_cache)
 
         return unsatisfied_deps
 
