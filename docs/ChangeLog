@@ -1,3 +1,41 @@
+commit 7f6def42e7132894ec1b9079255cffb272899ced
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 17 18:39:52 2013 +0100
+
+    Release Entropy 229
+
+commit e164b4b57794e53bd4f52367c1d41d92c53e5834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 17 18:38:49 2013 +0100
+
+    [matter] fix portdb.xmatch() when package is keyword masked
+    
+    This commit fixes the use of backupenv.
+
+commit 7c21ee500d7af49c28447d29e2792dd9a9a43ed5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 17 18:38:25 2013 +0100
+
+    [matter] do not create a new settings object, but keep reusing the same one
+
+commit 1f0750a183412f1647cbfe109fa5e201d2fae15f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 15 12:39:49 2013 +0100
+
+    [entropy.server] add another QA test, guard against revision downgrades
+
+commit 3431755aaf201735d6153a49f4b34de508b12bf4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 13 15:36:32 2013 +0100
+
+    [RigoDaemon] do not trigger kernel-switcher if kernel is already installed
+
+commit c689434298ef6783a3cde0f65e899086485153f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 13 13:23:53 2013 +0100
+
+    Tagging Entropy version 228
+
 commit e5226d2d762c1bc03375d995e3ff57b74c729286
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Nov 13 13:23:52 2013 +0100
