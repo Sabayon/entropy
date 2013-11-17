@@ -603,7 +603,7 @@ class PackageBuilder(object):
 
         keywords = None
         if force_stable_keywords:
-            keywords = "%s" % (arch,)
+            keywords = "%s -~%s" % (arch, arch)
         elif inherit_keywords:
             pass # don't do anything
         else:
@@ -629,6 +629,10 @@ class PackageBuilder(object):
                 backupenv.pop("ACCEPT_KEYWORDS", None)
 
         settings.lock()
+        # make sure that portdb is using our settings object and not
+        # its own instance, or keyword masking won't work at its full
+        # potential.
+        portdb.settings = settings
 
     @classmethod
     def _setup_build_args(cls, spec):
