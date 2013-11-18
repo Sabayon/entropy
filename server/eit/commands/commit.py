@@ -133,14 +133,9 @@ If you would like to selectively add certain packages, please see
 
     def _commit(self, entropy_server):
 
-        to_be_added = set()
-        to_be_removed = set()
-        to_be_injected = set()
-
         key_sorter = lambda x: \
             entropy_server.open_repository(x[1]).retrieveAtom(x[0])
         repository_id = entropy_server.repository()
-        generated_packages = []
 
         # First of all, open the repository in write mode
         # in order to trigger package name updates on SPM.
@@ -149,9 +144,12 @@ If you would like to selectively add certain packages, please see
         entropy_server.open_server_repository(
             repository_id, read_only=False, no_upload=True)
 
+        to_be_added = set()
+        to_be_removed = set()
+        to_be_injected = set()
+
         if self._repackage:
 
-            packages = []
             spm = entropy_server.Spm()
 
             for dep in self._repackage:
@@ -185,30 +183,33 @@ If you would like to selectively add certain packages, please see
 
                 spm_name = spm.convert_from_entropy_package_name(
                     repo.retrieveAtom(package_id))
-                packages.append((spm_name, spm_uid))
+                to_be_added.add((spm_name, spm_uid))
 
-            if packages:
-                to_be_added |= set(packages)
-            else:
+            if not to_be_added:
                 entropy_server.output(
                     red(_("No valid packages to repackage.")),
                     header=brown(" * "),
-                    importance=1)
+                    importance=1,
+                    level="error")
+                return 1
 
-        # normal scanning
-        entropy_server.output(
-            brown(_("Scanning...")),
-            importance=1)
-        try:
-            myadded, to_be_removed, to_be_injected = \
-                entropy_server.scan_package_changes()
-        except KeyboardInterrupt:
-            return 1
-        to_be_added |= myadded
+        else:
+            entropy_server.output(
+                brown(_("Scanning...")),
+                importance=1)
+            try:
+                (scan_added, scan_removed,
+                 scan_injected) = entropy_server.scan_package_changes()
+            except KeyboardInterrupt:
+                return 1
+            to_be_added |= scan_added
+            to_be_removed |= scan_removed
+            to_be_injected |= scan_injected
 
         if self._packages:
             to_be_removed.clear()
             to_be_injected.clear()
+
             tba = dict(((x[0], x,) for x in to_be_added))
             tb_added_new = set()
             for myatom in self._packages:
@@ -419,6 +420,8 @@ If you would like to selectively add certain packages, please see
                     importance=1,
                     level="error")
                 return 1
+
+        generated_packages = []
         for x in sorted(to_be_added):
             entropy_server.output(teal(x[0]),
                                   header=brown("    # "))
