@@ -252,8 +252,11 @@ class ServerPackagesRepository(CachedRepository):
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
 
+        increase_revision = False
         if revision is None:
-            current_rev = -1
+            current_rev = max(
+                pkg_data.get('revision', 0),
+                0)
         else:
             current_rev = revision
 
@@ -263,14 +266,16 @@ class ServerPackagesRepository(CachedRepository):
 
             if revision is None:
                 pkg_revision = self.retrieveRevision(package_id)
-                current_rev = max(pkg_revision, current_rev)
+                if pkg_revision >= current_rev:
+                    current_rev = pkg_revision
+                    increase_revision = True
 
             manual_deps |= self.retrieveManualDependencies(package_id,
                 resolve_conditional_deps = False)
             # injected packages wouldn't be removed by addPackage
             self.removePackage(package_id)
 
-        if revision is None:
+        if increase_revision:
             current_rev += 1
 
         # manual dependencies handling
