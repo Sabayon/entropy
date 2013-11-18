@@ -161,8 +161,10 @@ If you would like to selectively add certain packages, please see
                 match = dbconn.atomMatch(item)
                 if match[0] == -1:
                     entropy_server.output(
-                        red(_("Cannot match"))+" "+bold(item),
-                        header=darkred("  !!! "),
+                        "%s: %s" % (
+                            darkred(_("Cannot find package")),
+                            bold(item),),
+                        header=darkred(" !!! "),
                         importance=1,
                         level="warning")
                 else:
@@ -210,8 +212,10 @@ If you would like to selectively add certain packages, please see
                         ).match_installed_package(myatom)
                 except KeyError:
                     entropy_server.output(
-                        red(_("Invalid package"))+" "+bold(myatom),
-                        header=darkred("  !!! "),
+                        "%s: %s" % (
+                            darkred(_("Invalid package")),
+                            bold(myatom)),
+                        header=darkred(" !!! "),
                         importance=1,
                         level="warning")
                     continue
@@ -235,7 +239,12 @@ If you would like to selectively add certain packages, please see
                 dbconn = entropy_server.open_server_repository(repoid,
                     read_only = True, no_upload = True)
                 atom = dbconn.retrieveAtom(idpackage)
-                entropy_server.output("["+blue(repoid) + "] " + red(atom),
+
+                entropy_server.output(
+                    "[%s] %s" % (
+                        blue(repoid),
+                        darkred(atom),
+                        ),
                     header=brown("    # "))
 
             if self._ask:
@@ -268,8 +277,12 @@ If you would like to selectively add certain packages, please see
                 (idpackage, repoid,))
             if pkg_expired:
                 exp_string = "|%s" % (purple(_("expired")),)
+
             entropy_server.output(
-                "["+blue(repoid) + exp_string + "] " + red(atom),
+                "[%s%s] %s" % (
+                    blue(repoid),
+                    exp_string,
+                    darkred(atom),),
                 header=brown("    # "))
 
         if self._interactive and to_be_removed:
@@ -409,7 +422,7 @@ If you would like to selectively add certain packages, please see
                 entropy.tools.print_traceback()
                 entropy_server.output(
                     bold(_("Ignoring broken Spm entry, please recompile it")),
-                    header=brown("    !!! "),
+                    header=brown("  !!! "),
                     importance=1,
                     level="warning")
 
@@ -429,9 +442,10 @@ If you would like to selectively add certain packages, please see
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
         entropy_server.commit_repositories()
-        entropy_server.output(red("%s: " % (_("Statistics"),) ) + \
-            blue("%s: " % (_("Entries handled"),) ) + \
-                bold(str(len(idpackages))),
+        entropy_server.output(
+            "%s: %d" % (
+                blue(_("Packages handled")),
+                len(idpackages),),
             header=darkgreen(" * "))
         return 0
 
