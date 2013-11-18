@@ -12,6 +12,7 @@
 import sys
 import os
 import argparse
+import collections
 
 from entropy.i18n import _
 from entropy.output import darkgreen, teal, brown, \
@@ -131,6 +132,100 @@ If you would like to selectively add certain packages, please see
 
         return self._call_locked, [self._commit, nsargs.repo]
 
+    def _repackage_scan(self, entropy_server):
+        """
+        If in repackage mode (self._repackage not empty), scan for packages
+        to re-package and return them.
+        """
+        to_be_added = set()
+        spm = entropy_server.Spm()
+
+        for dep in self._repackage:
+            package_id, repository_id = entropy_server.atom_match(dep)
+
+            if package_id == -1:
+                entropy_server.output(
+                    "%s: %s" % (
+                        darkred(_("Cannot find package")),
+                        bold(dep),
+                        ),
+                    header=darkred(" !!! "),
+                    importance=1,
+                    level="warning")
+                continue
+
+            repo = entropy_server.open_repository(repository_id)
+            try:
+                spm_uid = spm.resolve_package_uid(repo, package_id)
+            except spm.Error as err:
+                entropy_server.output(
+                    "%s: %s, %s" % (
+                        darkred(_("Cannot find package")),
+                        bold(dep),
+                        err,
+                        ),
+                    header=darkred(" !!! "),
+                    importance=1,
+                    level="warning")
+                continue
+
+            spm_name = spm.convert_from_entropy_package_name(
+                repo.retrieveAtom(package_id))
+            to_be_added.add((spm_name, spm_uid))
+
+        return to_be_added
+
+    def _compress_packages(self, entropy_server, repository_id, packages):
+        """
+        Compress (and generate package tarball) the list of given
+        spm package names inside the given Entropy repository.
+        """
+        entropy_server.output(
+            blue(_("Compressing packages")),
+            header=brown(" @@ "))
+
+        generated_packages = collections.deque()
+        store_dir = entropy_server._get_local_store_directory(repository_id)
+
+        # user could have removed it. Oh dear lord!
+        if not os.path.isdir(store_dir):
+            try:
+                os.makedirs(store_dir)
+            except (IOError, OSError) as err:
+                entropy_server.output(
+                    "%s: %s" % (_("Cannot create store directory"), err),
+                    header=brown(" !!! "),
+                    importance=1,
+                    level="error")
+                return generated_packages, 1
+
+        sorted_packages = sorted(packages)
+        for count, (atom, spm_uid) in enumerate(sorted_packages):
+            entropy_server.output(
+                teal(atom),
+                header=brown("  # "),
+                count=(count, len(sorted_packages)))
+
+            try:
+                pkg_list = entropy_server.Spm().generate_package(atom,
+                    store_dir)
+                generated_packages.append(pkg_list)
+            except OSError:
+                entropy.tools.print_traceback()
+                entropy_server.output(
+                    bold(_("Ignoring broken Spm entry, please recompile it")),
+                    header=brown("  !!! "),
+                    importance=1,
+                    level="warning")
+
+        if not generated_packages:
+            entropy_server.output(
+                red(_("Nothing to do, check later.")),
+                header=brown(" * "))
+            return generated_packages, 0
+
+        return generated_packages, None
+
     def _commit(self, entropy_server):
 
         key_sorter = lambda x: \
@@ -148,43 +243,12 @@ If you would like to selectively add certain packages, please see
         to_be_removed = set()
         to_be_injected = set()
 
+        entropy_server.output(
+            brown(_("Scanning...")),
+            importance=1)
+
         if self._repackage:
-
-            spm = entropy_server.Spm()
-
-            for dep in self._repackage:
-                package_id, repository_id = entropy_server.atom_match(dep)
-
-                if package_id == -1:
-                    entropy_server.output(
-                        "%s: %s" % (
-                            darkred(_("Cannot find package")),
-                            bold(dep),
-                            ),
-                        header=darkred(" !!! "),
-                        importance=1,
-                        level="warning")
-                    continue
-
-                repo = entropy_server.open_repository(repository_id)
-                try:
-                    spm_uid = spm.resolve_package_uid(repo, package_id)
-                except spm.Error as err:
-                    entropy_server.output(
-                        "%s: %s, %s" % (
-                            darkred(_("Cannot find package")),
-                            bold(dep),
-                            err,
-                            ),
-                        header=darkred(" !!! "),
-                        importance=1,
-                        level="warning")
-                    continue
-
-                spm_name = spm.convert_from_entropy_package_name(
-                    repo.retrieveAtom(package_id))
-                to_be_added.add((spm_name, spm_uid))
-
+            to_be_added |= self._repackage_scan(entropy_server)
             if not to_be_added:
                 entropy_server.output(
                     red(_("No valid packages to repackage.")),
@@ -192,16 +256,11 @@ If you would like to selectively add certain packages, please see
                     importance=1,
                     level="error")
                 return 1
-
         else:
-            entropy_server.output(
-                brown(_("Scanning...")),
-                importance=1)
-            try:
-                (scan_added, scan_removed,
-                 scan_injected) = entropy_server.scan_package_changes()
-            except KeyboardInterrupt:
-                return 1
+            (scan_added,
+             scan_removed,
+             scan_injected) = entropy_server.scan_package_changes()
+
             to_be_added |= scan_added
             to_be_removed |= scan_removed
             to_be_injected |= scan_injected
@@ -232,7 +291,7 @@ If you would like to selectively add certain packages, please see
                     tb_added_new.add(tba.get(inst_myatom))
             to_be_added = tb_added_new
 
-        if not (len(to_be_removed)+len(to_be_added)+len(to_be_injected)):
+        if not (to_be_removed or to_be_added or to_be_injected):
             entropy_server.output(
                 red(_("Zarro thinggz to do")),
                 header=brown(" * "),
@@ -330,8 +389,8 @@ If you would like to selectively add certain packages, please see
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
-                    entropy_server.remove_packages(repoid,
-                                                   remdata[repoid])
+                    entropy_server.remove_packages(
+                        repoid, remdata[repoid])
 
         if self._interactive and to_be_added:
             entropy_server.output(
@@ -403,60 +462,23 @@ If you would like to selectively add certain packages, please see
             if problems:
                 return 1
 
-        # package them
-        entropy_server.output(
-            blue(_("Compressing packages")),
-            header=brown(" @@ "))
-        store_dir = entropy_server._get_local_store_directory(
-            repository_id)
-        # user could have removed it. Oh dear lord!
-        if not os.path.isdir(store_dir):
-            try:
-                os.makedirs(store_dir)
-            except (IOError, OSError) as err:
-                entropy_server.output(
-                    "%s: %s" % (_("Cannot create store directory"), err),
-                    header=brown(" !!! "),
-                    importance=1,
-                    level="error")
-                return 1
+        generated, exit_st = self._compress_packages(
+            entropy_server, repository_id, to_be_added)
+        if exit_st is not None:
+            return exit_st
 
-        generated_packages = []
-        for x in sorted(to_be_added):
-            entropy_server.output(teal(x[0]),
-                                  header=brown("    # "))
-            try:
-                pkg_list = entropy_server.Spm().generate_package(x[0],
-                    store_dir)
-                generated_packages.append(pkg_list)
-            except OSError:
-                entropy.tools.print_traceback()
-                entropy_server.output(
-                    bold(_("Ignoring broken Spm entry, please recompile it")),
-                    header=brown("  !!! "),
-                    importance=1,
-                    level="warning")
-
-        if not generated_packages:
-            entropy_server.output(
-                red(_("Nothing to do, check later.")),
-                header=brown(" * "))
-            # then exit gracefully
-            return 0
-
-        etp_pkg_files = [(pkg_list, False) for pkg_list in \
-                             generated_packages]
-        idpackages = entropy_server.add_packages_to_repository(
+        etp_pkg_files = [(pkg_list, False) for pkg_list in generated]
+        package_ids = entropy_server.add_packages_to_repository(
             repository_id, etp_pkg_files)
 
-        if idpackages:
+        if package_ids:
             # checking dependencies and print issues
             entropy_server.extended_dependencies_test([repository_id])
         entropy_server.commit_repositories()
         entropy_server.output(
             "%s: %d" % (
                 blue(_("Packages handled")),
-                len(idpackages),),
+                len(package_ids),),
             header=darkgreen(" * "))
         return 0
 
