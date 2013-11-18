@@ -152,32 +152,40 @@ If you would like to selectively add certain packages, please see
         if self._repackage:
 
             packages = []
-            dbconn = entropy_server.open_server_repository(
-                repository_id, read_only = True,
-                no_upload = True)
-
             spm = entropy_server.Spm()
-            for item in self._repackage:
-                match = dbconn.atomMatch(item)
-                if match[0] == -1:
+
+            for dep in self._repackage:
+                package_id, repository_id = entropy_server.atom_match(dep)
+
+                if package_id == -1:
                     entropy_server.output(
                         "%s: %s" % (
                             darkred(_("Cannot find package")),
-                            bold(item),),
+                            bold(dep),
+                            ),
                         header=darkred(" !!! "),
                         importance=1,
                         level="warning")
-                else:
-                    cat = dbconn.retrieveCategory(match[0])
-                    name = dbconn.retrieveName(match[0])
-                    version = dbconn.retrieveVersion(match[0])
-                    spm_pkg = os.path.join(cat, name + "-" + version)
-                    spm_build = \
-                        spm.get_installed_package_build_script_path(
-                            spm_pkg)
-                    spm_pkg_dir = os.path.dirname(spm_build)
-                    if os.path.isdir(spm_pkg_dir):
-                        packages.append((spm_pkg, 0))
+                    continue
+
+                repo = entropy_server.open_repository(repository_id)
+                try:
+                    spm_uid = spm.resolve_package_uid(repo, package_id)
+                except spm.Error as err:
+                    entropy_server.output(
+                        "%s: %s, %s" % (
+                            darkred(_("Cannot find package")),
+                            bold(dep),
+                            err,
+                            ),
+                        header=darkred(" !!! "),
+                        importance=1,
+                        level="warning")
+                    continue
+
+                spm_name = spm.convert_from_entropy_package_name(
+                    repo.retrieveAtom(package_id))
+                packages.append((spm_name, spm_uid))
 
             if packages:
                 to_be_added |= set(packages)
