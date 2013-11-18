@@ -262,6 +262,8 @@ If you would like to selectively add certain packages, please see
             entropy_server._transform_package_into_injected(
                 package_id, repository_id)
 
+        entropy_server.commit_repositories()
+
         entropy_server.output(blue(_("Action completed")),
             header=brown(" @@ "))
 
@@ -351,6 +353,8 @@ If you would like to selectively add certain packages, please see
         package_ids = entropy_server.add_packages_to_repository(
             repository_id, etp_pkg_files)
 
+        entropy_server.commit_repositories()
+
         if package_ids:
             entropy_server.extended_dependencies_test([repository_id])
 
@@ -418,6 +422,8 @@ If you would like to selectively add certain packages, please see
 
         for repository_id, packages in remdata.items():
             entropy_server.remove_packages(repository_id, packages)
+
+        entropy_server.commit_repositories()
 
     def _commit(self, entropy_server):
 
@@ -506,8 +512,6 @@ If you would like to selectively add certain packages, please see
             # drop spm_uid, no longer needed
             added_s = sorted(to_be_added)
             exit_st = self._add_packages(entropy_server, repository_id, added_s)
-
-        entropy_server.commit_repositories()
 
         return exit_st
 
