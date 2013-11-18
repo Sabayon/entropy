@@ -1,3 +1,69 @@
+commit 1c6fd477764b69c95f359bfd2ab362575d6e0add
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 15:34:01 2013 +0100
+
+    Release Entropy 230
+
+commit 8d6002edaf30eda7c11bbbabe14adbd920b454d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 15:29:03 2013 +0100
+
+    [eit.commands.commit] commit data only when something changed
+
+commit 9e2a324e83cdab0cd59a025ed3d4f255567f0326
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 15:10:17 2013 +0100
+
+    [entropy.server.db] use revision from package data if none is forced
+    
+    this avoids the generation of packages with lesser revisions during
+    package moves from a repo to another.
+    If we inherit the revision number, we should try to keep it as long
+    as there are no packages with greater revision number in the target
+    repository.
+
+commit 08e4b487bfe1d5d04b197007e334129e3a47e72c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 15:08:15 2013 +0100
+
+    [entropy.db] API change, handlePackage(forcedRevision -> revision)
+
+commit 704e5c8765d757c4a8d3c564f157159d5e512218
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 12:28:08 2013 +0100
+
+    [eit.commands.commit] refactor _commit(), divide the function into multiple sub-functions
+
+commit 715251d062756a274116ed2102a7e61fa4ab019f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 11:30:18 2013 +0100
+
+    [eit.commands.commit] start splitting _commit() method
+
+commit 85d56085625ebf002f672d442e903c974124c9fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 11:06:48 2013 +0100
+
+    [eit.commands.commit] make "eit repack" not fall back to packages scanning
+
+commit b70d9c2f2920a469e56d6c1d8323fbf05288a623
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 10:59:16 2013 +0100
+
+    [eit.commands.commit] make "eit repack" smarter and more reliable
+
+commit 384db92b1738ae1041b17dcea47e056ac29f6495
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 10:44:21 2013 +0100
+
+    [eit.commands.commit] improve output function usage
+
+commit f0db93e10c987fdf3c0c1c1618aaa0472bb0086e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 17 18:39:52 2013 +0100
+
+    Tagging Entropy version 229
+
 commit 7f6def42e7132894ec1b9079255cffb272899ced
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 17 18:39:52 2013 +0100
