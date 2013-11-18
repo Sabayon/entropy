@@ -134,8 +134,8 @@ class InstalledPackagesRepository(CachedRepository):
             const_setup_file(self._db, etpConst['entropygid'], 0o644,
                 uid = etpConst['uid'])
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropyRepository.
         """
@@ -145,7 +145,7 @@ class InstalledPackagesRepository(CachedRepository):
         )
         for r_package_id in removelist:
             self.removePackage(r_package_id)
-        return self.addPackage(pkg_data, revision = forcedRevision,
+        return self.addPackage(pkg_data, revision = revision,
             formatted_content = formattedContent)
 
 
@@ -2712,8 +2712,8 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         return AvailablePackagesRepositoryUpdater(TextInterface(),
             repository_id, False, False).remote_revision()
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropyRepository
         """
@@ -2752,8 +2752,8 @@ class GenericRepository(CachedRepository, MaskableRepository):
     in fail-safe mode.
     """
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropyRepository.
         It is supposed that a generic repository should not support
@@ -2766,8 +2766,8 @@ class GenericRepository(CachedRepository, MaskableRepository):
             raise PermissionDenied(
                 "cannot execute handlePackage on this repository")
 
-        return self.addPackage(pkg_data, revision = forcedRevision,
-            formatted_content = formattedContent)
+        return self.addPackage(pkg_data, revision = revision,
+                               formatted_content = formattedContent)
 
     def maskFilter(self, package_id, live = True):
         """

@@ -831,8 +831,8 @@ class EntropyMySQLRepository(EntropySQLRepository):
             REPLACE INTO counters SET counter = ? %s
             WHERE idpackage = ?""" % (branchstring,), insertdata)
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropySQLRepository.
         """

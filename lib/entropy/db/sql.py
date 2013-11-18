@@ -1026,8 +1026,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         super(EntropySQLRepository, self).initializeRepository()
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropyRepositoryBase. Raises NotImplementedError.
         Subclasses have to reimplement this.

@@ -241,8 +241,8 @@ class ServerPackagesRepository(CachedRepository):
         return super(ServerPackagesRepository, self)._runConfigurationFilesUpdate(
             actions, files, protect_overwrite = False)
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Reimplemented from EntropyRepository.
         """
@@ -252,24 +252,25 @@ class ServerPackagesRepository(CachedRepository):
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
 
-        current_rev = forcedRevision
+        if revision is None:
+            current_rev = -1
+        else:
+            current_rev = revision
 
         manual_deps = set()
         # Remove entries in the same scope.
         for package_id in self.getPackageIds(pkgatom):
 
-            if forcedRevision == -1:
-                myrev = self.retrieveRevision(package_id)
-                if myrev > current_rev:
-                    current_rev = myrev
+            if revision is None:
+                pkg_revision = self.retrieveRevision(package_id)
+                current_rev = max(pkg_revision, current_rev)
 
-            #
             manual_deps |= self.retrieveManualDependencies(package_id,
                 resolve_conditional_deps = False)
             # injected packages wouldn't be removed by addPackage
             self.removePackage(package_id)
 
-        if forcedRevision == -1:
+        if revision is None:
             current_rev += 1
 
         # manual dependencies handling

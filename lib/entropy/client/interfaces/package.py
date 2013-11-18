@@ -2570,7 +2570,7 @@ class Package:
             data['content_safety'] = Package.FileContentSafetyReader(
                 content_safety_file)
             idpackage = inst_repo.handlePackage(
-                data, forcedRevision = data['revision'],
+                data, revision = data['revision'],
                 formattedContent = True)
         finally:
             if data['content'] is not None:

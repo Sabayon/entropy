@@ -783,7 +783,7 @@ Tools to rescue the running system.
                     del data['original_repository']
 
                 new_package_id = inst_repo.handlePackage(
-                    data, forcedRevision = data['revision'])
+                    data, revision = data['revision'])
                 inst_repo.storeInstalledPackage(new_package_id,
                     etpConst['spmdbid'])
 

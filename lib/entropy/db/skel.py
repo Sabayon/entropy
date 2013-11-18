@@ -668,8 +668,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         return new_actions
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
+    def handlePackage(self, pkg_data, revision = None,
+                      formattedContent = False):
         """
         Update or add a package to repository automatically handling
         its scope and thus removal of previous versions if requested by
@@ -725,8 +725,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         @param pkg_data: Entropy package metadata dict
         @type pkg_data: dict
-        @keyword forcedRevision: force a specific package revision
-        @type forcedRevision: int
+        @keyword revision: force a specific package revision
+        @type revision: int
         @keyword formattedContent: tells whether content metadata is already
             formatted for insertion
         @type formattedContent: bool

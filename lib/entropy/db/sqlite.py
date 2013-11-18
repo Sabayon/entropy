@@ -518,7 +518,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("_doesColumnInTableExist")
         super(EntropySQLiteRepository, self).initializeRepository()
 
-    def handlePackage(self, pkg_data, forcedRevision = -1,
+    def handlePackage(self, pkg_data, revision = None,
         formattedContent = False):
         """
         Reimplemented from EntropySQLRepository.
