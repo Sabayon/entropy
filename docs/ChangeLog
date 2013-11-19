@@ -1,3 +1,80 @@
+commit 435b75effa7bba772f8df4a8937c9a10704d387c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 21:21:12 2013 +0100
+
+    Release Entropy 231
+
+commit 421b65ab3a6d9e73ca8afe26bdece174aa8f3d0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 21:19:27 2013 +0100
+
+    [eit.commands.commit] use map() instead of filter() in installed packages scan
+
+commit b36119bd55371dc04812df3431aa16aa5c313d58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 18:33:51 2013 +0100
+
+    [eit.commands.commit] start counting from 1
+
+commit b1d0c40153d11346c3901d851c19c47b100d80b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 16:55:19 2013 +0100
+
+    [entropy.server.interfaces.db] do not pull packages.db.light.bz2
+    
+    There is no need to download this particular file because it will
+    be re-created from scratch by push.
+
+commit 0a1c08b1e87bf0cf7b0dbf1d63179032d02a1f95
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 14:51:10 2013 +0100
+
+    [entropy.server] simplify _deps_tester(), improve speed
+
+commit 7eb0687ba9e695a9f9d23dead8f7e69faa53b560
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 14:48:20 2013 +0100
+
+    [entropy.db] make listAllDependencies() public
+
+commit 1834dbe55d30af6a4c98267d086498333eb07581
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 13:31:01 2013 +0100
+
+    [entropy.db.sqlite] retrieveDependencies: final performance tweaks
+
+commit 66c01f339b6e73618d7f12adff44c4baf067adbc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 13:20:12 2013 +0100
+
+    [entropy.db.sqlite] simplify retrieveDependencies() code
+
+commit a8d2ae3313bb4971f46149aa2adcaae72ad22632
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 13:06:36 2013 +0100
+
+    [entropy.db.sqlite] add in-RAM cache support for retrieveDependencies()
+    
+    This seems to give 15% speed boost in certain scenarios
+
+commit 8e600c39eaefecf03ecef590ca1ac22f123be104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 12:03:26 2013 +0100
+
+    [entropy.client] code style updates to dependencies_test()
+
+commit 016573701c7859de7906702666b9e7ceb4217bcd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 11:18:05 2013 +0100
+
+    [entropy.db.sql] fix retrieveDependencies() usage of resolve_conditional_deps
+
+commit 3e4e81fe8a7f8e6dc976e209962245aaef1c1b42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 18 15:34:02 2013 +0100
+
+    Tagging Entropy version 230
+
 commit 1c6fd477764b69c95f359bfd2ab362575d6e0add
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Nov 18 15:34:01 2013 +0100
