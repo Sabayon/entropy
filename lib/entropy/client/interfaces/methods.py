@@ -846,7 +846,7 @@ class RepositoryMixin:
             os.rename(tmp_path, dbfile)
 
         repo = self.open_generic_repository(dbfile)
-        # read all idpackages
+        # read all package_ids
         try:
             # all branches admitted from external files
             package_ids = repo.listAllPackageIds()
@@ -2437,7 +2437,7 @@ class MatchMixin:
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
         ver_data = inst_repo.getVersioningData(installed_package_id)
         if ver_data is None:
-            # installed idpackage is not available, race condition, probably
+            # installed package_id is not available, race condition, probably
             return 1
         installed_ver, installed_tag, installed_rev = ver_data
         pkgcmp = entropy.dep.entropy_compare_versions(
@@ -2471,8 +2471,8 @@ class MatchMixin:
         """
         m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
-        if idpackage != -1:
+        package_id, idreason = dbconn.maskFilter(m_id, live = live_check)
+        if package_id != -1:
             return False
         return True
 
@@ -2494,8 +2494,8 @@ class MatchMixin:
         if m_repo not in self._enabled_repos:
             return False
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
-        if idpackage != -1:
+        package_id, idreason = dbconn.maskFilter(m_id, live = live_check)
+        if package_id != -1:
             return False
 
         myr = self._settings['pkg_masking_reference']
@@ -2523,8 +2523,8 @@ class MatchMixin:
         if m_repo not in self._enabled_repos:
             return False
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
-        if idpackage == -1:
+        package_id, idreason = dbconn.maskFilter(m_id, live = live_check)
+        if package_id == -1:
             return False
 
         myr = self._settings['pkg_masking_reference']

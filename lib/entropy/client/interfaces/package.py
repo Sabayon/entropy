@@ -1054,9 +1054,9 @@ class Package:
 
         # when called by __fetch_file, which is called by _download_package
         # which is called by _match_checksum, which is called by
-        # multi_match_checksum, removeidpackage metadatum is not available
+        # multi_match_checksum, removepackage_id metadatum is not available
         # So, be fault tolerant.
-        installed_package_id = self.pkgmeta.get('removeidpackage', -1)
+        installed_package_id = self.pkgmeta.get('removepackage_id', -1)
 
         # fresh install, cannot fetch edelta, edelta only works for installed
         # packages, by design.
@@ -1919,15 +1919,15 @@ class Package:
         )
         inst_repo = self._entropy.installed_repository()
         automerge_metadata = inst_repo.retrieveAutomergefiles(
-            self.pkgmeta['removeidpackage'], get_dict = True)
+            self.pkgmeta['removepackage_id'], get_dict = True)
         inst_repo.removePackage(
-            self.pkgmeta['removeidpackage'])
+            self.pkgmeta['removepackage_id'])
 
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
         inst_repo.commit()
 
-        self._remove_content_from_system(self.pkgmeta['removeidpackage'],
+        self._remove_content_from_system(self.pkgmeta['removepackage_id'],
             automerge_metadata)
 
         return 0
@@ -2256,10 +2256,10 @@ class Package:
 
         inst_repo = self._entropy.installed_repository()
 
-        if self.pkgmeta['removeidpackage'] != -1:
+        if self.pkgmeta['removepackage_id'] != -1:
             self.pkgmeta['already_protected_config_files'] = \
                 inst_repo.retrieveAutomergefiles(
-                    self.pkgmeta['removeidpackage'], get_dict = True
+                    self.pkgmeta['removepackage_id'], get_dict = True
                 )
 
         # items_*installed will be filled by _move_image_to_system
@@ -2412,7 +2412,7 @@ class Package:
             # but generally, the difference between two contents
             # is really small
             content_diff = list(inst_repo.contentDiff(
-                self.pkgmeta['removeidpackage'],
+                self.pkgmeta['removepackage_id'],
                 repo,
                 _package_id,
                 extended=True))
@@ -2443,32 +2443,32 @@ class Package:
 
         if smart_pkg or self.pkgmeta['merge_from']:
 
-            data = dbconn.getPackageData(self.pkgmeta['idpackage'],
+            data = dbconn.getPackageData(self.pkgmeta['package_id'],
                 content_insert_formatted = True,
                 get_changelog = False, get_content = False,
                 get_content_safety = False)
 
             content = dbconn.retrieveContentIter(
-                self.pkgmeta['idpackage'])
+                self.pkgmeta['package_id'])
             content_file = self.__generate_content_file(
-                content, package_id = self.pkgmeta['idpackage'],
+                content, package_id = self.pkgmeta['package_id'],
                 filter_splitdebug = True,
                 splitdebug = splitdebug,
                 splitdebug_dirs = splitdebug_dirs)
 
             content_safety = dbconn.retrieveContentSafetyIter(
-                self.pkgmeta['idpackage'])
+                self.pkgmeta['package_id'])
             content_safety_file = self.__generate_content_safety_file(
                 content_safety)
 
-            if self.pkgmeta['removeidpackage'] != -1 and \
+            if self.pkgmeta['removepackage_id'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
-                _merge_removecontent(dbconn, self.pkgmeta['idpackage'])
+                _merge_removecontent(dbconn, self.pkgmeta['package_id'])
 
         else:
 
             # normal repositories
-            data = dbconn.getPackageData(self.pkgmeta['idpackage'],
+            data = dbconn.getPackageData(self.pkgmeta['package_id'],
                 get_content = False, get_changelog = False)
 
             # indexing_override = False : no need to index tables
@@ -2483,25 +2483,25 @@ class Package:
 
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
-            pkg_idpackage = sorted(pkg_dbconn.listAllPackageIds(),
+            pkg_package_id = sorted(pkg_dbconn.listAllPackageIds(),
                 reverse = True)[0]
             content = pkg_dbconn.retrieveContentIter(
-                pkg_idpackage)
+                pkg_package_id)
             content_file = self.__generate_content_file(
-                content, package_id = self.pkgmeta['idpackage'],
+                content, package_id = self.pkgmeta['package_id'],
                 filter_splitdebug = True,
                 splitdebug = splitdebug,
                 splitdebug_dirs = splitdebug_dirs)
 
             # setup content safety metadata, get from package
             content_safety = pkg_dbconn.retrieveContentSafetyIter(
-                pkg_idpackage)
+                pkg_package_id)
             content_safety_file = self.__generate_content_safety_file(
                 content_safety)
 
-            if self.pkgmeta['removeidpackage'] != -1 and \
+            if self.pkgmeta['removepackage_id'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
-                _merge_removecontent(pkg_dbconn, pkg_idpackage)
+                _merge_removecontent(pkg_dbconn, pkg_package_id)
 
             pkg_dbconn.close()
 
@@ -2569,7 +2569,7 @@ class Package:
                 content_file)
             data['content_safety'] = Package.FileContentSafetyReader(
                 content_safety_file)
-            idpackage = inst_repo.handlePackage(
+            package_id = inst_repo.handlePackage(
                 data, revision = data['revision'],
                 formattedContent = True)
         finally:
@@ -2588,16 +2588,16 @@ class Package:
 
         # update datecreation
         ctime = time.time()
-        inst_repo.setCreationDate(idpackage, str(ctime))
+        inst_repo.setCreationDate(package_id, str(ctime))
 
         # add idpk to the installedtable
-        inst_repo.dropInstalledPackageFromStore(idpackage)
-        inst_repo.storeInstalledPackage(idpackage,
+        inst_repo.dropInstalledPackageFromStore(package_id)
+        inst_repo.storeInstalledPackage(package_id,
             self.pkgmeta['repository'], self.pkgmeta['install_source'])
 
         automerge_data = self.pkgmeta.get('configprotect_data')
         if automerge_data:
-            inst_repo.insertAutomergefiles(idpackage, automerge_data)
+            inst_repo.insertAutomergefiles(package_id, automerge_data)
 
         inst_repo.commit()
 
@@ -2609,7 +2609,7 @@ class Package:
         self.pkgmeta['triggers']['install']['content'] = \
             Package.FileContentReader(content_file)
 
-        return idpackage
+        return package_id
 
     def __fill_image_dir(self, merge_from, image_dir):
 
@@ -2618,7 +2618,7 @@ class Package:
         # even if repositories are allowed to not have content
         # metadata, in this particular case, it is mandatory
         contents = dbconn.retrieveContentIter(
-            self.pkgmeta['idpackage'], order_by = "file")
+            self.pkgmeta['package_id'], order_by = "file")
 
         # collect files
         for path, ftype in contents:
@@ -2667,15 +2667,15 @@ class Package:
 
     def __get_package_match_config_protect(self, mask = False):
 
-        idpackage, repoid = self._package_match
+        package_id, repoid = self._package_match
         dbconn = self._entropy.open_repository(repoid)
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[cl_id]['misc']
         if mask:
-            config_protect = set(dbconn.retrieveProtectMask(idpackage).split())
+            config_protect = set(dbconn.retrieveProtectMask(package_id).split())
             config_protect |= set(misc_data['configprotectmask'])
         else:
-            config_protect = set(dbconn.retrieveProtect(idpackage).split())
+            config_protect = set(dbconn.retrieveProtect(package_id).split())
             config_protect |= set(misc_data['configprotect'])
         config_protect = [etpConst['systemroot']+x for x in config_protect]
 
@@ -3407,7 +3407,7 @@ class Package:
         avail = self._entropy.installed_repository().isFileAvailable(
             const_convert_to_unicode(todbfile), get_id = True)
 
-        if (self.pkgmeta['removeidpackage'] not in avail) and avail:
+        if (self.pkgmeta['removepackage_id'] not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
             mytxt += " %s - %s" % (
                 blue(tofile),
@@ -3557,7 +3557,7 @@ class Package:
             )
             pkg_disk_path = self.__get_fetch_disk_path(download)
             return self._download_package(
-                self.pkgmeta['idpackage'],
+                self.pkgmeta['package_id'],
                 self.pkgmeta['repository'],
                 download,
                 pkg_disk_path,
@@ -3659,7 +3659,7 @@ class Package:
         return 0
 
     def _checksum_step(self):
-        base_pkg_rc = self._match_checksum(self.pkgmeta['idpackage'],
+        base_pkg_rc = self._match_checksum(self.pkgmeta['package_id'],
             self.pkgmeta['repository'], self.pkgmeta['checksum'],
             self.pkgmeta['download'], self.pkgmeta['signatures'])
         if base_pkg_rc != 0:
@@ -3674,7 +3674,7 @@ class Package:
                 'sha512': extra_download['sha512'],
                 'gpg': extra_download['gpg'],
             }
-            extra_rc = self._match_checksum(self.pkgmeta['idpackage'],
+            extra_rc = self._match_checksum(self.pkgmeta['package_id'],
                 self.pkgmeta['repository'], checksum, download, signatures)
             if extra_rc != 0:
                 return extra_rc
@@ -3960,7 +3960,7 @@ class Package:
             level = "info",
             header = red("   ## ")
         )
-        self._remove_content_from_system(self.pkgmeta['removeidpackage'],
+        self._remove_content_from_system(self.pkgmeta['removepackage_id'],
             automerge_metadata = self.pkgmeta['already_protected_config_files'])
         return 0
 
@@ -3994,7 +3994,7 @@ class Package:
         others_installed = self._entropy.installed_repository().getPackageIds(
             test_atom)
 
-        # It's obvious that clientdb cannot have more than one idpackage
+        # It's obvious that clientdb cannot have more than one package_id
         # featuring the same "atom" value, but still, let's be fault-tolerant.
         spm_rc = 0
 
@@ -4666,23 +4666,23 @@ class Package:
 
     def __generate_remove_metadata(self):
 
-        idpackage = self._package_match[0]
+        package_id = self._package_match[0]
         inst_repo = self._entropy.installed_repository()
 
-        if not inst_repo.isPackageIdAvailable(idpackage):
+        if not inst_repo.isPackageIdAvailable(package_id):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
-        self.pkgmeta['idpackage'] = idpackage
-        self.pkgmeta['removeidpackage'] = idpackage
+        self.pkgmeta['package_id'] = package_id
+        self.pkgmeta['removepackage_id'] = package_id
         self.pkgmeta['configprotect_data'] = []
         self.pkgmeta['triggers'] = {}
         self.pkgmeta['removeatom'] = \
-            inst_repo.retrieveAtom(idpackage)
+            inst_repo.retrieveAtom(package_id)
         self.pkgmeta['slot'] = \
-            inst_repo.retrieveSlot(idpackage)
+            inst_repo.retrieveSlot(package_id)
         self.pkgmeta['versiontag'] = \
-            inst_repo.retrieveTag(idpackage)
+            inst_repo.retrieveTag(package_id)
 
         remove_config = False
         if 'removeconfig' in self.metaopts:
@@ -4690,7 +4690,7 @@ class Package:
         self.pkgmeta['removeconfig'] = remove_config
 
         content = inst_repo.retrieveContentIter(
-            idpackage, order_by="file", reverse=True)
+            package_id, order_by="file", reverse=True)
         self.pkgmeta['removecontent_file'] = \
             self.__generate_content_file(content)
         # collects directories whose content has been modified
@@ -4699,7 +4699,7 @@ class Package:
         self.pkgmeta['affected_infofiles'] = set()
 
         self.pkgmeta['triggers']['remove'] = \
-            inst_repo.getTriggerData(idpackage)
+            inst_repo.getTriggerData(package_id)
         if self.pkgmeta['triggers']['remove'] is None:
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
@@ -4710,12 +4710,12 @@ class Package:
 
         self.pkgmeta['triggers']['remove']['spm_repository'] = \
             inst_repo.retrieveSpmRepository(
-                idpackage)
+                package_id)
         self.pkgmeta['triggers']['remove'].update(
             self.__get_base_metadata(self._action))
 
         pkg_license = inst_repo.retrieveLicense(
-            idpackage)
+            package_id)
         if pkg_license is None:
             pkg_license = set()
         else:
@@ -4729,19 +4729,19 @@ class Package:
         return 0
 
     def __generate_config_metadata(self):
-        idpackage = self._package_match[0]
+        package_id = self._package_match[0]
         inst_repo = self._entropy.installed_repository()
 
-        self.pkgmeta['atom'] = inst_repo.retrieveAtom(idpackage)
-        key, slot = inst_repo.retrieveKeySlot(idpackage)
+        self.pkgmeta['atom'] = inst_repo.retrieveAtom(package_id)
+        key, slot = inst_repo.retrieveKeySlot(package_id)
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
-        self.pkgmeta['version'] = inst_repo.retrieveVersion(idpackage)
-        self.pkgmeta['category'] = inst_repo.retrieveCategory(idpackage)
-        self.pkgmeta['name'] = inst_repo.retrieveName(idpackage)
+        self.pkgmeta['version'] = inst_repo.retrieveVersion(package_id)
+        self.pkgmeta['category'] = inst_repo.retrieveCategory(package_id)
+        self.pkgmeta['name'] = inst_repo.retrieveName(package_id)
         self.pkgmeta['spm_repository'] = inst_repo.retrieveSpmRepository(
-            idpackage)
+            package_id)
 
-        pkg_license = inst_repo.retrieveLicense(idpackage)
+        pkg_license = inst_repo.retrieveLicense(package_id)
         if pkg_license is None:
             pkg_license = set()
         else:
@@ -4779,23 +4779,23 @@ class Package:
     def __setup_package_to_remove(self, package_key, slot):
 
         inst_repo = self._entropy.installed_repository()
-        inst_idpackage, inst_rc = inst_repo.atomMatch(package_key,
+        inst_package_id, inst_rc = inst_repo.atomMatch(package_key,
             matchSlot = slot)
 
-        if inst_idpackage != -1:
-            avail = inst_repo.isPackageIdAvailable(inst_idpackage)
+        if inst_package_id != -1:
+            avail = inst_repo.isPackageIdAvailable(inst_package_id)
             if avail:
-                inst_atom = inst_repo.retrieveAtom(inst_idpackage)
+                inst_atom = inst_repo.retrieveAtom(inst_package_id)
                 self.pkgmeta['removeatom'] = inst_atom
             else:
-                inst_idpackage = -1
-        return inst_idpackage
+                inst_package_id = -1
+        return inst_package_id
 
     def __generate_install_metadata(self):
 
-        idpackage, repository = self._package_match
+        package_id, repository = self._package_match
         inst_repo = self._entropy.installed_repository()
-        self.pkgmeta['idpackage'] = idpackage
+        self.pkgmeta['package_id'] = package_id
         self.pkgmeta['repository'] = repository
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         edelta_support = self._settings[cl_id]['misc']['edelta_support']
@@ -4828,10 +4828,10 @@ class Package:
         self.pkgmeta['configprotect_data'] = []
         dbconn = self._entropy.open_repository(repository)
         self.pkgmeta['triggers'] = {}
-        self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
-        self.pkgmeta['slot'] = dbconn.retrieveSlot(idpackage)
+        self.pkgmeta['atom'] = dbconn.retrieveAtom(package_id)
+        self.pkgmeta['slot'] = dbconn.retrieveSlot(package_id)
 
-        ver, tag, rev = dbconn.getVersioningData(idpackage)
+        ver, tag, rev = dbconn.getVersioningData(package_id)
         self.pkgmeta['version'] = ver
         self.pkgmeta['versiontag'] = tag
         self.pkgmeta['revision'] = rev
@@ -4840,17 +4840,17 @@ class Package:
         self.pkgmeta['splitdebug_pkgfile'] = True
         if not is_package_repo:
             self.pkgmeta['splitdebug_pkgfile'] = False
-            extra_download = dbconn.retrieveExtraDownload(idpackage)
+            extra_download = dbconn.retrieveExtraDownload(package_id)
             if not self.pkgmeta['splitdebug']:
                 extra_download = [x for x in extra_download if \
                     x['type'] != "debug"]
             self.pkgmeta['extra_download'] += extra_download
 
-        self.pkgmeta['category'] = dbconn.retrieveCategory(idpackage)
-        self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
-        self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
-        self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
-        sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
+        self.pkgmeta['category'] = dbconn.retrieveCategory(package_id)
+        self.pkgmeta['download'] = dbconn.retrieveDownloadURL(package_id)
+        self.pkgmeta['name'] = dbconn.retrieveName(package_id)
+        self.pkgmeta['checksum'] = dbconn.retrieveDigest(package_id)
+        sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(package_id)
         signatures = {
             'sha1': sha1,
             'sha256': sha256,
@@ -4861,7 +4861,7 @@ class Package:
         self.pkgmeta['conflicts'] = self.__get_match_conflicts(
             self._package_match)
 
-        description = dbconn.retrieveDescription(idpackage)
+        description = dbconn.retrieveDescription(package_id)
         if description:
             if len(description) > 74:
                 description = description[:74].strip()
@@ -4872,7 +4872,7 @@ class Package:
         # phase
         self.pkgmeta['installed_package_id'] = None
         # fill action queue
-        self.pkgmeta['removeidpackage'] = -1
+        self.pkgmeta['removepackage_id'] = -1
         remove_config = False
         if 'removeconfig' in self.metaopts:
             remove_config = self.metaopts.get('removeconfig')
@@ -4890,7 +4890,7 @@ class Package:
             self.pkgmeta['merge_from'] = const_convert_to_unicode(mf)
         self.pkgmeta['removeconfig'] = remove_config
 
-        self.pkgmeta['removeidpackage'] = self.__setup_package_to_remove(
+        self.pkgmeta['removepackage_id'] = self.__setup_package_to_remove(
             entropy.dep.dep_getkey(self.pkgmeta['atom']),
             self.pkgmeta['slot'])
 
@@ -4932,28 +4932,28 @@ class Package:
         self.pkgmeta['pkgdbpath'] = os.path.join(self.pkgmeta['unpackdir'],
             "edb/pkg.db")
 
-        if self.pkgmeta['removeidpackage'] == -1:
+        if self.pkgmeta['removepackage_id'] == -1:
             # nothing to remove, fresh install
             self.pkgmeta['removecontent_file'] = None
         else:
             # generate content file
             content = inst_repo.retrieveContentIter(
-                self.pkgmeta['removeidpackage'],
+                self.pkgmeta['removepackage_id'],
                 order_by="file", reverse=True)
             self.pkgmeta['removecontent_file'] = \
                 self.__generate_content_file(content)
 
             # There is a pkg to remove, but...
-            # compare both versions and if they match, disable removeidpackage
+            # compare both versions and if they match, disable removepackage_id
             trigger_data = inst_repo.getTriggerData(
-                self.pkgmeta['removeidpackage'])
+                self.pkgmeta['removepackage_id'])
 
             if trigger_data is None:
                 # installed repository entry is corrupted
-                self.pkgmeta['removeidpackage'] = -1
+                self.pkgmeta['removepackage_id'] = -1
             else:
                 self.pkgmeta['removeatom'] = inst_repo.retrieveAtom(
-                    self.pkgmeta['removeidpackage'])
+                    self.pkgmeta['removepackage_id'])
 
                 self.pkgmeta['triggers']['remove'] = trigger_data
                 # pass reference, not copy! nevva!
@@ -4963,12 +4963,12 @@ class Package:
                     self.pkgmeta['affected_infofiles']
 
                 self.pkgmeta['triggers']['remove']['spm_repository'] = \
-                    inst_repo.retrieveSpmRepository(idpackage)
+                    inst_repo.retrieveSpmRepository(package_id)
                 self.pkgmeta['triggers']['remove'].update(
                     self.__get_base_metadata(self._action))
 
                 pkg_rm_license = inst_repo.retrieveLicense(
-                    self.pkgmeta['removeidpackage'])
+                    self.pkgmeta['removepackage_id'])
                 if pkg_rm_license is None:
                     pkg_rm_license = set()
                 else:
@@ -4987,21 +4987,21 @@ class Package:
         self.pkgmeta['steps'].append("setup")
         self.pkgmeta['steps'].append("preinstall")
         self.pkgmeta['steps'].append("install")
-        if self.pkgmeta['removeidpackage'] != -1:
+        if self.pkgmeta['removepackage_id'] != -1:
             self.pkgmeta['steps'].append("preremove")
         self.pkgmeta['steps'].append("install_clean")
-        if self.pkgmeta['removeidpackage'] != -1:
+        if self.pkgmeta['removepackage_id'] != -1:
             self.pkgmeta['steps'].append("postremove")
             self.pkgmeta['steps'].append("postremove_install")
         self.pkgmeta['steps'].append("install_spm")
         self.pkgmeta['steps'].append("postinstall")
         self.pkgmeta['steps'].append("cleanup")
 
-        self.pkgmeta['triggers']['install'] = dbconn.getTriggerData(idpackage)
+        self.pkgmeta['triggers']['install'] = dbconn.getTriggerData(package_id)
         if self.pkgmeta['triggers']['install'] is None:
             # wtf!?
             return 1
-        pkg_license = dbconn.retrieveLicense(idpackage)
+        pkg_license = dbconn.retrieveLicense(package_id)
         if pkg_license is None:
             pkg_license = set()
         else:
@@ -5013,7 +5013,7 @@ class Package:
         self.pkgmeta['triggers']['install']['imagedir'] = \
             self.pkgmeta['imagedir']
         self.pkgmeta['triggers']['install']['spm_repository'] = \
-            dbconn.retrieveSpmRepository(idpackage)
+            dbconn.retrieveSpmRepository(package_id)
         self.pkgmeta['triggers']['install'].update(
             self.__get_base_metadata(self._action))
 
@@ -5023,7 +5023,7 @@ class Package:
 
     def __generate_fetch_metadata(self, sources = False):
 
-        idpackage, repository = self._package_match
+        package_id, repository = self._package_match
         dochecksum = True
 
         # fetch abort function
@@ -5050,17 +5050,17 @@ class Package:
                 self._package_match)
 
         self.pkgmeta['repository'] = repository
-        self.pkgmeta['idpackage'] = idpackage
+        self.pkgmeta['package_id'] = package_id
         dbconn = self._entropy.open_repository(repository)
-        self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
-        self.pkgmeta['slot'] = dbconn.retrieveSlot(idpackage)
-        self.pkgmeta['removeidpackage'] = self.__setup_package_to_remove(
+        self.pkgmeta['atom'] = dbconn.retrieveAtom(package_id)
+        self.pkgmeta['slot'] = dbconn.retrieveSlot(package_id)
+        self.pkgmeta['removepackage_id'] = self.__setup_package_to_remove(
             entropy.dep.dep_getkey(self.pkgmeta['atom']), self.pkgmeta['slot'])
 
         if sources:
             self.pkgmeta['edelta_support'] = False
             self.pkgmeta['extra_download'] = tuple()
-            self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
+            self.pkgmeta['download'] = dbconn.retrieveSources(package_id,
                 extended = True)
             # fake path, don't use
             self.pkgmeta['pkgpath'] = etpConst['entropypackagesworkdir']
@@ -5068,8 +5068,8 @@ class Package:
             cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
             edelta_support = self._settings[cl_id]['misc']['edelta_support']
             self.pkgmeta['edelta_support'] = edelta_support
-            self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
-            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
+            self.pkgmeta['checksum'] = dbconn.retrieveDigest(package_id)
+            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(package_id)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
@@ -5077,12 +5077,12 @@ class Package:
                 'gpg': gpg,
             }
             self.pkgmeta['signatures'] = signatures
-            extra_download = dbconn.retrieveExtraDownload(idpackage)
+            extra_download = dbconn.retrieveExtraDownload(package_id)
             if not splitdebug:
                 extra_download = [x for x in extra_download if \
                     x['type'] != "debug"]
             self.pkgmeta['extra_download'] = extra_download
-            self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
+            self.pkgmeta['download'] = dbconn.retrieveDownloadURL(package_id)
 
             # export main package download path to metadata
             # this is actually used by PackageKit backend in order
@@ -5148,7 +5148,7 @@ class Package:
                 return False
 
         matching_size = _check_matching_size(self.pkgmeta['download'],
-            dbconn.retrieveSize(idpackage))
+            dbconn.retrieveSize(package_id))
         if matching_size:
             for extra_download in self.pkgmeta['extra_download']:
                 matching_size = _check_matching_size(
@@ -5194,16 +5194,16 @@ class Package:
         temp_checksum_list = []
         temp_already_downloaded_count = 0
 
-        def _setup_download(download, size, idpackage, repository, digest,
+        def _setup_download(download, size, package_id, repository, digest,
                 signatures):
 
             if dochecksum:
-                obj = (idpackage, repository, download, digest,
+                obj = (package_id, repository, download, digest,
                     signatures)
                 temp_checksum_list.append(obj)
 
             if self.__check_pkg_path_download(download, None) < 0:
-                obj = (idpackage, repository, download, digest, signatures)
+                obj = (package_id, repository, download, digest, signatures)
                 temp_fetch_list.append(obj)
             else:
                 down_path = self.__get_fetch_disk_path(download)
@@ -5216,13 +5216,13 @@ class Package:
             return 0
 
 
-        for idpackage, repository in matches:
+        for package_id, repository in matches:
 
             if repository.endswith(etpConst['packagesext']):
                 continue
 
             dbconn = self._entropy.open_repository(repository)
-            myatom = dbconn.retrieveAtom(idpackage)
+            myatom = dbconn.retrieveAtom(package_id)
 
             # general purpose metadata
             self.pkgmeta['atoms'].append(myatom)
@@ -5230,10 +5230,10 @@ class Package:
                 self.pkgmeta['repository_atoms'][repository] = set()
             self.pkgmeta['repository_atoms'][repository].add(myatom)
 
-            download = dbconn.retrieveDownloadURL(idpackage)
-            digest = dbconn.retrieveDigest(idpackage)
-            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
-            size = dbconn.retrieveSize(idpackage)
+            download = dbconn.retrieveDownloadURL(package_id)
+            digest = dbconn.retrieveDigest(package_id)
+            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(package_id)
+            size = dbconn.retrieveSize(package_id)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
@@ -5241,16 +5241,16 @@ class Package:
                 'gpg': gpg,
             }
             temp_already_downloaded_count += _setup_download(download, size,
-                idpackage, repository, digest, signatures)
+                package_id, repository, digest, signatures)
 
-            extra_downloads = dbconn.retrieveExtraDownload(idpackage)
+            extra_downloads = dbconn.retrieveExtraDownload(package_id)
 
             splitdebug = self.pkgmeta['splitdebug']
             # if splitdebug is enabled, check if it's also enabled
             # via package.splitdebug
             if splitdebug:
                 splitdebug = self._package_splitdebug_enabled(
-                    (idpackage, repository))
+                    (package_id, repository))
 
             if not splitdebug:
                 extra_downloads = [x for x in extra_downloads if \
@@ -5266,7 +5266,7 @@ class Package:
                     'gpg': extra_download['gpg'],
                 }
                 temp_already_downloaded_count += _setup_download(download,
-                    size, idpackage, repository, digest, signatures)
+                    size, package_id, repository, digest, signatures)
 
         self.pkgmeta['steps'] = []
         self.pkgmeta['multi_fetch_list'] = temp_fetch_list

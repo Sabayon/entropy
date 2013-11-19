@@ -706,9 +706,9 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage, rc = inst_repo.atomMatch(
+                package_id, rc = inst_repo.atomMatch(
                     dependency[1:])
-                if idpackage != -1:
+                if package_id != -1:
                     if const_debug_enabled():
                         const_debug_write(
                             __name__,
@@ -1103,12 +1103,12 @@ class CalculatorsMixin:
         conflict_str, conflicts, stack, graph, deep_deps):
 
         conflict_atom = conflict_str[1:]
-        c_idpackage, xst = self._installed_repository.atomMatch(conflict_atom)
-        if c_idpackage == -1:
+        c_package_id, xst = self._installed_repository.atomMatch(conflict_atom)
+        if c_package_id == -1:
             return # conflicting pkg is not installed
 
         confl_replacement = self._lookup_conflict_replacement(
-            conflict_atom, c_idpackage, deep_deps = deep_deps)
+            conflict_atom, c_package_id, deep_deps = deep_deps)
 
         if const_debug_enabled():
             const_debug_write(__name__,
@@ -1121,7 +1121,7 @@ class CalculatorsMixin:
             return
 
         # conflict is installed, we need to record it
-        conflicts.add(c_idpackage)
+        conflicts.add(c_package_id)
 
     def __generate_dependency_tree_resolve_conditional(self, unsatisfied_deps,
         selected_matches, selected_matches_cache):
@@ -1428,16 +1428,16 @@ class CalculatorsMixin:
             except TypeError:
                 deps_not_found.add("unknown_%s_%s" % (pkg_id, repo_id,))
                 continue
-            cm_idpackage, cm_result = self._installed_repository.atomMatch(
+            cm_package_id, cm_result = self._installed_repository.atomMatch(
                 pkg_key, matchSlot = pkg_slot)
 
-            if cm_idpackage != -1:
+            if cm_package_id != -1:
                 # this method does:
                 # - broken libraries detection
                 # - inverse dependencies check
                 children_matches, after_pkgs, before_pkgs, inverse_deps = \
                     self.__generate_dependency_tree_inst_hooks(
-                        (cm_idpackage, cm_result), pkg_match,
+                        (cm_package_id, cm_result), pkg_match,
                         build_deps, elements_cache)
                 # this is fine this way, these are strong inverse deps
                 # and their order is already written in stone
@@ -1508,15 +1508,15 @@ class CalculatorsMixin:
 
         return graph, conflicts
 
-    def _lookup_post_dependencies(self, repo_db, repo_idpackage,
+    def _lookup_post_dependencies(self, repo_db, repo_package_id,
         unsatisfied_deps):
 
-        post_deps = repo_db.retrievePostDependencies(repo_idpackage)
+        post_deps = repo_db.retrievePostDependencies(repo_package_id)
 
         if const_debug_enabled():
             const_debug_write(__name__,
                 "_lookup_post_dependencies POST dependencies for %s => %s" % (
-                    (repo_idpackage, repo_db.repository_id()), post_deps,))
+                    (repo_package_id, repo_db.repository_id()), post_deps,))
 
         if post_deps:
 
@@ -1552,7 +1552,7 @@ class CalculatorsMixin:
             cached_items.add(mymatch)
         return mydata
 
-    def _lookup_conflict_replacement(self, conflict_atom, client_idpackage,
+    def _lookup_conflict_replacement(self, conflict_atom, client_package_id,
         deep_deps):
 
         if entropy.dep.isjustname(conflict_atom):
@@ -1560,13 +1560,13 @@ class CalculatorsMixin:
 
         conflict_match = self.atom_match(conflict_atom)
         mykey, myslot = self._installed_repository.retrieveKeySlot(
-            client_idpackage)
+            client_package_id)
         new_match = self.atom_match(mykey, match_slot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
 
         action = self.get_package_action(
-            new_match, installed_package_id = client_idpackage)
+            new_match, installed_package_id = client_package_id)
         if (action == 0) and (not deep_deps):
             return
 
@@ -2281,7 +2281,7 @@ class CalculatorsMixin:
 
         return reverse_tree
 
-    def __filter_depends_multimatched_atoms(self, idpackage, repo_id, depends,
+    def __filter_depends_multimatched_atoms(self, package_id, repo_id, depends,
         filter_match_cache = None):
 
         remove_depends = set()
@@ -2290,15 +2290,15 @@ class CalculatorsMixin:
             filter_match_cache = {}
         # filter_match_cache dramatically improves performance
 
-        for d_idpackage, d_repo_id in depends:
+        for d_package_id, d_repo_id in depends:
 
-            cached = filter_match_cache.get((d_idpackage, d_repo_id))
+            cached = filter_match_cache.get((d_package_id, d_repo_id))
             if cached is None:
 
                 my_remove_depends = set()
 
                 dbconn = self.open_repository(d_repo_id)
-                mydeps = dbconn.retrieveDependencies(d_idpackage,
+                mydeps = dbconn.retrieveDependencies(d_package_id,
                     exclude_deptypes = excluded_dep_types)
 
                 for mydep in mydeps:
@@ -2310,14 +2310,14 @@ class CalculatorsMixin:
                     matches = set((x, d_repo_id) for x in matches)
 
                     if len(matches) > 1:
-                        if (idpackage, repo_id) in matches:
+                        if (package_id, repo_id) in matches:
                             # are all in depends?
                             matches -= depends
                             if matches:
                                 # no, they aren't
-                                my_remove_depends.add((d_idpackage, d_repo_id))
+                                my_remove_depends.add((d_package_id, d_repo_id))
 
-                filter_match_cache[(d_idpackage, d_repo_id)] = my_remove_depends
+                filter_match_cache[(d_package_id, d_repo_id)] = my_remove_depends
                 cached = my_remove_depends
 
             remove_depends |= cached
@@ -2400,13 +2400,13 @@ class CalculatorsMixin:
             deps = set()
             for d_dep in d_deps:
                 if repo_db is self._installed_repository:
-                    m_idpackage, m_rc_x = repo_db.atomMatch(d_dep)
+                    m_package_id, m_rc_x = repo_db.atomMatch(d_dep)
                     m_rc = InstalledPackagesRepository.NAME
                 else:
-                    m_idpackage, m_rc = self.atom_match(d_dep)
+                    m_package_id, m_rc = self.atom_match(d_dep)
 
-                if m_idpackage != -1:
-                    deps.add((m_idpackage, m_rc))
+                if m_package_id != -1:
+                    deps.add((m_package_id, m_rc))
 
             return deps
 
@@ -3262,7 +3262,7 @@ class CalculatorsMixin:
         fine, spm_fine = outcome['fine'], outcome['spm_fine']
 
         installed_repo = self.installed_repository()
-        # verify that client database idpackage still exist,
+        # verify that client database package_id still exist,
         # validate here before passing removePackage() wrong info
         remove = [x for x in remove if \
                       installed_repo.isPackageIdAvailable(x)]
@@ -3317,8 +3317,8 @@ class CalculatorsMixin:
         match_id, match_repo = package_match
         mydbconn = self.open_repository(match_repo)
         myatom = mydbconn.retrieveAtom(match_id)
-        idpackage, idreason = mydbconn.maskFilter(match_id)
-        if idpackage == -1:
+        package_id, idreason = mydbconn.maskFilter(match_id)
+        if package_id == -1:
             treelevel += 1
             if atoms:
                 mydict = {myatom: idreason}
@@ -3350,33 +3350,33 @@ class CalculatorsMixin:
                 continue
             depcache.add(mydep)
 
-            idpackage, repoid = self.atom_match(mydep)
-            if (idpackage, repoid) in matchfilter:
+            package_id, repoid = self.atom_match(mydep)
+            if (package_id, repoid) in matchfilter:
                 try:
                     mydep = mybuffer.pop()
                 except ValueError:
                     break # stack empty
                 continue
 
-            if idpackage != -1:
+            if package_id != -1:
                 # doing even here because atomMatch with
                 # maskFilter = False can pull something different
-                matchfilter.add((idpackage, repoid))
+                matchfilter.add((package_id, repoid))
 
             # collect masked
-            if idpackage == -1:
-                idpackage, repoid = self.atom_match(mydep,
+            if package_id == -1:
+                package_id, repoid = self.atom_match(mydep,
                     mask_filter = False)
-                if idpackage != -1:
+                if package_id != -1:
                     treelevel += 1
                     if treelevel not in maskedtree and not flat:
                         maskedtree[treelevel] = {}
                     dbconn = self.open_repository(repoid)
-                    vidpackage, idreason = dbconn.maskFilter(idpackage)
+                    vpackage_id, idreason = dbconn.maskFilter(package_id)
                     if atoms:
-                        mydict = {dbconn.retrieveAtom(idpackage): idreason}
+                        mydict = {dbconn.retrieveAtom(package_id): idreason}
                     else:
-                        mydict = {(idpackage, repoid): idreason}
+                        mydict = {(package_id, repoid): idreason}
 
                     if flat:
                         maskedtree.update(mydict)
@@ -3384,10 +3384,10 @@ class CalculatorsMixin:
                         maskedtree[treelevel].update(mydict)
 
             # push its dep into the buffer
-            if idpackage != -1:
-                matchfilter.add((idpackage, repoid))
+            if package_id != -1:
+                matchfilter.add((package_id, repoid))
                 dbconn = self.open_repository(repoid)
-                owndeps = dbconn.retrieveDependencies(idpackage,
+                owndeps = dbconn.retrieveDependencies(package_id,
                     exclude_deptypes = excluded_deps)
                 for owndep in owndeps:
                     mybuffer.push(owndep)
@@ -3473,10 +3473,10 @@ class CalculatorsMixin:
         # cannot check this for pkgs not coming from installed pkgs repo
         if dbconn is self._installed_repository:
             if self._is_installed_package_id_in_system_mask(package_id):
-                idpackages = mask_installed_keys.get(pkgkey)
-                if not idpackages:
+                package_ids = mask_installed_keys.get(pkgkey)
+                if not package_ids:
                     return False
-                if len(idpackages) > 1:
+                if len(package_ids) > 1:
                     return True
                 return False # sorry!
 
@@ -3561,8 +3561,8 @@ class CalculatorsMixin:
             matches.
         """
         repo_name = InstalledPackagesRepository.NAME
-        _idpackages = [(x, repo_name) for x in package_identifiers]
-        treeview = self._generate_reverse_dependency_tree(_idpackages,
+        _package_ids = [(x, repo_name) for x in package_identifiers]
+        treeview = self._generate_reverse_dependency_tree(_package_ids,
             deep = deep, recursive = recursive, empty = empty,
             system_packages = system_packages)
         queue = []
@@ -3726,14 +3726,14 @@ class CalculatorsMixin:
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:
             myremmatch = {}
-            for rm_idpackage in removal:
+            for rm_package_id in removal:
                 keyslot = self._installed_repository.retrieveKeySlot(
-                    rm_idpackage)
-                # check if users removed idpackage while this
+                    rm_package_id)
+                # check if users removed package_id while this
                 # whole instance is running
                 if keyslot is None:
                     continue
-                myremmatch[keyslot] = rm_idpackage
+                myremmatch[keyslot] = rm_package_id
 
             for pkg_id, pkg_repo in install:
                 dbconn = self.open_repository(pkg_repo)
