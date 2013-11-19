@@ -198,7 +198,7 @@ If you would like to selectively add certain packages, please see
                     level="error")
                 return generated_packages, 1
 
-        for count, spm_name in enumerate(packages):
+        for count, spm_name in enumerate(packages, 1):
             entropy_server.output(
                 teal(spm_name),
                 header=brown("  # "),
