@@ -4425,7 +4425,7 @@ class Server(Client):
             dependencies = repo.listAllDependencies()
 
             total = len(dependencies)
-            for count, (_dep_id, dep) in enumerate(dependencies, 1):
+            for count, (dep_id, dep) in enumerate(dependencies, 1):
 
                 if (count % 150 == 0) or (count == total) or (count == 1):
                     self.output(
@@ -4442,7 +4442,9 @@ class Server(Client):
                 pkg_id, _pkg_repo = self.atom_match(
                     dep, match_repo = match_repo)
                 if pkg_id == -1:
-                    deps_not_satisfied.add(dep)
+                    # only if the dependency string is still valid
+                    if repo.searchPackageIdFromDependencyId(dep_id):
+                        deps_not_satisfied.add(dep)
 
         return deps_not_satisfied
 
