@@ -10,6 +10,7 @@
     the repository interface.
 
 """
+import collections
 import os
 import hashlib
 import time
@@ -1083,6 +1084,64 @@ class EntropySQLiteRepository(EntropySQLRepository):
         obj = frozenset(cached.get(package_id, frozenset()))
         del cached
         return obj
+
+    def retrieveDependencies(self, package_id, extended = False,
+        deptype = None, exclude_deptypes = None,
+        resolve_conditional_deps = True):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        We must use the in-memory cache to do some memoization.
+        """
+        searchdata = []
+        depstring = ""
+
+        if deptype is not None:
+            depstring = 'and dependencies.type = ?'
+            searchdata.append(deptype)
+
+        excluded_deptypes_query = ""
+        if exclude_deptypes is not None:
+            for dep_type in exclude_deptypes:
+                excluded_deptypes_query += " AND dependencies.type != %d" % (
+                    dep_type,)
+
+        cached = self._getLiveCache("retrieveDependencies")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT dependencies.idpackage,
+                   dependenciesreference.dependency,
+                   dependencies.type
+            FROM dependencies, dependenciesreference
+            WHERE dependencies.iddependency = dependenciesreference.iddependency
+            %s %s""" % (depstring, excluded_deptypes_query,), searchdata)
+
+            cached = {}
+            for pkg_id, dependency, dependency_type in cur:
+                obj = cached.setdefault(pkg_id, collections.deque())
+                obj.append((dependency, dependency_type))
+            self._setLiveCache("retrieveDependencies", cached)
+
+        data = cached.get(package_id, [])
+        if deptype is not None:
+            data = [x for x in data if x[1] == deptype]
+        elif exclude_deptypes is not None:
+            excl_set = frozenset(exclude_deptypes)
+            data = [x for x in data if x[1] not in excl_set]
+
+        iter_obj = tuple
+        if extended:
+            data = iter(data)
+        else:
+            iter_obj = frozenset
+            data = iter((x for x, _x in data))
+
+        # avoid python3.x memleak
+        del cached
+
+        if resolve_conditional_deps:
+            return iter_obj(entropy.dep.expand_dependencies(
+                    data, [self]))
+        return iter_obj(data)
 
     def retrieveDesktopMime(self, package_id):
         """
