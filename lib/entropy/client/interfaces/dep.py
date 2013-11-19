@@ -44,25 +44,24 @@ class CalculatorsMixin:
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
         deps_not_matched = set()
         deps_cache = set()
-        # now look
-        length = len(installed_packages)
-        count = 0
-        for idpackage in installed_packages:
-            count += 1
 
-            if (count%150 == 0) or (count == length) or (count == 1):
-                atom = self._installed_repository.retrieveAtom(idpackage)
+        total = len(installed_packages)
+        for count, package_id in enumerate(installed_packages, 1):
+
+            if (count % 150 == 0) or (count == total) or (count == 1):
+                atom = self._installed_repository.retrieveAtom(package_id)
                 self.output(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
                     level = "info",
                     back = True,
-                    count = (count, length),
+                    count = (count, total),
                     header = darkred(" @@ ")
                 )
 
-            xdeps = self._installed_repository.retrieveDependencies(idpackage,
+            xdeps = self._installed_repository.retrieveDependencies(package_id,
                 exclude_deptypes = (pdepend_id, bdepend_id,))
+
             # filter out already matched pkgs
             xdeps = [x for x in xdeps if x not in deps_cache]
             deps_cache.update(xdeps)
