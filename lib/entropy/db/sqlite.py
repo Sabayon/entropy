@@ -1108,12 +1108,12 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 obj.append((dependency, dependency_type))
             self._setLiveCache("retrieveDependencies", cached)
 
-        data = cached.get(package_id, [])
+        data = cached.get(package_id, collections.deque())
         if deptype is not None:
-            data = [x for x in data if x[1] == deptype]
+            data = iter([x for x in data if x[1] == deptype])
         elif exclude_deptypes is not None:
             excl_set = frozenset(exclude_deptypes)
-            data = [x for x in data if x[1] not in excl_set]
+            data = iter([x for x in data if x[1] not in excl_set])
 
         iter_obj = tuple
         if extended:
