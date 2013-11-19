@@ -472,9 +472,9 @@ If you would like to selectively add certain packages, please see
 
             def pkg_filter(spm_name):
                 if spm_name in to_be_added:
-                    return True
+                    return spm_name
                 try:
-                    inst_spm_name = entropy_server.Spm(
+                    return entropy_server.Spm(
                         ).match_installed_package(spm_name)
                 except KeyError:
                     entropy_server.output(
@@ -484,13 +484,14 @@ If you would like to selectively add certain packages, please see
                         header=darkred(" !!! "),
                         importance=1,
                         level="warning")
-                    return False
+                    return None
 
                 if inst_spm_name in to_be_added:
-                    return True
-                return False
+                    return inst_spm_name
+                return None
 
-            to_be_added = set(filter(pkg_filter, self._packages))
+            to_be_added = set(map(pkg_filter, self._packages))
+            to_be_added.discard(None)
 
         if not (to_be_removed or to_be_added or to_be_injected):
             entropy_server.output(
