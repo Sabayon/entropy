@@ -1092,19 +1092,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyRepositoryBase.
         We must use the in-memory cache to do some memoization.
         """
-        searchdata = []
-        depstring = ""
-
-        if deptype is not None:
-            depstring = 'and dependencies.type = ?'
-            searchdata.append(deptype)
-
-        excluded_deptypes_query = ""
-        if exclude_deptypes is not None:
-            for dep_type in exclude_deptypes:
-                excluded_deptypes_query += " AND dependencies.type != %d" % (
-                    dep_type,)
-
         cached = self._getLiveCache("retrieveDependencies")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1113,7 +1100,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                    dependencies.type
             FROM dependencies, dependenciesreference
             WHERE dependencies.iddependency = dependenciesreference.iddependency
-            %s %s""" % (depstring, excluded_deptypes_query,), searchdata)
+            """)
 
             cached = {}
             for pkg_id, dependency, dependency_type in cur:
