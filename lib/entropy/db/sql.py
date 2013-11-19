@@ -3207,6 +3207,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
                 excluded_deptypes_query += " AND dependencies.type != %d" % (
                     dep_type,)
 
+        cur = None
+        iter_obj = None
         if extended:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency,dependencies.type
@@ -3215,8 +3217,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return tuple(entropy.dep.expand_dependencies(
-                    cur, [self]))
+            iter_obj = tuple
         else:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency
@@ -3225,8 +3226,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return frozenset(entropy.dep.expand_dependencies(
+            iter_obj = frozenset
+
+        if resolve_conditional_deps:
+            return iter_obj(entropy.dep.expand_dependencies(
                     cur, [self]))
+        return iter_obj(cur)
 
     def retrieveKeywords(self, package_id):
         """
