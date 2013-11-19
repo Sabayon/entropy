@@ -571,8 +571,8 @@ class Server(object):
 
                 dbconn = self._entropy.open_server_repository(repository_id,
                     read_only = True, no_upload = True)
-                idpackage = dbconn.getPackageIdFromDownload(pkg_relative_path)
-                if idpackage == -1:
+                package_id = dbconn.getPackageIdFromDownload(pkg_relative_path)
+                if package_id == -1:
                     self._entropy.output(
                         "[%s|%s|#%s] %s: %s %s" % (
                             brown(repository_id),
@@ -588,7 +588,7 @@ class Server(object):
                     )
                     return False
 
-                storedmd5 = dbconn.retrieveDigest(idpackage)
+                storedmd5 = dbconn.retrieveDigest(package_id)
                 self._entropy.output(
                     "[%s|%s|#%s] %s: %s" % (
                         brown(repository_id),

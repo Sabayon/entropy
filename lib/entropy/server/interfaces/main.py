@@ -1538,7 +1538,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
             if repoid == InstalledPackagesRepository.NAME:
                 continue
 
-            idpackages = set()
+            package_ids = set()
             exp_fp = self._helper._get_local_exp_based_pkgs_rm_whitelist_file(
                 repoid)
             try:
@@ -1554,15 +1554,15 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                 pkgs += entropy.tools.generic_file_content_parser(
                     exp_fp, encoding = etpConst['conf_encoding'])
             if '*' in pkgs: # wildcard support
-                idpackages.add(-1)
+                package_ids.add(-1)
             else:
                 for pkg in pkgs:
-                    idpackage, rc_match = dbconn.atomMatch(pkg)
+                    package_id, rc_match = dbconn.atomMatch(pkg)
                     if rc_match:
                         continue
-                    idpackages.add(idpackage)
+                    package_ids.add(package_id)
 
-            data[repoid] = idpackages
+            data[repoid] = package_ids
 
         self._repos_data = data
         return data
@@ -2337,11 +2337,11 @@ class Server(Client):
         if ("world" in packages) or not packages:
             return dbconn.listAllPackageIds(), True
         else:
-            idpackages = set()
+            package_ids = set()
             for package in packages:
                 matches = dbconn.atomMatch(package, multiMatch = True)
                 if matches[1] == 0:
-                    idpackages |= matches[0]
+                    package_ids |= matches[0]
                 else:
                     mytxt = "%s: %s: %s" % (
                         red(_("Attention")),
@@ -2354,7 +2354,7 @@ class Server(Client):
                         level = "warning",
                         header = darkred(" !!! ")
                     )
-            return idpackages, False
+            return package_ids, False
 
     def mask_packages(self, repository_id, packages):
         """
@@ -2518,9 +2518,6 @@ class Server(Client):
         @return: execution status (0 = fine)
         @rtype: int
         """
-        # repo
-        # idpackages
-
         try:
             package_tag = str(package_tag)
             if " " in package_tag:
@@ -2584,16 +2581,16 @@ class Server(Client):
         dbconn = self.open_server_repository(repository_id, read_only = True,
             no_upload = True)
 
-        idpackage_map = dict(((x, [],) for x in from_branches))
-        idpackages = dbconn.listAllPackageIds(order_by = 'atom')
-        for idpackage in idpackages:
-            download_url = dbconn.retrieveDownloadURL(idpackage)
+        package_id_map = dict(((x, [],) for x in from_branches))
+        package_ids = dbconn.listAllPackageIds(order_by = 'atom')
+        for package_id in package_ids:
+            download_url = dbconn.retrieveDownloadURL(package_id)
             url_br = self._get_branch_from_download_relative_uri(
                 download_url)
             if url_br in from_branches:
-                idpackage_map[url_br].append(idpackage)
+                package_id_map[url_br].append(package_id)
 
-        mapped_branches = [x for x in idpackage_map if idpackage_map[x]]
+        mapped_branches = [x for x in package_id_map if package_id_map[x]]
         if not mapped_branches:
             self.output(
                 "[%s=>%s|%s] %s !" % (
@@ -2617,7 +2614,7 @@ class Server(Client):
             no_upload = True)
 
         def generate_queue(branch, repository_id, from_branch, down_q,
-            idpackage_map):
+            package_id_map):
 
             self.output(
                 "[%s=>%s|%s] %s" % (
@@ -2632,8 +2629,8 @@ class Server(Client):
             )
 
 
-            for idpackage in idpackage_map[from_branch]:
-                atom = dbconn.retrieveAtom(idpackage)
+            for package_id in package_id_map[from_branch]:
+                atom = dbconn.retrieveAtom(package_id)
                 self.output(
                     "[%s=>%s|%s] %s" % (
                         darkgreen(from_branch),
@@ -2645,9 +2642,10 @@ class Server(Client):
                     level = "info",
                     header = blue("  # ")
                 )
-                pkg_fp = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                pkg_fp = os.path.basename(
+                    dbconn.retrieveDownloadURL(package_id))
                 pkg_fp = os.path.join(tmp_down_dir, pkg_fp)
-                down_q.append((pkg_fp, idpackage,))
+                down_q.append((pkg_fp, package_id,))
 
 
         for from_branch in sorted(mapped_branches):
@@ -2655,7 +2653,7 @@ class Server(Client):
             download_queue[from_branch] = []
             all_fine = False
             generate_queue(branch, repository_id, from_branch,
-                download_queue[from_branch], idpackage_map)
+                download_queue[from_branch], package_id_map)
 
             if ask:
                 rc_question = self.ask_question(
@@ -2669,8 +2667,8 @@ class Server(Client):
 
                 queue_map = {}
 
-                for pkg_fp, idpackage in download_queue[from_branch]:
-                    down_url = dbconn.retrieveDownloadURL(idpackage)
+                for pkg_fp, package_id in download_queue[from_branch]:
+                    down_url = dbconn.retrieveDownloadURL(package_id)
                     down_rel = self.complete_remote_package_relative_path(
                         down_url, repository_id)
                     down_rel_dir = os.path.dirname(down_rel)
@@ -2700,7 +2698,7 @@ class Server(Client):
                     m_broken_uris.update(xm_broken_uris)
 
                 if not errors:
-                    for downloaded_path, idpackage in \
+                    for downloaded_path, package_id in \
                         download_queue[from_branch]:
 
                         self.output(
@@ -2708,7 +2706,7 @@ class Server(Client):
                                 darkgreen(from_branch),
                                 darkred(branch),
                                 brown(repository_id),
-                                dbconn.retrieveAtom(idpackage),
+                                dbconn.retrieveAtom(package_id),
                                 blue(_("checking package hash")),
                                 darkgreen(os.path.basename(downloaded_path)),
                             ),
@@ -2719,7 +2717,7 @@ class Server(Client):
                         )
 
                         md5hash = entropy.tools.md5sum(downloaded_path)
-                        db_md5hash = dbconn.retrieveDigest(idpackage)
+                        db_md5hash = dbconn.retrieveDigest(package_id)
                         if md5hash != db_md5hash:
                             errors = True
                             self.output(
@@ -2727,7 +2725,7 @@ class Server(Client):
                                     darkgreen(from_branch),
                                     darkred(branch),
                                     brown(repository_id),
-                                    dbconn.retrieveAtom(idpackage),
+                                    dbconn.retrieveAtom(package_id),
                                     blue(_("hash does not match for")),
                                     darkgreen(os.path.basename(downloaded_path)),
                                 ),
@@ -2806,7 +2804,7 @@ class Server(Client):
             )
 
             down_queue = download_queue[from_branch]
-            for package_path, idpackage in down_queue:
+            for package_path, package_id in down_queue:
 
                 self.output(
                     "[%s=>%s|%s] %s: %s" % (
@@ -2823,7 +2821,7 @@ class Server(Client):
                 )
 
                 # build new download url
-                download_url = dbconn.retrieveDownloadURL(idpackage)
+                download_url = dbconn.retrieveDownloadURL(package_id)
                 download_url = \
                     self._swap_branch_in_download_relative_uri(
                         branch, download_url)
@@ -2841,9 +2839,9 @@ class Server(Client):
                     shutil.move(package_path, new_package_path)
 
                 # update database
-                dbconn.setDownloadURL(idpackage, download_url)
+                dbconn.setDownloadURL(package_id, download_url)
                 dbconn.commit()
-                dbconn.switchBranch(idpackage, branch)
+                dbconn.switchBranch(package_id, branch)
                 dbconn.commit()
 
                 self.output(
@@ -3244,7 +3242,7 @@ class Server(Client):
         my_qa = self.QA()
         branch = self._settings['repositories']['branch']
         pull_deps_matches = []
-        for idpackage, repo in my_matches:
+        for package_id, repo in my_matches:
             dbconn = self.open_server_repository(repo, read_only = True,
                 no_upload = True)
             self.output(
@@ -3252,7 +3250,7 @@ class Server(Client):
                     darkgreen(repo),
                     darkred(to_repository_id),
                     brown(branch),
-                    blue(dbconn.retrieveAtom(idpackage)),
+                    blue(dbconn.retrieveAtom(package_id)),
                 ) + new_tag_string,
                 importance = 0,
                 level = "info",
@@ -3262,18 +3260,18 @@ class Server(Client):
             # check if there are pkgs that are going to be overwritten
             # and warn user about that.
             from_name, from_category, from_slot, from_injected = \
-                dbconn.retrieveName(idpackage), \
-                dbconn.retrieveCategory(idpackage), \
-                dbconn.retrieveSlot(idpackage), \
-                dbconn.isInjected(idpackage)
-            to_rm_idpackages = todbconn.getPackagesToRemove(from_name,
+                dbconn.retrieveName(package_id), \
+                dbconn.retrieveCategory(package_id), \
+                dbconn.retrieveSlot(package_id), \
+                dbconn.isInjected(package_id)
+            to_rm_package_ids = todbconn.getPackagesToRemove(from_name,
                 from_category, from_slot, from_injected)
-            for to_rm_idpackage in to_rm_idpackages:
+            for to_rm_package_id in to_rm_package_ids:
                 self.output(
                     "    [=>%s|%s] %s" % (
                             darkred(to_repository_id),
                             bold(_("remove")),
-                            blue(todbconn.retrieveAtom(to_rm_idpackage)),
+                            blue(todbconn.retrieveAtom(to_rm_package_id)),
                     ),
                     importance = 0,
                     level = "info",
@@ -3283,14 +3281,14 @@ class Server(Client):
             # do we want to pull in also package dependencies?
             if pull_deps:
                 dep_matches = my_qa.get_deep_dependency_list(self,
-                    (idpackage, repo), match_repo = (repo,))
+                    (package_id, repo), match_repo = (repo,))
                 revdep_matches = self.get_reverse_queue(dep_matches,
                     system_packages = False)
                 dep_matches.update(revdep_matches)
 
-                for dep_idpackage, dep_repo in dep_matches:
+                for dep_package_id, dep_repo in dep_matches:
 
-                    my_dep_match = (dep_idpackage, dep_repo,)
+                    my_dep_match = (dep_package_id, dep_repo,)
                     if my_dep_match in pull_deps_matches:
                         continue
                     if my_dep_match in my_matches:
@@ -3299,7 +3297,7 @@ class Server(Client):
                     pull_deps_matches.append(my_dep_match)
                     dep_dbconn = self.open_server_repository(dep_repo,
                         read_only = True, no_upload = True)
-                    dep_atom = dep_dbconn.retrieveAtom(dep_idpackage)
+                    dep_atom = dep_dbconn.retrieveAtom(dep_package_id)
                     if my_dep_match in revdep_matches:
                         self.output(
                             "[%s|%s] %s" % (
@@ -3414,7 +3412,7 @@ class Server(Client):
                 os.close(orig_fd)
 
         try:
-            for idpackage, package_path in injection_data:
+            for package_id, package_path in injection_data:
 
                 tmp_repo_file = None
                 tmp_fd = None
@@ -3428,7 +3426,7 @@ class Server(Client):
                     self.output(
                         "[%s|%s] %s: %s" % (
                             darkgreen(repository_id),
-                            brown(str(idpackage)),
+                            brown(str(package_id)),
                             blue(_("injecting entropy metadata")),
                             darkgreen(os.path.basename(package_path)),
                         ),
@@ -3437,7 +3435,7 @@ class Server(Client):
                         header = blue(" @@ "),
                         back = True
                     )
-                    data = dbconn.getPackageData(idpackage)
+                    data = dbconn.getPackageData(package_id)
                     self._inject_entropy_database_into_package(
                         package_path, data,
                         treeupdates_actions = treeupdates_actions,
@@ -3460,7 +3458,7 @@ class Server(Client):
 
                 digest = entropy.tools.md5sum(package_path)
                 # update digest
-                dbconn.setDigest(idpackage, digest)
+                dbconn.setDigest(package_id, digest)
                 # update signatures
                 signatures = data['signatures'].copy()
                 for hash_key in sorted(signatures):
@@ -3468,14 +3466,14 @@ class Server(Client):
                         continue
                     hash_func = getattr(entropy.tools, hash_key)
                     signatures[hash_key] = hash_func(package_path)
-                dbconn.setSignatures(idpackage, signatures['sha1'],
+                dbconn.setSignatures(package_id, signatures['sha1'],
                     signatures['sha256'], signatures['sha512'],
                     gpg_sign)
 
                 # recompute the package file name and download url
                 # to match the final SHA1.
                 download_url = self._setup_repository_package_filename(
-                    dbconn, idpackage)
+                    dbconn, package_id)
                 package_dir = os.path.dirname(package_path)
                 new_package_path = os.path.join(
                     package_dir, os.path.basename(download_url))
@@ -3488,7 +3486,7 @@ class Server(Client):
                 self.output(
                     "[%s|%s] %s: %s" % (
                         darkgreen(repository_id),
-                        brown(str(idpackage)),
+                        brown(str(package_id)),
                         blue(_("injection complete")),
                         darkgreen(os.path.basename(package_path)),
                     ),
@@ -3511,8 +3509,8 @@ class Server(Client):
         """
         dbconn = self.open_server_repository(repository_id, read_only = False,
             no_upload = True)
-        for idpackage in package_ids:
-            atom = dbconn.retrieveAtom(idpackage)
+        for package_id in package_ids:
+            atom = dbconn.retrieveAtom(package_id)
             self.output(
                 "[%s] %s: %s" % (
                     darkgreen(repository_id),
@@ -3523,7 +3521,7 @@ class Server(Client):
                 level = "info",
                 header = brown(" @@ ")
             )
-            dbconn.removePackage(idpackage)
+            dbconn.removePackage(package_id)
         dbconn.clean()
         dbconn.commit()
         self.close_repository(dbconn)
@@ -3549,7 +3547,7 @@ class Server(Client):
             header = blue(" @@ ")
         )
 
-        idpackages, world = self._match_packages(repository_id, packages)
+        package_ids, world = self._match_packages(repository_id, packages)
         dbconn = self.open_server_repository(repository_id, read_only = True,
             no_upload = True)
         branch = self._settings['repositories']['branch']
@@ -3571,9 +3569,9 @@ class Server(Client):
                 level = "info",
                 header = "    "
             )
-            for idpackage in idpackages:
-                pkgatom = dbconn.retrieveAtom(idpackage)
-                down_url = dbconn.retrieveDownloadURL(idpackage)
+            for package_id in package_ids:
+                pkgatom = dbconn.retrieveAtom(package_id)
+                down_url = dbconn.retrieveDownloadURL(package_id)
                 pkgfile = os.path.basename(down_url)
                 self.output(
                     red(pkgatom) + " -> " + bold(os.path.join(branch, pkgfile)),
@@ -3607,20 +3605,20 @@ class Server(Client):
             )
 
 
-            totalcounter = len(idpackages)
+            totalcounter = len(package_ids)
             currentcounter = 0
 
             txc = self.Transceiver(uri)
             txc.set_verbosity(False)
             with txc as handler:
 
-                for idpackage in idpackages:
+                for package_id in package_ids:
 
                     currentcounter += 1
-                    pkgfile = dbconn.retrieveDownloadURL(idpackage)
+                    pkgfile = dbconn.retrieveDownloadURL(package_id)
                     pkgfile = self.complete_remote_package_relative_path(
                         pkgfile, repository_id)
-                    pkghash = dbconn.retrieveDigest(idpackage)
+                    pkghash = dbconn.retrieveDigest(package_id)
 
                     self.output(
                         "[%s] %s: %s" % (
@@ -3652,9 +3650,9 @@ class Server(Client):
                         continue
 
                     if ck_remote == pkghash:
-                        match.add(idpackage)
+                        match.add(package_id)
                     else:
-                        not_match.add(idpackage)
+                        not_match.add(package_id)
                         self.output(
                             "[%s] %s: %s %s" % (
                                 brown(crippled_uri),
@@ -3752,7 +3750,7 @@ class Server(Client):
             header = darkgreen(" * ")
         )
 
-        idpackages, world = self._match_packages(repository_id, packages)
+        package_ids, world = self._match_packages(repository_id, packages)
         dbconn = self.open_server_repository(repository_id, read_only = True)
         if world:
             self.output(
@@ -3766,7 +3764,7 @@ class Server(Client):
         failed = set()
 
         rc_status, available, downloaded_fine, downloaded_errors = \
-            self._download_locally_missing_files(idpackages, repository_id,
+            self._download_locally_missing_files(package_ids, repository_id,
                 ask = ask)
         if not rc_status:
             return fine, failed, downloaded_fine, downloaded_errors
@@ -3775,9 +3773,9 @@ class Server(Client):
 
         totalcounter = str(len(available))
         currentcounter = 0
-        for idpackage in available:
+        for package_id in available:
             currentcounter += 1
-            pkg_path = dbconn.retrieveDownloadURL(idpackage)
+            pkg_path = dbconn.retrieveDownloadURL(package_id)
 
             self.output(
                 "%s: %s" % (
@@ -3791,14 +3789,14 @@ class Server(Client):
                 count = (currentcounter, totalcounter,)
             )
 
-            storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = self._get_package_path(repository_id, dbconn, idpackage)
+            storedmd5 = dbconn.retrieveDigest(package_id)
+            pkgpath = self._get_package_path(repository_id, dbconn, package_id)
             result = entropy.tools.compare_md5(pkgpath, storedmd5)
             qa_fine = my_qa.entropy_package_checks(pkgpath)
             if result and qa_fine:
-                fine.add(idpackage)
+                fine.add(package_id)
             else:
-                failed.add(idpackage)
+                failed.add(package_id)
                 self.output(
                     "%s: %s -- %s: %s" % (
                             blue(_("package")),
@@ -3820,9 +3818,9 @@ class Server(Client):
                     level = "warning",
                     header =  darkred("  # ")
             )
-            for idpackage in failed:
-                atom = dbconn.retrieveAtom(idpackage)
-                down_p = dbconn.retrieveDownloadURL(idpackage)
+            for package_id in failed:
+                atom = dbconn.retrieveAtom(package_id)
+                down_p = dbconn.retrieveDownloadURL(package_id)
                 self.output(
                         blue("[atom:%s] %s" % (atom, down_p,)),
                         importance = 0,
@@ -3911,7 +3909,7 @@ class Server(Client):
         )
 
         dbconn = self.open_server_repository(repository_id, read_only = False)
-        idpackages = dbconn.listAllPackageIds()
+        package_ids = dbconn.listAllPackageIds()
 
         self.output(
             blue(_("All the missing packages in repository will be downloaded.")),
@@ -3921,7 +3919,7 @@ class Server(Client):
         )
 
         rc_status, available, downloaded_fine, downloaded_errors = \
-            self._download_locally_missing_files(idpackages, repository_id,
+            self._download_locally_missing_files(package_ids, repository_id,
                 ask = ask)
         if not rc_status:
             return False, 0, 0
@@ -3971,17 +3969,17 @@ class Server(Client):
         # clear all GPG signatures?
 
         # we can eventually sign!
-        for idpackage in available:
+        for package_id in available:
 
             currentcounter += 1
 
-            pkg_path = self._get_package_path(repository_id, dbconn, idpackage)
+            pkg_path = self._get_package_path(repository_id, dbconn, package_id)
             if not os.path.isfile(pkg_path):
                 pkg_path = self._get_upload_package_path(repository_id, dbconn,
-                    idpackage)
+                    package_id)
             if not os.path.isfile(pkg_path):
                 # wtf!?
-                pkg_atom = dbconn.retrieveAtom(idpackage)
+                pkg_atom = dbconn.retrieveAtom(package_id)
                 raise OnlineMirrorError("WTF!?!?! => %s, %s" % (
                     pkg_path, pkg_atom,))
 
@@ -4014,8 +4012,9 @@ class Server(Client):
                 continue
 
             # now inject gpg signature into repo
-            sha1, sha256, sha512, old_gpg = dbconn.retrieveSignatures(idpackage)
-            dbconn.setSignatures(idpackage, sha1, sha256, sha512,
+            sha1, sha256, sha512, old_gpg = dbconn.retrieveSignatures(
+                package_id)
+            dbconn.setSignatures(package_id, sha1, sha256, sha512,
                 gpg = gpg_sign)
 
             fine += 1
@@ -4079,15 +4078,15 @@ class Server(Client):
         dbconn = self.open_server_repository(repository_id, read_only = True)
         to_download = set()
         available = set()
-        for idpackage in package_ids:
+        for package_id in package_ids:
 
             bindir_path = self._get_package_path(repository_id, dbconn,
-                idpackage)
+                package_id)
             uploaddir_path = self._get_upload_package_path(repository_id,
-                dbconn, idpackage)
-            pkg_path = dbconn.retrieveDownloadURL(idpackage)
+                dbconn, package_id)
+            pkg_path = dbconn.retrieveDownloadURL(package_id)
 
-            pkgatom = dbconn.retrieveAtom(idpackage)
+            pkgatom = dbconn.retrieveAtom(package_id)
             if os.path.isfile(bindir_path):
                 self.output(
                     "[%s] %s :: %s" % (
@@ -4099,7 +4098,7 @@ class Server(Client):
                     level = "info",
                     header = darkgreen("   # ")
                 )
-                available.add(idpackage)
+                available.add(package_id)
             elif os.path.isfile(uploaddir_path):
                 self.output(
                     "[%s] %s :: %s" % (
@@ -4122,7 +4121,7 @@ class Server(Client):
                     level = "info",
                     header = darkgreen("   # ")
                 )
-                to_download.add((idpackage, pkg_path,))
+                to_download.add((package_id, pkg_path,))
 
         if to_download and ask:
             rc_question = self.ask_question(_("Would you like to continue ?"))
@@ -4159,12 +4158,12 @@ class Server(Client):
                 to_download = not_downloaded.copy()
                 not_downloaded = set()
 
-            for idpackage, pkg_path in to_download:
+            for package_id, pkg_path in to_download:
                 rc_down = self.Mirrors.download_package(repository_id, uri,
                     pkg_path)
                 if rc_down:
-                    downloaded_fine.add(idpackage)
-                    available.add(idpackage)
+                    downloaded_fine.add(package_id)
+                    available.add(package_id)
                 else:
                     not_downloaded.add(pkg_path)
 
@@ -4271,22 +4270,22 @@ class Server(Client):
             dbconn = self.open_server_repository(repository_id,
                 read_only = False, no_upload = True, lock_remote = False)
 
-        idpackages = dbconn.listAllPackageIds()
+        package_ids = dbconn.listAllPackageIds()
         already_switched = set()
         not_found = set()
         switched = set()
         ignored = set()
         no_checksum = set()
 
-        maxcount = len(idpackages)
+        maxcount = len(package_ids)
         count = 0
-        for idpackage in idpackages:
+        for package_id in package_ids:
             count += 1
 
-            cur_branch = dbconn.retrieveBranch(idpackage)
-            atom = dbconn.retrieveAtom(idpackage)
+            cur_branch = dbconn.retrieveBranch(package_id)
+            atom = dbconn.retrieveAtom(package_id)
             if cur_branch == to_branch:
-                already_switched.add(idpackage)
+                already_switched.add(package_id)
                 self.output(
                     red("%s %s, %s %s" % (
                             _("Ignoring"),
@@ -4300,7 +4299,7 @@ class Server(Client):
                     header = darkgreen(" @@ "),
                     count = (count, maxcount,)
                 )
-                ignored.add(idpackage)
+                ignored.add(package_id)
                 continue
 
             self.output(
@@ -4315,9 +4314,9 @@ class Server(Client):
                 back = True,
                 count = (count, maxcount,)
             )
-            dbconn.switchBranch(idpackage, to_branch)
+            dbconn.switchBranch(package_id, to_branch)
             dbconn.commit()
-            switched.add(idpackage)
+            switched.add(package_id)
 
         dbconn.commit()
 
@@ -5143,8 +5142,8 @@ class Server(Client):
                     riddep = repo.searchDependency(atom)
                     if riddep == -1:
                         continue
-                    ridpackages = repo.searchPackageIdFromDependencyId(riddep)
-                    for i in ridpackages:
+                    rpackage_ids = repo.searchPackageIdFromDependencyId(riddep)
+                    for i in rpackage_ids:
                         iatom = repo.retrieveAtom(i)
                         if atom not in crying_atoms:
                             crying_atoms[atom] = set()
@@ -6138,8 +6137,8 @@ class Server(Client):
                 'extra_download': extra_download,
             }
         )
-        idpackage = dbconn.handlePackage(mydata)
-        revision = dbconn.retrieveRevision(idpackage)
+        package_id = dbconn.handlePackage(mydata)
+        revision = dbconn.retrieveRevision(package_id)
         # make sure that info have been written to disk
         dbconn.commit()
 
@@ -6159,9 +6158,9 @@ class Server(Client):
             mydbconn = self.open_server_repository(myrepo, read_only = True,
                 no_upload = True)
 
-            myrepo_idpackages = mydbconn.getPackageIds(rev_test_atom)
-            for myrepo_idpackage in myrepo_idpackages:
-                myrev = mydbconn.retrieveRevision(myrepo_idpackage)
+            myrepo_package_ids = mydbconn.getPackageIds(rev_test_atom)
+            for myrepo_package_id in myrepo_package_ids:
+                myrev = mydbconn.retrieveRevision(myrepo_package_id)
                 if myrev > max_rev:
                     max_rev = myrev
 
@@ -6170,7 +6169,7 @@ class Server(Client):
             revision = max_rev
             mydata['revision'] = revision
             # update revision for pkg now
-            dbconn.setRevision(idpackage, revision)
+            dbconn.setRevision(package_id, revision)
 
         # make sure that info have been written to disk, again
         dbconn.commit()
@@ -6196,7 +6195,7 @@ class Server(Client):
         # make sure that info have been written to disk, again
         dbconn.commit()
 
-        atom = dbconn.retrieveAtom(idpackage)
+        atom = dbconn.retrieveAtom(package_id)
         self.output(
             "[%s] %s: %s %s: %s" % (
                     darkgreen(repository_id),
@@ -6210,7 +6209,7 @@ class Server(Client):
             header = red(" @@ ")
         )
 
-        manual_deps = sorted(dbconn.retrieveManualDependencies(idpackage,
+        manual_deps = sorted(dbconn.retrieveManualDependencies(package_id,
             resolve_conditional_deps = False))
         if manual_deps:
             self.output(
@@ -6232,7 +6231,7 @@ class Server(Client):
                 )
 
         download_url = self._setup_repository_package_filename(dbconn,
-            idpackage)
+            package_id)
         destination_path = self.complete_local_upload_package_path(
             download_url, repository_id)
         destination_dir = os.path.dirname(destination_path)
@@ -6269,7 +6268,7 @@ class Server(Client):
 
         # reverse it again, since we wrote it reversed already
         destination_paths.reverse()
-        return idpackage, destination_paths
+        return package_id, destination_paths
 
     def _setup_repository_package_filename(self, repo, package_id):
         """
@@ -6805,7 +6804,7 @@ class Server(Client):
         """
         mycount = 0
         maxcount = len(packages_data)
-        idpackages_added = set()
+        package_ids_added = set()
         to_be_injected = set()
 
         for package_filepaths, inject in packages_data:
@@ -6850,10 +6849,10 @@ class Server(Client):
 
             try:
                 # add to database
-                idpackage, destination_paths = self._package_injector(
+                package_id, destination_paths = self._package_injector(
                     repository_id, package_filepaths, inject = inject)
-                idpackages_added.add(idpackage)
-                to_be_injected.add((idpackage, destination_paths[0]))
+                package_ids_added.add(package_id)
+                to_be_injected.add((package_id, destination_paths[0]))
             except Exception as err:
                 entropy.tools.print_traceback()
                 self.output(
@@ -6868,9 +6867,9 @@ class Server(Client):
                     count = (mycount, maxcount,)
                 )
                 # reinit librarypathsidpackage table
-                if idpackages_added:
+                if package_ids_added:
                     self._add_packages_qa_tests(
-                        [(x, repository_id) for x in idpackages_added],
+                        [(x, repository_id) for x in package_ids_added],
                         ask = ask)
                 if to_be_injected:
                     self._inject_database_into_packages(repository_id,
@@ -6881,17 +6880,17 @@ class Server(Client):
         # make sure packages are really available, it can happen
         # after a previous failure to have garbage here
         dbconn = self.open_server_repository(repository_id, just_reading = True)
-        idpackages_added = set((x for x in idpackages_added if \
+        package_ids_added = set((x for x in package_ids_added if \
             dbconn.isPackageIdAvailable(x)))
 
-        if idpackages_added:
+        if package_ids_added:
             self._add_packages_qa_tests(
-                [(x, repository_id) for x in idpackages_added], ask = ask)
+                [(x, repository_id) for x in package_ids_added], ask = ask)
 
         # inject database into packages
         self._inject_database_into_packages(repository_id, to_be_injected)
 
-        return idpackages_added
+        return package_ids_added
 
     def _taint_database(self, repository_id):
 
@@ -7094,22 +7093,22 @@ class Server(Client):
 
         return wl_data
 
-    def _get_package_path(self, repo, dbconn, idpackage):
+    def _get_package_path(self, repo, dbconn, package_id):
         """
         Given EntropyRepository instance and package identifier, return local
         path of package. This method does not check for path validity though.
         """
-        pkg_rel_url = dbconn.retrieveDownloadURL(idpackage)
+        pkg_rel_url = dbconn.retrieveDownloadURL(package_id)
         complete_path = self.complete_local_package_path(pkg_rel_url, repo)
         return complete_path
 
-    def _get_upload_package_path(self, repo, dbconn, idpackage):
+    def _get_upload_package_path(self, repo, dbconn, package_id):
         """
         Given ServerPackagesRepository instance and package identifier,
         return local path of package.
         This method does not check for path validity though.
         """
-        pkg_path = dbconn.retrieveDownloadURL(idpackage)
+        pkg_path = dbconn.retrieveDownloadURL(package_id)
         return os.path.join(self._get_local_upload_directory(repo), pkg_path)
 
     def scan_package_changes(self, repository_ids=None,
@@ -7201,7 +7200,7 @@ class Server(Client):
             except KeyError:
                 continue
 
-        for (counter, idpackage), repository_id in database_counters:
+        for (counter, package_id), repository_id in database_counters:
 
             if counter < 0:
                 continue # skip packages without valid counter
@@ -7218,10 +7217,10 @@ class Server(Client):
             if to_be_added:
 
                 dorm = False
-                atom = repo.retrieveAtom(idpackage)
+                atom = repo.retrieveAtom(package_id)
                 atomkey = entropy.dep.dep_getkey(atom)
                 atomtag = entropy.dep.dep_gettag(atom)
-                atomslot = repo.retrieveSlot(idpackage)
+                atomslot = repo.retrieveSlot(package_id)
                 add = True
 
                 spm_slots = _spm_key_slot_map.get(atomkey, [])
@@ -7239,18 +7238,18 @@ class Server(Client):
             # avoid touching what developer doesn't expect
             if dorm and (repository_id in removal_repository_ids):
 
-                tag = repo.retrieveTag(idpackage)
+                tag = repo.retrieveTag(package_id)
                 if tag:
-                    is_injected = repo.isInjected(idpackage)
+                    is_injected = repo.isInjected(package_id)
                     if not is_injected:
-                        to_be_injected.add((idpackage, repository_id))
+                        to_be_injected.add((package_id, repository_id))
                         continue
 
                 trashed = self._is_spm_uid_trashed(counter)
                 if trashed:
                     # search into portage then
                     try:
-                        key, slot = repo.retrieveKeySlot(idpackage)
+                        key, slot = repo.retrieveKeySlot(package_id)
                     except TypeError:
                         key, slot = None, None
 
@@ -7272,7 +7271,7 @@ class Server(Client):
                 if not exp_based_scope:
                     # expiration based scope is not enabled, so
                     # the package must be accounted for removal.
-                    to_be_removed.add((idpackage, repository_id))
+                    to_be_removed.add((package_id, repository_id))
                     continue
 
                 # check if support for this is set
@@ -7282,18 +7281,18 @@ class Server(Client):
 
                 # only some packages are set, check if our is
                 # in the list
-                if (idpackage not in exp_data) and (-1 not in exp_data):
-                    to_be_removed.add((idpackage, repository_id))
+                if (package_id not in exp_data) and (-1 not in exp_data):
+                    to_be_removed.add((package_id, repository_id))
                     continue
 
-                idpackage_expired = self._is_match_expired((idpackage,
+                package_id_expired = self._is_match_expired((package_id,
                     repository_id,))
 
-                if idpackage_expired:
+                if package_id_expired:
                     # expired !!!
                     # add this and its depends (reverse deps)
 
-                    rm_match = (idpackage, repository_id)
+                    rm_match = (package_id, repository_id)
                     #to_be_removed.add(rm_match)
                     revdep_matches = self.get_reverse_queue([rm_match],
                         system_packages = False)
@@ -7303,7 +7302,7 @@ class Server(Client):
 
     def _is_match_expired(self, match):
 
-        idpackage, repoid = match
+        package_id, repoid = match
         dbconn = self.open_server_repository(repoid, just_reading = True)
         # 3600 * 24 = 86400
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -7312,7 +7311,7 @@ class Server(Client):
         # if packages removal is triggered by expiration
         # we will have to check if our package is really
         # expired and remove its reverse deps too
-        mydate = dbconn.retrieveCreationDate(idpackage)
+        mydate = dbconn.retrieveCreationDate(package_id)
         # cross fingers hoping that time is set correctly
         mydelta = cur_unix_time - float(mydate)
         if mydelta > pkg_exp_secs:
@@ -7360,8 +7359,8 @@ class Server(Client):
         # to a temp repo
         tmp_repo = self._open_temp_repository("dep_rewrite_temp",
             temp_file = ":memory:")
-        new_idpackage = tmp_repo.handlePackage(pkg_meta)
-        pkg_atom = tmp_repo.retrieveAtom(new_idpackage)
+        new_package_id = tmp_repo.handlePackage(pkg_meta)
+        pkg_atom = tmp_repo.retrieveAtom(new_package_id)
 
         rewrites_enabled = []
         wildcard_rewrite = False
