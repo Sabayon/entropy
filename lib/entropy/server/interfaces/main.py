@@ -4410,50 +4410,40 @@ class Server(Client):
 
     def _deps_tester(self, default_repository_id, match_repo = None):
 
-        server_repos = self.repositories()
+        repository_ids = self.repositories()
         if match_repo is None:
-            match_repo = server_repos
-        installed_packages = set()
+            match_repo = repository_ids
+
         # if a default repository is passed, we will just test against it
         if default_repository_id:
-            server_repos = [default_repository_id]
-
-        for repository_id in server_repos:
-            repo = self.open_repository(repository_id)
-            installed_packages |= set([(x, repository_id) for x in \
-                repo.listAllPackageIds()])
+            repository_ids = [default_repository_id]
 
         deps_not_satisfied = set()
-        length = str((len(installed_packages)))
-        count = 0
-        mytxt = _("Checking")
-        _deps_cache = set()
+        txt = _("scanning dependencies")
 
-        for idpackage, repository_id in installed_packages:
-            count += 1
+        for repository_id in repository_ids:
             repo = self.open_repository(repository_id)
+            dependencies = repo.listAllDependencies()
 
-            if (count%150 == 0) or (count == length) or (count == 1):
-                atom = repo.retrieveAtom(idpackage)
-                self.output(
-                    darkgreen(mytxt)+" "+bold(atom),
-                    importance = 0,
-                    level = "info",
-                    back = True,
-                    count = (count, length),
-                    header = darkred(" @@  ")
-                )
+            total = len(dependencies)
+            for count, (_dep_id, dep) in enumerate(dependencies, 1):
 
-            # NOTE: this must also test build dependencies to make sure
-            # that every packages comes out with all of them.
-            xdeps = repo.retrieveDependencies(idpackage)
-            xdeps = [x for x in xdeps if x not in _deps_cache]
-            _deps_cache.update(xdeps)
-            for xdep in xdeps:
-                xid, xuseless = self.atom_match(xdep,
-                    match_repo = match_repo)
-                if xid == -1:
-                    deps_not_satisfied.add(xdep)
+                if (count % 150 == 0) or (count == total) or (count == 1):
+                    self.output(
+                        "[%s] %s" % (
+                            purple(repository_id),
+                            darkgreen(txt),),
+                        importance = 0,
+                        level = "info",
+                        back = True,
+                        count = (count, total),
+                        header = darkred(" @@ ")
+                    )
+
+                pkg_id, _pkg_repo = self.atom_match(
+                    dep, match_repo = match_repo)
+                if pkg_id == -1:
+                    deps_not_satisfied.add(dep)
 
         return deps_not_satisfied
 
