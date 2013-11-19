@@ -4002,6 +4002,16 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def listAllDependencies(self):
+        """
+        List all dependencies available in repository.
+
+        @return: list of tuples of length 2 containing
+            (dependency id, dependency,)
+        @rtype: list
+        """
+        raise NotImplementedError()
+
     def listAllSpmUids(self):
         """
         List all Source Package Manager unique package identifiers bindings

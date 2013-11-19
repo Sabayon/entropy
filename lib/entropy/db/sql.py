@@ -4639,13 +4639,9 @@ class EntropySQLRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("SELECT idpackage FROM systempackages")
         return self._cur2frozenset(cur)
 
-    def _listAllDependencies(self):
+    def listAllDependencies(self):
         """
-        List all dependencies available in repository.
-
-        @return: list of tuples of length 2 containing
-            (iddependency, dependency, name,)
-        @rtype: list
+        Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
         SELECT iddependency, dependency FROM dependenciesreference
@@ -5512,7 +5508,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             return rev_deps_data
 
         dep_data = {}
-        for iddep, atom in self._listAllDependencies():
+        for iddep, atom in self.listAllDependencies():
 
             if iddep == -1:
                 continue

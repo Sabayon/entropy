@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     # test with zillions of atoms
     repo = cl.open_repository("sabayonlinux.org")
-    atoms = [x[1] for x in repo._listAllDependencies()]
+    atoms = [x[1] for x in repo.listAllDependencies()]
     atoms = [x for x in atoms if not x.startswith("!")]
 
     graph = Graph()
