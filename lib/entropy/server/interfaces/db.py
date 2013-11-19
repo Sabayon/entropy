@@ -637,11 +637,13 @@ class ServerPackagesRepositoryUpdater(object):
             critical.append(data['compressed_database_path'])
             gpg_signed_files.append(data['compressed_database_path'])
 
-            data['compressed_database_path_light'] = os.path.join(
-                self._entropy._get_local_repository_dir(self._repository_id),
-                etpConst[cmethod[7]])
-            critical.append(data['compressed_database_path_light'])
-            gpg_signed_files.append(data['compressed_database_path_light'])
+            if not download:
+                data['compressed_database_path_light'] = os.path.join(
+                    self._entropy._get_local_repository_dir(
+                        self._repository_id),
+                    etpConst[cmethod[7]])
+                critical.append(data['compressed_database_path_light'])
+                gpg_signed_files.append(data['compressed_database_path_light'])
 
             data['database_path_digest'] = os.path.join(
                 self._entropy._get_local_repository_dir(self._repository_id),
@@ -657,13 +659,15 @@ class ServerPackagesRepositoryUpdater(object):
             critical.append(data['compressed_database_path_digest'])
             gpg_signed_files.append(data['compressed_database_path_digest'])
 
-            data['compressed_database_path_digest_light'] = os.path.join(
-                self._entropy._get_local_repository_dir(self._repository_id),
-                etpConst[cmethod[8]]
-            )
-            critical.append(data['compressed_database_path_digest_light'])
-            gpg_signed_files.append(
-                data['compressed_database_path_digest_light'])
+            if not download:
+                data['compressed_database_path_digest_light'] = os.path.join(
+                    self._entropy._get_local_repository_dir(
+                        self._repository_id),
+                    etpConst[cmethod[8]]
+                    )
+                critical.append(data['compressed_database_path_digest_light'])
+                gpg_signed_files.append(
+                    data['compressed_database_path_digest_light'])
 
         # Some information regarding how packages are built
         spm_files_map = self._entropy.Spm_class().config_files_map()
