@@ -578,6 +578,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
                     PRIMARY KEY (repository, from_branch, to_branch)
                 );
 
+                CREATE TABLE preserved_libs (
+                    library VARCHAR,
+                    elfclass INTEGER,
+                    path VARCHAR,
+                    PRIMARY KEY (library, path, elfclass)
+                );
+
                 CREATE TABLE xpakdata (
                     idpackage INTEGER PRIMARY KEY,
                     data BLOB
@@ -2165,6 +2172,41 @@ class EntropySQLRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         INSERT INTO triggers VALUES (?, ?)
         """, (package_id, const_get_buffer()(trigger),))
+
+    def insertPreservedLibrary(self, library, elfclass, path):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._cursor().execute("""
+        %s INTO preserved_libs VALUES (?, ?, ?)
+        """ % (self._INSERT_OR_REPLACE,), (library, elfclass, path))
+
+    def removePreservedLibrary(self, library, elfclass, path):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._cursor().execute("""
+        DELETE FROM preserved_libs
+        WHERE library = ? AND elfclass = ? AND path = ?
+        """, (library, elfclass, path))
+
+    def listAllPreservedLibraries(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute("""
+        SELECT library, elfclass, path FROM preserved_libs
+        """)
+        return tuple(cur)
+
+    def retrievePreservedLibraries(self, library, elfclass):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute("""
+        SELECT path FROM preserved_libs WHERE library = ? AND elfclass = ?
+        """, (library, elfclass))
+        return self._cur2tuple(cur)
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
         post_migration_md5sum, post_upgrade_md5sum):
