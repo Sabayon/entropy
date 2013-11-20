@@ -570,6 +570,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 DELETE FROM packagedownloads WHERE idpackage = (?)""",
                 (package_id,))
 
+    def _addDependency(self, dependency):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        self._clearLiveCache("retrieveDependencies")
+        return super(EntropySQLiteRepository, self)._addDependency(
+            dependency)
+
     def _addCategory(self, category):
         """
         Reimplemented from EntropySQLRepository.
@@ -626,6 +634,15 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("retrieveKeySlotAggregated")
         self._clearLiveCache("getStrictData")
 
+    def setDependency(self, iddependency, dependency):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle live cache.
+        """
+        super(EntropySQLiteRepository, self).setDependency(
+            iddependency, dependency)
+        self._clearLiveCache("retrieveDependencies")
+
     def setAtom(self, package_id, atom):
         """
         Reimplemented from EntropySQLRepository.
@@ -661,6 +678,24 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._clearLiveCache("getVersioningData")
         self._clearLiveCache("getStrictScopeData")
         self._clearLiveCache("getStrictData")
+
+    def removeDependencies(self, package_id):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle live cache.
+        """
+        super(EntropySQLiteRepository, self).removeDependencies(
+            package_id)
+        self._clearLiveCache("retrieveDependencies")
+
+    def insertDependencies(self, package_id, depdata):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle live cache.
+        """
+        super(EntropySQLiteRepository, self).insertDependencies(
+            package_id, depdata)
+        self._clearLiveCache("retrieveDependencies")
 
     def _insertUseflags(self, package_id, useflags):
         """
@@ -720,6 +755,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
             FROM baseinfo, categories
             WHERE baseinfo.idcategory = categories.idcategory)
         """)
+
+    def _cleanupDependencies(self):
+        """
+        Reimplemented from EntropySQLRepository.
+        We must handle live cache.
+        """
+        super(EntropySQLiteRepository, self)._cleanupDependencies()
+        self._clearLiveCache("retrieveDependencies")
 
     def getVersioningData(self, package_id):
         """
