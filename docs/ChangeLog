@@ -1,3 +1,41 @@
+commit 66f146348849b89989563251e7642e0be5ce26ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 12:34:41 2013 +0100
+
+    Release Entropy 233
+
+commit d089978b7439180bf8e4155a5b6744eb8f8f166e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 11:42:51 2013 +0100
+
+    Revert "[entropy.db.cache] add timed expiration support for cached elements"
+    
+    This reverts commit 8b7c48c2d99822d154bb0cca90f41683551691ca.
+
+commit d786c403c8a9c912c7b013de57c95f5d511ac96b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 11:38:53 2013 +0100
+
+    [entropy.db.sqlite] fix the retrieveDependencies cache invalidation paths
+
+commit 8b7c48c2d99822d154bb0cca90f41683551691ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 11:25:02 2013 +0100
+
+    [entropy.db.cache] add timed expiration support for cached elements
+
+commit 47657d62854964a8f8f8c3b0877844d2a31abc7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 11:15:53 2013 +0100
+
+    [entropy.misc] ParallelTask: code style update
+
+commit 465f086148be012e1fe729b01a40997e6df7a054
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 19 22:10:36 2013 +0100
+
+    Tagging Entropy version 232
+
 commit 8124d071d671852a327769bcc61ad495ebdc836a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Nov 19 22:10:36 2013 +0100
