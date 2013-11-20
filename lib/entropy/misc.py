@@ -439,9 +439,8 @@ class ParallelTask(threading.Thread):
 
         Provide a function and its arguments as arguments of this constructor.
         """
-        threading.Thread.__init__(self)
-        self.__function = args[0]
-        self.__args = args[1:][:]
+        super(ParallelTask, self).__init__()
+        self.__function, self.__args = args[0], args[1:]
         self.__kwargs = kwargs.copy()
         self.__rc = None
 
