@@ -1,14 +1,14 @@
 Short term:
 
+- preserved libs support
 - eit cache clean
 - drop all the EntropyCacher.CACHE_IDS
+- rewrite entropy.Security() to be O(1)
 
 - conditional deps:
   enabled with ETP_PORTAGE_CONDITIONAL_DEPS_ENABLE
   Test package generation and entropy client behaviour
   (both direct and inverse dependencies calculation)
-
-- rewrite entropy.Security() to be O(1) (dump sulfur first)
 
 
  Long term:
