@@ -849,11 +849,12 @@ class EntropySQLRepository(EntropyRepositoryBase):
         """
         self._live_cacher.discard(self._getLiveCacheKey())
 
-    def _setLiveCache(self, key, value):
+    def _setLiveCache(self, key, value, expiration_secs = None):
         """
         Save a new key -> value pair to the in-memory cache.
         """
-        self._live_cacher.set(self._getLiveCacheKey() + key, value)
+        self._live_cacher.set(self._getLiveCacheKey() + key,
+                              value, expiration_secs = expiration_secs)
 
     def _getLiveCache(self, key):
         """

@@ -9,6 +9,7 @@
     I{EntropyRepository} caching interface.
 
 """
+import threading
 import weakref
 
 from entropy.core import Singleton
@@ -63,7 +64,7 @@ class EntropyRepositoryCacher(Singleton):
             return obj()
         return obj
 
-    def set(self, key, value):
+    def set(self, key, value, expiration_secs = None):
         """
         Set item in cache.
         """
@@ -71,3 +72,12 @@ class EntropyRepositoryCacher(Singleton):
             self.__live_cache[key] = weakref.ref(value)
         else:
             self.__live_cache[key] = value
+
+        if expiration_secs is not None:
+            timer = threading.Timer(
+                expiration_secs,
+                self.__live_cache.pop,
+                args = (key, None))
+            timer.name = "EntropyRepositoryCacher.TimedPop"
+            timer.daemon = True
+            timer.start()
