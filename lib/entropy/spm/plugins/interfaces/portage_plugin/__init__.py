@@ -572,6 +572,7 @@ class PortagePlugin(SpmPlugin):
     EBUILD_EXT = ".ebuild"
     KERNEL_CATEGORY = "sys-kernel"
     _PORTAGE_ENTROPY_PACKAGE_NAME = "sys-apps/portage"
+    _ACCEPT_PROPERTIES = const_convert_to_unicode("* -interactive")
 
     ENV_DIRS = set(["/etc/env.d"])
 
@@ -582,6 +583,10 @@ class PortagePlugin(SpmPlugin):
 
         self.__output = output_interface
         self.__entropy_repository_treeupdate_digests = {}
+
+        # setup licenses according to Gentoo bug #234300 comment 9.
+        # EAPI < 3.
+        os.environ["ACCEPT_PROPERTIES"] = self._ACCEPT_PROPERTIES
 
         # setup color status
         if not getcolor():
@@ -2053,12 +2058,6 @@ class PortagePlugin(SpmPlugin):
     def _portage_doebuild(self, myebuild, action, action_metadata, mydo,
         tree, cpv, portage_tmpdir = None, licenses = None):
 
-        # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
-        # tree = "bintree"
-        # cpv = atom
-        # mydbapi = portage.fakedbapi(settings=portage.settings)
-        # vartree = portage.vartree(root=myroot)
-
         if licenses is None:
             licenses = []
 
@@ -2098,7 +2097,7 @@ class PortagePlugin(SpmPlugin):
         # generate warnings
         mysettings.features.discard("ccache")
 
-        # we already do this early
+        # EAPI >=3
         mysettings["ACCEPT_LICENSE"] = const_convert_to_unicode(
             " ".join(licenses))
         mysettings.backup_changes("ACCEPT_LICENSE")
@@ -2144,35 +2143,13 @@ class PortagePlugin(SpmPlugin):
             mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
             mysettings.backup_changes("PORTAGE_TMPDIR")
 
-        # create FAKE ${PORTDIR} directory and licenses subdir
-        portdir = os.path.join(portage_tmpdir, "portdir")
-        portdir_lic = os.path.join(portdir, "licenses")
-        if not os.path.isdir(portdir):
-            os.mkdir(portdir, 0o744)
-            const_setup_perms(portdir, etpConst['entropygid'],
-                recursion = False)
-        # create licenses subdir
-        if not os.path.isdir(portdir_lic):
-            os.mkdir(portdir_lic)
-
-        # set fake PORTDIR
-        old_portdir = mysettings["PORTDIR"][:]
-        mysettings["PORTDIR"] = portdir
-        mysettings.backup_changes("PORTDIR")
-
-        ### WORKAROUND for buggy check_license() in eutils.eclass
-        ### that looks for file availability before considering
-        ### ACCEPT_LICENSE
-        for lic in licenses:
-            lic_path = os.path.join(portdir_lic, lic)
-            try:
-                with codecs.open(lic_path, "w", encoding=enc) as lic_f:
-                    pass
-            except (OSError, IOError) as err:
-                if err.errno not in (
-                        errno.EACCES, errno.EISDIR,
-                        errno.ENOENT, errno.ENOTDIR):
-                    raise
+        # make sure that PORTDIR exists
+        portdir = mysettings["PORTDIR"]
+        try:
+            os.makedirs(os.path.join(portdir, "licenses"), 0o755)
+        except OSError:
+            # best effort
+            pass
 
         cpv = str(cpv)
         mydbapi = self._portage.fakedbapi(settings=mysettings)
@@ -2268,15 +2245,8 @@ class PortagePlugin(SpmPlugin):
                     except OSError:
                         pass
 
-                # remove self-created portdir directory in any case
-                shutil.rmtree(portdir, True)
                 if portage_tmpdir_created:
                     shutil.rmtree(portage_tmpdir, True)
-
-                # reset PORTDIR back to its old path
-                # for security !
-                mysettings["PORTDIR"] = old_portdir
-                mysettings.backup_changes("PORTDIR")
 
                 del mydbapi
                 del metadata
