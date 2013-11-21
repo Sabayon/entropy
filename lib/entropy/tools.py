@@ -2636,8 +2636,8 @@ def resolve_dynamic_library(library, requiring_executable):
 
     return found_path
 
-readelf_avail_check = False
 ldd_avail_check = False
+
 def read_elf_dynamic_libraries(elf_file):
     """
     Extract NEEDED metadatum from ELF file at path.
@@ -2647,14 +2647,36 @@ def read_elf_dynamic_libraries(elf_file):
     @return: list (set) of strings in NEEDED metadatum
     @rtype: set
     """
-    global readelf_avail_check
-    if not readelf_avail_check:
-        if not const_file_readable("/usr/bin/readelf"):
-            FileNotFound('FileNotFound: no readelf')
-        readelf_avail_check = True
-    return set([x.strip().split()[-1][1:-1] for x in \
-        getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") \
-            if (x.find("(NEEDED)") != -1)])
+    proc = None
+    args = ("/usr/bin/scanelf", "-qF", "%n", elf_file)
+
+    out = None
+    try:
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        exit_st = proc.wait()
+        if exit_st != 0:
+            raise FileNotFound("scanelf failure")
+        out = proc.stdout.read()
+
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
+        raise FileNotFound("/usr/bin/scanelf not found")
+
+    finally:
+        if proc is not None:
+            try:
+                proc.stdout.close()
+            except (OSError, IOError):
+                pass
+
+    outcome = set()
+    if out is not None:
+        for line in out.split("\n"):
+            if line:
+                libs = line.strip().split(" ", -1)[0].split(",")
+                outcome.update(libs)
+    return outcome
 
 def read_elf_real_dynamic_libraries(elf_file):
     """
@@ -2701,6 +2723,8 @@ def read_elf_broken_symbols(elf_file):
     return set([x.strip().split("\t")[0].split()[-1] for x in \
         getstatusoutput('/usr/bin/ldd -r "%s"' % (elf_file,))[1].split("\n") \
             if (x.find("undefined symbol:") != -1)])
+
+readelf_avail_check = False
 
 def read_elf_linker_paths(elf_file):
     """
