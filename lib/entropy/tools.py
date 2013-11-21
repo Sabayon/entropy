@@ -2773,8 +2773,6 @@ def read_elf_broken_symbols(elf_file):
 
     return outcome
 
-readelf_avail_check = False
-
 def read_elf_linker_paths(elf_file):
     """
     Extract built-in linker paths (RUNPATH and RPATH) from ELF file.
@@ -2784,21 +2782,40 @@ def read_elf_linker_paths(elf_file):
     @return: list of extracted built-in linker paths.
     @rtype: list
     """
-    global readelf_avail_check
-    if not readelf_avail_check:
-        if not const_file_readable("/usr/bin/readelf"):
-            raise FileNotFound('FileNotFound: no readelf')
-        readelf_avail_check = True
-    data = [x.strip().split()[-1][1:-1].split(":") for x in \
-        getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not \
-            ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
-    mypaths = []
-    for mypath in data:
-        for xpath in mypath:
-            xpath = xpath.replace("$ORIGIN", os.path.dirname(elf_file))
-            xpath = xpath.replace("${ORIGIN}", os.path.dirname(elf_file))
-            mypaths.append(xpath)
-    return mypaths
+    proc = None
+    args = ("/usr/bin/scanelf", "-qF", "%r", elf_file)
+    out = None
+
+    try:
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        exit_st = proc.wait()
+        if exit_st != 0:
+            raise FileNotFound("scanelf error")
+
+        out = proc.stdout.read()
+
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
+        raise FileNotFound("/usr/bin/scanelf not found")
+
+    finally:
+        if proc is not None:
+            proc.stdout.close()
+
+    outcome = []
+    if out is not None:
+
+        elf_dir = os.path.dirname(elf_file)
+        for line in out.split("\n"):
+            if line:
+                paths = line.strip().split(" ", -1)[0].split(",")
+                for path in paths:
+                    path = path.replace("$ORIGIN", elf_dir)
+                    path = path.replace("${ORIGIN}", elf_dir)
+                    outcome.append(path)
+
+    return outcome
 
 def xml_from_dict_extended(dictionary):
     """

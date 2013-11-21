@@ -547,7 +547,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_read_elf_linker_paths(self):
         elf_obj = _misc.get_dl_so_amd_2()
-        known_meta = ['/usr/lib64', '/usr/lib64']
+        known_meta = ['/usr/lib64']
         metadata = et.read_elf_linker_paths(elf_obj)
         self.assertEqual(metadata, known_meta)
 
