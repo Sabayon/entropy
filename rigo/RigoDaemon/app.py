@@ -18,6 +18,9 @@ random.seed()
 # entropy.i18n will pick this up
 os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
 
+# Set the default terminal if unset
+os.environ["TERM"] = os.environ.get("TERM", "xterm")
+
 import errno
 import sys
 import pwd
