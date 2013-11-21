@@ -1,5 +1,6 @@
 Short term:
 
+- reload portage modules in RigoDaemon (if equo upgraded it...)
 - preserved libs support
 - eit cache clean
 - drop all the EntropyCacher.CACHE_IDS
