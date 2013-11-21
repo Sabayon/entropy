@@ -469,6 +469,19 @@ class ToolsTest(unittest.TestCase):
         metadata = et.read_elf_dynamic_libraries(elf_obj)
         self.assertEqual(metadata, known_meta)
 
+    def test_read_elf_real_dynamic_libraries(self):
+        elf_obj = _misc.get_dl_so_amd_2()
+        known_meta = set(
+            ['libresolv.so.2', 'libcom_err.so.2',
+             'libkeyutils.so.1', 'libkrb5.so.3',
+             'ld-linux-x86-64.so.2', 'libkrb5support.so.0',
+             'libpthread.so.0', 'libgssrpc.so.4',
+             'libgssapi_krb5.so.2', 'libdl.so.2',
+             'libk5crypto.so.3', 'libc.so.6', 'libkdb5.so.4.0']
+        )
+        metadata = et.read_elf_real_dynamic_libraries(elf_obj)
+        self.assertEqual(metadata, known_meta)
+
     def test_read_elf_linker_paths(self):
         elf_obj = _misc.get_dl_so_amd_2()
         known_meta = ['/usr/lib64', '/usr/lib64']
