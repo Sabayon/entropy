@@ -2724,8 +2724,6 @@ def read_elf_real_dynamic_libraries(elf_file):
 
     return outcome
 
-ldd_avail_check = False
-
 def read_elf_broken_symbols(elf_file):
     """
     Extract broken symbols from ELF file.
@@ -2735,14 +2733,45 @@ def read_elf_broken_symbols(elf_file):
     @return: list of broken symbols in ELF file.
     @rtype: set
     """
-    global ldd_avail_check
-    if not ldd_avail_check:
-        if not const_file_readable("/usr/bin/ldd"):
-            raise FileNotFound('FileNotFound: no ldd')
-        ldd_avail_check = True
-    return set([x.strip().split("\t")[0].split()[-1] for x in \
-        getstatusoutput('/usr/bin/ldd -r "%s"' % (elf_file,))[1].split("\n") \
-            if (x.find("undefined symbol:") != -1)])
+    proc = None
+    args = ("/usr/bin/ldd", "-r", elf_file)
+    out = None
+
+    try:
+        proc = subprocess.Popen(
+            args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
+        exit_st = proc.wait()
+        if exit_st != 0:
+            raise FileNotFound("ldd error")
+
+        out = ""
+        while True:
+            # make sure that stdout is flushed and won't block
+            proc.stdout.read()
+            tout = proc.stderr.read()
+            out += tout
+            if not tout:
+                break
+
+    except (OSError, IOError) as err:
+        if err.errno != errno.ENOENT:
+            raise
+        raise FileNotFound("/usr/bin/ldd not found")
+
+    finally:
+        if proc is not None:
+            proc.stderr.close()
+            proc.stdout.close()
+
+    outcome = set()
+    if out is not None:
+        for line in out.split("\n"):
+            if line.startswith("undefined symbol: "):
+                symbol = line.split("\t")[0].split()[-1]
+                outcome.add(symbol)
+
+    return outcome
 
 readelf_avail_check = False
 

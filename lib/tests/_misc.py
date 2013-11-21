@@ -67,6 +67,10 @@ def get_test_video_file():
     test_pkg = "test.flv"
     return get_test_generic_package(test_pkg)
 
+def get_test_so_1():
+    test_pkg = "sip.so"
+    return get_test_generic_package(test_pkg)
+
 def get_test_packages_and_atoms():
     data = {
         'media-gfx/pdf2svg': get_test_entropy_package5(),
