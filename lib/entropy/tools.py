@@ -2697,7 +2697,7 @@ def read_elf_real_dynamic_libraries(elf_file):
     global ldd_avail_check
     if not ldd_avail_check:
         if not const_file_readable("/usr/bin/ldd"):
-            FileNotFound('FileNotFound: no ldd')
+            raise FileNotFound('FileNotFound: no ldd')
     sts, output = getstatusoutput('/usr/bin/ldd "%s"' % (elf_file,))
     if sts != 0:
         # garbage file
@@ -2718,7 +2718,7 @@ def read_elf_broken_symbols(elf_file):
     global ldd_avail_check
     if not ldd_avail_check:
         if not const_file_readable("/usr/bin/ldd"):
-            FileNotFound('FileNotFound: no ldd')
+            raise FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in \
         getstatusoutput('/usr/bin/ldd -r "%s"' % (elf_file,))[1].split("\n") \
@@ -2738,7 +2738,7 @@ def read_elf_linker_paths(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
         if not const_file_readable("/usr/bin/readelf"):
-            FileNotFound('FileNotFound: no readelf')
+            raise FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     data = [x.strip().split()[-1][1:-1].split(":") for x in \
         getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not \
