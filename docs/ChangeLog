@@ -1,3 +1,51 @@
+commit efeefa1d7ce7481e004323170bc29162dc89ea74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 13:05:33 2013 +0100
+
+    Release Entropy 234
+
+commit 24ff697eae45e563d3bf12e19eb769ab6f7b7055
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 13:05:16 2013 +0100
+
+    [todo] update TODO
+
+commit 161dbed43d76fb4bc4df30318c8de6e9e5f63569
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 13:00:11 2013 +0100
+
+    [todo] update TODO
+
+commit 14f4b7b8c5a2b17cc7b29e0913e82e07cb326f09
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 12:39:05 2013 +0100
+
+    [entropy.spm] PortagePlugin: drop the old license setup code, fix portage >=2.2.0_alpha189 support
+    
+    The old license setup code is no longer needed since 2009. EAPI < 3
+    use ACCEPT_PROPERTIES="* -interactive", which is now set in the environment
+    (note that we may want to reduce the scope of the variable to portage.config
+    in the future). EAPI >= 3 use ACCEPT_LICENSE. check_license() in
+    eutils.eclass is gone as well.
+
+commit 973dbc62e764ae7a1ec8bec18ac173871c2682a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 17:22:35 2013 +0100
+
+    [todo] update TODO
+
+commit 96ef5868f4b09bc7a4c6a12219d47a91e2788639
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 17:09:48 2013 +0100
+
+    [entropy.db] initial repository database support for preserved libraries
+
+commit 3c7fc6f4d09343c6ab2bb1cdcca2c7e421dee0aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 20 12:34:41 2013 +0100
+
+    Tagging Entropy version 233
+
 commit 66f146348849b89989563251e7642e0be5ce26ad
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Nov 20 12:34:41 2013 +0100
