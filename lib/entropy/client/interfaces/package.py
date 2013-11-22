@@ -4149,14 +4149,12 @@ class Package:
         if 'remove_installed_vanished' in self.pkgmeta:
             self._xterm_title += ' %s' % (_("Installed package vanished"),)
             self._entropy.set_title(self._xterm_title)
-            rc = self._vanished_step()
-            return rc
+            return self._vanished_step()
 
         if 'fetch_not_available' in self.pkgmeta:
             self._xterm_title += ' %s' % (_("Fetch not available"),)
             self._entropy.set_title(self._xterm_title)
-            rc = self._fetch_not_available_step()
-            return rc
+            return self._fetch_not_available_step()
 
         def do_fetch():
             self._xterm_title += ' %s: %s' % (
@@ -4188,8 +4186,10 @@ class Package:
 
         def do_multi_checksum():
             m_checksum_len = len(self.pkgmeta['multi_checksum_list'])
-            self._xterm_title += ' %s: %s %s' % (_("Multi Verification"),
-                m_checksum_len, ngettext("package", "packages", m_checksum_len),)
+            self._xterm_title += ' %s: %s %s' % (
+                _("Multi Verification"),
+                m_checksum_len,
+                ngettext("package", "packages", m_checksum_len),)
             self._entropy.set_title(self._xterm_title)
             return self._multi_checksum_step()
 
@@ -4211,9 +4211,6 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._unpack_step()
 
-        def do_remove_conflicts():
-            return self._removeconflict_step()
-
         def do_install():
             self._xterm_title += ' %s: %s' % (
                 _("Installing"),
@@ -4221,9 +4218,6 @@ class Package:
             )
             self._entropy.set_title(self._xterm_title)
             return self._install_step()
-
-        def do_install_clean():
-            return self._package_install_clean()
 
         def do_install_spm():
             return self._spm_install_package(
@@ -4285,12 +4279,6 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._post_remove_step()
 
-        def do_postremove_install():
-            return self._post_remove_step_install()
-
-        def do_postremove_remove():
-            return self._post_remove_step_remove()
-
         def do_config():
             self._xterm_title += ' %s: %s' % (
                 _("Configuring"),
@@ -4306,18 +4294,18 @@ class Package:
             "sources_fetch": do_sources_fetch,
             "checksum": do_checksum,
             "unpack": do_unpack,
-            "remove_conflicts": do_remove_conflicts,
+            "remove_conflicts": self._removeconflict_step,
             "install": do_install,
             "install_spm": do_install_spm,
-            "install_clean": do_install_clean,
+            "install_clean": self._package_install_clean,
             "remove": do_remove,
             "cleanup": do_cleanup,
             "postinstall": do_postinstall,
             "setup": do_setup,
             "preinstall": do_preinstall,
             "postremove": do_postremove,
-            "postremove_install": do_postremove_install,
-            "postremove_remove": do_postremove_remove,
+            "postremove_install": self._post_remove_step_install,
+            "postremove_remove": self._post_remove_step_remove,
             "preremove": do_preremove,
             "config": do_config,
         }
