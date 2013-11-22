@@ -322,11 +322,7 @@ class Package:
 
     def __init__(self, entropy_client):
 
-        if not isinstance(entropy_client, Client):
-            mytxt = "A valid Client instance or subclass is needed"
-            raise AttributeError(mytxt)
         self._entropy = entropy_client
-
         self._settings = SystemSettings()
         self.pkgmeta = {}
         self.__prepared = False
