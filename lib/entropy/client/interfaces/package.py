@@ -32,6 +32,7 @@ from entropy.fetchers import UrlFetcher
 import entropy.dep
 import entropy.tools
 
+
 class Package:
 
     class FileContentReader:
@@ -686,7 +687,8 @@ class Package:
                     red(self._get_url_name(best_mirror)),
                 )
                 if rc == -1:
-                    mytxt += " - %s." % (_("data not available on this mirror"),)
+                    mytxt += " - %s." % (
+                        _("data not available on this mirror"),)
                 elif rc == -2:
                     mirror_status.add_failing_mirror(best_mirror, 1)
                     mytxt += " - %s." % (_("wrong checksum"),)
@@ -1399,8 +1401,8 @@ class Package:
                         elif rc == -2:
                             mirror_status.add_failing_mirror(uri, 1)
                             error_message += " - %s." % (_("wrong checksum"),)
-                            # If file is fetched (with no resume) and its complete
-                            # better to enforce resume to False.
+                            # If file is fetched (with no resume) and its
+                            # complete better to enforce resume to False.
                             if (data_transfer < 1) and do_resume:
                                 error_message += " %s." % (
                                     _("Disabling resume"),)
@@ -2187,7 +2189,8 @@ class Package:
                 level = "warning",
                 header = red("   ## ")
             )
-            self._entropy.logger.log("[Package]", etpConst['logging']['normal_loglevel_id'],
+            self._entropy.logger.log(
+                "[Package]", etpConst['logging']['normal_loglevel_id'],
                 "Collision found during removal of %s - cannot overwrite" % (
                     path,)
             )
