@@ -246,9 +246,6 @@ def print_exception(silent = False, tb_data = None, all_frame_data = False):
 
     return data
 
-# Get the content of an online page
-# @returns content: if the file exists
-# @returns False: if the file is not found
 def get_remote_data(url, timeout = 5):
     """
     Fetch data at given URL (all the ones supported by Python urllib) and
