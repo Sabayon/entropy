@@ -32,295 +32,9 @@ from entropy.fetchers import UrlFetcher
 import entropy.dep
 import entropy.tools
 
+from . import _content as Content
 
-class Package:
-
-    class FileContentReader:
-
-        def __init__(self, path, enc=None):
-            if enc is None:
-                self._enc = etpConst['conf_encoding']
-            else:
-                self._enc = enc
-            self._cpath = path
-            self._f = None
-            self._eof = False
-
-        def _open_f(self):
-            # opening the file in universal newline mode
-            # fixes the readline() issues wrt
-            # truncated lines.
-            if isinstance(self._cpath, int):
-                self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "rU", self._enc)
-            else:
-                self._f = codecs.open(
-                    self._cpath, "rU", self._enc)
-
-        def __iter__(self):
-            # reset object status, this makes possible
-            # to reuse the iterator more than once
-            # restarting from the beginning. It is really
-            # important for scenarios where transactions
-            # have to be rolled back and replayed.
-            self.close()
-            self._open_f()
-            # reset EOF status on each new iteration
-            self._eof = False
-            return self
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_val, tb):
-            self.close()
-
-        def __next__(self):
-            return self.next()
-
-        def next(self):
-            if self._eof:
-                raise StopIteration()
-            if self._f is None:
-                self._open_f()
-
-            line = self._f.readline()
-            if not line:
-                self.close()
-                self._eof = True
-                raise StopIteration()
-
-            # non-deterministic BUG with
-            # ca-certificates and Python crappy
-            # API causes readline() to return
-            # partial lines when non ASCII cruft
-            # is on the line. This is probably a
-            # Python bug.
-            # Example of partial readline():
-            # 0|obj|/usr/share/ca-certificates/mozilla/NetLock_Arany_=Class_Gold=_F\xc3\x85
-            # and the next call:
-            # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
-            # Try to workaround it by reading ahead
-            # if line does not end with \n
-            # HOWEVER: opening the file in
-            # Universal Newline mode fixes it.
-            # But let's keep the check for QA.
-            # 2012-08-14: is has been observed that
-            # Universal Newline mode is not enough
-            # to avoid this issue.
-            while not line.endswith("\n"):
-                part_line = self._f.readline()
-                line += part_line
-                sys.stderr.write(
-                    "FileContentReader, broken readline()"
-                    ", executing fixup code\n")
-                sys.stderr.write("%s\n" % (repr(part_line),))
-                # break infinite loops
-                # and let it crash
-                if not part_line: # EOF
-                    break
-
-            _package_id, _ftype, _path = line[:-1].split("|", 2)
-            # must be legal or die!
-            _package_id = int(_package_id)
-            return _package_id, _path, _ftype
-
-        def close(self):
-            if self._f is not None:
-                self._f.close()
-                self._f = None
-
-    class FileContentWriter:
-
-        TMP_SUFFIX = "__filter_tmp"
-
-        def __init__(self, path, enc=None):
-            self._f = None
-            if enc is None:
-                self._enc = etpConst['conf_encoding']
-            else:
-                self._enc = enc
-            self._cpath = path
-            # callers expect that file is created
-            # on open object instantiation, don't
-            # remove this or things like os.rename()
-            # will fail
-            self._open_f()
-
-        def _open_f(self):
-            if isinstance(self._cpath, int):
-                self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "w", self._enc)
-            else:
-                self._f = codecs.open(
-                    self._cpath, "w", self._enc)
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_val, tb):
-            self.close()
-
-        def write(self, package_id, path, ftype):
-            if self._f is None:
-                self._open_f()
-
-            if package_id is not None:
-                self._f.write(str(package_id))
-            else:
-                self._f.write("0")
-            self._f.write("|")
-            self._f.write(ftype)
-            self._f.write("|")
-            self._f.write(path)
-            self._f.write("\n")
-
-        def close(self):
-            if self._f is not None:
-                self._f.flush()
-                self._f.close()
-                self._f = None
-
-    class FileContentSafetyWriter:
-
-        def __init__(self, path, enc=None):
-            self._f = None
-            if enc is None:
-                self._enc = etpConst['conf_encoding']
-            else:
-                self._enc = enc
-            self._cpath = path
-            # callers expect that file is created
-            # on open object instantiation, don't
-            # remove this or things like os.rename()
-            # will fail
-            self._open_f()
-
-        def _open_f(self):
-            if isinstance(self._cpath, int):
-                self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "w", self._enc)
-            else:
-                self._f = codecs.open(
-                    self._cpath, "w", self._enc)
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_val, tb):
-            self.close()
-
-        def write(self, path, sha256, mtime):
-            if self._f is None:
-                self._open_f()
-
-            self._f.write("%f" % (mtime,))
-            self._f.write("|")
-            self._f.write(sha256)
-            self._f.write("|")
-            self._f.write(path)
-            self._f.write("\n")
-
-        def close(self):
-            if self._f is not None:
-                self._f.flush()
-                self._f.close()
-                self._f = None
-
-    class FileContentSafetyReader:
-
-        def __init__(self, path, enc=None):
-            if enc is None:
-                self._enc = etpConst['conf_encoding']
-            else:
-                self._enc = enc
-            self._cpath = path
-            self._f = None
-            self._eof = False
-
-        def _open_f(self):
-            # opening the file in universal newline mode
-            # fixes the readline() issues wrt
-            # truncated lines.
-            if isinstance(self._cpath, int):
-                self._f = entropy.tools.codecs_fdopen(
-                    self._cpath, "rU", self._enc)
-            else:
-                self._f = codecs.open(
-                    self._cpath, "rU", self._enc)
-
-        def __iter__(self):
-            # reset object status, this makes possible
-            # to reuse the iterator more than once
-            # restarting from the beginning. It is really
-            # important for scenarios where transactions
-            # have to be rolled back and replayed.
-            self.close()
-            self._open_f()
-            # reset EOF status on each new iteration
-            self._eof = False
-            return self
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, exc_type, exc_val, tb):
-            self.close()
-
-        def __next__(self):
-            return self.next()
-
-        def next(self):
-            if self._eof:
-                raise StopIteration()
-            if self._f is None:
-                self._open_f()
-
-            line = self._f.readline()
-            if not line:
-                self.close()
-                self._eof = True
-                raise StopIteration()
-
-            # non-deterministic BUG with
-            # ca-certificates and Python crappy
-            # API causes readline() to return
-            # partial lines when non ASCII cruft
-            # is on the line. This is probably a
-            # Python bug.
-            # Example of partial readline():
-            # 0|obj|/usr/share/ca-certificates/mozilla/NetLock_Arany_=Class_Gold=_F\xc3\x85
-            # and the next call:
-            # \xc2\x91tan\xc3\x83\xc2\xbas\xc3\x83\xc2\xadtv\xc3\x83\xc2\xa1ny.crt\n
-            # Try to workaround it by reading ahead
-            # if line does not end with \n
-            # HOWEVER: opening the file in
-            # Universal Newline mode fixes it.
-            # But let's keep the check for QA.
-            # 2012-08-14: is has been observed that
-            # Universal Newline mode is not enough
-            # to avoid this issue.
-            while not line.endswith("\n"):
-                part_line = self._f.readline()
-                line += part_line
-                sys.stderr.write(
-                    "FileContentReader, broken readline()"
-                    ", executing fixup code\n")
-                sys.stderr.write("%s\n" % (repr(part_line),))
-                # break infinite loops
-                # and let it crash
-                if not part_line: # EOF
-                    break
-
-            _mtime, _sha256, _path = line[:-1].split("|", 2)
-            # must be legal or die!
-            _mtime = float(_mtime)
-            return _path, _sha256, _mtime
-
-        def close(self):
-            if self._f is not None:
-                self._f.close()
-                self._f = None
+class Package(object):
 
     def __init__(self, entropy_client):
 
@@ -2161,7 +1875,7 @@ class Package:
             # simulate a removecontent list/set object
             remove_content = []
             if self.pkgmeta['removecontent_file'] is not None:
-                remove_content = Package.FileContentReader(
+                remove_content = Content.FileContentReader(
                     self.pkgmeta['removecontent_file'])
 
             self._remove_content_from_system_loop(
@@ -2590,9 +2304,9 @@ class Package:
         data['content_safety'] = None
         try:
             # now we are ready to craft a 'content' iter object
-            data['content'] = Package.FileContentReader(
+            data['content'] = Content.FileContentReader(
                 content_file)
-            data['content_safety'] = Package.FileContentSafetyReader(
+            data['content_safety'] = Content.FileContentSafetyReader(
                 content_safety_file)
             package_id = inst_repo.handlePackage(
                 data, revision = data['revision'],
@@ -2632,7 +2346,7 @@ class Package:
         # in case of injected packages (SPM metadata might be
         # incomplete).
         self.pkgmeta['triggers']['install']['content'] = \
-            Package.FileContentReader(content_file)
+            Content.FileContentReader(content_file)
 
         return package_id
 
@@ -4488,7 +4202,7 @@ class Package:
             tmp_fd, tmp_path = const_mkstemp(
                 prefix="PackageContentSafety",
                 dir=tmp_dir)
-            with Package.FileContentSafetyWriter(tmp_fd) as tmp_f:
+            with Content.FileContentSafetyWriter(tmp_fd) as tmp_f:
                 for path, sha256, mtime in content_safety:
                     tmp_f.write(path, sha256, mtime)
 
@@ -4534,7 +4248,7 @@ class Package:
             tmp_fd, tmp_path = const_mkstemp(
                 prefix="PackageContent",
                 dir=tmp_dir)
-            with Package.FileContentWriter(tmp_fd) as tmp_f:
+            with Content.FileContentWriter(tmp_fd) as tmp_f:
                 for path, ftype in content:
                     if filter_splitdebug and not splitdebug:
                         # if filter_splitdebug is enabled, this
@@ -4576,15 +4290,15 @@ class Package:
         m = sorted_content length.
         """
         tmp_content_file = content_file + \
-            Package.FileContentWriter.TMP_SUFFIX
+            Content.FileContentWriter.TMP_SUFFIX
 
         sorted_ptr = 0
         _sorted_path = None
         _sorted_ftype = None
         _package_id = 0 # will be filled
         try:
-            with Package.FileContentWriter(tmp_content_file) as tmp_w:
-                with Package.FileContentReader(content_file) as tmp_r:
+            with Content.FileContentWriter(tmp_content_file) as tmp_w:
+                with Content.FileContentReader(content_file) as tmp_r:
                     for _package_id, _path, _ftype in tmp_r:
 
                         while True:
@@ -4636,10 +4350,10 @@ class Package:
         a filter to the path elements.
         """
         tmp_content_file = content_file + \
-            Package.FileContentWriter.TMP_SUFFIX
+            Content.FileContentWriter.TMP_SUFFIX
         try:
-            with Package.FileContentWriter(tmp_content_file) as tmp_w:
-                with Package.FileContentReader(content_file) as tmp_r:
+            with Content.FileContentWriter(tmp_content_file) as tmp_w:
+                with Content.FileContentReader(content_file) as tmp_r:
                     for _package_id, _path, _ftype in tmp_r:
                         if filter_func(_path):
                             tmp_w.write(_package_id, _path, _ftype)
