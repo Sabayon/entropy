@@ -73,11 +73,11 @@ class ConfigurationFiles(dict):
         spm = self._entropy.Spm()
 
         if mask:
-            config_protect |= set(misc_data['configprotectmask'])
+            config_protect |= misc_data['configprotectmask']
             # also read info from environment and merge here
             config_protect |= set(spm.get_merge_protected_paths_mask())
         else:
-            config_protect |= set(misc_data['configprotect'])
+            config_protect |= misc_data['configprotect']
             # also read info from environment and merge here
             config_protect |= set(spm.get_merge_protected_paths())
 
@@ -495,11 +495,11 @@ class FileUpdates:
         spm = self._entropy.Spm()
 
         if mask:
-            config_protect |= set(misc_data['configprotectmask'])
+            config_protect |= misc_data['configprotectmask']
             # also read info from environment and merge here
             config_protect |= set(spm.get_merge_protected_paths_mask())
         else:
-            config_protect |= set(misc_data['configprotect'])
+            config_protect |= misc_data['configprotect']
             # also read info from environment and merge here
             config_protect |= set(spm.get_merge_protected_paths())
 

@@ -568,18 +568,6 @@ def const_default_settings(rootdir):
         'forcedupdates': True,
         # collision protection option, see client.conf for more info
         'collisionprotect': 1,
-        # list of user specified CONFIG_PROTECT directories
-        # (see Gentoo manual to understand the meaining of this parameter)
-        'configprotect': [],
-        # list of user specified CONFIG_PROTECT_MASK directories
-        'configprotectmask': [],
-        # list of user specified configuration files that
-        # should be ignored and kept as they are
-        'configprotectskip': [],
-        # installed database CONFIG_PROTECT directories
-        'dbconfigprotect': [],
-        # installed database CONFIG_PROTECT_MASK directories
-        'dbconfigprotectmask': [],
         # this will be used to show the number of updated
         # files at the end of the processes
         'configprotectcounter': 0,

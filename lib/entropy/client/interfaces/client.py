@@ -529,9 +529,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'splitdebug_dirs': etpConst['splitdebug_dirs'],
             'multifetch': 1,
             'collisionprotect': etpConst['collisionprotect'],
-            'configprotect': etpConst['configprotect'][:],
-            'configprotectmask': etpConst['configprotectmask'][:],
-            'configprotectskip': etpConst['configprotectskip'][:],
+            'configprotect': set(),
+            'configprotectmask': set(),
+            'configprotectskip': set(),
             'autoprune_days': None, # disabled by default
             'edelta_support': False, # disabled by default
         }
@@ -619,15 +619,15 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         def _configprotect(setting):
             for opt in setting.split():
-                data['configprotect'].append(const_convert_to_unicode(opt))
+                data['configprotect'].add(const_convert_to_unicode(opt))
 
         def _configprotectmask(setting):
             for opt in setting.split():
-                data['configprotectmask'].append(const_convert_to_unicode(opt))
+                data['configprotectmask'].add(const_convert_to_unicode(opt))
 
         def _configprotectskip(setting):
             for opt in setting.split():
-                data['configprotectskip'].append(
+                data['configprotectskip'].add(
                     etpConst['systemroot'] + const_convert_to_unicode(opt))
 
         settings_map = {
