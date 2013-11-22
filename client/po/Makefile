@@ -29,6 +29,7 @@ PYFILES = $(wildcard ../../lib/entropy/db/*.py) \
 	$(wildcard ../../lib/entropy/client/services/*.py) \
 	$(wildcard ../../lib/entropy/client/*.py) \
 	$(wildcard ../../lib/entropy/client/interfaces/*.py) \
+	$(wildcard ../../lib/entropy/client/interfaces/package/*.py) \
 	$(wildcard ../../lib/entropy/*.py) \
 	$(wildcard ../../client/*.py) \
 	$(wildcard ../../client/solo/*.py) \

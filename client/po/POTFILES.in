@@ -34,13 +34,13 @@
 ../lib/entropy/client/interfaces/__init__.py
 ../lib/entropy/client/interfaces/methods.py
 ../lib/entropy/client/interfaces/noticeboard.py
-../lib/entropy/client/interfaces/package.py
 ../lib/entropy/client/interfaces/loaders.py
 ../lib/entropy/client/interfaces/db.py
 ../lib/entropy/client/interfaces/repository.py
 ../lib/entropy/client/interfaces/sets.py
 ../lib/entropy/client/interfaces/dep.py
 ../lib/entropy/client/interfaces/qa.py
+../lib/entropy/client/interfaces/package/__init__.py
 ../lib/entropy/fetchers.py
 ../lib/entropy/i18n.py
 ../lib/entropy/cache.py
