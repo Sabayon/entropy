@@ -1895,6 +1895,18 @@ class Package:
 
         return 0
 
+    def _setup_config_protect_and_mask(self, installed_package_id):
+        """
+        Setup the config_protect+mask metadata object.
+        Make sure to call this before the package goes away from the
+        repository.
+        """
+        protect = self.__get_installed_package_config_protect(
+            installed_package_id)
+        mask = self.__get_installed_package_config_protect(
+            installed_package_id, mask = True)
+        self.pkgmeta['config_protect+mask'] = (protect, mask)
+
     def __remove_package(self):
 
         self._entropy.clear_cache()
@@ -1916,15 +1928,19 @@ class Package:
         inst_repo = self._entropy.installed_repository()
         automerge_metadata = inst_repo.retrieveAutomergefiles(
             self.pkgmeta['removepackage_id'], get_dict = True)
-        inst_repo.removePackage(
-            self.pkgmeta['removepackage_id'])
+        # setup config_protect and config_protect_mask metadata before it's
+        # too late.
+        self._setup_config_protect_and_mask(self.pkgmeta['removepackage_id'])
+
+        inst_repo.removePackage(self.pkgmeta['removepackage_id'])
 
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
         inst_repo.commit()
 
-        self._remove_content_from_system(self.pkgmeta['removepackage_id'],
-            automerge_metadata)
+        self._remove_content_from_system(
+            self.pkgmeta['removepackage_id'],
+            automerge_metadata = automerge_metadata)
 
         return 0
 
@@ -2119,10 +2135,6 @@ class Package:
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         sys_settings = self._settings
-        protect = self.__get_installed_package_config_protect(
-            installed_package_id)
-        mask = self.__get_installed_package_config_protect(installed_package_id,
-            mask = True)
 
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -2133,6 +2145,12 @@ class Package:
         directories_cache = set()
         not_removed_due_to_collisions = set()
         colliding_path_messages = set()
+
+        protect_mask = self.pkgmeta['config_protect+mask']
+        if protect_mask is not None:
+            protect, mask = protect_mask
+        else:
+            protect, mask = set(), set()
 
         remove_content = None
         try:
@@ -2515,6 +2533,12 @@ class Package:
             self.__filter_out_files_installed_on_diff_path(
                 self.pkgmeta['removecontent_file'],
                 items_installed)
+
+        # setup config_protect and config_protect_mask metadata before it's
+        # too late.
+        installed_package_id = self.pkgmeta['removepackage_id']
+        if installed_package_id != -1:
+            self._setup_config_protect_and_mask(installed_package_id)
 
         # filter out files not installed from content metadata
         # these include splitdebug files, when splitdebug is
@@ -3956,8 +3980,11 @@ class Package:
             level = "info",
             header = red("   ## ")
         )
-        self._remove_content_from_system(self.pkgmeta['removepackage_id'],
+
+        self._remove_content_from_system(
+            self.pkgmeta['removepackage_id'],
             automerge_metadata = self.pkgmeta['already_protected_config_files'])
+
         return 0
 
     def _post_remove_step_install(self):
@@ -4694,6 +4721,10 @@ class Package:
         self.pkgmeta['affected_directories'] = set()
         self.pkgmeta['affected_infofiles'] = set()
 
+        # this will be set before calling removePackage() if we have
+        # a package to remove
+        self.pkgmeta['config_protect+mask'] = None
+
         self.pkgmeta['triggers']['remove'] = \
             inst_repo.getTriggerData(package_id)
         if self.pkgmeta['triggers']['remove'] is None:
@@ -4927,6 +4958,10 @@ class Package:
 
         self.pkgmeta['pkgdbpath'] = os.path.join(self.pkgmeta['unpackdir'],
             "edb/pkg.db")
+
+        # this will be set before calling handlePackage()
+        # if we have a package to remove
+        self.pkgmeta['config_protect+mask'] = None
 
         if self.pkgmeta['removepackage_id'] == -1:
             # nothing to remove, fresh install
