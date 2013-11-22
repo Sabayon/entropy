@@ -24,7 +24,6 @@ from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _, ngettext
 from entropy.output import brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, teal
-from entropy.client.interfaces.client import Client
 from entropy.client.mirrors import StatusInterface
 from entropy.core.settings.base import SystemSettings
 from entropy.security import Repository as RepositorySecurity
@@ -135,6 +134,7 @@ class Package:
         TMP_SUFFIX = "__filter_tmp"
 
         def __init__(self, path, enc=None):
+            self._f = None
             if enc is None:
                 self._enc = etpConst['conf_encoding']
             else:
@@ -183,6 +183,7 @@ class Package:
     class FileContentSafetyWriter:
 
         def __init__(self, path, enc=None):
+            self._f = None
             if enc is None:
                 self._enc = etpConst['conf_encoding']
             else:
@@ -448,7 +449,7 @@ class Package:
                 return {}
             ck_map = {}
             ck_map_id = 0
-            for pkg_id, repo, url, dest_path, cksum in url_data:
+            for _pkg_id, _repo, _url, _dest_path, cksum in url_data:
                 ck_map_id += 1
                 if cksum is not None:
                     ck_map[ck_map_id] = cksum
@@ -460,7 +461,7 @@ class Package:
         diff_map = {}
 
         # setup directories
-        for pkg_id, repo, url, dest_path, cksum in url_data:
+        for pkg_id, repo, url, dest_path, _cksum in url_data:
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
                 os.makedirs(dest_dir, 0o775)
@@ -479,7 +480,7 @@ class Package:
         if url_data:
 
             url_path_list = []
-            for pkg_id, repo, url, dest_path, cksum in url_data:
+            for pkg_id, repo, url, dest_path, _cksum in url_data:
                 url_path_list.append((url, dest_path,))
                 self._setup_differential_download(
                     self._entropy._multiple_url_fetcher, url, resume, dest_path,
@@ -546,7 +547,7 @@ class Package:
         excluded_data = self._settings['repositories']['excluded']
 
         repo_uris = {}
-        for pkg_id, repo, fname, cksum, signatures in download_list:
+        for pkg_id, repo, fname, cksum, _signatures in download_list:
             repo_db = self._entropy.open_repository(repo)
             # grab original repo, if any and use it if available
             # this is done in order to support "equo repo merge" feature
@@ -632,7 +633,7 @@ class Package:
             return True
 
         def show_download_summary(down_list):
-            for pkg_id, repo, fname, cksum, signatures in down_list:
+            for _pkg_id, repo, fname, _cksum, _signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -648,7 +649,7 @@ class Package:
                 )
 
         def show_successful_download(down_list, data_transfer):
-            for pkg_id, repo, fname, cksum, signatures in down_list:
+            for _pkg_id, repo, fname, _cksum, _signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -676,7 +677,7 @@ class Package:
             )
 
         def show_download_error(down_list, rc):
-            for pkg_id, repo, fname, cksum, signatures in down_list:
+            for _pkg_id, repo, _fname, _cksum, _signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -707,7 +708,7 @@ class Package:
 
         def remove_failing_mirrors(repos):
             for repo in repos:
-                best_mirror = get_best_mirror(repo)
+                get_best_mirror(repo)
                 if remaining[repo]:
                     remaining[repo].pop(0)
 
@@ -721,7 +722,7 @@ class Package:
             while True:
 
                 fetch_files_list = []
-                for pkg_id, repo, fname, cksum, signatures in my_download_list:
+                for pkg_id, repo, fname, cksum, _signatures in my_download_list:
                     best_mirror = get_best_mirror(repo)
                     # set working mirror, dont care if its None
                     mirror_status.set_working_mirror(best_mirror)
@@ -1073,7 +1074,7 @@ class Package:
         max_tries = 2
         edelta_approved = False
         data_transfer = 0
-        download_plan = [(edelta_url, edelta_save_path) for x in \
+        download_plan = [(edelta_url, edelta_save_path) for _x in \
             range(max_tries)]
         delta_resume = resume
         fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
@@ -1942,7 +1943,6 @@ class Package:
         inst_repo.commit()
 
         self._remove_content_from_system(
-            self.pkgmeta['removepackage_id'],
             automerge_metadata = automerge_metadata)
 
         return 0
@@ -1958,7 +1958,7 @@ class Package:
         inst_repo = self._entropy.installed_repository()
         info_dirs = self._get_info_directories()
 
-        for _pkg_id, item, ftype in remove_content:
+        for _pkg_id, item, _ftype in remove_content:
 
             if not item:
                 continue # empty element??
@@ -1988,7 +1988,7 @@ class Package:
             if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
-                (in_mask, protected, x,
+                (in_mask, protected, _x,
                  do_continue) = self._handle_config_protect(
                      protect, mask, protectskip, None, protected_item_test,
                      do_allocation_check = False, do_quiet = True
@@ -2123,13 +2123,10 @@ class Package:
 
                 directories_cache.add(dirobj)
 
-    def _remove_content_from_system(self, installed_package_id,
-        automerge_metadata = None):
+    def _remove_content_from_system(self, automerge_metadata = None):
         """
         Remove installed package content (files/directories) from live system.
 
-        @param installed_package_id: Entropy Repository package identifier
-        @type installed_package_id: int
         @keyword automerge_metadata: Entropy "automerge metadata"
         @type automerge_metadata: dict
         """
@@ -3521,7 +3518,7 @@ class Package:
             header = red("   ## ")
         )
 
-        rc, data_transfer, resumed = self.__fetch_file(
+        rc, data_transfer, _resumed = self.__fetch_file(
             url,
             dest_file,
             digest = None,
@@ -3658,7 +3655,7 @@ class Package:
             header = red("   ## ")
         )
 
-        for pkg_id, repo, fname, cksum, signatures in err_list:
+        for _pkg_id, repo, fname, cksum, _signatures in err_list:
             self._entropy.output(
                 "[%s|%s] %s" % (blue(repo), darkgreen(cksum), darkred(fname),),
                 importance = 1,
@@ -3990,7 +3987,6 @@ class Package:
         )
 
         self._remove_content_from_system(
-            self.pkgmeta['removepackage_id'],
             automerge_metadata = self.pkgmeta['already_protected_config_files'])
 
         return 0
@@ -4373,6 +4369,7 @@ class Package:
         # this is a SystemSettings.CachingList object
         splitdebug = settings['splitdebug']
         splitdebug_mask = settings['splitdebug_mask']
+        _pkg_id, pkg_repo = pkg_match
 
         def _generate_cache(lst_obj):
             # compute the package matching then
@@ -4383,7 +4380,7 @@ class Package:
                     if pkg_repo not in repo_ids:
                         # skip entry, not me
                         continue
-                dep_matches, rc = entropy_client.atom_match(
+                dep_matches, _rc = entropy_client.atom_match(
                     dep, multi_match=True, multi_repo=True)
                 pkg_matches |= dep_matches
 
@@ -4397,9 +4394,7 @@ class Package:
             enabled = True
         else:
             # whitelist support
-            pkg_id, pkg_repo = pkg_match
             pkg_matches = splitdebug.get()
-
             if pkg_matches is None:
                 pkg_matches = _generate_cache(splitdebug)
 
@@ -4409,9 +4404,7 @@ class Package:
         # if it's enabled, check whether it's blacklisted
         if enabled:
             # blacklist support
-            pkg_id, pkg_repo = pkg_match
             pkg_matches = splitdebug_mask.get()
-
             if pkg_matches is None:
                 # compute the package matching
                 pkg_matches = _generate_cache(splitdebug_mask)
@@ -4428,7 +4421,7 @@ class Package:
         """
         return Package.splitdebug_enabled(self._entropy, pkg_match)
 
-    def __get_base_metadata(self, action):
+    def __get_base_metadata(self, _action):
         def get_splitdebug_data():
             sys_set_plg_id = \
                 etpConst['system_settings_plugins_ids']['client_plugin']
@@ -4785,7 +4778,7 @@ class Package:
         inst_repo = self._entropy.installed_repository()
 
         for conflict in conflicts:
-            my_m_id, my_m_rc = inst_repo.atomMatch(conflict)
+            my_m_id, _my_m_rc = inst_repo.atomMatch(conflict)
             if my_m_id != -1:
                 # check if the package shares the same slot
                 match_data = dbconn.retrieveKeySlot(m_id)
@@ -4802,7 +4795,7 @@ class Package:
     def __setup_package_to_remove(self, package_key, slot):
 
         inst_repo = self._entropy.installed_repository()
-        inst_package_id, inst_rc = inst_repo.atomMatch(package_key,
+        inst_package_id, _inst_rc = inst_repo.atomMatch(package_key,
             matchSlot = slot)
 
         if inst_package_id != -1:
