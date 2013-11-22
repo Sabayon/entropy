@@ -1948,9 +1948,10 @@ class Package:
         return 0
 
     def _remove_content_from_system_loop(
-        self, remove_content, directories, directories_cache,
-        not_removed_due_to_collisions, colliding_path_messages,
-        automerge_metadata, col_protect, protect, mask, sys_root):
+            self, remove_content, directories, directories_cache,
+            not_removed_due_to_collisions, colliding_path_messages,
+            automerge_metadata, col_protect, protect, mask, protectskip,
+            sys_root):
         """
         Body of the _remove_content_from_system() method.
         """
@@ -1987,11 +1988,11 @@ class Package:
             if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
-                in_mask, protected, x, do_continue = \
-                    self._handle_config_protect(
-                        protect, mask, None, protected_item_test,
-                        do_allocation_check = False, do_quiet = True
-                    )
+                (in_mask, protected, x,
+                 do_continue) = self._handle_config_protect(
+                     protect, mask, protectskip, None, protected_item_test,
+                     do_allocation_check = False, do_quiet = True
+                 )
 
                 if do_continue:
                     protected = True
@@ -2154,6 +2155,7 @@ class Package:
             protect, mask = protect_mask
         else:
             protect, mask = set(), set()
+        protectskip = self._get_config_protect_skip()
 
         remove_content = None
         try:
@@ -2166,7 +2168,8 @@ class Package:
             self._remove_content_from_system_loop(
                 remove_content, directories, directories_cache,
                 not_removed_due_to_collisions, colliding_path_messages,
-                automerge_metadata, col_protect, protect, mask, sys_root)
+                automerge_metadata, col_protect, protect, mask, protectskip,
+                sys_root)
 
         finally:
             if hasattr(remove_content, "close"):
@@ -2691,6 +2694,10 @@ class Package:
         """
         Return configuration protection (or mask) metadata for the given
         package.
+        This method should not be used as source for storing metadata into
+        repositories since the returned objects may not be decoded in utf-8.
+        Data returned by this method is expected to be used only by internal
+        functions.
         """
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[cl_id]['misc']
@@ -2706,7 +2713,29 @@ class Package:
         config = set(("%s%s" % (root, path) for path in paths))
         config.update(misc_data[misc_key])
 
+        # os.* methods in Python 2.x do not expect unicode strings
+        # This set of data is only used by _handle_config_protect atm.
+        if not const_is_python3():
+            config = set((const_convert_to_rawstring(x) for x in config))
+
         return config
+
+    def _get_config_protect_skip(self):
+        """
+        Return the configuration protection path set.
+        """
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        client_settings = self._settings[sys_set_plg_id]
+        misc_settings = client_settings['misc']
+
+        protectskip = misc_settings['configprotectskip']
+        if not const_is_python3():
+            protectskip = set((
+                const_convert_to_rawstring(
+                    x, from_enctype = etpConst['conf_encoding']) for x in
+                misc_settings['configprotectskip']))
+        return protectskip
 
     def __get_sys_root(self):
         return self.pkgmeta.get('unittest_root', '') + \
@@ -2719,6 +2748,7 @@ class Package:
         protect = self._get_config_protect(repo, self.pkgmeta['package_id'])
         mask = self._get_config_protect(repo, self.pkgmeta['package_id'],
                                         mask = True)
+        protectskip = self._get_config_protect_skip()
 
         # support for unit testing settings
         sys_root = self.__get_sys_root()
@@ -2973,8 +3003,9 @@ class Package:
             prot_old_tofile = const_convert_to_unicode(prot_old_tofile)
 
             pre_tofile = tofile[:]
-            in_mask, protected, tofile, do_return = \
-                self._handle_config_protect(protect, mask, fromfile, tofile)
+            (in_mask, protected,
+             tofile, do_return) = self._handle_config_protect(
+                 protect, mask, protectskip, fromfile, tofile)
 
             # collect new config automerge data
             if in_mask and os.path.exists(fromfile):
@@ -3238,8 +3269,10 @@ class Package:
             return _path not in second_pass_removal
         Package._filter_content_file(content_file, _filter)
 
-    def _handle_config_protect(self, protect, mask, fromfile, tofile,
-        do_allocation_check = True, do_quiet = False):
+    def _handle_config_protect(self, protect, mask, protectskip,
+                               fromfile, tofile,
+                               do_allocation_check = True,
+                               do_quiet = False):
         """
         Handle configuration file protection. This method contains the logic
         for determining if a file should be protected from overwrite.
@@ -3247,14 +3280,12 @@ class Package:
         protected = False
         do_continue = False
         in_mask = False
-        encoded_protect = [const_convert_to_rawstring(x) for x in protect]
-        encoded_mask = [const_convert_to_rawstring(x) for x in mask]
 
-        if tofile in encoded_protect:
+        if tofile in protect:
             protected = True
             in_mask = True
 
-        elif os.path.dirname(tofile) in encoded_protect:
+        elif os.path.dirname(tofile) in protect:
             protected = True
             in_mask = True
 
@@ -3262,7 +3293,7 @@ class Package:
             tofile_testdir = os.path.dirname(tofile)
             old_tofile_testdir = None
             while tofile_testdir != old_tofile_testdir:
-                if tofile_testdir in encoded_protect:
+                if tofile_testdir in protect:
                     protected = True
                     in_mask = True
                     break
@@ -3271,11 +3302,11 @@ class Package:
 
         if protected: # check if perhaps, file is masked, so unprotected
 
-            if tofile in encoded_mask:
+            if tofile in mask:
                 protected = False
                 in_mask = False
 
-            elif os.path.dirname(tofile) in encoded_mask:
+            elif os.path.dirname(tofile) in mask:
                 protected = False
                 in_mask = False
 
@@ -3283,7 +3314,7 @@ class Package:
                 tofile_testdir = os.path.dirname(tofile)
                 old_tofile_testdir = None
                 while tofile_testdir != old_tofile_testdir:
-                    if tofile_testdir in encoded_mask:
+                    if tofile_testdir in mask:
                         protected = False
                         in_mask = False
                         break
@@ -3334,18 +3365,8 @@ class Package:
         # file is protected  #
         ##__________________##
 
-        sys_set_plg_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
-        client_settings = self._settings[sys_set_plg_id]
-        misc_settings = client_settings['misc']
-        encoded_protectskip = [
-            # this comes from a config file, so it's utf-8 encoded
-            const_convert_to_rawstring(
-                x, from_enctype = etpConst['conf_encoding'])
-            for x in misc_settings['configprotectskip']]
-
         # check if protection is disabled for this element
-        if tofile in encoded_protectskip:
+        if tofile in protectskip:
             self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
