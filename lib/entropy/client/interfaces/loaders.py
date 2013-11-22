@@ -27,14 +27,13 @@ class LoadersMixin:
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         from entropy.client.interfaces.sets import Sets
-        from entropy.client.misc import FileUpdates, ConfigurationUpdates
+        from entropy.client.misc import ConfigurationUpdates
         from entropy.client.services.interfaces import \
             ClientWebServiceFactory, RepositoryWebServiceFactory
         self.__package_loader = Package
         self.__repository_loader = Repository
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
-        self.__package_files_loader = FileUpdates
         self.__configuration_updates_loader = ConfigurationUpdates
         self.__webservice_factory = ClientWebServiceFactory
         self.__repo_webservice_factory = RepositoryWebServiceFactory
@@ -148,17 +147,8 @@ class LoadersMixin:
         """
         return self.__package_loader(self)
 
-    def PackageFileUpdates(self, repository_ids = None):
         """
-        @deprecated: use ConfigurationUpdates()
-
-        @keyword repository_ids: list of valid repository identifiers from
-            where reading the list of protected directories and files
-        @type repository_ids: list
-        @rtype: entropy.client.misc.FileUpdates
         """
-        return self.__package_files_loader(self,
-            repository_ids = repository_ids)
 
     def ConfigurationUpdates(self):
         """

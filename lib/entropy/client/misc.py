@@ -15,13 +15,10 @@ import sys
 import shutil
 import subprocess
 
-from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
-from entropy.client.interfaces import Client
-from entropy.exceptions import CacheCorruptionError
 from entropy.const import etpConst, const_convert_to_rawstring, \
-    const_convert_to_unicode, const_debug_write, const_file_readable
-from entropy.output import darkred, darkgreen, red, brown, blue
+    const_convert_to_unicode, const_debug_write
+from entropy.output import darkred, darkgreen, brown
 from entropy.tools import getstatusoutput, rename_keep_permissions
 from entropy.i18n import _
 
@@ -177,8 +174,7 @@ class ConfigurationFiles(dict):
         # requires manual merge
         return False
 
-    def _load_maybe_add(self, currentdir, item, filepath,
-                        scanfile, number):
+    def _load_maybe_add(self, currentdir, item, filepath, number):
         """
         Scan given path and store config file update information
         if needed.
@@ -271,7 +267,7 @@ class ConfigurationFiles(dict):
                 path = os.path.dirname(path)
                 scanfile = True
 
-            for currentdir, subdirs, files in os.walk(path):
+            for currentdir, _subdirs, files in os.walk(path):
                 for item in files:
                     if scanfile:
                         if path != item:
@@ -295,7 +291,7 @@ class ConfigurationFiles(dict):
                     name_cache.add(filepath)
 
                     self._load_maybe_add(
-                        currentdir, item, filepath, scanfile, number)
+                        currentdir, item, filepath, number)
 
     def _backup(self, dest_path):
         """
