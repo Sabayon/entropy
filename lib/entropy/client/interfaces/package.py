@@ -1895,16 +1895,18 @@ class Package:
 
         return 0
 
-    def _setup_config_protect_and_mask(self, installed_package_id):
+    def _setup_config_protect_and_mask(self, installed_repository,
+                                       installed_package_id):
         """
         Setup the config_protect+mask metadata object.
         Make sure to call this before the package goes away from the
         repository.
         """
-        protect = self.__get_installed_package_config_protect(
-            installed_package_id)
-        mask = self.__get_installed_package_config_protect(
-            installed_package_id, mask = True)
+        protect = self._get_config_protect(
+            installed_repository, installed_package_id)
+        mask = self._get_config_protect(
+            installed_repository, installed_package_id, mask = True)
+
         self.pkgmeta['config_protect+mask'] = (protect, mask)
 
     def __remove_package(self):
@@ -1930,7 +1932,8 @@ class Package:
             self.pkgmeta['removepackage_id'], get_dict = True)
         # setup config_protect and config_protect_mask metadata before it's
         # too late.
-        self._setup_config_protect_and_mask(self.pkgmeta['removepackage_id'])
+        self._setup_config_protect_and_mask(
+            inst_repo, self.pkgmeta['removepackage_id'])
 
         inst_repo.removePackage(self.pkgmeta['removepackage_id'])
 
@@ -2420,8 +2423,7 @@ class Package:
         Copy package from repository to installed packages one.
         """
 
-        def _merge_removecontent(repo, _package_id):
-            inst_repo = self._entropy.installed_repository()
+        def _merge_removecontent(inst_repo, repo, _package_id):
             # NOTE: this could be a source of memory consumption
             # but generally, the difference between two contents
             # is really small
@@ -2449,7 +2451,7 @@ class Package:
                     self.pkgmeta['removecontent_file'],
                     content_diff, _cmp_func)
 
-        # fetch info
+        inst_repo = self._entropy.installed_repository()
         smart_pkg = self.pkgmeta['smartpackage']
         dbconn = self._entropy.open_repository(self.pkgmeta['repository'])
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
@@ -2477,7 +2479,8 @@ class Package:
 
             if self.pkgmeta['removepackage_id'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
-                _merge_removecontent(dbconn, self.pkgmeta['package_id'])
+                _merge_removecontent(
+                    inst_repo, dbconn, self.pkgmeta['package_id'])
 
         else:
 
@@ -2515,7 +2518,7 @@ class Package:
 
             if self.pkgmeta['removepackage_id'] != -1 and \
                     self.pkgmeta['removecontent_file'] is not None:
-                _merge_removecontent(pkg_dbconn, pkg_package_id)
+                _merge_removecontent(inst_repo, pkg_dbconn, pkg_package_id)
 
             pkg_dbconn.close()
 
@@ -2538,7 +2541,8 @@ class Package:
         # too late.
         installed_package_id = self.pkgmeta['removepackage_id']
         if installed_package_id != -1:
-            self._setup_config_protect_and_mask(installed_package_id)
+            self._setup_config_protect_and_mask(
+                inst_repo, installed_package_id)
 
         # filter out files not installed from content metadata
         # these include splitdebug files, when splitdebug is
@@ -2578,8 +2582,6 @@ class Package:
         # and accepted extra_download items (in case of splitdebug being
         # disable, we're not going to add those entries, for example)
         data['extra_download'] = self.pkgmeta['extra_download']
-
-        inst_repo = self._entropy.installed_repository()
 
         data['content'] = None
         data['content_safety'] = None
@@ -2685,42 +2687,26 @@ class Package:
 
         del contents
 
-    def __get_package_match_config_protect(self, mask = False):
-
-        package_id, repoid = self._package_match
-        dbconn = self._entropy.open_repository(repoid)
+    def _get_config_protect(self, entropy_repository, package_id, mask = False):
+        """
+        Return configuration protection (or mask) metadata for the given
+        package.
+        """
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[cl_id]['misc']
+
         if mask:
-            config_protect = set(dbconn.retrieveProtectMask(package_id).split())
-            config_protect |= set(misc_data['configprotectmask'])
+            paths = entropy_repository.retrieveProtectMask(package_id).split()
+            misc_key = "configprotectmask"
         else:
-            config_protect = set(dbconn.retrieveProtect(package_id).split())
-            config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
+            paths = entropy_repository.retrieveProtect(package_id).split()
+            misc_key = "configprotect"
 
-        return sorted(config_protect)
+        root = etpConst['systemroot']
+        config = set(("%s%s" % (root, path) for path in paths))
+        config.update(misc_data[misc_key])
 
-    def __get_installed_package_config_protect(self, installed_package_id,
-        mask = False):
-
-        inst_repo = self._entropy.installed_repository()
-        if inst_repo is None:
-            return []
-
-        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self._settings[cl_id]['misc']
-        if mask:
-            _pmask = inst_repo.retrieveProtectMask(installed_package_id).split()
-            config_protect = set(_pmask)
-            config_protect |= set(misc_data['configprotectmask'])
-        else:
-            _protect = inst_repo.retrieveProtect(installed_package_id).split()
-            config_protect = set(_protect)
-            config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
-
-        return sorted(config_protect)
+        return config
 
     def __get_sys_root(self):
         return self.pkgmeta.get('unittest_root', '') + \
@@ -2729,8 +2715,10 @@ class Package:
     def _move_image_to_system(self, items_installed, items_not_installed):
 
         # load CONFIG_PROTECT and its mask
-        protect = self.__get_package_match_config_protect()
-        mask = self.__get_package_match_config_protect(mask = True)
+        repo = self._entropy.open_repository(self.pkgmeta['repository'])
+        protect = self._get_config_protect(repo, self.pkgmeta['package_id'])
+        mask = self._get_config_protect(repo, self.pkgmeta['package_id'],
+                                        mask = True)
 
         # support for unit testing settings
         sys_root = self.__get_sys_root()
@@ -3256,11 +3244,11 @@ class Package:
         Handle configuration file protection. This method contains the logic
         for determining if a file should be protected from overwrite.
         """
-
         protected = False
         do_continue = False
         in_mask = False
         encoded_protect = [const_convert_to_rawstring(x) for x in protect]
+        encoded_mask = [const_convert_to_rawstring(x) for x in mask]
 
         if tofile in encoded_protect:
             protected = True
@@ -3282,13 +3270,12 @@ class Package:
                 tofile_testdir = os.path.dirname(tofile_testdir)
 
         if protected: # check if perhaps, file is masked, so unprotected
-            newmask = [const_convert_to_rawstring(x) for x in mask]
 
-            if tofile in newmask:
+            if tofile in encoded_mask:
                 protected = False
                 in_mask = False
 
-            elif os.path.dirname(tofile) in newmask:
+            elif os.path.dirname(tofile) in encoded_mask:
                 protected = False
                 in_mask = False
 
@@ -3296,7 +3283,7 @@ class Package:
                 tofile_testdir = os.path.dirname(tofile)
                 old_tofile_testdir = None
                 while tofile_testdir != old_tofile_testdir:
-                    if tofile_testdir in newmask:
+                    if tofile_testdir in encoded_mask:
                         protected = False
                         in_mask = False
                         break
