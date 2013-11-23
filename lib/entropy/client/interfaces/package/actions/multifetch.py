@@ -80,8 +80,6 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         metadata['edelta_support'] = misc_settings['edelta_support']
 
         metadata['matches'] = self._package_matches
-        metadata['atoms'] = []
-        metadata['repository_atoms'] = {}
 
         temp_fetch_list = []
         temp_checksum_list = []
@@ -118,11 +116,6 @@ class _PackageMultiFetchAction(_PackageFetchAction):
 
             repo = self._entropy.open_repository(repository_id)
             atom = repo.retrieveAtom(package_id)
-
-            metadata['atoms'].append(atom)
-            if repository_id not in metadata['repository_atoms']:
-                metadata['repository_atoms'][repository_id] = set()
-            metadata['repository_atoms'][repository_id].add(atom)
 
             download = repo.retrieveDownloadURL(package_id)
             digest = repo.retrieveDigest(package_id)
