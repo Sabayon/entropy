@@ -74,7 +74,7 @@ from entropy.misc import LogFile, ParallelTask, TimeScheduled, \
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, purple, teal
 from entropy.client.interfaces import Client
-from entropy.client.interfaces.package import Package
+from entropy.client.interfaces.package.actions.action import PackageAction
 from entropy.client.interfaces.repository import Repository
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
@@ -1831,6 +1831,7 @@ class RigoDaemonService(dbus.service.Object):
 
         count = 0
         total = len(removal_queue)
+        action_factory = self._entropy.PackageActionFactory()
 
         try:
             for pkg_match in removal_queue:
@@ -1852,8 +1853,9 @@ class RigoDaemonService(dbus.service.Object):
 
                 pkg = None
                 try:
-                    pkg = self._entropy.Package()
-                    pkg.prepare((package_id,), "remove", {})
+                    pkg = action_factory.get(
+                        action_factory.REMOVE_ACTION,
+                        (package_id, repository_id))
 
                     msg = "-- %s" % (purple(_("Application Removal")),)
                     self._entropy.output(msg, count=(count, total),
@@ -1870,7 +1872,7 @@ class RigoDaemonService(dbus.service.Object):
                         time.sleep(5.0)
                         rc = 0
                     else:
-                        rc = pkg.run()
+                        rc = pkg.start()
                     if rc != 0:
                         self._txs.unset(package_id, repository_id)
                         _signal_merge_process(
@@ -1890,7 +1892,7 @@ class RigoDaemonService(dbus.service.Object):
                         return outcome
                 finally:
                     if pkg is not None:
-                        pkg.kill()
+                        pkg.finalize()
 
                 write_output(
                     "_process_remove_merge_action: "
@@ -2116,7 +2118,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         def _account_package_size(down_url, pkg_size):
             # if the package is already downloaded, don't account this part
-            down_path = Package.get_standard_fetch_disk_path(down_url)
+            down_path = PackageAction.get_standard_fetch_disk_path(down_url)
             try:
                 f_size = entropy.tools.get_file_size(down_path)
             except (OSError, IOError):
@@ -2129,7 +2131,7 @@ class RigoDaemonService(dbus.service.Object):
         download_size = 0
         unpack_size = 0
         for pkg_id, pkg_repo in install_queue:
-            splitdebug = Package.splitdebug_enabled(
+            splitdebug = PackageAction.splitdebug_enabled(
                 self._entropy, (pkg_id, pkg_repo))
             repo = self._entropy.open_repository(pkg_repo)
             key, slot = repo.retrieveKeySlot(pkg_id)
@@ -2164,7 +2166,7 @@ class RigoDaemonService(dbus.service.Object):
             return False
 
         # check download size
-        download_path = Package.get_standard_fetch_disk_path("")
+        download_path = PackageAction.get_standard_fetch_disk_path("")
         while not os.path.isdir(download_path):
             download_path = os.path.dirname(download_path)
         if not entropy.tools.check_required_space(
@@ -2197,18 +2199,20 @@ class RigoDaemonService(dbus.service.Object):
                     package_id, repository_id,
                     AppTransactionStates.DOWNLOAD, amount)
 
-        def _account_downloads(is_multifetch, download_map, pkg):
+        def _account_downloads(is_multifetch, pkgs, download_map):
             if is_multifetch:
-                _repo_data = pkg.pkgmeta['repository_atoms']
-                for _repo_id, atom_list in _repo_data.items():
-                    obj = download_map.setdefault(_repo_id, set())
-                    for _atom in atom_list:
-                        obj.add(entropy.dep.dep_getkey(_atom))
+                for pkg_id, pkg_repo in pkgs:
+                    repo = self._entropy.open_repository(pkg_repo)
+                    pkg_atom = repo.retrieveAtom(pkg_id)
+                    if pkg_atom:
+                        obj = download_map.setdefault(pkg_repo, set())
+                        obj.add(entropy.dep.dep_getkey(pkg_atom))
             else:
-                obj = download_map.setdefault(
-                    pkg.pkgmeta['repository'], set())
-                _atom = entropy.dep.dep_getkey(pkg.pkgmeta['atom'])
-                obj.add(_atom)
+                pkg_id, pkg_repo = pkgs
+                obj = download_map.setdefault(pkg_repo, set())
+                pkg_atom = repo.retrieveAtom(pkg_id)
+                if pkg_atom:
+                    obj.add(entropy.dep.dep_getkey(pkg_atom))
 
         def _abort_check_function():
             """
@@ -2218,6 +2222,7 @@ class RigoDaemonService(dbus.service.Object):
             if self._interrupt_activity:
                 raise InterruptError("simulated")
 
+        action_factory = self._entropy.PackageActionFactory()
         _settings = self._entropy.Settings()
         _plg_ids = etpConst['system_settings_plugins_ids']
         client_plg_id = _plg_ids['client_plugin']
@@ -2229,7 +2234,7 @@ class RigoDaemonService(dbus.service.Object):
         total = len(install_queue)
 
         queue = []
-        pkg_action = "fetch"
+        pkg_action = action_factory.FETCH_ACTION
         is_multifetch = False
         multifetch = misc_settings.get("multifetch", 1)
         mymultifetch = multifetch
@@ -2250,7 +2255,7 @@ class RigoDaemonService(dbus.service.Object):
 
             queue_len = len(queue)
             total += queue_len
-            pkg_action = "multi_fetch"
+            pkg_action = action_factory.MULTI_FETCH_ACTION
             is_multifetch = True
 
         else:
@@ -2275,8 +2280,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 pkg = None
                 try:
-                    pkg = self._entropy.Package()
-                    pkg.prepare(opaque, pkg_action, metaopts)
+                    pkg = action_factory.get(
+                        pkg_action, opaque, opts=metaopts)
 
                     msg = ":: %s" % (purple(_("Application download")),)
                     self._entropy.output(msg, count=(_count, total),
@@ -2284,7 +2289,7 @@ class RigoDaemonService(dbus.service.Object):
 
                     _signal_download_process(is_multifetch, opaque, 50)
 
-                    rc = pkg.run()
+                    rc = pkg.start()
                     if rc != 0:
                         _signal_download_process(is_multifetch, opaque, -1)
                         _outcome = AppTransactionOutcome.DOWNLOAD_ERROR
@@ -2295,11 +2300,11 @@ class RigoDaemonService(dbus.service.Object):
                                 total, rc))
                         return _count, total, _outcome
 
-                    _account_downloads(is_multifetch, download_map, pkg)
+                    _account_downloads(is_multifetch, opaque, download_map)
                     _signal_download_process(is_multifetch, opaque, 100)
                 finally:
                     if pkg is not None:
-                        pkg.kill()
+                        pkg.finalize()
 
                 if self._interrupt_activity:
                     _outcome = AppTransactionOutcome.PERMISSION_DENIED
@@ -2355,6 +2360,8 @@ class RigoDaemonService(dbus.service.Object):
                 _package_id, _repository_id,
                 AppTransactionStates.MANAGE, amount)
 
+        action_factory = self._entropy.PackageActionFactory()
+
         try:
             for pkg_match in install_queue:
 
@@ -2375,8 +2382,9 @@ class RigoDaemonService(dbus.service.Object):
 
                 pkg = None
                 try:
-                    pkg = self._entropy.Package()
-                    pkg.prepare(pkg_match, "install", {})
+                    pkg = action_factory.get(
+                        action_factory.INSTALL_ACTION,
+                        pkg_match)
 
                     msg = "++ %s" % (purple(_("Application Install")),)
                     self._entropy.output(msg, count=(count, total),
@@ -2393,7 +2401,7 @@ class RigoDaemonService(dbus.service.Object):
                         time.sleep(5.0)
                         rc = 0
                     else:
-                        rc = pkg.run()
+                        rc = pkg.start()
                     if rc != 0:
                         self._txs.unset(package_id, repository_id)
                         _signal_merge_process(
@@ -2413,7 +2421,7 @@ class RigoDaemonService(dbus.service.Object):
                         return outcome
                 finally:
                     if pkg is None:
-                        pkg.kill()
+                        pkg.finalize()
 
                 write_output(
                     "_process_install_merge_action: "
