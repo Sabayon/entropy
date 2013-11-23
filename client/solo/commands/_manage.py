@@ -593,7 +593,7 @@ class SoloManage(SoloCommand):
         return run_queue, removal_queue
 
     def _download_packages(self, entropy_client, package_matches,
-                           downdata, multifetch=1, checksum=True):
+                           downdata, multifetch=1):
         """
         Download packages from mirrors, essentially.
         """
@@ -602,6 +602,8 @@ class SoloManage(SoloCommand):
         misc_settings = client_settings['misc']
         if multifetch <= 1:
             multifetch = misc_settings.get('multifetch', 1)
+
+        action_factory = entropy_client.PackageActionFactory()
 
         mymultifetch = multifetch
         if multifetch > 1:
@@ -620,20 +622,23 @@ class SoloManage(SoloCommand):
             for matches in myqueue:
                 count += 1
 
-                metaopts = {}
-                metaopts['dochecksum'] = checksum
+                for pkg_id, pkg_repo in matches:
+                    obj = downdata.setdefault(pkg_repo, set())
+                    repo = entropy_client.open_repository(pkg_repo)
+                    pkg_atom = repo.retrieveAtom(pkg_id)
+                    if pkg_atom:
+                        obj.add(entropy.dep.dep_getkey(pkg_atom))
+
                 pkg = None
                 try:
-                    pkg = entropy_client.Package()
-                    pkg.prepare(matches, "multi_fetch", metaopts)
-                    myrepo_data = pkg.pkgmeta['repository_atoms']
-                    for myrepo in myrepo_data:
-                        obj = downdata.setdefault(myrepo, set())
-                        for atom in myrepo_data[myrepo]:
-                            obj.add(entropy.dep.dep_getkey(atom))
+                    pkg = action_factory.get(
+                        action_factory.MULTI_FETCH_ACTION,
+                        matches)
 
                     xterm_header = "equo (%s) :: %d of %d ::" % (
                         _("download"), count, total)
+                    pkg.set_xterm_header(xterm_header)
+
                     entropy_client.output(
                         "%s %s" % (
                             darkgreen(
@@ -643,13 +648,13 @@ class SoloManage(SoloCommand):
                         count=(count, total),
                         header=darkred(" ::: ") + ">>> ")
 
-                    exit_st = pkg.run(xterm_header=xterm_header)
+                    exit_st = pkg.start()
                     if exit_st != 0:
                         return 1
 
                 finally:
                     if pkg is not None:
-                        pkg.kill()
+                        pkg.finalize()
 
             return 0
 
@@ -659,35 +664,36 @@ class SoloManage(SoloCommand):
         for match in package_matches:
             count += 1
 
-            metaopts = {}
-            metaopts['dochecksum'] = checksum
             pkg = None
             try:
                 package_id, repository_id = match
+
                 atom = entropy_client.open_repository(
                     repository_id).retrieveAtom(package_id)
-                pkg = entropy_client.Package()
-                pkg.prepare(match, "fetch", metaopts)
-                myrepo = pkg.pkgmeta['repository']
+                if atom:
+                    obj = downdata.setdefault(repository_id, set())
+                    obj.add(entropy.dep.dep_getkey(atom))
 
-                obj = downdata.setdefault(myrepo, set())
-                obj.add(entropy.dep.dep_getkey(atom))
+                pkg = action_factory.get(
+                    action_factory.FETCH_ACTION,
+                    match)
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
                     _("download"), count, total)
+                pkg.set_xterm_header(xterm_header)
 
                 entropy_client.output(
                     darkgreen(atom),
                     count=(count, total),
                     header=darkred(" ::: ") + ">>> ")
 
-                exit_st = pkg.run(xterm_header=xterm_header)
+                exit_st = pkg.start()
                 if exit_st != 0:
                     return 1
 
             finally:
                 if pkg is not None:
-                    pkg.kill()
+                    pkg.finalize()
 
         return 0
 

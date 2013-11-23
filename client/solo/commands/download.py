@@ -187,8 +187,7 @@ Download packages, essentially.
 
         down_data = {}
         exit_st = self._download_packages(
-            entropy_client, run_queue, down_data, multifetch,
-            True)
+            entropy_client, run_queue, down_data, multifetch)
 
         if exit_st == 0:
             self._signal_ugc(entropy_client, down_data)

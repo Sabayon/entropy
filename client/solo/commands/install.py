@@ -18,7 +18,7 @@ from entropy.const import etpConst, const_convert_to_unicode
 from entropy.misc import ParallelTask
 from entropy.output import brown, purple, darkred, red, \
     blue, darkblue, darkgreen, bold
-from entropy.client.interfaces.package import Package
+from entropy.client.interfaces.package.actions.action import PackageAction
 
 import entropy.tools
 
@@ -194,8 +194,9 @@ Install or update packages or package files.
         return exit_st
 
     @staticmethod
-    def _show_install_queue(entropy_client, inst_repo, run_queue,
-                            removal_queue, ask, pretend, quiet, verbose):
+    def _show_install_queue(entropy_client, inst_repo,
+                            run_queue, removal_queue, ask, pretend,
+                            quiet, verbose):
         """
         Show expanded installation queue to user.
         """
@@ -239,7 +240,7 @@ Install or update packages or package files.
 
             unpack_size += int(pkgsize) * 2
 
-            fetch_path = Package.get_standard_fetch_disk_path(pkgfile)
+            fetch_path = PackageAction.get_standard_fetch_disk_path(pkgfile)
             if not os.path.exists(fetch_path):
                 download_size += int(pkgsize)
             else:
@@ -510,6 +511,7 @@ Install or update packages or package files.
         Solo Install action implementation.
         """
         inst_repo = entropy_client.installed_repository()
+        action_factory = entropy_client.PackageActionFactory()
 
         self._advise_repository_update(entropy_client)
         if self._check_critical_updates:
@@ -545,8 +547,8 @@ Install or update packages or package files.
             return 0, True
 
         self._show_install_queue(
-            entropy_client, inst_repo, run_queue, removal_queue,
-            ask, pretend, quiet, verbose)
+            entropy_client, inst_repo,
+            run_queue, removal_queue, ask, pretend, quiet, verbose)
 
         if ask:
             rc = entropy_client.ask_question(
@@ -566,8 +568,7 @@ Install or update packages or package files.
         ugc_thread = None
         down_data = {}
         exit_st = self._download_packages(
-            entropy_client, run_queue, down_data, multifetch,
-            True)
+            entropy_client, run_queue, down_data, multifetch)
         if exit_st == 0:
             ugc_thread = ParallelTask(
                 self._signal_ugc, entropy_client, down_data)
@@ -611,18 +612,21 @@ Install or update packages or package files.
 
             pkg = None
             try:
-                pkg = entropy_client.Package()
-                pkg.prepare(pkg_match, "install", metaopts)
+                pkg = action_factory.get(
+                    action_factory.INSTALL_ACTION,
+                    pkg_match, opts=metaopts)
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
                     _("install"), count, total)
+
+                pkg.set_xterm_header(xterm_header)
 
                 entropy_client.output(
                     purple(atom),
                     count=(count, total),
                     header=darkgreen(" +++ ") + ">>> ")
 
-                exit_st = pkg.run(xterm_header=xterm_header)
+                exit_st = pkg.start()
                 if exit_st != 0:
                     if ugc_thread is not None:
                         ugc_thread.join()
@@ -630,7 +634,7 @@ Install or update packages or package files.
 
             finally:
                 if pkg is not None:
-                    pkg.kill()
+                    pkg.finalize()
 
         if ugc_thread is not None:
             ugc_thread.join()

@@ -152,30 +152,34 @@ Configure installed packages (calling pkg_config() hook).
         if pretend:
             return 0, False
 
+        action_factory = entropy_client.PackageActionFactory()
+
         for count, package_id in enumerate(package_ids, 1):
 
             atom = inst_repo.retrieveAtom(package_id)
             pkg = None
 
             try:
-                pkg = entropy_client.Package()
-                pkg.prepare((package_id,), "config")
+                pkg = action_factory.get(
+                    action_factory.CONFIG_ACTION,
+                    (package_id, inst_repo.name))
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
                     _("configure"), count, len(package_ids))
+                pkg.set_xterm_header(xterm_header)
 
                 entropy_client.output(
                     darkgreen(atom),
                     count=(count, len(package_ids)),
                     header=darkred(" ::: ") + ">>> ")
 
-                exit_st = pkg.run(xterm_header=xterm_header)
+                exit_st = pkg.start()
                 if exit_st not in (0, 3):
                     return 1, True
 
             finally:
                 if pkg is not None:
-                    pkg.kill()
+                    pkg.finalize()
 
         return 0, True
 

@@ -156,34 +156,42 @@ Remove previously installed packages from system.
         """
         Execute the actual packages removal activity.
         """
+        action_factory = entropy_client.PackageActionFactory()
+
         total = len(removal_queue)
         for count, package_id in enumerate(removal_queue, 1):
 
+            avail = inst_repo.isPackageIdAvailable(package_id)
+            if not avail:
+                continue
+
             atom = inst_repo.retrieveAtom(package_id)
+
             metaopts = {}
             metaopts['removeconfig'] = remove_config_files
             pkg = None
             try:
-                pkg = entropy_client.Package()
-                pkg.prepare((package_id,), "remove", metaopts)
+                pkg = action_factory.get(
+                    action_factory.REMOVE_ACTION,
+                    (package_id, inst_repo.name),
+                    opts=metaopts)
 
-                if "remove_installed_vanished" not in pkg.pkgmeta:
+                xterm_header = "equo (%s) :: %d of %d ::" % (
+                    _("removal"), count, total)
+                pkg.set_xterm_header(xterm_header)
 
-                    xterm_header = "equo (%s) :: %d of %d ::" % (
-                        _("removal"), count, total)
+                entropy_client.output(
+                    darkgreen(atom),
+                    count=(count, total),
+                    header=darkred(" --- ") + ">>> ")
 
-                    entropy_client.output(
-                        darkgreen(atom),
-                        count=(count, total),
-                        header=darkred(" --- ") + ">>> ")
-
-                    exit_st = pkg.run(xterm_header = xterm_header)
-                    if exit_st != 0:
-                        return 1
+                exit_st = pkg.start()
+                if exit_st != 0:
+                    return 1
 
             finally:
                 if pkg is not None:
-                    pkg.kill()
+                    pkg.finalize()
 
         entropy_client.output(
             "%s." % (blue(_("All done")),),

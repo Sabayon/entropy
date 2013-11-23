@@ -191,6 +191,8 @@ Download source code of packages.
         if savehere:
             metaopts['fetch_path'] = os.getcwd()
 
+        action_factory = entropy_client.PackageActionFactory()
+
         for match in run_queue:
 
             package_id, repository_id = match
@@ -200,24 +202,26 @@ Download source code of packages.
             pkg = None
 
             try:
-                pkg = entropy_client.Package()
-                pkg.prepare(match, "source", metaopts)
+                pkg = action_factory.get(
+                    action_factory.SOURCE_ACTION,
+                    match, opts=metaopts)
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
                     _("sources download"), count, total)
+                pkg.set_xterm_header(xterm_header)
 
                 entropy_client.output(
                     darkgreen(atom),
                     count=(count, total),
                     header=darkred(" ::: ") + ">>> ")
 
-                exit_st = pkg.run(xterm_header = xterm_header)
+                exit_st = pkg.start()
                 if exit_st != 0:
                     return 1
 
             finally:
                 if pkg is not None:
-                    pkg.kill()
+                    pkg.finalize()
 
         return 0
 
