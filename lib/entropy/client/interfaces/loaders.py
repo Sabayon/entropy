@@ -9,6 +9,8 @@
     B{Entropy Package Manager Client Instance Loaders Interface}.
 
 """
+import warnings
+
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_default_class
 
@@ -25,12 +27,15 @@ class LoadersMixin:
         # during complete system upgrades
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
-        from entropy.client.interfaces.package import Package
+        from entropy.client.interfaces.package import \
+            PackageActionFactory, PackageActionFactoryWrapper
         from entropy.client.interfaces.sets import Sets
         from entropy.client.misc import ConfigurationUpdates
         from entropy.client.services.interfaces import \
             ClientWebServiceFactory, RepositoryWebServiceFactory
-        self.__package_loader = Package
+
+        self.__package_factory = PackageActionFactory
+        self.__package_loader = PackageActionFactoryWrapper
         self.__repository_loader = Repository
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
@@ -141,14 +146,16 @@ class LoadersMixin:
     def Package(self):
         """
         Load Entropy Package instance object
-
-        @return:
-        @rtype: entropy.client.interfaces.package.Package
         """
+        warnings.warn("deprecated, use PackageActionFactory",
+                      DeprecationWarning)
         return self.__package_loader(self)
 
+    def PackageActionFactory(self):
         """
+        Load Entropy PackageActionFactory instance object
         """
+        return self.__package_factory(self)
 
     def ConfigurationUpdates(self):
         """

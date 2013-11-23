@@ -10,9 +10,11 @@
 
 """
 import codecs
+import errno
 import sys
+import os
 
-from entropy.const import etpConst
+from entropy.const import etpConst, const_mkstemp
 
 import entropy.tools
 
@@ -312,3 +314,189 @@ class FileContentSafetyReader(object):
         if self._file is not None:
             self._file.close()
             self._file = None
+
+
+def generate_content_safety_file(content_safety):
+    """
+    Generate a file containing the "content_safety" metadata,
+    reading by content_safety list or iterator. Each item
+    of "content_safety" must contain (path, sha256, mtime).
+    Each item shall be written to file, one per line,
+    in the following form: "<mtime>|<sha256>|<path>".
+    The order of the element in "content_safety" will be kept.
+    """
+    tmp_dir = os.path.join(
+        etpConst['entropyunpackdir'],
+        "__generate_content_safety_file_f")
+    try:
+        os.makedirs(tmp_dir, 0o755)
+    except OSError as err:
+        if err.errno != errno.EEXIST:
+            raise
+
+    tmp_fd, tmp_path = None, None
+    generated = False
+    try:
+        tmp_fd, tmp_path = const_mkstemp(
+            prefix="PackageContentSafety",
+            dir=tmp_dir)
+        with FileContentSafetyWriter(tmp_fd) as tmp_f:
+            for path, sha256, mtime in content_safety:
+                tmp_f.write(path, sha256, mtime)
+
+        generated = True
+        return tmp_path
+    finally:
+        if tmp_fd is not None:
+            try:
+                os.close(tmp_fd)
+            except OSError:
+                pass
+        if tmp_path is not None and not generated:
+            try:
+                os.remove(tmp_path)
+            except (OSError, IOError):
+                pass
+
+
+def generate_content_file(content, package_id = None,
+                          filter_splitdebug = False,
+                          splitdebug = None,
+                          splitdebug_dirs = None):
+    """
+    Generate a file containing the "content" metadata,
+    reading by content list or iterator. Each item
+    of "content" must contain (path, ftype).
+    Each item shall be written to file, one per line,
+    in the following form: "[<package_id>|]<ftype>|<path>".
+    The order of the element in "content" will be kept.
+    """
+    tmp_dir = os.path.join(
+        etpConst['entropyunpackdir'],
+        "__generate_content_file_f")
+    try:
+        os.makedirs(tmp_dir, 0o755)
+    except OSError as err:
+        if err.errno != errno.EEXIST:
+            raise
+
+    tmp_fd, tmp_path = None, None
+    generated = False
+    try:
+        tmp_fd, tmp_path = const_mkstemp(
+            prefix="PackageContent",
+            dir=tmp_dir)
+        with FileContentWriter(tmp_fd) as tmp_f:
+            for path, ftype in content:
+                if filter_splitdebug and not splitdebug:
+                    # if filter_splitdebug is enabled, this
+                    # code filters out all the paths starting
+                    # with splitdebug_dirs, if splitdebug is
+                    # disabled for package.
+                    _skip = False
+                    for split_dir in splitdebug_dirs:
+                        if path.startswith(split_dir):
+                            _skip = True
+                            break
+                    if _skip:
+                        continue
+                tmp_f.write(package_id, path, ftype)
+
+        generated = True
+        return tmp_path
+    finally:
+        if tmp_fd is not None:
+            try:
+                os.close(tmp_fd)
+            except OSError:
+                pass
+        if tmp_path is not None and not generated:
+            try:
+                os.remove(tmp_path)
+            except (OSError, IOError):
+                pass
+
+
+def merge_content_file(content_file, sorted_content,
+                       cmp_func):
+    """
+    Given a sorted content_file content and a sorted list of
+    content (sorted_content), apply the "merge" step of a merge
+    sort algorithm. In other words, add the sorted_content to
+    content_file keeping content_file content ordered.
+    It is of couse O(n+m) where n = lines in content_file and
+    m = sorted_content length.
+    """
+    tmp_content_file = content_file + FileContentWriter.TMP_SUFFIX
+
+    sorted_ptr = 0
+    _sorted_path = None
+    _sorted_ftype = None
+    _package_id = 0 # will be filled
+    try:
+        with FileContentWriter(tmp_content_file) as tmp_w:
+            with FileContentReader(content_file) as tmp_r:
+                for _package_id, _path, _ftype in tmp_r:
+
+                    while True:
+
+                        try:
+                            _sorted_path, _sorted_ftype = \
+                                sorted_content[sorted_ptr]
+                        except IndexError:
+                            _sorted_path = None
+                            _sorted_ftype = None
+
+                        if _sorted_path is None:
+                            tmp_w.write(_package_id, _path, _ftype)
+                            break
+
+                        cmp_outcome = cmp_func(_path, _sorted_path)
+                        if cmp_outcome < 0:
+                            tmp_w.write(_package_id, _path, _ftype)
+                            break
+
+                        # always privilege _ftype over _sorted_ftype
+                        # _sorted_ftype might be invalid
+                        tmp_w.write(
+                            _package_id, _sorted_path, _ftype)
+                        sorted_ptr += 1
+                        if cmp_outcome == 0:
+                            # write only one
+                            break
+
+                # add the remainder
+                if sorted_ptr < len(sorted_content):
+                    _sorted_rem = sorted_content[sorted_ptr:]
+                    for _sorted_path, _sorted_ftype in _sorted_rem:
+                        tmp_w.write(
+                            _package_id, _sorted_path, _sorted_ftype)
+
+        os.rename(tmp_content_file, content_file)
+    finally:
+        try:
+            os.remove(tmp_content_file)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
+
+
+def filter_content_file(content_file, filter_func):
+    """
+    This method rewrites the content of content_file by applying
+    a filter to the path elements.
+    """
+    tmp_content_file = content_file + FileContentWriter.TMP_SUFFIX
+    try:
+        with FileContentWriter(tmp_content_file) as tmp_w:
+            with FileContentReader(content_file) as tmp_r:
+                for _package_id, _path, _ftype in tmp_r:
+                    if filter_func(_path):
+                        tmp_w.write(_package_id, _path, _ftype)
+        os.rename(tmp_content_file, content_file)
+    finally:
+        try:
+            os.remove(tmp_content_file)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
