@@ -60,6 +60,15 @@ class _PackageFetchAction(PackageAction):
         """
         return self._meta
 
+    def package_path(self):
+        """
+        Return the path to the download package file.
+        Please note that the path returned is only related to the main
+        package tarball file, extra-downloads and debug packages are ignored.
+        This method is mainly for PackageKit consumption.
+        """
+        return self._meta['pkgpath']
+
     def setup(self):
         """
         Setup the PackageAction.
