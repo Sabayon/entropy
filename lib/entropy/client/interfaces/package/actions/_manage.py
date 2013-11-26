@@ -580,9 +580,6 @@ class _PackageInstallRemoveAction(PackageAction):
             if not taint:
                 break
 
-        del directories_cache
-        del directories
-
     def _spm_remove_package(self, atom):
         """
         Call Source Package Manager interface and tell it to remove our
