@@ -53,11 +53,10 @@ class _PackageInstallRemoveAction(PackageAction):
         """
         raise NotImplementedError()
 
-    def _get_system_root(self):
+    def _get_system_root(self, metadata):
         """
         Return the path to the system root directory.
         """
-        metadata = self.metadata()
         return metadata.get('unittest_root', "") + etpConst['systemroot']
 
     def _get_config_protect_skip(self):
@@ -75,7 +74,8 @@ class _PackageInstallRemoveAction(PackageAction):
 
         return protectskip
 
-    def _get_config_protect(self, entropy_repository, package_id, mask = False):
+    def _get_config_protect(self, entropy_repository, package_id, mask = False,
+                            _metadata = None):
         """
         Return configuration protection (or mask) metadata for the given
         package.
@@ -94,7 +94,9 @@ class _PackageInstallRemoveAction(PackageAction):
             paths = entropy_repository.retrieveProtect(package_id).split()
             misc_key = "configprotect"
 
-        root = etpConst['systemroot']
+        if _metadata is None:
+            _metadata = self._meta
+        root = self._get_system_root(_metadata)
         config = set(("%s%s" % (root, path) for path in paths))
         config.update(misc_data[misc_key])
 
@@ -106,16 +108,19 @@ class _PackageInstallRemoveAction(PackageAction):
         return config
 
     def _get_config_protect_metadata(self, installed_repository,
-                                     installed_package_id):
+                                     installed_package_id,
+                                     _metadata=None):
         """
         Get the config_protect+mask metadata object.
         Make sure to call this before the package goes away from the
         repository.
         """
         protect = self._get_config_protect(
-            installed_repository, installed_package_id)
+            installed_repository, installed_package_id,
+            _metadata = _metadata)
         mask = self._get_config_protect(
-            installed_repository, installed_package_id, mask = True)
+            installed_repository, installed_package_id, mask = True,
+            _metadata = _metadata)
 
         metadata = {
             'config_protect+mask': (protect, mask)
@@ -472,7 +477,7 @@ class _PackageInstallRemoveAction(PackageAction):
             automerge_metadata = {}
 
         metadata = self.metadata()
-        sys_root = etpConst['systemroot']
+        sys_root = self._get_system_root(metadata)
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         misc_settings = self._entropy.ClientSettings()['misc']
         col_protect = misc_settings['collisionprotect']

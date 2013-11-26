@@ -237,7 +237,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             # setup config_protect and config_protect_mask metadata before it's
             # too late.
             protect = self._get_config_protect_metadata(
-                inst_repo, metadata['remove_package_id'])
+                inst_repo, metadata['remove_package_id'],
+                _metadata = metadata)
             metadata.update(protect)
 
         metadata['phases'] = []
@@ -905,7 +906,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         if both directory paths solve to the same inode and if so,
         add to our set that we're going to return.
         """
-        sys_root = self._get_system_root()
+        sys_root = self._get_system_root(self._meta)
         second_pass_removal = set()
 
         if not installed_content:
@@ -1298,7 +1299,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         protectskip = self._get_config_protect_skip()
 
         # support for unit testing settings
-        sys_root = self._get_system_root()
+        sys_root = self._get_system_root(metadata)
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[sys_set_plg_id]['misc']

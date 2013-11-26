@@ -89,7 +89,8 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
 
         # setup config_protect and config_protect+mask metadata before it's
         # too late.
-        protect = self._get_config_protect_metadata(inst_repo, self._package_id)
+        protect = self._get_config_protect_metadata(
+            inst_repo, self._package_id, _metadata = metadata)
         metadata.update(protect)
 
         metadata['phases'] = [
