@@ -31,6 +31,7 @@ import gzip
 import bz2
 import mmap
 import codecs
+import struct
 
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
@@ -2567,7 +2568,6 @@ def read_elf_class(elf_file):
     @return: ELF class metadatum value
     @rtype: int
     """
-    import struct
     with open(elf_file, "rb") as f:
         f.seek(4)
         elf_class = f.read(1)
@@ -2583,7 +2583,6 @@ def is_elf_file(elf_file):
     @return: True, if file at path is ELF file
     @rtype: bool
     """
-    import struct
     with open(elf_file, "rb") as f:
         data = f.read(4)
     try:
