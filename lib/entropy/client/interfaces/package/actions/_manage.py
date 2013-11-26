@@ -30,6 +30,11 @@ class _PackageInstallRemoveAction(PackageAction):
     and remove PackageAction classes.
     """
 
+    def __init__(self, entropy_client, package_match, opts = None):
+        super(_PackageInstallRemoveAction, self).__init__(
+            entropy_client, package_match, opts = opts)
+        self._meta = None
+
     def metadata(self):
         """
         Return the package metadata dict object for manipulation.

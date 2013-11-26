@@ -48,7 +48,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         """
         super(_PackageInstallAction, self).__init__(
             entropy_client, package_match, opts = opts)
-        self._meta = None
 
     def finalize(self):
         """
