@@ -118,7 +118,7 @@ Tools to manage the preserved libraries currently stored on the system.
         inst_repo = entropy_client.installed_repository()
 
         preserved_mgr = preservedlibs.PreservedLibraries(
-            inst_repo, None, None, frozenset(),
+            inst_repo, None, frozenset(),
             root=etpConst['systemroot'])
         preserved = preserved_mgr.list()
 
@@ -173,7 +173,7 @@ Tools to manage the preserved libraries currently stored on the system.
         inst_repo = entropy_client.installed_repository()
 
         preserved_mgr = preservedlibs.PreservedLibraries(
-            inst_repo, None, None, frozenset(),
+            inst_repo, None, frozenset(),
             root=etpConst['systemroot'])
         collectables = preserved_mgr.collect()
 
