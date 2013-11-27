@@ -12,6 +12,7 @@
 import collections
 import errno
 import os
+import stat
 
 
 class PreservedLibraries(object):
@@ -117,23 +118,50 @@ class PreservedLibraries(object):
         """
         paths = collections.deque()
 
-        recursion = 100
+        recursion = 128
         root_library_path = self._root + library_path
+        symlinks = {}
+        hardlinks = set()
 
-        paths.append(library_path)
-        while os.path.islink(root_library_path) and recursion:
-            # avoid infinite recursion
+        # Also see:
+        # portage.git commit: 32d19be14e22ada479963ba8627452f5f2d89b94
+
+        while recursion:
             recursion -= 1
 
-            path_link = os.readlink(root_library_path)
-            root_library_path = os.path.join(
-                os.path.dirname(root_library_path),
-                path_link)
+            try:
+                l_stat = os.lstat(root_library_path)
+            except OSError as err:
+                if err.errno != errno.ENOENT:
+                    raise
+                break
 
-            library_path = os.path.join(
-                os.path.dirname(library_path),
-                path_link)
-            paths.append(library_path)
+            if stat.S_ISLNK(l_stat.st_mode):
+                path_link = os.readlink(root_library_path)
+                root_library_path = os.path.join(
+                    os.path.dirname(root_library_path),
+                    path_link)
+
+                # delay symlinks add, due to Gentoo bug #406837
+                symlinks[library_path] = path_link
+
+                library_path = os.path.join(
+                    os.path.dirname(library_path),
+                    path_link)
+
+                continue
+
+            elif stat.S_ISREG(l_stat.st_mode):
+                paths.append(library_path)
+                hardlinks.add(library_path)
+
+            break
+
+        for library_path, target in symlinks.items():
+            target_path = os.path.join(
+                os.path.dirname(library_path), target)
+            if target_path in hardlinks:
+                paths.append(library_path)
 
         return paths
 
@@ -201,10 +229,16 @@ class PreservedLibraries(object):
                 collectables.append(item)
                 continue
 
-            # is the file owned by a package in the repo?
-            # if so, we assume that the entry could be removed
-            # from the registry
-            if self._inst_repo.isFileAvailable(path):
+            # is the library provided by any package?
+            providers = self._inst_repo.resolveNeeded(
+                library, elfclass = elfclass, extended = True)
+            found_provider = False
+
+            for provider_package_id, provider_path in providers:
+                if provider_path == path:
+                    found_provider = True
+                    break
+            if found_provider:
                 collectables.append(item)
                 continue
 
