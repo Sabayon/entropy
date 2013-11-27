@@ -184,12 +184,30 @@ Tools to manage the preserved libraries currently stored on the system.
             return 0
 
         for library, elfclass, path in collectables:
+
+            package_ids = inst_repo.isFileAvailable(path, get_id = True)
+
             entropy_client.output(
                 "%s [%s:%s]" % (
                     darkred(path),
                     purple(library),
                     teal(const_convert_to_unicode(elfclass)),
                 ))
+
+            for package_id in package_ids:
+                atom = inst_repo.retrieveAtom(package_id)
+                if atom is None:
+                    continue
+
+                entropy_client.output(
+                    "%s: %s, %s" % (
+                        blue(_("but owned by")),
+                        darkgreen(atom),
+                        blue(_("then just unregister the library")),
+                        ),
+                    header=brown(" -> "),
+                    importance=0
+                    )
 
         return 0
 
