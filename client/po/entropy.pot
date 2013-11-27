@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-27 12:49+0100\n"
+"POT-Creation-Date: 2013-11-27 18:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1058,7 +1058,7 @@ msgstr ""
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:671
 #: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:737
 #: ../../client/solo/commands/query.py:1276
-#: ../../client/solo/commands/_manage.py:646
+#: ../../client/solo/commands/_manage.py:655
 msgid "package"
 msgid_plural "packages"
 msgstr[0] ""
@@ -1098,7 +1098,7 @@ msgstr ""
 msgid "Removing from Entropy"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:195
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:198
 #: ../../lib/entropy/client/interfaces/package/actions/install.py:824
 msgid "Post-remove"
 msgstr ""
@@ -1231,44 +1231,44 @@ msgstr ""
 msgid "library needed by:"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:121
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:130
 msgid "Removing library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:124
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:133
 msgid "Unregistering library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:151
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:160
 msgid "Failed to remove the library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:315
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:326
 msgid "Cannot protect broken symlink"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:349
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:360
 msgid "Skipping file installation/removal"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:393
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:508
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:404
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:520
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:485
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:497
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:507
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:519
 msgid "remove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:527
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:539
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:655
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:664
 msgid "Collision found during removal of"
 msgstr ""
 
@@ -1493,7 +1493,7 @@ msgstr ""
 
 #: ../../lib/entropy/security.py:502 ../../client/solo/commands/pkg.py:201
 #: ../../client/solo/commands/_manage.py:494
-#: ../../client/solo/commands/_manage.py:516
+#: ../../client/solo/commands/_manage.py:527
 #: ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
@@ -1667,7 +1667,7 @@ msgstr ""
 msgid "Selected number"
 msgstr ""
 
-#: ../../lib/entropy/output.py:878 ../../client/solo/commands/_manage.py:759
+#: ../../lib/entropy/output.py:878 ../../client/solo/commands/_manage.py:768
 msgid "Please select an option"
 msgstr ""
 
@@ -1997,7 +1997,7 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
-#: ../../client/solo/utils.py:561 ../../client/solo/commands/_manage.py:818
+#: ../../client/solo/utils.py:561 ../../client/solo/commands/_manage.py:827
 msgid "License"
 msgstr ""
 
@@ -2148,7 +2148,7 @@ msgstr ""
 #: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
 #: ../../client/solo/commands/repo.py:68 ../../client/solo/commands/conf.py:76
 #: ../../client/solo/commands/rescue.py:72
-#: ../../client/solo/commands/preservedlibs.py:71 ../kernel-switcher:48
+#: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:48
 msgid "available commands"
 msgstr ""
 
@@ -3912,7 +3912,7 @@ msgid "package needed by"
 msgstr ""
 
 #: ../../client/solo/commands/_manage.py:419
-#: ../../client/solo/commands/_manage.py:828
+#: ../../client/solo/commands/_manage.py:837
 #: ../../client/solo/commands/install.py:388
 msgid "from"
 msgstr ""
@@ -3921,81 +3921,81 @@ msgstr ""
 msgid "Skipped"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:518
+#: ../../client/solo/commands/_manage.py:529
 msgid "is not installed"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:548
+#: ../../client/solo/commands/_manage.py:557
 msgid "Calculating dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:560
+#: ../../client/solo/commands/_manage.py:569
 msgid "Dependencies not found"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:571
+#: ../../client/solo/commands/_manage.py:580
 msgid "Conflicting packages were pulled in"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:587
+#: ../../client/solo/commands/_manage.py:596
 msgid "Please mask conflicts using"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:639
-#: ../../client/solo/commands/_manage.py:682
+#: ../../client/solo/commands/_manage.py:648
+#: ../../client/solo/commands/_manage.py:691
 msgid "download"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:708
+#: ../../client/solo/commands/_manage.py:717
 msgid "Repositories are old, please run:"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:732
+#: ../../client/solo/commands/_manage.py:741
 msgid "Please update the following critical packages"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:743
+#: ../../client/solo/commands/_manage.py:752
 msgid "You should install them as soon as possible"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:764
+#: ../../client/solo/commands/_manage.py:773
 msgid "Read the license"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:769
+#: ../../client/solo/commands/_manage.py:778
 msgid "Accept the license (I've read it)"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:774
+#: ../../client/solo/commands/_manage.py:783
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:778
+#: ../../client/solo/commands/_manage.py:787
 msgid "Quit"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:785
+#: ../../client/solo/commands/_manage.py:794
 msgid "Your choice (type a number and press enter)"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:812
+#: ../../client/solo/commands/_manage.py:821
 msgid "You need to accept the licenses below"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:820
-#: ../../client/solo/commands/preservedlibs.py:145
+#: ../../client/solo/commands/_manage.py:829
+#: ../../client/solo/commands/preservedlibs.py:142
 msgid "needed by"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:860
+#: ../../client/solo/commands/_manage.py:869
 msgid "No license data available"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:871
+#: ../../client/solo/commands/_manage.py:880
 msgid "No file viewer"
 msgstr ""
 
-#: ../../client/solo/commands/_manage.py:872
+#: ../../client/solo/commands/_manage.py:881
 msgid "License saved into"
 msgstr ""
 
@@ -4655,27 +4655,35 @@ msgstr ""
 msgid "unmask one or more packages"
 msgstr ""
 
-#: ../../client/solo/commands/preservedlibs.py:70
+#: ../../client/solo/commands/preservedlibs.py:67
 msgid "manage preserved libraries"
 msgstr ""
 
-#: ../../client/solo/commands/preservedlibs.py:74
+#: ../../client/solo/commands/preservedlibs.py:71
 msgid "list the currently preserved libraries"
 msgstr ""
 
-#: ../../client/solo/commands/preservedlibs.py:80
+#: ../../client/solo/commands/preservedlibs.py:77
 msgid "show libraries that could be garbage collected"
 msgstr ""
 
-#: ../../client/solo/commands/preservedlibs.py:131
+#: ../../client/solo/commands/preservedlibs.py:128
 msgid "No preserved libraries found"
 msgstr ""
 
-#: ../../client/solo/commands/preservedlibs.py:185
+#: ../../client/solo/commands/preservedlibs.py:182
 msgid "No preserved libraries to garbage collect"
 msgstr ""
 
 #: ../../client/solo/commands/preservedlibs.py:204
+msgid "but owned by"
+msgstr ""
+
+#: ../../client/solo/commands/preservedlibs.py:206
+msgid "then just unregister the library"
+msgstr ""
+
+#: ../../client/solo/commands/preservedlibs.py:219
 msgid "Tools to manage the preserved libraries on the system"
 msgstr ""
 
