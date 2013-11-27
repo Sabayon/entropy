@@ -15,7 +15,7 @@ import os
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring, const_is_python3
 from entropy.i18n import _
-from entropy.output import red, purple, brown, darkred, blue, darkgreen
+from entropy.output import red, purple, teal, brown, darkred, blue, darkgreen
 
 import entropy.tools
 
@@ -29,6 +29,12 @@ class _PackageInstallRemoveAction(PackageAction):
     Abstract class that exposes shared functions between install
     and remove PackageAction classes.
     """
+
+    _preserved_libs_enabled = True
+    if os.getenv("ETP_DISABLE_PRESERVED_LIBS"):
+        _preserved_libs_enabled = False
+
+    PRESERVED_LIBS_ENABLED = _preserved_libs_enabled
 
     def __init__(self, entropy_client, package_match, opts = None):
         super(_PackageInstallRemoveAction, self).__init__(
@@ -52,6 +58,113 @@ class _PackageInstallRemoveAction(PackageAction):
         Overridden from PackageAction.
         """
         raise NotImplementedError()
+
+    def _handle_preserved_lib(self, path, preserved_mgr):
+        """
+        Preserve libraries that would be removed but are still needed by
+        installed packages. This is a safety measure for accidental removals.
+        Proper library dependency ordering should be done during dependencies
+        calculation.
+        """
+        solved = preserved_mgr.resolve(path)
+        if solved is None:
+            return None
+
+        paths = preserved_mgr.determine(path)
+
+        if paths:
+
+            self._entropy.output(
+                "%s: %s, %s" % (
+                    darkgreen(_("Protecting")),
+                    teal(path),
+                    darkgreen(_("library needed by:")),
+                ),
+                importance = 1,
+                level = "warning",
+                header = red("   ## ")
+            )
+
+            library, elfclass, s_path = solved
+            preserved_mgr.register(library, elfclass, s_path)
+
+            installed_package_ids = preserved_mgr.needed(path)
+            installed_repository = preserved_mgr.installed_repository()
+
+            for installed_package_id in installed_package_ids:
+                atom = installed_repository.retrieveAtom(installed_package_id)
+                self._entropy.output(
+                    brown(atom),
+                    importance = 0,
+                    level = "warning",
+                    header = darkgreen("   :: ")
+                )
+                self._entropy.logger.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "Protecting library %s, due to package: %s" % (
+                        path, atom,)
+                )
+
+        return paths
+
+    def _garbage_collect_preserved_libs(self, preserved_mgr, remove = False):
+        """
+        Garbage collect (and remove) libraries preserved on the system
+        no longer available or no longer needed by any installed package.
+        """
+        preserved_libs = preserved_mgr.collect()
+
+        for library, elfclass, path in preserved_libs:
+
+            if remove:
+                msg = _("Removing library")
+                log_msg = const_convert_to_unicode("Removing library")
+            else:
+                msg = _("Unregistering library")
+                log_msg = const_convert_to_unicode("Unregistering library")
+
+            self._entropy.output(
+                "%s: %s [%s, %s]" % (
+                    brown(msg),
+                    darkgreen(path),
+                    purple(library),
+                    teal(const_convert_to_unicode("%s" % (elfclass,))),
+                ),
+                importance = 0,
+                level = "warning",
+                header = darkgreen("   :: ")
+            )
+
+            self._entropy.logger.log(
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
+                "%s %s [%s:%s]" % (
+                    log_msg, path, library, elfclass,)
+            )
+
+            if remove:
+                remove_failed = preserved_mgr.remove(library, elfclass, path)
+                for failed_path, err in remove_failed:
+                    self._entropy.output(
+                        "%s: %s, %s" % (
+                            purple(_("Failed to remove the library")),
+                            darkred(failed_path),
+                            err,
+                        ),
+                        importance = 1,
+                        level = "warning",
+                        header = brown("   ## ")
+                    )
+                    self._entropy.logger.log(
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
+                        "Error during %s removal: %s" % (failed_path, err)
+                    )
+
+            preserved_mgr.unregister(library, elfclass, path)
+
+        return len(preserved_libs) > 0
 
     def _get_system_root(self, metadata):
         """
@@ -289,6 +402,7 @@ class _PackageInstallRemoveAction(PackageAction):
 
     def _remove_content_from_system_loop(self, inst_repo, remove_content,
                                          directories, directories_cache,
+                                         preserved_mgr,
                                          not_removed_due_to_collisions,
                                          colliding_path_messages,
                                          automerge_metadata, col_protect,
@@ -299,6 +413,18 @@ class _PackageInstallRemoveAction(PackageAction):
         """
         info_dirs = self._get_info_directories()
         metadata = self.metadata()
+
+        # collect all the library paths to be preserved
+        # in the final removal loop.
+        preserved_lib_paths = set()
+
+        if self.PRESERVED_LIBS_ENABLED:
+            for _pkg_id, item, _ftype in remove_content:
+
+                # determine without sys_root
+                paths = self._handle_preserved_lib(item, preserved_mgr)
+                if paths is not None:
+                    preserved_lib_paths.update(paths)
 
         for _pkg_id, item, _ftype in remove_content:
 
@@ -432,6 +558,15 @@ class _PackageInstallRemoveAction(PackageAction):
             # just a file or symlink or broken
             # directory symlink (remove now)
 
+            # skip file removal if item is a preserved library.
+            if item in preserved_lib_paths:
+                self._entropy.logger.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "[remove] skipping removal of: %s" % (sys_root_item,)
+                )
+                continue
+
             try:
                 os.remove(sys_root_item_encoded)
             except OSError as err:
@@ -466,16 +601,13 @@ class _PackageInstallRemoveAction(PackageAction):
                 directories_cache.add(dirobj)
 
     def _remove_content_from_system(self, installed_repository,
-                                    automerge_metadata = None):
+                                    automerge_metadata, preserved_mgr):
         """
         Remove installed package content (files/directories) from live system.
 
         @keyword automerge_metadata: Entropy "automerge metadata"
         @type automerge_metadata: dict
         """
-        if automerge_metadata is None:
-            automerge_metadata = {}
-
         metadata = self.metadata()
         sys_root = self._get_system_root(metadata)
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
@@ -506,6 +638,7 @@ class _PackageInstallRemoveAction(PackageAction):
             self._remove_content_from_system_loop(
                 installed_repository,
                 remove_content, directories, directories_cache,
+                preserved_mgr,
                 not_removed_due_to_collisions, colliding_path_messages,
                 automerge_metadata, col_protect, protect, mask, protectskip,
                 sys_root)
@@ -513,6 +646,9 @@ class _PackageInstallRemoveAction(PackageAction):
         finally:
             if hasattr(remove_content, "close"):
                 remove_content.close()
+
+        # garbage collect preserved libraries that are no longer needed
+        self._garbage_collect_preserved_libs(preserved_mgr, remove = True)
 
         if colliding_path_messages:
             self._entropy.output(

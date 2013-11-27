@@ -27,6 +27,7 @@ import entropy.tools
 from ._manage import _PackageInstallRemoveAction
 
 from .. import _content as Content
+from .. import preservedlibs
 
 
 class _PackageInstallAction(_PackageInstallRemoveAction):
@@ -166,6 +167,14 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             matchSlot = metadata['slot'])
         metadata['remove_package_id'] = remove_package_id
 
+        # setup the list of provided libraries that we're going to remove
+        if metadata['remove_package_id'] != -1:
+            repo_libs = repo.retrieveProvidedLibraries(self._package_id)
+            inst_libs = inst_repo.retrieveProvidedLibraries(self._package_id)
+            metadata['removed_libs'] = frozenset(inst_libs - repo_libs)
+        else:
+            metadata['removed_libs'] = frozenset()
+
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         metadata['affected_directories'] = set()
@@ -259,6 +268,10 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         if metadata['remove_package_id'] != -1:
             metadata['phases'].append(self._pre_remove)
             metadata['phases'].append(self._install_clean)
+        else:
+            metadata['phases'].append(self._preserved_libs_gc)
+
+        if metadata['remove_package_id'] != -1:
             metadata['phases'].append(self._post_remove)
             metadata['phases'].append(self._post_remove_install)
 
@@ -767,9 +780,37 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             header = red("   ## ")
         )
 
+        installed_repository = self._entropy.installed_repository()
+
+        preserved_mgr = preservedlibs.PreservedLibraries(
+            installed_repository, self._meta['remove_package_id'],
+            self._meta['removed_libs'],
+            root = self._get_system_root(self._meta))
+
         self._remove_content_from_system(
-            self._entropy.installed_repository(),
-            automerge_metadata = self._meta['already_protected_config_files'])
+            installed_repository,
+            self._meta['already_protected_config_files'],
+            preserved_mgr
+            )
+
+        return 0
+
+    def _preserved_libs_gc(self):
+        """
+        Execute the garbage collection of preserved libraries.
+        """
+        installed_repository = self._entropy.installed_repository()
+
+        # NOTE: removed_libs is always empty because this phase is only
+        # called when remove_package_id == -1
+        preserved_mgr = preservedlibs.PreservedLibraries(
+            installed_repository, None, self._meta['removed_libs'],
+            root = self._get_system_root(self._meta))
+
+        collected = self._garbage_collect_preserved_libs(
+            preserved_mgr, remove = False)
+        if collected:
+            installed_repository.commit()
 
         return 0
 

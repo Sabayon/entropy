@@ -18,6 +18,8 @@ import entropy.dep
 
 from ._manage import _PackageInstallRemoveAction
 
+from .. import preservedlibs
+
 
 class _PackageRemoveAction(_PackageInstallRemoveAction):
     """
@@ -167,14 +169,20 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         inst_repo = self._entropy.open_repository(self._repository_id)
         automerge_metadata = inst_repo.retrieveAutomergefiles(
             self._package_id, get_dict = True)
+        provided_libraries = inst_repo.retrieveProvidedLibraries(
+            self._package_id)
 
         inst_repo.removePackage(self._package_id)
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
         inst_repo.commit()
 
+        preserved_mgr = preservedlibs.PreservedLibraries(
+            inst_repo, None, provided_libraries,
+            root = self._get_system_root(self._meta))
+
         self._remove_content_from_system(
-            inst_repo, automerge_metadata = automerge_metadata)
+            inst_repo, automerge_metadata, preserved_mgr)
 
         return 0
 
