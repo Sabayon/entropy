@@ -184,6 +184,9 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         self._remove_content_from_system(
             inst_repo, automerge_metadata, preserved_mgr)
 
+        # garbage collect preserved libraries that are no longer needed
+        self._garbage_collect_preserved_libs(preserved_mgr)
+
         return 0
 
     def _post_remove(self):

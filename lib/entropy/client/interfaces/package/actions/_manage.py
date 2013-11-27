@@ -108,14 +108,23 @@ class _PackageInstallRemoveAction(PackageAction):
 
         return paths
 
-    def _garbage_collect_preserved_libs(self, preserved_mgr, remove = False):
+    def _garbage_collect_preserved_libs(self, preserved_mgr):
         """
         Garbage collect (and remove) libraries preserved on the system
         no longer available or no longer needed by any installed package.
         """
         preserved_libs = preserved_mgr.collect()
+        inst_repo = preserved_mgr.installed_repository()
 
         for library, elfclass, path in preserved_libs:
+
+            # if path is owned by a package, it means that
+            # the library has been replaced, we should not remove it
+            # but just unregister.
+            remove = False
+            package_ids = inst_repo.isFileAvailable(path, get_id = True)
+            if not package_ids:
+                remove = True
 
             if remove:
                 msg = _("Removing library")
@@ -164,7 +173,9 @@ class _PackageInstallRemoveAction(PackageAction):
 
             preserved_mgr.unregister(library, elfclass, path)
 
-        return len(preserved_libs) > 0
+        # commit changes to repository if collected
+        if preserved_libs:
+            inst_repo.commit()
 
     def _get_system_root(self, metadata):
         """
@@ -647,9 +658,6 @@ class _PackageInstallRemoveAction(PackageAction):
         finally:
             if hasattr(remove_content, "close"):
                 remove_content.close()
-
-        # garbage collect preserved libraries that are no longer needed
-        self._garbage_collect_preserved_libs(preserved_mgr, remove = True)
 
         if colliding_path_messages:
             self._entropy.output(

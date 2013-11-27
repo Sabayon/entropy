@@ -793,6 +793,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             preserved_mgr
             )
 
+        # garbage collect preserved libraries that are no longer needed
+        self._garbage_collect_preserved_libs(preserved_mgr)
+
         return 0
 
     def _preserved_libs_gc(self):
@@ -808,10 +811,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             self._meta['removed_libs'],
             root = self._get_system_root(self._meta))
 
-        collected = self._garbage_collect_preserved_libs(
-            preserved_mgr, remove = False)
-        if collected:
-            installed_repository.commit()
+        self._garbage_collect_preserved_libs(preserved_mgr)
 
         return 0
 
