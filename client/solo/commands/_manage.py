@@ -510,23 +510,32 @@ class SoloManage(SoloCommand):
         """
         package_ids = []
         for package in packages:
-            package_id, _result = inst_repo.atomMatch(package)
-            if package_id == -1:
-                mytxt = "!!! %s: %s %s." % (
-                    purple(_("Warning")),
-                    teal(const_convert_to_unicode(package)),
-                    purple(_("is not installed")),
-                )
-                entropy_client.output("!!!", level="warning")
-                entropy_client.output(mytxt, level="warning")
-                entropy_client.output("!!!", level="warning")
 
-                if len(package) > 3:
-                    self._show_did_you_mean(
-                        entropy_client, package, True)
-                    entropy_client.output("!!!", level="warning")
+            package_id, _result = inst_repo.atomMatch(package)
+            if package_id != -1:
+                package_ids.append(package_id)
                 continue
-            package_ids.append(package_id)
+
+            # support file paths and convert them to package_ids
+            file_package_ids = inst_repo.isFileAvailable(
+                package, get_id=True)
+            if file_package_ids:
+                package_ids.extend(file_package_ids)
+                continue
+
+            mytxt = "!!! %s: %s %s." % (
+                purple(_("Warning")),
+                teal(const_convert_to_unicode(package)),
+                purple(_("is not installed")),
+            )
+            entropy_client.output("!!!", level="warning")
+            entropy_client.output(mytxt, level="warning")
+            entropy_client.output("!!!", level="warning")
+
+            if len(package) > 3:
+                self._show_did_you_mean(
+                    entropy_client, package, True)
+                entropy_client.output("!!!", level="warning")
 
         return package_ids
 
