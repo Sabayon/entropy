@@ -9,6 +9,8 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
+import collections
+import errno
 import os
 
 
@@ -24,13 +26,17 @@ class PreservedLibraries(object):
     thrown away.
     """
 
-    def __init__(self, installed_repository, provided_libraries, root = None):
+    def __init__(self, installed_repository, installed_package_id,
+                 provided_libraries, root = None):
         """
         Object constructor.
 
         @param installed_repository: an EntropyRepository object pointing
             to the installed packages repository
         @type installed_repository: EntropyRepository
+        @param installed_package_id: the installed packages repository package
+            identifier
+        @type installed_package_id: int
         @param provided_libraries: set of libraries that a package provides,
             typically this is the data returned by
             EntropyRepository.retrieveProvidedLibraries()
@@ -40,8 +46,9 @@ class PreservedLibraries(object):
         @type root: string
         """
         self._inst_repo = installed_repository
+        self._package_id = installed_package_id
         self._raw_provided = provided_libraries
-        self._provided = dict(((l_path, (library, l_path, elfclass)) for
+        self._provided = dict(((l_path, (library, elfclass, l_path)) for
                                library, l_path, elfclass in provided_libraries))
         self._root = root or ""
         self._search_needed_cache = {}
@@ -51,6 +58,19 @@ class PreservedLibraries(object):
         Return the installed packages repository used by this object.
         """
         return self._inst_repo
+
+    def resolve(self, library_path):
+        """
+        Resolve the given library path into a (library, elfclass, path) tuple.
+        A tuple is returned iff it can be found in the provided libraries
+        metadata passed during initialization of this object, None otherwise.
+
+        @param library_path: path to a library that would be removed (without
+            the root prefix)
+        @type library_path: string
+        @return: a (library name, elf class, library path) tuple or None
+        """
+        return self._provided.get(library_path)
 
     def determine(self, library_path):
         """
@@ -72,17 +92,35 @@ class PreservedLibraries(object):
             # the item should not be protected
             return paths
 
-        library, _path, elfclass = provided_path
+        library, elfclass, _path = provided_path
 
-        installed_package_ids = self._search_needed(library, elfclass)
+        installed_package_ids = set(self._search_needed(library, elfclass))
+        # drop myself from the list
+        installed_package_ids.discard(self._package_id)
+
         if not installed_package_ids:
             # no packages need this library
             return paths
 
+        paths.update(self._follow(library_path))
+        return paths
+
+    def _follow(self, library_path):
+        """
+        Follow library_path symlinks and generate a sequence of paths.
+
+        @param library_path: path to a library that would be removed (without
+            the root prefix)
+        @type library_path: string
+        @return: a sequence of paths
+        @rtype: collections.deque
+        """
+        paths = collections.deque()
+
         recursion = 100
         root_library_path = self._root + library_path
 
-        paths.add(library_path)
+        paths.append(library_path)
         while os.path.islink(root_library_path) and recursion:
             # avoid infinite recursion
             recursion -= 1
@@ -95,7 +133,7 @@ class PreservedLibraries(object):
             library_path = os.path.join(
                 os.path.dirname(library_path),
                 path_link)
-            paths.add(library_path)
+            paths.append(library_path)
 
         return paths
 
@@ -128,7 +166,7 @@ class PreservedLibraries(object):
         if provided_path is None:
             return set()
 
-        library, _path, elfclass = provided_path
+        library, elfclass, _path = provided_path
         return self._search_needed(library, elfclass)
 
     def collect(self):
@@ -174,7 +212,56 @@ class PreservedLibraries(object):
 
     def remove(self, library, elfclass, path):
         """
-        Remove the given preserved library element from the registry in
-        the installed packages repository.
+        Remove the given preserved library element from the system.
+        This method will not unregister the element from the registry,
+        please use unregister().
+
+        @param library: the library name
+        @type library: string
+        @param elfclass: the ELF class of the library
+        @type elfclass: int
+        @param path: the path to the library
+        @type path: string
+        @return: a sequence of path that haven't been removed and their reasons
+        @rtype: collections.queue
         """
-        self._inst_repo.removePreservedLibrary(library, elfclass, path)
+        failed = collections.deque()
+
+        for lib_path in self._follow(path):
+            root_lib_path = self._root + lib_path
+
+            try:
+                os.remove(root_lib_path)
+            except (OSError, IOError) as err:
+                if err.errno != errno.ENOENT:
+                    failed.append((root_lib_path, err))
+
+        return failed
+
+    def register(self, library, elfclass, path):
+        """
+        Register the given preserved library element into the registry in
+        the installed packages repository.
+
+        @param library: the library name
+        @type library: string
+        @param elfclass: the ELF class of the library
+        @type elfclass: int
+        @param path: the path to the library
+        @type path: string
+        """
+        return self._inst_repo.insertPreservedLibrary(library, elfclass, path)
+
+    def unregister(self, library, elfclass, path):
+        """
+        Unregister the given preserved library element from the registry in
+        the installed packages repository.
+
+        @param library: the library name
+        @type library: string
+        @param elfclass: the ELF class of the library
+        @type elfclass: int
+        @param path: the path to the library
+        @type path: string
+        """
+        return self._inst_repo.removePreservedLibrary(library, elfclass, path)
