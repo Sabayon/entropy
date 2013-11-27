@@ -582,6 +582,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
                     library VARCHAR,
                     elfclass INTEGER,
                     path VARCHAR,
+                    atom VARCHAR,
                     PRIMARY KEY (library, path, elfclass)
                 );
 
@@ -2173,13 +2174,13 @@ class EntropySQLRepository(EntropyRepositoryBase):
         INSERT INTO triggers VALUES (?, ?)
         """, (package_id, const_get_buffer()(trigger),))
 
-    def insertPreservedLibrary(self, library, elfclass, path):
+    def insertPreservedLibrary(self, library, elfclass, path, atom):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute("""
-        %s INTO preserved_libs VALUES (?, ?, ?)
-        """ % (self._INSERT_OR_REPLACE,), (library, elfclass, path))
+        %s INTO preserved_libs VALUES (?, ?, ?, ?)
+        """ % (self._INSERT_OR_REPLACE,), (library, elfclass, path, atom))
 
     def removePreservedLibrary(self, library, elfclass, path):
         """
@@ -2195,7 +2196,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute("""
-        SELECT library, elfclass, path FROM preserved_libs
+        SELECT library, elfclass, path, atom FROM preserved_libs
         """)
         return tuple(cur)
 

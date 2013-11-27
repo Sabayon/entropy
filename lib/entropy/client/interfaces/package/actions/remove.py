@@ -178,7 +178,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         inst_repo.commit()
 
         preserved_mgr = preservedlibs.PreservedLibraries(
-            inst_repo, None, provided_libraries,
+            inst_repo, None, self._meta['atom'], provided_libraries,
             root = self._get_system_root(self._meta))
 
         self._remove_content_from_system(

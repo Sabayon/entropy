@@ -1075,7 +1075,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
-    def insertPreservedLibrary(self, library, elfclass, path):
+    def insertPreservedLibrary(self, library, elfclass, path, atom):
         """
         Mark a library as preserved.
 
@@ -1084,6 +1084,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @param elfclass: the ELF class of the library
         @type elfclass: int
         @param path: the path where the library is currently stored
+        @param atom: the atom string of the package providing the library
+        @type atom: string
         """
         raise NotImplementedError()
 
@@ -1103,7 +1105,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Return a list of all the recorded preserved libraries.
 
-        @return: a list (tuple) of tuples composed by (library, elfclass, path).
+        @return: a list (tuple) of tuples composed by
+            (library, elfclass, path, atom).
         @rtype: tuple
         """
         raise NotImplementedError()

@@ -30,7 +30,7 @@ class PreservedLibraries(object):
     """
 
     def __init__(self, installed_repository, installed_package_id,
-                 provided_libraries, root = None):
+                 atom, provided_libraries, root = None):
         """
         Object constructor.
 
@@ -40,6 +40,8 @@ class PreservedLibraries(object):
         @param installed_package_id: the installed packages repository package
             identifier
         @type installed_package_id: int
+        @param atom: the atom owning the library
+        @type atom: string
         @param provided_libraries: set of libraries that a package provides,
             typically this is the data returned by
             EntropyRepository.retrieveProvidedLibraries()
@@ -50,6 +52,7 @@ class PreservedLibraries(object):
         """
         self._inst_repo = installed_repository
         self._package_id = installed_package_id
+        self._atom = atom
         self._raw_provided = provided_libraries
         self._provided = dict(((l_path, (library, elfclass, l_path)) for
                                library, l_path, elfclass in provided_libraries))
@@ -203,9 +206,10 @@ class PreservedLibraries(object):
         """
         Return a list of all the preserved libraries items stored in the
         registry.
-        The list is composed of a tuple (library, elfclass, path).
+        The list is composed of a tuple (library, elfclass, path, atom).
 
-        @return: a list of preserved library items (library, elfclass, path)
+        @return: a list of preserved library items (library,
+            elfclass, path, atom)
         @rtype: list
         """
         return self._inst_repo.listAllPreservedLibraries()
@@ -218,10 +222,9 @@ class PreservedLibraries(object):
         @return: a list of preserved library items (library, elfclass, path)
         @rtype: list
         """
-        preserved_libs = self.list()
-
         collectables = []
-        for library, elfclass, path in preserved_libs:
+
+        for library, elfclass, path, _atom in self.list():
 
             item = (library, elfclass, path)
             root_path = self._root + path
@@ -297,7 +300,8 @@ class PreservedLibraries(object):
         @param path: the path to the library
         @type path: string
         """
-        return self._inst_repo.insertPreservedLibrary(library, elfclass, path)
+        return self._inst_repo.insertPreservedLibrary(
+            library, elfclass, path, self._atom)
 
     def unregister(self, library, elfclass, path):
         """

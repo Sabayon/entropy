@@ -130,7 +130,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
     # bump this every time schema changes and databaseStructureUpdate
     # should be triggered
-    _SCHEMA_REVISION = 4
+    _SCHEMA_REVISION = 5
 
     _INSERT_OR_REPLACE = "INSERT OR REPLACE"
     _INSERT_OR_IGNORE = "INSERT OR IGNORE"
@@ -1705,6 +1705,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         # added on Nov. 2013
         if not self._doesTableExist("preserved_libs"):
             self._createPreservedLibsTable()
+        if not self._doesColumnInTableExist("preserved_libs", "atom"):
+            self._createPreservedLibsAtomColumn()
 
         # added on Sept. 2010, keep forever? ;-)
         self._migrateBaseinfoExtrainfo()
@@ -2426,10 +2428,17 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 library VARCHAR,
                 elfclass INTEGER,
                 path VARCHAR,
+                atom VARCHAR,
                 PRIMARY KEY (library, path, elfclass)
             );
         """)
         self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
+
+    def _createPreservedLibsAtomColumn(self):
+        self._cursor().execute("""
+        ALTER TABLE preserved_libs ADD atom VARCHAR;
+        """)
         self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackageDownloadsTable(self):

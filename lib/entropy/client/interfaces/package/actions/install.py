@@ -784,7 +784,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         preserved_mgr = preservedlibs.PreservedLibraries(
             installed_repository, self._meta['remove_package_id'],
-            self._meta['removed_libs'],
+            self._meta['removeatom'], self._meta['removed_libs'],
             root = self._get_system_root(self._meta))
 
         self._remove_content_from_system(
@@ -804,7 +804,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # NOTE: removed_libs is always empty because this phase is only
         # called when remove_package_id == -1
         preserved_mgr = preservedlibs.PreservedLibraries(
-            installed_repository, None, self._meta['removed_libs'],
+            installed_repository, None, self._meta['atom'],
+            self._meta['removed_libs'],
             root = self._get_system_root(self._meta))
 
         collected = self._garbage_collect_preserved_libs(

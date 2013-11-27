@@ -941,13 +941,14 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.test_db.listAllPreservedLibraries()
         self.assertEqual(data, tuple())
 
+        atom = "app-foo/bar-1.2.3"
         fake_data = [
-            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so.3"),
-            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so.3.0.0"),
-            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so"),
-            ("libbar.so.10", 2, "/usr/lib64/libbar.so.10"),
-            ("libbar.so.10", 2, "/usr/lib64/libbar.so"),
-            ("libbar.so.10", 2, "/usr/lib64/libbar.so.10.0.0"),
+            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so.3", atom),
+            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so.3.0.0", atom),
+            ("libfoo.so.3", 2, "/usr/lib64/libfoo.so", atom),
+            ("libbar.so.10", 2, "/usr/lib64/libbar.so.10", atom),
+            ("libbar.so.10", 2, "/usr/lib64/libbar.so", atom),
+            ("libbar.so.10", 2, "/usr/lib64/libbar.so.10.0.0", atom),
         ]
         for entry in fake_data:
             self.test_db.insertPreservedLibrary(*entry)
@@ -957,7 +958,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(tuple(data), tuple(fake_data))
 
         grouped = {}
-        for lib, elfclass, path in data:
+        for lib, elfclass, path, _atom in data:
             obj = grouped.setdefault((lib, elfclass), [])
             obj.append(path)
 
@@ -969,7 +970,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # test removal
         count = len(data)
-        for lib, elfclass, path in data:
+        for lib, elfclass, path, _atom in data:
             self.test_db.removePreservedLibrary(lib, elfclass, path)
             count -= 1
             current_preserved_libs = self.test_db.listAllPreservedLibraries()
