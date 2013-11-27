@@ -199,6 +199,17 @@ class PreservedLibraries(object):
         library, elfclass, _path = provided_path
         return self._search_needed(library, elfclass)
 
+    def list(self):
+        """
+        Return a list of all the preserved libraries items stored in the
+        registry.
+        The list is composed of a tuple (library, elfclass, path).
+
+        @return: a list of preserved library items (library, elfclass, path)
+        @rtype: list
+        """
+        return self._inst_repo.listAllPreservedLibraries()
+
     def collect(self):
         """
         Return a list of collectable preserved libraries items that can be
@@ -207,7 +218,7 @@ class PreservedLibraries(object):
         @return: a list of preserved library items (library, elfclass, path)
         @rtype: list
         """
-        preserved_libs = self._inst_repo.listAllPreservedLibraries()
+        preserved_libs = self.list()
 
         collectables = []
         for library, elfclass, path in preserved_libs:
