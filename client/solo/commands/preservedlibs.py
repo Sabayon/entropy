@@ -10,14 +10,11 @@
 
 """
 import argparse
-import errno
-import os
 import sys
 
 from entropy.const import etpConst, const_convert_to_unicode
 from entropy.i18n import _
-from entropy.output import red, bold, brown, blue, darkred, darkgreen, \
-    purple, teal
+from entropy.output import brown, blue, darkred, darkgreen, purple, teal
 
 from entropy.client.interfaces.package import preservedlibs
 
