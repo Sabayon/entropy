@@ -104,6 +104,7 @@
 ../client/solo/commands/download.py
 ../client/solo/commands/version.py
 ../client/solo/commands/mask.py
+../client/solo/commands/preservedlibs.py
 ../client/solo/commands/notice.py
 ../magneto/src/magneto/kde/interfaces.py
 ../magneto/src/magneto/kde/components.py

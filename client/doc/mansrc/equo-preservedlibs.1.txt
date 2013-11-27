@@ -1,0 +1,54 @@
+equo-preservedlibs(1)
+=====================
+:man source:   equo {equoversion}
+:man manual:   equo {equoversion}
+
+
+NAME
+----
+equo-preservedlibs - Tools to manage the preserved libraries on the system
+
+
+SYNOPSIS
+--------
+equo preservedlibs [-h] {list,gc} ...
+
+
+INTRODUCTION
+------------
+Tools to manage the preserved libraries currently stored on the system.
+
+
+
+OPTIONS
+-------
+"equo preservedlibs" supports the following options which alters its behaviour.
+
+
+OPTIONAL ARGUMENTS
+~~~~~~~~~~~~~~~~~~
+*--help*::
+    show this help message and exit
+
+ACTION
+~~~~~~
+*list*::
+    list the currently preserved libraries
+
+*gc*::
+    show libraries that could be garbage collected
+
+
+
+AUTHORS
+-------
+Fabio Erculiani (lxnay@sabayon.org)
+
+REPORTING BUGS
+--------------
+Report bugs to https://bugs.sabayon.org or directly to the author at
+lxnay@sabayon.org.
+
+SEE ALSO
+--------
+    equo(1)

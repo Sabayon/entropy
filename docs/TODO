@@ -1,6 +1,5 @@
 Short term:
 
-- preserved libs support
 - eit cache clean
 - drop all the EntropyCacher.CACHE_IDS
 - rewrite entropy.Security() to be O(1)
