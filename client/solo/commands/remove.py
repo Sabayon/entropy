@@ -148,6 +148,7 @@ Remove previously installed packages from system.
             packages)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
+            self._show_preserved_libraries(entropy_client)
         return exit_st
 
     @staticmethod

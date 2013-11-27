@@ -25,6 +25,7 @@ from entropy.exceptions import EntropyPackageException, \
     DependenciesCollision, DependenciesNotFound
 from entropy.services.client import WebService
 from entropy.client.interfaces.repository import Repository
+from entropy.client.interfaces.package.preservedlibs import PreservedLibraries
 
 import entropy.tools
 import entropy.dep
@@ -117,6 +118,34 @@ class SoloManage(SoloCommand):
         entropy_client.output(
             darkgreen(mytxt),
             level="warning")
+
+    def _show_preserved_libraries(self, entropy_client):
+        """
+        Inform User about preserved libraries living on the filesystem.
+        """
+        inst_repo = entropy_client.installed_repository()
+        preserved_mgr = PreservedLibraries(
+            inst_repo, None, frozenset(), root=etpConst['systemroot'])
+
+        preserved = preserved_mgr.list()
+
+        if preserved:
+            mytxt = ngettext(
+                "There is %s preserved library on the system",
+                "There are %s preserved libraries on the system",
+                len(preserved)) % (len(preserved),)
+            entropy_client.output(
+                darkgreen(mytxt),
+                level="warning")
+
+        for library, elfclass, path, atom in preserved:
+            entropy_client.output(
+                "%s [%s:%s -> %s]" % (
+                    darkred(path),
+                    purple(library),
+                    teal(const_convert_to_unicode(elfclass)),
+                    enlightenatom(atom),
+                ))
 
     def _show_packages_info(self, entropy_client, package_matches,
                             deps, ask, pretend, verbose, quiet,
