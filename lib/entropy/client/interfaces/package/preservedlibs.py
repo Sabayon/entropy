@@ -14,6 +14,8 @@ import errno
 import os
 import stat
 
+from entropy.const import const_convert_to_unicode
+
 
 class PreservedLibraries(object):
     """
@@ -51,7 +53,7 @@ class PreservedLibraries(object):
         self._raw_provided = provided_libraries
         self._provided = dict(((l_path, (library, elfclass, l_path)) for
                                library, l_path, elfclass in provided_libraries))
-        self._root = root or ""
+        self._root = root or const_convert_to_unicode("")
         self._search_needed_cache = {}
 
     def installed_repository(self):
