@@ -260,24 +260,20 @@ class PreservedLibraries(object):
 
         return collectables
 
-    def remove(self, library, elfclass, path):
+    def remove(self, library_path):
         """
         Remove the given preserved library element from the system.
         This method will not unregister the element from the registry,
         please use unregister().
 
-        @param library: the library name
-        @type library: string
-        @param elfclass: the ELF class of the library
-        @type elfclass: int
-        @param path: the path to the library
-        @type path: string
+        @param library_path: the path to the library
+        @type library_path: string
         @return: a sequence of path that haven't been removed and their reasons
         @rtype: collections.queue
         """
         failed = collections.deque()
 
-        for lib_path in self._follow(path):
+        for lib_path in self._follow(library_path):
             root_lib_path = self._root + lib_path
 
             try:

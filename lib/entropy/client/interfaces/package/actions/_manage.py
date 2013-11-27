@@ -144,7 +144,7 @@ class _PackageInstallRemoveAction(PackageAction):
             )
 
             if remove:
-                remove_failed = preserved_mgr.remove(library, elfclass, path)
+                remove_failed = preserved_mgr.remove(path)
                 for failed_path, err in remove_failed:
                     self._entropy.output(
                         "%s: %s, %s" % (
