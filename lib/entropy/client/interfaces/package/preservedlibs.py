@@ -30,7 +30,7 @@ class PreservedLibraries(object):
     """
 
     def __init__(self, installed_repository, installed_package_id,
-                 atom, provided_libraries, root = None):
+                 provided_libraries, root = None):
         """
         Object constructor.
 
@@ -40,8 +40,6 @@ class PreservedLibraries(object):
         @param installed_package_id: the installed packages repository package
             identifier
         @type installed_package_id: int
-        @param atom: the atom owning the library
-        @type atom: string
         @param provided_libraries: set of libraries that a package provides,
             typically this is the data returned by
             EntropyRepository.retrieveProvidedLibraries()
@@ -52,7 +50,6 @@ class PreservedLibraries(object):
         """
         self._inst_repo = installed_repository
         self._package_id = installed_package_id
-        self._atom = atom
         self._raw_provided = provided_libraries
         self._provided = dict(((l_path, (library, elfclass, l_path)) for
                                library, l_path, elfclass in provided_libraries))
@@ -64,6 +61,12 @@ class PreservedLibraries(object):
         Return the installed packages repository used by this object.
         """
         return self._inst_repo
+
+    def package_id(self):
+        """
+        Return the installed packages repository package identifier.
+        """
+        return self._package_id
 
     def resolve(self, library_path):
         """
@@ -288,7 +291,7 @@ class PreservedLibraries(object):
 
         return failed
 
-    def register(self, library, elfclass, path):
+    def register(self, library, elfclass, path, atom):
         """
         Register the given preserved library element into the registry in
         the installed packages repository.
@@ -301,7 +304,7 @@ class PreservedLibraries(object):
         @type path: string
         """
         return self._inst_repo.insertPreservedLibrary(
-            library, elfclass, path, self._atom)
+            library, elfclass, path)
 
     def unregister(self, library, elfclass, path):
         """

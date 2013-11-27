@@ -59,7 +59,7 @@ class _PackageInstallRemoveAction(PackageAction):
         """
         raise NotImplementedError()
 
-    def _handle_preserved_lib(self, path, preserved_mgr):
+    def _handle_preserved_lib(self, path, atom, preserved_mgr):
         """
         Preserve libraries that would be removed but are still needed by
         installed packages. This is a safety measure for accidental removals.
@@ -86,7 +86,7 @@ class _PackageInstallRemoveAction(PackageAction):
             )
 
             library, elfclass, s_path = solved
-            preserved_mgr.register(library, elfclass, s_path)
+            preserved_mgr.register(library, elfclass, s_path, atom)
 
             installed_package_ids = preserved_mgr.needed(path)
             installed_repository = preserved_mgr.installed_repository()
@@ -422,7 +422,8 @@ class _PackageInstallRemoveAction(PackageAction):
             for _pkg_id, item, _ftype in remove_content:
 
                 # determine without sys_root
-                paths = self._handle_preserved_lib(item, preserved_mgr)
+                paths = self._handle_preserved_lib(
+                    item, metadata['removeatom'], preserved_mgr)
                 if paths is not None:
                     preserved_lib_paths.update(paths)
 
