@@ -304,7 +304,7 @@ class PreservedLibraries(object):
         @type path: string
         """
         return self._inst_repo.insertPreservedLibrary(
-            library, elfclass, path)
+            library, elfclass, path, atom)
 
     def unregister(self, library, elfclass, path):
         """
