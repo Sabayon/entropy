@@ -248,13 +248,17 @@ class PreservedLibraries(object):
             # is the library provided by any package?
             providers = self._inst_repo.resolveNeeded(
                 library, elfclass = elfclass, extended = True)
-            found_provider = False
 
-            for provider_package_id, provider_path in providers:
-                if provider_path == path:
-                    found_provider = True
-                    break
-            if found_provider:
+            # There is a trade-off here. We would like to check if
+            # the provider is the same of path, but we would miss the
+            # libraries that moved from like /lib to /usr/lib.
+            # An alternative would be to check if all the packages
+            # in package_ids can reach at least one of the providers
+            # but this would be quite expensive to do. Since this is
+            # anyway a best-effort service and 99% of the cases are already
+            # handled on the packaging side ("server" side), we could
+            # just accept that providers, if any, are reachable by consumers.
+            if providers:
                 collectables.append(item)
                 continue
 
