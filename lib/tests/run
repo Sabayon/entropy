@@ -13,12 +13,10 @@ sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 # set unit testing mode
 from entropy.const import etpSys
-import entropy.tools
 etpSys['unittest'] = True
 
 from tests import db, client, server, misc, fetchers, tools, dep, i18n, spm, \
     qa, core, security, const
-rc = 0
 
 # Add to the list the module to test
 mods = [db, client, server, misc, fetchers, tools, dep, i18n, spm, qa, core,
@@ -28,8 +26,8 @@ tests = []
 for mod in mods:
     tests.append(unittest.TestLoader().loadTestsFromModule(mod))
 
+rc = 0
 result = unittest.TextTestRunner(verbosity = 1).run(unittest.TestSuite(tests))
 if result.errors:
     rc = 1
-entropy.tools.kill_threads()
 raise SystemExit(rc)
