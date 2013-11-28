@@ -38,7 +38,7 @@ def radian(deg):
 
 # directional shapes
 
-class Shape:
+class Shape(object):
 
     """ Base class for a Shape implementation.
 
