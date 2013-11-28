@@ -1,3 +1,354 @@
+commit b21654e7053b0bf8f7689397d21bfc616aa64484
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 28 20:19:05 2013 +0100
+
+    Release Entropy 235
+
+commit 56bc937e4730e02d2419670877f4fb5e0b9df674
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 28 19:55:00 2013 +0100
+
+    [tests] cleanup run
+
+commit 2c1226f909a11739a7283740d8c2b1b23c12f656
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 19:06:50 2013 +0100
+
+    [client] update entropy.pot
+
+commit 57918399e4c1639741a4c7efd9f34b427178c22f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 19:05:24 2013 +0100
+
+    [solo.commands.manage] inform user about preserved libraries
+
+commit c459d63fcc3c922e81ea5b58c64c159d875d8a2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 18:29:03 2013 +0100
+
+    [client] translate file paths on "equo remove" to packages.
+    
+    "equo remove /usr/bin/k3b" will remove app-cdr/k3b
+
+commit ed3e8cc263174c1942de8aefe41bf93ad4852fcf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 18:28:47 2013 +0100
+
+    [client] update translations
+
+commit f4c1cae4fea9fe246e565e77494a2d00d719cde7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 18:27:35 2013 +0100
+
+    [client] update entropy.pot
+
+commit 3f046e6c07da121f24559857e16336b006dfb371
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 18:18:33 2013 +0100
+
+    [entropy.client.package] _garbage_collect_preserved_libs: remove library iff there are no owners
+
+commit dfb6fadf99648c3c6eb6f989e024288a0c752ded
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 17:38:57 2013 +0100
+
+    [entropy.client.package] PreservedLibraries: fix insertPreservedLibraries() call
+
+commit fe649e5f2b0c0883e38ab970031c9755a790e1bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 17:36:24 2013 +0100
+
+    [solo.commands.preservedlibs] drop atom argument from PreservedLibs()
+
+commit 2b3b2d0f275810a3f1f718d495fccd74052e6d26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 17:29:52 2013 +0100
+
+    [entropy.client.package] PreservedLibraries: tweak API
+
+commit 7cd5228b3afbc145668a317ebb23f7b856a7c5b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 17:27:39 2013 +0100
+
+    [solo.commands.preservedlibs] inform user about libraries owned by packages in gc
+
+commit 9d733afefbaf5d221b92702fbf00f500e968fec4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 17:27:23 2013 +0100
+
+    [solo.commands.preservedlibs] drop unused imports
+
+commit 67443f16456aef8a2d309c7122ca0b34a13c6b3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 16:46:14 2013 +0100
+
+    [entropy.client.package] PreservedLibraries: accept any provider as valid
+
+commit b548f4b357f505cb2f3c1ef2d0369bf2c0f2da1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 12:51:16 2013 +0100
+
+    [solo.commands.preservedlibs] add new command "preservedlibs"
+
+commit 97f2e47438086bc9c617897c87fac186a4c8c0d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 12:37:05 2013 +0100
+
+    [entropy.client.package] simplify PreservedLibraries.remove()
+
+commit e7c482ac215d999aee557ba24be17595e311e195
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 12:30:09 2013 +0100
+
+    [entropy.db] add atom field to preserved_libs metadata
+
+commit 334172f8f941ee0d21f81e8cbfecab173f03f235
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 12:18:07 2013 +0100
+
+    [entropy.client.package] expose a list() method, wrap listAllPreservedLibraries()
+
+commit 87d375e9ecfd13113eaea227101d57646591f932
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 12:17:45 2013 +0100
+
+    [entropy.client.package] force self._root to unicode
+
+commit 66dd05936ea23317e3075682cb659165a5d331c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 11:41:36 2013 +0100
+
+    [client] add new paths to POTFILES.in
+
+commit fa97583cacd279a1c2d7b64af1a9da534f3c41bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 11:25:47 2013 +0100
+
+    [entropy.client.package] initial preserved libraries support
+
+commit 5efdb319037df43e2a0f53a4a80dbc5e241b6892
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 11:22:31 2013 +0100
+
+    [entropy.client.package] correctly handle symlinks to hardlinks, see Gentoo bug #406837
+
+commit 81cf0befe41732914841ba2988ebf46070216d2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 27 10:31:23 2013 +0100
+
+    [entropy.client.package] extend the preservedlibs module with more methods
+
+commit 3c8f5ae81272d2243cd5739069752d4a3848fea2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 26 22:32:56 2013 +0100
+
+    [entropy.client.package] remove useless del calls
+
+commit 68f3db82d67811b6d295cb7fad6a6f6bb0543669
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 26 22:31:08 2013 +0100
+
+    [entropy.client.package] add metadata parameter to _get_system_root()
+
+commit 0a948b87847fcee380a80181d17e098b4318a1f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 26 22:26:32 2013 +0100
+
+    [entropy.client.package] move self._meta to _PackageInstallRemoveAction
+
+commit 548d579d2f3be4e3a36dab78cfdc2d9309633791
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 26 20:53:00 2013 +0100
+
+    [entropy.client.package] add initial preserved libraries support class
+
+commit 86cdf058a393406ad81eaea88f6fd18c4d245049
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 26 11:18:34 2013 +0100
+
+    [entropy.tools] move struct import to global scope
+
+commit ff461f467686a80db07d914e6b9aca94b4a16d50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 20:24:22 2013 +0100
+
+    [entropy.client.package] add _PackageFetchAction.package_path() for PackageKit
+
+commit 70a0a1c983e6529d26ad28cf73a85bcd4cc35400
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 14:15:05 2013 +0100
+
+    [entropy.client.interfaces.package] drop unused metadata
+
+commit 41e0cf576bd1b2b236f12db526eeffe3d1fc5167
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 14:14:48 2013 +0100
+
+    [RigoDaemon] migrate to the new PackageActionFactory API
+
+commit 005ac42610a2c41167f3ced859cf5496ffe7c9c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 13:58:39 2013 +0100
+
+    [tests] port code to the new PackageActionFactory API
+
+commit f10b9341f90aa74a3cba125a845ac7b2a589e745
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 13:53:40 2013 +0100
+
+    [client] migrate solo to the new PackageActionFactory API
+
+commit 453481204d2512f0bac28e75fafa89bf4fc04b85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 23 13:00:53 2013 +0100
+
+    [entropy.client.interfaces.package] split Package class, create new API
+    
+    The Package has been split into multiple PackageAction based classes.
+    The new interface uses a factory (PackageActionFactory) to build
+    the PackageAction objects on behalf of the caller.
+    
+    The new factory-based interface is clean, modular and faster than
+    the old Package spaghetti class.
+    
+    Backward compatibility has been preserved, as long as caller doesn't
+    peek into internal structures and metadata. The old interface has
+    been deprecated and a new Entropy Client method called PackageActionFactory()
+    has been added.
+    
+    Please migrate your code to the new API, the old API will be dropped in 1
+    solar year.
+
+commit 44444b43d8768a21dc30523062a3f02e666a846d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 18:14:29 2013 +0100
+
+    [entropy.client.misc] drop unused variables
+
+commit 8f083449a6832d6d38a0a7fbce398c1f0f31ba46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 18:12:23 2013 +0100
+
+    [entropy.client.misc] drop deprecated class, sulfur is dead
+
+commit 1b6e7ff2fff78036be3a1da47dfc06f91dfca45b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 15:17:38 2013 +0100
+
+    [entropy.client.package] move FileContent* classes to separate module
+
+commit 7fe3c021bdf7f5e9b35a8d3540d60a23b87adc02
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 15:00:14 2013 +0100
+
+    [entropy.client] move package.py to Python package
+
+commit 69fb71f9578c6bfaeaddb5e16597edb77f9ec696
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 14:02:49 2013 +0100
+
+    [entropy.client.package] code style updates
+
+commit c04f2c5a50c4228d39f3658756a483e76687b98d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 13:57:14 2013 +0100
+
+    [entropy.client.package] pylint sweep
+
+commit ddfdc517919fdb9dea8732690a613f9de56b9fa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 13:42:06 2013 +0100
+
+    [entropy.client.package] make _handle_config_protect() faster, use sets
+
+commit 782ec72fd60403e6cca735d119d1fe260227c0d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 13:12:15 2013 +0100
+
+    [entropy.const] drop all the config_protect+mask objects from etpConst
+
+commit d41aa402bae69ba3c3c18cf2f94e5b6567d67e52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 12:54:38 2013 +0100
+
+    [entropy.client.package] rewrite config_protect+mask handling code
+    
+    Improve code quality, remove several redundant parts, use set()
+    objects instead of list() for both protect and mask data.
+    Improve speed, save the world.
+
+commit 36b38487a47bc73f6f5599752bd1e04befa022f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 12:20:24 2013 +0100
+
+    [entropy.client.package] some cleanups
+
+commit 41988b7002c3c145ea7584d9ff4489067661d129
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 12:17:48 2013 +0100
+
+    [entropy.client.package] fix config protect and mask handling
+    
+    We must collect the configuration protection and masking bits before
+    the installed package metadata goes away. This is true for both
+    install and removal paths.
+
+commit 9c73be1d0393137313d89145cb8c01047882aec1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 11:04:43 2013 +0100
+
+    [entropy.client.interfaces.package] drop type checking
+
+commit 3d7b00725bb554c83561a8f7a1408c0db31d5a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 22 11:04:25 2013 +0100
+
+    [entropy.tools] drop stale comments
+
+commit 8c5a499e5845ccd0ba30bd4816185aac5a063066
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 21:48:07 2013 +0100
+
+    [RigoDaemon] set the default terminal (${TERM}) if unset
+    
+    This prevents portage phases printing weird things about missing ${TERM}
+
+commit 7091c56fe0845249ee9cd236e6c28bd3597d0cba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 16:43:18 2013 +0100
+
+    [entropy.tools] rewrite read_elf_linker_paths(), improve speed, add tests
+
+commit 60af35b7488d3a3ae1ebf5dad975c8b92b954c2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 16:30:51 2013 +0100
+
+    [entropy.tools] rewrite read_elf_broken_symbols(), add tests
+
+commit 70fc4598402ab912d5839f97b517a44561484832
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 16:05:29 2013 +0100
+
+    [entropy.tools] rewrite read_elf_real_dynamic_libraries(), add tests
+
+commit 1f6805d389620cf041a881202fa0d3be1b9a6b41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 15:48:36 2013 +0100
+
+    [entropy.tools] fix FileNotFound exception handling
+
+commit 5509272fdddb0e7d338f855e6ae8402ea721e3e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 15:48:17 2013 +0100
+
+    [entropy.tools] rewrite read_elf_dynamic_libraries(), make it use scanelf
+
+commit 36285567849170a29737c0519574dac369494aaf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 21 13:05:34 2013 +0100
+
+    Tagging Entropy version 234
+
 commit efeefa1d7ce7481e004323170bc29162dc89ea74
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Nov 21 13:05:33 2013 +0100
