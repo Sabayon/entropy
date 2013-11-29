@@ -1199,6 +1199,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     # the soname path resolves to a provided library
                     continue
 
+                # try with the complete real path
+                # (libGL.so.1 -> /usr/lib64/opengl/...)
+                if os.path.realpath(resolved_soname_path) in provided_libs_set:
+                    # the real soname path resolves to a provided library
+                    continue
+
                 # fixup library dir, multilib systems
                 real_dir = os.path.realpath(os.path.dirname(
                     resolved_soname_path))
