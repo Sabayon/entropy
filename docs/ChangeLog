@@ -1,3 +1,62 @@
+commit d10d82bebb0ffd5397d98e557eddee1c495deaf4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:43:21 2013 +0100
+
+    Release Entropy 238
+
+commit a01f0bd1038bc1f945cccef916e4f37cf7f507a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:41:08 2013 +0100
+
+    [tests] mute QA and Security test function outputs
+
+commit 982d99fe30522514b211b0cced99446536e6c326
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:37:24 2013 +0100
+
+    [tests] client: silence tests
+
+commit 464ae46d90ede34374bf83355ca949af2b39c079
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:29:12 2013 +0100
+
+    [tests] drop debug output
+
+commit e6d0a556b7183e01ca83577a745a7cd70b45d03c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:21:17 2013 +0100
+
+    [entropy.spm] PortagePlugin.__source_env_get_var: silence stderr
+
+commit e406a4edaa1c8e2fbe822f0966931d28a9ba11a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:15:44 2013 +0100
+
+    [entropy.*] create new dependencies metadata "pkg_dependencies"
+    
+    The old "dependencies" metadata is deprecated. It was found that
+    the generated metadata might get corrupted by colliding atom strings.
+    The new implementation avoids collisions completely and is more
+    efficient.
+
+commit 48794603d09c01796aa6f35872f73a1aad57e13d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 17:38:27 2013 +0100
+
+    [entropy.spm] PortagePlugin: make sure that /usr/lib/portage/pym is in sys.path
+
+commit 79885e0e0f11952eeef96cb0fe0a5be84a7ae9e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 17:38:09 2013 +0100
+
+    [entropy.client.interfaces.dep] restore python3 compatibility
+
+commit 078c24de3b73dd4379ab1fe2ee1b6c9fd4ec0662
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 16:42:31 2013 +0100
+
+    Tagging Entropy version 237
+
 commit d28fd6050fcc5220c3f1b73d4e77bff9bb18f0a5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 29 16:42:30 2013 +0100
