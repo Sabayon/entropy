@@ -88,7 +88,16 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         def _setup_download(download, size, package_id, repository_id, digest,
                 signatures):
 
-            obj = (package_id, repository_id, download, digest, signatures)
+            inst_repo = self._entropy.installed_repository()
+            installed_package_id = None
+
+            repo = self._entropy.open_repository(repository_id)
+            key_slot = repo.retrieveKeySlotAggregated(package_id)
+            if key_slot:
+                installed_package_id, _inst_rc = inst_repo.atomMatch(key_slot)
+
+            obj = (package_id, repository_id, installed_package_id,
+                   download, digest, signatures)
             temp_checksum_list.append(obj)
 
             down_path = self.get_standard_fetch_disk_path(download)
@@ -741,9 +750,11 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         exit_st = 0
         ck_list = self._meta['multi_checksum_list']
 
-        for pkg_id, repository_id, download, digest, signatures in ck_list:
+        for (pkg_id, repository_id, inst_pkg_id, download,
+             digest, signatures) in ck_list:
             exit_st = self._match_checksum(
-                pkg_id, repository_id, digest, download, signatures)
+                pkg_id, repository_id, inst_pkg_id, digest,
+                download, signatures)
             if exit_st != 0:
                 break
 

@@ -390,7 +390,8 @@ class _PackageFetchAction(PackageAction):
             "_setup_differential_download(%s) copied to %s" % (
                 url, fetch_path))
 
-    def _try_edelta_fetch(self, url, save_path, resume):
+    def _try_edelta_fetch(self, installed_package_id, url, save_path,
+                          checksum, resume):
 
         # no edelta support enabled
         if not self._meta.get('edelta_support'):
@@ -399,19 +400,13 @@ class _PackageFetchAction(PackageAction):
         if not entropy.tools.is_entropy_delta_available():
             return 1, 0.0
 
-        # when called by _fetch_file, which is called by _download_package
-        # which is called by _match_checksum, which is called by
-        # multi_match_checksum, installed_package_id metadatum is not available
-        # So, be fault tolerant.
-        installed_package_id = self._meta['installed_package_id']
-
         # fresh install, cannot fetch edelta, edelta only works for installed
         # packages, by design.
-        if installed_package_id == -1:
+        if installed_package_id is None or installed_package_id == -1:
             return 1, 0.0
 
         edelta_approve = self._approve_edelta(url, installed_package_id,
-            self._meta['checksum'])
+            checksum)
 
         if edelta_approve is None:
             # edelta not available, give up
@@ -492,7 +487,8 @@ class _PackageFetchAction(PackageAction):
         return 1, data_transfer
 
     def _fetch_file(self, url, save_path, digest = None, resume = True,
-                    download = None, package_id = None, repository = None):
+                    download = None, package_id = None, repository = None,
+                    installed_package_id = None):
         """
         Internal method. Try to download the package file.
         """
@@ -529,7 +525,9 @@ class _PackageFetchAction(PackageAction):
                         filepath_dir, err))
                 return -1, 0, False
 
-        exit_st, data_transfer = self._try_edelta_fetch(url, save_path, resume)
+        exit_st, data_transfer = self._try_edelta_fetch(
+            installed_package_id, url, save_path,
+            digest, resume)
         if exit_st == 0:
             return exit_st, data_transfer, False
         elif exit_st < 0: # < 0 errors are unrecoverable
@@ -605,8 +603,8 @@ class _PackageFetchAction(PackageAction):
 
         return 0, data_transfer, resumed
 
-    def _download_package(self, package_id, repository_id, download, save_path,
-                          digest = False, resume = True):
+    def _download_package(self, package_id, repository_id, installed_package_id,
+                          download, save_path, checksum, resume = True):
 
         avail_data = self._settings['repositories']['available']
         excluded_data = self._settings['repositories']['excluded']
@@ -705,8 +703,9 @@ class _PackageFetchAction(PackageAction):
                     download = download,
                     package_id = package_id,
                     repository = repository_id,
-                    digest = digest,
-                    resume = do_resume
+                    digest = checksum,
+                    resume = do_resume,
+                    installed_package_id = installed_package_id
                 )
 
                 if exit_st == 0:
@@ -827,6 +826,7 @@ class _PackageFetchAction(PackageAction):
             return self._download_package(
                 self._package_id,
                 self._repository_id,
+                self._meta['installed_package_id'],
                 download,
                 pkg_disk_path,
                 checksum
@@ -856,8 +856,8 @@ class _PackageFetchAction(PackageAction):
 
         return exit_st
 
-    def _match_checksum(self, package_id, repository, checksum, download,
-                        signatures):
+    def _match_checksum(self, package_id, repository, installed_package_id,
+                        checksum, download, signatures):
         """
         Verify package checksum and return an exit status code.
         """
@@ -1084,6 +1084,7 @@ class _PackageFetchAction(PackageAction):
                 fetch = self._download_package(
                     package_id,
                     repository,
+                    installed_package_id,
                     download,
                     pkg_disk_path,
                     checksum,
@@ -1130,9 +1131,13 @@ class _PackageFetchAction(PackageAction):
         )
         self._entropy.set_title(xterm_title)
 
-        exit_st = self._match_checksum(self._package_id,
-            self._repository_id, self._meta['checksum'],
-            self._meta['download'], self._meta['signatures'])
+        exit_st = self._match_checksum(
+            self._package_id,
+            self._repository_id,
+            self._meta['installed_package_id'],
+            self._meta['checksum'],
+            self._meta['download'],
+            self._meta['signatures'])
         if exit_st != 0:
             return exit_st
 
@@ -1147,7 +1152,9 @@ class _PackageFetchAction(PackageAction):
             }
             exit_st = self._match_checksum(
                 self._package_id,
-                self._repository_id, checksum,
+                self._repository_id,
+                self._meta['installed_package_id'],
+                checksum,
                 download, signatures)
             if exit_st != 0:
                 return exit_st
