@@ -293,7 +293,6 @@ class ServerPackagesRepository(CachedRepository):
         m_dep_id = etpConst['dependency_type_ids']['mdepend_id']
         for manual_dep in manual_deps:
             pkg_data['pkg_dependencies'] += ((manual_dep, m_dep_id),)
-            pkg_data['dependencies'][manual_dep] = m_dep_id
 
         # add the new one
         return self.addPackage(pkg_data, revision = current_rev,
