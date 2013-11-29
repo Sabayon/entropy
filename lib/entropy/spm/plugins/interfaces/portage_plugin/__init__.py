@@ -1310,13 +1310,16 @@ class PortagePlugin(SpmPlugin):
         exec_path = os.path.join(dirname, "env_sourcer.sh")
         args = [exec_path, env_file, env_var]
         tmp_fd, tmp_path = None, None
+        tmp_err_fd, tmp_err_path = None, None
         raw_enc = etpConst['conf_raw_encoding']
 
         try:
             tmp_fd, tmp_path = const_mkstemp(
                 prefix="entropy.spm.__source_env_get_var")
+            tmp_err_fd, tmp_err_path = const_mkstemp(
+                prefix="entropy.spm.__source_env_get_var_err")
 
-            sts = subprocess.call(args, stdout = tmp_fd)
+            sts = subprocess.call(args, stdout = tmp_fd, stderr = tmp_err_fd)
             if sts != 0:
                 raise IOError("cannot source %s and get %s" % (
                         env_file, env_var,))
@@ -1331,17 +1334,19 @@ class PortagePlugin(SpmPlugin):
             return const_convert_to_unicode(output, enctype = raw_enc)
 
         finally:
-            if tmp_fd is not None:
-                try:
-                    os.close(tmp_fd)
-                except OSError:
-                    pass
-            if tmp_path is not None:
-                try:
-                    os.remove(tmp_path)
-                except OSError as err:
-                    if err.errno != errno.ENOENT:
-                        raise
+            for fd in (tmp_fd, tmp_err_fd):
+                if fd is not None:
+                    try:
+                        os.close(fd)
+                    except OSError:
+                        pass
+            for path in (tmp_path, tmp_err_path):
+                if path is not None:
+                    try:
+                        os.remove(path)
+                    except OSError as err:
+                        if err.errno != errno.ENOENT:
+                            raise
 
     def __pkg_sources_filtering(self, sources):
         sources.discard("->")
