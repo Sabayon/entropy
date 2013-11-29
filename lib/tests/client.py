@@ -231,7 +231,7 @@ class EntropyClientTest(unittest.TestCase):
             pkgdata['affected_infofiles'] = set()
             pkgdata['trigger'] = """\
 #!%s
-echo $@
+echo >/dev/null
 exit 42
 """ % (etpConst['trigger_sh_interpreter'],)
             trigger = self.Client.Triggers(
@@ -258,7 +258,7 @@ exit 42
             pkgdata['affected_infofiles'] = set()
             pkgdata['trigger'] = """\
 import os
-os.system("echo hello")
+os.listdir(".")
 my_ext_status = 42
 """
             trigger = self.Client.Triggers(
@@ -289,18 +289,9 @@ from entropy.const import etpConst
 def configure_correct_gcc():
     gcc_target = "4.5"
     uname_arch = os.uname()[4]
-    gcc_dir = etpConst['systemroot'] + "/etc/env.d/gcc"
-    gcc_profile_file_pfx = uname_arch + "-pc-linux-gnu-" + gcc_target
-    gcc_profile_file = None
-    for curdir, subs, files in os.walk(gcc_dir):
-        for fname in files:
-            if fname.startswith(gcc_profile_file_pfx):
-                gcc_profile_file = fname
-                break
-        break
-    if gcc_profile_file is not None:
-        subprocess.call(("echo", gcc_profile_file))
-    return 42
+    if uname_arch:
+        return 42
+    return 24
 
 if stage == "postinstall":
     my_ext_status = configure_correct_gcc()
