@@ -1233,10 +1233,9 @@ class MultipleUrlFetcher(TextInterface):
         if total_size > 0 and all_started:
             average = int(float(downloaded_size / 1000) / total_size * 100)
 
-        if all_started:
-            time_remaining_str = convert_seconds_to_fancy_output(time_remaining)
-        else:
-            time_remaining_str = _("Infinity")
+        time_remaining_str = convert_seconds_to_fancy_output(time_remaining)
+        if not all_started:
+            time_remaining_str = "~%s" % (time_remaining_str,)
 
         return {
             "downloaded_size": downloaded_size,
