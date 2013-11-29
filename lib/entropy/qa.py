@@ -18,13 +18,13 @@
     exceptions (errors) submission.
 
 """
+import collections
 import errno
 import os
 import sys
 import subprocess
 import stat
 import codecs
-import functools
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
@@ -1148,66 +1148,69 @@ class QAInterface(TextInterface, EntropyPluginStore):
         elif not content_root.endswith(os.path.sep):
             content_root += os.path.sep
 
-        pkg_matches = set()
-        package_id, repo_id = package_match
-        entropy_repository = entropy_client.open_repository(repo_id)
+        dependencies = self.get_deep_dependency_list(entropy_client,
+            package_match, atoms = True)
 
-        for dependency in entropy_repository.retrieveRuntimeDependencies(
-            package_id):
+        pkg_matches = set()
+        for dependency in dependencies:
             match_pkg_id, match_repo_id = entropy_client.atom_match(dependency)
             if match_pkg_id == -1:
                 continue
             pkg_matches.add((match_pkg_id, match_repo_id))
 
-        all_content = set()
-        for pkg_id, pkg_repo in pkg_matches:
-            pkg_dbconn = entropy_client.open_repository(pkg_repo)
-            all_content |= pkg_dbconn.retrieveContent(pkg_id)
+        provided_libs_set = set()
+        package_id, repository_id = package_match
+        entropy_repository = entropy_client.open_repository(repository_id)
 
-        package_content = entropy_repository.retrieveContent(package_id)
-        all_content |= package_content
+        for lib, path, elfclass in entropy_repository.retrieveProvidedLibraries(
+            package_id):
+            provided_libs_set.add(path)
+
+        for pkg_id, pkg_repo in pkg_matches:
+            repo = entropy_client.open_repository(pkg_repo)
+            for lib, path, elfclass in repo.retrieveProvidedLibraries(pkg_id):
+                provided_libs_set.add(path)
+
+        elf_files = collections.deque()
+        for path, ftype in entropy_repository.retrieveContentIter(package_id):
+            real_path = content_root + path
+            if self._is_elf_executable_or_library(
+                real_path, allow_symlink = False):
+                elf_files.append(real_path)
 
         resolve_cache = {}
         unresolved_sonames = {}
-        content = [os.path.normpath(content_root + x) for x in package_content]
-        content_dirs = set((x for x in content if os.path.isdir(x)))
-        elf_files = filter(
-            functools.partial(
-                self._is_elf_executable_or_library,
-                allow_symlink = False),
-            content)
-
-        def soname_in_package_content(soname):
-            for content_dir in content_dirs:
-                if self._is_elf_executable_or_library(
-                    os.path.join(content_dir, soname)):
-                    return True
-            return False
 
         for elf_file in elf_files:
             sonames = entropy.tools.read_elf_real_dynamic_libraries(elf_file)
+
             for soname in sonames:
                 resolved_soname_path = resolve_cache.setdefault(soname,
                     entropy.tools.resolve_dynamic_library(soname, elf_file))
+
                 if resolved_soname_path is None:
                     # library not found on system
                     # maybe it's into our package?
-                    if not soname_in_package_content(soname):
-                        obj = unresolved_sonames.setdefault(elf_file, set())
-                        obj.add(soname)
-                else:
+                    obj = unresolved_sonames.setdefault(elf_file, set())
+                    obj.add(soname)
+                    continue
 
-                    # fixup library dir, multilib systems
-                    real_dir = os.path.realpath(os.path.dirname(
-                        resolved_soname_path))
-                    resolved_soname_path = os.path.join(real_dir,
-                        os.path.basename(resolved_soname_path))
+                if resolved_soname_path in provided_libs_set:
+                    # the soname path resolves to a provided library
+                    continue
 
-                    # library found on system, need to check if it's in our
-                    # package dependencies, "all_content"
-                    if resolved_soname_path not in all_content:
-                        obj = unresolved_sonames.setdefault(elf_file, set())
-                        obj.add(soname)
+                # fixup library dir, multilib systems
+                real_dir = os.path.realpath(os.path.dirname(
+                    resolved_soname_path))
+                multilib_resolved_soname_path = os.path.join(real_dir,
+                    os.path.basename(resolved_soname_path))
+
+                if multilib_resolved_soname_path in provided_libs_set:
+                    # soname library found, phew!
+                    continue
+
+                obj = unresolved_sonames.setdefault(elf_file, set())
+                obj.add(soname)
 
         return unresolved_sonames
 
