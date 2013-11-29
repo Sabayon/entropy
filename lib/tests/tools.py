@@ -477,7 +477,7 @@ class ToolsTest(unittest.TestCase):
              'ld-linux-x86-64.so.2', 'libkrb5support.so.0',
              'libpthread.so.0', 'libgssrpc.so.4',
              'libgssapi_krb5.so.2', 'libdl.so.2',
-             'libk5crypto.so.3', 'libc.so.6', 'libkdb5.so.4.0']
+             'libk5crypto.so.3', 'libc.so.6']
         )
         metadata = et.read_elf_real_dynamic_libraries(elf_obj)
         self.assertEqual(metadata, known_meta)

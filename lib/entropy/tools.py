@@ -2714,9 +2714,10 @@ def read_elf_real_dynamic_libraries(elf_file):
     outcome = set()
     if out is not None:
         for line in out.split("\n"):
+            if line == elf_file:
+                continue
             if line:
                 outcome.add(os.path.basename(line))
-    outcome.discard(elf_file)
 
     return outcome
 
