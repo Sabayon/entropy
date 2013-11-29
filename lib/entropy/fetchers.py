@@ -1025,7 +1025,6 @@ class MultipleUrlFetcher(TextInterface):
         """
         self._init_vars()
 
-        th_id = 0
         speed_limit = 0
         dsl = self.__system_settings['repositories']['transfer_limit']
         if isinstance(dsl, int) and self._url_path_list:
@@ -1047,6 +1046,7 @@ class MultipleUrlFetcher(TextInterface):
                 return self.__multiple_fetcher.handle_statistics(*args,
                     **kwargs)
 
+        th_id = 0
         for url, path_to_save in self._url_path_list:
             th_id += 1
             downloader = MyFetcher(self.__url_fetcher, self, url, path_to_save,
@@ -1060,8 +1060,8 @@ class MultipleUrlFetcher(TextInterface):
             )
             downloader.set_id(th_id)
 
-            def do_download(ds, th_id, downloader):
-                ds[th_id] = downloader.download()
+            def do_download(ds, dth_id, downloader):
+                ds[dth_id] = downloader.download()
 
             t = ParallelTask(do_download, self.__download_statuses, th_id,
                 downloader)
@@ -1254,7 +1254,6 @@ class MultipleUrlFetcher(TextInterface):
         downloaded_size = stats["downloaded_size"]
         total_size = stats["total_size"]
         time_remaining = stats["time_remaining"]
-        all_started = stats["all_started"]
         data_transfer = stats["data_transfer"]
         average = stats["average"]
         time_remaining_str = stats["time_remaining_str"]
