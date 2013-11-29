@@ -1633,10 +1633,6 @@ class PortagePlugin(SpmPlugin):
         data['sources'] = set(portage_metadata['SRC_URI'])
         data['sources'] = self.__pkg_sources_filtering(data['sources'])
 
-        # dependencies is deprecated, because it contains a bug caused
-        # by collisions: if a dep is both runtime and buildtime, it will
-        # be recorded only once. please move to pkg_dependencies.
-        data['dependencies'] = {}
         data['pkg_dependencies'] = set()
 
         dep_keys = {
@@ -1644,11 +1640,9 @@ class PortagePlugin(SpmPlugin):
             "PDEPEND": etpConst['dependency_type_ids']['pdepend_id'],
             "DEPEND": etpConst['dependency_type_ids']['bdepend_id'],
         }
-        # NOTE: sorted() can be dropped once 'dependencies' is gone.
-        # It is only needed to make the collisions deterministic.
         dep_duplicates = set()
-        for dep_key, dep_val in sorted(dep_keys.items()):
-            for x in sorted(portage_metadata[dep_key]):
+        for dep_key, dep_val in dep_keys.items():
+            for x in portage_metadata[dep_key]:
                 if x.startswith("!") or (x in ("(", "||", ")", "")):
                     continue
 
@@ -1656,7 +1650,6 @@ class PortagePlugin(SpmPlugin):
                     continue
                 dep_duplicates.add((x, dep_val))
 
-                data['dependencies'][x] = dep_val
                 data['pkg_dependencies'].add((x, dep_val))
 
         dep_duplicates.clear()
@@ -1668,7 +1661,6 @@ class PortagePlugin(SpmPlugin):
 
         if kern_dep_key is not None:
             kern_dep_id = etpConst['dependency_type_ids']['rdepend_id']
-            data['dependencies'][kern_dep_key] = kern_dep_id
             data['pkg_dependencies'].add((kern_dep_key, kern_dep_id))
 
         # force a tuple object
