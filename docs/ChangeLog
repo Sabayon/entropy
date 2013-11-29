@@ -1,3 +1,33 @@
+commit 4d9397c140c6e2f4c2763bbda2fe371cd22a48dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 20:01:22 2013 +0100
+
+    Release Entropy 239
+
+commit 38810e2c83e5cd8bb460e92409b2f173530e8386
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 20:00:36 2013 +0100
+
+    [entropy.spm] PortagePlugin: drop dependencies metadata compatibility
+
+commit a5761e0302b50b7dbb5d0040a4c0c703fbed3891
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:57:01 2013 +0100
+
+    [entropy.server.db] migrate to pkg_dependencies
+
+commit c9809f077512985a92fa8d46bba5a9ac6ca0ffd2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:56:20 2013 +0100
+
+    [entropy.server] migrate to pkg_dependencies metadata
+
+commit 5c120efb6134de3a70413db60f4e8731268c2358
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 19:43:21 2013 +0100
+
+    Tagging Entropy version 238
+
 commit d10d82bebb0ffd5397d98e557eddee1c495deaf4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 29 19:43:21 2013 +0100
