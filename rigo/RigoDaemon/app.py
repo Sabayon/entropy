@@ -76,6 +76,7 @@ from entropy.output import TextInterface, purple, teal
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package.actions.action import PackageAction
 from entropy.client.interfaces.repository import Repository
+from entropy.client.interfaces.package.preservedlibs import PreservedLibraries
 from entropy.services.client import WebService
 from entropy.core.settings.base import SystemSettings
 
@@ -1514,6 +1515,8 @@ class RigoDaemonService(dbus.service.Object):
                     # put it back
                     self._action_queue_waiter.release()
                 else:
+                    self._maybe_signal_preserved_libraries()
+
                     try:
                         app_log_path = self._read_app_management_notes()
                     except Exception as err:
@@ -2453,6 +2456,24 @@ class RigoDaemonService(dbus.service.Object):
                 "count: %s, total: %s, finally stmt, committing." % (
                     count, total), debug=True)
             self._entropy.installed_repository().commit()
+
+    def _maybe_signal_preserved_libraries(self):
+        """
+        Signal preserved libraries if needed.
+        """
+        self._rwsem.reader_acquire()
+        try:
+            inst_repo = self._entropy.installed_repository()
+            preserved_mgr = PreservedLibraries(
+                inst_repo, None, frozenset(), root=etpConst['systemroot'])
+            preserved = preserved_mgr.list()
+        finally:
+            self._rwsem.reader_release()
+
+        if preserved:
+            GLib.idle_add(
+                self.preserved_libraries_available,
+                preserved)
 
     def _maybe_signal_configuration_updates(self):
         """
@@ -3753,6 +3774,17 @@ class RigoDaemonService(dbus.service.Object):
         (root, source, destination, installed_package_ids, auto-mergeable)
         """
         write_output("configuration_updates_available() issued, args:"
+                     " %s" % (locals(),), debug=True)
+
+    @dbus.service.signal(dbus_interface=BUS_NAME,
+        signature='a(siss)')
+    def preserved_libraries_available(self, preserved):
+        """
+        Notify the presence of preserved libraries still on the system.
+        The payload is a list of tuples, each one composed by:
+        (library name, ELF class, library path, belonging atom)
+        """
+        write_output("preserved_libraries_available() issued, args:"
                      " %s" % (locals(),), debug=True)
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
