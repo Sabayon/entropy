@@ -25,8 +25,6 @@ import tests._misc as _misc
 class EntropyClientTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.mem_repoid = "mem_repo"
         self.mem_repo_desc = "This is a testing repository"
         self.Client = Client(installed_repo = -1, indexing = False,
@@ -43,8 +41,6 @@ class EntropyClientTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
         # calling destroy() and shutdown()
         # need to call destroy() directly to remove all the SystemSettings
         # plugins because shutdown() doesn't, since it's meant to be called
@@ -453,5 +449,4 @@ else:
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

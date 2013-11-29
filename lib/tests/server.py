@@ -17,8 +17,6 @@ import tests._misc as _misc
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.default_repo = "foo"
         etpConst['defaultserverrepositoryid'] = self.default_repo
         etpConst['uid'] = 0
@@ -36,8 +34,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         tearDown is run after each test
         """
         self.Server.remove_repository(self.default_repo)
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
         # calling destroy() and shutdown()
         # need to call destroy() directly to remove all the SystemSettings
         # plugins because shutdown() doesn't, since it's meant to be called
@@ -169,5 +165,4 @@ class EntropyRepositoryTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

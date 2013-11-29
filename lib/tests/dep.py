@@ -16,19 +16,10 @@ import entropy.dep as et
 class DepTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.test_pkg = _misc.get_test_entropy_package()
         self.test_pkg2 = _misc.get_test_entropy_package2()
         self.test_pkg3 = _misc.get_test_entropy_package3()
         self.test_pkgs = [self.test_pkg, self.test_pkg2, self.test_pkg3]
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def test_valid_package_tag(self):
         valid = "ciao"
@@ -264,5 +255,4 @@ class DepTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    et.kill_threads()
     raise SystemExit(0)

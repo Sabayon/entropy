@@ -13,8 +13,6 @@ from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
 class MiscTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.__lifo = Lifo()
         self._lifo_item1 = set([1, 2, 3, 4])
         self._lifo_item2 = set([1, 2, 3, 4])
@@ -25,13 +23,6 @@ class MiscTest(unittest.TestCase):
         self._lifo_items = [self._lifo_item1, self._lifo_item2,
             self._lifo_item3, self._lifo_item4, self._lifo_item5,
             self._lifo_item6]
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def test_lifo_push_pop(self):
 
@@ -95,13 +86,10 @@ class MiscTest(unittest.TestCase):
             import time
             time.sleep(1)
             self.t_sched_run = True
-            #print "parallel done"
 
         t = ParallelTask(do_t)
         t.start()
-        #print "joining"
         t.join()
-        #print "joined"
         self.assertTrue(self.t_sched_run)
 
     def test_flock_file(self):
@@ -249,5 +237,4 @@ class MiscTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

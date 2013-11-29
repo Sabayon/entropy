@@ -18,11 +18,10 @@ import tests._misc as _misc
 import entropy.dep
 import entropy.tools
 
+
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.Client = Client(installed_repo = -1, indexing = False,
             xcache = False, repo_validation = False)
         self.Spm = self.Client.Spm()
@@ -47,8 +46,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
         self.test_db.close()
         self.test_db2.close()
         # calling destroy() and shutdown()
@@ -653,7 +650,11 @@ class EntropyRepositoryTest(unittest.TestCase):
             fd, buf_file = tempfile.mkstemp()
             os.close(fd)
             buf = open(buf_file, "wb")
+
+            set_mute(True)
             self.test_db.exportRepository(buf)
+            set_mute(False)
+
             buf.flush()
             buf.close()
 
@@ -1018,5 +1019,4 @@ class EntropyRepositoryTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

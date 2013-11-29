@@ -12,17 +12,8 @@ import entropy.tools
 class FetchersTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self._random_file = _misc.get_random_file()
         self._random_file_md5 = _misc.get_random_file_md5()
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def test_urlfetcher_file_fetch(self):
 
@@ -58,5 +49,4 @@ class FetchersTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

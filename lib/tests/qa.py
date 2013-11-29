@@ -12,17 +12,8 @@ import tempfile
 class QATest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         text = TextInterface()
         self.QA = entropy.qa.QAInterface()
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def test_package_qa(self):
         pkgs = [_misc.get_test_entropy_package4(),
@@ -35,5 +26,4 @@ class QATest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

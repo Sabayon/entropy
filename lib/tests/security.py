@@ -35,9 +35,6 @@ class SecurityTest(unittest.TestCase):
         self._system = System(self._entropy)
         # set fake security url
 
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
-
     def tearDown(self):
         """
         tearDown is run after each test
@@ -54,8 +51,6 @@ class SecurityTest(unittest.TestCase):
         shutil.rmtree(self._tmp_dir, True)
         shutil.rmtree(self._security_dir, True)
         shutil.rmtree(self._security_cache_dir, True)
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def test_security_get_advisories_cache(self):
         self.assertEqual(self._system.get_advisories_cache(), None)
@@ -131,5 +126,4 @@ class SecurityTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

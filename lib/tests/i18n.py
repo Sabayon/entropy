@@ -8,14 +8,11 @@ sys.path.insert(0, '../')
 
 import unittest
 from entropy.i18n import _, change_language
-from entropy.output import print_info
 from entropy.const import const_convert_to_unicode
 
 class MiscTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self._backup_language = os.environ.get("LANGUAGE", '')
         self._words_to_test = [
             "Yes", "No", "database already exists",
@@ -67,8 +64,6 @@ class MiscTest(unittest.TestCase):
         tearDown is run after each test
         """
         change_language(self._backup_language)
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
 
     def _assert_word(self, untranslated, translated):
         lang = os.environ.get("LANGUAGE")
@@ -80,8 +75,6 @@ class MiscTest(unittest.TestCase):
     def __do_print(self):
         for word in self._words_to_test:
             tword = _(word)
-            print_info("%s [%s]: %s" % (
-                r"test", os.environ.get("LANGUAGE"), tword,))
             self._assert_word(word, tword)
 
     def test_1_italian(self):
@@ -104,12 +97,7 @@ class MiscTest(unittest.TestCase):
         change_language('de_DE')
         self.__do_print()
 
-    #def test_i18n_func(self):
-    #    pass
-
-
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

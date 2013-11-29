@@ -12,17 +12,6 @@ from entropy.exceptions import SecurityError
 
 class ConstTest(unittest.TestCase):
 
-    def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
-
     def test_privileges(self):
 
         self.assertTrue(os.getuid() == 0)
@@ -47,5 +36,4 @@ class ConstTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)

@@ -16,8 +16,6 @@ from entropy.spm.plugins.interfaces.portage_plugin import \
 class SpmTest(unittest.TestCase):
 
     def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
         self.Client = Client(installed_repo = -1, indexing = False,
             xcache = False, repo_validation = False)
         self.test_pkg = _misc.get_test_entropy_package()
@@ -29,8 +27,6 @@ class SpmTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
         # calling destroy() and shutdown()
         # need to call destroy() directly to remove all the SystemSettings
         # plugins because shutdown() doesn't, since it's meant to be called
@@ -318,5 +314,4 @@ class SpmTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    et.kill_threads()
     raise SystemExit(0)

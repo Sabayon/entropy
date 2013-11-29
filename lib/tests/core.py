@@ -11,17 +11,6 @@ import tests._misc as _misc
 
 class CoreTest(unittest.TestCase):
 
-    def setUp(self):
-        sys.stdout.write("%s called\n" % (self,))
-        sys.stdout.flush()
-
-    def tearDown(self):
-        """
-        tearDown is run after each test
-        """
-        sys.stdout.write("%s ran\n" % (self,))
-        sys.stdout.flush()
-
     def test_plugin_store(self):
 
         store = EntropyPluginStore()
@@ -57,5 +46,4 @@ class CoreTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-    entropy.tools.kill_threads()
     raise SystemExit(0)
