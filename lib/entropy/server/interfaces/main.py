@@ -7455,8 +7455,10 @@ class Server(Client):
 
         # pkg_meta['conflicts'] is a frozenset
         conflicts = set(pkg_meta['conflicts'])
+        new_dependencies = []
+        remove_dependencies = set()
 
-        for dep_string, dep_value in pkg_meta['dependencies'].items():
+        for dep_string, dep_value in pkg_meta['pkg_dependencies']:
 
             dep_string_matched = False
             matched_pattern = False
@@ -7472,8 +7474,8 @@ class Server(Client):
                     if conflict:
                         conflicts.add(dep_pattern_string)
                     else:
-                        pkg_meta['dependencies'][dep_pattern_string] = \
-                            dep_pattern_type
+                        new_dependencies.append(
+                            (dep_pattern_string, dep_pattern_type))
                     continue
 
                 if not compiled_pattern.match(dep_string):
@@ -7491,7 +7493,7 @@ class Server(Client):
                     if number_of_subs_made:
                         dep_string_matched = True
                         if new_dep_string and (new_dep_string != "-"):
-                            pkg_meta['dependencies'][new_dep_string] = dep_value
+                            new_dependencies.append((new_dep_string, dep_value))
                             self.output(
                                 "%s: %s => %s" % (
                                     teal(_("replaced")),
@@ -7526,7 +7528,7 @@ class Server(Client):
                         )
 
             if dep_string_matched:
-                del pkg_meta['dependencies'][dep_string]
+                remove_dependencies.add(dep_string)
             elif (not dep_string_matched) and matched_pattern:
                 self.output(
                     "%s: %s :: %s" % (
@@ -7538,6 +7540,15 @@ class Server(Client):
                     level = "warning",
                     header = darkred("   !x!x!x! ")
                 )
+
+        pkg_dependencies = []
+        for dep_string, dep_value in pkg_meta['pkg_dependencies']:
+            if dep_string in remove_dependencies:
+                continue
+            pkg_dependencies.append((dep_string, dep_value))
+
+        pkg_dependencies.extend(new_dependencies)
+        pkg_meta['pkg_dependencies'] = tuple(pkg_dependencies)
 
         # save conflicts metadata back in place
         pkg_meta['conflicts'] = frozenset(conflicts)
