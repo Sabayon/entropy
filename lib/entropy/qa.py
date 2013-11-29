@@ -792,20 +792,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             def _is_elf(item):
                 filepath = os.path.join(currentdir, item)
-                try:
-                    st = os.stat(filepath)
-                except (OSError, IOError):
-                    return None
-
-                if not stat.S_ISREG(st.st_mode):
-                    return None
-                # shared libraries must be always executable
-                if not (stat.S_IMODE(st.st_mode) & stat.S_IXUSR):
-                    return None
-
-                if not entropy.tools.is_elf_file(filepath):
-                    return None
-                return filepath[sys_root_len:]
+                if self._is_elf_executable_or_library(filepath):
+                    return filepath[sys_root_len:]
 
             return (x for x in map(_is_elf, files) if x is not None)
 
@@ -925,7 +913,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         my_real_exec_dir = os.path.dirname(real_exec_path)
                         mylib_guess = os.path.join(my_real_exec_dir, mylib)
                         try:
-                            if entropy.tools.is_elf_file(mylib_guess):
+                            if self._is_elf_executable_or_library(mylib_guess):
                                 # we have found the missing library,
                                 # which wasn't in LDPATH, booooo @ package
                                 # developers !! boooo!
@@ -1065,9 +1053,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         mylibs = {}
         for myfile in mycontent:
             myfile = const_convert_to_rawstring(myfile)
-            if not const_file_readable(myfile):
-                continue
-            if not entropy.tools.is_elf_file(myfile):
+            if not self._is_elf_executable_or_library(myfile):
                 continue
             mylibs[myfile] = entropy.tools.read_elf_dynamic_libraries(
                 myfile)
@@ -1087,6 +1073,44 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 broken_libs[mylib].add(myneeded)
 
         return broken_libs
+
+    def _is_elf_executable_or_library(self, path):
+        """
+        Determine whether a path is a valid ELF executable or ELF library.
+
+        @param path: path to test
+        @type path: string
+        @return: True, if yes
+        @rtype: bool
+        """
+        if not const_is_python3():
+            path = const_convert_to_rawstring(path)
+
+        try:
+            st = os.stat(path)
+        except (OSError, IOError):
+            return False
+
+        # is it a regular file?
+        if not stat.S_ISREG(st.st_mode):
+            return False
+
+        # shared libraries must be always executable
+        if not (stat.S_IMODE(st.st_mode) & stat.S_IXUSR):
+            return False
+
+        # is it a debug file? skip them.
+        t_path = path
+        while t_path != os.path.sep:
+            if t_path in etpConst['splitdebug_dirs']:
+                return False
+            t_path = os.path.dirname(t_path)
+
+        # is this really an ELF object file?
+        if not entropy.tools.is_elf_file(path):
+            return False
+
+        return True
 
     def _get_unresolved_sonames(self, entropy_client, package_match,
         content_root = None):
@@ -1117,19 +1141,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
         elif not content_root.endswith(os.path.sep):
             content_root += os.path.sep
 
-        def is_valid_elf(path):
-            if not os.path.lexists(path):
-                return False
-            if not os.path.isfile(path):
-                return False
-            if os.path.islink(path):
-                return False
-            if not const_file_readable(path):
-                return False
-            if not entropy.tools.is_elf_file(path):
-                return False
-            return True
-
         pkg_matches = set()
         package_id, repo_id = package_match
         entropy_repository = entropy_client.open_repository(repo_id)
@@ -1153,11 +1164,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
         unresolved_sonames = {}
         content = [os.path.normpath(content_root + x) for x in package_content]
         content_dirs = set((x for x in content if os.path.isdir(x)))
-        elf_files = filter(is_valid_elf, content)
+        elf_files = filter(self._is_elf_executable_or_library, content)
 
         def soname_in_package_content(soname):
             for content_dir in content_dirs:
-                if is_valid_elf(os.path.join(content_dir, soname)):
+                if self._is_elf_executable_or_library(
+                    os.path.join(content_dir, soname)):
                     return True
             return False
 
