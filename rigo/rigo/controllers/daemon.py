@@ -37,7 +37,8 @@ from rigo.ui.gtk3.widgets.notifications import NotificationBox, \
     PleaseWaitNotificationBox, LicensesNotificationBox, \
     OrphanedAppsNotificationBox, InstallNotificationBox, \
     RemovalNotificationBox, QueueActionNotificationBox, \
-    UpdatesNotificationBox, RepositoriesUpdateNotificationBox
+    UpdatesNotificationBox, RepositoriesUpdateNotificationBox, \
+    PreservedLibsNotificationBox
 
 from rigo.utils import prepare_markup
 
@@ -188,6 +189,7 @@ class RigoServiceController(GObject.Object):
     _NOTICEBOARDS_AVAILABLE_SIGNAL = "noticeboards_available"
     _REPOS_SETTINGS_CHANGED_SIGNAL = "repositories_settings_changed"
     _MIRRORS_OPTIMIZED_SIGNAL = "mirrors_optimized"
+    _PRESERVED_LIBS_AVAILABLE_SIGNAL = "preserved_libraries_available"
     _SUPPORTED_APIS = [6, 7, 8]
 
     def __init__(self, rigo_app, activity_rwsem,
@@ -571,6 +573,21 @@ class RigoServiceController(GObject.Object):
                     self._MIRRORS_OPTIMIZED_SIGNAL,
                     self._mirrors_optimized_signal,
                     dbus_interface=self.DBUS_INTERFACE)
+
+                # RigoDaemon talls us that there are preserved libraries
+                # on the system
+                try:
+                    self.__entropy_bus.connect_to_signal(
+                        self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
+                        self._preserved_libraries_signal,
+                        dbus_interface=self.DBUS_INTERFACE)
+                except dbus.exceptions.DBusException as exc:
+                    # signal may not be available, ignore.
+                    const_debug_write(
+                        __name__,
+                        "_entropy_bus: %s signal not available: %s" % (
+                            self._PRESERVED_LIBS_AVAILABLE_SIGNAL,
+                            exc,))
 
             self._execute_mainloop(_init)
             return self.__entropy_bus
@@ -1152,6 +1169,21 @@ class RigoServiceController(GObject.Object):
             msg, msg_type,
             context_id=self.OPTIMIZE_MIRRORS_CONTEXT_ID)
         self._nc.append(box, timeout=30)
+
+    def _preserved_libraries_signal(self, preserved):
+        """
+        RigoDaemon is signaling that there are preserved libraries on the
+        system.
+        """
+        if self._nc is not None:
+
+            def _on_upgrade(box):
+                self._nc.remove(box)
+                self.upgrade_system()
+
+            box = PreservedLibsNotificationBox(preserved)
+            box.connect("upgrade-request", _on_upgrade)
+            self._nc.append(box)
 
     def _output_signal(self, text, header, footer, back, importance, level,
                count_c, count_t, percent, raw):

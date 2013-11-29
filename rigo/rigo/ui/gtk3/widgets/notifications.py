@@ -1194,3 +1194,40 @@ class RenameRepositoryNotificationBox(NotificationBox):
 
         self.destroy()
         self.emit("renamed")
+
+
+class PreservedLibsNotificationBox(NotificationBox):
+
+    __gsignals__ = {
+        # Update button clicked
+        "upgrade-request" : (GObject.SignalFlags.RUN_LAST,
+                          None,
+                          tuple(),
+                          ),
+    }
+
+    def __init__(self, preserved):
+
+        preserved_len = len(preserved)
+        msg = ngettext("There is <b>%d</b> preserved library on the system",
+                       "There are <b>%d</b> preserved libraries on the system",
+                       preserved_len)
+        msg = msg % (preserved_len,)
+
+        msg += ". " + _("What to do?")
+
+        NotificationBox.__init__(
+            self, prepare_markup(msg),
+            tooltip=prepare_markup(
+                _("Preserved libraries detected on the system.")),
+            message_type=Gtk.MessageType.WARNING,
+            context_id="PreservedLibsNotificationBox")
+
+        self.add_button(_("_Update system now"), self._update)
+        self.add_destroy_button(_("_Ignore"))
+
+    def _update(self, button):
+        """
+        Update button callback from the updates notification box.
+        """
+        self.emit("upgrade-request")
