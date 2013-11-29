@@ -90,6 +90,12 @@ class TerminalWidget(Vte.Terminal):
         self.set_color_foreground_rgba(fg_rgba)
         self.set_color_bold_rgba(fg_rgba)
 
+    def autoscroll(self, value):
+        """
+        Enable or disable automatic scrolling.
+        """
+        self.set_scroll_on_output(value)
+
     def _set_config_colors(self, background_color, foreground_color):
         """
         Set the given color strings to the configuration file.
@@ -177,7 +183,6 @@ class TerminalWidget(Vte.Terminal):
         self.set_emulation("xterm")
         self.set_font_from_string("Monospace 9")
         self.set_scrollback_lines(10000)
-        self.set_scroll_on_output(True)
         self._configure_colors()
 
     def reset(self):

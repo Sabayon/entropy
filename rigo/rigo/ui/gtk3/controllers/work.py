@@ -48,6 +48,7 @@ class WorkViewController(GObject.Object):
         self._terminal = None
         self._terminal_menu = None
         self._last_daemon_action = None
+        self._autoscroll_mode = False
 
     def _setup_terminal_menu(self):
         """
@@ -80,6 +81,16 @@ class WorkViewController(GObject.Object):
         white_menu_item.connect("activate", self._on_terminal_color, False)
         self._terminal_menu.append(white_menu_item)
 
+        self._autoscroll_enable_text = escape_markup(
+            _("Enable automatic scrolling"))
+        self._autoscroll_disable_text = escape_markup(
+            _("Disable automatic scrolling"))
+        self._autoscroll_menu_item = Gtk.ImageMenuItem.new_with_label(
+            self._autoscroll_enable_text)
+        self._autoscroll_menu_item.connect(
+            "activate", self._on_terminal_autoscroll)
+        self._terminal_menu.append(self._autoscroll_menu_item)
+
         self._terminal_menu.show_all()
 
     def _setup_terminal_area(self):
@@ -99,6 +110,8 @@ class WorkViewController(GObject.Object):
             "button-press-event",
             self._on_terminal_click)
         self._terminal.reset()
+        self._terminal.autoscroll(self._autoscroll_mode)
+
         hbox.pack_start(self._terminal, True, True, 0)
 
         scrollbar = Gtk.VScrollbar.new(self._terminal.adjustment)
@@ -397,3 +410,17 @@ class WorkViewController(GObject.Object):
             self._terminal.white()
         else:
             self._terminal.black()
+
+    def _on_terminal_autoscroll(self, widget):
+        """
+        Toggle the terminal autoscroll mode.
+        """
+        mode = not self._autoscroll_mode
+        self._autoscroll_mode = mode
+        if mode:
+            text = self._autoscroll_disable_text
+        else:
+            text = self._autoscroll_enable_text
+
+        self._autoscroll_menu_item.set_label(text)
+        self._terminal.autoscroll(mode)
