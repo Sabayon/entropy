@@ -579,6 +579,13 @@ class PortagePlugin(SpmPlugin):
     if "/usr/lib/gentoolkit/pym" not in sys.path:
         sys.path.append("/usr/lib/gentoolkit/pym")
 
+    # Portage now installs its modules into site-packages.
+    # However, if it's compiled only for py2.7, running
+    # this code with py3.3 won't work. So, add the real
+    # portage/pym path.
+    if "/usr/lib/portage/pym" not in sys.path:
+        sys.path.append("/usr/lib/portage/pym")
+
     def init_singleton(self, output_interface):
 
         self.__output = output_interface
