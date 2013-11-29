@@ -1074,12 +1074,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return broken_libs
 
-    def _is_elf_executable_or_library(self, path):
+    def _is_elf_executable_or_library(self, path, allow_symlink = True):
         """
         Determine whether a path is a valid ELF executable or ELF library.
 
         @param path: path to test
         @type path: string
+        @keyword allow_symlink: True, if you accept symlinks
+        @type allow_symlink: bool
         @return: True, if yes
         @rtype: bool
         """
@@ -1094,6 +1096,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
         # is it a regular file?
         if not stat.S_ISREG(st.st_mode):
             return False
+
+        if not allow_symlink:
+            if stat.S_ISLNK(st.st_mode):
+                return False
 
         # shared libraries must be always executable
         if not (stat.S_IMODE(st.st_mode) & stat.S_IXUSR):
