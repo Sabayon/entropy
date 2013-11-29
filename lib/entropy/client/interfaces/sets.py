@@ -286,7 +286,7 @@ class Sets:
 
         try:
             os.remove(set_file)
-        except OSError:
+        except OSError as err:
             if err.errno != errno.ENOENT:
                 raise InvalidPackageSet(_("Set not found or unable to remove"))
 
