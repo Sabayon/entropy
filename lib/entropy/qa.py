@@ -24,6 +24,7 @@ import sys
 import subprocess
 import stat
 import codecs
+import functools
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
@@ -1170,7 +1171,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
         unresolved_sonames = {}
         content = [os.path.normpath(content_root + x) for x in package_content]
         content_dirs = set((x for x in content if os.path.isdir(x)))
-        elf_files = filter(self._is_elf_executable_or_library, content)
+        elf_files = filter(
+            functools.partial(
+                self._is_elf_executable_or_library,
+                allow_symlink = False),
+            content)
 
         def soname_in_package_content(soname):
             for content_dir in content_dirs:
