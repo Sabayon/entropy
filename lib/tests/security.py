@@ -9,6 +9,7 @@ import unittest
 import tempfile
 import shutil
 from entropy.const import etpConst
+from entropy.output import set_mute
 from entropy.client.interfaces import Client
 from entropy.security import Repository, System
 import entropy.tools
@@ -78,7 +79,9 @@ class SecurityTest(unittest.TestCase):
         self.assertEqual(meta, {})
 
     def test_security_fetch_advisories(self):
+        set_mute(True)
         s_rc = self._system.sync()
+        set_mute(False)
         self.assertEqual(s_rc, 0)
         self.assertEqual(self._system.check_advisories_availability(), True)
 
