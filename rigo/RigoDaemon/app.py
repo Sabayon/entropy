@@ -1070,6 +1070,8 @@ class RigoDaemonService(dbus.service.Object):
             }
 
         def _authorized_callback(result):
+            write_output("_authorize: received callback: %s" % (
+                    result,), debug=True)
             auth_res['result'] = result
             auth_res['sem'].release()
 
