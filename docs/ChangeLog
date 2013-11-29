@@ -1,3 +1,75 @@
+commit 46cbde0a878d22c57cfb6e7381b6f5cbc4061b61
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 13:09:01 2013 +0100
+
+    Release Entropy 236
+
+commit b7292eadf133091ce169e5f5b3fee21e1d5f6d9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 13:08:28 2013 +0100
+
+    [entropy.fetchers] do not print "Infinity" but rather warn about the accuracy
+
+commit a5910790a607f34b7b5c692be8a7ae8271a5722a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 13:08:07 2013 +0100
+
+    [entropy.fetchers] clean code a bit
+
+commit 6f8164dd14017e73e91cb46584dc710f14d0da88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 12:55:26 2013 +0100
+
+    [entropy.client.package] fix regression in .edelta files download support
+
+commit 7fc8ad14adbff7d205f2fa0989b3404990cb3f81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 11:57:57 2013 +0100
+
+    [RigoDaemon] add debug output on _authorize callback method
+
+commit 3d1c79c299dc007983edf0d0640b67c82af8322e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 11:37:42 2013 +0100
+
+    [Rigo] update translations
+
+commit 0ce468721227b15af6228ece5fdbcee11914dc6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 11:37:15 2013 +0100
+
+    [Rigo] update rigo.pot
+
+commit f68ddef4ae5007e7174f34bfb5e64ee66e135c81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 11:36:47 2013 +0100
+
+    [Rigo] add support for basic preserved libraries notification
+
+commit ae9707d39e9dac17193379248bd1984a59073719
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 11:05:15 2013 +0100
+
+    [Rigo] make possible to toggle the VteTerminal scroll-on-output mode
+
+commit 04048b88186456c34da3e90b66865d682063721a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 10:48:50 2013 +0100
+
+    [RigoDaemon] signal preserved libraries through preserved_libraries_available()
+
+commit 52791086d589fb5d28ee1627607a07e26997ed1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 28 21:03:31 2013 +0100
+
+    [Rigo] derive Shape from object, avoid python warning
+
+commit 6848c9cda0ae9df3a9a5803c0f37ebcde566a95c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 28 20:19:05 2013 +0100
+
+    Tagging Entropy version 235
+
 commit b21654e7053b0bf8f7689397d21bfc616aa64484
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Nov 28 20:19:05 2013 +0100
