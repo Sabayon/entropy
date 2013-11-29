@@ -139,9 +139,10 @@ class Repository:
                 # execute post update repo hook
                 self._run_post_update_repository_hook(repo)
 
-        # keep them closed
+        # keep them closed, but trigger schema updates
         self._entropy.close_repositories()
         self._entropy._validate_repositories()
+        self._entropy.reopen_installed_repository()
         self._entropy.close_repositories()
 
         # clean caches, fetch security
