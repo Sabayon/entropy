@@ -150,3 +150,10 @@ def get_config_files_updates_test_files():
         get_test_generic_package("packages.server.dep_blacklist.test"),
         get_test_generic_package("packages.server.dep_rewrite.test")
     ]
+
+def clean_pkg_metadata(data):
+    for k in ('dependencies', 'original_repository', 'extra_download'):
+        try:
+            del data[k]
+        except KeyError:
+            pass

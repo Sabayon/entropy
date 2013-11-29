@@ -209,7 +209,6 @@ non-permanent way.
 
             new_deps = data.get('new_deps', [])
             orig_deps = [(x, dep_type_map[x],) for x in new_deps]
-            insert_deps = dict(orig_deps)
 
             self._show_package_dependencies(
                 entropy_server, atom, orig_deps)
@@ -224,7 +223,7 @@ non-permanent way.
             while True:
                 try:
                     w_repo.removeDependencies(package_id)
-                    w_repo.insertDependencies(package_id, insert_deps)
+                    w_repo.insertDependencies(package_id, orig_deps)
                     w_repo.commit()
                 except (KeyboardInterrupt, SystemExit,):
                     continue

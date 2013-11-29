@@ -693,7 +693,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 'cxxflags': '-Os -march=x86-64 -pipe',
                 'injected': False,
                 'licensedata': {'ZLIB': u"lictext"},
-                'dependencies': {},
+                'pkg_dependencies': tuple(),
                 'chost': 'x86_64-pc-linux-gn',
                 'config_protect': 'string string',
                 'download': 'packages/amd64/4/sys-libs:zlib-1.2.3-r1.tbz2',
@@ -1026,7 +1026,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def insertDependencies(self, package_id, depdata):
         """
         Insert dependencies for package. "depdata" is a dict() with dependency
-        strings as keys and dependency type as values.
+        strings as keys and dependency type as values or a sequence of tuples
+        composed by (dep, dep type).
 
         @param package_id: package indentifier
         @type package_id: int
@@ -1490,8 +1491,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
             'content_safety': {},
-            'dependencies': dict((x, y,) for x, y in \
-                self.retrieveDependencies(package_id, extended = True)),
+            'pkg_dependencies': self.retrieveDependencies(package_id,
+                                                          extended = True),
             'mirrorlinks': [[x,self.retrieveMirrorData(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(package_id),
@@ -1552,6 +1553,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         if get_content_safety:
             content_safety = self.retrieveContentSafety(package_id)
 
+        deps = self.retrieveDependencies(
+            package_id, extended = True,
+            resolve_conditional_deps = False)
+
         data = {
             'atom': atom,
             'name': name,
@@ -1595,9 +1600,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
             'content_safety': content_safety,
-            'dependencies': dict((x, y,) for x, y in \
-                self.retrieveDependencies(package_id, extended = True,
-                    resolve_conditional_deps = False)),
+            # TODO: backward compatibility, drop after 2015
+            'dependencies': dict((x, y,) for x, y in deps),
+            'pkg_dependencies': deps,
             'mirrorlinks': [[x, self.retrieveMirrorData(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(package_id),
@@ -1772,7 +1777,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 package.appendChild(provides)
 
             dependencies = doc.createElement("dependencies")
-            if data['dependencies']:
+            if data.get('pkg_dependencies'):
                 dep_type_ids = etpConst['dependency_type_ids']
                 dep_type_map = {
                     dep_type_ids['bdepend_id']: "buildtime",
@@ -1787,8 +1792,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     dependency.setAttribute("conflict", "true")
                     dependencies.appendChild(dependency)
 
-                for dep in sorted(data['dependencies']):
-                    dep_type = dep_type_map[data['dependencies'][dep]]
+                for dep, dep_type in sorted(data['pkg_dependencies']):
                     dependency = doc.createElement("dependency")
                     dependency.appendChild(doc.createTextNode(dep))
                     dependency.setAttribute("type", dep_type)

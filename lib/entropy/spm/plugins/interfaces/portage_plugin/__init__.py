@@ -1627,18 +1627,34 @@ class PortagePlugin(SpmPlugin):
         # sources must be a set, as returned by entropy.db.getPackageData
         data['sources'] = set(portage_metadata['SRC_URI'])
         data['sources'] = self.__pkg_sources_filtering(data['sources'])
+
+        # dependencies is deprecated, because it contains a bug caused
+        # by collisions: if a dep is both runtime and buildtime, it will
+        # be recorded only once. please move to pkg_dependencies.
         data['dependencies'] = {}
+        data['pkg_dependencies'] = set()
 
         dep_keys = {
             "RDEPEND": etpConst['dependency_type_ids']['rdepend_id'],
             "PDEPEND": etpConst['dependency_type_ids']['pdepend_id'],
             "DEPEND": etpConst['dependency_type_ids']['bdepend_id'],
         }
-        for dep_key, dep_val in dep_keys.items():
-            for x in portage_metadata[dep_key]:
+        # NOTE: sorted() can be dropped once 'dependencies' is gone.
+        # It is only needed to make the collisions deterministic.
+        dep_duplicates = set()
+        for dep_key, dep_val in sorted(dep_keys.items()):
+            for x in sorted(portage_metadata[dep_key]):
                 if x.startswith("!") or (x in ("(", "||", ")", "")):
                     continue
+
+                if (x, dep_val) in dep_duplicates:
+                    continue
+                dep_duplicates.add((x, dep_val))
+
                 data['dependencies'][x] = dep_val
+                data['pkg_dependencies'].add((x, dep_val))
+
+        dep_duplicates.clear()
 
         data['conflicts'] = [x.replace("!", "") for x in \
             portage_metadata['RDEPEND'] + \
@@ -1646,8 +1662,12 @@ class PortagePlugin(SpmPlugin):
             x.startswith("!") and not x in ("(", "||", ")", "")]
 
         if kern_dep_key is not None:
-            data['dependencies'][kern_dep_key] = \
-                etpConst['dependency_type_ids']['rdepend_id']
+            kern_dep_id = etpConst['dependency_type_ids']['rdepend_id']
+            data['dependencies'][kern_dep_key] = kern_dep_id
+            data['pkg_dependencies'].add((kern_dep_key, kern_dep_id))
+
+        # force a tuple object
+        data['pkg_dependencies'] = tuple(data['pkg_dependencies'])
 
         # conflicts must be a set, which is what is returned
         # by entropy.db.getPackageData

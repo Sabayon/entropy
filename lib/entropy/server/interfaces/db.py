@@ -290,11 +290,10 @@ class ServerPackagesRepository(CachedRepository):
             self.removePackage(r_package_id)
 
         # inject old manual dependencies back to package metadata
+        m_dep_id = etpConst['dependency_type_ids']['mdepend_id']
         for manual_dep in manual_deps:
-            if manual_dep in pkg_data['dependencies']:
-                continue
-            pkg_data['dependencies'][manual_dep] = \
-                etpConst['dependency_type_ids']['mdepend_id']
+            pkg_data['pkg_dependencies'] += ((manual_dep, m_dep_id),)
+            pkg_data['dependencies'][manual_dep] = m_dep_id
 
         # add the new one
         return self.addPackage(pkg_data, revision = current_rev,
