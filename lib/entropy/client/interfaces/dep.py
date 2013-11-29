@@ -3214,7 +3214,7 @@ class CalculatorsMixin:
             remove = list(remove)
 
         # sort data
-        upd_sorter = lambda (x, y): self.open_repository(y).retrieveAtom(x)
+        upd_sorter = lambda x: self.open_repository(x[1]).retrieveAtom(x[0])
         rm_sorter = lambda x: self._installed_repository.retrieveAtom(x)
         update = sorted(update, key = upd_sorter)
         fine = sorted(fine)
