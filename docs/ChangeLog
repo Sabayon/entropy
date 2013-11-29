@@ -1,3 +1,61 @@
+commit d28fd6050fcc5220c3f1b73d4e77bff9bb18f0a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 16:42:30 2013 +0100
+
+    Release Entropy 237
+
+commit 57d22348ea5e5bf8eec78c3eedeea227ebb6fac8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 16:41:21 2013 +0100
+
+    [entropy.qa] _get_unresolved_sonames: try to resolve the lib using its real path
+
+commit 2b082167cd5c360aa2ff332d6f8e772c866b15d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 16:30:23 2013 +0100
+
+    [entropy.tools] read_elf_real_dynamic_libraries: correctly filter out elf_file
+
+commit 32e48aa576fb6bd53d94da96b45bde821a66cad6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 16:24:25 2013 +0100
+
+    [entropy.qa] rewrite _get_unresolved_sonames: reduce false positives
+    
+    Use the provided libraries metadata instead of the content metadata,
+    which may be really large and error prone. Improve speed and memory
+    usage as well.
+
+commit 53ef2c06bd51cd80b2a05efb3ddee80a8a4e6339
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 15:54:05 2013 +0100
+
+    [entropy.qa] _get_unresolved_sonames: filter symlinks from elf_files
+
+commit aab2449b2b00535dab9ae65aa3ecadaaa8b0f51f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 15:50:49 2013 +0100
+
+    [entropy.qa] _is_elf_executable_or_library: add allow_symlink keyword arg
+
+commit ed6e58551d71e2122ead06e8f419c3efe46f4b7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 15:40:52 2013 +0100
+
+    [entropy.qa] move ELF file checks to separate unified function, add debug dir check
+
+commit 734fe7a0f92d056ce4a6633cbf63ad29cee05d18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 13:10:10 2013 +0100
+
+    [entropy.client.interfaces.sets] fix undefined variable: err
+
+commit b08389db21045c92bed51040b08ac1974822e90e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 13:09:01 2013 +0100
+
+    Tagging Entropy version 236
+
 commit 46cbde0a878d22c57cfb6e7381b6f5cbc4061b61
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 29 13:09:01 2013 +0100
