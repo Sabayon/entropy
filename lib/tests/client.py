@@ -9,12 +9,11 @@ import os
 import shutil
 import signal
 import time
-import tempfile
 
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository
 from entropy.cache import EntropyCacher
-from entropy.const import etpConst
+from entropy.const import etpConst, const_mkdtemp
 from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
@@ -96,7 +95,7 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_cacher_lock_usage(self):
         cacher = self.Client._cacher
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp()
         cacher.start()
         try:
             with cacher:
@@ -111,7 +110,7 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_cacher_general_usage(self):
         cacher = self.Client._cacher
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp()
         cacher.start()
         st_val = EntropyCacher.STASHING_CACHE
         try:
@@ -132,7 +131,7 @@ class EntropyClientTest(unittest.TestCase):
 
     def test_cacher_push_pop_sync(self):
         cacher = self.Client._cacher
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp()
         cacher.stop()
         try:
             cacher.push("bar", "foo", async = False, cache_dir = tmp_dir)
@@ -154,7 +153,7 @@ class EntropyClientTest(unittest.TestCase):
         dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
         test_pkg = _misc.get_test_entropy_package5()
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp()
         rc = entropy.tools.uncompress_tarball(test_pkg, extract_path = tmp_dir)
         self.assertEqual(rc, 0)
 
@@ -316,13 +315,13 @@ else:
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0
-        temp_unpack = tempfile.mkdtemp()
+        temp_unpack = const_mkdtemp()
         old_unpackdir = etpConst['entropyunpackdir']
         etpConst['entropyunpackdir'] = temp_unpack
 
-        fake_root = tempfile.mkdtemp()
-        pkg_dir = tempfile.mkdtemp()
-        inst_dir = tempfile.mkdtemp()
+        fake_root = const_mkdtemp()
+        pkg_dir = const_mkdtemp()
+        inst_dir = const_mkdtemp()
 
         s_pkg = SoloPkg(["inflate", pkg_path, "--savedir", pkg_dir])
         func, func_args = s_pkg.parse()
@@ -376,13 +375,13 @@ else:
 
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0
-        temp_unpack = tempfile.mkdtemp()
+        temp_unpack = const_mkdtemp()
         old_unpackdir = etpConst['entropyunpackdir']
         etpConst['entropyunpackdir'] = temp_unpack
 
-        fake_root = tempfile.mkdtemp()
-        pkg_dir = tempfile.mkdtemp()
-        inst_dir = tempfile.mkdtemp()
+        fake_root = const_mkdtemp()
+        pkg_dir = const_mkdtemp()
+        inst_dir = const_mkdtemp()
 
         s_pkg = SoloPkg(["inflate", pkg_path, "--savedir", pkg_dir])
         func, func_args = s_pkg.parse()

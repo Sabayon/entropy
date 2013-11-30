@@ -6,9 +6,8 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import os
 import unittest
-import tempfile
 import shutil
-from entropy.const import etpConst
+from entropy.const import etpConst, const_mkdtemp
 from entropy.output import set_mute
 from entropy.client.interfaces import Client
 from entropy.security import Repository, System
@@ -21,14 +20,14 @@ class SecurityTest(unittest.TestCase):
         """
         NOTE: this requires gnupg as test-dependency.
         """
-        self._tmp_dir = tempfile.mkdtemp()
+        self._tmp_dir = const_mkdtemp()
         self._entropy = Client(installed_repo = False)
         self._repository = Repository(keystore_dir = self._tmp_dir)
 
         tmp_dir = os.getenv("TMPDIR", os.getcwd())
-        self._security_cache_dir = tempfile.mkdtemp(
+        self._security_cache_dir = const_mkdtemp(
             dir=tmp_dir, prefix="entropy.SecurityTest")
-        self._security_dir = tempfile.mkdtemp(
+        self._security_dir = const_mkdtemp(
             dir=tmp_dir, prefix="entropy.SecurityTest")
         System.SECURITY_DIR = self._security_dir
         System._CACHE_DIR = self._security_cache_dir
