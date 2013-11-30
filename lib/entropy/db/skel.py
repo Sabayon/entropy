@@ -22,7 +22,7 @@ from entropy.exceptions import InvalidAtom
 from entropy.const import etpConst, const_cmp, const_debug_write, \
     const_convert_to_rawstring, const_mkstemp, const_is_python3
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
-    darkred
+    darkred, darkgreen
 from entropy.cache import EntropyCacher
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
@@ -424,11 +424,26 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         Acquire a shared file lock for this repository (context manager).
         This is used for inter-process synchronization only.
         """
-        self.acquire_shared()
+        acquired = False
         try:
+            acquired = self.try_acquire_shared()
+            if not acquired:
+                self.output(
+                    "%s: %s..." % (
+                        brown(_("Acquiring shared lock on")),
+                        darkgreen(self.name),
+                    ),
+                    back = True,
+                    importance = 0)
+
+                self.acquire_shared()
+                acquired = True
+
             yield
+
         finally:
-            self.release_shared()
+            if acquired:
+                self.release_shared()
 
     @contextlib.contextmanager
     def exclusive(self):
@@ -436,9 +451,23 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         Acquire an exclusive file lock for this repository (context manager).
         This is used for inter-process synchronization only.
         """
-        self.acquire_exclusive()
+        acquired = False
         try:
+            acquired = self.try_acquire_exclusive()
+            if not acquired:
+                self.output(
+                    "%s: %s..." % (
+                        brown(_("Acquiring exclusive lock on")),
+                        darkgreen(self.name),
+                    ),
+                    back = True,
+                    importance = 0)
+
+                self.acquire_exclusive()
+                acquired = True
+
             yield
+
         finally:
             self.release_exclusive()
 
