@@ -422,6 +422,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def shared(self):
         """
         Acquire a shared file lock for this repository (context manager).
+        This is used for inter-process synchronization only.
         """
         self.acquire_shared()
         try:
@@ -433,6 +434,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def exclusive(self):
         """
         Acquire an exclusive file lock for this repository (context manager).
+        This is used for inter-process synchronization only.
         """
         self.acquire_exclusive()
         try:
@@ -443,18 +445,21 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def acquire_shared(self):
         """
         Acquire a shared file lock for this repository.
+        This is used for inter-process synchronization only.
         """
         raise NotImplementedError()
 
     def acquire_exclusive(self):
         """
         Acquire an exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
         """
         raise NotImplementedError()
 
     def try_acquire_shared(self):
         """
         Try to acquire a shared file lock for this repository.
+        This is used for inter-process synchronization only.
 
         @return: True, if acquired, False otherwise.
         @rtype: bool
