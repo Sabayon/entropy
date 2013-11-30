@@ -1251,14 +1251,8 @@ class EntropySQLRepository(EntropyRepositoryBase):
             # merge old manual dependencies
             m_dep_id = etpConst['dependency_type_ids']['mdepend_id']
 
-            # TODO: backward compatibility, drop this after 2015
-            dep_dict = pkg_data['dependencies']
             for manual_dep in manual_deps:
-                dep_dict[manual_dep] = m_dep_id
-
-            if 'pkg_dependencies' in pkg_data:
-                for manual_dep in manual_deps:
-                    pkg_data['pkg_dependencies'] += ((manual_dep, m_dep_id),)
+                pkg_data['pkg_dependencies'] += ((manual_dep, m_dep_id),)
 
         cur = self._cursor().execute("""
         INSERT INTO baseinfo VALUES
@@ -1304,11 +1298,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
         # tables using a select
         self._insertNeeded(package_id, pkg_data['needed'])
 
-        if 'pkg_dependencies' in pkg_data:
-            self.insertDependencies(package_id, pkg_data['pkg_dependencies'])
-        else:
-            # TODO: backward compatibility, drop this after 2015
-            self.insertDependencies(package_id, pkg_data['dependencies'])
+        self.insertDependencies(package_id, pkg_data['pkg_dependencies'])
 
         self._insertSources(package_id, pkg_data['sources'])
         self._insertUseflags(package_id, pkg_data['useflags'])

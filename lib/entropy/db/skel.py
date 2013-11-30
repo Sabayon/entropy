@@ -1600,8 +1600,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
             'content_safety': content_safety,
-            # TODO: backward compatibility, drop after 2015
-            'dependencies': dict((x, y,) for x, y in deps),
             'pkg_dependencies': deps,
             'mirrorlinks': [[x, self.retrieveMirrorData(x)] for x in mirrornames],
             'signatures': signatures,
