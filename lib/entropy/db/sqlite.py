@@ -1199,23 +1199,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 raise
             return frozenset()
 
-    def retrieveProvide(self, package_id):
-        """
-        Reimplemented from EntropySQLRepository.
-        We must handle backward compatibility.
-        """
-        try:
-            return super(EntropySQLiteRepository,
-                  self).retrieveProvide(package_id)
-        except OperationalError as err:
-            # TODO: remove after 2013?
-            if self._doesColumnInTableExist("provide", "is_default"):
-                raise
-            cur = self._cursor().execute("""
-            SELECT atom, 0 FROM provide WHERE idpackage = (?)
-            """, (package_id,))
-            return frozenset(cur)
-
     def retrieveContentSafety(self, package_id):
         """
         Reimplemented from EntropySQLRepository.
@@ -1472,25 +1455,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             if self._doesTableExist("provided_mime"):
                 raise
             return tuple()
-
-    def searchProvidedVirtualPackage(self, keyword):
-        """
-        Reimplemented from EntropySQLRepository.
-        We must handle backward compatibility.
-        """
-        try:
-            return super(EntropySQLiteRepository,
-                         self).searchProvidedVirtualPackage(keyword)
-        except OperationalError as err:
-            # TODO: remove this after 2012?
-            if self._doesColumnInTableExist("provide", "is_default"):
-                # something is really wrong
-                raise
-            cur = self._cursor().execute("""
-            SELECT baseinfo.idpackage, 0 FROM baseinfo,provide
-            WHERE provide.atom = (?) AND
-            provide.idpackage = baseinfo.idpackage""", (keyword,))
-            return tuple(cur)
 
     def searchCategory(self, keyword, like = False, just_id = True):
         """
