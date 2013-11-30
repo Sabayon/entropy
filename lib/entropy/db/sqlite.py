@@ -927,30 +927,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         del cached
         return obj
 
-    def retrieveSignatures(self, package_id):
-        """
-        Reimplemented from EntropySQLRepository.
-        We must handle backward compatibility.
-        """
-        try:
-            return super(EntropySQLiteRepository,
-                         self).retrieveSignatures(
-                package_id)
-        except OperationalError:
-            data = None
-            if self._doesTableExist("packagesignatures"):
-                # TODO: drop after 2013?
-                cur = self._cursor().execute("""
-                SELECT sha1, sha256, sha512 FROM packagesignatures
-                WHERE idpackage = (?) LIMIT 1
-                """, (package_id,))
-                data = cur.fetchone()
-                if data:
-                    data = data + (None,)
-            if data:
-                return data
-            return None, None, None, None
-
     def retrieveExtraDownload(self, package_id, down_type = None):
         """
         Reimplemented from EntropySQLRepository.
@@ -1913,20 +1889,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
             do_update_hash(m, cur)
 
         if include_signatures:
-            try:
-                # be optimistic and delay if condition,
-                # _doesColumnInTableExist
-                # is really slow
-                cur = self._cursor().execute("""
+            cur = self._cursor().execute("""
                 SELECT idpackage, sha1, gpg FROM
-                packagesignatures %s""" % (package_id_order,))
-            except OperationalError as err:
-                # TODO: remove this before 31-12-2011
-                if self._doesColumnInTableExist(
-                    "packagesignatures", "gpg"):
-                    raise
-                cur = self._cursor().execute("""
-                SELECT idpackage, sha1 FROM
                 packagesignatures %s""" % (package_id_order,))
 
             do_update_hash(m, cur)
