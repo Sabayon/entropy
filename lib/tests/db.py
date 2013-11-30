@@ -1016,6 +1016,82 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.test_db.listAllPreservedLibraries()
         self.assertEqual(data, tuple())
 
+    def test_locking_memory(self):
+
+        test_db = self.test_db
+
+        with test_db.shared():
+            self.assert_(test_db._rwsem is not None)
+            self.assert_(test_db._flock is None)
+
+        test_db.close()
+        self.assert_(test_db._rwsem is None)
+        self.assert_(test_db._flock is None)
+
+        with test_db.shared():
+            self.assert_(test_db._rwsem is not None)
+            self.assert_(test_db._flock is None)
+
+        acquired = test_db.try_acquire_shared()
+        self.assertEqual(acquired, True)
+        acquired = test_db.try_acquire_exclusive()
+        self.assertEqual(acquired, False)
+
+        test_db.release_shared()
+        acquired = test_db.try_acquire_exclusive()
+        self.assertEqual(acquired, True)
+        test_db.release_exclusive()
+
+        acquired = test_db.try_acquire_shared()
+        self.assertEqual(acquired, True)
+        test_db.release_shared()
+
+    def test_locking_file(self):
+
+        fd, db_file = tempfile.mkstemp()
+        os.close(fd)
+        test_db = None
+
+        try:
+            test_db = self.Client.open_generic_repository(db_file)
+            test_db.initializeRepository()
+
+            with test_db.shared():
+                self.assert_(test_db._flock is not None)
+
+            test_db.close()
+            self.assert_(test_db._flock is None)
+
+            with test_db.shared():
+                self.assert_(test_db._flock is not None)
+
+            acquired = test_db.try_acquire_shared()
+            self.assertEqual(acquired, True)
+
+            acquired = test_db.try_acquire_exclusive()
+            self.assertEqual(acquired, True)
+
+            pid = os.fork()
+            if pid == 0:
+                test_db.close()
+                acquired = test_db.try_acquire_exclusive()
+                if acquired:
+                    os._exit(1)
+
+                acquired = test_db.try_acquire_shared()
+                if acquired:
+                    os._exit(1)
+
+                os._exit(0)
+            else:
+                child_pid, exit_st = os.waitpid(pid, 0)
+                self.assertEqual(exit_st, 0)
+
+        finally:
+            if test_db is not None:
+                test_db.close()
+            os.remove(db_file)
+
 
 if __name__ == '__main__':
     unittest.main()

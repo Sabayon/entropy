@@ -26,6 +26,7 @@ from entropy.const import etpConst, const_convert_to_unicode, \
     const_is_python3, const_debug_write, const_file_writable
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
+from entropy.misc import FlockFile, ReadersWritersSemaphore
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
@@ -197,6 +198,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
             on close()
         @type temporary: bool
         """
+        self._flock_lock = threading.RLock()
+        self._flock = None
+        self._rwsem_lock = threading.RLock()
+        self._rwsem = None
+
         self._sqlite = self.ModuleProxy.get()
 
         EntropySQLRepository.__init__(
@@ -472,12 +478,123 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
+    def _get_flock(self):
+        """
+        Get the lock object used for locking.
+        """
+        flock = None
+        with self._flock_lock:
+            if not self._flock:
+                flock = FlockFile(self._db)
+                self._flock = flock
+            else:
+                flock = self._flock
+        return flock
+
+    def _get_rwsem(self):
+        """
+        Get the lock object use for locking of in-memory repositories.
+        """
+        rwsem = None
+        with self._rwsem_lock:
+            if not self._rwsem:
+                rwsem = ReadersWritersSemaphore()
+                self._rwsem = rwsem
+            else:
+                rwsem = self._rwsem
+        return rwsem
+
+    def acquire_shared(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            rwsem = self._get_rwsem()
+            return rwsem.reader_acquire()
+        else:
+            flock = self._get_flock()
+            return flock.acquire_shared()
+
+    def try_acquire_shared(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            rwsem = self._get_rwsem()
+            return rwsem.try_reader_acquire()
+        else:
+            flock = self._get_flock()
+            return flock.try_acquire_shared()
+
+    def acquire_exclusive(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            rwsem = self._get_rwsem()
+            return rwsem.writer_acquire()
+        else:
+            flock = self._get_flock()
+            return flock.acquire_exclusive()
+
+    def try_acquire_exclusive(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            rwsem = self._get_rwsem()
+            return rwsem.try_writer_acquire()
+        else:
+            flock = self._get_flock()
+            return flock.try_acquire_exclusive()
+
+    def _release_flock(self):
+        """
+        Release the resource associated with the FlockFile object.
+        """
+        with self._flock_lock:
+            if not self._flock:
+                raise RuntimeError("releasing a lock that wasn't acquired")
+            self._flock.release()
+
+    def release_shared(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            with self._rwsem_lock:
+                if not self._rwsem:
+                    raise RuntimeError("releasing a lock that wasn't acquired")
+                self._rwsem.reader_release()
+        else:
+            self._release_flock()
+
+    def release_exclusive(self):
+        """
+        Reimplemented from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            with self._rwsem_lock:
+                if not self._rwsem:
+                    raise RuntimeError("releasing a lock that wasn't acquired")
+                self._rwsem.writer_release()
+        else:
+            self._release_flock()
+
     def close(self, safe=False):
         """
         Reimplemented from EntropySQLRepository.
         Needs to call superclass method.
         """
         super(EntropySQLiteRepository, self).close(safe=safe)
+
+        with self._flock_lock:
+            if self._flock:
+                self._flock.close()
+                self._flock = None
+        with self._rwsem_lock:
+            if self._rwsem:
+                self._rwsem = None
 
         self._cleanup_all(_cleanup_main_thread=not safe)
         if self._temporary and (not self._is_memory()) and \
