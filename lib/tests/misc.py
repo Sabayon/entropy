@@ -110,6 +110,27 @@ class MiscTest(unittest.TestCase):
             if tmp_path is not None:
                 os.remove(tmp_path)
 
+    def test_flock_file_with(self):
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.test")
+            mf = FlockFile(tmp_path, fd = tmp_fd)
+            count = 0
+            with mf.exclusive():
+                count += 1
+
+            with mf.shared():
+                count += 1
+
+            mf.close()
+
+            self.assertEqual(count, 2)
+        finally:
+            if tmp_fd is not None:
+                self.assertRaises(OSError, os.close, tmp_fd)
+            if tmp_path is not None:
+                os.remove(tmp_path)
+
     def test_email_sender(self):
 
         mail_sender = 'test@test.com'

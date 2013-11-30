@@ -19,6 +19,7 @@ import fcntl
 import signal
 import errno
 import codecs
+import contextlib
 
 from entropy.const import const_is_python3
 
@@ -594,6 +595,28 @@ class FlockFile(object):
                 if err.errno in (errno.ENOENT, errno.EACCES):
                     raise FlockFile.FlockFileInitFailure(err)
                 raise
+
+    @contextlib.contextmanager
+    def shared(self):
+        """
+        Acquire the lock in shared mode (context manager).
+        """
+        self.acquire_shared()
+        try:
+            yield
+        finally:
+            self.release()
+
+    @contextlib.contextmanager
+    def exclusive(self):
+        """
+        Acquire the lock in exclusive mode.
+        """
+        self.acquire_exclusive()
+        try:
+            yield
+        finally:
+            self.release()
 
     def acquire_shared(self):
         """
