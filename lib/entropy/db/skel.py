@@ -427,7 +427,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         try:
             yield
         finally:
-            self.release()
+            self.release_shared()
 
     @contextlib.contextmanager
     def exclusive(self):
@@ -438,7 +438,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         try:
             yield
         finally:
-            self.release()
+            self.release_exclusive()
 
     def acquire_shared(self):
         """
@@ -464,15 +464,24 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     def try_acquire_exclusive(self):
         """
         Try to acquire an exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
 
         @return: True, if acquired, False otherwise.
         @rtype: bool
         """
         raise NotImplementedError()
 
-    def release(self):
+    def release_shared(self):
         """
-        Release the previously acquired file lock for this repository.
+        Release the previously acquired shared file lock for this repository.
+        This is used for inter-process synchronization only.
+        """
+        raise NotImplementedError()
+
+    def release_exclusive(self):
+        """
+        Release the previously acquired exclusive file lock for this repository.
+        This is used for inter-process synchronization only.
         """
         raise NotImplementedError()
 
