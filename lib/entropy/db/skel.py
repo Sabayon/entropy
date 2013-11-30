@@ -706,7 +706,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 'name': 'zlib',
                 'versiontag': '',
                 'changelog': u"text",
-                'provide': set([]),
+                'provide_extended': set([]),
                 'trigger': 'text',
                 'counter': 22331,
                 'messages': [],
@@ -1485,7 +1485,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'sources': sources,
             'needed': self.retrieveNeeded(package_id, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(package_id),
-            'provide': provide (the old provide metadata version)
             'provide_extended': self.retrieveProvide(package_id),
             'conflicts': self.retrieveConflicts(package_id),
             'licensedata': self.retrieveLicenseData(package_id),
@@ -1537,15 +1536,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'gpg': gpg,
         }
 
-        provide_extended = self.retrieveProvide(package_id)
-        # TODO: remove this before 31-12-2011
-        old_provide = set()
-        for x in provide_extended:
-            if isinstance(x, tuple):
-                old_provide.add(x[0])
-            else:
-                old_provide.add(x)
-
         changelog = None
         if get_changelog:
             changelog = self.retrieveChangelog(package_id)
@@ -1594,8 +1584,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'sources': sources,
             'needed': self.retrieveNeeded(package_id, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(package_id),
-            'provide': old_provide,
-            'provide_extended': provide_extended,
+            'provide_extended': self.retrieveProvide(package_id),
             'conflicts': self.retrieveConflicts(package_id),
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,

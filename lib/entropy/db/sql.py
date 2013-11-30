@@ -1364,10 +1364,7 @@ class EntropySQLRepository(EntropyRepositoryBase):
             self._insertTrigger(package_id, pkg_data['trigger'])
         self._insertConflicts(package_id, pkg_data['conflicts'])
 
-        if "provide_extended" not in pkg_data:
-            self._insertProvide(package_id, pkg_data['provide'])
-        else:
-            self._insertProvide(package_id, pkg_data['provide_extended'])
+        self._insertProvide(package_id, pkg_data['provide_extended'])
 
         self._insertConfigProtect(package_id, idprotect)
         self._insertConfigProtect(package_id, idprotect_mask, mask = True)

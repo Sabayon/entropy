@@ -1618,7 +1618,6 @@ class PortagePlugin(SpmPlugin):
             data['eapi']
         )
 
-        data['provide'] = set(portage_metadata['PROVIDE'])
         data['license'] = " ".join(portage_metadata['LICENSE'])
         data['useflags'] = []
         data['useflags'].extend(portage_metadata['ENABLED_USE'])
@@ -1673,9 +1672,10 @@ class PortagePlugin(SpmPlugin):
         # old-style virtual support, we need to check if this pkg provides
         # PROVIDE metadatum which points to itself, if so, this is the
         # default
+        del data['provide']
         provide_extended = set()
         myself_provide_key = data['category'] + "/" + data['name']
-        for provide_key in data['provide']:
+        for provide_key in set(portage_metadata['PROVIDE']):
             is_provide_default = 0
             try:
                 profile_default_provide = self._get_default_virtual_pkg(
