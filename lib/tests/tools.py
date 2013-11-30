@@ -7,7 +7,7 @@ import unittest
 from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
 import entropy.tools as et
 from entropy.client.interfaces import Client
-from entropy.output import print_generic
+from entropy.output import print_generic, set_mute
 import tests._misc as _misc
 import tempfile
 import subprocess
@@ -31,7 +31,9 @@ class ToolsTest(unittest.TestCase):
         for test_pkg in self.test_pkgs:
             et.dump_entropy_metadata(test_pkg, tmp_path)
             self.assertNotEqual(tmp_path, None)
+            set_mute(True)
             dbconn = client.open_generic_repository(tmp_path)
+            set_mute(False)
             dbconn.validate()
             dbconn.integrity_check()
             dbconn.listAllPackageIds()
