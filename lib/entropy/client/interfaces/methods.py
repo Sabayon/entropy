@@ -200,7 +200,7 @@ class RepositoryMixin:
     def _open_repository(self, repository_id, _enabled_repos = None):
         # support for installed packages repository here as well
         if repository_id == InstalledPackagesRepository.NAME:
-            return self._installed_repository
+            return self.installed_repository()
 
         key = self.__get_repository_cache_key(repository_id)
         with self._repodb_cache_mutex:
@@ -1071,7 +1071,7 @@ class RepositoryMixin:
         Close the Installed Packages repository. It will be reopened
         on demand.
         """
-        self._installed_repository.close(
+        self.installed_repository().close(
             _token = InstalledPackagesRepository.NAME)
 
     def open_generic_repository(self, repository_path, dbname = None,
@@ -1438,7 +1438,7 @@ class RepositoryMixin:
         const_debug_write(__name__,
             "run_repositories_post_branch_switch_hooks: called")
 
-        client_dbconn = self._installed_repository
+        client_dbconn = self.installed_repository()
         hooks_ran = set()
         if client_dbconn is None:
             const_debug_write(__name__,
@@ -1556,7 +1556,7 @@ class RepositoryMixin:
             "run_repository_post_branch_upgrade_hooks: called"
         )
 
-        client_dbconn = self._installed_repository
+        client_dbconn = self.installed_repository()
         hooks_ran = set()
         if client_dbconn is None:
             return hooks_ran, True
@@ -1977,7 +1977,7 @@ class MiscMixin:
         self.close_repositories()
         if chroot:
             try:
-                self._installed_repository.resetTreeupdatesDigests()
+                self.installed_repository().resetTreeupdatesDigests()
             except EntropyRepositoryError:
                 pass
 
@@ -2038,7 +2038,7 @@ class MiscMixin:
             for key in keys:
                 if key in wl:
                     continue
-                found = self._installed_repository.isLicenseAccepted(key)
+                found = self.installed_repository().isLicenseAccepted(key)
                 if found:
                     continue
                 obj = licenses.setdefault(key, set())
@@ -2218,7 +2218,7 @@ class MiscMixin:
 
         # reset treeupdatesactions
         self.reopen_installed_repository()
-        self._installed_repository.resetTreeupdatesDigests()
+        self.installed_repository().resetTreeupdatesDigests()
         self._validate_repositories(quiet = True)
         self.close_repositories()
         if cacher_started:
@@ -2252,8 +2252,9 @@ class MiscMixin:
 
         if from_installed:
             if hasattr(self, '_installed_repository'):
-                if self._installed_repository is not None:
-                    valid_repos.append(self._installed_repository)
+                inst_repo = self.installed_repository()
+                if inst_repo is not None:
+                    valid_repos.append(inst_repo)
 
         elif not valid_repos:
             valid_repos.extend(self._filter_available_repositories())
@@ -2453,7 +2454,7 @@ class MatchMixin:
         @return: package status
         @rtype: int
         """
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
         pkg_id, pkg_repo = package_match
         dbconn = self.open_repository(pkg_repo)
 
@@ -2792,7 +2793,7 @@ class MatchMixin:
         @return: list of installed package identifiers
         @rtype: list
         """
-        return self._installed_repository.searchProvidedMime(mimetype)
+        return self.installed_repository().searchProvidedMime(mimetype)
 
     def search_available_mimetype(self, mimetype):
         """

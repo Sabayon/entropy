@@ -51,8 +51,9 @@ class CacheMixin:
             # drop all the buffers then remove on-disk data
             self._cacher.discard()
             # clear repositories live cache
-            if self._installed_repository is not None:
-                self._installed_repository.clearCache()
+            inst_repo = self.installed_repository()
+            if inst_repo is not None:
+                inst_repo.clearCache()
             with self._repodb_cache_mutex:
                 for repo in self._repodb_cache.values():
                     repo.clearCache()

@@ -38,7 +38,7 @@ class CalculatorsMixin:
     def dependencies_test(self):
 
         # get all the installed packages
-        installed_packages = self._installed_repository.listAllPackageIds()
+        installed_packages = self.installed_repository().listAllPackageIds()
 
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
@@ -49,7 +49,7 @@ class CalculatorsMixin:
         for count, package_id in enumerate(installed_packages, 1):
 
             if (count % 150 == 0) or (count == total) or (count == 1):
-                atom = self._installed_repository.retrieveAtom(package_id)
+                atom = self.installed_repository().retrieveAtom(package_id)
                 self.output(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
@@ -59,14 +59,14 @@ class CalculatorsMixin:
                     header = darkred(" @@ ")
                 )
 
-            xdeps = self._installed_repository.retrieveDependencies(package_id,
+            xdeps = self.installed_repository().retrieveDependencies(package_id,
                 exclude_deptypes = (pdepend_id, bdepend_id,))
 
             # filter out already matched pkgs
             xdeps = [x for x in xdeps if x not in deps_cache]
             deps_cache.update(xdeps)
 
-            needed_deps = [(x, self._installed_repository.atomMatch(x),) for \
+            needed_deps = [(x, self.installed_repository().atomMatch(x),) for \
                 x in xdeps]
             deps_not_matched |= set(
                 [x for x, (y, z,) in needed_deps if y == -1])
@@ -444,7 +444,7 @@ class CalculatorsMixin:
         @return: the new dependency string
         @rtype: tuple
         """
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
         if _selected_matches_cache is None:
             cache = {}
         else:
@@ -629,7 +629,7 @@ class CalculatorsMixin:
                                       relaxed_deps = False, depcache = None,
                                       match_repo = None):
 
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
@@ -1063,7 +1063,7 @@ class CalculatorsMixin:
                                               elements_cache):
 
         if const_debug_enabled():
-            inst_atom = self._installed_repository.retrieveAtom(
+            inst_atom = self.installed_repository().retrieveAtom(
                 installed_match[0])
             atom = self.open_repository(pkg_match[1]
                 ).retrieveAtom(pkg_match[0])
@@ -1103,7 +1103,7 @@ class CalculatorsMixin:
         conflict_str, conflicts, stack, graph, deep_deps):
 
         conflict_atom = conflict_str[1:]
-        c_package_id, xst = self._installed_repository.atomMatch(conflict_atom)
+        c_package_id, xst = self.installed_repository().atomMatch(conflict_atom)
         if c_package_id == -1:
             return # conflicting pkg is not installed
 
@@ -1327,7 +1327,7 @@ class CalculatorsMixin:
         repo_db = self.open_repository(repository_id)
 
         pkg_key = entropy.dep.dep_getkey(repo_db.retrieveAtom(pkg_id))
-        potential_conflicts = self._installed_repository.searchConflict(
+        potential_conflicts = self.installed_repository().searchConflict(
             pkg_key)
 
         for dep_package_id, conflict_str in potential_conflicts:
@@ -1343,7 +1343,7 @@ class CalculatorsMixin:
                 break
             else:
                 # yes, this is really me!
-                dep_key_slot = self._installed_repository.retrieveKeySlot(
+                dep_key_slot = self.installed_repository().retrieveKeySlot(
                     dep_package_id)
                 if dep_key_slot is not None:
                     dep_key, dep_slot = dep_key_slot
@@ -1428,7 +1428,7 @@ class CalculatorsMixin:
             except TypeError:
                 deps_not_found.add("unknown_%s_%s" % (pkg_id, repo_id,))
                 continue
-            cm_package_id, cm_result = self._installed_repository.atomMatch(
+            cm_package_id, cm_result = self.installed_repository().atomMatch(
                 pkg_key, matchSlot = pkg_slot)
 
             if cm_package_id != -1:
@@ -1559,7 +1559,7 @@ class CalculatorsMixin:
             return
 
         conflict_match = self.atom_match(conflict_atom)
-        mykey, myslot = self._installed_repository.retrieveKeySlot(
+        mykey, myslot = self.installed_repository().retrieveKeySlot(
             client_package_id)
         new_match = self.atom_match(mykey, match_slot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
@@ -1586,7 +1586,7 @@ class CalculatorsMixin:
         keyslots_cache = set()
         match_cache = {}
         results = set()
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
 
         excluded_dep_types = (
             etpConst['dependency_type_ids']['bdepend_id'],)
@@ -1679,7 +1679,7 @@ class CalculatorsMixin:
         """
         match_package_id, match_repo_id = match
 
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
         match_repo = self.open_repository(match_repo_id)
         repo_libs = match_repo.retrieveProvidedLibraries(match_package_id)
 
@@ -1795,7 +1795,7 @@ class CalculatorsMixin:
 
         repo_needed = repo.retrieveNeeded(package_id,
             extended = True, formatted = True)
-        installed_needed = self._installed_repository.retrieveNeeded(
+        installed_needed = self.installed_repository().retrieveNeeded(
             installed_package_id, extended = True, formatted = True)
 
         # intersect the two dicts and find the libraries that
@@ -2020,7 +2020,7 @@ class CalculatorsMixin:
         We assume that a repository is in a consistent state and
         packages requiring libfoo.so.1 have been dropped alltogether.
         """
-        inst_repo = self._installed_repository
+        inst_repo = self.installed_repository()
 
         # all the packages in bumped_needed_libs should be
         # pulled in and updated
@@ -2144,7 +2144,7 @@ class CalculatorsMixin:
                 build_deps,
                 only_deps,
                 recursive,
-                self._installed_repository.checksum(),
+                self.installed_repository().checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
                 self._settings['repositories']['branch'],
@@ -2399,7 +2399,7 @@ class CalculatorsMixin:
         def get_deps(repo_db, d_deps):
             deps = set()
             for d_dep in d_deps:
-                if repo_db is self._installed_repository:
+                if repo_db is self.installed_repository():
                     m_package_id, m_rc_x = repo_db.atomMatch(d_dep)
                     m_rc = InstalledPackagesRepository.NAME
                 else:
@@ -2427,7 +2427,7 @@ class CalculatorsMixin:
                                 "cannot calculate, it's a system package" \
                                 % ((mydep, m_repo_id),))
                         continue
-                    if m_repo_db is self._installed_repository:
+                    if m_repo_db is self.installed_repository():
                         if self._is_installed_package_id_in_system_mask(
                             mydep):
                             if const_debug_enabled():
@@ -2857,7 +2857,7 @@ class CalculatorsMixin:
                         # mmh... invalid entry, ignore
                         continue
                     key, slot = key_slot
-                    matches = self._installed_repository.searchKeySlot(key, slot)
+                    matches = self.installed_repository().searchKeySlot(key, slot)
                 except (DatabaseError, IntegrityError, OperationalError,):
                     do_break = True
                     continue
@@ -2959,7 +2959,7 @@ class CalculatorsMixin:
 
         sec_updates = []
         for vul_dep in vul_deps:
-            pkg_id, rc = self._installed_repository.atomMatch(vul_dep)
+            pkg_id, rc = self.installed_repository().atomMatch(vul_dep)
             if pkg_id == -1:
                 continue
             matches, rc = self.atom_match(vul_dep, multi_repo = True,
@@ -3032,7 +3032,7 @@ class CalculatorsMixin:
         # get all the installed packages
         try:
             package_ids = collections.deque(
-                self._installed_repository.listAllPackageIds())
+                self.installed_repository().listAllPackageIds())
         except OperationalError:
             # client db is broken!
             raise SystemDatabaseError("installed packages repository is broken")
@@ -3075,7 +3075,7 @@ class CalculatorsMixin:
             try:
                 cl_pkgkey, cl_slot, cl_version, \
                     cl_tag, cl_revision, \
-                    cl_atom = self._installed_repository.getStrictData(
+                    cl_atom = self.installed_repository().getStrictData(
                         package_id)
             except TypeError:
                 # check against broken entries, or removed during iteration
@@ -3177,7 +3177,7 @@ class CalculatorsMixin:
                     # first check branch
                     if package_id is not None:
 
-                        c_digest = self._installed_repository.retrieveDigest(
+                        c_digest = self.installed_repository().retrieveDigest(
                             package_id)
                         # If the repo has been manually (user-side)
                         # regenerated, digest == "0". In this case
@@ -3209,13 +3209,13 @@ class CalculatorsMixin:
         if remove:
             remove = [
                 x for x in remove if not \
-                    self._installed_repository.retrieveReverseDependencies(x)]
+                    self.installed_repository().retrieveReverseDependencies(x)]
         else:
             remove = list(remove)
 
         # sort data
         upd_sorter = lambda x: self.open_repository(x[1]).retrieveAtom(x[0])
-        rm_sorter = lambda x: self._installed_repository.retrieveAtom(x)
+        rm_sorter = lambda x: self.installed_repository().retrieveAtom(x)
         update = sorted(update, key = upd_sorter)
         fine = sorted(fine)
         spm_fine = sorted(spm_fine, key = upd_sorter)
@@ -3417,13 +3417,13 @@ class CalculatorsMixin:
                 return cached
 
         found = False
-        pkg_id, pkg_rc = self._installed_repository.atomMatch(atom)
+        pkg_id, pkg_rc = self.installed_repository().atomMatch(atom)
         matched = None
         if pkg_id != -1:
-            myatom = self._installed_repository.retrieveAtom(pkg_id)
+            myatom = self.installed_repository().retrieveAtom(pkg_id)
             mytag = entropy.dep.dep_gettag(myatom)
             myatom = entropy.dep.remove_tag(myatom)
-            myrev = self._installed_repository.retrieveRevision(pkg_id)
+            myrev = self.installed_repository().retrieveRevision(pkg_id)
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
                 pkg_match += "%s%s" % (etpConst['entropytagprefix'], mytag,)
@@ -3460,7 +3460,7 @@ class CalculatorsMixin:
         """
 
         if repo_id is None:
-            dbconn = self._installed_repository
+            dbconn = self.installed_repository()
         else:
             dbconn = self.open_repository(repo_id)
 
@@ -3471,7 +3471,7 @@ class CalculatorsMixin:
         mask_installed_keys = mask_data['repos_installed_keys']
 
         # cannot check this for pkgs not coming from installed pkgs repo
-        if dbconn is self._installed_repository:
+        if dbconn is self.installed_repository():
             if self._is_installed_package_id_in_system_mask(package_id):
                 package_ids = mask_installed_keys.get(pkgkey)
                 if not package_ids:
@@ -3727,7 +3727,7 @@ class CalculatorsMixin:
         if install and removal:
             myremmatch = {}
             for rm_package_id in removal:
-                keyslot = self._installed_repository.retrieveKeySlot(
+                keyslot = self.installed_repository().retrieveKeySlot(
                     rm_package_id)
                 # check if users removed package_id while this
                 # whole instance is running

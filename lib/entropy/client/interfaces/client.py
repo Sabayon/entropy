@@ -839,9 +839,10 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         """
         self.__instance_destroyed = True
         if hasattr(self, '_installed_repository'):
-            if self._installed_repository is not None:
-                self._installed_repository.close(
-                    _token = InstalledPackagesRepository.NAME)
+            inst_repo = self.installed_repository()
+            if inst_repo is not None:
+                inst_repo.close(_token = InstalledPackagesRepository.NAME)
+
         if hasattr(self, 'logger'):
             self.logger.close()
         if hasattr(self, '_settings') and \
@@ -890,7 +891,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         @return: bool stating if changes have been made
         @rtype: bool
         """
-        if not self._installed_repository:
+        inst_repo = self.installed_repository()
+
+        if not inst_repo:
             # nothing to do if client db is not availabe
             return False
 
@@ -911,22 +914,21 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         client_digest = "0"
         if not do_rescan:
             client_digest = \
-                self._installed_repository.retrieveRepositoryUpdatesDigest(
+                inst_repo.retrieveRepositoryUpdatesDigest(
                     repository_identifier)
 
         if do_rescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
-            self._installed_repository.clearTreeupdatesEntries(
+            inst_repo.clearTreeupdatesEntries(
                 repository_identifier)
 
             # load updates
             update_actions = repo_db.retrieveTreeUpdatesActions(
                 repository_identifier)
             # now filter the required actions
-            update_actions = \
-                self._installed_repository.filterTreeUpdatesActions(
-                    update_actions)
+            update_actions = inst_repo.filterTreeUpdatesActions(
+                update_actions)
 
             if update_actions:
 
@@ -951,19 +953,19 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
                     header = darkred(" * ")
                 )
                 # run stuff
-                self._installed_repository.runTreeUpdatesActions(
+                inst_repo.runTreeUpdatesActions(
                     update_actions)
 
             # store new digest into database
-            self._installed_repository.setRepositoryUpdatesDigest(
+            inst_repo.setRepositoryUpdatesDigest(
                 repository_identifier, stored_digest)
             # store new actions
-            self._installed_repository.addRepositoryUpdatesActions(
+            inst_repo.addRepositoryUpdatesActions(
                 InstalledPackagesRepository.NAME, update_actions,
                     self._settings['repositories']['branch'])
-            self._installed_repository.commit()
+            inst_repo.commit()
             # clear client cache
-            self._installed_repository.clearCache()
+            inst_repo.clearCache()
             return True
 
     def is_destroyed(self):
