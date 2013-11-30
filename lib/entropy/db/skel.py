@@ -709,7 +709,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 'provide_extended': set([]),
                 'trigger': 'text',
                 'counter': 22331,
-                'messages': [],
                 'branch': '4',
                 'content': {},
                 'content_safety': {},
@@ -1569,9 +1568,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'revision': revision,
             # risky to add to the sql above, still
             'counter': self.retrieveSpmUid(package_id),
-            'messages': [],
-            # TODO: backward compatibility, drop after 2011
-            'eclasses': [],
             'trigger': self.retrieveTrigger(package_id),
             'disksize': self.retrieveOnDiskSize(package_id),
             'changelog': changelog,
