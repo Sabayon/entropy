@@ -15,6 +15,7 @@ import warnings
 import hashlib
 import codecs
 import collections
+import contextlib
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
@@ -416,6 +417,64 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         self.__db_match_cache_key = EntropyCacher.CACHE_IDS['db_match']
 
         EntropyRepositoryPluginStore.__init__(self)
+
+    @contextlib.contextmanager
+    def shared(self):
+        """
+        Acquire a shared file lock for this repository (context manager).
+        """
+        self.acquire_shared()
+        try:
+            yield
+        finally:
+            self.release()
+
+    @contextlib.contextmanager
+    def exclusive(self):
+        """
+        Acquire an exclusive file lock for this repository (context manager).
+        """
+        self.acquire_exclusive()
+        try:
+            yield
+        finally:
+            self.release()
+
+    def acquire_shared(self):
+        """
+        Acquire a shared file lock for this repository.
+        """
+        raise NotImplementedError()
+
+    def acquire_exclusive(self):
+        """
+        Acquire an exclusive file lock for this repository.
+        """
+        raise NotImplementedError()
+
+    def try_acquire_shared(self):
+        """
+        Try to acquire a shared file lock for this repository.
+
+        @return: True, if acquired, False otherwise.
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def try_acquire_exclusive(self):
+        """
+        Try to acquire an exclusive file lock for this repository.
+
+        @return: True, if acquired, False otherwise.
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def release(self):
+        """
+        Release the previously acquired file lock for this repository.
+        """
+        raise NotImplementedError()
 
     def caching(self):
         """
