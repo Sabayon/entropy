@@ -469,7 +469,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             yield
 
         finally:
-            self.release_exclusive()
+            if acquired:
+                self.release_exclusive()
 
     def acquire_shared(self):
         """
