@@ -224,7 +224,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 self._indexing = False
 
             def _is_avail():
-                if self._db == ":memory:":
+                if self._is_memory():
                     return True
                 return const_file_writable(self._db)
 
@@ -321,7 +321,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropySQLRepository.
         """
-        if (not self._readonly) and (self._db != ":memory:"):
+        if (not self._readonly) and not self._is_memory():
             if os.getuid() != 0:
                 # make sure that user can write to file
                 # before returning False, override actual
@@ -367,7 +367,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 _init_db = True
         # memory databases are critical because every new cursor brings
         # up a totally empty repository. So, enforce initialization.
-        if _init_db and self._db == ":memory:":
+        if _init_db and self._is_memory():
             self.initializeRepository()
         return cursor
 
@@ -444,6 +444,12 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self._cursor().execute('PRAGMA cache_size = %s' % (size,))
 
+    def _is_memory(self):
+        """
+        Return True whether the database is stored in memory.
+        """
+        return self._db == ":memory:"
+
     def _setDefaultCacheSize(self, size):
         """
         Change default low-level, storage engine based cache size.
@@ -474,7 +480,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         super(EntropySQLiteRepository, self).close(safe=safe)
 
         self._cleanup_all(_cleanup_main_thread=not safe)
-        if self._temporary and (self._db != ":memory:") and \
+        if self._temporary and (not self._is_memory()) and \
             os.path.isfile(self._db):
             try:
                 os.remove(self._db)
@@ -1810,7 +1816,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         if self._db is None:
             return 0.0
-        if self._db == ":memory:":
+        if self._is_memory():
             return 0.0
         return os.path.getmtime(self._db)
 
