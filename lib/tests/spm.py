@@ -4,14 +4,16 @@ import os
 sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
-import entropy.tools as et
-from entropy.client.interfaces import Client
-import tests._misc as _misc
-import tempfile
 import shutil
+
+import entropy.tools as et
+from entropy.const import const_mkdtemp
+from entropy.client.interfaces import Client
 
 from entropy.spm.plugins.interfaces.portage_plugin import \
     PortageEntropyDepTranslator
+
+import tests._misc as _misc
 
 class SpmTest(unittest.TestCase):
 
@@ -101,8 +103,8 @@ class SpmTest(unittest.TestCase):
 
         from entropy.spm.plugins.interfaces.portage_plugin import xpak
         from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
-        temp_unpack = tempfile.mkdtemp()
-        temp_unpack2 = tempfile.mkdtemp()
+        temp_unpack = const_mkdtemp(prefix="test_portage_xpak")
+        temp_unpack2 = const_mkdtemp(prefix="test_portage_xpak2")
         test_pkg = os.path.join(temp_unpack2, "test.pkg")
         dbdir = _misc.get_entrofoo_test_spm_portage_dir()
 
@@ -137,7 +139,7 @@ class SpmTest(unittest.TestCase):
             return
 
         from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
-        tmp_path = tempfile.mkdtemp()
+        tmp_path = const_mkdtemp(prefix="test_extract_xpak")
 
         for test_pkg in self.test_pkgs:
             out_path = xpaktools.extract_xpak(test_pkg, tmp_path)
@@ -155,7 +157,7 @@ class SpmTest(unittest.TestCase):
 
         from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
         pkg_path = _misc.get_test_xpak_empty_package()
-        tmp_path = tempfile.mkdtemp()
+        tmp_path = const_mkdtemp(prefix="test_extract_xpak_only")
         out_path = xpaktools.extract_xpak(pkg_path, tmp_path)
 
         self.assertNotEqual(out_path, None)
