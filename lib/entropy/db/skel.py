@@ -418,6 +418,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         EntropyRepositoryPluginStore.__init__(self)
 
+    def lock_path(self):
+        """
+        Return the path of the file lock for this repository.
+        """
+        return os.path.join(
+            etpConst['entropyrundir'],
+            "repository", self.name + ".lock")
+
     @contextlib.contextmanager
     def shared(self):
         """
@@ -426,12 +434,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         acquired = False
         try:
+            lock_path = self.lock_path()
             acquired = self.try_acquire_shared()
             if not acquired:
                 self.output(
                     "%s %s ..." % (
                         darkred(_("Acquiring shared lock on")),
-                        darkgreen(self.name),
+                        darkgreen(lock_path),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
@@ -443,7 +452,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 self.output(
                     "%s %s" % (
                         darkred(_("Acquired shared lock on")),
-                        darkgreen(self.name),
+                        darkgreen(lock_path),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
@@ -463,12 +472,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         acquired = False
         try:
+            lock_path = self.lock_path()
             acquired = self.try_acquire_exclusive()
             if not acquired:
                 self.output(
                     "%s %s ..." % (
                         darkred(_("Acquiring exclusive lock on")),
-                        darkgreen(self.name),
+                        darkgreen(lock_path),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
@@ -480,7 +490,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 self.output(
                     "%s %s" % (
                         darkred(_("Acquired exclusive lock on")),
-                        darkgreen(self.name),
+                        darkgreen(lock_path),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
