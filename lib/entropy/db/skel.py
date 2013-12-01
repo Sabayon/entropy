@@ -433,6 +433,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                         brown(_("Acquiring shared lock on")),
                         darkgreen(self.name),
                     ),
+                    level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
                     importance = 0)
 
@@ -460,6 +461,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                         brown(_("Acquiring exclusive lock on")),
                         darkgreen(self.name),
                     ),
+                    level = "warning", # use stderr, avoid breaking --quiet
                     back = True,
                     importance = 0)
 
