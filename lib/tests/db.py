@@ -1016,36 +1016,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.test_db.listAllPreservedLibraries()
         self.assertEqual(data, tuple())
 
-    def test_locking_memory(self):
-
-        test_db = self.test_db
-
-        with test_db.shared():
-            self.assert_(test_db._rwsem is not None)
-            self.assert_(test_db._flock is None)
-
-        test_db.close()
-        self.assert_(test_db._rwsem is None)
-        self.assert_(test_db._flock is None)
-
-        with test_db.shared():
-            self.assert_(test_db._rwsem is not None)
-            self.assert_(test_db._flock is None)
-
-        acquired = test_db.try_acquire_shared()
-        self.assertEqual(acquired, True)
-        acquired = test_db.try_acquire_exclusive()
-        self.assertEqual(acquired, False)
-
-        test_db.release_shared()
-        acquired = test_db.try_acquire_exclusive()
-        self.assertEqual(acquired, True)
-        test_db.release_exclusive()
-
-        acquired = test_db.try_acquire_shared()
-        self.assertEqual(acquired, True)
-        test_db.release_shared()
-
     def test_locking_file(self):
 
         fd, db_file = tempfile.mkstemp()

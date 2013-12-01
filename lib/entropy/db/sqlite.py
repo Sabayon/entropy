@@ -27,7 +27,7 @@ from entropy.const import etpConst, const_convert_to_unicode, \
     const_setup_directory
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
-from entropy.misc import FlockFile, ReadersWritersSemaphore
+from entropy.misc import FlockFile
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
@@ -201,8 +201,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self._flock_lock = threading.RLock()
         self._flock = None
-        self._rwsem_lock = threading.RLock()
-        self._rwsem = None
 
         self._sqlite = self.ModuleProxy.get()
 
@@ -502,32 +500,16 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 flock = self._flock
         return flock
 
-    def _get_rwsem(self):
-        """
-        Get the lock object use for locking of in-memory repositories.
-        """
-        rwsem = None
-        with self._rwsem_lock:
-            if not self._rwsem:
-                rwsem = ReadersWritersSemaphore()
-                self._rwsem = rwsem
-            else:
-                rwsem = self._rwsem
-        return rwsem
-
     def acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem()
-            rwsem.reader_acquire()
-        else:
+        if not self._is_memory():
             flock = self._get_flock()
             flock.acquire_shared()
 
-        # in-RAM cached data may have become stale
-        self.clearCache()
+            # in-RAM cached data may have become stale
+            self.clearCache()
 
     def try_acquire_shared(self):
         """
@@ -535,30 +517,26 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         acquired = None
         if self._is_memory():
-            rwsem = self._get_rwsem()
-            acquired = rwsem.try_reader_acquire()
+            acquired = True
         else:
             flock = self._get_flock()
             acquired = flock.try_acquire_shared()
+            if acquired:
+                # in-RAM cached data may have become stale
+                self.clearCache()
 
-        if acquired:
-            # in-RAM cached data may have become stale
-            self.clearCache()
         return acquired
 
     def acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem()
-            rwsem.writer_acquire()
-        else:
+        if not self._is_memory():
             flock = self._get_flock()
             flock.acquire_exclusive()
 
-        # in-RAM cached data may have become stale
-        self.clearCache()
+            # in-RAM cached data may have become stale
+            self.clearCache()
 
     def try_acquire_exclusive(self):
         """
@@ -566,15 +544,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         acquired = None
         if self._is_memory():
-            rwsem = self._get_rwsem()
-            acquired = rwsem.try_writer_acquire()
+            acquired = True
         else:
             flock = self._get_flock()
             acquired = flock.try_acquire_exclusive()
+            if acquired:
+                # in-RAM cached data may have become stale
+                self.clearCache()
 
-        if acquired:
-            # in-RAM cached data may have become stale
-            self.clearCache()
         return acquired
 
     def _release_flock(self):
@@ -590,24 +567,14 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            with self._rwsem_lock:
-                if not self._rwsem:
-                    raise RuntimeError("releasing a lock that wasn't acquired")
-                self._rwsem.reader_release()
-        else:
+        if not self._is_memory():
             self._release_flock()
 
     def release_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            with self._rwsem_lock:
-                if not self._rwsem:
-                    raise RuntimeError("releasing a lock that wasn't acquired")
-                self._rwsem.writer_release()
-        else:
+        if not self._is_memory():
             self._release_flock()
 
     def close(self, safe=False):
@@ -621,9 +588,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             if self._flock:
                 self._flock.close()
                 self._flock = None
-        with self._rwsem_lock:
-            if self._rwsem:
-                self._rwsem = None
 
         self._cleanup_all(_cleanup_main_thread=not safe)
         if self._temporary and (not self._is_memory()) and \
