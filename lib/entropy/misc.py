@@ -597,26 +597,52 @@ class FlockFile(object):
                 raise
 
     @contextlib.contextmanager
-    def shared(self):
+    def shared(self, _wait_msg_cb = None, _acquired_msg_cb = None):
         """
         Acquire the lock in shared mode (context manager).
         """
-        self.acquire_shared()
+        acquired = False
         try:
+            acquired = self.try_acquire_shared()
+            if not acquired:
+                if _wait_msg_cb:
+                    _wait_msg_cb()
+
+                self.acquire_shared()
+                acquired = True
+
+                if _acquired_msg_cb:
+                    _acquired_msg_cb()
+
             yield
+
         finally:
-            self.release()
+            if acquired:
+                self.release()
 
     @contextlib.contextmanager
-    def exclusive(self):
+    def exclusive(self, _wait_msg_cb = None, _acquired_msg_cb = None):
         """
         Acquire the lock in exclusive mode.
         """
-        self.acquire_exclusive()
+        acquired = False
         try:
+            acquired = self.try_acquire_exclusive()
+            if not acquired:
+                if _wait_msg_cb:
+                    _wait_msg_cb()
+
+                self.acquire_exclusive()
+                acquired = True
+
+                if _acquired_msg_cb:
+                    _acquired_msg_cb()
+
             yield
+
         finally:
-            self.release()
+            if acquired:
+                self.release()
 
     def acquire_shared(self):
         """
