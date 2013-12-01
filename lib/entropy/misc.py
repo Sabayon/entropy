@@ -583,6 +583,9 @@ class FlockFile(object):
         """
 
     def __init__(self, file_path, fd = None, fobj = None):
+        self._wait_msg_cb = None
+        self._acquired_msg_cb = None
+
         self._path = file_path
         if fobj:
             self._f = fobj
@@ -597,7 +600,7 @@ class FlockFile(object):
                 raise
 
     @contextlib.contextmanager
-    def shared(self, _wait_msg_cb = None, _acquired_msg_cb = None):
+    def shared(self):
         """
         Acquire the lock in shared mode (context manager).
         """
@@ -605,14 +608,14 @@ class FlockFile(object):
         try:
             acquired = self.try_acquire_shared()
             if not acquired:
-                if _wait_msg_cb:
-                    _wait_msg_cb()
+                if self._wait_msg_cb:
+                    self._wait_msg_cb(False)
 
                 self.acquire_shared()
                 acquired = True
 
-                if _acquired_msg_cb:
-                    _acquired_msg_cb()
+                if self._acquired_msg_cb:
+                    self._acquired_msg_cb(False)
 
             yield
 
@@ -621,7 +624,7 @@ class FlockFile(object):
                 self.release()
 
     @contextlib.contextmanager
-    def exclusive(self, _wait_msg_cb = None, _acquired_msg_cb = None):
+    def exclusive(self):
         """
         Acquire the lock in exclusive mode.
         """
@@ -629,14 +632,14 @@ class FlockFile(object):
         try:
             acquired = self.try_acquire_exclusive()
             if not acquired:
-                if _wait_msg_cb:
-                    _wait_msg_cb()
+                if self._wait_msg_cb:
+                    self._wait_msg_cb(True)
 
                 self.acquire_exclusive()
                 acquired = True
 
-                if _acquired_msg_cb:
-                    _acquired_msg_cb()
+                if self._acquired_msg_cb:
+                    self._acquired_msg_cb(True)
 
             yield
 
