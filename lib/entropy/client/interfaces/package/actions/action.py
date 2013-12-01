@@ -11,9 +11,11 @@
 """
 import os
 
-from entropy.const import etpConst, const_convert_to_unicode
+from entropy.const import etpConst, const_convert_to_unicode, \
+    const_setup_directory
 from entropy.i18n import _
-from entropy.output import darkred, blue
+from entropy.misc import FlockFile
+from entropy.output import darkred, blue, darkgreen
 
 import entropy.dep
 
@@ -73,6 +75,58 @@ class PackageAction(object):
         @type header: string
         """
         self._xterm_header = header
+
+    def path_lock(self, path):
+        """
+        Given a path, return a FlockFile object that can be used for
+        inter-process synchronization purposes.
+
+        @param path: path to protect with a file lock
+        @type path: string
+        @return: a FlockFile object instance
+        @rtype: entropy.misc.FlockFile
+        """
+        lock_path = path + "._entropy_package.lock"
+        path_dir = os.path.dirname(path)
+        const_setup_directory(path_dir)
+
+        def wait_msg_cb(obj, exclusive):
+            if exclusive:
+                msg = _("Acquiring exclusive lock on")
+            else:
+                msg = _("Acquiring shared lock on")
+
+            self._entropy.output(
+                "%s %s ..." % (
+                    darkred(msg),
+                    darkgreen(obj.get_path()),
+                ),
+                level = "warning", # use stderr, avoid breaking --quiet
+                back = True,
+                importance = 0)
+
+        def acquired_msg_cb(obj, exclusive):
+            if exclusive:
+                msg = _("Acquired exclusive lock on")
+            else:
+                msg = _("Acquired shared lock on")
+            self._entropy.output(
+                "%s %s" % (
+                    darkred(msg),
+                    darkgreen(obj.get_path()),
+                ),
+                level = "warning", # use stderr, avoid breaking --quiet
+                back = True,
+                importance = 0)
+
+        class PackageFlockFile(FlockFile):
+
+            def __init__(self, *args, **kwargs):
+                super(PackageFlockFile, self).__init__(*args, **kwargs)
+                self._wait_msg_cb = wait_msg_cb
+                self._acquired_msg_cb = acquired_msg_cb
+
+        return PackageFlockFile(path)
 
     def setup(self):
         """
