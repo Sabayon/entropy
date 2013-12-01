@@ -137,15 +137,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         metadata['category'] = repo.retrieveCategory(self._package_id)
         metadata['download'] = repo.retrieveDownloadURL(self._package_id)
         metadata['name'] = repo.retrieveName(self._package_id)
-        metadata['checksum'] = repo.retrieveDigest(self._package_id)
-        sha1, sha256, sha512, gpg = repo.retrieveSignatures(self._package_id)
-        signatures = {
-            'sha1': sha1,
-            'sha256': sha256,
-            'sha512': sha512,
-            'gpg': gpg,
-        }
-        metadata['signatures'] = signatures
         metadata['conflicts'] = self._get_package_conflicts_unlocked(
             inst_repo, repo, self._package_id)
 
