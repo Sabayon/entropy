@@ -253,6 +253,10 @@ def const_default_settings(rootdir):
         os.path.join(rootdir, "var/lib/entropy"))
     default_etp_dbdir_name = "database"
 
+    default_etp_run_dir = os.getenv(
+        'DEV_ETP_RUN_DIR',
+        os.path.join(rootdir, "run/entropy"))
+
     default_etp_dbdir = os.path.join(
         default_etp_dbdir_name, ETP_ARCH_CONST)
     default_etp_dbfile = "packages.db"
@@ -300,6 +304,7 @@ def const_default_settings(rootdir):
         'packagesrelativepath_basename': ETP_ARCH_CONST,
         'databaserelativepath_basedir': default_etp_dbdir_name,
 
+        'entropyrundir': default_etp_run_dir, # /run/entropy
         'entropyworkdir': default_etp_dir, # Entropy workdir
         # new (since 0.99.48) Entropy downloaded packages location
         # equals to /var/lib/entropy/client/packages containing packages/,
@@ -851,8 +856,13 @@ def const_regain_privileges():
 
     etpConst['uid'] = 0
 
-def const_create_working_dirs():
+def const_setup_run_directory():
+    """
+    Setup the Entropy /run directory with appropriate permissions.
+    """
+    const_setup_directory(etpConst['entropyrundir'])
 
+def const_create_working_dirs():
     """
     Setup Entropy directory structure, as much automagically as possible.
 
@@ -887,6 +897,12 @@ def const_create_working_dirs():
         etpConst['entropygid'] = gid
     if nopriv_gid is not None:
         etpConst['entropygid_nopriv'] = nopriv_gid
+
+    try:
+        const_setup_run_directory()
+    except (OSError, IOError):
+        # best effort
+        pass
 
 def const_convert_log_level(entropy_log_level):
     """
