@@ -570,6 +570,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Release the previously acquired shared file lock for this repository.
         This is used for inter-process synchronization only.
+
+        Make sure to commit any pending transaction before releasing the lock.
         """
         raise NotImplementedError()
 
@@ -577,6 +579,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Release the previously acquired exclusive file lock for this repository.
         This is used for inter-process synchronization only.
+
+        Make sure to commit any pending transaction before releasing the lock.
         """
         raise NotImplementedError()
 

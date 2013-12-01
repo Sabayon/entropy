@@ -568,6 +568,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyBaseRepository.
         """
         if not self._is_memory():
+            self.commit()
             self._release_flock()
 
     def release_exclusive(self):
@@ -575,6 +576,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyBaseRepository.
         """
         if not self._is_memory():
+            self.commit()
             self._release_flock()
 
     def close(self, safe=False):
