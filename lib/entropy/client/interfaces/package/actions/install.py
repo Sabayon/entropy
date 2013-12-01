@@ -16,7 +16,7 @@ import stat
 import time
 
 from entropy.const import etpConst, const_convert_to_unicode, \
-    const_convert_to_rawstring, const_is_python3
+    const_mkdtemp, const_convert_to_rawstring, const_is_python3
 from entropy.exceptions import EntropyException
 from entropy.i18n import _
 from entropy.output import darkred, red, purple, brown, blue, darkgreen, teal
@@ -68,11 +68,18 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             # already configured
             return
 
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.shared():
+            return self._action_setup_unlocked(inst_repo)
+
+    def _action_setup_unlocked(self, inst_repo):
+        """
+        Setup the PackageAction. Assume repository lock already held.
+        """
         metadata = {}
         splitdebug_metadata = self._get_splitdebug_metadata()
         metadata.update(splitdebug_metadata)
 
-        inst_repo = self._entropy.installed_repository()
         repo = self._entropy.open_repository(self._repository_id)
 
         misc_settings = self._entropy.ClientSettings()['misc']
@@ -139,8 +146,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             'gpg': gpg,
         }
         metadata['signatures'] = signatures
-        metadata['conflicts'] = self._get_package_conflicts(
-            repo, self._package_id)
+        metadata['conflicts'] = self._get_package_conflicts_unlocked(
+            inst_repo, repo, self._package_id)
 
         description = repo.retrieveDescription(self._package_id)
         if description:
@@ -209,8 +216,16 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             metadata['pkgpath'] = self.get_standard_fetch_disk_path(
                 metadata['download'])
 
-        metadata['unpackdir'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self._escape_path(metadata['download'])
+        # craete an atomically safe unpack directory path
+        unpack_dir = os.path.join(
+            etpConst['entropyunpackdir'],
+            self._escape_path(metadata['download']).lstrip(os.path.sep))
+        try:
+            os.makedirs(unpack_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                raise
+        metadata['unpackdir'] = const_mkdtemp(dir=unpack_dir)
 
         metadata['imagedir'] = metadata['unpackdir'] + os.path.sep + \
             etpConst['entropyimagerelativepath']
@@ -257,32 +272,32 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         metadata['phases'] = []
         if metadata['conflicts']:
-            metadata['phases'].append(self._remove_conflicts)
+            metadata['phases'].append(self._remove_conflicts_phase)
 
         if metadata['merge_from']:
-            metadata['phases'].append(self._merge)
+            metadata['phases'].append(self._merge_phase)
         else:
-            metadata['phases'].append(self._unpack)
+            metadata['phases'].append(self._unpack_phase)
 
         # preinstall placed before preremove in order
         # to respect Spm order
-        metadata['phases'].append(self._setup)
-        metadata['phases'].append(self._pre_install)
+        metadata['phases'].append(self._setup_phase)
+        metadata['phases'].append(self._pre_install_phase)
 
-        metadata['phases'].append(self._install)
+        metadata['phases'].append(self._install_phase)
         if metadata['remove_package_id'] != -1:
-            metadata['phases'].append(self._pre_remove)
-            metadata['phases'].append(self._install_clean)
+            metadata['phases'].append(self._pre_remove_phase)
+            metadata['phases'].append(self._install_clean_phase)
         else:
-            metadata['phases'].append(self._preserved_libs_gc)
+            metadata['phases'].append(self._preserved_libs_gc_phase)
 
         if metadata['remove_package_id'] != -1:
-            metadata['phases'].append(self._post_remove)
-            metadata['phases'].append(self._post_remove_install)
+            metadata['phases'].append(self._post_remove_phase)
+            metadata['phases'].append(self._post_remove_install_phase)
 
-        metadata['phases'].append(self._install_spm)
-        metadata['phases'].append(self._post_install)
-        metadata['phases'].append(self._cleanup)
+        metadata['phases'].append(self._install_spm_phase)
+        metadata['phases'].append(self._post_install_phase)
+        metadata['phases'].append(self._cleanup_phase)
 
         install_trigger = repo.getTriggerData(self._package_id)
         metadata['triggers']['install'] = install_trigger
@@ -328,12 +343,12 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         path = path.replace("~", "_")
         return path
 
-    def _get_package_conflicts(self, entropy_repository, package_id):
+    def _get_package_conflicts_unlocked(self, inst_repo, entropy_repository,
+                                        package_id):
         """
         Return a set of conflict dependencies for the given package.
         """
         conflicts = entropy_repository.retrieveConflicts(package_id)
-        inst_repo = self._entropy.installed_repository()
 
         found_conflicts = set()
         for conflict in conflicts:
@@ -353,11 +368,19 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return found_conflicts
 
-    def _remove_conflicts(self):
+    def _remove_conflicts_phase(self):
         """
         Execute the package conflicts removal phase.
         """
         inst_repo = self._entropy.installed_repository()
+        with inst_repo.exclusive():
+            return self._remove_conflicts_unlocked(inst_repo)
+
+    def _remove_conflicts_unlocked(self, inst_repo):
+        """
+        Execute the package conflicts removal phase. Assume repository lock
+        already held.
+        """
         confl_package_ids = [x for x in self._meta['conflicts'] if \
             inst_repo.isPackageIdAvailable(x)]
         if not confl_package_ids:
@@ -458,8 +481,11 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             # from the repository database, which, in future
             # is allowed to not provide such info.
             pkg_dbdir = os.path.dirname(pkg_dbpath)
-            if not os.path.isdir(pkg_dbdir):
+            try:
                 os.makedirs(pkg_dbdir, 0o755)
+            except OSError as err:
+                if err.errno != errno.EEXIST:
+                    raise
             # extract edb
             dump_exit_st = entropy.tools.dump_entropy_metadata(
                 package_path, pkg_dbpath)
@@ -558,9 +584,12 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     os.remove(topath)
                 os.symlink(tolink, topath)
             elif os.path.isdir(path):
-                if not os.path.isdir(topath):
+                try:
                     os.makedirs(topath)
                     copystat = True
+                except OSError as err:
+                    if err.errno != errno.EEXIST:
+                        raise
             elif os.path.isfile(path):
                 if os.path.isfile(topath):
                     os.remove(topath) # should never happen
@@ -573,7 +602,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 os.chown(topath, user, group)
                 shutil.copystat(path, topath)
 
-    def _merge(self):
+    def _merge_phase(self):
         """
         Execute the merge (from) phase.
         """
@@ -606,7 +635,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         return spm_class.entropy_install_unpack_hook(self._entropy,
             self._meta)
 
-    def _unpack(self):
+    def _unpack_phase(self):
         """
         Execute the unpack phase.
         """
@@ -626,11 +655,15 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 from_enctype = etpConst['conf_encoding'])
 
         if os.path.isdir(unpack_dir):
-            # this, if Python 2.x, must be fed with rawstrings
             shutil.rmtree(unpack_dir)
         elif os.path.isfile(unpack_dir):
             os.remove(unpack_dir)
-        os.makedirs(unpack_dir)
+
+        try:
+            os.makedirs(unpack_dir)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                raise
 
         exit_st = self._unpack_package(
             self._meta['download'], self._meta['pkgpath'],
@@ -673,7 +706,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         return spm_class.entropy_install_unpack_hook(self._entropy,
             self._meta)
 
-    def _setup(self):
+    def _setup_phase(self):
         """
         Execute the setup phase.
         """
@@ -720,7 +753,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _pre_install(self):
+    def _pre_install_phase(self):
         """
         Execute the pre-install phase.
         """
@@ -746,7 +779,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _pre_remove(self):
+    def _pre_remove_phase(self):
         """
         Execute the pre-remove phase.
         """
@@ -772,11 +805,20 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _install_clean(self):
+    def _install_clean_phase(self):
         """
         Cleanup package files not used anymore by newly installed version.
         This is part of the atomic install, which overwrites the live fs with
         new files and removes old afterwards.
+        """
+        inst_repo = self._entropy.installed_repository()
+
+        with inst_repo.exclusive():
+            return self._install_clean_unlocked(inst_repo)
+
+    def _install_clean_unlocked(self, inst_repo):
+        """
+        _install_clean with no installed repository lock handling.
         """
         self._entropy.output(
             blue(_("Cleaning previously installed application data.")),
@@ -785,15 +827,13 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             header = red("   ## ")
         )
 
-        installed_repository = self._entropy.installed_repository()
-
         preserved_mgr = preservedlibs.PreservedLibraries(
-            installed_repository, self._meta['installed_package_id'],
+            inst_repo, self._meta['installed_package_id'],
             self._meta['removed_libs'],
             root = self._get_system_root(self._meta))
 
         self._remove_content_from_system(
-            installed_repository,
+            inst_repo,
             self._meta['already_protected_config_files'],
             preserved_mgr
             )
@@ -803,24 +843,25 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return 0
 
-    def _preserved_libs_gc(self):
+    def _preserved_libs_gc_phase(self):
         """
         Execute the garbage collection of preserved libraries.
         """
-        installed_repository = self._entropy.installed_repository()
+        inst_repo = self._entropy.installed_repository()
 
-        # NOTE: removed_libs is always empty because this phase is only
-        # called when remove_package_id == -1
-        preserved_mgr = preservedlibs.PreservedLibraries(
-            installed_repository, self._meta['installed_package_id'],
-            self._meta['removed_libs'],
-            root = self._get_system_root(self._meta))
+        with inst_repo.exclusive():
+            # NOTE: removed_libs is always empty because this phase is only
+            # called when remove_package_id == -1
+            preserved_mgr = preservedlibs.PreservedLibraries(
+                inst_repo, self._meta['installed_package_id'],
+                self._meta['removed_libs'],
+                root = self._get_system_root(self._meta))
 
-        self._garbage_collect_preserved_libs(preserved_mgr)
+            self._garbage_collect_preserved_libs(preserved_mgr)
 
         return 0
 
-    def _post_remove(self):
+    def _post_remove_phase(self):
         """
         Execute the post-remove phase.
         """
@@ -846,7 +887,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _post_remove_install(self):
+    def _post_remove_install_phase(self):
         """
         Execute the post-remove SPM package metadata phase.
         """
@@ -857,7 +898,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         return self._spm_remove_package(self._meta['removeatom'])
 
-    def _install_spm(self):
+    def _install_spm_phase(self):
         """
         Execute the installation of SPM package metadata.
         """
@@ -873,13 +914,15 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         installed_package_id = self._meta['installed_package_id']
 
         spm_uid = spm.add_installed_package(self._meta)
-        inst_repo = self._entropy.installed_repository()
         if spm_uid != -1:
-            inst_repo.insertSpmUid(installed_package_id, spm_uid)
+            inst_repo = self._entropy.installed_repository()
+            with inst_repo.exclusive():
+                if inst_repo.isPackageIdAvailable(installed_package_id):
+                    inst_repo.insertSpmUid(installed_package_id, spm_uid)
 
         return 0
 
-    def _post_install(self):
+    def _post_install_phase(self):
         """
         Execute the post-install phase.
         """
@@ -905,7 +948,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _cleanup(self):
+    def _cleanup_phase(self):
         """
         Execute the cleanup phase.
         """
@@ -985,7 +1028,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             return _path not in second_pass_removal
         Content.filter_content_file(content_file, _filter)
 
-    def _add_installed_package(self, items_installed, items_not_installed):
+    def _add_installed_package_unlocked(self, inst_repo, items_installed,
+                                        items_not_installed):
         """
         For internal use only.
         Copy package from repository to installed packages one.
@@ -1018,7 +1062,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     self._meta['removecontent_file'],
                     content_diff, _cmp_func)
 
-        inst_repo = self._entropy.installed_repository()
         smart_pkg = self._meta['smartpackage']
         repo = self._entropy.open_repository(self._repository_id)
 
@@ -1199,7 +1242,14 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         """
         Execute the package installation code.
         """
-        # clear on-disk cache
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.exclusive():
+            return self._install_package_unlocked(inst_repo)
+
+    def _install_package_unlocked(self, inst_repo):
+        """
+        Execute the package installation code.
+        """
         self._entropy.clear_cache()
 
         self._entropy.logger.log(
@@ -1207,8 +1257,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             etpConst['logging']['normal_loglevel_id'],
             "Installing package: %s" % (self._meta['atom'],)
         )
-
-        inst_repo = self._entropy.installed_repository()
 
         if self._meta['remove_package_id'] != -1:
             am_files = inst_repo.retrieveAutomergefiles(
@@ -1220,8 +1268,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # then passed to _add_installed_package()
         items_installed = set()
         items_not_installed = set()
-        exit_st = self._move_image_to_system(
-            items_installed, items_not_installed)
+        exit_st = self._move_image_to_system_unlocked(
+            inst_repo, items_installed, items_not_installed)
         if exit_st != 0:
             return exit_st
 
@@ -1235,12 +1283,13 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             level = "info",
             header = red("   ## ")
         )
-        self._meta['installed_package_id'] = self._add_installed_package(
-            items_installed, items_not_installed)
+        package_id = self._add_installed_package_unlocked(
+            inst_repo, items_installed, items_not_installed)
+        self._meta['installed_package_id'] = package_id
 
         return 0
 
-    def _install(self):
+    def _install_phase(self):
         """
         Execute the install phase.
         """
@@ -1303,13 +1352,15 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             )
         return exit_st
 
-    def _handle_install_collision_protect(self, tofile, todbfile):
+    def _handle_install_collision_protect_unlocked(self, inst_repo, tofile,
+                                                   todbfile):
         """
         Handle files collition protection for the install phase.
         """
-        inst_repo = self._entropy.installed_repository()
+
         avail = inst_repo.isFileAvailable(
-            const_convert_to_unicode(todbfile), get_id = True)
+            const_convert_to_unicode(todbfile),
+            get_id = True)
 
         if (self._meta['remove_package_id'] not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
@@ -1333,7 +1384,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return True
 
-    def _move_image_to_system(self, items_installed, items_not_installed):
+    def _move_image_to_system_unlocked(self, inst_repo, items_installed,
+                                       items_not_installed):
         """
         Internal method that moves the package image directory to the live
         filesystem.
@@ -1584,8 +1636,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
             if col_protect > 1:
                 todbfile = fromfile[len(image_dir):]
-                myrc = self._handle_install_collision_protect(tofile,
-                    todbfile)
+                myrc = self._handle_install_collision_protect_unlocked(
+                    inst_repo, tofile, todbfile)
                 if not myrc:
                     return 0
 
@@ -1823,5 +1875,3 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     return move_st
 
         return 0
-
-
