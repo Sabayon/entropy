@@ -23,7 +23,8 @@ import subprocess
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_buffer, const_convert_to_rawstring, const_pid_exists, \
-    const_is_python3, const_debug_write, const_file_writable
+    const_is_python3, const_debug_write, const_file_writable, \
+    const_setup_directory
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
 from entropy.misc import FlockFile, ReadersWritersSemaphore
@@ -485,7 +486,17 @@ class EntropySQLiteRepository(EntropySQLRepository):
         flock = None
         with self._flock_lock:
             if not self._flock:
-                flock = FlockFile(self._db)
+
+                lock_path = self.lock_path()
+                lock_dir = os.path.dirname(lock_path)
+                try:
+                    const_setup_directory(lock_dir)
+                except (OSError, IOError):
+                    # best effort, hope not to fail
+                    # on FlockFile()
+                    pass
+
+                flock = FlockFile(lock_path)
                 self._flock = flock
             else:
                 flock = self._flock
