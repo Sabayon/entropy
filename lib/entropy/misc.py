@@ -609,13 +609,13 @@ class FlockFile(object):
             acquired = self.try_acquire_shared()
             if not acquired:
                 if self._wait_msg_cb:
-                    self._wait_msg_cb(False)
+                    self._wait_msg_cb(self, False)
 
                 self.acquire_shared()
                 acquired = True
 
                 if self._acquired_msg_cb:
-                    self._acquired_msg_cb(False)
+                    self._acquired_msg_cb(self, False)
 
             yield
 
@@ -633,13 +633,13 @@ class FlockFile(object):
             acquired = self.try_acquire_exclusive()
             if not acquired:
                 if self._wait_msg_cb:
-                    self._wait_msg_cb(True)
+                    self._wait_msg_cb(self, True)
 
                 self.acquire_exclusive()
                 acquired = True
 
                 if self._acquired_msg_cb:
-                    self._acquired_msg_cb(True)
+                    self._acquired_msg_cb(self, True)
 
             yield
 
