@@ -431,6 +431,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Acquire a shared file lock for this repository (context manager).
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
         """
         acquired = False
         try:
@@ -469,6 +474,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Acquire an exclusive file lock for this repository (context manager).
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
         """
         acquired = False
         try:
@@ -506,6 +516,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Acquire a shared file lock for this repository.
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
         """
         raise NotImplementedError()
 
@@ -513,6 +528,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Acquire an exclusive file lock for this repository.
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
         """
         raise NotImplementedError()
 
@@ -520,6 +540,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Try to acquire a shared file lock for this repository.
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
 
         @return: True, if acquired, False otherwise.
         @rtype: bool
@@ -530,6 +555,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         Try to acquire an exclusive file lock for this repository.
         This is used for inter-process synchronization only.
+
+        This locking infrastructure assumes that resources initialized during
+        object instantiation are valid throughout the whole object lifecycle.
+        If this is not the case, please synchronize using the Entropy Resources
+        General Lock (entropy.tools.acquire_entropy_locks()).
 
         @return: True, if acquired, False otherwise.
         @rtype: bool
