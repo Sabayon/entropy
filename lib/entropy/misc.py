@@ -723,6 +723,12 @@ class FlockFile(object):
         """
         fcntl.flock(self._f.fileno(), fcntl.LOCK_UN)
 
+    def get_path(self):
+        """
+        Return the file path associated with this instance.
+        """
+        return self._path
+
     def get_file(self):
         """
         Get the underlying File Object.
