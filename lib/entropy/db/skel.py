@@ -429,8 +429,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             acquired = self.try_acquire_shared()
             if not acquired:
                 self.output(
-                    "%s: %s..." % (
-                        brown(_("Acquiring shared lock on")),
+                    "%s %s ..." % (
+                        darkred(_("Acquiring shared lock on")),
                         darkgreen(self.name),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
@@ -439,6 +439,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
                 self.acquire_shared()
                 acquired = True
+
+                self.output(
+                    "%s %s" % (
+                        darkred(_("Acquired shared lock on")),
+                        darkgreen(self.name),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
 
             yield
 
@@ -457,8 +466,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             acquired = self.try_acquire_exclusive()
             if not acquired:
                 self.output(
-                    "%s: %s..." % (
-                        brown(_("Acquiring exclusive lock on")),
+                    "%s %s ..." % (
+                        darkred(_("Acquiring exclusive lock on")),
                         darkgreen(self.name),
                     ),
                     level = "warning", # use stderr, avoid breaking --quiet
@@ -467,6 +476,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
                 self.acquire_exclusive()
                 acquired = True
+
+                self.output(
+                    "%s %s" % (
+                        darkred(_("Acquired exclusive lock on")),
+                        darkgreen(self.name),
+                    ),
+                    level = "warning", # use stderr, avoid breaking --quiet
+                    back = True,
+                    importance = 0)
 
             yield
 
