@@ -735,23 +735,29 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         # NOTE: fixup permissions in the image directory
         # the setup phase could have created additional users and groups
-        package_path = self._meta['pkgpath']
-        prefix_dir = self._meta['imagedir']
-        try:
-            entropy.tools.apply_tarball_ownership(package_path, prefix_dir)
-        except IOError as err:
-            msg = "%s: %s" % (
-                brown(_("Error during package files permissions setup")),
-                err,)
-            self._entropy.output(
-                msg,
-                importance = 1,
-                level = "error",
-                header = darkred(" !!! ")
+        package_paths = [self._meta['pkgpath']]
+        for extra_download in self._meta['extra_download']:
+            package_paths.append(
+                self.get_standard_fetch_disk_path(extra_download['download'])
             )
-            exit_st = 1
 
-        return exit_st
+        for package_path in package_paths:
+            try:
+                entropy.tools.apply_tarball_ownership(
+                    package_path, self._meta['imagedir'])
+            except IOError as err:
+                msg = "%s: %s" % (
+                    brown(_("Error during package files permissions setup")),
+                    err,)
+                self._entropy.output(
+                    msg,
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" !!! ")
+                )
+                return 1
+
+        return 0
 
     def _pre_install_phase(self):
         """
