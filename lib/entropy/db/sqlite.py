@@ -521,21 +521,30 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         if self._is_memory():
             rwsem = self._get_rwsem()
-            return rwsem.reader_acquire()
+            rwsem.reader_acquire()
         else:
             flock = self._get_flock()
-            return flock.acquire_shared()
+            flock.acquire_shared()
+
+        # in-RAM cached data may have become stale
+        self.clearCache()
 
     def try_acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
+        acquired = None
         if self._is_memory():
             rwsem = self._get_rwsem()
-            return rwsem.try_reader_acquire()
+            acquired = rwsem.try_reader_acquire()
         else:
             flock = self._get_flock()
-            return flock.try_acquire_shared()
+            acquired = flock.try_acquire_shared()
+
+        if acquired:
+            # in-RAM cached data may have become stale
+            self.clearCache()
+        return acquired
 
     def acquire_exclusive(self):
         """
@@ -543,21 +552,30 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         if self._is_memory():
             rwsem = self._get_rwsem()
-            return rwsem.writer_acquire()
+            rwsem.writer_acquire()
         else:
             flock = self._get_flock()
-            return flock.acquire_exclusive()
+            flock.acquire_exclusive()
+
+        # in-RAM cached data may have become stale
+        self.clearCache()
 
     def try_acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
+        acquired = None
         if self._is_memory():
             rwsem = self._get_rwsem()
-            return rwsem.try_writer_acquire()
+            acquired = rwsem.try_writer_acquire()
         else:
             flock = self._get_flock()
-            return flock.try_acquire_exclusive()
+            acquired = flock.try_acquire_exclusive()
+
+        if acquired:
+            # in-RAM cached data may have become stale
+            self.clearCache()
+        return acquired
 
     def _release_flock(self):
         """
