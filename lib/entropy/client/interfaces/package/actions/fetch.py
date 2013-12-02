@@ -176,25 +176,6 @@ class _PackageFetchAction(PackageAction):
             pkg_disk_path = self.get_standard_fetch_disk_path(download)
         return pkg_disk_path
 
-    def _check_package_path_download(self, download, checksum,
-                                     _metadata = None):
-        """
-        Internal function that verifies if a package tarball is already
-        available locally and quickly computes its md5. Please note that
-        stronger crypto hash functions are used during the real package
-        validation phase.
-        """
-        pkg_path = self._get_download_path(download, self._meta)
-
-        if not os.path.isfile(pkg_path):
-            return -1
-        if checksum is None:
-            return 0
-
-        if entropy.tools.compare_md5(pkg_path, checksum):
-            return 0
-        return -2
-
     def _stat_path(self, path):
         """
         Return true whether path is a regular file (no symlinks allowed).
