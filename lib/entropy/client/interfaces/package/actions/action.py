@@ -128,6 +128,16 @@ class PackageAction(object):
 
         return PackageFlockFile(lock_path)
 
+    def _stat_path(self, path):
+        """
+        Return true whether path is a regular file (no symlinks allowed).
+        """
+        try:
+            st = os.stat(path)
+            return stat.S_ISREG(st.st_mode)
+        except OSError:
+            return False
+
     def setup(self):
         """
         Setup the action metadata. There is no need to call this directly,

@@ -176,16 +176,6 @@ class _PackageFetchAction(PackageAction):
             pkg_disk_path = self.get_standard_fetch_disk_path(download)
         return pkg_disk_path
 
-    def _stat_path(self, path):
-        """
-        Return true whether path is a regular file (no symlinks allowed).
-        """
-        try:
-            st = os.stat(path)
-            return stat.S_ISREG(st.st_mode)
-        except OSError:
-            return False
-
     def _build_uris_list(self, original_repo, repository_id):
         """
         Build a list of possible download URIs for the given repository.
