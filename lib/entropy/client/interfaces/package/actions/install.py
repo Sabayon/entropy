@@ -16,7 +16,8 @@ import stat
 import time
 
 from entropy.const import etpConst, const_convert_to_unicode, \
-    const_mkdtemp, const_convert_to_rawstring, const_is_python3
+    const_mkdtemp, const_convert_to_rawstring, const_is_python3, \
+    const_debug_write
 from entropy.exceptions import EntropyException
 from entropy.i18n import _
 from entropy.output import darkred, red, purple, brown, blue, darkgreen, teal
@@ -412,13 +413,13 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return 0
 
-    def _unpack_package(self, download, package_path, image_dir, pkg_dbpath):
+    def _unpack_package(self, package_path, image_dir, pkg_dbpath):
         """
         Effectively unpack the package tarballs.
         """
         txt = "%s: %s" % (
             blue(_("Unpacking")),
-            red(os.path.basename(download)),
+            red(os.path.basename(package_path)),
         )
         self._entropy.output(
             txt,
@@ -430,7 +431,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
-            "Unpacking package: %s" % (download,)
+            "Unpacking package: %s" % (package_path,)
         )
 
         # removed in the meantime? fail.
@@ -637,60 +638,81 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        unpack_dir = self._meta['unpackdir']
-
-        if not const_is_python3():
-            # unpackdir comes from download metadatum, which is utf-8
-            # (conf_encoding)
-            unpack_dir = const_convert_to_rawstring(unpack_dir,
-                from_enctype = etpConst['conf_encoding'])
-
-        if os.path.isdir(unpack_dir):
-            shutil.rmtree(unpack_dir)
-        elif os.path.isfile(unpack_dir):
-            os.remove(unpack_dir)
-
-        try:
-            os.makedirs(unpack_dir)
-        except OSError as err:
-            if err.errno != errno.EEXIST:
-                raise
-
-        exit_st = self._unpack_package(
-            self._meta['download'], self._meta['pkgpath'],
-            self._meta['imagedir'], self._meta['pkgdbpath'])
-
-        if exit_st == 0:
-            for extra_download in self._meta['extra_download']:
-                download = extra_download['download']
-                pkgpath = self.get_standard_fetch_disk_path(download)
-                exit_st = self._unpack_package(download, pkgpath,
-                    self._meta['imagedir'], None)
-                if exit_st != 0:
-                    break
-
-        if exit_st != 0:
-            if exit_st == 512:
-                errormsg = "%s. %s. %s: 512" % (
-                    red(_("You are running out of disk space")),
-                    red(_("I bet, you're probably Michele")),
-                    blue(_("Error")),
-                )
-            else:
-                msg = _("An error occured while trying to unpack the package")
-                errormsg = "%s. %s. %s: %s" % (
-                    red(msg),
-                    red(_("Check if your system is healthy")),
-                    blue(_("Error")),
-                    exit_st,
-                )
+        def _unpack_error(exit_st):
+            msg = _("An error occured while trying to unpack the package")
+            errormsg = "%s. %s. %s: %s" % (
+                red(msg),
+                red(_("Check if your system is healthy")),
+                blue(_("Error")),
+                exit_st,
+            )
             self._entropy.output(
                 errormsg,
                 importance = 1,
                 level = "error",
                 header = red("   ## ")
             )
-            return exit_st
+
+        locks = []
+        try:
+            download_path = self._meta['pkgpath']
+            lock = self.path_lock(download_path)
+            locks.append(lock)
+
+            with lock.shared():
+
+                if not self._stat_path(download_path):
+                    const_debug_write(
+                        __name__,
+                        "_unpack_phase: %s vanished" % (
+                            download_path,))
+                    _unpack_error(2)
+                    return 2
+
+                exit_st = self._unpack_package(
+                    download_path,
+                    self._meta['imagedir'],
+                    self._meta['pkgdbpath'])
+
+                if exit_st != 0:
+                    const_debug_write(
+                        __name__,
+                        "_unpack_phase: %s unpack error: %s" % (
+                            download_path, exit_st))
+                    _unpack_error(exit_st)
+                    return exit_st
+
+            for extra_download in self._meta['extra_download']:
+                download = extra_download['download']
+                download_path = self.get_standard_fetch_disk_path(download)
+                extra_lock = self.path_lock(download_path)
+                locks.append(extra_lock)
+
+                with extra_lock.shared():
+                    if not self._stat_path(download_path):
+                        const_debug_write(
+                            __name__,
+                            "_unpack_phase: %s vanished" % (
+                                download_path,))
+                        _unpack_error(2)
+                        return 2
+
+                    exit_st = self._unpack_package(
+                        download_path,
+                        self._meta['imagedir'],
+                        None)
+
+                    if exit_st != 0:
+                        const_debug_write(
+                            __name__,
+                            "_unpack_phase: %s unpack error: %s" % (
+                                download_path, exit_st,))
+                        _unpack_error(exit_st)
+                        return exit_st
+
+        finally:
+            for l in locks:
+                l.close()
 
         spm_class = self._entropy.Spm_class()
         # call Spm unpack hook
@@ -733,20 +755,49 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             )
 
         for package_path in package_paths:
+            lock = None
+
             try:
-                entropy.tools.apply_tarball_ownership(
-                    package_path, self._meta['imagedir'])
-            except IOError as err:
-                msg = "%s: %s" % (
-                    brown(_("Error during package files permissions setup")),
-                    err,)
-                self._entropy.output(
-                    msg,
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                return 1
+                lock = self.path_lock(package_path)
+                with lock.shared():
+
+                    if not self._stat_path(package_path):
+                        const_debug_write(
+                            __name__,
+                            "_setup_phase: %s vanished" % (
+                                package_path,))
+
+                        self._entropy.output(
+                            "%s: vanished" % (
+                                brown(_("Error during package files "
+                                        "permissions setup"))
+                                ,),
+                            importance = 1,
+                            level = "error",
+                            header = darkred(" !!! ")
+                        )
+                        return 1
+
+                    try:
+                        entropy.tools.apply_tarball_ownership(
+                            package_path, self._meta['imagedir'])
+                    except IOError as err:
+                        msg = "%s: %s" % (
+                            brown(_("Error during package files "
+                                    "permissions setup")),
+                            err,)
+
+                        self._entropy.output(
+                            msg,
+                            importance = 1,
+                            level = "error",
+                            header = darkred(" !!! ")
+                        )
+                        return 1
+
+            finally:
+                if lock is not None:
+                    lock.close()
 
         return 0
 
