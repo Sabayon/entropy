@@ -147,7 +147,7 @@ class _PackageFetchAction(PackageAction):
         metadata['phases'] = []
 
         if not self._entropy._is_package_repository(self._repository_id):
-            metadata['phases'].append(self._fetch)
+            metadata['phases'].append(self._fetch_phase)
 
         self._meta = metadata
 
@@ -835,7 +835,7 @@ class _PackageFetchAction(PackageAction):
         mirror_status.set_working_mirror(None)
         return 0
 
-    def _fetch(self):
+    def _fetch_phase(self):
         """
         Execute the package fetch phase.
         """
