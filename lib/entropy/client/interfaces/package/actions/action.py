@@ -126,7 +126,7 @@ class PackageAction(object):
                 self._wait_msg_cb = wait_msg_cb
                 self._acquired_msg_cb = acquired_msg_cb
 
-        return PackageFlockFile(path)
+        return PackageFlockFile(lock_path)
 
     def setup(self):
         """
