@@ -96,8 +96,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
             if key_slot:
                 installed_package_id, _inst_rc = inst_repo.atomMatch(key_slot)
 
-            obj = (package_id, repository_id, installed_package_id,
-                   download, digest, signatures)
+            obj = (package_id, repository_id, download, digest, signatures)
             temp_checksum_list.append(obj)
 
             down_path = self.get_standard_fetch_disk_path(download)
@@ -229,12 +228,19 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 # package is not installed
                 continue
 
-            edelta_approve = self._approve_edelta(url, installed_package_id,
-                                                  cksum)
-            if edelta_approve is None:
+            installed_url = inst_repo.retrieveDownloadURL(
+                installed_package_id)
+            installed_checksum = inst_repo.retrieveDigest(
+                installed_package_id)
+            installed_download_path = self.get_standard_fetch_disk_path(
+                installed_url)
+
+            edelta_url = self._approve_edelta_unlocked(
+                url, cksum, installed_url, installed_checksum,
+                installed_download_path)
+            if edelta_url is None:
                 # no edelta support
                 continue
-            edelta_url, installed_fetch_path = edelta_approve
 
             edelta_save_path = dest_path + etpConst['packagesdeltaext']
             key = (edelta_url, edelta_save_path)
@@ -243,7 +249,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
             url_data_map[url_data_map_idx] = (
                 pkg_id, repository_id, url,
                 dest_path, cksum, edelta_url,
-                edelta_save_path, installed_fetch_path)
+                edelta_save_path, installed_download_path)
 
         if not url_path_list:
             # no martini, no party!
@@ -750,11 +756,10 @@ class _PackageMultiFetchAction(_PackageFetchAction):
         exit_st = 0
         ck_list = self._meta['multi_checksum_list']
 
-        for (pkg_id, repository_id, inst_pkg_id, download,
-             digest, signatures) in ck_list:
+        for (pkg_id, repository_id, download, digest, signatures) in ck_list:
+            download_path = self.get_standard_fetch_disk_path(download)
             exit_st = self._match_checksum(
-                pkg_id, repository_id, inst_pkg_id, digest,
-                download, signatures)
+                download_path, repository_id, digest, signatures)
             if exit_st != 0:
                 break
 

@@ -77,6 +77,15 @@ class _PackageFetchAction(PackageAction):
             # already configured
             return
 
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.shared():
+            return self._setup_unlocked(inst_repo)
+
+    def _setup_unlocked(self, inst_repo):
+        """
+        Setup the PackageAction, assume that installed repository
+        locks are held.
+        """
         metadata = {}
         splitdebug_metadata = self._get_splitdebug_metadata()
         metadata.update(splitdebug_metadata)
@@ -104,7 +113,6 @@ class _PackageFetchAction(PackageAction):
         metadata['atom'] = repo.retrieveAtom(self._package_id)
         metadata['slot'] = repo.retrieveSlot(self._package_id)
 
-        inst_repo = self._entropy.installed_repository()
         metadata['installed_package_id'], _inst_rc = inst_repo.atomMatch(
             entropy.dep.dep_getkey(metadata['atom']),
             matchSlot = metadata['slot'])
@@ -133,54 +141,13 @@ class _PackageFetchAction(PackageAction):
         # export main package download path to metadata
         # this is actually used by PackageKit backend in order
         # to signal downloaded package files
-        metadata['pkgpath'] = self._get_fetch_disk_path(
+        metadata['pkgpath'] = self._get_download_path(
             metadata['download'], metadata)
 
         metadata['phases'] = []
 
-        if not self._repository_id.endswith(etpConst['packagesext']):
-
-            dl_check = self._check_package_path_download(
-                metadata['download'], None, _metadata = metadata)
-            dl_fetch = dl_check < 0
-
-            if not dl_fetch:
-                for extra_download in metadata['extra_download']:
-                    dl_check = self._check_package_path_download(
-                        extra_download['download'], None, _metadata = metadata)
-                    if dl_check < 0:
-                        # dl_check checked again right below
-                        break
-
-            if dl_check < 0:
-                metadata['phases'].append(self._fetch)
-
-            metadata['phases'].append(self._checksum)
-
-        def _check_matching_size(download, size):
-            d_path = self._get_fetch_disk_path(download, metadata)
-            try:
-                st = os.stat(d_path)
-                return size == st.st_size
-            except OSError as err:
-                if err.errno != errno.ENOENT:
-                    raise
-                return False
-
-        matching_size = _check_matching_size(metadata['download'],
-            repo.retrieveSize(self._package_id))
-        if matching_size:
-            for extra_download in metadata['extra_download']:
-                matching_size = _check_matching_size(
-                    extra_download['download'],
-                    extra_download['size'])
-                if not matching_size:
-                    break
-
-        # downloading binary package
-        # if file exists, first checksum then fetch
-        if matching_size:
-            metadata['phases'].reverse()
+        if not self._entropy._is_package_repository(self._repository_id):
+            metadata['phases'].append(self._fetch)
 
         self._meta = metadata
 
@@ -197,7 +164,7 @@ class _PackageFetchAction(PackageAction):
                 break
         return exit_st
 
-    def _get_fetch_disk_path(self, download, metadata):
+    def _get_download_path(self, download, metadata):
         """
         Return proper Entropy package store path.
         """
@@ -217,10 +184,7 @@ class _PackageFetchAction(PackageAction):
         stronger crypto hash functions are used during the real package
         validation phase.
         """
-        if _metadata is None:
-            _metadata = self._meta
-
-        pkg_path = self._get_fetch_disk_path(download, _metadata)
+        pkg_path = self._get_download_path(download, self._meta)
 
         if not os.path.isfile(pkg_path):
             return -1
@@ -230,6 +194,16 @@ class _PackageFetchAction(PackageAction):
         if entropy.tools.compare_md5(pkg_path, checksum):
             return 0
         return -2
+
+    def _stat_path(self, path):
+        """
+        Return true whether path is a regular file (no symlinks allowed).
+        """
+        try:
+            st = os.stat(path)
+            return stat.S_ISREG(st.st_mode)
+        except OSError:
+            return False
 
     def _build_uris_list(self, original_repo, repository_id):
         """
@@ -252,7 +226,8 @@ class _PackageFetchAction(PackageAction):
 
         return uris
 
-    def _approve_edelta(self, url, installed_package_id, package_digest):
+    def _approve_edelta_unlocked(self, url, checksum, installed_url,
+                                 installed_checksum, installed_download_path):
         """
         Approve Entropy package delta support for given url, checking if
         a previously fetched package is available.
@@ -261,36 +236,39 @@ class _PackageFetchAction(PackageAction):
         or None if edelta is not available
         @rtype: tuple of strings or None
         """
-        inst_repo = self._entropy.installed_repository()
-        download_url = inst_repo.retrieveDownloadURL(installed_package_id)
-        installed_digest = inst_repo.retrieveDigest(installed_package_id)
-        installed_fetch_path = self._get_fetch_disk_path(
-            download_url, self._meta)
+        try:
+            os.lstat(installed_download_path)
+        except (OSError, IOError) as err:
+            const_debug_write(
+                __name__, "_approve_edelta_unlocked, stat error: %s" % (err,))
+            return
 
         edelta_local_approved = False
         try:
             edelta_local_approved = entropy.tools.compare_md5(
-                installed_fetch_path, installed_digest)
+                installed_download_path, installed_checksum)
         except (OSError, IOError) as err:
             const_debug_write(
-                __name__, "_approve_edelta, error: %s" % (err,))
+                __name__, "_approve_edelta_unlocked, error: %s" % (err,))
             return
 
-        if edelta_local_approved:
-            hash_tag = installed_digest + package_digest
-            edelta_file_name = entropy.tools.generate_entropy_delta_file_name(
-                os.path.basename(download_url),
-                os.path.basename(url),
-                hash_tag)
-            edelta_url = os.path.join(
-                os.path.dirname(url),
-                etpConst['packagesdeltasubdir'],
-                edelta_file_name)
+        if not edelta_local_approved:
+            return
 
-            return edelta_url, installed_fetch_path
+        hash_tag = installed_checksum + checksum
+        edelta_file_name = entropy.tools.generate_entropy_delta_file_name(
+            os.path.basename(installed_url),
+            os.path.basename(url),
+            hash_tag)
+        edelta_url = os.path.join(
+            os.path.dirname(url),
+            etpConst['packagesdeltasubdir'],
+            edelta_file_name)
+
+        return edelta_url
 
     def _setup_differential_download(self, fetcher, url, resume,
-                                     fetch_path, repository, package_id):
+                                     download_path, repository, package_id):
         """
         Setup differential download in case of URL supporting it.
         Internal function.
@@ -300,8 +278,8 @@ class _PackageFetchAction(PackageAction):
         @type url: string
         @param resume: resume support
         @type resume: bool
-        @param fetch_path: path where package file will be saved
-        @type fetch_path: string
+        @param download_path: path where package file will be saved
+        @type download_path: string
         @param repository: repository identifier belonging to package file
         @type repository: string
         @param package_id: package identifier belonging to repository identifier
@@ -311,7 +289,7 @@ class _PackageFetchAction(PackageAction):
         if not resume:
             const_debug_write(__name__,
                 "_setup_differential_download(%s) %s" % (
-                    url, "resume disabled"))
+                    download_path, "resume disabled"))
             return
 
         if not fetcher.supports_differential_download(url):
@@ -324,10 +302,11 @@ class _PackageFetchAction(PackageAction):
         # this is the fetch path of the file that is going to be downloaded
         # not going to overwrite it if a file is located there because
         # user would want a resume for sure in first place
-        if os.path.isfile(fetch_path):
+        if os.path.isfile(download_path):
             const_debug_write(__name__,
-                "_setup_differential_download(%s) %s" % (
-                    url, "fetch path already exists, not overwriting"))
+                "_setup_differential_download(%s) %s %s" % (
+                    url, download_path,
+                    "download path already exists, not overwriting"))
             return
 
         pkg_repo = self._entropy.open_repository(repository)
@@ -341,60 +320,98 @@ class _PackageFetchAction(PackageAction):
 
         key, slot = keyslot
         inst_repo = self._entropy.installed_repository()
-        pkg_ids = inst_repo.searchKeySlot(key, slot)
-        if not pkg_ids:
-            # not installed, nothing to use as diff download
-            const_debug_write(__name__,
-                "_setup_differential_download(%s) %s" % (
-                    url, "no installed packages"))
+        with inst_repo.shared():
+
+            pkg_ids = inst_repo.searchKeySlot(key, slot)
+            if not pkg_ids:
+                # not installed, nothing to use as diff download
+                const_debug_write(__name__,
+                    "_setup_differential_download(%s) %s" % (
+                        url, "no installed packages"))
+                return
+
+            # grab the highest, we don't know if user was able to mess up
+            # its installed packages repository
+            pkg_id = max(pkg_ids)
+            download_url = inst_repo.retrieveDownloadURL(pkg_id)
+            installed_download_path = self.get_standard_fetch_disk_path(
+                download_url)
+
+        if installed_download_path == download_path:
+            # collision between what we need locally and what we need
+            # remotely, definitely edelta fetch is not going to work.
+            # Abort here.
             return
 
-        # grab the highest, we don't know if user was able to mess up
-        # its installed packages repository
-        pkg_id = max(pkg_ids)
-        download_url = inst_repo.retrieveDownloadURL(pkg_id)
-        installed_fetch_path = self._get_fetch_disk_path(
-            download_url, self._meta)
+        lock = None
+        try:
+            lock = self.path_lock(installed_download_path)
+
+            with lock.shared():
+                return self._setup_differential_download_unlocked(
+                    download_path, installed_download_path)
+
+        finally:
+            if lock is not None:
+                lock.close()
+
+    def _setup_differential_download_unlocked(self, download_path,
+                                              installed_download_path):
+        """
+        _setup_differential_download() assuming that the installed packages
+        repository lock is held.
+        """
+        tmp_download_path = download_path + ".setup_differential_download"
 
         try:
-            shutil.copyfile(installed_fetch_path, fetch_path)
+            shutil.copyfile(installed_download_path, tmp_download_path)
         except (OSError, IOError, shutil.Error) as err:
             const_debug_write(
                 __name__,
-                "_setup_differential_download(%s), copyfile error: %s" % (
-                    url, err))
+                "_setup_differential_download2(%s), %s copyfile error: %s" % (
+                    installed_download_path, tmp_download_path, err))
+
             try:
-                os.remove(fetch_path)
+                os.remove(tmp_download_path)
             except OSError:
                 pass
             return
 
         try:
-            user = os.stat(installed_fetch_path)[stat.ST_UID]
-            group = os.stat(installed_fetch_path)[stat.ST_GID]
-            os.chown(fetch_path, user, group)
+            user = os.stat(installed_download_path)[stat.ST_UID]
+            group = os.stat(installed_download_path)[stat.ST_GID]
+            os.chown(download_path, user, group)
         except (OSError, IOError) as err:
             const_debug_write(
                 __name__,
-                "_setup_differential_download(%s), chown error: %s" % (
-                    url, err))
+                "_setup_differential_download2(%s), chown error: %s" % (
+                    installed_download_path, err))
             return
 
         try:
-            shutil.copystat(installed_fetch_path, fetch_path)
+            shutil.copystat(installed_download_path, tmp_download_path)
         except (OSError, IOError, shutil.Error) as err:
             const_debug_write(
                 __name__,
-                "_setup_differential_download(%s), copystat error: %s" % (
-                    url, err))
+                "_setup_differential_download2(%s), %s copystat error: %s" % (
+                    installed_download_path, tmp_download_path, err))
+            return
+
+        try:
+            os.rename(tmp_download_path, download_path)
+        except (OSError, IOError) as err:
+            const_debug_write(
+                __name__,
+                "_setup_differential_download2(%s), %s rename error: %s" % (
+                    installed_download_path, tmp_download_path, err))
             return
 
         const_debug_write(
             __name__,
-            "_setup_differential_download(%s) copied to %s" % (
-                url, fetch_path))
+            "_setup_differential_download2(%s) copied to %s" % (
+                installed_download_path, download_path))
 
-    def _try_edelta_fetch(self, installed_package_id, url, save_path,
+    def _try_edelta_fetch(self, installed_package_id, url, download_path,
                           checksum, resume):
 
         # no edelta support enabled
@@ -409,21 +426,74 @@ class _PackageFetchAction(PackageAction):
         if installed_package_id is None or installed_package_id == -1:
             return 1, 0.0
 
-        edelta_approve = self._approve_edelta(url, installed_package_id,
-            checksum)
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.shared():
 
-        if edelta_approve is None:
-            # edelta not available, give up
+            if not inst_repo.isPackageIdAvailable(installed_package_id):
+                # installed package is no longer available, abort here.
+                return 1, 0.0
+
+            installed_url = inst_repo.retrieveDownloadURL(installed_package_id)
+            installed_checksum = inst_repo.retrieveDigest(installed_package_id)
+            installed_download_path = self.get_standard_fetch_disk_path(
+                installed_url)
+
+        if installed_download_path == download_path:
+            # collision between what we need locally and what we need
+            # remotely, definitely edelta fetch is not going to work.
+            # Abort here.
             return 1, 0.0
-        edelta_url, installed_fetch_path = edelta_approve
 
+        download_path_dir = os.path.dirname(download_path)
+        try:
+            os.makedirs(download_path_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                const_debug_write(
+                    __name__,
+                    "_try_edelta_fetch.makedirs, %s, error: %s" % (
+                        download_path_dir, err))
+                return -1, 0.0
+
+        # download_path lock is already held, don't try to get a new
+        # FlockFile for it or you're gonna get a deadlock in return.
+        # however, we should hold the lock for the other file.
+        lock = None
+        edelta_url = None
+        try:
+            lock = self.path_lock(installed_download_path)
+            with lock.shared():
+
+                edelta_url = self._approve_edelta_unlocked(
+                    url, checksum, installed_url, installed_checksum,
+                    installed_download_path)
+
+                if edelta_url is None:
+                    # edelta not available, give up
+                    return 1, 0.0
+
+                return self._try_edelta_fetch_unlocked(
+                    edelta_url, download_path, installed_download_path,
+                    resume)
+
+        finally:
+            if lock is not None:
+                lock.close()
+
+    def _try_edelta_fetch_unlocked(self, edelta_url, download_path,
+                                   installed_download_path, resume):
+        """
+        _try_edelta_fetch(), assuming that installed packages repository file
+        lock is held, as well as the relevant file locks regarding package
+        tarballs (package file itself and edelta file).
+        """
         # check if edelta file is available online
-        edelta_save_path = save_path + etpConst['packagesdeltaext']
+        edelta_download_path = download_path + etpConst['packagesdeltaext']
 
         max_tries = 2
         edelta_approved = False
         data_transfer = 0
-        download_plan = [(edelta_url, edelta_save_path) for _x in \
+        download_plan = [(edelta_url, edelta_download_path) for _x in \
             range(max_tries)]
 
         delta_resume = resume
@@ -465,22 +535,23 @@ class _PackageFetchAction(PackageAction):
                 continue
 
             # now check
-            tmp_save_path = save_path + ".edelta_pkg_tmp"
+            tmp_download_path = download_path + ".edelta_pkg_tmp"
             # yay, we can apply the delta and cook the new package file!
             try:
-                entropy.tools.apply_entropy_delta(installed_fetch_path,
-                    delta_save, tmp_save_path)
+                entropy.tools.apply_entropy_delta(
+                    installed_download_path,
+                    delta_save, tmp_download_path)
             except IOError:
                 # make sure this points to the hell
                 delta_resume = False
                 # retry
                 try:
-                    os.remove(tmp_save_path)
+                    os.remove(tmp_download_path)
                 except (OSError, IOError):
                     pass
                 continue
 
-            os.rename(tmp_save_path, save_path)
+            os.rename(tmp_download_path, download_path)
             edelta_approved = True
             break
 
@@ -490,9 +561,9 @@ class _PackageFetchAction(PackageAction):
         # error, give up with the edelta stuff
         return 1, data_transfer
 
-    def _fetch_file(self, url, save_path, digest = None, resume = True,
-                    download = None, package_id = None, repository = None,
-                    installed_package_id = None):
+    def _download_file(self, url, download_path, digest = None,
+                       resume = True, package_id = None,
+                       repository_id = None):
         """
         Internal method. Try to download the package file.
         """
@@ -511,46 +582,30 @@ class _PackageFetchAction(PackageAction):
             except OSError:
                 return None
 
-        fetch_abort_function = self._meta.get('fetch_abort_function')
-        filepath_dir = os.path.dirname(save_path)
-
-        if not os.path.isdir(os.path.realpath(filepath_dir)):
-            try:
-                os.remove(filepath_dir)
-            except OSError as err:
-                const_debug_write(__name__,
-                    "_fetch_file.remove, %s, error: %s" % (
-                        filepath_dir, err))
-            try:
-                os.makedirs(filepath_dir, 0o755)
-            except OSError as err:
-                const_debug_write(__name__,
-                    "_fetch_file.makedirs, %s, error: %s" % (
-                        filepath_dir, err))
+        download_path_dir = os.path.dirname(download_path)
+        try:
+            os.makedirs(download_path_dir, 0o755)
+        except OSError as err:
+            if err.errno != errno.EEXIST:
+                const_debug_write(
+                    __name__,
+                    "_download_file.makedirs, %s, error: %s" % (
+                        download_path_dir, err))
                 return -1, 0, False
 
-        exit_st, data_transfer = self._try_edelta_fetch(
-            installed_package_id, url, save_path,
-            digest, resume)
-        if exit_st == 0:
-            return exit_st, data_transfer, False
-        elif exit_st < 0: # < 0 errors are unrecoverable
-            return exit_st, data_transfer, False
-        # otherwise, just fallback to package download
-
+        fetch_abort_function = self._meta.get('fetch_abort_function')
         existed_before = False
-        if os.path.isfile(save_path) and os.path.exists(save_path):
+        if os.path.isfile(download_path) and os.path.exists(download_path):
             existed_before = True
 
         fetch_intf = self._entropy._url_fetcher(
-            url, save_path, resume = resume,
+            url, download_path, resume = resume,
             abort_check_func = fetch_abort_function)
-        if (download is not None) and (package_id is not None) and \
-            (repository is not None) and (exit_st == 0):
-            fetch_path = self._get_fetch_disk_path(download, self._meta)
+
+        if (package_id is not None) and (repository_id is not None):
             self._setup_differential_download(
                 self._entropy._url_fetcher, url,
-                resume, fetch_path, repository, package_id)
+                resume, download_path, repository_id, package_id)
 
         data_transfer = 0
         resumed = False
@@ -579,7 +634,7 @@ class _PackageFetchAction(PackageAction):
                 )
                 entropy.tools.print_traceback()
             if (not existed_before) or (not resume):
-                do_stfu_rm(save_path)
+                do_stfu_rm(download_path)
             return -1, data_transfer, resumed
 
         if fetch_checksum == UrlFetcher.GENERIC_FETCH_ERROR:
@@ -587,7 +642,7 @@ class _PackageFetchAction(PackageAction):
             # maybe we already have it?
             # this handles the case where network is unavailable
             # but file is already downloaded
-            fetch_checksum = do_get_md5sum(save_path)
+            fetch_checksum = do_get_md5sum(download_path)
             if (fetch_checksum != digest) or fetch_checksum is None:
                 return -3, data_transfer, resumed
 
@@ -595,20 +650,20 @@ class _PackageFetchAction(PackageAction):
             # maybe we already have it?
             # this handles the case where network is unavailable
             # but file is already downloaded
-            fetch_checksum = do_get_md5sum(save_path)
+            fetch_checksum = do_get_md5sum(download_path)
             if (fetch_checksum != digest) or fetch_checksum is None:
                 return -4, data_transfer, resumed
 
         if digest and (fetch_checksum != digest):
             # not properly downloaded
             if (not existed_before) or (not resume):
-                do_stfu_rm(save_path)
+                do_stfu_rm(download_path)
             return -2, data_transfer, resumed
 
         return 0, data_transfer, resumed
 
     def _download_package(self, package_id, repository_id, installed_package_id,
-                          download, save_path, checksum, resume = True):
+                          download, download_path, checksum, resume = True):
 
         avail_data = self._settings['repositories']['available']
         excluded_data = self._settings['repositories']['excluded']
@@ -701,16 +756,20 @@ class _PackageFetchAction(PackageAction):
                     header = red("   ## ")
                 )
 
-                exit_st, data_transfer, resumed = self._fetch_file(
-                    url,
-                    save_path,
-                    download = download,
-                    package_id = package_id,
-                    repository = repository_id,
-                    digest = checksum,
-                    resume = do_resume,
-                    installed_package_id = installed_package_id
-                )
+                resumed = False
+                exit_st, data_transfer = self._try_edelta_fetch(
+                    installed_package_id, url, download_path,
+                    checksum, do_resume)
+                if exit_st > 0:
+                    # fallback to package file download
+                    exit_st, data_transfer, resumed = self._download_file(
+                        url,
+                        download_path,
+                        package_id = package_id,
+                        repository_id = repository_id,
+                        digest = checksum,
+                        resume = do_resume
+                    )
 
                 if exit_st == 0:
                     txt = mirror_count_txt
@@ -811,43 +870,15 @@ class _PackageFetchAction(PackageAction):
         """
         xterm_title = "%s %s: %s" % (
             self._xterm_header,
-            _("Fetching"),
+            _("Downloading"),
             os.path.basename(self._meta['download']),
         )
         self._entropy.set_title(xterm_title)
 
-        def _fetch(download, checksum):
-            txt = "%s: %s" % (
-                blue(_("Downloading")),
-                red(os.path.basename(download)),)
-            self._entropy.output(
-                txt,
-                importance = 1,
-                level = "info",
-                header = red("   ## ")
-            )
-            pkg_disk_path = self._get_fetch_disk_path(download, self._meta)
-            return self._download_package(
-                self._package_id,
-                self._repository_id,
-                self._meta['installed_package_id'],
-                download,
-                pkg_disk_path,
-                checksum
-            )
-
-        exit_st = _fetch(self._meta['download'], self._meta['checksum'])
-        if exit_st == 0:
-            # go ahead with extra_download
-            for extra_download in self._meta['extra_download']:
-                exit_st = _fetch(extra_download['download'],
-                    extra_download['md5'])
-                if exit_st != 0:
-                    break
-
-        if exit_st != 0:
+        def _download_error(exit_st):
             txt = "%s. %s: %s" % (
-                red(_("Package cannot be fetched. Try to update repositories")),
+                red(_("Package cannot be downloaded. "
+                      "Try to update repositories")),
                 blue(_("Error")),
                 exit_st,
             )
@@ -858,23 +889,120 @@ class _PackageFetchAction(PackageAction):
                 header = darkred("   ## ")
             )
 
-        return exit_st
+        def _fetch(path, download, checksum):
+            txt = "%s: %s" % (
+                blue(_("Downloading")),
+                red(os.path.basename(download)),)
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
+            )
+            return self._download_package(
+                self._package_id,
+                self._repository_id,
+                self._meta['installed_package_id'],
+                download,
+                path,
+                checksum
+            )
 
-    def _match_checksum(self, package_id, repository, installed_package_id,
-                        checksum, download, signatures):
+        locks = []
+        try:
+            download_path = self._get_download_path(
+                self._meta['download'], self._meta)
+            lock = self.path_lock(download_path)
+            locks.append(lock)
+
+            with lock.exclusive():
+
+                verify_st = 1
+                if self._stat_path(download_path):
+                    verify_st = self._match_checksum(
+                        download_path,
+                        self._repository_id,
+                        self._meta['checksum'],
+                        self._meta['signatures'])
+
+                if verify_st != 0:
+                    download_st = _fetch(
+                        download_path,
+                        self._meta['download'],
+                        self._meta['checksum'])
+
+                    if download_st == 0:
+                        verify_st = self._match_checksum(
+                            download_path,
+                            self._repository_id,
+                            self._meta['checksum'],
+                            self._meta['signatures'])
+
+                if verify_st != 0:
+                    _download_error(verify_st)
+                    return verify_st
+
+            for extra_download in self._meta['extra_download']:
+
+                download_path = self._get_download_path(
+                    extra_download['download'], self._meta)
+                signatures = {
+                    'sha1': extra_download['sha1'],
+                    'sha256': extra_download['sha256'],
+                    'sha512': extra_download['sha512'],
+                    'gpg': extra_download['gpg'],
+                }
+
+                extra_lock = self.path_lock(download_path)
+                locks.append(extra_lock)
+
+                with extra_lock.exclusive():
+
+                    verify_st = 1
+                    if self._stat_path(download_path):
+                        verify_st = self._match_checksum(
+                            download_path,
+                            self._repository_id,
+                            extra_download['md5'],
+                            signatures)
+
+                    if verify_st != 0:
+                        download_st = _fetch(
+                            download_path,
+                            extra_download['download'],
+                            extra_download['md5'])
+
+                        if download_st == 0:
+                            verify_st = self._match_checksum(
+                                download_path,
+                                self._repository_id,
+                                extra_download['md5'],
+                                signatures)
+
+                    if verify_st != 0:
+                        _download_error(verify_st)
+                        return verify_st
+
+            return 0
+
+        finally:
+            for l in locks:
+                l.close()
+
+    def _match_checksum(self, download_path, repository_id,
+                        checksum, signatures):
         """
         Verify package checksum and return an exit status code.
         """
+        download_path_mtime = download_path + etpConst['packagemtimefileext']
+
         misc_settings = self._entropy.ClientSettings()['misc']
         enabled_hashes = misc_settings['packagehashes']
-
-        pkg_disk_path = self._get_fetch_disk_path(download, self._meta)
-        pkg_disk_path_mtime = pkg_disk_path + etpConst['packagemtimefileext']
 
         def do_mtime_validation():
             enc = etpConst['conf_encoding']
             try:
-                with codecs.open(pkg_disk_path_mtime,
+                with codecs.open(download_path_mtime,
                                  "r", encoding=enc) as mt_f:
                     stored_mtime = mt_f.read().strip()
             except (OSError, IOError) as err:
@@ -883,7 +1011,7 @@ class _PackageFetchAction(PackageAction):
                 return 1
 
             try:
-                cur_mtime = str(os.path.getmtime(pkg_disk_path))
+                cur_mtime = str(os.path.getmtime(download_path))
             except (OSError, IOError) as err:
                 if err.errno != errno.ENOENT:
                     raise
@@ -896,9 +1024,9 @@ class _PackageFetchAction(PackageAction):
         def do_store_mtime():
             enc = etpConst['conf_encoding']
             try:
-                with codecs.open(pkg_disk_path_mtime,
+                with codecs.open(download_path_mtime,
                                  "w", encoding=enc) as mt_f:
-                    cur_mtime = str(os.path.getmtime(pkg_disk_path))
+                    cur_mtime = str(os.path.getmtime(download_path))
                     mt_f.write(cur_mtime)
             except (OSError, IOError) as err:
                 if err.errno != errno.ENOENT:
@@ -913,7 +1041,7 @@ class _PackageFetchAction(PackageAction):
 
             # check if we have repository pubkey
             try:
-                if not repo_sec.is_pubkey_available(repository):
+                if not repo_sec.is_pubkey_available(repository_id):
                     return None
             except repo_sec.KeyExpired:
                 # key is expired
@@ -927,7 +1055,7 @@ class _PackageFetchAction(PackageAction):
             try:
                 # actually verify
                 valid, err_msg = repo_sec.verify_file(
-                    repository, pkg_path, tmp_path)
+                    repository_id, pkg_path, tmp_path)
             finally:
                 os.remove(tmp_path)
 
@@ -993,7 +1121,7 @@ class _PackageFetchAction(PackageAction):
                         back = True
                     )
 
-                    valid = cmp_func(pkg_disk_path, hash_val)
+                    valid = cmp_func(download_path, hash_val)
                     if valid is None:
                         self._entropy.output(
                             "%s '%s' %s" % (
@@ -1032,135 +1160,68 @@ class _PackageFetchAction(PackageAction):
 
             return 0
 
-        dlcount = 0
-        match = False
-        max_dlcount = 5
+        self._entropy.output(
+            blue(_("Checking package checksum...")),
+            importance = 0,
+            level = "info",
+            header = red("   ## "),
+            back = True
+        )
 
-        while dlcount <= max_dlcount:
+        download_name = os.path.basename(download_path)
+        valid_checksum = False
+        try:
+            valid_checksum = entropy.tools.compare_md5(download_path, checksum)
+        except (OSError, IOError) as err:
+            valid_checksum = False
+            const_debug_write(
+                __name__,
+                "_match_checksum: %s checksum validation error: %s" % (
+                    download_path, err))
 
-            self._entropy.output(
-                blue(_("Checking package checksum...")),
-                importance = 0,
-                level = "info",
-                header = red("   ## "),
-                back = True
+            txt = "%s: %s, %s" % (
+                red(_("Checksum validation error")),
+                blue(download_name),
+                err,
             )
-
-            dlcheck = self._check_package_path_download(
-                download, checksum)
-            if dlcheck == 0:
-                basef = os.path.basename(download)
-                self._entropy.output(
-                    "%s: %s" % (
-                        blue(_("Package checksum matches")),
-                        darkgreen(basef),
-                    ),
-                    importance = 0,
-                    level = "info",
-                    header = red("   ## ")
-                )
-
-                # check if package has been already checked
-                dlcheck = do_mtime_validation()
-                if dlcheck != 0:
-                    dlcheck = do_signatures_validation(signatures)
-
-                if dlcheck == 0:
-                    do_store_mtime()
-                    match = True
-                    break # file downloaded successfully
-
-            if dlcheck != 0:
-                dlcount += 1
-                mytxt = _("Checksum does not match. Download attempt #%s") % (
-                    dlcount,
-                )
-                self._entropy.output(
-                    darkred(mytxt),
-                    importance = 0,
-                    level = "warning",
-                    header = darkred("   ## ")
-                )
-
-                # Unfortunately, disabling resume makes possible to recover
-                # from bad download data. trying to resume would do more harm
-                # than good in the majority of cases.
-                fetch = self._download_package(
-                    package_id,
-                    repository,
-                    installed_package_id,
-                    download,
-                    pkg_disk_path,
-                    checksum,
-                    resume = False
-                )
-
-                if fetch != 0:
-                    self._entropy.output(
-                        blue(_("Cannot properly fetch package! Quitting.")),
-                        importance = 0,
-                        level = "error",
-                        header = darkred("   ## ")
-                    )
-                    return fetch
-
-                # package is fetched, let's loop one more time
-                # to make sure to run all the checksum checks
-                continue
-
-        if not match:
-            txt = _("Cannot fetch package or checksum does not match")
-            txt2 = _("Try to download latest repositories")
-            for txt in (txt, txt2,):
-                self._entropy.output(
-                    "%s." % (
-                        blue(txt),
-                    ),
-                    importance = 0,
-                    level = "info",
-                    header = red("   ## ")
-                )
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "error",
+                header = darkred("   ## ")
+            )
             return 1
 
-        return 0
+        if not valid_checksum:
+            txt = "%s: %s" % (
+                red(_("Invalid checksum")),
+                blue(download_name),
+            )
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "warning",
+                header = red("   ## ")
+            )
+            return 1
 
-    def _checksum(self):
-        """
-        Execute the package checksum validation phase.
-        """
-        xterm_title = "%s %s: %s" % (
-            self._xterm_header,
-            _("Verifying"),
-            os.path.basename(self._meta['download']),
-        )
-        self._entropy.set_title(xterm_title)
+        # check if package has been already checked
+        validated = True
+        if do_mtime_validation() != 0:
+            validated = do_signatures_validation(signatures) == 0
 
-        exit_st = self._match_checksum(
-            self._package_id,
-            self._repository_id,
-            self._meta['installed_package_id'],
-            self._meta['checksum'],
-            self._meta['download'],
-            self._meta['signatures'])
-        if exit_st != 0:
-            return exit_st
+        if not validated:
+            txt = "%s: %s" % (
+                red(_("Invalid signatures")),
+                blue(download_name),
+            )
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "warning",
+                header = red("   ## ")
+            )
+            return 1
 
-        for extra_download in self._meta['extra_download']:
-            download = extra_download['download']
-            checksum = extra_download['md5']
-            signatures = {
-                'sha1': extra_download['sha1'],
-                'sha256': extra_download['sha256'],
-                'sha512': extra_download['sha512'],
-                'gpg': extra_download['gpg'],
-            }
-            exit_st = self._match_checksum(
-                self._package_id,
-                self._repository_id,
-                self._meta['installed_package_id'],
-                checksum,
-                download, signatures)
-            if exit_st != 0:
-                return exit_st
-
+        do_store_mtime()
         return 0

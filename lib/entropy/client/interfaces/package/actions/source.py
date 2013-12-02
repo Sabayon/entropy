@@ -183,7 +183,7 @@ class _PackageSourceAction(_PackageFetchAction):
             header = red("   ## ")
         )
 
-        exit_st, data_transfer, _resumed = self._fetch_file(
+        exit_st, data_transfer, _resumed = self._download_file(
             url, dest_file, digest = None, resume = False)
 
         if exit_st == 0:
