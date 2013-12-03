@@ -1016,6 +1016,40 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.test_db.listAllPreservedLibraries()
         self.assertEqual(data, tuple())
 
+    def _test_repository_locking(self, test_db):
+
+        with test_db.shared():
+            self.assertEqual(test_db.try_acquire_exclusive(),
+                             None)
+
+        with test_db.exclusive():
+            self.assertEqual(test_db.try_acquire_shared(),
+                             None)
+
+        opaque_shared = test_db.try_acquire_shared()
+        self.assert_(opaque_shared is not None)
+
+        opaque_exclusive = test_db.try_acquire_exclusive()
+        self.assert_(opaque_exclusive is None)
+
+        test_db.release_shared(opaque_shared)
+
+        opaque_exclusive = test_db.try_acquire_exclusive()
+        self.assert_(opaque_exclusive is not None)
+
+        opaque_exclusive2 = test_db.try_acquire_exclusive()
+        self.assert_(opaque_exclusive2 is None)
+
+        test_db.release_exclusive(opaque_exclusive)
+
+        opaque_exclusive = test_db.try_acquire_exclusive()
+        self.assert_(opaque_exclusive is not None)
+
+        self.assertRaises(RuntimeError, test_db.release_shared,
+                          opaque_exclusive)
+
+        test_db.release_exclusive(opaque_exclusive)
+
     def test_locking_file(self):
 
         fd, db_file = tempfile.mkstemp()
@@ -1026,42 +1060,16 @@ class EntropyRepositoryTest(unittest.TestCase):
             test_db = self.Client.open_generic_repository(db_file)
             test_db.initializeRepository()
 
-            with test_db.shared():
-                self.assertEqual(test_db.try_acquire_exclusive(),
-                                 None)
-
-            with test_db.exclusive():
-                self.assertEqual(test_db.try_acquire_shared(),
-                                 None)
-
-            opaque_shared = test_db.try_acquire_shared()
-            self.assert_(opaque_shared is not None)
-
-            opaque_exclusive = test_db.try_acquire_exclusive()
-            self.assert_(opaque_exclusive is None)
-
-            test_db.release_shared(opaque_shared)
-
-            opaque_exclusive = test_db.try_acquire_exclusive()
-            self.assert_(opaque_exclusive is not None)
-
-            opaque_exclusive2 = test_db.try_acquire_exclusive()
-            self.assert_(opaque_exclusive2 is None)
-
-            test_db.release_exclusive(opaque_exclusive)
-
-            opaque_exclusive = test_db.try_acquire_exclusive()
-            self.assert_(opaque_exclusive is not None)
-
-            self.assertRaises(RuntimeError, test_db.release_shared,
-                              opaque_exclusive)
-
-            test_db.release_exclusive(opaque_exclusive)
+            return self._test_repository_locking(test_db)
 
         finally:
             if test_db is not None:
                 test_db.close()
             os.remove(db_file)
+
+    def test_locking_memory(self):
+        self.assert_(self.test_db._is_memory())
+        return self._test_repository_locking(self.test_db)
 
 
 if __name__ == '__main__':
