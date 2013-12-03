@@ -77,7 +77,7 @@ class UrlFetcher(TextInterface):
                  abort_check_func = None, disallow_redirect = False,
                  thread_stop_func = None, speed_limit = None,
                  timeout = None, download_context_func = None,
-                 pre_download_hook = None):
+                 pre_download_hook = None, post_download_hook = None):
         """
         Entropy URL downloader constructor.
 
@@ -115,9 +115,15 @@ class UrlFetcher(TextInterface):
             process, inside the download_context_func context. This can be
             used to verify if the download is actually needed or just return.
             If the returned value is not None, the download method will return
-            that value. The function takes a path (the download path) as
-            argument.
+            that value. The function takes a path (the download path) and the
+            download id as arguments.
         @type pre_download_hook: callable
+        @keyword post_download_hook: hook called after the download is complete,
+            inside the download_context_func context. This can be used to verify
+            the integrity of the downloaded data.
+            The function takes a path (the download path) and the download
+            status and the download id as arguments.
+        @type post_download_hook: callable
         """
         self.__supported_uris = {
             'file': self._urllib_download,
@@ -148,6 +154,7 @@ class UrlFetcher(TextInterface):
 
         self.__download_context_func = download_context_func
         self.__pre_download_hook = pre_download_hook
+        self.__post_download_hook = post_download_hook
 
         self.__resume = resume
         self.__url = url
@@ -347,13 +354,14 @@ class UrlFetcher(TextInterface):
             "UrlFetcher.download(%s), save: %s, checksum: %s, resume: %s, "
             "show speed: %s, abort func: %s, thread stop func: %s, "
             "disallow redir: %s, speed limit: %s, timeout: %s, "
-            "download context method: %s, pre download hook: %s" % (
+            "download context method: %s, pre download hook: %s, "
+            "post download hook: %s" % (
                 self.__url, self.__path_to_save, self.__checksum,
                 self.__resume, self.__show_speed, self.__abort_check_func,
                 self.__thread_stop_func, self.__disallow_redirect,
                 self.__speedlimit, self.__timeout,
                 self.__download_context_func,
-                self.__pre_download_hook)
+                self.__pre_download_hook, self.__post_download_hook)
         )
         if downloader is None:
             # return error, protocol not supported
@@ -365,13 +373,19 @@ class UrlFetcher(TextInterface):
         with self.__download_context_func(self.__path_to_save):
 
             if self.__pre_download_hook:
-                status = self.__pre_download_hook(self.__path_to_save)
+                status = self.__pre_download_hook(
+                    self.__path_to_save, self.__th_id)
                 if status is not None:
                     return status
 
             status = downloader()
             if self.__show_speed:
                 self.update()
+
+            if self.__post_download_hook:
+                self.__post_download_hook(
+                    self.__path_to_save, status, self.__th_id)
+
             return status
 
     def _setup_rsync_args(self):
@@ -962,7 +976,7 @@ class MultipleUrlFetcher(TextInterface):
                  abort_check_func = None, disallow_redirect = False,
                  url_fetcher_class = None, timeout = None,
                  download_context_func = None,
-                 pre_download_hook = None):
+                 pre_download_hook = None, post_download_hook = None):
         """
         @param url_path_list: list of tuples composed by url and
             path to save, for eg. [(url,path_to_save,),...]
@@ -997,9 +1011,15 @@ class MultipleUrlFetcher(TextInterface):
             process, inside the download_context_func context. This can be
             used to verify if the download is actually needed or just return.
             If the returned value is not None, the download method will return
-            that value. The function takes a path (the download path) as
-            argument.
+            that value. The function takes a path (the download path) and the
+            download id as arguments.
         @type pre_download_hook: callable
+        @keyword post_download_hook: hook called after the download is complete,
+            inside the download_context_func context. This can be used to verify
+            the integrity of the downloaded data.
+            The function takes a path (the download path) and the download
+            status and the download id as arguments.
+        @type post_download_hook: callable
         """
         self._progress_data = {}
         self._url_path_list = url_path_list
@@ -1013,6 +1033,7 @@ class MultipleUrlFetcher(TextInterface):
         self.__timeout = timeout
         self.__download_context_func = download_context_func
         self.__pre_download_hook = pre_download_hook
+        self.__post_download_hook = post_download_hook
 
         # important to have a declaration here
         self.__data_transfer = 0
@@ -1106,7 +1127,8 @@ class MultipleUrlFetcher(TextInterface):
                 speed_limit = speed_limit,
                 timeout = self.__timeout,
                 download_context_func = self.__download_context_func,
-                pre_download_hook = self.__pre_download_hook
+                pre_download_hook = self.__pre_download_hook,
+                post_download_hook = self.__post_download_hook
             )
             downloader.set_id(th_id)
 
