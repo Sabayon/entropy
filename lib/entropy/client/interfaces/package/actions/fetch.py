@@ -1061,18 +1061,6 @@ class _PackageFetchAction(PackageAction):
 
                     down_name = os.path.basename(download_path)
 
-                    self._entropy.output(
-                        "[%s] %s: %s" % (
-                            brown(down_name),
-                            blue(_("Checking package signature")),
-                            purple(hash_type.upper()),
-                        ),
-                        importance = 0,
-                        level = "info",
-                        header = red("   ## "),
-                        back = True
-                    )
-
                     valid = cmp_func(download_path, hash_val)
                     if valid is None:
                         self._entropy.output(
@@ -1119,8 +1107,7 @@ class _PackageFetchAction(PackageAction):
             blue(_("Checking package checksum...")),
             importance = 0,
             level = "info",
-            header = red("   ## "),
-            back = True
+            header = red("   ## ")
         )
 
         download_name = os.path.basename(download_path)
