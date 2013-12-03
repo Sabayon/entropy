@@ -77,15 +77,6 @@ class _PackageFetchAction(PackageAction):
             # already configured
             return
 
-        inst_repo = self._entropy.installed_repository()
-        with inst_repo.shared():
-            return self._setup_unlocked(inst_repo)
-
-    def _setup_unlocked(self, inst_repo):
-        """
-        Setup the PackageAction, assume that installed repository
-        locks are held.
-        """
         metadata = {}
         splitdebug_metadata = self._get_splitdebug_metadata()
         metadata.update(splitdebug_metadata)
@@ -110,13 +101,6 @@ class _PackageFetchAction(PackageAction):
                 self._package_match)
 
         repo = self._entropy.open_repository(self._repository_id)
-        metadata['atom'] = repo.retrieveAtom(self._package_id)
-        metadata['slot'] = repo.retrieveSlot(self._package_id)
-
-        metadata['installed_package_id'], _inst_rc = inst_repo.atomMatch(
-            entropy.dep.dep_getkey(metadata['atom']),
-            matchSlot = metadata['slot'])
-
         cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
         edelta_support = self._settings[cl_id]['misc']['edelta_support']
         metadata['edelta_support'] = edelta_support
@@ -382,8 +366,7 @@ class _PackageFetchAction(PackageAction):
             "_setup_differential_download2(%s) copied to %s" % (
                 installed_download_path, download_path))
 
-    def _try_edelta_fetch(self, installed_package_id, url, download_path,
-                          checksum, resume):
+    def _try_edelta_fetch(self, url, download_path, checksum, resume):
 
         # no edelta support enabled
         if not self._meta.get('edelta_support'):
@@ -392,16 +375,18 @@ class _PackageFetchAction(PackageAction):
         if not entropy.tools.is_entropy_delta_available():
             return 1, 0.0
 
-        # fresh install, cannot fetch edelta, edelta only works for installed
-        # packages, by design.
-        if installed_package_id is None or installed_package_id == -1:
-            return 1, 0.0
-
+        repo = self._entropy.open_repository(self._repository_id)
         inst_repo = self._entropy.installed_repository()
         with inst_repo.shared():
 
-            if not inst_repo.isPackageIdAvailable(installed_package_id):
-                # installed package is no longer available, abort here.
+            key_slot = repo.retrieveKeySlotAggregated(self._package_id)
+            if key_slot is None:
+                # wtf corrupted entry, skip
+                return 1, 0.0
+
+            installed_package_id, _inst_rc = inst_repo.atomMatch(key_slot)
+            if installed_package_id == -1:
+                # package is not installed
                 return 1, 0.0
 
             installed_url = inst_repo.retrieveDownloadURL(installed_package_id)
@@ -633,8 +618,8 @@ class _PackageFetchAction(PackageAction):
 
         return 0, data_transfer, resumed
 
-    def _download_package(self, package_id, repository_id, installed_package_id,
-                          download, download_path, checksum, resume = True):
+    def _download_package(self, package_id, repository_id, download,
+                          download_path, checksum, resume = True):
 
         avail_data = self._settings['repositories']['available']
         excluded_data = self._settings['repositories']['excluded']
@@ -729,8 +714,7 @@ class _PackageFetchAction(PackageAction):
 
                 resumed = False
                 exit_st, data_transfer = self._try_edelta_fetch(
-                    installed_package_id, url, download_path,
-                    checksum, do_resume)
+                    url, download_path, checksum, do_resume)
                 if exit_st > 0:
                     # fallback to package file download
                     exit_st, data_transfer, resumed = self._download_file(
@@ -873,7 +857,6 @@ class _PackageFetchAction(PackageAction):
             return self._download_package(
                 self._package_id,
                 self._repository_id,
-                self._meta['installed_package_id'],
                 download,
                 path,
                 checksum
