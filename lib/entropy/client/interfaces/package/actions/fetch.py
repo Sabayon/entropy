@@ -1106,7 +1106,7 @@ class _PackageFetchAction(PackageAction):
                         "[%s] %s %s" % (
                             brown(down_name),
                             purple(hash_type.upper()),
-                            darkgreen(_("matches")),
+                            darkgreen(_("validated")),
                         ),
                         importance = 0,
                         level = "info",
