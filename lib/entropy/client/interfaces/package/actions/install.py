@@ -85,8 +85,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         misc_settings = self._entropy.ClientSettings()['misc']
         metadata['edelta_support'] = misc_settings['edelta_support']
-        is_package_repo = self._repository_id.endswith(
-            etpConst['packagesext'])
+        is_package_repo = self._entropy._is_package_repository(
+            self._repository_id)
 
         # if splitdebug is enabled, check if it's also enabled
         # via package.splitdebug
