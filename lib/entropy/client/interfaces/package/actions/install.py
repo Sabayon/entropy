@@ -365,39 +365,35 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         Execute the package conflicts removal phase.
         """
         inst_repo = self._entropy.installed_repository()
-        with inst_repo.exclusive():
-            return self._remove_conflicts_unlocked(inst_repo)
 
-    def _remove_conflicts_unlocked(self, inst_repo):
-        """
-        Execute the package conflicts removal phase. Assume repository lock
-        already held.
-        """
-        confl_package_ids = [x for x in self._meta['conflicts'] if \
-            inst_repo.isPackageIdAvailable(x)]
-        if not confl_package_ids:
-            return 0
+        with inst_repo.shared():
+            confl_package_ids = [x for x in self._meta['conflicts'] if \
+                inst_repo.isPackageIdAvailable(x)]
+            if not confl_package_ids:
+                return 0
 
-        # calculate removal dependencies
-        # system_packages must be False because we should not exclude
-        # them from the dependency tree in any case. Also, we cannot trigger
-        # DependenciesNotRemovable() exception, too.
-        proposed_pkg_ids = self._entropy.get_removal_queue(confl_package_ids,
-            system_packages = False)
-        # we don't want to remove the whole inverse dependencies of course,
-        # but just the conflicting ones, in a proper order
-        package_ids = [x for x in proposed_pkg_ids if x in confl_package_ids]
-        # make sure that every package is listed in package_ids before
-        # proceeding, cannot keep packages behind anyway, and must be fault
-        # tolerant. Besides, having missing packages here should never happen.
-        package_ids += [x for x in confl_package_ids if x not in \
-            package_ids]
+            # calculate removal dependencies
+            # system_packages must be False because we should not exclude
+            # them from the dependency tree in any case. Also, we cannot trigger
+            # DependenciesNotRemovable() exception, too.
+            proposed_pkg_ids = self._entropy.get_removal_queue(
+                confl_package_ids, system_packages = False)
+            # we don't want to remove the whole inverse dependencies of course,
+            # but just the conflicting ones, in a proper order
+            package_ids = [x for x in proposed_pkg_ids if x in
+                           confl_package_ids]
+            # make sure that every package is listed in package_ids before
+            # proceeding, cannot keep packages behind anyway, and must be fault
+            # tolerant. Besides, having missing packages here should never
+            # happen.
+            package_ids += [x for x in confl_package_ids if x not in \
+                package_ids]
 
-        if not package_ids:
-            return 0
+            if not package_ids:
+                return 0
 
+        # make sure to run this without locks, or deadlock happenz
         factory = self._entropy.PackageActionFactory()
-
         for package_id in package_ids:
 
             pkg = factory.get(
