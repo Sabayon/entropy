@@ -439,9 +439,7 @@ class _PackageFetchAction(PackageAction):
                                    download_path, installed_download_path,
                                    resume):
         """
-        _try_edelta_fetch(), assuming that installed packages repository file
-        lock is held, as well as the relevant file locks regarding package
-        tarballs (package file itself and edelta file).
+        _try_edelta_fetch(), assuming that the relevant file locks are held.
         """
         max_tries = 2
         edelta_approved = False
