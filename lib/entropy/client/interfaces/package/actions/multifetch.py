@@ -645,18 +645,19 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                     header = red("   ## ")
                 )
 
-            txt = " %s: %s%s%s" % (
-                blue(_("Aggregated transfer rate")),
-                bold(entropy.tools.bytes_into_human(data_transfer)),
-                darkred("/"),
-                darkblue(_("second")),
-            )
-            self._entropy.output(
-                txt,
-                importance = 1,
-                level = "info",
-                header = red("   ## ")
-            )
+            if data_transfer:
+                txt = " %s: %s%s%s" % (
+                    blue(_("Aggregated transfer rate")),
+                    bold(entropy.tools.bytes_into_human(data_transfer)),
+                    darkred("/"),
+                    darkblue(_("second")),
+                )
+                self._entropy.output(
+                    txt,
+                    importance = 1,
+                    level = "info",
+                    header = red("   ## ")
+                )
 
         def show_download_error(down_list, p_exit_st):
             for _pkg_id, repository_id, _fname, _cksum, _signs in down_list:
