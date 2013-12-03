@@ -1027,35 +1027,36 @@ class EntropyRepositoryTest(unittest.TestCase):
             test_db.initializeRepository()
 
             with test_db.shared():
-                self.assert_(test_db._flock is not None)
+                self.assertEqual(test_db.try_acquire_exclusive(),
+                                 None)
 
-            test_db.close()
-            self.assert_(test_db._flock is None)
+            with test_db.exclusive():
+                self.assertEqual(test_db.try_acquire_shared(),
+                                 None)
 
-            with test_db.shared():
-                self.assert_(test_db._flock is not None)
+            opaque_shared = test_db.try_acquire_shared()
+            self.assert_(opaque_shared is not None)
 
-            acquired = test_db.try_acquire_shared()
-            self.assertEqual(acquired, True)
+            opaque_exclusive = test_db.try_acquire_exclusive()
+            self.assert_(opaque_exclusive is None)
 
-            acquired = test_db.try_acquire_exclusive()
-            self.assertEqual(acquired, True)
+            test_db.release_shared(opaque_shared)
 
-            pid = os.fork()
-            if pid == 0:
-                test_db.close()
-                acquired = test_db.try_acquire_exclusive()
-                if acquired:
-                    os._exit(1)
+            opaque_exclusive = test_db.try_acquire_exclusive()
+            self.assert_(opaque_exclusive is not None)
 
-                acquired = test_db.try_acquire_shared()
-                if acquired:
-                    os._exit(1)
+            opaque_exclusive2 = test_db.try_acquire_exclusive()
+            self.assert_(opaque_exclusive2 is None)
 
-                os._exit(0)
-            else:
-                child_pid, exit_st = os.waitpid(pid, 0)
-                self.assertEqual(exit_st, 0)
+            test_db.release_exclusive(opaque_exclusive)
+
+            opaque_exclusive = test_db.try_acquire_exclusive()
+            self.assert_(opaque_exclusive is not None)
+
+            self.assertRaises(RuntimeError, test_db.release_shared,
+                              opaque_exclusive)
+
+            test_db.release_exclusive(opaque_exclusive)
 
         finally:
             if test_db is not None:

@@ -437,11 +437,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
         """
-        acquired = False
+        opaque = None
         try:
-            lock_path = self.lock_path()
-            acquired = self.try_acquire_shared()
-            if not acquired:
+            opaque = self.try_acquire_shared()
+            if opaque is None:
+                lock_path = self.lock_path()
+
                 self.output(
                     "%s %s ..." % (
                         darkred(_("Acquiring shared lock on")),
@@ -451,8 +452,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     back = True,
                     importance = 0)
 
-                self.acquire_shared()
-                acquired = True
+                opaque = self.acquire_shared()
 
                 self.output(
                     "%s %s" % (
@@ -466,8 +466,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             yield
 
         finally:
-            if acquired:
-                self.release_shared()
+            if opaque is not None:
+                self.release_shared(opaque)
 
     @contextlib.contextmanager
     def exclusive(self):
@@ -480,11 +480,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
         """
-        acquired = False
+        opaque = None
         try:
-            lock_path = self.lock_path()
-            acquired = self.try_acquire_exclusive()
-            if not acquired:
+            opaque = self.try_acquire_exclusive()
+            if opaque is None:
+                lock_path = self.lock_path()
+
                 self.output(
                     "%s %s ..." % (
                         darkred(_("Acquiring exclusive lock on")),
@@ -494,8 +495,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     back = True,
                     importance = 0)
 
-                self.acquire_exclusive()
-                acquired = True
+                opaque = self.acquire_exclusive()
 
                 self.output(
                     "%s %s" % (
@@ -509,8 +509,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             yield
 
         finally:
-            if acquired:
-                self.release_exclusive()
+            if opaque is not None:
+                self.release_exclusive(opaque)
 
     def acquire_shared(self):
         """
@@ -521,6 +521,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
+
+        @return: an opaque that must be used to release the lock.
+        @rtype: object
         """
         raise NotImplementedError()
 
@@ -533,6 +536,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
+
+        @return: an opaque that must be used to release the lock.
+        @rtype: object
         """
         raise NotImplementedError()
 
@@ -546,8 +552,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
 
-        @return: True, if acquired, False otherwise.
-        @rtype: bool
+        @return: an opaque object that must be used to release the lock, None
+            otherwise.
+        @rtype: object or None
         """
         raise NotImplementedError()
 
@@ -561,26 +568,33 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
 
-        @return: True, if acquired, False otherwise.
-        @rtype: bool
+        @return: an opaque object that must be used to release the lock, None
+            otherwise.
+        @rtype: object or None
         """
         raise NotImplementedError()
 
-    def release_shared(self):
+    def release_shared(self, opaque):
         """
         Release the previously acquired shared file lock for this repository.
         This is used for inter-process synchronization only.
 
         Make sure to commit any pending transaction before releasing the lock.
+
+        @param opaque: the opaque object returned by *acquire_shared methods.
+        @type opaque: object
         """
         raise NotImplementedError()
 
-    def release_exclusive(self):
+    def release_exclusive(self, opaque):
         """
         Release the previously acquired exclusive file lock for this repository.
         This is used for inter-process synchronization only.
 
         Make sure to commit any pending transaction before releasing the lock.
+
+        @param opaque: the opaque object returned by *acquire_exclusive methods.
+        @type opaque: object
         """
         raise NotImplementedError()
 

@@ -199,9 +199,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
             on close()
         @type temporary: bool
         """
-        self._flock_lock = threading.RLock()
-        self._flock = None
-
         self._sqlite = self.ModuleProxy.get()
 
         EntropySQLRepository.__init__(
@@ -477,107 +474,155 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    def _get_flock(self):
+    def _get_flock(self, mode):
         """
         Get the lock object used for locking.
         """
-        flock = None
-        with self._flock_lock:
-            if not self._flock:
+        lock_path = self.lock_path()
+        lock_dir = os.path.dirname(lock_path)
 
-                lock_path = self.lock_path()
-                lock_dir = os.path.dirname(lock_path)
-                try:
-                    const_setup_directory(lock_dir)
-                except (OSError, IOError):
-                    # best effort, hope not to fail
-                    # on FlockFile()
-                    pass
+        try:
+            const_setup_directory(lock_dir)
+        except (OSError, IOError):
+            # best effort, hope not to fail
+            # on FlockFile()
+            pass
 
-                flock = FlockFile(lock_path)
-                self._flock = flock
-            else:
-                flock = self._flock
-        return flock
+        class RepositoryFlockFile(FlockFile):
+
+            def __init__(self, lock_path, mode):
+                super(RepositoryFlockFile, self).__init__(lock_path)
+                self._mode = mode
+
+        return RepositoryFlockFile(lock_path, mode)
 
     def acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if not self._is_memory():
-            flock = self._get_flock()
-            flock.acquire_shared()
+        if self._is_memory():
+            return True
+        else:
+            flock = None
+            acquired = False
+            try:
+                flock = self._get_flock(False)
 
-            # in-RAM cached data may have become stale
-            self.clearCache()
+                flock.acquire_shared()
+                acquired = True
+
+                # in-RAM cached data may have become stale
+                self.clearCache()
+                return flock
+
+            finally:
+                if not acquired and flock is not None:
+                    flock.close()
 
     def try_acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        acquired = None
         if self._is_memory():
-            acquired = True
+            return True
         else:
-            flock = self._get_flock()
-            acquired = flock.try_acquire_shared()
-            if acquired:
-                # in-RAM cached data may have become stale
-                self.clearCache()
+            acquired = False
+            flock = None
+            try:
 
-        return acquired
+                flock = self._get_flock(False)
+                acquired = flock.try_acquire_shared()
+                if acquired:
+                    # in-RAM cached data may have become stale
+                    self.clearCache()
+                    return flock
+
+                else:
+                    return None
+
+            finally:
+                if not acquired and flock is not None:
+                    flock.close()
 
     def acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if not self._is_memory():
-            flock = self._get_flock()
-            flock.acquire_exclusive()
+        if self._is_memory():
+            return True
+        else:
+            flock = None
+            acquired = False
+            try:
+                flock = self._get_flock(True)
+                flock.acquire_exclusive()
+                acquired = True
 
-            # in-RAM cached data may have become stale
-            self.clearCache()
+                # in-RAM cached data may have become stale
+                self.clearCache()
+                return flock
+
+            finally:
+                if not acquired and flock is not None:
+                    flock.close()
 
     def try_acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        acquired = None
         if self._is_memory():
-            acquired = True
+            return True
         else:
-            flock = self._get_flock()
-            acquired = flock.try_acquire_exclusive()
-            if acquired:
-                # in-RAM cached data may have become stale
-                self.clearCache()
+            acquired = False
+            flock = None
+            try:
 
-        return acquired
+                flock = self._get_flock(True)
+                acquired = flock.try_acquire_exclusive()
+                if acquired:
+                    # in-RAM cached data may have become stale
+                    self.clearCache()
+                    return flock
 
-    def _release_flock(self):
+                else:
+                    return None
+
+            finally:
+                if not acquired and flock is not None:
+                    flock.close()
+
+    def _release_flock(self, flock, mode):
         """
         Release the resource associated with the FlockFile object.
         """
-        with self._flock_lock:
-            if not self._flock:
-                raise RuntimeError("releasing a lock that wasn't acquired")
-            self._flock.release()
+        if self._is_memory():
+            return
+        else:
+            if flock._mode != mode:
+                raise RuntimeError(
+                    "Programming error: acquired lock in a different mode")
+            flock.release()
+            flock.close()
 
-    def release_shared(self):
+    def release_shared(self, opaque):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if not self._is_memory():
+        if self._is_memory():
+            return
+        else:
             self.commit()
-            self._release_flock()
+            self._release_flock(opaque, False)
 
-    def release_exclusive(self):
+    def release_exclusive(self, opaque):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if not self._is_memory():
+        if self._is_memory():
+            return
+        else:
             self.commit()
-            self._release_flock()
+            self._release_flock(opaque, True)
 
     def close(self, safe=False):
         """
@@ -585,11 +630,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Needs to call superclass method.
         """
         super(EntropySQLiteRepository, self).close(safe=safe)
-
-        with self._flock_lock:
-            if self._flock:
-                self._flock.close()
-                self._flock = None
 
         self._cleanup_all(_cleanup_main_thread=not safe)
         if self._temporary and (not self._is_memory()) and \
