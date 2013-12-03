@@ -191,13 +191,6 @@ class _PackageFetchAction(PackageAction):
         or None if edelta is not available
         @rtype: tuple of strings or None
         """
-        try:
-            os.lstat(installed_download_path)
-        except (OSError, IOError) as err:
-            const_debug_write(
-                __name__, "_approve_edelta_unlocked, stat error: %s" % (err,))
-            return
-
         edelta_local_approved = False
         try:
             edelta_local_approved = entropy.tools.compare_md5(
@@ -294,30 +287,39 @@ class _PackageFetchAction(PackageAction):
 
         if installed_download_path == download_path:
             # collision between what we need locally and what we need
-            # remotely, definitely edelta fetch is not going to work.
-            # Abort here.
+            # remotely, definitely differential download is not going
+            # to help. Abort here.
             return
 
+        # do not hold the lock on installed_download_path since it may
+        # cause a deadlock, rather hold an exclusive lock on the temporary
+        # file and be tolerant on failures on installed_download_path
+        tmp_download_path = download_path + ".setup_differential_download"
         lock = None
         try:
-            lock = self.path_lock(installed_download_path)
+            lock = self.path_lock(tmp_download_path)
 
-            with lock.shared():
-                return self._setup_differential_download_unlocked(
-                    download_path, installed_download_path)
+            with lock.exclusive():
+                self._setup_differential_download_internal(
+                    tmp_download_path, download_path,
+                    installed_download_path)
+
+                try:
+                    os.remove(tmp_download_path)
+                except (OSError, IOError):
+                    pass
 
         finally:
             if lock is not None:
                 lock.close()
 
-    def _setup_differential_download_unlocked(self, download_path,
+    def _setup_differential_download_internal(self, tmp_download_path,
+                                              download_path,
                                               installed_download_path):
         """
         _setup_differential_download() assuming that the installed packages
         repository lock is held.
         """
-        tmp_download_path = download_path + ".setup_differential_download"
-
         try:
             shutil.copyfile(installed_download_path, tmp_download_path)
         except (OSError, IOError, shutil.Error) as err:
@@ -325,12 +327,7 @@ class _PackageFetchAction(PackageAction):
                 __name__,
                 "_setup_differential_download2(%s), %s copyfile error: %s" % (
                     installed_download_path, tmp_download_path, err))
-
-            try:
-                os.remove(tmp_download_path)
-            except OSError:
-                pass
-            return
+            return False
 
         try:
             user = os.stat(installed_download_path)[stat.ST_UID]
@@ -341,7 +338,7 @@ class _PackageFetchAction(PackageAction):
                 __name__,
                 "_setup_differential_download2(%s), chown error: %s" % (
                     installed_download_path, err))
-            return
+            return False
 
         try:
             shutil.copystat(installed_download_path, tmp_download_path)
@@ -350,7 +347,7 @@ class _PackageFetchAction(PackageAction):
                 __name__,
                 "_setup_differential_download2(%s), %s copystat error: %s" % (
                     installed_download_path, tmp_download_path, err))
-            return
+            return False
 
         try:
             os.rename(tmp_download_path, download_path)
@@ -359,12 +356,14 @@ class _PackageFetchAction(PackageAction):
                 __name__,
                 "_setup_differential_download2(%s), %s rename error: %s" % (
                     installed_download_path, tmp_download_path, err))
-            return
+            return False
 
         const_debug_write(
             __name__,
             "_setup_differential_download2(%s) copied to %s" % (
                 installed_download_path, download_path))
+
+        return True
 
     def _try_edelta_fetch(self, url, download_path, checksum, resume):
 
@@ -411,14 +410,14 @@ class _PackageFetchAction(PackageAction):
                         download_path_dir, err))
                 return -1, 0.0
 
-        # download_path lock is already held, don't try to get a new
-        # FlockFile for it or you're gonna get a deadlock in return.
-        # however, we should hold the lock for the other file.
+        # installed_download_path is read in a fault-tolerant mode
+        # so, there is no need for locking.
+        edelta_download_path = download_path
+        edelta_download_path += etpConst['packagesdeltaext']
         lock = None
-        edelta_url = None
         try:
-            lock = self.path_lock(installed_download_path)
-            with lock.shared():
+            lock = self.path_lock(edelta_download_path)
+            with lock.exclusive():
 
                 edelta_url = self._approve_edelta_unlocked(
                     url, checksum, installed_url, installed_checksum,
@@ -429,23 +428,21 @@ class _PackageFetchAction(PackageAction):
                     return 1, 0.0
 
                 return self._try_edelta_fetch_unlocked(
-                    edelta_url, download_path, installed_download_path,
-                    resume)
+                    edelta_url, edelta_download_path, download_path,
+                    installed_download_path, resume)
 
         finally:
             if lock is not None:
                 lock.close()
 
-    def _try_edelta_fetch_unlocked(self, edelta_url, download_path,
-                                   installed_download_path, resume):
+    def _try_edelta_fetch_unlocked(self, edelta_url, edelta_download_path,
+                                   download_path, installed_download_path,
+                                   resume):
         """
         _try_edelta_fetch(), assuming that installed packages repository file
         lock is held, as well as the relevant file locks regarding package
         tarballs (package file itself and edelta file).
         """
-        # check if edelta file is available online
-        edelta_download_path = download_path + etpConst['packagesdeltaext']
-
         max_tries = 2
         edelta_approved = False
         data_transfer = 0
