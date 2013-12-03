@@ -20,7 +20,7 @@ from entropy.const import etpConst, const_debug_write, const_debug_enabled, \
 from entropy.client.mirrors import StatusInterface
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
-from entropy.output import red, darkred, blue, purple, darkgreen
+from entropy.output import red, darkred, blue, purple, darkgreen, brown
 from entropy.security import Repository as RepositorySecurity
 
 import entropy.dep
@@ -1059,8 +1059,11 @@ class _PackageFetchAction(PackageAction):
                     if cmp_func is None:
                         continue
 
+                    down_name = os.path.basename(download_path)
+
                     self._entropy.output(
-                        "%s: %s" % (
+                        "[%s] %s: %s" % (
+                            brown(down_name),
                             blue(_("Checking package signature")),
                             purple(hash_type.upper()),
                         ),
@@ -1073,7 +1076,8 @@ class _PackageFetchAction(PackageAction):
                     valid = cmp_func(download_path, hash_val)
                     if valid is None:
                         self._entropy.output(
-                            "%s '%s' %s" % (
+                            "[%s] %s '%s' %s" % (
+                                brown(down_name),
                                 darkred(_("Package signature verification")),
                                 purple(hash_type.upper()),
                                 darkred(_("temporarily unavailable")),
@@ -1086,7 +1090,8 @@ class _PackageFetchAction(PackageAction):
 
                     if not valid:
                         self._entropy.output(
-                            "%s: %s %s" % (
+                            "[%s] %s: %s %s" % (
+                                brown(down_name),
                                 darkred(_("Package signature")),
                                 purple(hash_type.upper()),
                                 darkred(_("does not match the recorded one")),
@@ -1098,7 +1103,8 @@ class _PackageFetchAction(PackageAction):
                         return 1
 
                     self._entropy.output(
-                        "%s %s" % (
+                        "[%s] %s %s" % (
+                            brown(down_name),
                             purple(hash_type.upper()),
                             darkgreen(_("matches")),
                         ),
