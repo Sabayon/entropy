@@ -11,6 +11,7 @@
 
 """
 import collections
+import errno
 import os
 import hashlib
 import time
@@ -24,7 +25,7 @@ import subprocess
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_get_buffer, const_convert_to_rawstring, const_pid_exists, \
     const_is_python3, const_debug_write, const_file_writable, \
-    const_setup_directory
+    const_setup_directory, const_setup_file
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
 from entropy.misc import FlockFile, ReadersWritersSemaphore
@@ -494,7 +495,29 @@ class EntropySQLiteRepository(EntropySQLRepository):
         class RepositoryFlockFile(FlockFile):
 
             def __init__(self, lock_path, mode):
-                super(RepositoryFlockFile, self).__init__(lock_path)
+                fmode = 0o664
+                fd = None
+                try:
+                    if mode:
+                        fd = os.open(lock_path, os.O_CREAT | os.O_APPEND, fmode)
+                    else:
+                        fd = os.open(lock_path, os.O_CREAT | os.O_RDONLY, fmode)
+                    super(RepositoryFlockFile, self).__init__(
+                        lock_path, fd = fd)
+
+                except Exception:
+                    if fd is not None:
+                        try:
+                            os.close(fd)
+                        except OSError:
+                            pass
+                    raise
+
+                try:
+                    const_setup_file(lock_path, etpConst['entropygid'], fmode)
+                except OSError as err:
+                    if err.errno not in (errno.EPERM, errno.ENOENT):
+                        raise
                 self._mode = mode
 
         return RepositoryFlockFile(lock_path, mode)
