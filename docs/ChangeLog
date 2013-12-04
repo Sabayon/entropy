@@ -1,3 +1,100 @@
+commit 755c751d40e3ef9df55bb24a94363ec9e16d523b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 17:44:24 2013 +0100
+
+    Release Entropy 240
+
+commit 43992dd452cc55803c6e1f5a1b626a2d6c3023b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 17:43:44 2013 +0100
+
+    [entropy.client.package.actions] install: fix entropy_install_unpack_hook() in case of smart packages
+
+commit cedee6a35ca2efbf5d5a59e95944f242d9e0f1b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 17:38:56 2013 +0100
+
+    [entropy.client.package.actions] install: use the correct package_id
+
+commit 32027b244968367122e46699d4392610cbf030ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 1 16:33:58 2013 +0100
+
+    [entropy.spm] fix vdb handling wrt locking, fix several potential races
+
+commit b70ceca1cee3146ef2e3264caaf90fe10c9d5f28
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 12:18:39 2013 +0100
+
+    [entropy.db.sqlite] drop retrieveSignatures
+    
+    This is no longer needed here since support for the old schema
+    has been dropped (the schema update code will update the tables
+    anyway)
+
+commit ec3d091c22eece10674aaa73946ae517a0837c83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 12:16:06 2013 +0100
+
+    [entropy.db.sqlite] drop retrieveProvide and searchProvidedVirtualPackage
+    
+    They are no longer needed since compatibility with the old metadata
+    has been dropped.
+
+commit c8c20f03aa96e424806d823639a0f865872c83db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 12:04:05 2013 +0100
+
+    [entropy.db] drop support for deprecated eclasses and messages metadata
+
+commit c199b6839f8262c372ef1b3366ad570f95f32143
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 12:02:07 2013 +0100
+
+    [entropy.db] remove support for deprecated provide metadata
+
+commit a54f5b36bc61ad5a94f1223a5a79eaa679e5b096
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 11:51:06 2013 +0100
+
+    [entropy.db] drop 'dependencies' metadata support completely
+
+commit a42711086b4825dbad61b7ca66976c166586278d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 11:23:40 2013 +0100
+
+    [tests] tools: mute output
+
+commit cd6d6b9d22df14345db171982d2162949ce5524d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 10:54:13 2013 +0100
+
+    [tests] use const_mkdtemp() instead of tempfile.mkdtemp()
+
+commit ac1548207d48022f831c66444888f109319d64c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 10:53:42 2013 +0100
+
+    [entropy.tools] restore python3 compatibility on newly tested functions
+
+commit 3a05acd16a079f5b415b47284e3ca857d0d43ffc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 30 08:25:30 2013 +0100
+
+    [tests] spm: use const_mkdtemp() instead of tempfile.mkdtemp
+
+commit d3cfd35bf528f4ed4e44d7f305b799234cea4046
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 21:49:42 2013 +0100
+
+    [entropy.client.package] reopen the installed packages repository to trigger schema updates
+
+commit cf16a4e11ee1f8a246dfe5c9a8acab58c61e024f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 29 20:01:22 2013 +0100
+
+    Tagging Entropy version 239
+
 commit 4d9397c140c6e2f4c2763bbda2fe371cd22a48dc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 29 20:01:22 2013 +0100
