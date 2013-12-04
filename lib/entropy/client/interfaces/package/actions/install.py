@@ -61,6 +61,16 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             self._meta = None
             meta.clear()
 
+    def _get_remove_package_id_unlocked(self, inst_repo):
+        """
+        Return the installed packages repository package id
+        that would be removed.
+        """
+        repo = self._entropy.open_repository(self._repository_id)
+        key_slot = repo.retrieveKeySlotAggregated(self._package_id)
+        remove_package_id, _inst_rc = inst_repo.atomMatch(key_slot)
+        return remove_package_id
+
     def setup(self):
         """
         Setup the PackageAction.
@@ -69,24 +79,18 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             # already configured
             return
 
-        inst_repo = self._entropy.installed_repository()
-        with inst_repo.shared():
-            return self._action_setup_unlocked(inst_repo)
-
-    def _action_setup_unlocked(self, inst_repo):
-        """
-        Setup the PackageAction. Assume repository lock already held.
-        """
         metadata = {}
         splitdebug_metadata = self._get_splitdebug_metadata()
         metadata.update(splitdebug_metadata)
-
-        repo = self._entropy.open_repository(self._repository_id)
 
         misc_settings = self._entropy.ClientSettings()['misc']
         metadata['edelta_support'] = misc_settings['edelta_support']
         is_package_repo = self._entropy._is_package_repository(
             self._repository_id)
+
+        # These are used by Spm.entropy_install_unpack_hook()
+        metadata['package_id'] = self._package_id
+        metadata['repository_id'] = self._repository_id
 
         # if splitdebug is enabled, check if it's also enabled
         # via package.splitdebug
@@ -116,14 +120,18 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         metadata['already_protected_config_files'] = {}
         metadata['configprotect_data'] = []
-        metadata['triggers'] = {}
-        metadata['atom'] = repo.retrieveAtom(self._package_id)
-        metadata['slot'] = repo.retrieveSlot(self._package_id)
 
-        ver, tag, rev = repo.getVersioningData(self._package_id)
-        metadata['version'] = ver
-        metadata['versiontag'] = tag
-        metadata['revision'] = rev
+        repo = self._entropy.open_repository(self._repository_id)
+
+        metadata['atom'] = repo.retrieveAtom(self._package_id)
+
+        # use by Spm.entropy_install_unpack_hook(),
+        # and remove_installed_package()
+        metadata['category'] = repo.retrieveCategory(self._package_id)
+        metadata['name'] = repo.retrieveName(self._package_id)
+        metadata['version'] = repo.retrieveVersion(self._package_id)
+        metadata['versiontag'] = repo.retrieveTag(self._package_id)
+        metadata['slot'] = repo.retrieveSlot(self._package_id)
 
         metadata['extra_download'] = []
         metadata['splitdebug_pkgfile'] = True
@@ -135,11 +143,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     x['type'] != "debug"]
             metadata['extra_download'] += extra_download
 
-        metadata['category'] = repo.retrieveCategory(self._package_id)
         metadata['download'] = repo.retrieveDownloadURL(self._package_id)
-        metadata['name'] = repo.retrieveName(self._package_id)
-        metadata['conflicts'] = self._get_package_conflicts_unlocked(
-            inst_repo, repo, self._package_id)
 
         description = repo.retrieveDescription(self._package_id)
         if description:
@@ -147,11 +151,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 description = description[:74].strip()
                 description += "..."
         metadata['description'] = description
-
-        # this is set by __install_package() and required by spm_install
-        # phase
-        metadata['installed_package_id'] = None
-        metadata['remove_package_id'] = -1
 
         metadata['remove_metaopts'] = {
             'removeconfig': True,
@@ -165,26 +164,11 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             metadata['merge_from'] = const_convert_to_unicode(mf)
         metadata['removeconfig'] = self._opts.get('removeconfig', False)
 
-        remove_package_id, _inst_rc = inst_repo.atomMatch(
-            entropy.dep.dep_getkey(metadata['atom']),
-            matchSlot = metadata['slot'])
-        metadata['remove_package_id'] = remove_package_id
-
-        # setup the list of provided libraries that we're going to remove
-        if metadata['remove_package_id'] != -1:
-            repo_libs = repo.retrieveProvidedLibraries(self._package_id)
-            inst_libs = inst_repo.retrieveProvidedLibraries(
-                metadata['remove_package_id'])
-            metadata['removed_libs'] = frozenset(inst_libs - repo_libs)
-        else:
-            metadata['removed_libs'] = frozenset()
-
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         metadata['affected_directories'] = set()
         metadata['affected_infofiles'] = set()
 
-        # smartpackage ?
         metadata['smartpackage'] = False
         # set unpack dir and image dir
         if is_package_repo:
@@ -217,93 +201,34 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         except OSError as err:
             if err.errno != errno.EEXIST:
                 raise
+
         metadata['unpackdir'] = const_mkdtemp(dir=unpack_dir)
 
-        metadata['imagedir'] = metadata['unpackdir'] + os.path.sep + \
-            etpConst['entropyimagerelativepath']
+        metadata['imagedir'] = os.path.join(
+            metadata['unpackdir'],
+            etpConst['entropyimagerelativepath'])
 
         metadata['pkgdbpath'] = os.path.join(metadata['unpackdir'],
-            "edb/pkg.db")
-
-        if metadata['remove_package_id'] == -1:
-            # nothing to remove, fresh install
-            metadata['removecontent_file'] = None
-        else:
-            metadata['removeatom'] = inst_repo.retrieveAtom(
-                metadata['remove_package_id'])
-
-            # generate content file
-            content = inst_repo.retrieveContentIter(
-                metadata['remove_package_id'],
-                order_by="file", reverse=True)
-            metadata['removecontent_file'] = \
-                self._generate_content_file(content)
-
-            remove_trigger = inst_repo.getTriggerData(
-                metadata['remove_package_id'])
-            metadata['triggers']['remove'] = remove_trigger
-
-            remove_trigger['affected_directories'] = \
-                metadata['affected_directories']
-            remove_trigger['affected_infofiles'] = \
-                metadata['affected_infofiles']
-
-            remove_trigger['spm_repository'] = inst_repo.retrieveSpmRepository(
-                metadata['remove_package_id'])
-            remove_trigger.update(splitdebug_metadata)
-
-            remove_trigger['accept_license'] = self._get_licenses(
-                inst_repo, metadata['remove_package_id'])
-
-            # setup config_protect and config_protect_mask metadata before it's
-            # too late.
-            protect = self._get_config_protect_metadata(
-                inst_repo, metadata['remove_package_id'],
-                _metadata = metadata)
-            metadata.update(protect)
+            "edb", "pkg.db")
 
         metadata['phases'] = []
-        if metadata['conflicts']:
-            metadata['phases'].append(self._remove_conflicts_phase)
+        metadata['phases'].append(self._remove_conflicts_phase)
 
         if metadata['merge_from']:
             metadata['phases'].append(self._merge_phase)
         else:
             metadata['phases'].append(self._unpack_phase)
 
-        # preinstall placed before preremove in order
-        # to respect Spm order
-        metadata['phases'].append(self._setup_phase)
+        metadata['phases'].append(self._setup_package_phase)
+        metadata['phases'].append(self._tarball_ownership_fixup_phase)
         metadata['phases'].append(self._pre_install_phase)
-
         metadata['phases'].append(self._install_phase)
-        if metadata['remove_package_id'] != -1:
-            metadata['phases'].append(self._pre_remove_phase)
-            metadata['phases'].append(self._install_clean_phase)
-        else:
-            metadata['phases'].append(self._preserved_libs_gc_phase)
-
-        if metadata['remove_package_id'] != -1:
-            metadata['phases'].append(self._post_remove_phase)
-            metadata['phases'].append(self._post_remove_install_phase)
-
-        metadata['phases'].append(self._install_spm_phase)
         metadata['phases'].append(self._post_install_phase)
         metadata['phases'].append(self._cleanup_phase)
 
-        install_trigger = repo.getTriggerData(self._package_id)
-        metadata['triggers']['install'] = install_trigger
-
-        install_trigger['unpackdir'] = metadata['unpackdir']
-        install_trigger['imagedir'] = metadata['imagedir']
-        install_trigger['spm_repository'] = repo.retrieveSpmRepository(
-            self._package_id)
-
-        metadata['accept_license'] = self._get_licenses(
-            repo, self._package_id)
-        install_trigger['accept_license'] = metadata['accept_license']
-
-        install_trigger.update(splitdebug_metadata)
+        # SPM can place metadata here if it should be copied to
+        # the install trigger
+        metadata['__install_trigger__'] = {}
 
         self._meta = metadata
 
@@ -365,10 +290,11 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         Execute the package conflicts removal phase.
         """
         inst_repo = self._entropy.installed_repository()
-
         with inst_repo.shared():
-            confl_package_ids = [x for x in self._meta['conflicts'] if \
-                inst_repo.isPackageIdAvailable(x)]
+
+            repo = self._entropy.open_repository(self._repository_id)
+            confl_package_ids = self._get_package_conflicts_unlocked(
+                inst_repo, repo, self._package_id)
             if not confl_package_ids:
                 return 0
 
@@ -715,9 +641,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         return spm_class.entropy_install_unpack_hook(self._entropy,
             self._meta)
 
-    def _setup_phase(self):
+    def _setup_package_phase(self):
         """
-        Execute the setup phase.
+        Execute the package setup phase.
         """
         xterm_title = "%s %s: %s" % (
             self._xterm_header,
@@ -726,22 +652,55 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        exit_st = 0
-        data = self._meta['triggers'].get('install')
-        action_data = self._meta['triggers'].get('install')
+        data = self._get_install_trigger_data()
+        trigger = self._entropy.Triggers(
+            self.NAME,
+            "setup",
+            data,
+            data)
 
-        if data:
-            trigger = self._entropy.Triggers(
-                self.NAME, "setup",
-                data, action_data)
-            ack = trigger.prepare()
-            if ack:
-                exit_st = trigger.run()
-            trigger.kill()
+        exit_st = 0
+        ack = trigger.prepare()
+        if ack:
+            exit_st = trigger.run()
+        trigger.kill()
 
         if exit_st != 0:
             return exit_st
 
+        return 0
+
+    def _pre_install_phase(self):
+        """
+        Execute the pre-install phase.
+        """
+        xterm_title = "%s %s: %s" % (
+            self._xterm_header,
+            _("Pre-install"),
+            self._meta['atom'],
+        )
+        self._entropy.set_title(xterm_title)
+
+        data = self._get_install_trigger_data()
+        trigger = self._entropy.Triggers(
+            self.NAME,
+            "preinstall",
+            data,
+            data)
+
+        exit_st = 0
+        ack = trigger.prepare()
+        if ack:
+            exit_st = trigger.run()
+        trigger.kill()
+
+        return exit_st
+
+    def _tarball_ownership_fixup_phase(self):
+        """
+        Execute the tarball file ownership fixup phase.
+        New uid or gids could have created after the setup phase.
+        """
         # NOTE: fixup permissions in the image directory
         # the setup phase could have created additional users and groups
         package_paths = [self._meta['pkgpath']]
@@ -760,7 +719,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     if not self._stat_path(package_path):
                         const_debug_write(
                             __name__,
-                            "_setup_phase: %s vanished" % (
+                            "_tarball_ownership_fixup_phase: %s vanished" % (
                                 package_path,))
 
                         self._entropy.output(
@@ -797,33 +756,59 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return 0
 
-    def _pre_install_phase(self):
+    def _get_remove_trigger_data_unlocked(self, inst_repo, remove_package_id):
         """
-        Execute the pre-install phase.
+        Get the metadata used during removal phases by Triggers.
         """
-        xterm_title = "%s %s: %s" % (
-            self._xterm_header,
-            _("Pre-install"),
-            self._meta['atom'],
-        )
-        self._entropy.set_title(xterm_title)
+        data = {}
+        data.update(inst_repo.getTriggerData(remove_package_id))
 
-        data = self._meta['triggers'].get('install')
-        action_data = self._meta['triggers'].get('install')
-        exit_st = 0
+        splitdebug_metadata = self._get_splitdebug_metadata()
+        data.update(splitdebug_metadata)
 
-        if data:
-            trigger = self._entropy.Triggers(
-                self.NAME, "preinstall",
-                data, action_data)
-            ack = trigger.prepare()
-            if ack:
-                exit_st = trigger.run()
-            trigger.kill()
+        data['affected_directories'] = self._meta['affected_directories']
+        data['affected_infofiles'] = self._meta['affected_infofiles']
+        data['spm_repository'] = inst_repo.retrieveSpmRepository(
+            remove_package_id)
 
-        return exit_st
+        data['accept_license'] = self._get_licenses(
+            inst_repo, remove_package_id)
 
-    def _pre_remove_phase(self):
+        return data
+
+    def _get_install_trigger_data(self):
+        """
+        Get the metadata used during removal phases by Triggers.
+        """
+        repo = self._entropy.open_repository(self._repository_id)
+
+        data = {}
+        data.update(repo.getTriggerData(self._package_id))
+
+        splitdebug_metadata = self._get_splitdebug_metadata()
+        data.update(splitdebug_metadata)
+
+        data['unpackdir'] = self._meta['unpackdir']
+        data['imagedir'] = self._meta['imagedir']
+
+        data['affected_directories'] = self._meta['affected_directories']
+        data['affected_infofiles'] = self._meta['affected_infofiles']
+        data['spm_repository'] = repo.retrieveSpmRepository(self._package_id)
+        data['accept_license'] = self._get_licenses(repo, self._package_id)
+
+        # replace current empty "content" metadata info
+        # content metadata is required by
+        # _spm_install_package() -> Spm.add_installed_package()
+        # in case of injected packages (SPM metadata might be
+        # incomplete).
+        data['content'] = self._meta.get('content', data['content'])
+
+        # SPM hook
+        data.update(self._meta['__install_trigger__'])
+
+        return data
+
+    def _pre_remove_package_unlocked(self, data):
         """
         Execute the pre-remove phase.
         """
@@ -834,88 +819,61 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        data = self._meta['triggers'].get('remove')
-        action_data = self._meta['triggers'].get('install')
-        exit_st = 0
+        trigger = self._entropy.Triggers(
+            self.NAME,
+            "preremove",
+            data,
+            self._get_install_trigger_data())
 
-        if data:
-            trigger = self._entropy.Triggers(
-                self.NAME, "preremove", data,
-                action_data)
-            ack = trigger.prepare()
-            if ack:
-                exit_st = trigger.run()
-            trigger.kill()
+        exit_st = 0
+        ack = trigger.prepare()
+        if ack:
+            exit_st = trigger.run()
+        trigger.kill()
 
         return exit_st
 
-    def _install_clean_phase(self):
+    def _install_clean_unlocked(self, inst_repo, installed_package_id,
+                                clean_content, removecontent_file,
+                                remove_atom, removed_libs,
+                                config_protect_metadata):
         """
         Cleanup package files not used anymore by newly installed version.
         This is part of the atomic install, which overwrites the live fs with
         new files and removes old afterwards.
         """
-        inst_repo = self._entropy.installed_repository()
-
-        with inst_repo.exclusive():
-            installed_package_id = self._meta['installed_package_id']
-
-            if inst_repo.isPackageIdAvailable(installed_package_id):
-                return self._install_clean_unlocked(
-                    inst_repo, installed_package_id)
-
-            return 0
-
-    def _install_clean_unlocked(self, inst_repo, installed_package_id):
-        """
-        _install_clean with no installed repository lock handling.
-        """
-        self._entropy.output(
-            blue(_("Cleaning previously installed application data.")),
-            importance = 1,
-            level = "info",
-            header = red("   ## ")
-        )
+        sys_root = self._get_system_root(self._meta)
 
         preserved_mgr = preservedlibs.PreservedLibraries(
             inst_repo, installed_package_id,
-            self._meta['removed_libs'],
-            root = self._get_system_root(self._meta))
+            removed_libs, root = sys_root)
 
-        self._remove_content_from_system(
-            inst_repo,
-            self._meta['already_protected_config_files'],
-            preserved_mgr
+        if clean_content:
+            self._entropy.output(
+                blue(_("Cleaning previously installed application data.")),
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
             )
+
+            self._remove_content_from_system(
+                inst_repo,
+                remove_atom,
+                self._meta['removeconfig'],
+                sys_root,
+                config_protect_metadata['config_protect+mask'],
+                removecontent_file,
+                self._meta['already_protected_config_files'],
+                self._meta['affected_directories'],
+                self._meta['affected_infofiles'],
+                preserved_mgr)
 
         # garbage collect preserved libraries that are no longer needed
         self._garbage_collect_preserved_libs(preserved_mgr)
 
         return 0
 
-    def _preserved_libs_gc_phase(self):
-        """
-        Execute the garbage collection of preserved libraries.
-        """
-        inst_repo = self._entropy.installed_repository()
-
-        with inst_repo.exclusive():
-
-            installed_package_id = self._meta['installed_package_id']
-            if inst_repo.isPackageIdAvailable(installed_package_id):
-
-                # NOTE: removed_libs is always empty because this phase is only
-                # called when remove_package_id == -1
-                preserved_mgr = preservedlibs.PreservedLibraries(
-                    inst_repo, installed_package_id,
-                    self._meta['removed_libs'],
-                    root = self._get_system_root(self._meta))
-
-                self._garbage_collect_preserved_libs(preserved_mgr)
-
-        return 0
-
-    def _post_remove_phase(self):
+    def _post_remove_package_unlocked(self, data):
         """
         Execute the post-remove phase.
         """
@@ -926,33 +884,33 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        data = self._meta['triggers'].get('remove')
-        action_data = self._meta['triggers'].get('install')
-        exit_st = 0
+        trigger = self._entropy.Triggers(
+            self.NAME,
+            "postremove",
+            data,
+            self._get_install_trigger_data())
 
-        if data:
-            trigger = self._entropy.Triggers(
-                self.NAME, "postremove", data,
-                action_data)
-            ack = trigger.prepare()
-            if ack:
-                exit_st = trigger.run()
-            trigger.kill()
+        exit_st = 0
+        ack = trigger.prepare()
+        if ack:
+            exit_st = trigger.run()
+        trigger.kill()
 
         return exit_st
 
-    def _post_remove_install_phase(self):
+    def _post_remove_install_package_unlocked(self, atom):
         """
         Execute the post-remove SPM package metadata phase.
         """
         self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
-            "Remove old package (spm data): %s" % (self._meta['removeatom'],)
+            "Remove old package (spm data): %s" % (atom,)
         )
-        return self._spm_remove_package(self._meta['removeatom'])
 
-    def _install_spm_phase(self):
+        return self._spm_remove_package(atom, self._meta)
+
+    def _install_spm_package_unlocked(self, inst_repo, installed_package_id):
         """
         Execute the installation of SPM package metadata.
         """
@@ -964,16 +922,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             "Installing new SPM entry: %s" % (self._meta['atom'],)
         )
 
-        # this comes from _add_installed_package()
-        installed_package_id = self._meta['installed_package_id']
-
         spm_uid = spm.add_installed_package(self._meta)
         if spm_uid != -1:
-            inst_repo = self._entropy.installed_repository()
-            with inst_repo.exclusive():
-
-                if inst_repo.isPackageIdAvailable(installed_package_id):
-                    inst_repo.insertSpmUid(installed_package_id, spm_uid)
+            inst_repo.insertSpmUid(installed_package_id, spm_uid)
 
         return 0
 
@@ -988,18 +939,18 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        data = self._meta['triggers'].get('install')
-        action_data = self._meta['triggers'].get('install')
-        exit_st = 0
+        data = self._get_install_trigger_data()
+        trigger = self._entropy.Triggers(
+            self.NAME,
+            "postinstall",
+            data,
+            data)
 
-        if data:
-            trigger = self._entropy.Triggers(
-                self.NAME, "postinstall",
-                data, action_data)
-            ack = trigger.prepare()
-            if ack:
-                exit_st = trigger.run()
-            trigger.kill()
+        exit_st = 0
+        ack = trigger.prepare()
+        if ack:
+            exit_st = trigger.run()
+        trigger.kill()
 
         return exit_st
 
@@ -1083,18 +1034,29 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             return _path not in second_pass_removal
         Content.filter_content_file(content_file, _filter)
 
-    def _add_installed_package_unlocked(self, inst_repo, items_installed,
-                                        items_not_installed):
+    def _add_installed_package_unlocked(self, inst_repo,removecontent_file,
+                                        items_installed, items_not_installed):
         """
         For internal use only.
         Copy package from repository to installed packages one.
         """
+
         def _merge_removecontent(inst_repo, repo, _package_id):
+
+            # nothing to do if there is no content to remove
+            if removecontent_file is None:
+                return
+
+            # determine if there is a package to remove first
+            remove_package_id = self._get_remove_package_id_unlocked(inst_repo)
+            if remove_package_id == -1:
+                return
+
             # NOTE: this could be a source of memory consumption
             # but generally, the difference between two contents
             # is really small
             content_diff = list(inst_repo.contentDiff(
-                self._meta['remove_package_id'],
+                remove_package_id,
                 repo,
                 _package_id,
                 extended=True))
@@ -1114,7 +1076,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 content_diff.sort(reverse=True)
 
                 Content.merge_content_file(
-                    self._meta['removecontent_file'],
+                    removecontent_file,
                     content_diff, _cmp_func)
 
         smart_pkg = self._meta['smartpackage']
@@ -1144,10 +1106,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             content_safety_file = self._generate_content_safety_file(
                 content_safety)
 
-            if self._meta['remove_package_id'] != -1 and \
-                    self._meta['removecontent_file'] is not None:
-                _merge_removecontent(
-                    inst_repo, repo, self._package_id)
+            _merge_removecontent(inst_repo, repo, self._package_id)
 
         else:
 
@@ -1183,9 +1142,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             content_safety_file = self._generate_content_safety_file(
                 content_safety)
 
-            if self._meta['remove_package_id'] != -1 and \
-                    self._meta['removecontent_file'] is not None:
-                _merge_removecontent(inst_repo, pkg_repo, pkg_package_id)
+            _merge_removecontent(inst_repo, pkg_repo, pkg_package_id)
 
             pkg_repo.close()
 
@@ -1199,10 +1156,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # --
         # fix removecontent, need to check if we just installed files
         # that resolves at the same directory path (different symlink)
-        if self._meta['removecontent_file'] is not None:
+        if removecontent_file is not None:
             self._filter_out_files_installed_on_diff_path(
-                self._meta['removecontent_file'],
-                items_installed)
+                removecontent_file, items_installed)
 
         # filter out files not installed from content metadata
         # these include splitdebug files, when splitdebug is
@@ -1212,12 +1168,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 return _path not in items_not_installed
             Content.filter_content_file(
                 content_file, _filter)
-
-        # this is needed to make postinstall trigger work properly
-        self._meta['triggers']['install']['affected_directories'] = \
-            self._meta['affected_directories']
-        self._meta['triggers']['install']['affected_infofiles'] = \
-            self._meta['affected_infofiles']
 
         # always set data['injected'] to False
         # installed packages database SHOULD never have more
@@ -1288,18 +1238,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # _spm_install_package() -> Spm.add_installed_package()
         # in case of injected packages (SPM metadata might be
         # incomplete).
-        self._meta['triggers']['install']['content'] = \
-            Content.FileContentReader(content_file)
+        self._meta['content'] = Content.FileContentReader(content_file)
 
         return package_id
-
-    def _install_package(self):
-        """
-        Execute the package installation code.
-        """
-        inst_repo = self._entropy.installed_repository()
-        with inst_repo.exclusive():
-            return self._install_package_unlocked(inst_repo)
 
     def _install_package_unlocked(self, inst_repo):
         """
@@ -1313,20 +1254,37 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             "Installing package: %s" % (self._meta['atom'],)
         )
 
-        if self._meta['remove_package_id'] != -1:
+        remove_package_id = self._get_remove_package_id_unlocked(inst_repo)
+
+        if remove_package_id != -1:
             am_files = inst_repo.retrieveAutomergefiles(
-                self._meta['remove_package_id'],
+                remove_package_id,
                 get_dict = True)
-            self._meta['already_protected_config_files'] = am_files
+            self._meta['already_protected_config_files'].clear()
+            self._meta['already_protected_config_files'].update(am_files)
 
         # items_*installed will be filled by _move_image_to_system
         # then passed to _add_installed_package()
         items_installed = set()
         items_not_installed = set()
         exit_st = self._move_image_to_system_unlocked(
-            inst_repo, items_installed, items_not_installed)
+            inst_repo, remove_package_id,
+            items_installed, items_not_installed)
+
         if exit_st != 0:
-            return exit_st
+            txt = "%s. %s. %s: %s" % (
+                red(_("An error occured while trying to install the package")),
+                red(_("Check if your system is healthy")),
+                blue(_("Error")),
+                exit_st,
+            )
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "error",
+                header = red("   ## ")
+            )
+            return exit_st, None, None
 
         txt = "%s: %s" % (
             blue(_("Updating installed packages repository")),
@@ -1338,11 +1296,22 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             level = "info",
             header = red("   ## ")
         )
-        package_id = self._add_installed_package_unlocked(
-            inst_repo, items_installed, items_not_installed)
-        self._meta['installed_package_id'] = package_id
 
-        return 0
+        # generate the files and directories that would be removed
+        removecontent_file = None
+        if remove_package_id != -1:
+            removecontent_file = self._generate_content_file(
+                inst_repo.retrieveContentIter(
+                    remove_package_id,
+                    order_by="file",
+                    reverse=True)
+            )
+
+        package_id = self._add_installed_package_unlocked(
+            inst_repo, removecontent_file,
+            items_installed, items_not_installed)
+
+        return 0, package_id, removecontent_file
 
     def _install_phase(self):
         """
@@ -1391,23 +1360,84 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 header = red("   ## ")
             )
 
-        exit_st = self._install_package()
-        if exit_st != 0:
-            txt = "%s. %s. %s: %s" % (
-                red(_("An error occured while trying to install the package")),
-                red(_("Check if your system is healthy")),
-                blue(_("Error")),
-                exit_st,
-            )
-            self._entropy.output(
-                txt,
-                importance = 1,
-                level = "error",
-                header = red("   ## ")
-            )
-        return exit_st
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.exclusive():
+            return self._install_phase_unlocked(inst_repo)
 
-    def _handle_install_collision_protect_unlocked(self, inst_repo, tofile,
+    def _install_phase_unlocked(self, inst_repo):
+        """
+        _install_phase(), assuming that the installed packages repository
+        lock is held in exclusive mode.
+        """
+        remove_package_id = self._get_remove_package_id_unlocked(inst_repo)
+
+        remove_atom = None
+        if remove_package_id != -1:
+            remove_atom = inst_repo.retrieveAtom(remove_package_id)
+
+        # save trigger data
+        remove_trigger_data = None
+        if remove_package_id != -1:
+            remove_trigger_data = self._get_remove_trigger_data_unlocked(
+                inst_repo, remove_package_id)
+
+        if remove_package_id == -1:
+            removed_libs = frozenset()
+        else:
+            repo = self._entropy.open_repository(self._repository_id)
+            repo_libs = repo.retrieveProvidedLibraries(self._package_id)
+            inst_libs = inst_repo.retrieveProvidedLibraries(
+                remove_package_id)
+            removed_libs = frozenset(inst_libs - repo_libs)
+
+        config_protect_metadata = None
+        if remove_package_id != -1:
+            config_protect_metadata = self._get_config_protect_metadata(
+                inst_repo, remove_package_id, _metadata = self._meta)
+
+        # after this point, old package metadata is no longer available
+
+        (exit_st, installed_package_id,
+         removecontent_file) = self._install_package_unlocked(inst_repo)
+        if exit_st != 0:
+            return exit_st
+
+        if remove_trigger_data:
+            exit_st = self._pre_remove_package_unlocked(remove_trigger_data)
+            if exit_st != 0:
+                return exit_st
+
+        clean_content = remove_package_id != -1
+        exit_st = self._install_clean_unlocked(
+            inst_repo, installed_package_id,
+            clean_content, removecontent_file,
+            remove_atom, removed_libs,
+            config_protect_metadata)
+        if exit_st != 0:
+            return exit_st
+
+        if remove_trigger_data:
+            exit_st = self._post_remove_package_unlocked(
+                remove_trigger_data)
+            if exit_st != 0:
+                return exit_st
+
+        if remove_package_id != -1:
+            exit_st = self._post_remove_install_package_unlocked(
+                remove_atom)
+            if exit_st != 0:
+                return exit_st
+
+        exit_st = self._install_spm_package_unlocked(
+            inst_repo, installed_package_id)
+        if exit_st != 0:
+            return exit_st
+
+        return 0
+
+    def _handle_install_collision_protect_unlocked(self, inst_repo,
+                                                   remove_package_id,
+                                                   tofile,
                                                    todbfile):
         """
         Handle files collition protection for the install phase.
@@ -1417,7 +1447,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             const_convert_to_unicode(todbfile),
             get_id = True)
 
-        if (self._meta['remove_package_id'] not in avail) and avail:
+        if (remove_package_id not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
             mytxt += " %s - %s" % (
                 blue(tofile),
@@ -1439,8 +1469,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return True
 
-    def _move_image_to_system_unlocked(self, inst_repo, items_installed,
-                                       items_not_installed):
+    def _move_image_to_system_unlocked(self, inst_repo, remove_package_id,
+                                       items_installed, items_not_installed):
         """
         Internal method that moves the package image directory to the live
         filesystem.
@@ -1692,7 +1722,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             if col_protect > 1:
                 todbfile = fromfile[len(image_dir):]
                 myrc = self._handle_install_collision_protect_unlocked(
-                    inst_repo, tofile, todbfile)
+                    inst_repo, remove_package_id, tofile, todbfile)
                 if not myrc:
                     return 0
 

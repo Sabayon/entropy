@@ -55,11 +55,15 @@ class _PackageConfigAction(PackageAction):
             # already configured
             return
 
-        metadata = {}
-        splitdebug_metadata = self._get_splitdebug_metadata()
-        metadata.update(splitdebug_metadata)
-
         inst_repo = self._entropy.open_repository(self._repository_id)
+        with inst_repo.shared():
+            return self._action_setup_unlocked(inst_repo)
+
+    def _action_setup_unlocked(self, inst_repo):
+        """
+        Setup the PackageAction. Assume repository lock already held.
+        """
+        metadata = {}
 
         metadata['atom'] = inst_repo.retrieveAtom(self._package_id)
         key, slot = inst_repo.retrieveKeySlot(self._package_id)

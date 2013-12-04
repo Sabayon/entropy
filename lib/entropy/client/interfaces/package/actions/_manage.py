@@ -411,7 +411,10 @@ class _PackageInstallRemoveAction(PackageAction):
 
         return in_mask, protected, tofile, do_continue
 
-    def _remove_content_from_system_loop(self, inst_repo, remove_content,
+    def _remove_content_from_system_loop(self, inst_repo, remove_atom,
+                                         remove_content, remove_config,
+                                         affected_directories,
+                                         affected_infofiles,
                                          directories, directories_cache,
                                          preserved_mgr,
                                          not_removed_due_to_collisions,
@@ -423,7 +426,6 @@ class _PackageInstallRemoveAction(PackageAction):
         Body of the _remove_content_from_system() method.
         """
         info_dirs = self._get_info_directories()
-        metadata = self.metadata()
 
         # collect all the library paths to be preserved
         # in the final removal loop.
@@ -434,7 +436,7 @@ class _PackageInstallRemoveAction(PackageAction):
 
                 # determine without sys_root
                 paths = self._handle_preserved_lib(
-                    item, metadata['removeatom'], preserved_mgr)
+                    item, remove_atom, preserved_mgr)
                 if paths is not None:
                     preserved_lib_paths.update(paths)
 
@@ -465,7 +467,7 @@ class _PackageInstallRemoveAction(PackageAction):
             protected = False
             in_mask = False
 
-            if not metadata['removeconfig']:
+            if not remove_config:
 
                 protected_item_test = sys_root_item
                 (in_mask, protected, _x,
@@ -552,7 +554,7 @@ class _PackageInstallRemoveAction(PackageAction):
                 # so using os.path.isdir valid directory symlink
                 if sys_root_item not in directories_cache:
                     # collect for Trigger
-                    metadata['affected_directories'].add(item)
+                    affected_directories.add(item)
                     directories.add((sys_root_item, "link"))
                     directories_cache.add(sys_root_item)
                 continue
@@ -561,7 +563,7 @@ class _PackageInstallRemoveAction(PackageAction):
                 # plain directory
                 if sys_root_item not in directories_cache:
                     # collect for Trigger
-                    metadata['affected_directories'].add(item)
+                    affected_directories.add(item)
                     directories.add((sys_root_item, "dir"))
                     directories_cache.add(sys_root_item)
                 continue
@@ -592,13 +594,13 @@ class _PackageInstallRemoveAction(PackageAction):
 
             # collect for Trigger
             dir_name = os.path.dirname(item)
-            metadata['affected_directories'].add(dir_name)
+            affected_directories.add(dir_name)
 
             # account for info files, if any
             if dir_name in info_dirs:
                 for _ext in self._INFO_EXTS:
                     if item.endswith(_ext):
-                        metadata['affected_infofiles'].add(item)
+                        affected_infofiles.add(item)
                         break
 
             # add its parent directory
@@ -613,15 +615,17 @@ class _PackageInstallRemoveAction(PackageAction):
                 directories_cache.add(dirobj)
 
     def _remove_content_from_system(self, installed_repository,
-                                    automerge_metadata, preserved_mgr):
+                                    remove_atom, remove_config, sys_root,
+                                    protect_mask, removecontent_file,
+                                    automerge_metadata,
+                                    affected_directories, affected_infofiles,
+                                    preserved_mgr):
         """
         Remove installed package content (files/directories) from live system.
 
         @keyword automerge_metadata: Entropy "automerge metadata"
         @type automerge_metadata: dict
         """
-        metadata = self.metadata()
-        sys_root = self._get_system_root(metadata)
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         misc_settings = self._entropy.ClientSettings()['misc']
         col_protect = misc_settings['collisionprotect']
@@ -632,7 +636,6 @@ class _PackageInstallRemoveAction(PackageAction):
         not_removed_due_to_collisions = set()
         colliding_path_messages = set()
 
-        protect_mask = metadata['config_protect+mask']
         if protect_mask is not None:
             protect, mask = protect_mask
         else:
@@ -643,13 +646,16 @@ class _PackageInstallRemoveAction(PackageAction):
         try:
             # simulate a removecontent list/set object
             remove_content = []
-            if metadata['removecontent_file'] is not None:
+            if removecontent_file is not None:
                 remove_content = Content.FileContentReader(
-                    metadata['removecontent_file'])
+                    removecontent_file)
 
             self._remove_content_from_system_loop(
-                installed_repository,
-                remove_content, directories, directories_cache,
+                installed_repository, remove_atom,
+                remove_content, remove_config,
+                affected_directories,
+                affected_infofiles,
+                directories, directories_cache,
                 preserved_mgr,
                 not_removed_due_to_collisions, colliding_path_messages,
                 automerge_metadata, col_protect, protect, mask, protectskip,
@@ -690,8 +696,7 @@ class _PackageInstallRemoveAction(PackageAction):
             def _filter(_path):
                 return _path not in not_removed_due_to_collisions
             Content.filter_content_file(
-                metadata['removecontent_file'],
-                _filter)
+                removecontent_file, _filter)
 
         # now handle directories
         directories = sorted(directories, reverse = True)
@@ -725,7 +730,7 @@ class _PackageInstallRemoveAction(PackageAction):
             if not taint:
                 break
 
-    def _spm_remove_package(self, atom):
+    def _spm_remove_package(self, atom, metadata):
         """
         Call Source Package Manager interface and tell it to remove our
         just removed package.
@@ -739,4 +744,4 @@ class _PackageInstallRemoveAction(PackageAction):
             etpConst['logging']['normal_loglevel_id'],
             "Removing from SPM: %s" % (atom,)
         )
-        return spm.remove_installed_package(self.metadata())
+        return spm.remove_installed_package(atom, metadata)

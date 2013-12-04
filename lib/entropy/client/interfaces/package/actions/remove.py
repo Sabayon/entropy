@@ -182,7 +182,16 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
             root = self._get_system_root(self._meta))
 
         self._remove_content_from_system(
-            inst_repo, automerge_metadata, preserved_mgr)
+            inst_repo,
+            self._meta['atom'],
+            self._meta['removeconfig'],
+            self._get_system_root(self._meta),
+            self._meta['config_protect+mask'],
+            self._meta['removecontent_file'],
+            automerge_metadata,
+            self._meta['affected_directories'],
+            self._meta['affected_infofiles'],
+            preserved_mgr)
 
         # garbage collect preserved libraries that are no longer needed
         self._garbage_collect_preserved_libs(preserved_mgr)
@@ -273,7 +282,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         spm_atom = spm.convert_from_entropy_package_name(atom)
 
         if not installed_package_ids:
-            exit_st = self._spm_remove_package(spm_atom)
+            exit_st = self._spm_remove_package(spm_atom, self._meta)
             if exit_st != 0:
                 return exit_st
 

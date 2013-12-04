@@ -3211,7 +3211,7 @@ class PortagePlugin(SpmPlugin):
                 # Packages emerged with -B don't contain CONTENTS file
                 # in their metadata, so we have to create one
                 self._create_contents_file_if_not_available(pkg_dir,
-                    package_metadata['triggers']['install'])
+                    package_metadata)
 
                 try:
                     counter = self.assign_uid_to_installed_package(
@@ -3296,7 +3296,7 @@ class PortagePlugin(SpmPlugin):
 
         return counter
 
-    def remove_installed_package(self, package_metadata):
+    def remove_installed_package(self, atom, package_metadata):
         """
         Reimplemented from SpmPlugin class.
         """
@@ -3304,14 +3304,14 @@ class PortagePlugin(SpmPlugin):
 
         with self._PortageVdbLocker(self, root = root):
             return self._remove_installed_package_unlocked(
-                root, package_metadata)
+                root, atom, package_metadata)
 
-    def _remove_installed_package_unlocked(self, root, package_metadata):
+    def _remove_installed_package_unlocked(self, root, atom, package_metadata):
         """
         remove_installed_package() body assuming that vdb lock has been
         already acquired.
         """
-        atom = entropy.dep.remove_tag(package_metadata['removeatom'])
+        atom = self.convert_from_entropy_package_name(atom)
         remove_build = self.get_installed_package_build_script_path(atom)
         remove_path = os.path.dirname(remove_build)
         key = entropy.dep.dep_getkey(atom)
@@ -3778,20 +3778,22 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        package_metadata['xpakpath'] = os.path.join(
+        install_dict = package_metadata['__install_trigger__']
+
+        install_dict['xpakpath'] = os.path.join(
             package_metadata['unpackdir'],
             PortagePlugin._xpak_const['entropyxpakrelativepath'])
 
         if not package_metadata['merge_from']:
 
-            package_metadata['xpakstatus'] = None
-            package_metadata['xpakdir'] = os.path.join(
-                package_metadata['xpakpath'],
+            install_dict['xpakstatus'] = None
+            install_dict['xpakdir'] = os.path.join(
+                install_dict['xpakpath'],
                 PortagePlugin._xpak_const['entropyxpakdatarelativepath'])
 
         else:
 
-            package_metadata['xpakstatus'] = True
+            install_dict['xpakstatus'] = True
 
             try:
                 import portage.const as pc
@@ -3803,10 +3805,11 @@ class PortagePlugin(SpmPlugin):
             portdbdir = os.path.join(portdbdir,
                 PortagePlugin._pkg_compose_atom(package_metadata))
 
-            package_metadata['xpakdir'] = portdbdir
+            install_dict['xpakdir'] = portdbdir
 
-        package_metadata['triggers']['install']['xpakdir'] = \
-            package_metadata['xpakdir']
+        package_metadata['xpakpath'] = install_dict['xpakpath']
+        package_metadata['xpakdir'] = install_dict['xpakdir']
+        package_metadata['xpakstatus'] = install_dict['xpakstatus']
 
         return 0
 
