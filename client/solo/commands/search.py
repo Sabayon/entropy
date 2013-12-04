@@ -148,15 +148,17 @@ Search for packages.
         # try to actually match something in installed packages db
         if not found and (inst_repo is not None) \
             and not self._available:
-            pkg_ids = _adv_search(inst_repo, string)
+            with inst_repo.shared():
+                pkg_ids = _adv_search(inst_repo, string)
             if pkg_ids:
                 found = True
             search_data.update(
                 ((x, inst_repo.repository_id()) for x in pkg_ids))
 
-        key_sorter = lambda x: \
-            entropy_client.open_repository(x[1]).retrieveAtom(x[0])
-        return sorted(search_data, key=key_sorter)
+        with inst_repo.shared():
+            key_sorter = lambda x: \
+                entropy_client.open_repository(x[1]).retrieveAtom(x[0])
+            return sorted(search_data, key=key_sorter)
 
     def search(self, entropy_client):
         """
@@ -194,15 +196,18 @@ Search for packages.
             entropy_client, string)
 
         inst_repo = entropy_client.installed_repository()
-        inst_repo_class = inst_repo.__class__
-        for pkg_id, pkg_repo in results:
-            dbconn = entropy_client.open_repository(pkg_repo)
-            from_client = isinstance(dbconn, inst_repo_class)
-            print_package_info(
-                pkg_id, entropy_client, dbconn,
-                extended = self._verbose,
-                installed_search = from_client,
-                quiet = self._quiet)
+        with inst_repo.shared():
+            for pkg_id, pkg_repo in results:
+
+                dbconn = entropy_client.open_repository(pkg_repo)
+                if not dbconn.isPackageIdAvailable(pkg_id):
+                    continue
+
+                print_package_info(
+                    pkg_id, entropy_client, dbconn,
+                    extended = self._verbose,
+                    installed_search = dbconn is inst_repo,
+                    quiet = self._quiet)
 
         return results
 
