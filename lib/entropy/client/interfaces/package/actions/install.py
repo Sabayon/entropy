@@ -96,6 +96,10 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         metadata['fetch_abort_function'] = self._opts.get(
             'fetch_abort_function')
 
+        # Used by Spm.entropy_install_unpack_hook()
+        metadata['repository_id'] = self._repository_id
+        metadata['package_id'] = self._package_id
+
         install_source = etpConst['install_sources']['unknown']
         meta_inst_source = self._opts.get('install_source', install_source)
         if meta_inst_source in list(etpConst['install_sources'].values()):

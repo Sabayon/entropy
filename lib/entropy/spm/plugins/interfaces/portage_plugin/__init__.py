@@ -3834,9 +3834,9 @@ class PortagePlugin(SpmPlugin):
 
                 # we need to get the .xpak from database
                 xdbconn = entropy_client.open_repository(
-                    package_metadata['repository'])
+                    package_metadata['repository_id'])
                 xpakdata = xdbconn.retrieveSpmMetadata(
-                    package_metadata['idpackage'])
+                    package_metadata['package_id'])
                 if xpakdata:
                     # save into a file
                     with open(xpak_path, "wb") as xpak_f:
