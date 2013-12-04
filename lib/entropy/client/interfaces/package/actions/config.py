@@ -55,29 +55,9 @@ class _PackageConfigAction(PackageAction):
             # already configured
             return
 
-        inst_repo = self._entropy.open_repository(self._repository_id)
-        with inst_repo.shared():
-            return self._action_setup_unlocked(inst_repo)
-
-    def _action_setup_unlocked(self, inst_repo):
-        """
-        Setup the PackageAction. Assume repository lock already held.
-        """
         metadata = {}
-
-        metadata['atom'] = inst_repo.retrieveAtom(self._package_id)
-        key, slot = inst_repo.retrieveKeySlot(self._package_id)
-        metadata['key'], metadata['slot'] = key, slot
-        metadata['version'] = inst_repo.retrieveVersion(self._package_id)
-        metadata['category'] = inst_repo.retrieveCategory(self._package_id)
-        metadata['name'] = inst_repo.retrieveName(self._package_id)
-        metadata['spm_repository'] = inst_repo.retrieveSpmRepository(
-            self._package_id)
-
-        metadata['accept_license'] = self._get_licenses(
-            inst_repo, self._package_id)
         metadata['phases'] = []
-        metadata['phases'].append(self._config)
+        metadata['phases'].append(self._config_phase)
 
         self._meta = metadata
 
@@ -94,7 +74,7 @@ class _PackageConfigAction(PackageAction):
                 break
         return exit_st
 
-    def _configure_package(self):
+    def _configure_package_unlocked(self, metadata):
         """
         Configure the package.
         """
@@ -110,7 +90,7 @@ class _PackageConfigAction(PackageAction):
 
         try:
             spm.execute_package_phase(
-                self._meta, self._meta,
+                metadata, metadata,
                 self.NAME, "configure")
 
         except spm.PhaseFailure as err:
@@ -149,29 +129,14 @@ class _PackageConfigAction(PackageAction):
 
         return 0
 
-    def _config(self):
+    def _config_phase(self):
         """
         Execute the config phase.
         """
-        xterm_title = "%s %s: %s" % (
-            self._xterm_header,
-            _("Configuring package"),
-            self._meta['atom'],
-        )
-        self._entropy.set_title(xterm_title)
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.shared():
+            exit_st = self._config_phase_unlocked(inst_repo)
 
-        txt = "%s: %s" % (
-            blue(_("Configuring package")),
-            red(self._meta['atom']),
-        )
-        self._entropy.output(
-            txt,
-            importance = 1,
-            level = "info",
-            header = red("   ## ")
-        )
-
-        exit_st = self._configure_package()
         if exit_st == 1:
             txt = _("An error occured while trying to configure the package")
             txt2 = "%s. %s: %s" % (
@@ -213,3 +178,50 @@ class _PackageConfigAction(PackageAction):
             )
 
         return exit_st
+
+
+    def _config_phase_unlocked(self, inst_repo):
+        """
+        _config_phase(), assuming that the installed packages repository lock
+        is held.
+        """
+        if not inst_repo.isPackageIdAvailable(self._package_id):
+            self._entropy.output(
+                darkred(_("The requested package is no longer available.")),
+                importance = 1,
+                level = "error",
+                header = red("   ## ")
+            )
+            return 3
+
+        metadata = {}
+        metadata['atom'] = inst_repo.retrieveAtom(self._package_id)
+        key, slot = inst_repo.retrieveKeySlot(self._package_id)
+        metadata['key'], metadata['slot'] = key, slot
+        metadata['version'] = inst_repo.retrieveVersion(self._package_id)
+        metadata['category'] = inst_repo.retrieveCategory(self._package_id)
+        metadata['name'] = inst_repo.retrieveName(self._package_id)
+        metadata['spm_repository'] = inst_repo.retrieveSpmRepository(
+            self._package_id)
+
+        metadata['accept_license'] = self._get_licenses(
+            inst_repo, self._package_id)
+
+        xterm_title = "%s %s: %s" % (
+            self._xterm_header,
+            _("Configuring package"),
+            metadata['atom'],
+        )
+        self._entropy.set_title(xterm_title)
+
+        txt = "%s: %s" % (
+            blue(_("Configuring package")),
+            red(metadata['atom']),
+        )
+        self._entropy.output(
+            txt,
+            importance = 1,
+            level = "info",
+            header = red("   ## ")
+        )
+        return self._configure_package_unlocked(metadata)
