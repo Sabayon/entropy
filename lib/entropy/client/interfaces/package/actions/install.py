@@ -756,26 +756,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return 0
 
-    def _get_remove_trigger_data_unlocked(self, inst_repo, remove_package_id):
-        """
-        Get the metadata used during removal phases by Triggers.
-        """
-        data = {}
-        data.update(inst_repo.getTriggerData(remove_package_id))
-
-        splitdebug_metadata = self._get_splitdebug_metadata()
-        data.update(splitdebug_metadata)
-
-        data['affected_directories'] = self._meta['affected_directories']
-        data['affected_infofiles'] = self._meta['affected_infofiles']
-        data['spm_repository'] = inst_repo.retrieveSpmRepository(
-            remove_package_id)
-
-        data['accept_license'] = self._get_licenses(
-            inst_repo, remove_package_id)
-
-        return data
-
     def _get_install_trigger_data(self):
         """
         Get the metadata used during removal phases by Triggers.
@@ -1378,7 +1358,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # save trigger data
         remove_trigger_data = None
         if remove_package_id != -1:
-            remove_trigger_data = self._get_remove_trigger_data_unlocked(
+            remove_trigger_data = self._get_remove_trigger_data(
                 inst_repo, remove_package_id)
 
         if remove_package_id == -1:

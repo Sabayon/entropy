@@ -183,6 +183,26 @@ class _PackageInstallRemoveAction(PackageAction):
         """
         return metadata.get('unittest_root', "") + etpConst['systemroot']
 
+    def _get_remove_trigger_data(self, inst_repo, installed_package_id):
+        """
+        Get the metadata used during removal phases by Triggers.
+        """
+        data = {}
+        data.update(inst_repo.getTriggerData(installed_package_id))
+
+        splitdebug_metadata = self._get_splitdebug_metadata()
+        data.update(splitdebug_metadata)
+
+        data['affected_directories'] = self._meta['affected_directories']
+        data['affected_infofiles'] = self._meta['affected_infofiles']
+        data['spm_repository'] = inst_repo.retrieveSpmRepository(
+            installed_package_id)
+
+        data['accept_license'] = self._get_licenses(
+            inst_repo, installed_package_id)
+
+        return data
+
     def _get_config_protect_skip(self):
         """
         Return the configuration protection path set.
