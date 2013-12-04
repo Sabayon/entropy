@@ -858,9 +858,15 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         inst_repo = self._entropy.installed_repository()
 
         with inst_repo.exclusive():
-            return self._install_clean_unlocked(inst_repo)
+            installed_package_id = self._meta['installed_package_id']
 
-    def _install_clean_unlocked(self, inst_repo):
+            if inst_repo.isPackageIdAvailable(installed_package_id):
+                return self._install_clean_unlocked(
+                    inst_repo, installed_package_id)
+
+            return 0
+
+    def _install_clean_unlocked(self, inst_repo, installed_package_id):
         """
         _install_clean with no installed repository lock handling.
         """
@@ -872,7 +878,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
 
         preserved_mgr = preservedlibs.PreservedLibraries(
-            inst_repo, self._meta['installed_package_id'],
+            inst_repo, installed_package_id,
             self._meta['removed_libs'],
             root = self._get_system_root(self._meta))
 
@@ -894,14 +900,18 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         inst_repo = self._entropy.installed_repository()
 
         with inst_repo.exclusive():
-            # NOTE: removed_libs is always empty because this phase is only
-            # called when remove_package_id == -1
-            preserved_mgr = preservedlibs.PreservedLibraries(
-                inst_repo, self._meta['installed_package_id'],
-                self._meta['removed_libs'],
-                root = self._get_system_root(self._meta))
 
-            self._garbage_collect_preserved_libs(preserved_mgr)
+            installed_package_id = self._meta['installed_package_id']
+            if inst_repo.isPackageIdAvailable(installed_package_id):
+
+                # NOTE: removed_libs is always empty because this phase is only
+                # called when remove_package_id == -1
+                preserved_mgr = preservedlibs.PreservedLibraries(
+                    inst_repo, installed_package_id,
+                    self._meta['removed_libs'],
+                    root = self._get_system_root(self._meta))
+
+                self._garbage_collect_preserved_libs(preserved_mgr)
 
         return 0
 
@@ -961,6 +971,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         if spm_uid != -1:
             inst_repo = self._entropy.installed_repository()
             with inst_repo.exclusive():
+
                 if inst_repo.isPackageIdAvailable(installed_package_id):
                     inst_repo.insertSpmUid(installed_package_id, spm_uid)
 
