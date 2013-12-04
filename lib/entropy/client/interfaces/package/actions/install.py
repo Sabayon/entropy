@@ -1222,7 +1222,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         return package_id
 
-    def _install_package_unlocked(self, inst_repo):
+    def _install_package_unlocked(self, inst_repo, remove_package_id):
         """
         Execute the package installation code.
         """
@@ -1233,8 +1233,6 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             etpConst['logging']['normal_loglevel_id'],
             "Installing package: %s" % (self._meta['atom'],)
         )
-
-        remove_package_id = self._get_remove_package_id_unlocked(inst_repo)
 
         if remove_package_id != -1:
             am_files = inst_repo.retrieveAutomergefiles(
@@ -1378,7 +1376,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # after this point, old package metadata is no longer available
 
         (exit_st, installed_package_id,
-         removecontent_file) = self._install_package_unlocked(inst_repo)
+         removecontent_file) = self._install_package_unlocked(
+             inst_repo, remove_package_id)
         if exit_st != 0:
             return exit_st
 
