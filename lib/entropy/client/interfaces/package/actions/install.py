@@ -170,7 +170,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         # setup the list of provided libraries that we're going to remove
         if metadata['remove_package_id'] != -1:
             repo_libs = repo.retrieveProvidedLibraries(self._package_id)
-            inst_libs = inst_repo.retrieveProvidedLibraries(self._package_id)
+            inst_libs = inst_repo.retrieveProvidedLibraries(
+                metadata['remove_package_id'])
             metadata['removed_libs'] = frozenset(inst_libs - repo_libs)
         else:
             metadata['removed_libs'] = frozenset()
@@ -237,7 +238,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                 metadata['affected_infofiles']
 
             remove_trigger['spm_repository'] = inst_repo.retrieveSpmRepository(
-                self._package_id)
+                metadata['remove_package_id'])
             remove_trigger.update(splitdebug_metadata)
 
             remove_trigger['accept_license'] = self._get_licenses(
