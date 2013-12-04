@@ -12,7 +12,7 @@
 from entropy.const import etpConst
 from entropy.exceptions import SPMError
 from entropy.i18n import _
-from entropy.output import blue, red
+from entropy.output import blue, red, darkred, brown
 
 import entropy.dep
 
@@ -59,68 +59,41 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
 
         inst_repo = self._entropy.open_repository(self._repository_id)
         metadata['configprotect_data'] = []
-        metadata['triggers'] = {}
-        metadata['atom'] = inst_repo.retrieveAtom(self._package_id)
-        # removeatom metadata key used by Spm.remove_installed_package()
-        metadata['removeatom'] = metadata['atom']
-        metadata['slot'] = inst_repo.retrieveSlot(self._package_id)
-        metadata['versiontag'] = inst_repo.retrieveTag(self._package_id)
+
         metadata['removeconfig'] = self._opts.get('removeconfig', False)
 
-        content = inst_repo.retrieveContentIter(
-            self._package_id, order_by="file", reverse=True)
-        metadata['removecontent_file'] = self._generate_content_file(
-            content)
+        # used by Spm.remove_installed_package()
+        metadata['slot'] = inst_repo.retrieveSlot(self._package_id)
+        metadata['versiontag'] = inst_repo.retrieveTag(self._package_id)
 
         # collects directories whose content has been modified
         # this information is then handed to the Trigger
         metadata['affected_directories'] = set()
         metadata['affected_infofiles'] = set()
 
-        trigger = inst_repo.getTriggerData(self._package_id)
-        metadata['triggers']['remove'] = trigger
-
-        trigger['affected_directories'] = metadata['affected_directories']
-        trigger['affected_infofiles'] = metadata['affected_infofiles']
-        trigger['spm_repository'] = inst_repo.retrieveSpmRepository(
-            self._package_id)
-
-        trigger['accept_license'] = self._get_licenses(
-            inst_repo, self._package_id)
-        trigger.update(splitdebug_metadata)
-
-        # setup config_protect and config_protect+mask metadata before it's
-        # too late.
-        protect = self._get_config_protect_metadata(
-            inst_repo, self._package_id, _metadata = metadata)
-        metadata.update(protect)
-
         metadata['phases'] = [
-            self._pre_remove,
-            self._remove,
-            self._post_remove,
-            self._post_remove_remove,
+            self._remove_phase,
         ]
         self._meta = metadata
 
-    def _pre_remove(self):
+    def _pre_remove_package_unlocked(self, atom, data):
         """
         Run the pre-remove phase.
         """
         xterm_title = "%s %s: %s" % (
             self._xterm_header,
             _("Pre-remove"),
-            self._meta['atom'],
+            atom,
         )
         self._entropy.set_title(xterm_title)
 
-        exit_st = 0
-        data = self._meta['triggers']['remove']
-        if not data:
-            return exit_st
-
         trigger = self._entropy.Triggers(
-            self.NAME, "preremove", data, None)
+            self.NAME,
+            "preremove",
+            data,
+            None)
+
+        exit_st = 0
         ack = trigger.prepare()
         if ack:
             exit_st = trigger.run()
@@ -128,66 +101,109 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
 
         return exit_st
 
-    def _remove(self):
+    def _remove_phase(self):
         """
         Run the remove phase.
         """
-        xterm_title = "%s %s: %s" % (
-            self._xterm_header,
-            _("Removing"),
-            self._meta['atom'],
-        )
-        self._entropy.set_title(xterm_title)
+        inst_repo = self._entropy.open_repository(self._repository_id)
+        with inst_repo.exclusive():
 
-        self._entropy.output(
-            "%s: %s" % (
-                blue(_("Removing")),
-                red(self._meta['atom']),
-            ),
-            importance = 1,
-            level = "info",
-            header = red("   ## ")
-        )
+            if not inst_repo.isPackageIdAvailable(self._package_id):
+                self._entropy.output(
+                    darkred(_("The requested package is no longer available")),
+                    importance = 1,
+                    level = "warning",
+                    header = brown(" @@ ")
+                )
 
+                # install.py assumes that a zero exit status is returned
+                # in this case.
+                return 0
+
+            atom = inst_repo.retrieveAtom(self._package_id)
+
+            xterm_title = "%s %s: %s" % (
+                self._xterm_header,
+                _("Removing"),
+                atom,
+            )
+            self._entropy.set_title(xterm_title)
+
+            self._entropy.output(
+                "%s: %s" % (
+                    blue(_("Removing")),
+                    red(atom),
+                ),
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
+            )
+
+            self._entropy.logger.log("[Package]",
+                etpConst['logging']['normal_loglevel_id'],
+                    "Removing package: %s" % (atom,))
+
+            txt = "%s: %s" % (
+                blue(_("Removing from Entropy")),
+                red(atom),
+            )
+            self._entropy.output(
+                txt,
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
+            )
+
+            return self._remove_phase_unlocked(inst_repo)
+
+    def _remove_phase_unlocked(self, inst_repo):
+        """
+        _remove_phase(), assuming that the installed packages repository lock
+        is held.
+        """
         self._entropy.clear_cache()
 
-        self._entropy.logger.log("[Package]",
-            etpConst['logging']['normal_loglevel_id'],
-                "Removing package: %s" % (self._meta['atom'],))
-
-        txt = "%s: %s" % (
-            blue(_("Removing from Entropy")),
-            red(self._meta['atom']),
-        )
-        self._entropy.output(
-            txt,
-            importance = 1,
-            level = "info",
-            header = red("   ## ")
+        removecontent_file = self._generate_content_file(
+            inst_repo.retrieveContentIter(
+                self._package_id, order_by="file", reverse=True)
         )
 
-        inst_repo = self._entropy.open_repository(self._repository_id)
+        atom = inst_repo.retrieveAtom(self._package_id)
+
+        trigger_data = self._get_remove_trigger_data(
+            inst_repo, self._package_id)
+
+        config_protect_metadata = self._get_config_protect_metadata(
+            inst_repo, self._package_id, _metadata = self._meta)
+
         automerge_metadata = inst_repo.retrieveAutomergefiles(
             self._package_id, get_dict = True)
         provided_libraries = inst_repo.retrieveProvidedLibraries(
             self._package_id)
+
+        # end of data collection
+
+        exit_st = self._pre_remove_package_unlocked(atom, trigger_data)
+        if exit_st != 0:
+            return exit_st
 
         inst_repo.removePackage(self._package_id)
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
         inst_repo.commit()
 
+        sys_root = self._get_system_root(self._meta)
         preserved_mgr = preservedlibs.PreservedLibraries(
             inst_repo, None, provided_libraries,
-            root = self._get_system_root(self._meta))
+            root = sys_root)
 
         self._remove_content_from_system(
             inst_repo,
-            self._meta['atom'],
+            atom,
             self._meta['removeconfig'],
-            self._get_system_root(self._meta),
-            self._meta['config_protect+mask'],
-            self._meta['removecontent_file'],
+            sys_root,
+            config_protect_metadata['config_protect+mask'],
+            removecontent_file,
             automerge_metadata,
             self._meta['affected_directories'],
             self._meta['affected_infofiles'],
@@ -196,26 +212,35 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         # garbage collect preserved libraries that are no longer needed
         self._garbage_collect_preserved_libs(preserved_mgr)
 
+        exit_st = self._post_remove_package_unlocked(atom, trigger_data)
+        if exit_st != 0:
+            return exit_st
+
+        exit_st = self._post_remove_remove_package_unlocked(
+            inst_repo, atom)
+        if exit_st != 0:
+            return exit_st
+
         return 0
 
-    def _post_remove(self):
+    def _post_remove_package_unlocked(self, atom, data):
         """
         Run the first post-remove phase.
         """
         xterm_title = "%s %s: %s" % (
             self._xterm_header,
             _("Post-remove"),
-            self._meta['atom'],
+            atom,
         )
         self._entropy.set_title(xterm_title)
 
-        exit_st = 0
-        data = self._meta['triggers']['remove']
-        if not data:
-            return exit_st
-
         trigger = self._entropy.Triggers(
-            self.NAME, "postremove", data, None)
+            self.NAME,
+            "postremove",
+            data,
+            None)
+
+        exit_st = 0
         ack = trigger.prepare()
         if ack:
             exit_st = trigger.run()
@@ -258,7 +283,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
             inst_repo = self._entropy.open_repository(self._repository_id)
             inst_repo.insertSpmUid(installed_package_id, spm_uid)
 
-    def _post_remove_remove(self):
+    def _post_remove_remove_package_unlocked(self, inst_repo, atom):
         """
         Post-remove phase of package remove action, this step removes SPM
         package entries if there are no other Entropy-tagged packages installed.
@@ -272,17 +297,15 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         # -- of course, we need to drop versiontag before being able to look
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
-
-        atom = self._meta['atom']
-        inst_repo = self._entropy.open_repository(self._repository_id)
-        test_atom = entropy.dep.remove_tag(atom)
-        installed_package_ids = inst_repo.getPackageIds(test_atom)
-
         spm = self._entropy.Spm()
+
+        test_atom = entropy.dep.remove_tag(atom)
         spm_atom = spm.convert_from_entropy_package_name(atom)
 
+        installed_package_ids = inst_repo.getPackageIds(test_atom)
         if not installed_package_ids:
-            exit_st = self._spm_remove_package(spm_atom, self._meta)
+            exit_st = self._spm_remove_package(
+                spm_atom, self._meta)
             if exit_st != 0:
                 return exit_st
 
