@@ -1,3 +1,27 @@
+commit f85c890f9add76ba80550ffe99a00be69ca34c0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 23:42:17 2013 +0100
+
+    Release Entropy 245
+
+commit 0bf9ab5d82afcf15c094aa6c9fe9a585bf437bc6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 23:19:17 2013 +0100
+
+    [Rigo] document the installed repository lazy load requirement
+
+commit a2e1e6ba94074067d404daf54c49e8782449e245
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 23:11:36 2013 +0100
+
+    [entropy.client] delay installed repository initialization as much as possible
+
+commit 78c47b65bcd13f48208ed087e74018f4dfff64c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:25:29 2013 +0100
+
+    Tagging Entropy version 243
+
 commit addd11b19164da2e04ad55c9205d37f032d0a9b6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 5 22:25:29 2013 +0100
