@@ -1,3 +1,48 @@
+commit addd11b19164da2e04ad55c9205d37f032d0a9b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:25:29 2013 +0100
+
+    Release Entropy 243
+
+commit 81dca7339e8d64468d57ff863242bd8b5d04b21b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:19:21 2013 +0100
+
+    [eit.commands.command] use the Entropy class object to acquire the Entropy Resources Lock
+
+commit c26b8fb971be6a9d2bbb57fafb446c09e8beaf71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:14:18 2013 +0100
+
+    [solo.commands.command] use the Entropy class object to acquire the Entropy Resources Lock
+
+commit 9c7fdd5410596246fcd542f9f0e7ee4238171d53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:12:25 2013 +0100
+
+    [entropy.tools] update docstrings for Entropy Resources Lock methods
+
+commit b21eeaf4d2e5dd21857c0c1f4c56cd7db48ad64f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 22:05:35 2013 +0100
+
+    [entropy.client.methods] make Entropy Resources Lock methods classmethods
+
+commit 82b85704ce530fa0849b07891bb40517eadd5d82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 21:36:30 2013 +0100
+
+    [entropy.output] make TextInterface methods classmethods
+    
+    This makes possible to fix a circular dependency in the Entropy
+    Resources Lock management methods
+
+commit 391ed26f4fa7a0e2995d9a431b635d9a1806351a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 16:34:16 2013 +0100
+
+    Tagging Entropy version 242
+
 commit 4d20097e97abc543ccf92e7f01cc8e47ec76c2b7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 5 16:34:16 2013 +0100
