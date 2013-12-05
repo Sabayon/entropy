@@ -17,6 +17,7 @@ import errno
 import sys
 import shutil
 import time
+import types
 import subprocess
 import threading
 import codecs
@@ -41,7 +42,7 @@ from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
 from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     teal
-from entropy.core.settings.base import RepositoryConfigParser
+from entropy.core.settings.base import RepositoryConfigParser, SystemSettings
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError
@@ -1676,7 +1677,8 @@ class MiscMixin:
     _FILE_LOCK_MAP = {
     }
 
-    def _file_lock_setup(self, file_path):
+    @classmethod
+    def _file_lock_setup(cls, file_path):
         """
         Setup _FILE_LOCK_MAP for file_path, allocating locking information.
         """
@@ -1690,19 +1692,20 @@ class MiscMixin:
             MiscMixin._FILE_LOCK_MAP[file_path] = mapped
         return mapped
 
-    def _lock_resource(self, lock_path, blocking, shared):
+    @classmethod
+    def _lock_resource(cls, lock_path, blocking, shared):
         """
         Internal function that does the locking given a lock
         file path.
         """
         with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = self._file_lock_setup(lock_path)
+            mapped = cls._file_lock_setup(lock_path)
             if mapped['ref'] is not None:
                 # reentrant lock, already acquired
                 mapped['count'] += 1
                 return True
             path = mapped['path']
-        acquired, flock_f = self._file_lock_create(
+        acquired, flock_f = cls._file_lock_create(
             path, blocking = blocking, shared = shared)
         if acquired:
             with MiscMixin._FILE_LOCK_MUTEX:
@@ -1711,12 +1714,13 @@ class MiscMixin:
                     mapped['ref'] = flock_f
         return acquired
 
-    def _promote_resource(self, lock_path, blocking):
+    @classmethod
+    def _promote_resource(cls, lock_path, blocking):
         """
         Internal function that does the file lock promotion.
         """
         with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = self._file_lock_setup(lock_path)
+            mapped = cls._file_lock_setup(lock_path)
             flock_f = mapped['ref']
             if flock_f is None:
                 # wtf ?
@@ -1729,13 +1733,14 @@ class MiscMixin:
             acquired = flock_f.try_promote()
         return acquired
 
-    def _unlock_resource(self, lock_path):
+    @classmethod
+    def _unlock_resource(cls, lock_path):
         """
         Internal function that does the unlocking of a given
         lock file.
         """
         with MiscMixin._FILE_LOCK_MUTEX:
-            mapped = self._file_lock_setup(lock_path)
+            mapped = cls._file_lock_setup(lock_path)
             # decrement lock counter
             if mapped['count'] > 0:
                 mapped['count'] -= 1
@@ -1751,7 +1756,8 @@ class MiscMixin:
                 ref_obj.close()
                 mapped['ref'] = None
 
-    def _file_lock_create(self, pidfile, blocking = False, shared = False):
+    @classmethod
+    def _file_lock_create(cls, pidfile, blocking = False, shared = False):
         """
         Create and allocate the lock file pointed by lock_data structure.
         """
@@ -1790,27 +1796,35 @@ class MiscMixin:
             if not acquired:
                 return False, None
 
-        self._clear_resources_after_lock()
+        cls._clear_resources_after_lock()
         return True, flock_f
 
-    def _clear_resources_after_lock(self):
+    @classmethod
+    def _clear_resources_after_lock(cls):
         """
         Clear resources that could have become stale after
         the Entropy Lock acquisition.
         """
-        with self._cacher:
-            # clear repositories live cache
-            if self._installed_repository is not None:
-                self._installed_repository.clearCache()
+        cacher = EntropyCacher()
+        with cacher:
 
-            with self._repodb_cache_mutex:
-                for repo in self._repodb_cache.values():
-                    repo.clearCache()
-            self._settings.clear()
-            self._cacher.discard()
-        self._cacher.sync()
+            if isinstance(cls, types.InstanceType):
+                # this is only required to run if called within
+                # an instance
+                if cls._installed_repository is not None:
+                    cls._installed_repository.clearCache()
 
-    def _wait_resource(self, lock_func, sleep_seconds = 1.0,
+                with cls._repodb_cache_mutex:
+                    for repo in cls._repodb_cache.values():
+                        repo.clearCache()
+
+            SystemSettings().clear()
+            cacher.discard()
+
+        cacher.sync()
+
+    @classmethod
+    def _wait_resource(cls, lock_func, sleep_seconds = 1.0,
                        max_lock_count = 300, shared = False,
                        spinner = False):
         """
@@ -1822,7 +1836,7 @@ class MiscMixin:
             acquired = lock_func(blocking=False, shared=shared)
             if acquired:
                 if lock_count > 0:
-                    self.output(
+                    cls.output(
                         blue(_("Resources unlocked, let's go!")),
                         importance = 1,
                         level = "info",
@@ -1838,7 +1852,7 @@ class MiscMixin:
                 count = (lock_count + 1, max_lock_count)
 
             if lock_count >= max_lock_count and not spinner:
-                self.output(
+                cls.output(
                     blue(_("Resources still locked, giving up!")),
                     importance = 1,
                     level = "warning",
@@ -1847,7 +1861,7 @@ class MiscMixin:
                 return True # gave up
 
             lock_count += 1
-            self.output(
+            cls.output(
                 blue(_("Resources locked, sleeping...")),
                 importance = 1,
                 level = "warning",
@@ -1858,7 +1872,8 @@ class MiscMixin:
             time.sleep(sleep_seconds)
         return False # yay!
 
-    def lock_resources(self, blocking = False, shared = False):
+    @classmethod
+    def lock_resources(cls, blocking = False, shared = False):
         """
         Acquire Entropy Resources lock; once acquired, it's possible
         to alter:
@@ -1877,9 +1892,10 @@ class MiscMixin:
         @rtype: bool
         """
         lock_path = etpConst['locks']['using_resources']
-        return self._lock_resource(lock_path, blocking, shared)
+        return cls._lock_resource(lock_path, blocking, shared)
 
-    def promote_resources(self, blocking = False):
+    @classmethod
+    def promote_resources(cls, blocking = False):
         """
         Promote previously acquired Entropy Resources Lock from
         shared to exclusive.
@@ -1888,16 +1904,18 @@ class MiscMixin:
         @type blocking: bool
         """
         lock_path = etpConst['locks']['using_resources']
-        return self._promote_resource(lock_path, blocking)
+        return cls._promote_resource(lock_path, blocking)
 
-    def unlock_resources(self):
+    @classmethod
+    def unlock_resources(cls):
         """
         Release previously locked Entropy Resources, see lock_resources().
         """
         lock_path = etpConst['locks']['using_resources']
-        return self._unlock_resource(lock_path)
+        return cls._unlock_resource(lock_path)
 
-    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300,
+    @classmethod
+    def wait_resources(cls, sleep_seconds = 1.0, max_lock_count = 300,
                        shared = False, spinner = False):
         """
         Wait until Entropy resources are unlocked.
@@ -1916,8 +1934,8 @@ class MiscMixin:
         @return: True, if lock hasn't been released, False otherwise.
         @rtype: bool
         """
-        return self._wait_resource(
-            self.lock_resources, sleep_seconds=sleep_seconds,
+        return cls._wait_resource(
+            cls.lock_resources, sleep_seconds=sleep_seconds,
             max_lock_count=max_lock_count, shared=shared,
             spinner=spinner)
 
