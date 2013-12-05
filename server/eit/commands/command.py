@@ -196,21 +196,24 @@ class EitCommand(object):
         The signature of func is: int func(entropy_server).
         """
         server = None
+        server_class = None
         acquired = False
         try:
             try:
-                server = self._entropy(default_repository=repo)
+                server_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
             acquired = entropy.tools.acquire_entropy_locks(
-                server, spinner=True)
+                server_class, spinner=True)
             if not acquired:
-                server.output(
+                server_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
+
+            server = server_class(default_repository=repo)
 
             # make sure that repositories are closed now
             # to reset their internal states, which could have
@@ -224,8 +227,8 @@ class EitCommand(object):
         finally:
             if server is not None:
                 server.shutdown()
-                if acquired:
-                    entropy.tools.release_entropy_locks(server)
+            if acquired:
+                entropy.tools.release_entropy_locks(server_class)
 
     def _call_unlocked(self, func, repo):
         """
@@ -234,22 +237,25 @@ class EitCommand(object):
         The signature of func is: int func(entropy_server).
         """
         server = None
+        server_class = None
         acquired = False
         try:
             try:
-                server = self._entropy(default_repository=repo)
+                server_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
             # use blocking mode to avoid tainting stdout
             acquired = entropy.tools.acquire_entropy_locks(
-                server, blocking=True, shared=True)
+                server_class, blocking=True, shared=True)
             if not acquired:
-                server.output(
+                server_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
+
+            server = server_class(default_repository=repo)
 
             # make sure that repositories are closed now
             # to reset their internal states, which could have
@@ -263,8 +269,8 @@ class EitCommand(object):
         finally:
             if server is not None:
                 server.shutdown()
-                if acquired:
-                    entropy.tools.release_entropy_locks(server)
+            if acquired:
+                entropy.tools.release_entropy_locks(server_class)
 
     def _settings(self):
         """
