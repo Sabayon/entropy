@@ -287,6 +287,12 @@ class SoloCommand(object):
         """
         return Client(*args, **kwargs)
 
+    def _entropy_class(self):
+        """
+        Return the Entropy Client class object.
+        """
+        return Client
+
     def _entropy_bashcomp(self):
         """
         Return an Entropy Client object that MUST
@@ -335,34 +341,37 @@ class SoloCommand(object):
         Resources Lock, for given repository at repo.
         The signature of func is: int func(entropy_client).
         """
+        client_class = None
         client = None
         acquired = False
         try:
             try:
-                client = self._entropy()
+                client_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
             blocking = os.getenv("__EQUO_LOCKS_BLOCKING__")
             if blocking:
-                client.output(darkgreen(
+                client_class.output(darkgreen(
                         _("Acquiring Entropy Resources "
                           "Lock, please wait...")),
                               back=True)
             acquired = entropy.tools.acquire_entropy_locks(
-                client, blocking=blocking, spinner=True)
+                client_class, blocking=blocking, spinner=True)
             if not acquired:
-                client.output(
+                client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
+
+            client = client_class()
             return func(client)
         finally:
             if client is not None:
                 client.shutdown()
-                if acquired:
-                    entropy.tools.release_entropy_locks(client)
+            if acquired:
+                entropy.tools.release_entropy_locks(client_class)
 
     def _call_unlocked(self, func):
         """
@@ -370,29 +379,32 @@ class SoloCommand(object):
         Resources Lock in shared mode, for given repository at repo.
         The signature of func is: int func(entropy_client).
         """
+        client_class = None
         client = None
         acquired = False
         try:
             try:
-                client = self._entropy()
+                client_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
             # use blocking mode to avoid tainting stdout
             acquired = entropy.tools.acquire_entropy_locks(
-                client, blocking=True, shared=True)
+                client_class, blocking=True, shared=True)
             if not acquired:
-                client.output(
+                client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
                     level="error", importance=1
                 )
                 return 1
+
+            client = client_class()
             return func(client)
         finally:
             if client is not None:
                 client.shutdown()
-                if acquired:
-                    entropy.tools.release_entropy_locks(client)
+            if acquired:
+                entropy.tools.release_entropy_locks(client_class)
 
     def _settings(self):
         """
