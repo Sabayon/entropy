@@ -181,6 +181,9 @@ class Rigo(Gtk.Application):
         icons = get_sc_icon_theme(DATA_DIR)
 
         self._activity_rwsem = ReadersWritersSemaphore()
+
+        # This relies on the fact that the installed packages repository
+        # is lazily loaded (thus, schema update code is).
         self._entropy = Client()
         self._entropy_ws = EntropyWebService(self._entropy)
 
