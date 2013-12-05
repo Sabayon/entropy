@@ -1,3 +1,15 @@
+commit c6aced2bdc29df07a8f4b193512028340ba556b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 16:23:55 2013 +0100
+
+    Release Entropy 241
+
+commit 255b9f7d36c580d84efa20e74491e54432923d39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 4 17:44:25 2013 +0100
+
+    Tagging Entropy version 240
+
 commit 755c751d40e3ef9df55bb24a94363ec9e16d523b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 4 17:44:24 2013 +0100
