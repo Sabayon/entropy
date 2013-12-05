@@ -522,6 +522,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
 
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
         @return: an opaque that must be used to release the lock.
         @rtype: object
         """
@@ -537,6 +543,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
 
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
         @return: an opaque that must be used to release the lock.
         @rtype: object
         """
@@ -551,6 +563,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
 
         @return: an opaque object that must be used to release the lock, None
             otherwise.
@@ -568,6 +586,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         If this is not the case, please synchronize using the Entropy Resources
         General Lock (entropy.tools.acquire_entropy_locks()).
 
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
         @return: an opaque object that must be used to release the lock, None
             otherwise.
         @rtype: object or None
@@ -581,6 +605,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         Make sure to commit any pending transaction before releasing the lock.
 
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
+
         @param opaque: the opaque object returned by *acquire_shared methods.
         @type opaque: object
         """
@@ -592,6 +622,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This is used for inter-process synchronization only.
 
         Make sure to commit any pending transaction before releasing the lock.
+
+        The only effect of not using these synchronization methods is that
+        stale results, incomplete results, None (in case of using a no
+        longer valid package id, for instance) could be returned by methods.
+        If your code can deal with such conditions, it is perfectly fine to
+        avoid locking.
 
         @param opaque: the opaque object returned by *acquire_exclusive methods.
         @type opaque: object
