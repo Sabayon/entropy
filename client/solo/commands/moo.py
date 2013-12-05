@@ -12,7 +12,6 @@
 import argparse
 
 from entropy.i18n import _
-from entropy.output import TextInterface
 
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.command import SoloCommand

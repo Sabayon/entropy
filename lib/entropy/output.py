@@ -687,7 +687,8 @@ class TextInterface(object):
     with the user, channel is bi-directional.
     """
 
-    def output(self, text, header = "", footer = "", back = False,
+    @classmethod
+    def output(cls, text, header = "", footer = "", back = False,
         importance = 0, level = "info", count = None, percent = False):
 
         """
@@ -745,7 +746,8 @@ class TextInterface(object):
         myfunc(header+count_str+text+footer, back = back, flush = False)
         _flush_stdouterr()
 
-    def ask_question(self, question, importance = 0, responses = None):
+    @classmethod
+    def ask_question(cls, question, importance = 0, responses = None):
 
         """
         Questions asking function. It asks the user to answer the question given
@@ -803,7 +805,8 @@ class TextInterface(object):
         xterm_title_reset()
         _flush_stdouterr()
 
-    def input_box(self, title, input_parameters, cancel_button = True):
+    @classmethod
+    def input_box(cls, title, input_parameters, cancel_button = True):
         """
         Generic input box (form) creator and data collector.
 
@@ -844,11 +847,11 @@ class TextInterface(object):
             mydict = {}
             counter = 1
             option_text, option_list = option_data
-            self.output(option_text)
+            cls.output(option_text)
             for item in option_list:
                 mydict[counter] = item
                 txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
-                self.output(txt)
+                cls.output(txt)
                 counter += 1
             while True:
                 try:
@@ -874,17 +877,17 @@ class TextInterface(object):
         def list_editor(option_data, can_cancel, callback):
 
             def selaction():
-                self.output('')
-                self.output(darkred(_("Please select an option")))
+                cls.output('')
+                cls.output(darkred(_("Please select an option")))
                 if can_cancel:
-                    self.output("  ("+blue("-1")+") "+darkred(_("Discard all")))
-                self.output("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
-                self.output("  ("+blue("1")+")  "+brown(_("Add item")))
-                self.output("  ("+blue("2")+")  "+brown(_("Edit item")))
-                self.output("  ("+blue("3")+")  "+darkblue(_("Remove item")))
-                self.output("  ("+blue("4")+")  "+darkgreen(_("Show current list")))
+                    cls.output("  ("+blue("-1")+") "+darkred(_("Discard all")))
+                cls.output("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
+                cls.output("  ("+blue("1")+")  "+brown(_("Add item")))
+                cls.output("  ("+blue("2")+")  "+brown(_("Edit item")))
+                cls.output("  ("+blue("3")+")  "+darkblue(_("Remove item")))
+                cls.output("  ("+blue("4")+")  "+darkgreen(_("Show current list")))
                 # wait user interaction
-                self.output('')
+                cls.output('')
                 try:
                     action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
                 except UnicodeDecodeError:
@@ -898,18 +901,18 @@ class TextInterface(object):
                 valid_actions.insert(0, -1)
             option_text, option_list = option_data
             txt = "%s:" % (blue(option_text),)
-            self.output(txt)
+            cls.output(txt)
 
             for item in option_list:
                 mydict[counter] = item
                 txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
-                self.output(txt)
+                cls.output(txt)
                 counter += 1
 
             def show_current_list():
                 for key in sorted(mydict):
                     txt = "[%s] %s" % (darkgreen(str(key)), blue(mydict[key]),)
-                    self.output(txt)
+                    cls.output(txt)
 
             while True:
                 try:
@@ -918,10 +921,10 @@ class TextInterface(object):
                         show_current_list()
                     action = int(sel_action)
                 except (ValueError, TypeError,):
-                    self.output(_("You don't have typed a number."), level = "warning")
+                    cls.output(_("You don't have typed a number."), level = "warning")
                     continue
                 if action not in valid_actions:
-                    self.output(_("Invalid action."), level = "warning")
+                    cls.output(_("Invalid action."), level = "warning")
                     continue
                 if action == -1:
                     raise KeyboardInterrupt()
@@ -941,7 +944,7 @@ class TextInterface(object):
                             mydict[counter] = s_el
                             counter += 1
                         except (ValueError,):
-                            self.output(_("Invalid string."), level = "warning")
+                            cls.output(_("Invalid string."), level = "warning")
                             continue
                         break
                     show_current_list()
@@ -968,7 +971,7 @@ class TextInterface(object):
                                 raise ValueError()
                             mydict[s_el] = new_s_val[:]
                         except (ValueError, TypeError,):
-                            self.output(_("Invalid element."), level = "warning")
+                            cls.output(_("Invalid element."), level = "warning")
                             continue
                         break
                     show_current_list()
@@ -986,7 +989,7 @@ class TextInterface(object):
                                 raise ValueError()
                             del mydict[s_el]
                         except (ValueError, TypeError,):
-                            self.output(_("Invalid element."), level = "warning")
+                            cls.output(_("Invalid element."), level = "warning")
                             continue
                         break
                     show_current_list()
@@ -1007,7 +1010,7 @@ class TextInterface(object):
                         myresult = False
                         input_type, data = input_text
                         if input_type == "checkbox":
-                            answer = self.ask_question(data)
+                            answer = cls.ask_question(data)
                             if answer == _("Yes"):
                                 myresult = True
                         elif input_type == "combo":
@@ -1034,7 +1037,8 @@ class TextInterface(object):
                     break
         return results
 
-    def edit_file(self, file_path):
+    @classmethod
+    def edit_file(cls, file_path):
         """
         Open a file editor on given file path (file_path).
 
@@ -1046,7 +1050,8 @@ class TextInterface(object):
         editor = os.getenv("EDITOR", "/bin/nano")
         return subprocess.call((editor, file_path)) == 0
 
-    def set_title(self, title):
+    @classmethod
+    def set_title(cls, title):
         """
         Set application title.
 

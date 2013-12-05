@@ -187,16 +187,17 @@ class Entropy(Client):
         DaemonUrlFetcher.set_daemon(daemon)
         DaemonMultipleUrlFetcher.set_daemon(daemon)
 
-    def output(self, text, header = "", footer = "", back = False,
+    @classmethod
+    def output(cls, text, header = "", footer = "", back = False,
                importance = 0, level = "info", count = None,
                percent = False, _raw=False):
-        if self._DAEMON is not None:
+        if cls._DAEMON is not None:
             count_c = 0
             count_t = 0
             if count is not None:
                 count_c, count_t = count
             GLib.idle_add(
-                self._DAEMON.output,
+                cls._DAEMON.output,
                 text, header, footer, back, importance,
                 level, count_c, count_t, percent, _raw)
 

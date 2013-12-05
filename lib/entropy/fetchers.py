@@ -909,7 +909,7 @@ class UrlFetcher(TextInterface):
         if len(average) < 2:
             average = " "+average
         current_txt += " <->  "+average+"% "+bartext
-        TextInterface.output(self, current_txt, back = True)
+        TextInterface.output(current_txt, back = True)
 
     def update(self):
         """
@@ -1131,7 +1131,7 @@ class MultipleUrlFetcher(TextInterface):
     def __show_download_files_info(self):
         count = 0
         pl = self._url_path_list[:]
-        TextInterface.output(self,
+        TextInterface.output(
             "%s: %s %s" % (
                 darkblue(_("Aggregated download")),
                 darkred(str(len(pl))),
@@ -1145,7 +1145,7 @@ class MultipleUrlFetcher(TextInterface):
             count += 1
             fname = os.path.basename(url)
             uri = spliturl(url)[1]
-            TextInterface.output(self,
+            TextInterface.output(
                 "[%s] %s => %s" % (
                     darkblue(str(count)),
                     darkgreen(uri),
@@ -1299,7 +1299,7 @@ class MultipleUrlFetcher(TextInterface):
             if len(myavg) < 2:
                 myavg = " "+myavg
             current_txt += " <->  "+myavg+"% "+bartext+" "
-            TextInterface.output(self, current_txt, back = True)
+            TextInterface.output(current_txt, back = True)
 
         self.__old_average = average
 
