@@ -3204,7 +3204,7 @@ def acquire_entropy_locks(entropy_client, blocking = False,
     other writeable destinations.
     Can be unlocked by simply calling release_entropy_locks().
 
-    @param entropy_client: any Entropy Client based instance
+    @param entropy_client: any Entropy Client based class
     @type entropy_client: entropy.client.interfaces.Client
     @keyword blocking: acquire locks in blocking mode?
     @type blocking: bool
@@ -3237,7 +3237,7 @@ def release_entropy_locks(entropy_client):
     """
     Release Entropy Client/Server file locks.
 
-    @param entropy_client: any Entropy Client based instance
+    @param entropy_client: any Entropy Client based class
     @type entropy_client: entropy.client.interfaces.Client
     """
     entropy_client.unlock_resources()
