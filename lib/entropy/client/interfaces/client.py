@@ -742,7 +742,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         self._repodb_cache = {}
         self._repodb_cache_mutex = threading.RLock()
         self._memory_db_instances = {}
-        self._installed_repository = None
+        self._real_installed_repository = None
+        self._real_installed_repository_lock = threading.RLock()
         self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
@@ -774,28 +775,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
         self._cacher = EntropyCacher()
 
-        # backward compatibility, will be removed after 2011
-        if "noclientdb" in kwargs:
-            noclientdb = kwargs.get("noclientdb")
-            self._do_open_installed_repo = True
+        self._do_open_installed_repo = True
+        self._installed_repo_enable = True
+        if installed_repo in (True, None, 1):
             self._installed_repo_enable = True
-            if noclientdb in (True, 1):
-                self._installed_repo_enable = False
-            elif noclientdb in (False, 0):
-                self._installed_repo_enable = True
-            elif noclientdb == 2:
-                self._installed_repo_enable = False
-                self._do_open_installed_repo = False
-        else:
-            self._do_open_installed_repo = True
-            self._installed_repo_enable = True
-            if installed_repo in (True, None, 1):
-                self._installed_repo_enable = True
-            elif installed_repo in (False, 0):
-                self._installed_repo_enable = False
-            elif installed_repo == -1:
-                self._installed_repo_enable = False
-                self._do_open_installed_repo = False
+        elif installed_repo in (False, 0):
+            self._installed_repo_enable = False
+        elif installed_repo == -1:
+            self._installed_repo_enable = False
+            self._do_open_installed_repo = False
 
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")
@@ -814,9 +802,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
 
         if not self.xcache and (entropy.tools.is_user_in_entropy_group()):
             self.clear_cache()
-
-        if self._do_open_installed_repo:
-            self._open_installed_repository()
 
         # create our SystemSettings plugin
         self.sys_settings_client_plugin = ClientSystemSettingsPlugin(

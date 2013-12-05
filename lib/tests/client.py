@@ -28,7 +28,7 @@ class EntropyClientTest(unittest.TestCase):
         self.mem_repo_desc = "This is a testing repository"
         self.Client = Client(installed_repo = -1, indexing = False,
             xcache = False, repo_validation = False)
-        self.Client._installed_repository = self.Client.open_temp_repository(
+        self.Client._real_installed_repository = self.Client.open_temp_repository(
             name = InstalledPackagesRepository.NAME, temp_file = ":memory:")
         # as per GenericRepository specifications, enable generic handlePackage
         self.Client._installed_repository.override_handlePackage = True

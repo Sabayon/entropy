@@ -977,6 +977,18 @@ class RepositoryMixin:
         """
         return self._installed_repository
 
+    @property
+    def _installed_repository(self):
+        """
+        Return the Installed Packages Repository object instance.
+        """
+        with self._real_installed_repository_lock:
+            if self._real_installed_repository is None:
+                if self._do_open_installed_repo:
+                    self._open_installed_repository()
+
+        return self._real_installed_repository
+
     def installed_repository_path(self):
         """
         Return the Entropy Client installed packages repository
@@ -1042,7 +1054,7 @@ class RepositoryMixin:
                         entropy.tools.print_traceback(f = self.logger)
                         conn = load_db_from_ram()
 
-        self._installed_repository = conn
+        self._real_installed_repository = conn
         return conn
 
     def reopen_installed_repository(self):
