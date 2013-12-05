@@ -196,18 +196,20 @@ Search for packages.
             entropy_client, string)
 
         inst_repo = entropy_client.installed_repository()
-        with inst_repo.shared():
-            for pkg_id, pkg_repo in results:
+        for pkg_id, pkg_repo in results:
 
-                dbconn = entropy_client.open_repository(pkg_repo)
-                if not dbconn.isPackageIdAvailable(pkg_id):
-                    continue
+            repo = entropy_client.open_repository(pkg_repo)
+            if not repo.isPackageIdAvailable(pkg_id):
+                continue
 
-                print_package_info(
-                    pkg_id, entropy_client, dbconn,
-                    extended = self._verbose,
-                    installed_search = dbconn is inst_repo,
-                    quiet = self._quiet)
+            # this method is fault tolerant and we better not
+            # hold the installed repository lock during print
+            # because we can deadlock other processes/threads.
+            print_package_info(
+                pkg_id, entropy_client, repo,
+                extended = self._verbose,
+                installed_search = repo is inst_repo,
+                quiet = self._quiet)
 
         return results
 
