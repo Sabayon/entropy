@@ -352,7 +352,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         files = self._nsargs.files
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -366,10 +366,10 @@ Repository query tools.
 
         for xfile in files:
             results[xfile] = set()
-            pkg_ids = entropy_repository.searchBelongs(xfile)
+            pkg_ids = inst_repo.searchBelongs(xfile)
             if not pkg_ids:
                 # try real path if possible
-                pkg_ids = entropy_repository.searchBelongs(
+                pkg_ids = inst_repo.searchBelongs(
                     os.path.realpath(xfile))
 
             if not pkg_ids:
@@ -378,7 +378,7 @@ Repository query tools.
                     if xfile.startswith(sym_dir):
                         for sym_child in reverse_symlink_map[sym_dir]:
                             my_file = sym_child+xfile[len(sym_dir):]
-                            pkg_ids = entropy_repository.searchBelongs(
+                            pkg_ids = inst_repo.searchBelongs(
                                 my_file)
                             if pkg_ids:
                                 break
@@ -389,7 +389,7 @@ Repository query tools.
                     flatresults[pkg_id] = True
 
         if results:
-            key_sorter = lambda x: entropy_repository.retrieveAtom(x)
+            key_sorter = lambda x: inst_repo.retrieveAtom(x)
             for result in results:
 
                 # print info
@@ -399,11 +399,11 @@ Repository query tools.
                 for pkg_id in sorted(result, key = key_sorter):
                     if quiet:
                         entropy_client.output(
-                            entropy_repository.retrieveAtom(pkg_id),
+                            inst_repo.retrieveAtom(pkg_id),
                             level="generic")
                     else:
                         print_package_info(pkg_id, entropy_client,
-                            entropy_repository, installed_search = True,
+                            inst_repo, installed_search = True,
                             extended = verbose, quiet = quiet)
                 if not quiet:
                     toc = []
@@ -426,7 +426,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -434,9 +434,9 @@ Repository query tools.
                 header=darkred(" @@ "))
 
         for package in packages:
-            repo = entropy_repository
-            if entropy_repository is not None:
-                pkg_id, rc = entropy_repository.atomMatch(package)
+            repo = inst_repo
+            if inst_repo is not None:
+                pkg_id, rc = inst_repo.atomMatch(package)
                 if rc != 0:
                     entropy_client.output(
                         "%s: %s" % (
@@ -502,7 +502,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
         settings = entropy_client.Settings()
 
         if not quiet:
@@ -518,7 +518,7 @@ Repository query tools.
 
         for package in packages:
 
-            result = entropy_repository.atomMatch(package)
+            result = inst_repo.atomMatch(package)
             match_in_repo = False
             repo_masked = False
 
@@ -534,7 +534,7 @@ Repository query tools.
 
             if result[0] != -1:
 
-                repo = entropy_repository
+                repo = inst_repo
                 if match_in_repo:
                     repo = entropy_client.open_repository(result[1])
                 key_sorter = lambda x: repo.retrieveAtom(x)
@@ -597,7 +597,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         descriptions = self._nsargs.descriptions
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
         settings = entropy_client.Settings()
 
         found = False
@@ -674,7 +674,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -683,12 +683,12 @@ Repository query tools.
 
         for package in packages:
 
-            pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+            pkg_id, pkg_rc = inst_repo.atomMatch(package)
             if pkg_id == -1:
                 continue
 
-            atom = entropy_repository.retrieveAtom(pkg_id)
-            files = entropy_repository.retrieveContentIter(
+            atom = inst_repo.retrieveAtom(pkg_id)
+            files = inst_repo.retrieveContentIter(
                 pkg_id, order_by="file")
             files_len = 0
             if quiet:
@@ -1002,7 +1002,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1010,12 +1010,12 @@ Repository query tools.
                 header=darkred(" @@ "))
 
         for package in packages:
-            pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+            pkg_id, pkg_rc = inst_repo.atomMatch(package)
             if pkg_id == -1:
                 continue
 
-            atom = entropy_repository.retrieveAtom(pkg_id)
-            neededs = entropy_repository.retrieveNeeded(
+            atom = inst_repo.retrieveAtom(pkg_id)
+            neededs = inst_repo.retrieveNeeded(
                 pkg_id, extended=True)
             for needed, elfclass in neededs:
                 if verbose:
@@ -1043,7 +1043,7 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         settings = entropy_client.Settings()
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1149,12 +1149,12 @@ Repository query tools.
                 header=darkred(" @@ "))
 
 
-        pkg_ids = entropy_repository.listAllPackageIds()
+        pkg_ids = inst_repo.listAllPackageIds()
         length = str(len(pkg_ids))
         count = 0
 
         def gen_cont(pkg_id):
-            for path, ftype in entropy_repository.retrieveContentIter(
+            for path, ftype in inst_repo.retrieveContentIter(
                 pkg_id):
                 # reverse sym
                 for sym_dir in reverse_symlink_map:
@@ -1170,7 +1170,7 @@ Repository query tools.
 
             if not quiet:
                 count += 1
-                atom = entropy_repository.retrieveAtom(pkg_id)
+                atom = inst_repo.retrieveAtom(pkg_id)
                 if atom is None:
                     continue
                 entropy_client.output(
@@ -1253,21 +1253,21 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         libraries = self._nsargs.libraries
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
                 darkgreen(_("Required Packages Search")),
                 header=darkred(" @@ "))
 
-        key_sorter = lambda x: entropy_repository.retrieveAtom(x)
+        key_sorter = lambda x: inst_repo.retrieveAtom(x)
         for library in libraries:
-            results = entropy_repository.searchNeeded(
+            results = inst_repo.searchNeeded(
                 library, like = True)
 
             for pkg_id in sorted(results, key = key_sorter):
                 print_package_info(
-                    pkg_id, entropy_client, entropy_repository,
+                    pkg_id, entropy_client, inst_repo,
                     installed_search=True, strict_output=True,
                     extended=verbose, quiet=quiet)
 
@@ -1477,7 +1477,7 @@ Repository query tools.
         verbose = self._nsargs.verbose
         revisions = self._nsargs.revisions
         settings = entropy_client.Settings()
-        entropy_repository = entropy_client.installed_repository()
+        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1485,16 +1485,16 @@ Repository query tools.
                 header=darkred(" @@ "))
 
         found = False
-        key_sorter = lambda x: entropy_repository.retrieveAtom(x)
+        key_sorter = lambda x: inst_repo.retrieveAtom(x)
 
         for revision in revisions:
-            results = entropy_repository.searchRevisionedPackages(
+            results = inst_repo.searchRevisionedPackages(
                 revision)
 
             found = True
             for pkg_id in sorted(results, key = key_sorter):
                 print_package_info(
-                    pkg_id, entropy_client, entropy_repository,
+                    pkg_id, entropy_client, inst_repo,
                     extended=verbose, strict_output=quiet,
                     installed_search=True, quiet=quiet)
 
