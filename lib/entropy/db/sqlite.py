@@ -722,6 +722,32 @@ class EntropySQLiteRepository(EntropySQLRepository):
             super(EntropySQLiteRepository, self)._insertExtraDownload(
                 package_id, package_downloads_data)
 
+    def listAllPreservedLibraries(self):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        try:
+            return super(EntropySQLiteRepository,
+                         self).listAllPreservedLibraries()
+        except OperationalError:
+            # TODO: backward compatibility, remove after 2014
+            if self._doesTableExist("preserved_libs"):
+                raise
+            return tuple()
+
+    def retrievePreservedLibraries(self, library, elfclass):
+        """
+        Reimplemented from EntropySQLRepository.
+        """
+        try:
+            return super(EntropySQLiteRepository,
+                         self).retrievePreservedLibraries(library, elfclass)
+        except OperationalError:
+            # TODO: backward compatibility, remove after 2014
+            if self._doesTableExist("preserved_libs"):
+                raise
+            return tuple()
+
     def _bindSpmPackageUid(self, package_id, spm_package_uid, branch):
         """
         Reimplemented from EntropySQLRepository.
