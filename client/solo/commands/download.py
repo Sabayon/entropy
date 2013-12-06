@@ -153,18 +153,22 @@ Download packages, essentially.
         bdeps = self._nsargs.bdeps
         multifetch = self._nsargs.multifetch
 
-        packages = self._scan_packages(
-            entropy_client, self._nsargs.packages)
-        if not packages:
-            entropy_client.output(
-                "%s." % (
-                    darkred(_("No packages found")),),
-                level="error", importance=1)
-            return 1
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
 
-        run_queue, removal_queue = self._generate_install_queue(
-            entropy_client, packages, deps, False, deep, relaxed,
-            onlydeps, bdeps, recursive)
+            packages = self._scan_packages(
+                entropy_client, self._nsargs.packages)
+            if not packages:
+                entropy_client.output(
+                    "%s." % (
+                        darkred(_("No packages found")),),
+                    level="error", importance=1)
+                return 1
+
+            run_queue, removal_queue = self._generate_install_queue(
+                entropy_client, packages, deps, False, deep, relaxed,
+                onlydeps, bdeps, recursive)
+
         if (run_queue is None) or (removal_queue is None):
             return 1
         elif not (run_queue or removal_queue):
