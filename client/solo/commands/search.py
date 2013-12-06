@@ -16,7 +16,7 @@ from entropy.i18n import _, ngettext
 from entropy.output import darkred, blue, brown, darkgreen, purple
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 from solo.utils import print_table, print_package_info
 
 import entropy.dep
@@ -114,13 +114,12 @@ Search for packages.
         args.sort()
         return self._bashcomp(sys.stdout, last_arg, args)
 
-    def _search_string(self, entropy_client, string):
+    def _search_string(self, entropy_client, inst_repo, string):
         """
         Search method, returns search results.
         """
         search_data = set()
         found = False
-        inst_repo = entropy_client.installed_repository()
 
         def _adv_search(dbconn, package):
             slot = entropy.dep.dep_getslot(package)
@@ -131,7 +130,7 @@ Search for packages.
                     package, slot = slot,
                     tag = tag, just_id = True, order_by = "atom"))
             if not pkg_ids: # look for something else?
-                pkg_id, rc = dbconn.atomMatch(
+                pkg_id, _rc = dbconn.atomMatch(
                     package, matchSlot = slot)
                 if pkg_id != -1:
                     pkg_ids.add(pkg_id)
@@ -160,7 +159,8 @@ Search for packages.
                 entropy_client.open_repository(x[1]).retrieveAtom(x[0])
             return sorted(search_data, key=key_sorter)
 
-    def search(self, entropy_client):
+    @sharedlock
+    def search(self, entropy_client, inst_repo):
         """
         Solo Search command.
         """
@@ -172,7 +172,7 @@ Search for packages.
         matches_found = 0
         for string in self._packages:
             results = self._search(
-                entropy_client, string)
+                entropy_client, inst_repo, string)
             matches_found += len(results)
 
         if not self._quiet:
@@ -188,23 +188,15 @@ Search for packages.
             return 1
         return 0
 
-    def _search(self, entropy_client, string):
+    def _search(self, entropy_client, inst_repo, string):
         """
         Solo Search string command.
         """
         results = self._search_string(
-            entropy_client, string)
+            entropy_client, inst_repo, string)
 
-        inst_repo = entropy_client.installed_repository()
         for pkg_id, pkg_repo in results:
-
             repo = entropy_client.open_repository(pkg_repo)
-            if not repo.isPackageIdAvailable(pkg_id):
-                continue
-
-            # this method is fault tolerant and we better not
-            # hold the installed repository lock during print
-            # because we can deadlock other processes/threads.
             print_package_info(
                 pkg_id, entropy_client, repo,
                 extended = self._verbose,
