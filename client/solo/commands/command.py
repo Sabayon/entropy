@@ -51,6 +51,36 @@ def _fix_argparse_print_help():
 _fix_argparse_print_help()
 
 
+def sharedlock(func):
+    """
+    Solo command methods decorator that acquires the Installed
+    Packages Repository lock in shared mode and calls the wrapped
+    function with an extra argument (the Installed Packages
+    Repository object instance).
+    """
+    def wrapped(zelf, entropy_client, *args, **kwargs):
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.shared():
+            return func(zelf, entropy_client, inst_repo, *args, **kwargs)
+
+    return wrapped
+
+
+def exclusivelock(func):
+    """
+    Solo command methods decorator that acquires the Installed
+    Packages Repository lock in exclusive mode and calls the wrapped
+    function with an extra argument (the Installed Packages
+    Repository object instance).
+    """
+    def wrapped(zelf, entropy_client, *args, **kwargs):
+        inst_repo = entropy_client.installed_repository()
+        with inst_repo.exclusive():
+            return func(zelf, entropy_client, inst_repo, *args, **kwargs)
+
+    return wrapped
+
+
 class SoloCommand(object):
     """
     Base class for Solo commands
