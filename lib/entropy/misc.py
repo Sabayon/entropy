@@ -567,6 +567,28 @@ class ReadersWritersSemaphore(object):
         self.__no_writers.release()
         self.__write_switch.release(self.__no_readers)
 
+    @contextlib.contextmanager
+    def reader(self):
+        """
+        Acquire the Reader end.
+        """
+        self.reader_acquire()
+        try:
+            yield
+        finally:
+            self.reader_release()
+
+    @contextlib.contextmanager
+    def writer(self):
+        """
+        Acquire the Writer end.
+        """
+        self.writer_acquire()
+        try:
+            yield
+        finally:
+            self.writer_release()
+
 
 class FlockFile(object):
 
