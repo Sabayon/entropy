@@ -139,8 +139,7 @@ class UpperNotificationViewController(NotificationViewController):
         Execute connectivity check basing on Entropy
         Web Services availability.
         """
-        self._entropy.rwsem().reader_acquire()
-        try:
+        with self._entropy.rwsem().reader():
             repositories = self._entropy.repositories()
             available = False
             for repository_id in repositories:
@@ -153,8 +152,6 @@ class UpperNotificationViewController(NotificationViewController):
 
             if not available:
                 GLib.idle_add(self._notify_connectivity_issues)
-        finally:
-            self._entropy.rwsem().reader_release()
 
     def _notify_connectivity_issues(self):
         """
