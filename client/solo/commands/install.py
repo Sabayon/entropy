@@ -195,8 +195,8 @@ Install or update packages or package files.
 
         return exit_st
 
-    @staticmethod
-    def _show_install_queue(entropy_client, inst_repo,
+    @classmethod
+    def _show_install_queue(cls, entropy_client, inst_repo,
                             run_queue, removal_queue, ask, pretend,
                             quiet, verbose):
         """
@@ -515,36 +515,38 @@ Install or update packages or package files.
         inst_repo = entropy_client.installed_repository()
         action_factory = entropy_client.PackageActionFactory()
 
-        self._advise_repository_update(entropy_client)
-        if self._check_critical_updates:
-            self._advise_packages_update(entropy_client)
+        with inst_repo.shared():
 
-        if package_matches is None:
-            packages = self._scan_packages(
-                entropy_client, packages)
-            if not packages:
-                entropy_client.output(
-                    "%s." % (
-                        darkred(_("No packages found")),),
-                    level="error", importance=1)
+            self._advise_repository_update(entropy_client)
+            if self._check_critical_updates:
+                self._advise_packages_update(entropy_client)
+
+            if package_matches is None:
+                packages = self._scan_packages(
+                    entropy_client, packages)
+                if not packages:
+                    entropy_client.output(
+                        "%s." % (
+                            darkred(_("No packages found")),),
+                        level="error", importance=1)
+                    return 1, False
+            else:
+                packages = package_matches
+
+            run_queue, removal_queue = self._generate_install_queue(
+                entropy_client, packages, deps, empty, deep, relaxed,
+                onlydeps, bdeps, recursive)
+            if (run_queue is None) or (removal_queue is None):
                 return 1, False
-        else:
-            packages = package_matches
+            elif not (run_queue or removal_queue):
+                entropy_client.output(
+                    "%s." % (blue(_("Nothing to do")),),
+                    level="warning", header=darkgreen(" @@ "))
+                return 0, True
 
-        run_queue, removal_queue = self._generate_install_queue(
-            entropy_client, packages, deps, empty, deep, relaxed,
-            onlydeps, bdeps, recursive)
-        if (run_queue is None) or (removal_queue is None):
-            return 1, False
-        elif not (run_queue or removal_queue):
-            entropy_client.output(
-                "%s." % (blue(_("Nothing to do")),),
-                level="warning", header=darkgreen(" @@ "))
-            return 0, True
-
-        self._show_install_queue(
-            entropy_client, inst_repo,
-            run_queue, removal_queue, ask, pretend, quiet, verbose)
+            self._show_install_queue(
+                entropy_client, inst_repo,
+                run_queue, removal_queue, ask, pretend, quiet, verbose)
 
         if ask:
             rc = entropy_client.ask_question(
