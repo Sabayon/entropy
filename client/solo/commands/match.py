@@ -16,7 +16,7 @@ from entropy.i18n import _, ngettext
 from entropy.output import darkred, blue, brown, darkgreen, purple
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 from solo.utils import print_table, print_package_info
 
 import entropy.dep
@@ -157,11 +157,10 @@ Match package names.
 
         return self._call_unlocked, [self.match]
 
-    def _match_string(self, entropy_client, string):
+    def _match_string(self, entropy_client, inst_repo, string):
         """
         Match method, returns search results.
         """
-        inst_repo = entropy_client.installed_repository()
         inst_repo_id = inst_repo.repository_id()
 
         def iterify(match):
@@ -216,7 +215,8 @@ Match package names.
                 filter_injected(iterify(match)),
                 key=key_sorter)
 
-    def match(self, entropy_client):
+    @sharedlock
+    def match(self, entropy_client, inst_repo):
         """
         Solo Match command.
         """
@@ -228,7 +228,7 @@ Match package names.
         matches_found = 0
         for string in self._packages:
             results = self._match(
-                entropy_client, string)
+                entropy_client, inst_repo, string)
             matches_found += len(results)
 
         if not self._quiet:
@@ -244,23 +244,15 @@ Match package names.
             return 1
         return 0
 
-    def _match(self, entropy_client, string):
+    def _match(self, entropy_client, inst_repo, string):
         """
         Solo Search string command.
         """
-        results = self._match_string(
-            entropy_client, string)
+        results = self._match_string(entropy_client, inst_repo, string)
 
-        inst_repo = entropy_client.installed_repository()
         for pkg_id, pkg_repo in results:
-
             repo = entropy_client.open_repository(pkg_repo)
-            if not repo.isPackageIdAvailable(pkg_id):
-                continue
 
-            # this method is fault tolerant and we better not
-            # hold the installed repository lock during print
-            # because we can deadlock other processes/threads.
             print_package_info(
                 pkg_id, entropy_client, repo,
                 show_download_if_quiet = self._showdownload,
