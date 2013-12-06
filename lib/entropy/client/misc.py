@@ -34,8 +34,8 @@ class ConfigurationFiles(dict):
         "destination": path to destination file (string)
         "automerge": if source can be automerged to destination (bool)
 
-    This class delegates the Installed Packages Repository locking
-    to the API user.
+    This API is process and thread safe with regards to the Installed
+    Packages Repository. There is no need to do external locking on it.
     """
 
     def __init__(self, entropy_client, quiet=False):
@@ -83,11 +83,15 @@ class ConfigurationFiles(dict):
 
         # get from our repositories
         for repository_id in self._repository_ids:
+            # assume that all the repositories need separate locking.
+            # this might be true in future.
             repo = self._entropy.open_repository(repository_id)
-            if mask:
-                _mask = repo.listConfigProtectEntries(mask = True)
-            else:
-                _mask = repo.listConfigProtectEntries()
+            with repo.shared():
+                if mask:
+                    _mask = repo.listConfigProtectEntries(mask = True)
+                else:
+                    _mask = repo.listConfigProtectEntries()
+
             config_protect |= set(_mask)
 
         root = ConfigurationFiles.root()
