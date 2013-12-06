@@ -178,7 +178,7 @@ Manage User Generate Content (votes, comments, files).
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """
