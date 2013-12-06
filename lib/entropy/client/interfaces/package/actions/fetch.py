@@ -141,13 +141,13 @@ class _PackageFetchAction(PackageAction):
         if not self._repository_id.endswith(etpConst['packagesext']):
 
             dl_check = self._check_package_path_download(
-                metadata['download'], None)
+                metadata['download'], None, _metadata = metadata)
             dl_fetch = dl_check < 0
 
             if not dl_fetch:
                 for extra_download in metadata['extra_download']:
                     dl_check = self._check_package_path_download(
-                        extra_download['download'], None)
+                        extra_download['download'], None, _metadata = metadata)
                     if dl_check < 0:
                         # dl_check checked again right below
                         break
@@ -209,14 +209,18 @@ class _PackageFetchAction(PackageAction):
             pkg_disk_path = self.get_standard_fetch_disk_path(download)
         return pkg_disk_path
 
-    def _check_package_path_download(self, download, checksum):
+    def _check_package_path_download(self, download, checksum,
+                                     _metadata = None):
         """
         Internal function that verifies if a package tarball is already
         available locally and quickly computes its md5. Please note that
         stronger crypto hash functions are used during the real package
         validation phase.
         """
-        pkg_path = self._get_fetch_disk_path(download, self._meta)
+        if _metadata is None:
+            _metadata = self._meta
+
+        pkg_path = self._get_fetch_disk_path(download, _metadata)
 
         if not os.path.isfile(pkg_path):
             return -1
