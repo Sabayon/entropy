@@ -888,13 +888,11 @@ class RigoDaemonService(dbus.service.Object):
             self._acquire_shared()
             try:
 
-                self._rwsem.reader_acquire()
-                try:
-                    self._entropy.clean_downloaded_packages()
-                except AttributeError:
-                    pass
-                finally:
-                    self._rwsem.reader_release()
+                with self._rwsem.reader():
+                    try:
+                        self._entropy.clean_downloaded_packages()
+                    except AttributeError:
+                        pass
 
             finally:
                 self._release_shared()
@@ -1150,11 +1148,8 @@ class RigoDaemonService(dbus.service.Object):
                     self._close_local_resources()
                     self._entropy_setup()
 
-                    self._rwsem.reader_acquire()
-                    try:
+                    with self._rwsem.reader():
                         self._installed_repository_updated_unlocked()
-                    finally:
-                        self._rwsem.reader_release()
                 finally:
                     self._release_shared()
         finally:
@@ -1299,8 +1294,7 @@ class RigoDaemonService(dbus.service.Object):
                 GLib.idle_add(
                     self.activity_progress, activity, 0)
 
-                self._rwsem.reader_acquire()
-                try:
+                with self._rwsem.reader():
                     if not repositories:
                         repositories = list(
                             SystemSettings()['repositories']['available'])
@@ -1311,8 +1305,6 @@ class RigoDaemonService(dbus.service.Object):
                     updater = self._entropy.Repositories(
                         repositories, force = force)
                     result = updater.unlocked_sync()
-                finally:
-                    self._rwsem.reader_release()
 
             except AttributeError as err:
                 write_output("_update_repositories error: %s" % (err,))
@@ -1353,23 +1345,21 @@ class RigoDaemonService(dbus.service.Object):
                          "this is a package file, generating "
                          "repo", debug=True)
 
-            self._rwsem.writer_acquire()
-            try:
-                pkg_matches = self._entropy.add_package_repository(
-                    path)
-                return pkg_matches, True
-            except EntropyPackageException as err:
-                write_output("_maybe_setup_package_repository: "
-                             "invalid package file, "
-                             "%s" % (err,), debug=True)
-                return None, False
-            except Exception as err:
-                write_output("_maybe_setup_package_repository: "
-                             "error during repository setup (err), "
-                             "%s" % (repr(err),), debug=True)
-                return None, False
-            finally:
-                self._rwsem.writer_release()
+            with self._rwsem.writer():
+                try:
+                    pkg_matches = self._entropy.add_package_repository(
+                        path)
+                    return pkg_matches, True
+                except EntropyPackageException as err:
+                    write_output("_maybe_setup_package_repository: "
+                                 "invalid package file, "
+                                 "%s" % (err,), debug=True)
+                    return None, False
+                except Exception as err:
+                    write_output("_maybe_setup_package_repository: "
+                                 "error during repository setup (err), "
+                                 "%s" % (repr(err),), debug=True)
+                    return None, False
 
         return None, True
 
@@ -1383,8 +1373,8 @@ class RigoDaemonService(dbus.service.Object):
             "_maybe_dismantle_package_repository: "
             "about to acquire rwsem for %s" % (pkg_matches,),
             debug=True)
-        self._rwsem.writer_acquire()
-        try:
+
+        with self._rwsem.writer():
             write_output(
                 "_maybe_dismantle_package_repository: "
                 "acquired rwsem for %s" % (pkg_matches,),
@@ -1397,8 +1387,6 @@ class RigoDaemonService(dbus.service.Object):
                         "_maybe_dismantle_package_repository: "
                         "error during repository removal (err), "
                         "%s" % (repr(err),), debug=True)
-        finally:
-            self._rwsem.writer_release()
 
 
     def _action_queue_worker_thread(self):
@@ -1585,14 +1573,13 @@ class RigoDaemonService(dbus.service.Object):
                 outcome = AppTransactionOutcome.INSTALL_ERROR
                 return
 
-            self._rwsem.reader_acquire()
             try:
-                outcome = self._process_action(item, activity, is_app)
-                write_output("_action_queue_worker_thread, "
-                             "returned outcome: %s" % (
-                        outcome,), debug=True)
+                with self._rwsem.reader():
+                    outcome = self._process_action(item, activity, is_app)
+                    write_output("_action_queue_worker_thread, "
+                                 "returned outcome: %s" % (
+                            outcome,), debug=True)
             finally:
-                self._rwsem.reader_release()
                 if is_app and pkg_matches:
                     self._maybe_dismantle_package_repository(pkg_matches)
 
@@ -1838,6 +1825,7 @@ class RigoDaemonService(dbus.service.Object):
         count = 0
         total = len(removal_queue)
         action_factory = self._entropy.PackageActionFactory()
+        inst_repo = self._entropy.installed_repository()
 
         try:
             for pkg_match in removal_queue:
@@ -1904,7 +1892,7 @@ class RigoDaemonService(dbus.service.Object):
                     "_process_remove_merge_action: "
                     "%s, count: %s, total: %s, done, committing." % (
                         pkg_match, count, total), debug=True)
-                self._entropy.installed_repository().commit()
+                inst_repo.commit()
 
                 # Remove us from the ongoing transactions
                 self._txs.unset(package_id, repository_id)
@@ -1924,7 +1912,7 @@ class RigoDaemonService(dbus.service.Object):
                 "_process_remove_merge_action: "
                 "count: %s, total: %s, finally stmt, committing." % (
                     count, total), debug=True)
-            self._entropy.installed_repository().commit()
+            inst_repo.commit()
 
     def _maybe_enqueue_kernel_switcher_actions(self, simulate, package_id,
                                                repository_id, path):
@@ -2367,6 +2355,7 @@ class RigoDaemonService(dbus.service.Object):
                 AppTransactionStates.MANAGE, amount)
 
         action_factory = self._entropy.PackageActionFactory()
+        inst_repo = self._entropy.installed_repository()
 
         try:
             for pkg_match in install_queue:
@@ -2434,7 +2423,7 @@ class RigoDaemonService(dbus.service.Object):
                     "%s, count: %s, total: %s, done, committing." % (
                         pkg_match, count, total), debug=True)
 
-                self._entropy.installed_repository().commit()
+                inst_repo.commit()
 
                 # Remove us from the ongoing transactions
                 self._txs.unset(package_id, repository_id)
@@ -2458,20 +2447,17 @@ class RigoDaemonService(dbus.service.Object):
                 "_process_install_merge_action: "
                 "count: %s, total: %s, finally stmt, committing." % (
                     count, total), debug=True)
-            self._entropy.installed_repository().commit()
+            inst_repo.commit()
 
     def _maybe_signal_preserved_libraries(self):
         """
         Signal preserved libraries if needed.
         """
-        self._rwsem.reader_acquire()
-        try:
+        with self._rwsem.reader():
             inst_repo = self._entropy.installed_repository()
             preserved_mgr = PreservedLibraries(
                 inst_repo, None, frozenset(), root=etpConst['systemroot'])
             preserved = preserved_mgr.list()
-        finally:
-            self._rwsem.reader_release()
 
         if preserved:
             GLib.idle_add(
@@ -2504,8 +2490,7 @@ class RigoDaemonService(dbus.service.Object):
         Return the latest (or a new one if not initialized yet)
         ConfigurationFiles object.
         """
-        self._rwsem.reader_acquire()
-        try:
+        with self._rwsem.reader():
             with self._config_updates_mutex:
                 if self._config_updates is None or _force:
                     updates = self._entropy.ConfigurationUpdates()
@@ -2514,8 +2499,6 @@ class RigoDaemonService(dbus.service.Object):
                     self._config_updates = scandata
                 else:
                     scandata = self._config_updates
-        finally:
-            self._rwsem.reader_release()
         return scandata
 
     def _enrich_configuration_updates(self, scandata):
@@ -2540,11 +2523,8 @@ class RigoDaemonService(dbus.service.Object):
         Close any Entropy resource that might have been changed
         or replaced.
         """
-        self._rwsem.writer_acquire()
-        try:
+        with self._rwsem.writer():
             self._close_local_resources_unlocked()
-        finally:
-            self._rwsem.writer_release()
 
     def _close_local_resources_unlocked(self):
         """
@@ -2718,15 +2698,12 @@ class RigoDaemonService(dbus.service.Object):
         Here we reload Entropy configuration and other resources.
         """
         write_output("_entropy_setup(): called", debug=True)
-        self._rwsem.writer_acquire()
-        try:
+        with self._rwsem.writer():
             initconfig_entropy_constants(etpConst['systemroot'])
             self._entropy.Settings().clear()
             self._entropy._validate_repositories()
             self._close_local_resources_unlocked()
-        finally:
-            self._rwsem.writer_release()
-            write_output("_entropy_setup(): complete", debug=True)
+        write_output("_entropy_setup(): complete", debug=True)
 
     def _send_greetings(self):
         """
@@ -2744,12 +2721,10 @@ class RigoDaemonService(dbus.service.Object):
                     self._close_local_resources()
                     self._entropy_setup()
 
-                    self._rwsem.reader_acquire()
-                    try:
+                    with self._rwsem.reader():
                         unavailable_repositories = \
                             self._entropy.unavailable_repositories()
-                    finally:
-                        self._rwsem.reader_release()
+
                     if unavailable_repositories:
                         GLib.idle_add(
                             self.unavailable_repositories,
@@ -2758,12 +2733,8 @@ class RigoDaemonService(dbus.service.Object):
                     if Repository.are_repositories_old():
                         GLib.idle_add(self.old_repositories)
 
-                    self._rwsem.reader_acquire()
-                    try:
-                        # signal updates available
+                    with self._rwsem.reader():
                         self._installed_repository_updated_unlocked()
-                    finally:
-                        self._rwsem.reader_release()
 
                     self._maybe_signal_noticeboards_available_unlocked()
 
@@ -2779,8 +2750,7 @@ class RigoDaemonService(dbus.service.Object):
         Resources Lock acquired, no activity mutex acquired)
         of _maybe_signal_noticeboards_available()
         """
-        self._rwsem.reader_acquire()
-        try:
+        with self._rwsem.reader():
             notices = []
             for repository in self._entropy.repositories():
                 notice = self._entropy.get_noticeboard(
@@ -2788,8 +2758,6 @@ class RigoDaemonService(dbus.service.Object):
                 if not notice:
                     continue
                 notices.append((repository, notice))
-        finally:
-            self._rwsem.reader_release()
 
         if notices:
             GLib.idle_add(
@@ -3162,13 +3130,10 @@ class RigoDaemonService(dbus.service.Object):
         write_output("accept_licenses called: %s" % (names,),
                      debug=True)
         def _accept():
-            self._rwsem.reader_acquire()
-            try:
+            with self._rwsem.reader():
                 inst_repo = self._entropy.installed_repository()
                 for name in names:
                     inst_repo.acceptLicense(name)
-            finally:
-                self._rwsem.reader_release()
 
         task = ParallelTask(_accept)
         task.daemon = True
@@ -3323,11 +3288,8 @@ class RigoDaemonService(dbus.service.Object):
             try:
 
                 done = False
-                self._rwsem.writer_acquire()
-                try:
+                with self._rwsem.writer():
                     done = method(*args, **kwargs)
-                finally:
-                    self._rwsem.writer_release()
                 return done
 
             finally:
@@ -3450,14 +3412,11 @@ class RigoDaemonService(dbus.service.Object):
             if not authorized:
                 return
 
-            self._rwsem.reader_acquire()
-            try:
+            with self._rwsem.reader():
                 updates = self._entropy.ConfigurationUpdates()
                 with self._config_updates_mutex:
                     scandata = updates.get()
                     self._config_updates = scandata
-            finally:
-                self._rwsem.reader_release()
 
         task = ParallelTask(
             _reload,
