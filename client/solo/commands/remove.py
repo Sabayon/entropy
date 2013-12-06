@@ -151,8 +151,8 @@ Remove previously installed packages from system.
             self._show_preserved_libraries(entropy_client)
         return exit_st
 
-    @staticmethod
-    def _execute_action(entropy_client, inst_repo, removal_queue,
+    @classmethod
+    def _execute_action(cls, entropy_client, inst_repo, removal_queue,
                         remove_config_files):
         """
         Execute the actual packages removal activity.
@@ -217,10 +217,9 @@ Remove previously installed packages from system.
                       "would be removed")),),
                 header=darkred(" @@ "))
 
-        total = len(package_ids)
         inst_repo = entropy_client.installed_repository()
 
-        for count, package_id in enumerate(package_ids, 1):
+        for package_id in package_ids:
 
             atom = inst_repo.retrieveAtom(package_id)
             installedfrom = inst_repo.getInstalledPackageRepository(
@@ -229,10 +228,8 @@ Remove previously installed packages from system.
                 installedfrom = _("Not available")
 
             on_disk_size = inst_repo.retrieveOnDiskSize(package_id)
-            pkg_size = inst_repo.retrieveSize(package_id)
             extra_downloads = inst_repo.retrieveExtraDownload(package_id)
             for extra_download in extra_downloads:
-                pkg_size += extra_download['size']
                 on_disk_size += extra_download['disksize']
 
             disksize = entropy.tools.bytes_into_human(on_disk_size)
@@ -248,76 +245,6 @@ Remove previously installed packages from system.
                 disksize_info)
 
             entropy_client.output(mytxt, header=darkred(" ## "))
-
-    def _prompt_removal(self, entropy_client, inst_repo, package_ids,
-                        system_packages_check):
-        """
-        Show list of packages that would be removed and ask User
-        about dependencies calculation, if --ask has been provided.
-        """
-        ask = self._nsargs.ask
-        verbose = self._nsargs.verbose
-        pretend = self._nsargs.pretend
-        plain_removal_queue = []
-        deep_removal = True
-
-        entropy_client.output(
-            "%s:" % (
-                teal(_("These are the chosen packages")),),
-            header=darkgreen(" @@ "))
-
-        total = len(package_ids)
-        for count, package_id in enumerate(package_ids, 1):
-
-            atom = inst_repo.retrieveAtom(package_id)
-            if system_packages_check:
-                valid = entropy_client.validate_package_removal(
-                    package_id)
-                if not valid:
-                    mytxt = "%s: %s. %s." % (
-                        enlightenatom(atom),
-                        darkred(_("vital package")),
-                        darkred(_("Removal forbidden")),
-                    )
-                    entropy_client.output(
-                        mytxt,
-                        level="warning",
-                        count=(count, total),
-                        header=bold("   !!! "))
-                    continue
-
-            plain_removal_queue.append(package_id)
-            installedfrom = inst_repo.getInstalledPackageRepository(
-                package_id)
-            if installedfrom is None:
-                installedfrom = _("Not available")
-
-            on_disk_size = inst_repo.retrieveOnDiskSize(package_id)
-            extra_downloads = inst_repo.retrieveExtraDownload(package_id)
-
-            for extra_download in extra_downloads:
-                on_disk_size += extra_download['disksize']
-
-            disksize = entropy.tools.bytes_into_human(on_disk_size)
-            disksizeinfo = " [%s]" % (
-                bold(const_convert_to_unicode(disksize)),)
-
-            entropy_client.output(
-                "[%s] %s %s" % (
-                    brown(installedfrom),
-                    enlightenatom(atom),
-                    disksizeinfo),
-                count=(count, total),
-                header=darkgreen("   # "))
-
-        if verbose or ask or pretend:
-            entropy_client.output(
-                "%s: %d" % (
-                    blue(_("Packages involved")),
-                    total,),
-                header=purple(" @@ "))
-
-        return plain_removal_queue, deep_removal
 
     def _prompt_final_removal(self, entropy_client,
                               inst_repo, removal_queue):
@@ -389,36 +316,11 @@ Remove previously installed packages from system.
                 level="error", importance=1)
             return 1, False
 
-        plain_removal_queue, deep_removal = self._prompt_removal(
-            entropy_client, inst_repo, package_ids, system_packages_check)
-
-        if not plain_removal_queue:
-            entropy_client.output(
-                darkred(_("Nothing to do")),
-                level="error", importance=1)
-            return 1, False
-
-        if ask and not pretend:
-            if deps:
-                question = "     %s" % (
-                    _("Would you like to calculate dependencies ?"),
-                )
-                rc = entropy_client.ask_question(question)
-                if rc == _("No"):
-                    return 1, False
-            else:
-                question = "     %s" % (
-                    _("Would you like to remove them now ?"),)
-                deep_removal = False
-                rc = entropy_client.ask_question(question)
-                if rc == _("No"):
-                    return 1, False
-
         removal_queue = []
-        if deep_removal and deps:
+        if deps:
             try:
                 removal_queue += entropy_client.get_removal_queue(
-                    plain_removal_queue,
+                    package_ids,
                     deep = deep, recursive = recursive,
                     empty = empty,
                     system_packages = system_packages_check)
@@ -442,8 +344,7 @@ Remove previously installed packages from system.
                 entropy_client.output("", level="error")
                 return 1, False
 
-        removal_queue += [x for x in plain_removal_queue if x \
-            not in removal_queue]
+        removal_queue += [x for x in package_ids if x not in removal_queue]
         self._show_removal_info(entropy_client, removal_queue)
         self._prompt_final_removal(
             entropy_client, inst_repo, removal_queue)
