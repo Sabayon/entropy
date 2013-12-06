@@ -33,6 +33,9 @@ class ConfigurationFiles(dict):
     a dictionary, containing the following items:
         "destination": path to destination file (string)
         "automerge": if source can be automerged to destination (bool)
+
+    This class delegates the Installed Packages Repository locking
+    to the API user.
     """
 
     def __init__(self, entropy_client, quiet=False):

@@ -64,6 +64,9 @@ class PackageActionFactory(object):
     You can reuse the factory as many times as you want.
     If you pass an invalid action string, InvalidAction() will be raised.
     The PackageAction objects (well, their methods) are not thread-safe.
+
+    This API is process and thread safe with regards to the Installed
+    Packages Repository. There is no need to do external locking on it.
     """
 
     class InvalidAction(EntropyException):
