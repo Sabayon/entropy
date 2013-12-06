@@ -1,3 +1,23 @@
+commit d029f5568c916840c869d2972717c15914dc970c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 09:20:51 2013 +0100
+
+    Release Entropy 246
+
+commit 5c717701f7af8e0730755b1ad04b2d7003183702
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 09:18:23 2013 +0100
+
+    [entropy.client.package.actions] fetch: pass metadata through _check_package_path_download
+    
+    This method is called in the setup phase, when self._meta is still None.
+
+commit 525bab67144934b0d0c96fda36818b1c5a24387b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 5 23:42:17 2013 +0100
+
+    Tagging Entropy version 245
+
 commit f85c890f9add76ba80550ffe99a00be69ca34c0c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Dec 5 23:42:17 2013 +0100
