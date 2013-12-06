@@ -73,6 +73,8 @@ class System(object):
         The former MUST be named signature.asc while the latter must match
         securityurl value plus ".asc"
 
+    This class uses the Installed Packages Repository but locking is delegated
+    to the API user.
     """
     _CACHE_ID = 'advisories_cache_'
     _CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "security_cache")
