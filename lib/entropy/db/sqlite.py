@@ -406,7 +406,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
                 conn = SQLiteConnectionWrapper.connect(
                     self.ModuleProxy, self._sqlite,
                     SQLiteConnectionWrapper,
-                    self._db, timeout=30.0,
+                    self._db, timeout=60.0,
                     check_same_thread=False)
                 connection_pool[c_key] = conn, threads
                 if not _from_cursor:
