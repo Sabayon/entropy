@@ -67,7 +67,7 @@ class SoloManage(SoloCommand):
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def _signal_ugc(self, entropy_client, package_keys):
         """
