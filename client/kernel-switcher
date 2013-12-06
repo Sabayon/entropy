@@ -51,18 +51,20 @@ if __name__ == "__main__":
         etp_client = None
         acquired = False
         try:
-            etp_client = Client()
             acquired = entropy.tools.acquire_entropy_locks(
-                etp_client, blocking=True, shared=True)
+                Client, blocking=True, shared=True)
             if not acquired:
                 print_error(brown(_("Another Entropy is currently running.")))
                 return 1
+
+            etp_client = Client()
+
             return method(etp_client, *args, **kwargs)
         finally:
-            if acquired and (etp_client is not None):
-                entropy.tools.release_entropy_locks(etp_client)
             if etp_client is not None:
                 etp_client.shutdown()
+            if acquired:
+                entropy.tools.release_entropy_locks(Client)
 
     def _switch_kernel(f_nsargs):
 
