@@ -11,6 +11,7 @@
 """
 import sys
 import argparse
+import collections
 
 from entropy.const import const_convert_to_unicode
 from entropy.i18n import _
@@ -157,16 +158,21 @@ Remove previously installed packages from system.
         """
         Execute the actual packages removal activity.
         """
+        final_queue = collections.deque()
+        with inst_repo.shared():
+            for package_id in removal_queue:
+                if not inst_repo.isPackageIdAvailable(package_id):
+                    continue
+
+                atom = inst_repo.retrieveAtom(package_id)
+                if atom is None:
+                    continue
+
+                final_queue.append((atom, package_id))
+
         action_factory = entropy_client.PackageActionFactory()
 
-        total = len(removal_queue)
-        for count, package_id in enumerate(removal_queue, 1):
-
-            avail = inst_repo.isPackageIdAvailable(package_id)
-            if not avail:
-                continue
-
-            atom = inst_repo.retrieveAtom(package_id)
+        for count, (atom, package_id) in enumerate(final_queue, 1):
 
             metaopts = {}
             metaopts['removeconfig'] = remove_config_files
@@ -174,16 +180,16 @@ Remove previously installed packages from system.
             try:
                 pkg = action_factory.get(
                     action_factory.REMOVE_ACTION,
-                    (package_id, inst_repo.name),
+                    (package_id, inst_repo.repository_id()),
                     opts=metaopts)
 
                 xterm_header = "equo (%s) :: %d of %d ::" % (
-                    _("removal"), count, total)
+                    _("removal"), count, len(final_queue))
                 pkg.set_xterm_header(xterm_header)
 
                 entropy_client.output(
                     darkgreen(atom),
-                    count=(count, total),
+                    count=(count, len(final_queue)),
                     header=darkred(" --- ") + ">>> ")
 
                 exit_st = pkg.start()
@@ -305,49 +311,52 @@ Remove previously installed packages from system.
         Solo Remove action implementation.
         """
         inst_repo = entropy_client.installed_repository()
-        if package_ids is None:
-            packages = entropy_client.packages_expand(packages)
-            package_ids = self._scan_installed_packages(
-                entropy_client, inst_repo, packages)
+        with inst_repo.shared():
 
-        if not package_ids:
-            entropy_client.output(
-                darkred(_("No packages found")),
-                level="error", importance=1)
-            return 1, False
+            if package_ids is None:
+                packages = entropy_client.packages_expand(packages)
+                package_ids = self._scan_installed_packages(
+                    entropy_client, inst_repo, packages)
 
-        removal_queue = []
-        if deps:
-            try:
-                removal_queue += entropy_client.get_removal_queue(
-                    package_ids,
-                    deep = deep, recursive = recursive,
-                    empty = empty,
-                    system_packages = system_packages_check)
-            except DependenciesNotRemovable as err:
-                non_rm_pkg_names = sorted(
-                    [inst_repo.retrieveAtom(x[0]) for x in err.value])
-                # otherwise we need to deny the request
-                entropy_client.output("", level="error")
+            if not package_ids:
                 entropy_client.output(
-                    "  %s, %s:" % (
-                        purple(_("Ouch!")),
-                        brown(_("the following system packages"
-                                " were pulled in")),
-                        ),
+                    darkred(_("No packages found")),
                     level="error", importance=1)
-                for pkg_name in non_rm_pkg_names:
-                    entropy_client.output(
-                        teal(pkg_name),
-                        header=purple("    # "),
-                        level="error")
-                entropy_client.output("", level="error")
                 return 1, False
 
-        removal_queue += [x for x in package_ids if x not in removal_queue]
-        self._show_removal_info(entropy_client, removal_queue)
-        self._prompt_final_removal(
-            entropy_client, inst_repo, removal_queue)
+            removal_queue = []
+            if deps:
+                try:
+                    removal_queue += entropy_client.get_removal_queue(
+                        package_ids,
+                        deep = deep, recursive = recursive,
+                        empty = empty,
+                        system_packages = system_packages_check)
+                except DependenciesNotRemovable as err:
+                    non_rm_pkg_names = sorted(
+                        [inst_repo.retrieveAtom(x[0]) for x in err.value])
+                    # otherwise we need to deny the request
+                    entropy_client.output("", level="error")
+                    entropy_client.output(
+                        "  %s, %s:" % (
+                            purple(_("Ouch!")),
+                            brown(_("the following system packages"
+                                    " were pulled in")),
+                            ),
+                        level="error", importance=1)
+                    for pkg_name in non_rm_pkg_names:
+                        entropy_client.output(
+                            teal(pkg_name),
+                            header=purple("    # "),
+                            level="error")
+                    entropy_client.output("", level="error")
+                    return 1, False
+
+            removal_queue += [x for x in package_ids if x not in removal_queue]
+            self._show_removal_info(entropy_client, removal_queue)
+
+            self._prompt_final_removal(
+                entropy_client, inst_repo, removal_queue)
 
         if pretend:
             return 0, False
