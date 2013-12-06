@@ -15,6 +15,7 @@
 import os
 import subprocess
 import sys
+import threading
 
 from matter.binpms.base import BaseBinaryResourceLock, \
     BaseBinaryPMS
@@ -49,7 +50,7 @@ class EntropyResourceLock(BaseBinaryResourceLock):
     class NotAcquired(BaseBinaryResourceLock.NotAcquired):
         """ Raised when Entropy Resource Lock cannot be acquired """
 
-    def __init__(self, entropy_server, blocking):
+    def __init__(self, blocking):
         """
         EntropyResourceLock constructor.
 
@@ -59,14 +60,13 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         @type blocking: bool
         """
         super(EntropyResourceLock, self).__init__(blocking)
-        self._entropy = entropy_server
         self.__inside_with_stmt = 0
 
     def acquire(self):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        acquired = entropy.tools.acquire_entropy_locks(self._entropy,
+        acquired = entropy.tools.acquire_entropy_locks(Server,
             blocking = self._blocking)
         if not acquired:
             raise EntropyResourceLock.NotAcquired(
@@ -76,7 +76,7 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        entropy.tools.release_entropy_locks(self._entropy)
+        entropy.tools.release_entropy_locks(Server)
 
     def __enter__(self):
         """
@@ -149,7 +149,7 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         """
         Overridden from BaseBinaryPMS.
         """
-        return EntropyResourceLock(self._entropy, blocking)
+        return EntropyResourceLock(blocking)
 
     def shutdown(self):
         """
