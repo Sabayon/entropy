@@ -185,6 +185,8 @@ Upgrade the system.
             relaxed, multifetch)
         if _show_cfgupd:
             self._show_config_files_update(entropy_client)
+            self._show_preserved_libraries(entropy_client)
+
         return exit_st
 
     def _upgrade_action(self, entropy_client, deps, recursive,
@@ -198,14 +200,17 @@ Upgrade the system.
             "%s: " % (blue(_("Calculating System Updates")),),
             darkred(" @@ "))
 
-        with entropy_client.Cacher():
-            outcome = entropy_client.calculate_updates(empty=empty)
-            update, remove = outcome['update'], outcome['remove']
-            fine, critical_f = outcome['fine'], outcome['critical_found']
-            # if critical updates have been found, relaxed is enforced
-            # as per specifications.
-            if critical_f:
-                relaxed = True
+        inst_repo = entropy_client.installed_repository()
+
+        with inst_repo.shared():
+            with entropy_client.Cacher():
+                outcome = entropy_client.calculate_updates(empty=empty)
+                update, remove = outcome['update'], outcome['remove']
+                fine, critical_f = outcome['fine'], outcome['critical_found']
+                # if critical updates have been found, relaxed is enforced
+                # as per specifications.
+                if critical_f:
+                    relaxed = True
 
         if verbose or pretend:
             entropy_client.output(
@@ -253,34 +258,36 @@ Upgrade the system.
             misc_settings['collisionprotect'] = old_cprotect
 
         if not fetch:
-            manual_removal, remove = \
-                entropy_client.calculate_orphaned_packages()
-            remove.sort()
-            manual_removal.sort()
 
-            if manual_removal or remove:
-                entropy_client.output(
-                    "%s." % (
-                        blue(_("On the system there are "
-                               "packages that are not available "
-                               "anymore in the online repositories")),),
-                    header=darkred(" @@ "))
-                entropy_client.output(
-                    blue(_("Even if they are usually harmless, "
-                           "it is suggested (after proper verification) "
-                           "to remove them.")),
-                    header=darkred(" @@ "))
+            with inst_repo.shared():
+                manual_removal, remove = \
+                    entropy_client.calculate_orphaned_packages()
+                remove.sort()
+                manual_removal.sort()
 
-            if manual_removal:
-                self._show_removal_info(
-                    entropy_client, manual_removal, manual=True)
-            if remove:
-                self._show_removal_info(entropy_client, remove)
-                if not purge:
+                if manual_removal or remove:
                     entropy_client.output(
-                        blue(_("To automatically remove them, please run "
-                               "equo with --purge.")),
+                        "%s." % (
+                            blue(_("On the system there are "
+                                   "packages that are not available "
+                                   "anymore in the online repositories")),),
                         header=darkred(" @@ "))
+                    entropy_client.output(
+                        blue(_("Even if they are usually harmless, "
+                               "it is suggested (after proper verification) "
+                               "to remove them.")),
+                        header=darkred(" @@ "))
+
+                if manual_removal:
+                    self._show_removal_info(
+                        entropy_client, manual_removal, manual=True)
+                if remove:
+                    self._show_removal_info(entropy_client, remove)
+                    if not purge:
+                        entropy_client.output(
+                            blue(_("To automatically remove them, please run: "
+                                   "equo upgrade --purge.")),
+                            header=darkred(" @@ "))
 
         if remove and purge and not fetch:
 
@@ -308,21 +315,28 @@ Upgrade the system.
                     do_run = False
 
                 elif rc == 3: # selective
+                    remove_proposal = []
+
+                    with inst_repo.shared():
+                        for package_id in remove:
+                            if not inst_repo.isPackageIdAvailable(package_id):
+                                continue
+
+                            c_atom = inst_repo.retrieveAtom(package_id)
+                            if c_atom is None:
+                                continue
+
+                            remove_proposal.append((c_atom, package_id))
+
                     new_remove = []
-                    c_repo = entropy_client.installed_repository()
-                    for package_id in remove:
-                        c_atom = c_repo.retrieveAtom(package_id)
-                        if c_atom is None:
-                            continue
-                        c_atom = purple(c_atom)
+                    for c_atom, package_id in remove_proposal:
                         r_rc = entropy_client.ask_question("[%s] %s" % (
-                            c_atom, _("Remove this?"),))
+                            purple(c_atom), _("Remove this?"),))
                         if r_rc == _("Yes"):
                             new_remove.append(package_id)
                     remove = new_remove
 
             if do_run and remove:
-                # use pretend
                 exit_st, _show_cfgupd = self._remove_action(
                     entropy_client, pretend, ask,
                     deps, deep, empty, recursive,
@@ -344,11 +358,11 @@ Upgrade the system.
         if update and not pretend and not fetch:
             # if updates have been installed, check if there are more
             # to come (perhaps critical updates were installed)
-            self._upgrade_respawn(entropy_client)
+            self._upgrade_respawn(entropy_client, inst_repo)
 
         return exit_st, True
 
-    def _upgrade_respawn(self, entropy_client):
+    def _upgrade_respawn(self, entropy_client, inst_repo):
         """
         Respawn the upgrade activity if required.
         """
@@ -356,7 +370,9 @@ Upgrade the system.
         # install queue, ignoring the rest of available packages.
         # So, respawning myself again using execvp() should be a much
         # better idea.
-        outcome = entropy_client.calculate_updates()
+        with inst_repo.shared():
+            outcome = entropy_client.calculate_updates()
+
         if outcome['update']:
             entropy_client.output(
                 "%s." % (
