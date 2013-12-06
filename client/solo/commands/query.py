@@ -23,7 +23,7 @@ from entropy.output import darkgreen, darkred, blue, teal, purple, brown, \
 import entropy.tools
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 from solo.utils import print_package_info, print_table, get_file_mime, \
     graph_packages, revgraph_packages
 
@@ -345,14 +345,14 @@ Repository query tools.
         return self._hierarchical_bashcomp(
             last_arg, outcome, self._commands)
 
-    def _belongs(self, entropy_client):
+    @sharedlock
+    def _belongs(self, entropy_client, inst_repo):
         """
         Solo Query Belongs command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         files = self._nsargs.files
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -360,12 +360,12 @@ Repository query tools.
                 header=darkred(" @@ "))
 
         results = {}
-        flatresults = {}
         reverse_symlink_map = entropy_client.Settings(
             )['system_rev_symlinks']
 
         for xfile in files:
-            results[xfile] = set()
+            outcome = results.setdefault(xfile, set())
+
             pkg_ids = inst_repo.searchBelongs(xfile)
             if not pkg_ids:
                 # try real path if possible
@@ -375,58 +375,58 @@ Repository query tools.
             if not pkg_ids:
                 # try using reverse symlink mapping
                 for sym_dir in reverse_symlink_map:
-                    if xfile.startswith(sym_dir):
-                        for sym_child in reverse_symlink_map[sym_dir]:
-                            my_file = sym_child+xfile[len(sym_dir):]
-                            pkg_ids = inst_repo.searchBelongs(
-                                my_file)
-                            if pkg_ids:
-                                break
+                    if not xfile.startswith(sym_dir):
+                        continue
 
-            for pkg_id in pkg_ids:
-                if not flatresults.get(pkg_id):
-                    results[xfile].add(pkg_id)
-                    flatresults[pkg_id] = True
+                    for sym_child in reverse_symlink_map[sym_dir]:
+                        my_file = sym_child+xfile[len(sym_dir):]
+                        pkg_ids = inst_repo.searchBelongs(my_file)
+                        if pkg_ids:
+                            break
 
-        if results:
-            key_sorter = lambda x: inst_repo.retrieveAtom(x)
-            for result in results:
+            outcome.update(pkg_ids)
 
-                # print info
-                xfile = result
-                result = results[result]
+        key_sorter = lambda x: inst_repo.retrieveAtom(x)
 
-                for pkg_id in sorted(result, key = key_sorter):
-                    if quiet:
-                        entropy_client.output(
-                            inst_repo.retrieveAtom(pkg_id),
-                            level="generic")
-                    else:
-                        print_package_info(pkg_id, entropy_client,
-                            inst_repo, installed_search = True,
-                            extended = verbose, quiet = quiet)
-                if not quiet:
-                    toc = []
-                    toc.append(("%s:" % (
-                                blue(_("Keyword")),), purple(xfile)))
-                    toc.append((
-                            "%s:" % (
-                                blue(_("Found")),), "%s %s" % (
-                                len(result),
-                                brown(ngettext("entry", "entries",
-                                               len(result))),)))
-                    print_table(entropy_client, toc)
+        matches_found = 0
+
+        for xfile, pkg_ids in results.items():
+
+            matches_found += len(pkg_ids)  # can be incorrect
+
+            for pkg_id in sorted(pkg_ids, key=key_sorter):
+                if quiet:
+                    atom = inst_repo.retrieveAtom(pkg_id)
+                    if atom is not None:
+                        entropy_client.output(atom, level="generic")
+                else:
+                    print_package_info(pkg_id, entropy_client,
+                        inst_repo, installed_search=True,
+                        extended=verbose, quiet=quiet)
+
+            if not quiet:
+                entries_txt = ngettext("entry", "entries", len(pkg_ids))
+                toc = []
+                toc.append((
+                    "%s:" % (blue(_("Keyword")),),
+                    purple(xfile)
+                ))
+                toc.append((
+                    "%s:" % (blue(_("Found")),),
+                    "%s %s" % (len(pkg_ids), brown(entries_txt),)
+                ))
+                print_table(entropy_client, toc)
 
         return 0
 
-    def _changelog(self, entropy_client):
+    @sharedlock
+    def _changelog(self, entropy_client, inst_repo):
         """
         Solo Query Changelog command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -454,6 +454,9 @@ Repository query tools.
                 repo = entropy_client.open_repository(r_id)
 
             repo_atom = repo.retrieveAtom(pkg_id)
+            if repo_atom is None:
+                continue
+
             if quiet:
                 entropy_client.output(
                     "%s :" % (repo_atom,),
@@ -468,6 +471,7 @@ Repository query tools.
                     )
 
             changelog = repo.retrieveChangelog(pkg_id)
+
             if not changelog or (changelog == "None"):
                 # == "None" is a bug, see:
                 # 685b865453d552d37ce3a9559f4cefb9a88f8beb
@@ -495,14 +499,14 @@ Repository query tools.
 
         return 0
 
-    def _revdeps(self, entropy_client):
+    @sharedlock
+    def _revdeps(self, entropy_client, inst_repo):
         """
         Solo Query Revdeps command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        inst_repo = entropy_client.installed_repository()
         settings = entropy_client.Settings()
 
         if not quiet:
@@ -518,86 +522,91 @@ Repository query tools.
 
         for package in packages:
 
-            result = inst_repo.atomMatch(package)
+            repository_id = inst_repo.repository_id()
+            package_id, _inst_rc = inst_repo.atomMatch(package)
+
             match_in_repo = False
             repo_masked = False
 
-            if result[0] == -1:
+            if package_id == -1:
                 match_in_repo = True
-                result = entropy_client.atom_match(package)
+                package_id, repository_id = entropy_client.atom_match(package)
 
-            if result[0] == -1:
-                result = entropy_client.atom_match(
+            if package_id == -1:
+                package_id, repository_id = entropy_client.atom_match(
                     package, mask_filter = False)
-                if result[0] != -1:
+                if package_id != -1:
                     repo_masked = True
 
-            if result[0] != -1:
+            if package_id == -1:
+                continue
 
-                repo = inst_repo
-                if match_in_repo:
-                    repo = entropy_client.open_repository(result[1])
-                key_sorter = lambda x: repo.retrieveAtom(x)
+            repo = inst_repo
+            if match_in_repo:
+                repo = entropy_client.open_repository(repository_id)
 
-                found_atom = repo.retrieveAtom(result[0])
-                if repo_masked:
-                    package_id_masked, idmasking_reason = repo.maskFilter(
-                        result[0])
+            found_atom = repo.retrieveAtom(package_id)
+            if repo_masked:
+                package_id_masked, idmasking_reason = repo.maskFilter(
+                    package_id)
 
-                search_results = repo.retrieveReverseDependencies(
-                    result[0], exclude_deptypes = excluded_dep_types)
-                for pkg_id in sorted(search_results, key = key_sorter):
-                    print_package_info(pkg_id, entropy_client, repo,
-                        installed_search = True, strict_output = quiet,
-                        extended = verbose, quiet = quiet)
+            search_results = repo.retrieveReverseDependencies(
+                package_id, exclude_deptypes=excluded_dep_types)
 
-                if not quiet:
+            key_sorter = lambda x: repo.retrieveAtom(x)
+            for pkg_id in sorted(search_results, key=key_sorter):
+                print_package_info(pkg_id, entropy_client, repo,
+                    installed_search=True, strict_output=quiet,
+                    extended=verbose, quiet=quiet)
 
-                    masking_reason = ''
-                    if repo_masked:
-                        masking_reason = ", %s" % (
-                            settings['pkg_masking_reasons'].get(
-                                idmasking_reason),
-                        )
-                    repo_masked_str = const_convert_to_unicode(
-                        repo_masked)
-                    mask_str = bold(repo_masked_str) + masking_reason
+            if quiet:
+                continue
 
-                    toc = []
-                    toc.append(("%s:" % (
-                                blue(_("Keyword")),), purple(package)))
-                    toc.append(("%s:" % (
-                                blue(_("Matched")),), teal(found_atom)))
-                    toc.append(("%s:" % (
-                                blue(_("Masked")),), mask_str))
+            masking_reason = ''
+            if repo_masked:
+                masking_reason = ", %s" % (
+                    settings['pkg_masking_reasons'].get(
+                        idmasking_reason),
+                )
+            repo_masked_str = const_convert_to_unicode(
+                repo_masked)
+            mask_str = bold(repo_masked_str) + masking_reason
 
-                    if match_in_repo:
-                        where = "%s %s" % (
-                            _("from repository"), result[1])
-                    else:
-                        where = _("from the installed packages repository")
+            toc = []
+            toc.append(("%s:" % (
+                        blue(_("Keyword")),), purple(package)))
+            toc.append(("%s:" % (
+                        blue(_("Matched")),), teal(found_atom)))
+            toc.append(("%s:" % (
+                        blue(_("Masked")),), mask_str))
 
-                    entry_str = ngettext(
-                        "entry", "entries", len(search_results))
-                    toc.append(
-                        ("%s:" % (blue(_("Found")),),
-                         "%s %s %s" % (
-                                len(search_results),
-                                brown(entry_str),
-                                where,)
-                         ))
-                    print_table(entropy_client, toc)
+            if match_in_repo:
+                where = "%s %s" % (
+                    _("from repository"), repository_id)
+            else:
+                where = _("from the installed packages repository")
+
+            entry_str = ngettext(
+                "entry", "entries", len(search_results))
+            toc.append(
+                ("%s:" % (blue(_("Found")),),
+                 "%s %s %s" % (
+                        len(search_results),
+                        brown(entry_str),
+                        where,)
+                 ))
+            print_table(entropy_client, toc)
 
         return 0
 
-    def _description(self, entropy_client):
+    @sharedlock
+    def _description(self, entropy_client, inst_repo):
         """
         Solo Query Description command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         descriptions = self._nsargs.descriptions
-        inst_repo = entropy_client.installed_repository()
         settings = entropy_client.Settings()
 
         found = False
@@ -667,14 +676,14 @@ Repository query tools.
 
         return found
 
-    def _files(self, entropy_client):
+    @sharedlock
+    def _files(self, entropy_client, inst_repo):
         """
         Solo Query Files command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -847,7 +856,8 @@ Repository query tools.
 
         return 0
 
-    def _list_installed(self, entropy_client):
+    @sharedlock
+    def _list_installed(self, entropy_client, inst_repo):
         """
         Solo Query List Installed command.
         """
@@ -874,9 +884,8 @@ Repository query tools.
         if repositories:
             filter_funcs.append(by_repoid_filter)
 
-        return self._list_packages(entropy_client,
-            entropy_client.installed_repository(),
-            filter_funcs)
+        return self._list_packages(
+            entropy_client, inst_repo, filter_funcs)
 
     def _list_available(self, entropy_client):
         """
@@ -907,7 +916,7 @@ Repository query tools.
 
         return exit_st
 
-    def _search_mimetype(self, entropy_client, associate=False):
+    def _search_mimetype(self, entropy_client, inst_repo, associate=False):
         """
         Solo Query Mimetype command.
         """
@@ -915,7 +924,6 @@ Repository query tools.
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         settings = entropy_client.Settings()
-        inst_repo = entropy_client.installed_repository()
         inst_repo_id = inst_repo.repository_id()
         if associate:
             mimetypes = self._nsargs.files
@@ -979,30 +987,30 @@ Repository query tools.
 
         return 0
 
-    def _mimetype(self, entropy_client):
+    @sharedlock
+    def _mimetype(self, entropy_client, inst_repo):
         """
         Solo Query Mimetype command.
         """
         return self._search_mimetype(
-            entropy_client,
-            associate=False)
+            entropy_client, inst_repo, associate=False)
 
-    def _associate(self, entropy_client):
+    @sharedlock
+    def _associate(self, entropy_client, inst_repo):
         """
         Solo Query Associate command.
         """
         return self._search_mimetype(
-            entropy_client,
-            associate=True)
+            entropy_client, inst_repo, associate=True)
 
-    def _needed(self, entropy_client):
+    @sharedlock
+    def _needed(self, entropy_client, inst_repo):
         """
         Solo Query Needed command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         packages = self._nsargs.packages
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1036,14 +1044,14 @@ Repository query tools.
 
         return 0
 
-    def _orphans(self, entropy_client):
+    @sharedlock
+    def _orphans(self, entropy_client, inst_repo):
         """
         Solo Query Orphans command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         settings = entropy_client.Settings()
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1246,14 +1254,14 @@ Repository query tools.
             entropy_client.output(humansize, level="generic")
         return 0
 
-    def _required(self, entropy_client):
+    @sharedlock
+    def _required(self, entropy_client, inst_repo):
         """
         Solo Query Required command.
         """
         quiet = self._nsargs.quiet
         verbose = self._nsargs.verbose
         libraries = self._nsargs.libraries
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1469,7 +1477,8 @@ Repository query tools.
                 header=darkred(" @@ "))
         return 0
 
-    def _revisions(self, entropy_client):
+    @sharedlock
+    def _revisions(self, entropy_client, inst_repo):
         """
         Solo Query Revisions command.
         """
@@ -1477,7 +1486,6 @@ Repository query tools.
         verbose = self._nsargs.verbose
         revisions = self._nsargs.revisions
         settings = entropy_client.Settings()
-        inst_repo = entropy_client.installed_repository()
 
         if not quiet:
             entropy_client.output(
@@ -1529,7 +1537,8 @@ Repository query tools.
             packages, entropy_client,
             complete=complete, quiet=quiet)
 
-    def _revgraph(self, entropy_client):
+    @sharedlock
+    def _revgraph(self, entropy_client, _inst_repo):
         """
         Solo Query Revgraph command.
         """
