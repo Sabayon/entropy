@@ -122,12 +122,14 @@ class SoloManage(SoloCommand):
     def _show_preserved_libraries(self, entropy_client):
         """
         Inform User about preserved libraries living on the filesystem.
+        This method is process and thread safe.
         """
         inst_repo = entropy_client.installed_repository()
-        preserved_mgr = PreservedLibraries(
-            inst_repo, None, frozenset(), root=etpConst['systemroot'])
+        with inst_repo.shared():
+            preserved_mgr = PreservedLibraries(
+                inst_repo, None, frozenset(), root=etpConst['systemroot'])
 
-        preserved = preserved_mgr.list()
+            preserved = preserved_mgr.list()
 
         if preserved:
             mytxt = ngettext(
