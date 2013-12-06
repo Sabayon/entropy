@@ -140,10 +140,23 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         if nsargs.entropy_community:
             os.environ['ETP_COMMUNITY_MODE'] = "1"
         super(EntropyBinaryPMS, self).__init__(cwd, nsargs)
-        try:
-            self._entropy = Server()
-        except PermissionDenied as err:
-            raise EntropyBinaryPMS.BinaryPMSLoadError(err)
+
+        self._real_entropy = None
+        self._real_entropy_lock = threading.Lock()
+
+    @property
+    def _entropy(self):
+        """
+        Return the Entropy Server instance object.
+        """
+        with self._real_entropy_lock:
+            if self._real_entropy is None:
+                try:
+                    self._real_entropy = Server()
+                except PermissionDenied as err:
+                    raise EntropyBinaryPMS.BinaryPMSLoadError(err)
+
+        return self._real_entropy
 
     def get_resource_lock(self, blocking):
         """
@@ -155,7 +168,9 @@ class EntropyBinaryPMS(BaseBinaryPMS):
         """
         Overridden from BaseBinaryPMS.
         """
-        self._entropy.shutdown()
+        with self._real_entropy_lock:
+            if self._real_entropy is not None:
+                self._real_entropy.shutdown()
 
     def validate_spec(self, spec):
         """
