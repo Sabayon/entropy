@@ -16,7 +16,7 @@ from entropy.i18n import _
 from entropy.output import blue, brown, darkgreen
 
 from solo.commands.descriptor import SoloCommandDescriptor
-from solo.commands.command import SoloCommand
+from solo.commands.command import SoloCommand, sharedlock
 
 class SoloCache(SoloCommand):
     """
@@ -91,7 +91,7 @@ Manage Entropy Library Cache.
             return parser.print_help, []
 
         self._nsargs = nsargs
-        return self._call_locked, [nsargs.func]
+        return self._call_unlocked, [nsargs.func]
 
     def bashcomp(self, last_arg):
         """
@@ -118,7 +118,8 @@ Manage Entropy Library Cache.
 
         return self._bashcomp(sys.stdout, last_arg, outcome)
 
-    def _clean(self, entropy_client):
+    @sharedlock  # clear_cache uses inst_repo
+    def _clean(self, entropy_client, _inst_repo):
         """
         Solo Cache Clean command.
         """
