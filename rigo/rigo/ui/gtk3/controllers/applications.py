@@ -80,6 +80,7 @@ class ApplicationsViewController(GObject.Object):
     MIN_RECENT_SEARCH_KEY_LEN = 2
 
     SHOW_INSTALLED_KEY = "in:installed"
+    SHOW_EXACT_MATCH = "in:exact"
     SHOW_CATEGORY_KEY = "in:category"
     SHOW_QUEUE_KEY = "in:queue"
     SHOW_KERNEL_BINS_KEY = kswitch.KERNEL_BINARY_VIRTUAL
@@ -170,6 +171,8 @@ class ApplicationsViewController(GObject.Object):
         search_cmd, search_args = split_text[0], split_text[1:]
         sort = False
 
+        show_exact = search_cmd == ApplicationsViewController.SHOW_EXACT_MATCH
+
         self._entropy.rwsem().reader_acquire()
         try:
             matches = []
@@ -209,9 +212,16 @@ class ApplicationsViewController(GObject.Object):
                     if pkg_id != -1:
                         matches.append((pkg_id, pkg_repo))
 
+            elif show_exact and search_args:
+                use_fallback = False
+                for search_arg in search_args:
+                    pkg_matches, rc = self._entropy.atom_match(
+                        search_arg, multi_match=True,
+                        multi_repo=True, mask_filter=False)
+                    matches.extend(pkg_matches)
+
             # fallback search
             if not matches and use_fallback:
-                # exact match
                 pkg_matches, rc = self._entropy.atom_match(
                     text, multi_match=True,
                     multi_repo=True, mask_filter=False)
@@ -787,8 +797,11 @@ class ApplicationsViewController(GObject.Object):
         self._prefc.append(pref)
 
         def _show_kernel_lts_bins():
-            self._search(ApplicationsViewController.SHOW_KERNEL_LTS_BINS_KEY,
-                         _force=True)
+            query = "%s %s" % (
+                ApplicationsViewController.SHOW_EXACT_MATCH,
+                ApplicationsViewController.SHOW_KERNEL_LTS_BINS_KEY,
+            )
+            self._search(query, _force=True)
         pref = Preference(
             -2, _("Show Available Long-Term-Stable Kernels"),
              _("Browse through the available and installable Linux "
