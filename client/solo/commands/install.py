@@ -531,12 +531,6 @@ Install or update packages or package files.
         else:
             packages = package_matches
 
-        exit_st = self._show_packages_info(
-            entropy_client, packages, deps,
-            ask, pretend, verbose, quiet)
-        if exit_st != 0:
-            return 1, False
-
         run_queue, removal_queue = self._generate_install_queue(
             entropy_client, packages, deps, empty, deep, relaxed,
             onlydeps, bdeps, recursive)

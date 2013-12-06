@@ -162,13 +162,6 @@ Download source code of packages.
                 level="error", importance=1)
             return 1, False
 
-        action = darkgreen(_("Source code download"))
-        exit_st = self._show_packages_info(
-            entropy_client, packages, deps,
-            ask, pretend, verbose, quiet, action_name = action)
-        if exit_st != 0:
-            return exit_st, False
-
         run_queue, removal_queue = self._generate_install_queue(
             entropy_client, packages, deps, False, deep, relaxed,
             onlydeps, bdeps, recursive)
