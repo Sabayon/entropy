@@ -52,7 +52,8 @@ if __name__ == "__main__":
         acquired = False
         try:
             etp_client = Client()
-            acquired = entropy.tools.acquire_entropy_locks(etp_client)
+            acquired = entropy.tools.acquire_entropy_locks(
+                etp_client, blocking=True, shared=True)
             if not acquired:
                 print_error(brown(_("Another Entropy is currently running.")))
                 return 1
@@ -74,6 +75,7 @@ if __name__ == "__main__":
                 False, False, 1, [], package_matches=list(matches))
             if _show_cfgupd:
                 install._show_config_files_update(etp_client)
+                install._show_preserved_libraries(etp_client)
             if f_nsargs.pretend:
                 # this won't trigger any post install action
                 return 1
@@ -123,13 +125,17 @@ if __name__ == "__main__":
             if not kernels:
                 print_warning(_("No kernel packages found"))
                 return 1
-            for pkg_id, pkg_repo in kernels:
-                repo = etp_client.open_repository(pkg_repo)
-                print_package_info(
-                    pkg_id, etp_client, repo,
-                    show_repo_if_quiet = True,
-                    extended=f_nsargs.verbose,
-                    quiet=f_nsargs.quiet)
+
+            inst_repo = etp_client.installed_repository()
+            with inst_repo.shared():
+                for pkg_id, pkg_repo in kernels:
+
+                    repo = etp_client.open_repository(pkg_repo)
+                    print_package_info(
+                        pkg_id, etp_client, repo,
+                        show_repo_if_quiet = True,
+                        extended=f_nsargs.verbose,
+                        quiet=f_nsargs.quiet)
             return 0
 
         return _wrap_locked_api(_list)
