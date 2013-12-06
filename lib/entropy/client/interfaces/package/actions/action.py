@@ -12,6 +12,7 @@
 import errno
 import os
 import stat
+import sys
 
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_setup_directory
