@@ -171,6 +171,8 @@ class ApplicationsViewController(GObject.Object):
         search_cmd, search_args = split_text[0], split_text[1:]
         sort = False
 
+        show_exact = search_cmd == ApplicationsViewController.SHOW_EXACT_MATCH
+
         with self._entropy.rwsem().reader():
             matches = []
             use_fallback = True
