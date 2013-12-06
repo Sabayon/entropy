@@ -9,6 +9,7 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
+import errno
 import os
 import stat
 
@@ -122,10 +123,71 @@ class PackageAction(object):
 
         class PackageFlockFile(FlockFile):
 
+            _ALLOWED_ERRORS = (errno.EPERM, errno.ENOSYS, errno.ENOLCK)
+
             def __init__(self, *args, **kwargs):
                 super(PackageFlockFile, self).__init__(*args, **kwargs)
                 self._wait_msg_cb = wait_msg_cb
                 self._acquired_msg_cb = acquired_msg_cb
+
+            def acquire_shared(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).acquire_shared()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).shared: lock error: %s\n" % (
+                            self._path, err))
+
+            def try_acquire_shared(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).try_acquire_shared()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).try_shared: lock error: %s\n" % (
+                            self._path, err))
+                    return True
+
+            def acquire_exclusive(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).acquire_exclusive()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).exclusive: lock error: %s\n" % (
+                            self._path, err))
+
+            def try_acquire_exclusive(self):
+                """
+                Avoid failures if lock cannot be acquired due to filesystem
+                limitations (NFS?).
+                """
+                try:
+                    return super(PackageFlockFile, self).try_acquire_exclusive()
+                except (OSError, IOError) as err:
+                    if err.errno not in self._ALLOWED_ERRORS:
+                        raise
+                    sys.stderr.write(
+                        "PackageFlockFile(%s).try_excl: lock error: %s\n" % (
+                            self._path, err))
+                    return True
+
 
         return PackageFlockFile(lock_path)
 
