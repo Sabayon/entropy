@@ -1,3 +1,34 @@
+commit f28ab4f7027663827fdd13f8c98cd7757943786d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 17:49:22 2013 +0100
+
+    Release Entropy 247
+
+commit 7b0d41e50f174b67560d84ad7d17c98fcd780c04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 15:57:45 2013 +0100
+
+    [Rigo] add "in:exact" command to allow users to match packages, use it for lts kernels
+    
+    Conflicts:
+    	rigo/rigo/ui/gtk3/controllers/applications.py
+
+commit 0184dac61733525b62b31e70b37f888020507d52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 16:11:38 2013 +0100
+
+    [entropy.db.skel] fix matching of old style virtuals
+    
+    When only a subset of the packages in a given key, slot expose
+    an old style virtual dep string (like virtual/linux-binary-lts),
+    make sure not to pull in all of them instead.
+
+commit 454b1b61fae5be5f8f4d39c776abd522ecf7aac6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 6 09:20:52 2013 +0100
+
+    Tagging Entropy version 246
+
 commit d029f5568c916840c869d2972717c15914dc970c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Dec 6 09:20:51 2013 +0100
