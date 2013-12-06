@@ -4929,14 +4929,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             # to go further and search stuff using category and name since
             # we wouldn't find anything new
             if old_style_virtuals is not None:
-                v_results = set()
-                for package_id in results:
-                    virtual_cat, virtual_name = self.retrieveKeySplit(package_id)
-                    v_result = self.searchNameCategory(
-                        virtual_name, virtual_cat, just_id = True)
-                    v_results.update(v_result)
-                del results
-                return set(v_results), old_style_virtuals
+                return set(results), old_style_virtuals
 
             # if it's because category differs, it's a problem
             found_cat = None
