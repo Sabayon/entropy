@@ -14,16 +14,15 @@ import os
 import subprocess
 import codecs
 
-from entropy.client.interfaces.client import Client
-from entropy.const import etpConst, const_isunicode, etpSys, \
-    const_convert_to_rawstring, const_mkstemp
+from entropy.const import etpConst, etpSys, const_convert_to_rawstring, \
+    const_mkstemp
 from entropy.output import brown, bold, darkred, red, teal, purple
 from entropy.i18n import _
 
 import entropy.dep
 import entropy.tools
 
-class Trigger:
+class Trigger(object):
 
     """
     Entropy Client Package installation phases trigger functions.
@@ -162,8 +161,6 @@ class Trigger:
         """
         functions = []
         if self._spm is not None:
-            spm_class = self._entropy.Spm_class()
-            phases_map = spm_class.package_phases_map()
             append_setup = False
             if self._pkgdata['spm_phases'] != None:
                 if "setup" in self._pkgdata['spm_phases']:

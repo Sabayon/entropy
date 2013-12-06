@@ -17,6 +17,7 @@ from entropy.output import blue, red, darkred, brown
 import entropy.dep
 
 from ._manage import _PackageInstallRemoveAction
+from ._triggers import Trigger
 
 from .. import preservedlibs
 
@@ -87,7 +88,8 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "preremove",
             data,
@@ -234,7 +236,8 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "postremove",
             data,

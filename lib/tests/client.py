@@ -12,6 +12,7 @@ import time
 
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository
+from entropy.client.interfaces.package.actions._triggers import Trigger
 from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_mkdtemp
 from entropy.output import set_mute
@@ -233,8 +234,8 @@ class EntropyClientTest(unittest.TestCase):
 echo >/dev/null
 exit 42
 """ % (etpConst['trigger_sh_interpreter'],)
-            trigger = self.Client.Triggers(
-                "install", 'postinstall', pkgdata, pkgdata)
+            trigger = Trigger(
+                self.Client, "install", 'postinstall', pkgdata, pkgdata)
             trigger.prepare()
             exit_st = trigger._do_trigger_call_ext_generic()
             trigger.kill()
@@ -260,8 +261,8 @@ import os
 os.listdir(".")
 my_ext_status = 42
 """
-            trigger = self.Client.Triggers(
-                "install", 'postinstall', pkgdata, pkgdata)
+            trigger = Trigger(
+                self.Client, "install", 'postinstall', pkgdata, pkgdata)
             trigger.prepare()
             exit_st = trigger._do_trigger_call_ext_generic()
         finally:
@@ -297,8 +298,8 @@ if stage == "postinstall":
 else:
     my_ext_status = 0
 """
-            trigger = self.Client.Triggers(
-                "install", 'postinstall', pkgdata, pkgdata)
+            trigger = Trigger(
+                self.Client, "install", 'postinstall', pkgdata, pkgdata)
             trigger.prepare()
             exit_st = trigger._do_trigger_call_ext_generic()
         finally:

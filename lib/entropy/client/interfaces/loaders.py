@@ -25,7 +25,6 @@ class LoadersMixin:
         self._spm_cache = {}
         # instantiate here to avoid runtime loading, that can cause failures
         # during complete system upgrades
-        from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import \
             PackageActionFactory, PackageActionFactoryWrapper
@@ -37,7 +36,6 @@ class LoadersMixin:
         self.__package_factory = PackageActionFactory
         self.__package_loader = PackageActionFactoryWrapper
         self.__repository_loader = Repository
-        self.__trigger_loader = Trigger
         self.__sets_loader = Sets
         self.__configuration_updates_loader = ConfigurationUpdates
         self.__webservice_factory = ClientWebServiceFactory
@@ -86,9 +84,6 @@ class LoadersMixin:
         qa_intf.input_box = self.input_box
         qa_intf.set_title = self.set_title
         return qa_intf
-
-    def Triggers(self, *args, **kwargs):
-        return self.__trigger_loader(self, *args, **kwargs)
 
     def Repositories(self, *args, **kwargs):
         """

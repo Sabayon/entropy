@@ -26,6 +26,7 @@ import entropy.dep
 import entropy.tools
 
 from ._manage import _PackageInstallRemoveAction
+from ._triggers import Trigger
 
 from .. import _content as Content
 from .. import preservedlibs
@@ -653,7 +654,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         self._entropy.set_title(xterm_title)
 
         data = self._get_install_trigger_data()
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "setup",
             data,
@@ -682,7 +684,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         self._entropy.set_title(xterm_title)
 
         data = self._get_install_trigger_data()
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "preinstall",
             data,
@@ -758,7 +761,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
     def _get_install_trigger_data(self):
         """
-        Get the metadata used during removal phases by Triggers.
+        Get the metadata used during removal phases by Trigger.
         """
         repo = self._entropy.open_repository(self._repository_id)
 
@@ -799,7 +802,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "preremove",
             data,
@@ -864,7 +868,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         )
         self._entropy.set_title(xterm_title)
 
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "postremove",
             data,
@@ -920,7 +925,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         self._entropy.set_title(xterm_title)
 
         data = self._get_install_trigger_data()
-        trigger = self._entropy.Triggers(
+        trigger = Trigger(
+            self._entropy,
             self.NAME,
             "postinstall",
             data,
