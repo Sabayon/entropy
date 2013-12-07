@@ -278,7 +278,7 @@ class _PackageMultiFetchAction(_PackageFetchAction):
                 if lock is not None:
                     lock.close()
 
-        def pre_download_hook(path):
+        def pre_download_hook(path, _download_id):
             # assume that, if path is available, it's been
             # downloaded already. checksum verification will
             # happen afterwards.
