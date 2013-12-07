@@ -1873,33 +1873,20 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a directory when it should " \
-                    "be a file !! Removing in 20 seconds..." % (tofile,)
+                    "be a file !!" % (tofile,)
                 )
 
-                mytxt = "%s: %s" % (
-                    _("file expected, directory found"),
+                txt = "%s: %s" % (
+                    _("Fatal: file expected, directory found"),
                     const_convert_to_unicode(tofile),
                 )
-                mytxt2 = _("Removing in 20 seconds !!")
-                for txt in (mytxt, mytxt2,):
-                    self._entropy.output(
-                        darkred("QA: ") + darkred(txt),
-                        importance = 1,
-                        level = "warning",
-                        header = red(" !!! ")
-                    )
-
-                try:
-                    shutil.rmtree(tofile, True)
-                except (shutil.Error, IOError,) as err:
-                    self._entropy.logger.log(
-                        "[Package]",
-                        etpConst['logging']['normal_loglevel_id'],
-                        "WARNING!!! Failed to cope to oddity of %s " \
-                        "file ! [workout_file/3]: %s" % (
-                            tofile, err,
-                        )
-                    )
+                self._entropy.output(
+                    darkred(txt),
+                    importance = 1,
+                    level = "error",
+                    header = red(" !!! ")
+                )
+                return 1
 
             # moving file using the raw format
             try:
