@@ -454,9 +454,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         counter = getattr(self._tls, "_EntropyRepositoryCacheCounter", 0)
         self._tls._EntropyRepositoryCacheCounter = counter + 1
 
-        yield
-
-        self._tls._EntropyRepositoryCacheCounter -= 1
+        try:
+            yield
+        finally:
+            self._tls._EntropyRepositoryCacheCounter -= 1
 
     def directed(self):
         """
