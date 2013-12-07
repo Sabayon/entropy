@@ -6,6 +6,8 @@ import unittest
 import os
 import time
 import tempfile
+import threading
+
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, const_convert_to_unicode, \
     const_convert_to_rawstring
@@ -1070,6 +1072,37 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_locking_memory(self):
         self.assert_(self.test_db._is_memory())
         return self._test_repository_locking(self.test_db)
+
+    def test_direct_access(self):
+        local = self.test_db._tls
+
+        self.assertEquals(self.test_db.directed(), False)
+
+        counter = getattr(local, "_EntropyRepositoryCacheCounter", "foo")
+        self.assertEquals(counter, "foo")
+
+        with self.test_db.direct():
+            self.assertEquals(self.test_db.directed(), True)
+
+        counter = local._EntropyRepositoryCacheCounter
+        self.assertEquals(counter, 0)
+
+        self.assertEquals(self.test_db.directed(), False)
+
+        with self.test_db.direct():
+
+            counter = local._EntropyRepositoryCacheCounter
+            self.assertEquals(counter, 1)
+
+            with self.test_db.direct():
+                counter = local._EntropyRepositoryCacheCounter
+                self.assertEquals(counter, 2)
+
+            counter = local._EntropyRepositoryCacheCounter
+            self.assertEquals(counter, 1)
+
+        counter = local._EntropyRepositoryCacheCounter
+        self.assertEquals(counter, 0)
 
 
 if __name__ == '__main__':

@@ -1023,6 +1023,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getVersioningData(
+                package_id)
+
         cached = self._getLiveCache("getVersioningData")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1041,6 +1045,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getStrictData(
+                package_id)
+
         cached = self._getLiveCache("getStrictData")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1072,6 +1080,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).getStrictScopeData(
+                package_id)
+
         cached = self._getLiveCache("getStrictScopeData")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1169,6 +1181,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveDigest(
+                package_id)
+
         cached = self._getLiveCache("retrieveDigest")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1201,6 +1217,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must use the in-memory cache to do some memoization.
         We must handle _baseinfo_extrainfo_2010.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveKeySplit(
+                package_id)
+
         cached = self._getLiveCache("retrieveKeySplit")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1229,6 +1249,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must use the in-memory cache to do some memoization.
         We must handle _baseinfo_extrainfo_2010.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveKeySlot(
+                package_id)
+
         cached = self._getLiveCache("retrieveKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1257,6 +1281,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).retrieveKeySlotAggregated(package_id)
+
         cached = self._getLiveCache("retrieveKeySlotAggregated")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1304,6 +1332,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveVersion(
+                package_id)
+
         cached = self._getLiveCache("retrieveVersion")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1322,6 +1354,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveRevision(
+                package_id)
+
         cached = self._getLiveCache("retrieveRevision")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1340,6 +1376,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveUseflags(
+                package_id)
+
         cached = self._getLiveCache("retrieveUseflags")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1365,6 +1405,12 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropyRepositoryBase.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveDependencies(
+                package_id, exnteded = extended, deptype = deptype,
+                exclude_deptypes = exclude_deptypes,
+                resolve_conditional_deps = resolve_conditional_deps)
+
         cached = self._getLiveCache("retrieveDependencies")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1489,6 +1535,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveSlot(
+                package_id)
+
         cached = self._getLiveCache("retrieveSlot")
         if cached is None:
             cur = self._cursor().execute("""
@@ -1507,6 +1557,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveTag(
+                package_id)
+
         cached = self._getLiveCache("retrieveTag")
         # gain 2% speed on atomMatch()
         if cached is None:
@@ -1527,6 +1581,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).retrieveCategory(
+                package_id)
+
         cached = self._getLiveCache("retrieveCategory")
         # this gives 14% speed boost in atomMatch()
         if cached is None:
@@ -1600,6 +1658,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchKeySlot(
+                key, slot)
+
         cached = self._getLiveCache("searchKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1632,6 +1694,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchKeySlotTag(
+                key, slot, tag)
+
         cached = self._getLiveCache("searchKeySlotTag")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -1725,6 +1791,10 @@ class EntropySQLiteRepository(EntropySQLRepository):
         We must handle _baseinfo_extrainfo_2010.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository, self).searchNameCategory(
+                name, category, just_id = just_id)
+
         cached = self._getLiveCache("searchNameCategory")
         # this gives 30% speed boost on atomMatch()
         if cached is None:
@@ -2178,6 +2248,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepository.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).getInstalledPackageRepository(
+                             package_id)
+
         cached = self._getLiveCache("getInstalledPackageRepository")
         if cached is None:
             cur = self._cursor().execute("""
@@ -2196,6 +2271,11 @@ class EntropySQLiteRepository(EntropySQLRepository):
         Reimplemented from EntropySQLRepositoryBase.
         We must use the in-memory cache to do some memoization.
         """
+        if self.directed():
+            return super(EntropySQLiteRepository,
+                         self).getInstalledPackageSource(
+                             package_id)
+
         cached = self._getLiveCache("getInstalledPackageSource")
         if cached is None:
             try:

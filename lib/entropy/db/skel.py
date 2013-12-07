@@ -16,6 +16,7 @@ import hashlib
 import codecs
 import collections
 import contextlib
+import threading
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
@@ -405,6 +406,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @param name: repository identifier (or name)
         @type name: string
         """
+        self._tls = threading.local()
+
         TextInterface.__init__(self)
         self._readonly = readonly
         self._caching = xcache
@@ -425,6 +428,42 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         return os.path.join(
             etpConst['entropyrundir'],
             "repository", self.name + ".lock")
+
+    @contextlib.contextmanager
+    def direct(self):
+        """
+        Avoid acquiring any kind of lock, disable caches and access directly
+        to the underlying repository data.
+
+        In latency sensitive code paths, acquiring locks (especially file locks)
+        and blocking may be impractical. This context manager makes possible to
+        avoid that, at the price of returning stale or null data.
+
+        This method uses Thread Local Storage. In order to determine if
+        direct mode is enabled, just call directed().
+        memory cache is not cleared by this method, but both shared() and
+        exclusive() do that.
+        Nested calls are reference counted, so it's possible to enter the
+        direct() context more than once (in a nested way) without problems.
+
+        This method exists because some subclasses may have implemented their
+        own in-memory caches and if the locks aren't acquired, they may contain
+        stale data. However, keeping the cache clear may result in a big
+        performance penalty due to the fact that cold caches kill latency.
+        """
+        counter = getattr(self._tls, "_EntropyRepositoryCacheCounter", 0)
+        self._tls._EntropyRepositoryCacheCounter = counter + 1
+
+        yield
+
+        self._tls._EntropyRepositoryCacheCounter -= 1
+
+    def directed(self):
+        """
+        Return whether direct mode is enabled or not for the current thread.
+        See direct() for more information.
+        """
+        return getattr(self._tls, "_EntropyRepositoryCacheCounter", 0) != 0
 
     @contextlib.contextmanager
     def shared(self):
