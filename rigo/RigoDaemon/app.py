@@ -885,7 +885,8 @@ class RigoDaemonService(dbus.service.Object):
         files.
         """
         with self._activity_mutex:
-            self._acquire_shared()
+            activity = ActivityStates.INTERNAL_ROUTINES
+            self._acquire_exclusive(activity)
             try:
 
                 with self._rwsem.reader():
@@ -895,7 +896,7 @@ class RigoDaemonService(dbus.service.Object):
                         pass
 
             finally:
-                self._release_shared()
+                self._release_exclusive(activity)
                 # spin!
                 self._start_package_cache_timer()
 
@@ -1169,34 +1170,30 @@ class RigoDaemonService(dbus.service.Object):
                      " called, sending signal",
                      debug=True)
 
-        # signal updates available
-        outcome = self._entropy.calculate_updates()
-        self._signal_updates_unlocked(outcome['update'], outcome['remove'])
+        inst_repo = self._entropy.installed_repository()
+        with inst_repo.shared():
+            outcome = self._entropy.calculate_updates()
 
-    def _signal_updates_unlocked(self, update, remove):
-        """
-        Signal Updates availability.
-        """
+            remove_atoms = []
+            for pkg_id in outcome['remove']:
+                atom = inst_repo.retrieveAtom(pkg_id)
+                if atom is not None:
+                    remove_atoms.append(atom)
+
         update_atoms = []
-        for pkg_id, repo_id in update:
+        for pkg_id, repo_id in outcome['update']:
             atom = self._entropy.open_repository(
                 repo_id).retrieveAtom(pkg_id)
             if atom is not None:
                 update_atoms.append(atom)
 
-        remove_atoms = []
-        inst_repo = self._entropy.installed_repository()
-        for pkg_id in remove:
-            atom = inst_repo.retrieveAtom(pkg_id)
-            if atom is not None:
-                remove_atoms.append(atom)
-
+        # KernelSwitcher is already process/thread safe
         one_click_updatable = self._one_click_updatable_unlocked(
-            update, remove)
+            outcome['update'], outcome['remove'])
 
         GLib.idle_add(self.updates_available,
-                      update, update_atoms,
-                      remove, remove_atoms,
+                      outcome['update'], update_atoms,
+                      outcome['remove'], remove_atoms,
                       one_click_updatable)
 
     def _one_click_updatable_unlocked(self, update, remove):
@@ -1239,11 +1236,12 @@ class RigoDaemonService(dbus.service.Object):
             return False
 
         inst_repo = self._entropy.installed_repository()
-        key_slot = inst_repo.retrieveKeySlotAggregated(package_id)
-        if key_slot is None:
-            write_output("_one_click_updatable_kernel: corrupted entry",
-                         debug=True)
-            return False
+        with inst_repo.shared():
+            key_slot = inst_repo.retrieveKeySlotAggregated(package_id)
+            if key_slot is None:
+                write_output("_one_click_updatable_kernel: corrupted entry",
+                             debug=True)
+                return False
 
         repo_package_id, repository_id = self._entropy.atom_match(key_slot)
         if repo_package_id == -1:
@@ -1522,7 +1520,7 @@ class RigoDaemonService(dbus.service.Object):
                                      "._unbusy: already "
                                      "available, wtf !?!?")
                             # wtf??
-                    self._release_exclusive(activity)
+                    self._release_shared()
                     success = outcome == AppTransactionOutcome.SUCCESS
                     write_output("_action_queue_worker_thread"
                                  "._action_queue_finally: "
@@ -1554,7 +1552,7 @@ class RigoDaemonService(dbus.service.Object):
                 outcome = AppTransactionOutcome.PERMISSION_DENIED
                 return
 
-            self._acquire_exclusive(activity)
+            self._acquire_shared()
             self._close_local_resources()
             self._entropy_setup()
             GLib.idle_add(
@@ -1825,7 +1823,6 @@ class RigoDaemonService(dbus.service.Object):
         count = 0
         total = len(removal_queue)
         action_factory = self._entropy.PackageActionFactory()
-        inst_repo = self._entropy.installed_repository()
 
         try:
             for pkg_match in removal_queue:
@@ -1890,9 +1887,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 write_output(
                     "_process_remove_merge_action: "
-                    "%s, count: %s, total: %s, done, committing." % (
+                    "%s, count: %s, total: %s, done." % (
                         pkg_match, count, total), debug=True)
-                inst_repo.commit()
 
                 # Remove us from the ongoing transactions
                 self._txs.unset(package_id, repository_id)
@@ -1910,9 +1906,8 @@ class RigoDaemonService(dbus.service.Object):
         finally:
             write_output(
                 "_process_remove_merge_action: "
-                "count: %s, total: %s, finally stmt, committing." % (
+                "count: %s, total: %s, finally stmt." % (
                     count, total), debug=True)
-            inst_repo.commit()
 
     def _maybe_enqueue_kernel_switcher_actions(self, simulate, package_id,
                                                repository_id, path):
@@ -1939,14 +1934,15 @@ class RigoDaemonService(dbus.service.Object):
             return
 
         inst_repo = self._entropy.installed_repository()
-        inst_pkg_id, _rc = inst_repo.atomMatch(keyslot)
-        if inst_pkg_id != -1:
-            # kernel is already installed, not triggering kswitch
-            write_output(
-                "_maybe_enqueue_kernel_switcher_actions: kernel "
-                "%s already installed" % (keyslot,),
-            debug=True)
-            return
+        with inst_repo.shared():
+            inst_pkg_id, _rc = inst_repo.atomMatch(keyslot)
+            if inst_pkg_id != -1:
+                # kernel is already installed, not triggering kswitch
+                write_output(
+                    "_maybe_enqueue_kernel_switcher_actions: kernel "
+                    "%s already installed" % (keyslot,),
+                debug=True)
+                return
 
         switcher = kswitch.KernelSwitcher(self._entropy)
 
@@ -2119,8 +2115,6 @@ class RigoDaemonService(dbus.service.Object):
                 return pkg_size
             pkg_size -= f_size
             return pkg_size
-
-        inst_repo = self._entropy.installed_repository()
 
         download_size = 0
         unpack_size = 0
@@ -2355,7 +2349,6 @@ class RigoDaemonService(dbus.service.Object):
                 AppTransactionStates.MANAGE, amount)
 
         action_factory = self._entropy.PackageActionFactory()
-        inst_repo = self._entropy.installed_repository()
 
         try:
             for pkg_match in install_queue:
@@ -2420,10 +2413,8 @@ class RigoDaemonService(dbus.service.Object):
 
                 write_output(
                     "_process_install_merge_action: "
-                    "%s, count: %s, total: %s, done, committing." % (
+                    "%s, count: %s, total: %s, done." % (
                         pkg_match, count, total), debug=True)
-
-                inst_repo.commit()
 
                 # Remove us from the ongoing transactions
                 self._txs.unset(package_id, repository_id)
@@ -2445,9 +2436,8 @@ class RigoDaemonService(dbus.service.Object):
         finally:
             write_output(
                 "_process_install_merge_action: "
-                "count: %s, total: %s, finally stmt, committing." % (
+                "count: %s, total: %s, finally stmt." % (
                     count, total), debug=True)
-            inst_repo.commit()
 
     def _maybe_signal_preserved_libraries(self):
         """
@@ -2455,9 +2445,11 @@ class RigoDaemonService(dbus.service.Object):
         """
         with self._rwsem.reader():
             inst_repo = self._entropy.installed_repository()
-            preserved_mgr = PreservedLibraries(
-                inst_repo, None, frozenset(), root=etpConst['systemroot'])
-            preserved = preserved_mgr.list()
+            with inst_repo.shared():
+                preserved_mgr = PreservedLibraries(
+                    inst_repo, None, frozenset(),
+                    root=etpConst['systemroot'])
+                preserved = preserved_mgr.list()
 
         if preserved:
             GLib.idle_add(
@@ -2508,14 +2500,17 @@ class RigoDaemonService(dbus.service.Object):
         """
         _cache = {}
         inst_repo = self._entropy.installed_repository()
-        for k, v in scandata.items():
-            dest = v['destination']
-            pkg_ids = _cache.get(dest)
-            if pkg_ids is None:
-                pkg_ids = list(inst_repo.searchBelongs(dest))
-                _cache[dest] = pkg_ids
-            v['package_ids'] = pkg_ids
-        del _cache
+        with inst_repo.shared():
+
+            for k, v in scandata.items():
+                dest = v['destination']
+                pkg_ids = _cache.get(dest)
+
+                if pkg_ids is None:
+                    pkg_ids = list(inst_repo.searchBelongs(dest))
+                    _cache[dest] = pkg_ids
+                v['package_ids'] = pkg_ids
+
         return scandata
 
     def _close_local_resources(self):
@@ -3132,8 +3127,13 @@ class RigoDaemonService(dbus.service.Object):
         def _accept():
             with self._rwsem.reader():
                 inst_repo = self._entropy.installed_repository()
-                for name in names:
-                    inst_repo.acceptLicense(name)
+                # this should be exclusive(), maybe, but accepting
+                # the same license twice has no side effects.
+                with inst_repo.shared():
+                    for name in names:
+                        inst_repo.acceptLicense(name)
+
+                    inst_repo.commit()
 
         task = ParallelTask(_accept)
         task.daemon = True
