@@ -285,6 +285,7 @@ class _PackageRemoveAction(_PackageInstallRemoveAction):
         if spm_uid != -1:
             inst_repo = self._entropy.open_repository(self._repository_id)
             inst_repo.insertSpmUid(installed_package_id, spm_uid)
+            inst_repo.commit()
 
     def _post_remove_remove_package_unlocked(self, inst_repo, atom):
         """
