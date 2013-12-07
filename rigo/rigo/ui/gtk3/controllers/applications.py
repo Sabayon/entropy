@@ -181,16 +181,20 @@ class ApplicationsViewController(GObject.Object):
             if search_cmd == ApplicationsViewController.SHOW_INSTALLED_KEY:
                 use_fallback = False
                 sort = True
+
                 inst_repo = self._entropy.installed_repository()
-                if not search_args:
-                    for pkg_id in inst_repo.listAllPackageIds(
-                        order_by="atom"):
-                        matches.append((pkg_id, inst_repo.repository_id()))
-                else:
-                    for search_arg in search_args:
-                        for pkg_id in inst_repo.searchPackages(
-                            search_arg.lower(), just_id=True):
+                with inst_repo.direct():
+                    if not search_args:
+                        for pkg_id in inst_repo.listAllPackageIds(
+                                order_by="atom"):
                             matches.append((pkg_id, inst_repo.repository_id()))
+                    else:
+                        for search_arg in search_args:
+                            for pkg_id in inst_repo.searchPackages(
+                                search_arg.lower(), just_id=True):
+                                matches.append(
+                                    (pkg_id, inst_repo.repository_id()))
+
             elif search_cmd == \
                     ApplicationsViewController.SHOW_CATEGORY_KEY and \
                     search_args:
@@ -316,7 +320,8 @@ class ApplicationsViewController(GObject.Object):
         with self._entropy.rwsem().reader():
             inst_repo = self._entropy.installed_repository()
             pkg_repo = inst_repo.repository_id()
-            pkg_id, rc = inst_repo.atomMatch(dependency)
+            with inst_repo.direct():
+                pkg_id, rc = inst_repo.atomMatch(dependency)
 
         if pkg_id == -1:
             const_debug_write(
@@ -395,8 +400,9 @@ class ApplicationsViewController(GObject.Object):
             "%s" % (text,))
         with self._entropy.rwsem().reader():
             inst_repo = self._entropy.installed_repository()
-            pkg_ids = inst_repo.searchPackages(text, just_id=True)
-            manual_pkg_ids, rc = inst_repo.atomMatch(text, multiMatch=True)
+            with inst_repo.direct():
+                pkg_ids = inst_repo.searchPackages(text, just_id=True)
+                manual_pkg_ids, rc = inst_repo.atomMatch(text, multiMatch=True)
 
         def _notify():
             self._service._unsupported_applications_signal(

@@ -45,6 +45,7 @@ from rigo.enums import Icons
 from rigo.utils import build_application_store_url, escape_markup, \
     prepare_markup
 
+
 class ReviewStats(object):
 
     NO_RATING = 0
@@ -929,6 +930,25 @@ class ApplicationMetadata(object):
         _ICON_DISCARD_SIGNALS.append(discard_signal)
 
 
+def direct(method):
+    """
+    Enable direct access to the EntropyRepository instance
+    skipping memory cache in case of Installed Packages repository.
+    This avoids having to acquire a shared or exclusive lock at
+    the price of reading stale data.
+    """
+    def wrapped(self, *args, **kwargs):
+        repo = self._entropy.open_repository(self._repo_id)
+        inst_repo = self._entropy.installed_repository()
+        if repo is inst_repo:
+            with inst_repo.direct():
+                return method(self, *args, **kwargs)
+        else:
+            return method(self, *args, **kwargs)
+
+    return wrapped
+
+
 # this is a very lean class as its used in the main listview
 # and there are a lot of application objects in memory
 class Application(object):
@@ -973,6 +993,7 @@ class Application(object):
         self._vanished_callback = vanished_callback
 
     @property
+    @direct
     def name(self):
         """Show user visible name"""
         with self._entropy.rwsem().reader():
@@ -1018,6 +1039,7 @@ class Application(object):
         with self._entropy.rwsem().reader():
             return self._is_installed_app()
 
+    @direct
     def _is_installed_app(self):
         """
         Return whether this Application object describes an
@@ -1027,6 +1049,7 @@ class Application(object):
         inst_repo = self._entropy.installed_repository()
         return repo is inst_repo
 
+    @direct
     def _get_installed(self):
         """
         Application.get_installed() method body.
@@ -1060,6 +1083,7 @@ class Application(object):
                            (package_id, inst_repo.repository_id()),
                            redraw_callback=self._redraw_callback)
 
+    @direct
     def _source_repository_id(self, repo):
         """
         Return the actual repository name (if possible) if
@@ -1076,6 +1100,7 @@ class Application(object):
                 repository_id = _repository_id
         return repository_id
 
+    @direct
     def get_installed(self):
         """
         Return the Application object of the installed
@@ -1085,6 +1110,7 @@ class Application(object):
         with self._entropy.rwsem().reader():
             return self._get_installed()
 
+    @direct
     def is_updatable(self):
         """
         Return if Application can be updated.
@@ -1110,6 +1136,7 @@ class Application(object):
             else:
                 return True
 
+    @direct
     def _get_removal_queue(self):
         """
         Return Application removal queue.
@@ -1120,6 +1147,7 @@ class Application(object):
         except DependenciesNotRemovable:
             return None
 
+    @direct
     def get_removal_queue(self):
         """
         Return a list of Applications that would be removed.
@@ -1138,6 +1166,7 @@ class Application(object):
                 remove.append(app)
             return remove
 
+    @direct
     def is_removable(self):
         """
         Return if Application can be removed or it's part of
@@ -1159,6 +1188,7 @@ class Application(object):
             except DependenciesNotRemovable:
                 return False
 
+    @direct
     def _get_install_queue(self):
         """
         Return Application install and removal queues.
@@ -1173,18 +1203,18 @@ class Application(object):
         if masked:
             return None
 
-        with inst_repo.shared():
-            try:
-                install_queue, removal_queue = \
-                    self._entropy.get_install_queue(
-                        [pkg_match], False, False)
-            except DependenciesNotFound:
-                raise
-            except DependenciesCollision:
-                raise
+        try:
+            install_queue, removal_queue = \
+                self._entropy.get_install_queue(
+                    [pkg_match], False, False)
+        except DependenciesNotFound:
+            raise
+        except DependenciesCollision:
+            raise
 
         return install_queue, removal_queue
 
+    @direct
     def get_install_conflicts(self):
         """
         Return a list of Application objects belonging to
@@ -1214,6 +1244,7 @@ class Application(object):
             except DependenciesCollision:
                 return None
 
+    @direct
     def get_install_queue(self):
         """
         Return a tuple composed by a list of Applications that
@@ -1258,6 +1289,7 @@ class Application(object):
                     "get_install_queue: DependenciesCollision: %s" % (err,))
                 return None
 
+    @direct
     def accept_licenses(self, install_queue):
         """
         Return a mapping representing the licenses to accept,
@@ -1276,6 +1308,7 @@ class Application(object):
                         obj.append(pkg_map[pkg_match])
             return license_map
 
+    @direct
     def is_installable(self):
         """
         Return if Application can be installed or it's masked
@@ -1300,6 +1333,7 @@ class Application(object):
 
         return True
 
+    @direct
     def is_available(self):
         """
         Return if Application is actually available in repos,
@@ -1311,6 +1345,7 @@ class Application(object):
             repo = self._entropy.open_repository(self._repo_id)
             return repo.isPackageIdAvailable(self._pkg_id)
 
+    @direct
     def get_markup(self):
         """
         Get Application markup text.
@@ -1342,6 +1377,7 @@ class Application(object):
                 escape_markup(description))
             return text
 
+    @direct
     def search(self, keyword):
         """
         Match keyword against Application name. Return True if
@@ -1352,6 +1388,7 @@ class Application(object):
             return True
         return keyword.lower() in name.lower()
 
+    @direct
     def get_extended_markup(self):
         """
         Get Application markup text (extended version).
@@ -1426,6 +1463,7 @@ class Application(object):
                     )
             return text
 
+    @direct
     def get_info_markup(self):
         """
         Get Application info markup text.
@@ -1538,6 +1576,7 @@ class Application(object):
                 )
             return text
 
+    @direct
     def get_review_stats(self, _still_visible_cb=None, cached=False):
         """
         Return ReviewStats object containing user review
@@ -1575,6 +1614,7 @@ class Application(object):
                 stat.downloads_total = down
             return stat
 
+    @direct
     def get_icon(self, _still_visible_cb=None, cached=False):
         """
         Return Application Icon image Entropy Document object.
@@ -1610,6 +1650,7 @@ class Application(object):
 
             return icon, cache_hit
 
+    @direct
     def download_comments(self, callback, offset=0):
         """
         Return Application Comments Entropy Document object.
@@ -1636,6 +1677,7 @@ class Application(object):
                     "Application{%s}.download_comments called" % (
                         self._pkg_match,))
 
+    @direct
     def download_images(self, callback, offset=0):
         """
         Return Application Images Entropy Document object.
@@ -1695,7 +1737,7 @@ class Application(object):
             return -1
         return progress
 
-    # get a AppDetails object for this Applications
+    @direct
     def get_details(self):
         """
         Return a new AppDetails object for this application
@@ -1704,6 +1746,7 @@ class Application(object):
                           self._service, self._pkg_match, self,
                           redraw_callback=self._redraw_callback)
 
+    @direct
     def __str__(self):
         with self._entropy.rwsem().reader():
             repo = self._entropy.open_repository(self._repo_id)
