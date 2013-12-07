@@ -13,6 +13,7 @@ import os
 import bz2
 import stat
 import fcntl
+import glob
 import errno
 import sys
 import shutil
@@ -42,6 +43,7 @@ from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
 from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     teal
+from entropy.client.interfaces.package.actions.action import PackageAction
 from entropy.core.settings.base import RepositoryConfigParser, SystemSettings
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
@@ -1302,7 +1304,8 @@ class RepositoryMixin:
             valid_backups.append(path)
         return valid_backups
 
-    def clean_downloaded_packages(self, dry_run = False, days_override = None):
+    def clean_downloaded_packages(self, dry_run = False, days_override = None,
+                                  skip_available_packages = False):
         """
         Clean Entropy Client downloaded packages older than the setting
         specified by "packages-autoprune-days" in /etc/entropy/client.conf.
@@ -1312,8 +1315,13 @@ class RepositoryMixin:
 
         @keyword dry_run: do not remove files, just return them
         @type dry_run: bool
-        @keyword days_override: override SystemSettings setting (from client.conf)
+        @keyword days_override: override SystemSettings setting
+            (from client.conf)
         @type days_override: int
+        @keyword skip_available_packages: if True, the package files still
+            available in repositories are skipped. This can be used to implement
+            cleanups using just a shared Entropy Resources lock.
+        @type skip_available_packages: bool
         @return: list of removed package file paths.
         @rtype: list
         @raise AttributeError: if days_override or client.conf setting is
@@ -1328,8 +1336,19 @@ class RepositoryMixin:
         if not const_isnumber(autoprune_days):
             raise AttributeError("autoprune_days is invalid")
 
-        def filter_expired_pkg(pkg_path):
+        repo_packages = set()
+        if skip_available_packages:
+            for repository_id in self.repositories():
+                repo = self.open_repository(repository_id)
+                repo_packages.update(
+                    (PackageAction.get_standard_fetch_disk_path(x) for x in
+                     repo.listAllDownloads(do_sort = False, full_path = True))
+                )
 
+        def filter_expired_pkg(pkg_path):
+            if skip_available_packages:
+                if pkg_path in repo_packages:
+                    return False
             if not os.path.isfile(pkg_path):
                 return False
             if not const_file_readable(pkg_path):
@@ -1405,16 +1424,11 @@ class RepositoryMixin:
             except OSError:
                 pass
 
-            try:
-                os.remove(repo_pkg + etpConst['packagesmd5fileext'])
-            except OSError:
-                pass
-            try:
-                os.remove(repo_pkg + \
-                    etpConst['packagemtimefileext'])
-            except OSError:
-                # KeyError is for backward compatibility
-                pass
+            for path in glob.iglob(repo_pkg + ".*"):
+                try:
+                    os.remove(path)
+                except OSError:
+                    pass
 
         return successfully_removed
 
