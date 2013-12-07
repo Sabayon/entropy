@@ -3440,7 +3440,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='i', sender_keyword='sender')
-    def api(self, _sender=None):
+    def api(self, sender=None):
         """
         Return RigoDaemon API version.
         """
