@@ -23,7 +23,6 @@ os.environ["TERM"] = os.environ.get("TERM", "xterm")
 
 import errno
 import sys
-import pwd
 import time
 import signal
 import shutil
@@ -153,7 +152,7 @@ def install_exception_handler():
 def uninstall_exception_handler():
     sys.excepthook = sys.__excepthook__
 
-def handle_exception(exc_class, exc_instance, exc_tb):
+def handle_exception(_exc_class, exc_instance, exc_tb):
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
     # restore original exception handler, to avoid loops
     uninstall_exception_handler()
@@ -179,13 +178,13 @@ class Entropy(Client):
             )
 
     @staticmethod
-    def set_daemon(daemon):
+    def set_daemon(daem):
         """
         Bind the Entropy Singleton instance to the DBUS Daemon.
         """
-        Entropy._DAEMON = daemon
-        DaemonUrlFetcher.set_daemon(daemon)
-        DaemonMultipleUrlFetcher.set_daemon(daemon)
+        Entropy._DAEMON = daem
+        DaemonUrlFetcher.set_daemon(daem)
+        DaemonMultipleUrlFetcher.set_daemon(daem)
 
     @classmethod
     def output(cls, text, header = "", footer = "", back = False,
@@ -218,11 +217,11 @@ class DaemonUrlFetcher(UrlFetcher):
         self.__last_t = None
 
     @staticmethod
-    def set_daemon(daemon):
+    def set_daemon(daem):
         """
         Bind RigoDaemon instance to this class.
         """
-        DaemonUrlFetcher._DAEMON = daemon
+        DaemonUrlFetcher._DAEMON = daem
 
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
@@ -262,11 +261,11 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
         self.__last_t_mutex = Lock()
 
     @staticmethod
-    def set_daemon(daemon):
+    def set_daemon(daem):
         """
         Bind RigoDaemon instance to this class.
         """
-        DaemonMultipleUrlFetcher._DAEMON = daemon
+        DaemonMultipleUrlFetcher._DAEMON = daem
 
     def update(self):
         if self._DAEMON is None:
@@ -340,7 +339,7 @@ class FakeOutFile(object):
     def isatty(self):
         return False
 
-    def read(self, a):
+    def read(self, _a):
         return ""
 
     def readline(self):
@@ -359,7 +358,7 @@ class FakeOutFile(object):
         for s in l:
             self.write(s)
 
-    def seek(self, a):
+    def seek(self, _a):
         raise IOError(29, "Illegal seek")
 
     def tell(self):
@@ -464,15 +463,6 @@ class ApplicationsTransaction(object):
 
 class RigoDaemonService(dbus.service.Object):
 
-    BUS_NAME = DbusConfig.BUS_NAME
-    OBJECT_PATH = DbusConfig.OBJECT_PATH
-
-    _INSTALLED_REPO_GIO_EVENTS = (
-        Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
-        Gio.FileMonitorEvent.CHANGED)
-
-    API_VERSION = 8
-
     """
     RigoDaemon is the dbus service Object in charge of executing
     privileged tasks, like repository updates, package installation
@@ -481,6 +471,15 @@ class RigoDaemonService(dbus.service.Object):
     by the caller. Here it is assumed that Entropy Resources Lock
     is acquired in exclusive mode.
     """
+
+    BUS_NAME = DbusConfig.BUS_NAME
+    OBJECT_PATH = DbusConfig.OBJECT_PATH
+
+    _INSTALLED_REPO_GIO_EVENTS = (
+        Gio.FileMonitorEvent.ATTRIBUTE_CHANGED,
+        Gio.FileMonitorEvent.CHANGED)
+
+    API_VERSION = 8
 
     class ActionQueueItem(object):
 
@@ -799,7 +798,7 @@ class RigoDaemonService(dbus.service.Object):
         task.name = "AutoRepositoriesUpdateTimer"
         task.start()
 
-    def _installed_repository_changed(self, mon, gio_f, data, event):
+    def _installed_repository_changed(self, _mon, _gio_f, _data, event):
         """
         Gio handler for Installed Packages Repository
         modification events.
@@ -847,7 +846,7 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
                 serializer.release()
 
-    def _rigo_daemon_executable_changed(self, mon, gio_f, data, event):
+    def _rigo_daemon_executable_changed(self, _mon, _gio_f, _data, _event):
         """
         Gio handler for RigoDaemon executable modification events.
         """
@@ -859,7 +858,7 @@ class RigoDaemonService(dbus.service.Object):
             task.name = "ActivateDeferredShutdown"
             task.start()
 
-    def _activate_deferred_shutdown(self, *args):
+    def _activate_deferred_shutdown(self, *_args):
         """
         Activate deferred shutdown starting the ping/pong
         protocol.
@@ -1209,7 +1208,7 @@ class RigoDaemonService(dbus.service.Object):
 
         return True
 
-    def _one_click_updatable_kernel(self, update, remove):
+    def _one_click_updatable_kernel(self, _update, _remove):
         """
         Determine whether One Click Update can be run basing
         on the current running kernel state and its availability
@@ -1243,7 +1242,7 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
                 return False
 
-        repo_package_id, repository_id = self._entropy.atom_match(key_slot)
+        repo_package_id, _repository_id = self._entropy.atom_match(key_slot)
         if repo_package_id == -1:
             write_output(
                 "_one_click_updatable_kernel: %s not available" % (key_slot,),
@@ -1535,10 +1534,8 @@ class RigoDaemonService(dbus.service.Object):
         is_app = True
         if isinstance(item, RigoDaemonService.ActionQueueItem):
             activity = ActivityStates.MANAGING_APPLICATIONS
-            policy = PolicyActions.MANAGE_APPLICATIONS
         elif isinstance(item, RigoDaemonService.UpgradeActionQueueItem):
             activity = ActivityStates.UPGRADING_SYSTEM
-            policy = PolicyActions.UPGRADE_SYSTEM
             is_app = False
         else:
             raise AssertionError("wtf?")
@@ -1707,8 +1704,8 @@ class RigoDaemonService(dbus.service.Object):
             relaxed = True
 
         try:
-            install, removal = self._entropy.get_install_queue(
-                outcome['update'], False, False, relaxed=True)
+            install, _removal = self._entropy.get_install_queue(
+                outcome['update'], False, False, relaxed=relaxed)
 
         except DependenciesNotFound as dnf:
             write_output(
@@ -1741,7 +1738,7 @@ class RigoDaemonService(dbus.service.Object):
         # Download
         count, total, outcome = \
             self._process_install_fetch_action(
-                install, activity, AppActions.INSTALL)
+                install, activity)
         if outcome != AppTransactionOutcome.SUCCESS:
             return outcome
 
@@ -1956,7 +1953,7 @@ class RigoDaemonService(dbus.service.Object):
             "binary package: %s" % (pkg_match,),
             debug=True)
 
-        def fake_installer(_entropy_client, matches):
+        def fake_installer(_entropy_client, _matches):
             return 0
 
         prepared_s = switcher.prepared_switch(
@@ -1978,7 +1975,7 @@ class RigoDaemonService(dbus.service.Object):
                 debug=True)
             return
 
-        for n, pkg_match in enumerate(pkg_matches, 1):
+        for pkg_match in pkg_matches:
             pkg_id, pkg_repo = pkg_match
             repo = self._entropy.open_repository(pkg_repo)
             atom = repo.retrieveAtom(pkg_id)
@@ -2025,7 +2022,7 @@ class RigoDaemonService(dbus.service.Object):
                 "%s, %s" % (package_id, repository_id,), debug=True)
 
             try:
-                install, removal = self._entropy.get_install_queue(
+                install, _removal = self._entropy.get_install_queue(
                     [pkg_match], False, False)
 
             except DependenciesNotFound as dnf:
@@ -2066,7 +2063,7 @@ class RigoDaemonService(dbus.service.Object):
             # Download
             count, total, outcome = \
                 self._process_install_fetch_action(
-                    install, activity, action)
+                    install, activity)
             if outcome != AppTransactionOutcome.SUCCESS:
                 return outcome
 
@@ -2122,7 +2119,6 @@ class RigoDaemonService(dbus.service.Object):
             splitdebug = PackageAction.splitdebug_enabled(
                 self._entropy, (pkg_id, pkg_repo))
             repo = self._entropy.open_repository(pkg_repo)
-            key, slot = repo.retrieveKeySlot(pkg_id)
 
             # package size and unpack size calculation
             down_url = repo.retrieveDownloadURL(pkg_id)
@@ -2167,8 +2163,7 @@ class RigoDaemonService(dbus.service.Object):
 
         return True
 
-    def _process_install_fetch_action(self, install_queue, activity,
-                                      action):
+    def _process_install_fetch_action(self, install_queue, activity):
         """
         Process Applications Download Action.
         """
@@ -2502,7 +2497,7 @@ class RigoDaemonService(dbus.service.Object):
         inst_repo = self._entropy.installed_repository()
         with inst_repo.shared():
 
-            for k, v in scandata.items():
+            for _k, v in scandata.items():
                 dest = v['destination']
                 pkg_ids = _cache.get(dest)
 
@@ -3438,7 +3433,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.method(BUS_NAME, in_signature='',
         out_signature='i', sender_keyword='sender')
-    def api(self, sender=None):
+    def api(self, _sender=None):
         """
         Return RigoDaemon API version.
         """
@@ -3585,8 +3580,6 @@ class RigoDaemonService(dbus.service.Object):
                           sender=None):
         """
         Rename a Repository.
-
-        TODO: concurrent access
         """
         pid = self._get_caller_pid(sender)
         write_output("disable_repository() received, pid: %s" % (pid,),
@@ -3679,8 +3672,8 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='sssbisiibb')
-    def output(self, text, header, footer, back, importance, level,
-               count_c, count_t, percent, raw):
+    def output(self, _text, _header, _footer, _back, _importance, _level,
+               _count_c, _count_t, _percent, _raw):
         """
         Entropy Library output text signal. Clients will be required to
         forward this message to User.
@@ -3688,9 +3681,9 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='iiiis')
-    def transfer_output(self, average, downloaded_size,
-                        total_size, data_transfer_bytes,
-                        time_remaining_secs):
+    def transfer_output(self, _average, _downloaded_size,
+                        _total_size, _data_transfer_bytes,
+                        _time_remaining_secs):
         """
         Entropy UrlFetchers output signals. Clients will be required to
         forward this message to User in Progress Bar form.
@@ -3698,7 +3691,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='is')
-    def repositories_updated(self, result, message):
+    def repositories_updated(self, _result, _message):
         """
         Repositories have been updated.
         "result" is an integer carrying execution return status.
@@ -3708,7 +3701,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='ss')
-    def applications_managed(self, outcome, app_log_path):
+    def applications_managed(self, _outcome, _app_log_path):
         """
         Enqueued Application actions have been completed.
         """
@@ -3717,7 +3710,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='aiai')
-    def unsupported_applications(self, manual_package_ids, package_ids):
+    def unsupported_applications(self, _manual_package_ids, _package_ids):
         """
         Notify Installed Applications that are no longer supported.
         "manual_package_ids" denotes the list of installed package ids
@@ -3729,7 +3722,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='a(sssaib)')
-    def configuration_updates_available(self, updates):
+    def configuration_updates_available(self, _updates):
         """
         Notify the presence of configuration files that should be updated.
         The payload is a list of tuples, each one composed by:
@@ -3740,7 +3733,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='a(siss)')
-    def preserved_libraries_available(self, preserved):
+    def preserved_libraries_available(self, _preserved):
         """
         Notify the presence of preserved libraries still on the system.
         The payload is a list of tuples, each one composed by:
@@ -3751,7 +3744,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='asb')
-    def repositories_settings_changed(self, repository_ids, success):
+    def repositories_settings_changed(self, _repository_ids, _success):
         """
         Notify that Repositories configuration has changed.
         This may include:
@@ -3765,7 +3758,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='i')
-    def restarting_system_upgrade(self, updates_amount):
+    def restarting_system_upgrade(self, _updates_amount):
         """
         Notify that System Upgrade activity is being restarted because
         there are more updates available. This happens when the
@@ -3894,7 +3887,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='a(sisssss)')
-    def noticeboards_available(self, notices):
+    def noticeboards_available(self, _notices):
         """
         Signal all the connected Clients that notice boards are
         available. It's up to the receiver to filter relevant
@@ -3905,8 +3898,8 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='a(is)asaiasb')
-    def updates_available(self, update, update_atoms, remove,
-                          remove_atoms, one_click_updatable):
+    def updates_available(self, _update, _update_atoms, _remove,
+                          _remove_atoms, _one_click_updatable):
         """
         Signal all the connected Clients that there are updates
         available.
@@ -3916,7 +3909,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='as')
-    def unavailable_repositories(self, repositories):
+    def unavailable_repositories(self, _repositories):
         """
         Signal all the connected Clients that there are updates
         unavailable repositories that would need to be downloaded.
@@ -3936,7 +3929,7 @@ class RigoDaemonService(dbus.service.Object):
 
     @dbus.service.signal(dbus_interface=BUS_NAME,
         signature='asb')
-    def mirrors_optimized(self, repository_ids, optimized):
+    def mirrors_optimized(self, _repository_ids, _optimized):
         """
         Mirrors have been eventually optimized for given Repositories.
         """
