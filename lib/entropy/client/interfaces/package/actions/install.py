@@ -16,8 +16,8 @@ import stat
 import time
 
 from entropy.const import etpConst, const_convert_to_unicode, \
-    const_mkdtemp, const_convert_to_rawstring, const_is_python3, \
-    const_debug_write
+    const_mkdtemp, const_mkstemp, const_convert_to_rawstring, \
+    const_is_python3, const_debug_write
 from entropy.exceptions import EntropyException
 from entropy.i18n import _
 from entropy.output import darkred, red, purple, brown, blue, darkgreen, teal
@@ -1521,10 +1521,10 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a file when it should be " \
-                    "a directory !! Removing in 20 seconds..." % (rootdir,)
+                    "a directory" % (rootdir,)
                 )
-                mytxt = darkred(_("%s is a file when should be a " \
-                "directory !! Removing in 20 seconds...") % (rootdir,))
+                mytxt = darkred(_("%s is a file when should "
+                                  "be a directory") % (rootdir,))
 
                 self._entropy.output(
                     red("QA: ")+mytxt,
@@ -1532,7 +1532,30 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     level = "warning",
                     header = red(" !!! ")
                 )
-                os.remove(rootdir)
+                rootdir_dir = os.path.dirname(rootdir)
+                rootdir_name = os.path.basename(rootdir)
+                tmp_fd, tmp_path = None, None
+                try:
+                    tmp_fd, tmp_path = const_mkstemp(
+                        dir = rootdir_dir, prefix=rootdir_name)
+                    os.rename(rootdir, tmp_path)
+                finally:
+                    if tmp_fd is not None:
+                        try:
+                            os.close(tmp_fd)
+                        except OSError:
+                            pass
+
+                self._entropy.output(
+                    "%s: %s -> %s" % (
+                        darkred(_("File moved")),
+                        blue(rootdir),
+                        darkred(tmp_path),
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = brown(" @@ ")
+                )
 
             # if our directory is a symlink instead, then copy the symlink
             if os.path.islink(imagepath_dir):
