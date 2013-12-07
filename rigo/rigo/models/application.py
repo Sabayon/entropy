@@ -1031,14 +1031,20 @@ class Application(object):
         """
         Application.get_installed() method body.
         """
-        inst_repo = self._entropy.installed_repository()
         repo = self._entropy.open_repository(self._repo_id)
+        inst_repo = self._entropy.installed_repository()
+
+        if inst_repo is repo:
+            # return ourselves if we're already representing
+            # an installed App (is_removable() expects that)
+            return self
 
         key_slot_tag = repo.retrieveKeySlotTag(self._pkg_id)
         if key_slot_tag is None:
             return None
 
         key, slot, tag = key_slot_tag
+
         matches = inst_repo.searchKeySlotTag(key, slot, tag)
         # in the installed packages repository, matches
         # must be of length < 2.
@@ -1049,10 +1055,6 @@ class Application(object):
             return None
 
         package_id = list(matches)[0]
-        if inst_repo is repo:
-            # return ourselves if we're already representing
-            # an installed App (is_removable() expects that)
-            return self
         return Application(self._entropy, self._entropy_ws,
                            self._service,
                            (package_id, inst_repo.repository_id()),
@@ -1171,14 +1173,15 @@ class Application(object):
         if masked:
             return None
 
-        try:
-            install_queue, removal_queue = \
-                self._entropy.get_install_queue(
-                    [pkg_match], False, False)
-        except DependenciesNotFound:
-            raise
-        except DependenciesCollision:
-            raise
+        with inst_repo.shared():
+            try:
+                install_queue, removal_queue = \
+                    self._entropy.get_install_queue(
+                        [pkg_match], False, False)
+            except DependenciesNotFound:
+                raise
+            except DependenciesCollision:
+                raise
 
         return install_queue, removal_queue
 
@@ -1359,7 +1362,6 @@ class Application(object):
                 if not repo.isPackageIdAvailable(self._pkg_id):
                     self._vanished_callback(self)
 
-            inst_repo = self._entropy.installed_repository()
             strict = repo.getStrictData(self._pkg_id)
             if strict is None:
                 return escape_markup(_("N/A"))
@@ -1398,6 +1400,8 @@ class Application(object):
 
             from_str = self._repo_id
             installed_str = ""
+
+            inst_repo = self._entropy.installed_repository()
             if repo is inst_repo:
                 from_str = _("Installed")
             else:
@@ -1770,14 +1774,21 @@ class AppDetails(object):
         with self._entropy.rwsem().reader():
             repo = self._entropy.open_repository(self._repo_id)
             inst_repo = self._entropy.installed_repository()
+
             if repo is inst_repo:
-                return entropy.tools.convert_unix_time_to_human_time(
-                    float(repo.retrieveCreationDate(self._pkg_id)))
+                date = repo.retrieveCreationDate(self._pkg_id)
+                if date is not None:
+                    return entropy.tools.convert_unix_time_to_human_time(
+                        float(date))
+                return None
+
             keyslot = repo.retrieveKeySlotAggregated(self._pkg_id)
             pkg_id, rc = inst_repo.atomMatch(keyslot)
             if pkg_id != -1:
-                return entropy.tools.convert_unix_time_to_human_time(
-                    float(inst_repo.retrieveCreationDate(pkg_id)))
+                date = inst_repo.retrieveCreationDate(pkg_id)
+                if date is not None:
+                    return entropy.tools.convert_unix_time_to_human_time(
+                        float(date))
 
     @property
     def date(self):
