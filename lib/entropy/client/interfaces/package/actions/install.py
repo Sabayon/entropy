@@ -1435,12 +1435,13 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
         if (remove_package_id not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
-            mytxt += " %s - %s" % (
+            mytxt += "%s %s - %s" % (
+                blue(_("QA:")),
                 blue(tofile),
                 darkred(_("cannot overwrite")),
             )
             self._entropy.output(
-                red("QA: ")+mytxt,
+                mytxt,
                 importance = 1,
                 level = "warning",
                 header = darkred("   ## ")
@@ -1523,11 +1524,11 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "WARNING!!! %s is a file when it should be " \
                     "a directory" % (rootdir,)
                 )
-                mytxt = darkred(_("%s is a file when should "
+                mytxt = darkred(_("QA: %s is a file when it should "
                                   "be a directory") % (rootdir,))
 
                 self._entropy.output(
-                    red("QA: ")+mytxt,
+                    mytxt,
                     importance = 1,
                     level = "warning",
                     header = red(" !!! ")
@@ -1800,12 +1801,12 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a circular symlink !!!" % (fromfile,)
                 )
-                mytxt = "%s: %s" % (
-                    _("Circular symlink issue"),
+                txt = "%s: %s" % (
+                    _("QA: circular symlink issue"),
                     const_convert_to_unicode(fromfile),
                 )
                 self._entropy.output(
-                    darkred("QA: ") + darkred(mytxt),
+                    darkred(txt),
                     importance = 1,
                     level = "warning",
                     header = red(" !!! ")
@@ -1823,11 +1824,11 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     "WARNING!!! %s is a circular symlink !!!" % (tofile,)
                 )
                 mytxt = "%s: %s" % (
-                    _("Circular symlink issue"),
+                    _("QA: circular symlink issue"),
                     const_convert_to_unicode(tofile),
                 )
                 self._entropy.output(
-                    darkred("QA: ") + darkred(mytxt),
+                    darkred(mytxt),
                     importance = 1,
                     level = "warning",
                     header = red(" !!! ")
@@ -1903,13 +1904,13 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                     " to system: %s => %s" % (fromfile, tofile,)
                 )
                 mytxt = "%s: %s => %s, %s" % (
-                    _("File move error"),
+                    _("QA: file move error"),
                     const_convert_to_unicode(fromfile),
                     const_convert_to_unicode(tofile),
                     _("please report"),
                 )
                 self._entropy.output(
-                    red("QA: ")+darkred(mytxt),
+                    darkred(mytxt),
                     importance = 1,
                     level = "warning",
                     header = red(" !!! ")
