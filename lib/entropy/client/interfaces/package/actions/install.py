@@ -1507,7 +1507,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                         # strings for items_not_installed
                         unicode_rootdir = const_convert_to_unicode(rootdir)
                         items_not_installed.add(unicode_rootdir)
-                        return
+                        return 0
 
             # handle broken symlinks
             if os.path.islink(rootdir) and not os.path.exists(rootdir):
@@ -1567,36 +1567,20 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! %s is a directory when it should be " \
-                        "a symlink !! Removing in 20 seconds..." % (
-                            rootdir,)
+                        "a symlink !!" % (rootdir,)
                     )
-                    mytxt = "%s: %s" % (
-                        _("directory expected, symlink found"),
+                    txt = "%s: %s" % (
+                        _("QA: symlink expected, directory found"),
                         rootdir,
                     )
-                    mytxt2 = _("Removing in 20 seconds !!")
-                    for txt in (mytxt, mytxt2,):
-                        self._entropy.output(
-                            darkred("QA: ") + darkred(txt),
-                            importance = 1,
-                            level = "warning",
-                            header = red(" !!! ")
-                        )
+                    self._entropy.output(
+                        darkred(txt),
+                        importance = 1,
+                        level = "warning",
+                        header = red(" !!! ")
+                    )
 
-                    # fucking kill it in any case!
-                    # rootdir must die! die die die die!
-                    # /me brings chainsaw
-                    try:
-                        shutil.rmtree(rootdir, True)
-                    except (shutil.Error, OSError,) as err:
-                        self._entropy.logger.log(
-                            "[Package]",
-                            etpConst['logging']['normal_loglevel_id'],
-                            "WARNING!!! Failed to rm %s " \
-                            "directory ! [workout_subdir/1]: %s" % (
-                                rootdir, err,
-                            )
-                        )
+                    return 0
 
                 tolink = os.readlink(imagepath_dir)
                 live_tolink = None
@@ -1688,6 +1672,8 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
             item_inst = os.path.join(item_dir, item_base)
             item_inst = const_convert_to_unicode(item_inst)
             items_installed.add(item_inst)
+
+            return 0
 
 
         def workout_file(currentdir, item):
@@ -1948,7 +1934,9 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
 
             # create subdirs
             for subdir in subdirs:
-                workout_subdir(currentdir, subdir)
+                exit_st = workout_subdir(currentdir, subdir)
+                if exit_st != 0:
+                    return exit_st
 
             for item in files:
                 move_st = workout_file(currentdir, item)
