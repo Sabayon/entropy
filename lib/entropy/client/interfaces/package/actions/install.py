@@ -910,6 +910,7 @@ class _PackageInstallAction(_PackageInstallRemoveAction):
         spm_uid = spm.add_installed_package(self._meta)
         if spm_uid != -1:
             inst_repo.insertSpmUid(installed_package_id, spm_uid)
+            inst_repo.commit()
 
         return 0
 
