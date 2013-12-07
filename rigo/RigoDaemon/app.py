@@ -884,18 +884,18 @@ class RigoDaemonService(dbus.service.Object):
         files.
         """
         with self._activity_mutex:
-            activity = ActivityStates.INTERNAL_ROUTINES
-            self._acquire_exclusive(activity)
+            self._acquire_shared()
             try:
 
                 with self._rwsem.reader():
                     try:
-                        self._entropy.clean_downloaded_packages()
+                        self._entropy.clean_downloaded_packages(
+                            skip_available_packages=True)
                     except AttributeError:
                         pass
 
             finally:
-                self._release_exclusive(activity)
+                self._release_shared()
                 # spin!
                 self._start_package_cache_timer()
 
