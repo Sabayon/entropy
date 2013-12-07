@@ -290,6 +290,8 @@ class MagnetoCore(MagnetoCoreUI):
         """
         if activity == ActivityStates.UPDATING_REPOSITORIES:
             self.updating_signal()
+        elif activity == ActivityStates.UPGRADING_SYSTEM:
+            self.upgrading_signal()
 
     def _repositories_updated_signal(self, result, message):
         """
@@ -392,6 +394,16 @@ class MagnetoCore(MagnetoCoreUI):
         self.update_tooltip(_("Repositories are being updated"))
         self.show_alert(_("Sabayon repositories status"),
             _("Repositories are being updated automatically")
+        )
+
+    def upgrading_signal(self):
+        if not config.settings['APPLET_ENABLED']:
+            return
+
+        # all fine, no updates
+        self.update_tooltip(_("System upgrade started"))
+        self.show_alert(_("System upgrade started"),
+            _("Do not shutdown nor reboot the computer!")
         )
 
     def is_system_on_batteries(self):
