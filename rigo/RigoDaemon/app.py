@@ -1959,6 +1959,13 @@ class RigoDaemonService(dbus.service.Object):
         prepared_s = switcher.prepared_switch(
             pkg_match, fake_installer, from_running=False)
 
+        if simulate:
+            write_output(
+                "_maybe_enqueue_kernel_switcher_actions: "
+                "simulation complete.",
+                debug=True)
+            return
+
         try:
             prepared_s.pre()
         except kswitch.CannotFindRunningKernel as cfrk:
