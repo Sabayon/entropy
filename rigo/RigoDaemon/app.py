@@ -21,6 +21,7 @@ os.environ['ETP_GETTEXT_DOMAIN'] = "rigo"
 # Set the default terminal if unset
 os.environ["TERM"] = os.environ.get("TERM", "xterm")
 
+import contextlib
 import errno
 import sys
 import time
@@ -880,6 +881,68 @@ class RigoDaemonService(dbus.service.Object):
         task.daemon = True
         task.start()
 
+    def _systemd_booted(self):
+        """
+        Return whether systemd booted this system.
+        """
+        return os.path.isdir("/run/systemd/system")
+
+    def _systemd_inhibit_shutdown(self, activity):
+        """
+        Inhibit shutdown through systemd. Return the file descriptor
+        that should be kept open as long as the shutdown should be
+        inhibited.
+        """
+        write_output("_systemd_inhibit_shutdown: called", debug=True)
+
+        description = _("Internal activity in progress")
+        if activity == ActivityStates.UPGRADING_SYSTEM:
+            description = _("Upgrade in progress")
+        elif activity == ActivityStates.UPDATING_REPOSITORIES:
+            description = _("Repositories update in progress")
+        elif activity == ActivityStates.MANAGING_APPLICATIONS:
+            description = _("Applications management in progress")
+
+        def getfd():
+            try:
+                bus = self._bus.get_object(
+                    "org.freedesktop.login1",
+                    "/org/freedesktop/login1")
+                iface = dbus.Interface(
+                    bus, dbus_interface="org.freedesktop.login1.Manager")
+
+                return iface.Inhibit(
+                    "shutdown:idle", "RigoDaemon",
+                    description, "block").take()
+
+            except dbus.exceptions.DBusException as err:
+                write_output("_systemd_inhibit: error: %s" % (err,))
+
+        return self._execute_mainloop(getfd)
+
+    @contextlib.contextmanager
+    def _inhibit_shutdown(self, activity):
+        """
+        Context manager that can be used to inhibit the system shutdown.
+        """
+        write_output("_inhibit_shutdown: called", debug=True)
+        fd = None
+        try:
+            if self._systemd_booted():
+                fd = self._systemd_inhibit_shutdown(activity)
+
+            write_output("_inhibit_shutdown: got fd: %s" % (fd,),
+                         debug=True)
+
+            yield
+
+        finally:
+            if fd is not None:
+                try:
+                    os.close(fd)
+                except OSError:
+                    pass
+
     def _clean_package_cache(self):
         """
         Clean Entropy Packages Cache, removing old package
@@ -1330,9 +1393,10 @@ class RigoDaemonService(dbus.service.Object):
                     write_output("_update_repositories(): %s" % (
                             repositories,), debug=True)
 
-                    updater = self._entropy.Repositories(
-                        repositories, force = force)
-                    result = updater.unlocked_sync()
+                    with self._inhibit_shutdown(activity):
+                        updater = self._entropy.Repositories(
+                            repositories, force = force)
+                        result = updater.unlocked_sync()
 
             except AttributeError as err:
                 write_output("_update_repositories error: %s" % (err,))
@@ -1600,7 +1664,7 @@ class RigoDaemonService(dbus.service.Object):
                 return
 
             try:
-                with self._rwsem.reader():
+                with self._rwsem.reader(), self._inhibit_shutdown(activity):
                     outcome = self._process_action(item, activity, is_app)
                     write_output("_action_queue_worker_thread, "
                                  "returned outcome: %s" % (
