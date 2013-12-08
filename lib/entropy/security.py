@@ -31,7 +31,6 @@ from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.fetchers import UrlFetcher
-from entropy.locks import EntropyResourcesLock
 
 import entropy.tools
 
@@ -851,10 +850,9 @@ class System(object):
         """
         return os.path.isdir(self.SECURITY_DIR)
 
-    def unlocked_sync(self, do_cache = True, force = False):
+    def sync(self, do_cache = True, force = False):
         """
-        This is equivalent to sync() but doesn't acquire the
-        Entropy Resources Lock.
+        This is the service method for remotely fetch advisories metadata.
 
         @keyword do_cache: generates advisories cache
         @type do_cache: bool
@@ -915,30 +913,6 @@ class System(object):
                 header = red(" @@ ")
             )
         return rc_lock
-
-    def sync(self, do_cache = True, force = False):
-        """
-        This is the service method for remotely fetch advisories metadata.
-
-        @keyword do_cache: generates advisories cache
-        @type do_cache: bool
-        @return: execution status (0 means all file)
-        @rtype: int
-        """
-        lock = EntropyResourcesLock(output = self._entropy)
-        gave_up = lock.wait_resources()
-        if gave_up:
-            return 7
-
-        # acquired
-        try:
-            rc_lock = self.unlocked_sync(do_cache = do_cache,
-                               force = force)
-            if rc_lock != 0:
-                return rc_lock
-        finally:
-            lock.unlock_resources()
-        return 0
 
     def _setup_paths(self):
         """

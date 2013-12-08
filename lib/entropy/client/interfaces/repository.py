@@ -110,7 +110,7 @@ class Repository:
 
         return br_rc
 
-    def _run_sync(self, _unlocked = False):
+    def _run_sync(self):
 
         self.updated = False
         for repo in self.repo_ids:
@@ -149,7 +149,7 @@ class Repository:
         if self.updated:
             self._entropy.clear_cache()
             if self.fetch_security:
-                self._update_security_advisories(_unlocked = _unlocked)
+                self._update_security_advisories()
 
             # do treeupdates
             if isinstance(self._entropy.installed_repository(),
@@ -293,14 +293,10 @@ class Repository:
             return True
         return False
 
-    def _update_security_advisories(self, _unlocked = False):
-        # update Security Advisories
+    def _update_security_advisories(self):
         try:
             security_intf = self._entropy.Security()
-            if _unlocked:
-                security_intf.unlocked_sync(do_cache = False)
-            else:
-                security_intf.sync(do_cache = False)
+            security_intf.sync(do_cache = False)
         except Exception as e:
             entropy.tools.print_traceback(f = self._entropy.logger)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
@@ -328,7 +324,7 @@ class Repository:
             header = darkred(" @@ ")
         )
 
-        rc = self._run_sync(_unlocked=True)
+        rc = self._run_sync()
         if rc:
             return rc
 
