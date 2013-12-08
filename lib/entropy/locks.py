@@ -191,21 +191,25 @@ class _GenericResourceLock(object):
                 ref_obj.close()
                 mapped['ref'] = None
 
-    def _file_lock_create(self, pidfile, blocking=False, shared=False):
+    def _file_lock_create(self, lock_path, blocking=False, shared=False):
         """
         Create and allocate the lock file pointed by lock_data structure.
         """
-        lockdir = os.path.dirname(pidfile)
+        lock_dir = os.path.dirname(lock_path)
         try:
-            os.makedirs(lockdir, 0o775)
+            os.makedirs(lock_dir, 0o775)
         except OSError as err:
             if err.errno != errno.EEXIST:
                 raise
-        const_setup_directory(lockdir)
+        const_setup_directory(lock_dir)
 
         try:
-            pid_f = open(pidfile, "a+")
-        except IOError as err:
+            fmode = 0o664
+            if shared:
+                fd = os.open(lock_path, os.O_CREAT | os.O_RDONLY, fmode)
+            else:
+                fd = os.open(lock_path, os.O_CREAT | os.O_APPEND, fmode)
+        except OSError as err:
             if err.errno in (errno.ENOENT, errno.EACCES):
                 # cannot get lock or dir doesn't exist
                 return False, None
@@ -213,11 +217,11 @@ class _GenericResourceLock(object):
 
         # ensure that entropy group can write on that
         try:
-            const_setup_file(pidfile, etpConst['entropygid'], 0o664)
+            const_setup_file(lock_path, etpConst['entropygid'], 0o664)
         except OSError:
             pass
 
-        flock_f = FlockFile(pidfile, fobj = pid_f)
+        flock_f = FlockFile(lock_path, fd=fd)
         if blocking:
             if shared:
                 flock_f.acquire_shared()
