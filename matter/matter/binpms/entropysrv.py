@@ -69,9 +69,10 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         """
         lock = EntropyResourcesLock(output=Server)
         if self._blocking:
-            acquired = lock.lock_resources(shared=False)
+            lock.acquire_exclusive()
+            acquired = True
         else:
-            acquired = not lock.wait_resources(shared=False)
+            acquired = lock.wait_exclusive()
         if not acquired:
             raise EntropyResourceLock.NotAcquired(
                 "unable to acquire lock")
@@ -81,7 +82,7 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         Overridden from BaseBinaryResourceLock.
         """
         lock = EntropyResourcesLock(output=Server)
-        lock.unlock_resources()
+        lock.release()
 
     def __enter__(self):
         """

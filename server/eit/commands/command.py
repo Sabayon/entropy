@@ -208,7 +208,7 @@ class EitCommand(object):
                 return 1
 
             lock = EntropyResourcesLock(output=server_class)
-            acquired = not lock.wait_resources(shared=False, spinner=True)
+            acquired = lock.wait_exclusive()
             if not acquired:
                 server_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -231,7 +231,7 @@ class EitCommand(object):
             if server is not None:
                 server.shutdown()
             if acquired:
-                lock.unlock_resources()
+                lock.release()
 
     def _call_unlocked(self, func, repo):
         """
@@ -251,8 +251,8 @@ class EitCommand(object):
                 return 1
 
             lock = EntropyResourcesLock(output=server_class)
-            acquired = lock.lock_resources(
-                shared=True, blocking=True)
+            lock.acquire_shared()
+            acquired = True
 
             if not acquired:
                 server_class.output(
@@ -276,7 +276,7 @@ class EitCommand(object):
             if server is not None:
                 server.shutdown()
             if acquired:
-                lock.unlock_resources()
+                lock.release()
 
     def _settings(self):
         """

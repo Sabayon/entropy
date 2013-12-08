@@ -53,10 +53,8 @@ if __name__ == "__main__":
         acquired = False
         lock = EntropyResourcesLock(output=Client)
         try:
-            acquired = lock.lock_resources(blocking=True, shared=True)
-            if not acquired:
-                print_error(brown(_("Another Entropy is currently running.")))
-                return 1
+            lock.acquire_shared()
+            acquired = True
 
             etp_client = Client()
 
@@ -65,7 +63,7 @@ if __name__ == "__main__":
             if etp_client is not None:
                 etp_client.shutdown()
             if acquired:
-                lock.unlock_resources()
+                lock.release()
 
     def _switch_kernel(f_nsargs):
 

@@ -90,8 +90,7 @@ class RigoServiceController(GObject.Object):
         SharedLocker ensures that Entropy Resources
         lock and unlock operations are called once,
         avoiding reentrancy, which is a property of
-        lock_resources() and unlock_resources(), even
-        during concurrent access.
+        *acquire*(), even during concurrent access.
         """
 
         def __init__(self, entropy_client, locked):
@@ -107,8 +106,7 @@ class RigoServiceController(GObject.Object):
                     lock = True
                     self._locked = True
             if lock:
-                self._reslock.lock_resources(
-                    blocking=True, shared=True)
+                self._reslock.acquire_shared()
 
         def unlock(self):
             with self._locking_mutex:
@@ -117,7 +115,7 @@ class RigoServiceController(GObject.Object):
                     unlock = True
                     self._locked = False
             if unlock:
-                self._reslock.unlock_resources()
+                self._reslock.release()
 
     __gsignals__ = {
         # we request to lock the whole UI wrt repo

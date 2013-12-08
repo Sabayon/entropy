@@ -389,7 +389,7 @@ Upgrade the system.
             # we will acquire them again in blocking mode, cross
             # fingers
             lock = EntropyResourcesLock(output=entropy_client)
-            lock.unlock_resources()
+            lock.release()
             os.execvp("equo", sys.argv)
 
 

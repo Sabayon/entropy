@@ -804,7 +804,7 @@ class Rigo(Gtk.Application):
             return
 
         lock = EntropyResourcesLock(output=self._entropy)
-        acquired = not lock.wait_resources(max_lock_count=1, shared=True)
+        acquired = lock.try_acquire_shared()
         is_exclusive = False
         if not acquired:
             # check whether RigoDaemon is running in excluive mode

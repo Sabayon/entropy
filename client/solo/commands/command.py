@@ -391,9 +391,10 @@ class SoloCommand(object):
 
             lock = EntropyResourcesLock(output=client_class)
             if blocking:
-                acquired = lock.lock_resources(blocking=True, shared=False)
+                lock.acquire_exclusive()
+                acquired = True
             else:
-                acquired = not lock.wait_resources(shared=False)
+                acquired = lock.wait_exclusive()
             if not acquired:
                 client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -407,7 +408,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                lock.unlock_resources()
+                lock.release()
 
     def _call_unlocked(self, func):
         """
@@ -427,14 +428,8 @@ class SoloCommand(object):
                 return 1
 
             lock = EntropyResourcesLock(output=client_class)
-            acquired = lock.lock_resources(blocking=True, shared=True)
-
-            if not acquired:
-                client_class.output(
-                    darkgreen(_("Another Entropy is currently running.")),
-                    level="error", importance=1
-                )
-                return 1
+            lock.acquire_shared()
+            acquired = True
 
             client = client_class()
             return func(client)
@@ -442,7 +437,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                lock.unlock_resources()
+                lock.release()
 
     def _settings(self):
         """
