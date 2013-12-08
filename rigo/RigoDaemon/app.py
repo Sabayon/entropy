@@ -1398,7 +1398,7 @@ class RigoDaemonService(dbus.service.Object):
                     with self._inhibit_shutdown(activity):
                         updater = self._entropy.Repositories(
                             repositories, force = force)
-                        result = updater.unlocked_sync()
+                        result = updater.sync()
 
             except AttributeError as err:
                 write_output("_update_repositories error: %s" % (err,))

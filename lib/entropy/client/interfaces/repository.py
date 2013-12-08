@@ -311,21 +311,6 @@ class Repository:
                 header = darkred(" @@ ")
             )
 
-    def unlocked_sync(self):
-        """
-        Start repository synchronization without acquiring
-        Entropy Resources Lock.
-        """
-        rc = self._run_sync(_unlocked=True)
-        if rc:
-            return rc
-        if self.not_available >= len(self.repo_ids):
-            return 2
-        elif self.not_available > 0:
-            return 1
-        self._set_last_successful_sync_time()
-        return 0
-
     def sync(self):
         """
         Start repository synchronization.
@@ -334,7 +319,7 @@ class Repository:
         @rtype: int
         """
         self._entropy.close_repositories()
-        # let's dance!
+
         mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
         self._entropy.output(
             mytxt,
@@ -343,4 +328,14 @@ class Repository:
             header = darkred(" @@ ")
         )
 
-        return self.unlocked_sync()
+        rc = self._run_sync(_unlocked=True)
+        if rc:
+            return rc
+
+        if self.not_available >= len(self.repo_ids):
+            return 2
+        elif self.not_available > 0:
+            return 1
+
+        self._set_last_successful_sync_time()
+        return 0
