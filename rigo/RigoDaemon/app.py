@@ -30,8 +30,6 @@ import shutil
 import subprocess
 import copy
 import threading
-from threading import Lock, RLock, Timer, Semaphore, BoundedSemaphore, \
-    current_thread
 from collections import deque
 
 # this makes the daemon to not write the entropy pid file
@@ -261,7 +259,7 @@ class DaemonMultipleUrlFetcher(MultipleUrlFetcher):
     def __init__(self, *args, **kwargs):
         MultipleUrlFetcher.__init__(self, *args, **kwargs)
         self.__last_t = None
-        self.__last_t_mutex = Lock()
+        self.__last_t_mutex = threading.Lock()
 
     @staticmethod
     def set_daemon(daem):
@@ -379,7 +377,7 @@ class ApplicationsTransaction(object):
 
     def __init__(self):
         self._transactions = {}
-        self._transactions_mutex = RLock()
+        self._transactions_mutex = threading.RLock()
         self._parent = None
 
     def __enter__(self):
@@ -655,36 +653,36 @@ class RigoDaemonService(dbus.service.Object):
         self._old_stderr = sys.stderr
 
         # used to determine if there are connected clients
-        self._ping_timer_mutex = Lock()
+        self._ping_timer_mutex = threading.Lock()
         self._ping_timer = None
 
-        self._current_activity_mutex = Lock()
+        self._current_activity_mutex = threading.Lock()
         self._current_activity = ActivityStates.AVAILABLE
-        self._activity_mutex = Lock()
+        self._activity_mutex = threading.Lock()
 
         self._acquired_exclusive = False
-        self._acquired_exclusive_mutex = Lock()
+        self._acquired_exclusive_mutex = threading.Lock()
 
         self._config_updates = None
-        self._config_updates_mutex = Lock()
+        self._config_updates_mutex = threading.Lock()
 
-        self._greetings_serializer = Lock()
+        self._greetings_serializer = threading.Lock()
         # Thread serializer for Entropy SystemSettings
         # active management.
-        self._settings_mgmt_serializer = Lock()
+        self._settings_mgmt_serializer = threading.Lock()
 
         # this mutex is used when non threads-safe
         # accesses are required, like when we're forced
         # to iterate through the deque.
-        self._action_queue_mutex = Lock()
+        self._action_queue_mutex = threading.Lock()
         self._action_queue = deque()
         # this should not be merged with action_queue_mutex
         # because it masks clients from early action_queue_length = 0
         # return values (see action_queue_length()).
-        self._action_queue_length_mutex = Lock()
+        self._action_queue_length_mutex = threading.Lock()
         self._action_queue_length = 0
-        self._action_queue_waiter = Semaphore(0)
-        self._enqueue_action_busy_hold_sem = Semaphore()
+        self._action_queue_waiter = threading.Semaphore(0)
+        self._enqueue_action_busy_hold_sem = threading.Semaphore()
         self._action_queue_task = ParallelTask(
             self._action_queue_worker_thread)
         self._action_queue_task.name = "ActionQueueWorkerThread"
@@ -692,9 +690,9 @@ class RigoDaemonService(dbus.service.Object):
         self._action_queue_task.start()
 
         self._deferred_shutdown = False
-        self._deferred_shutdown_mutex = Lock()
+        self._deferred_shutdown_mutex = threading.Lock()
 
-        self._app_mgmt_mutex = Lock()
+        self._app_mgmt_mutex = threading.Lock()
         self._app_mgmt_notes = {
             'fobj': None,
             'path': None
@@ -722,7 +720,8 @@ class RigoDaemonService(dbus.service.Object):
         # repository changes
         # the latter is mainly for lockless clients
         repo_path = self._entropy.installed_repository_path()
-        self._installed_repository_updated_serializer = BoundedSemaphore(1)
+        bounded_sem = threading.BoundedSemaphore(1)
+        self._installed_repository_updated_serializer = bounded_sem
         self._inst_mon = None
         if os.path.isfile(repo_path):
             inst_repo_file = Gio.file_new_for_path(repo_path)
@@ -756,7 +755,7 @@ class RigoDaemonService(dbus.service.Object):
                 def _dump():
                     task.kill()
                     dump_signal(None, None)
-                timer = Timer(10.0, _dump)
+                timer = threading.Timer(10.0, _dump)
                 timer.name = "MainThreadHearthbeatCheck"
                 timer.daemon = True
                 timer.start()
@@ -772,7 +771,7 @@ class RigoDaemonService(dbus.service.Object):
         Start timer thread that reloads RigoDaemon every 24 hours.
         This avoids the Python process to grow over time.
         """
-        task = Timer(3600 * 24, self.reload)
+        task = threading.Timer(3600 * 24, self.reload)
         task.daemon = True
         task.name = "TimedReloadTimer"
         task.start()
@@ -784,7 +783,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         # clean entropy packages cache every 8 hours, basing
         # on Entropy Client settings
-        task = Timer(3600 * 8, self._clean_package_cache)
+        task = threading.Timer(3600 * 8, self._clean_package_cache)
         task.daemon = True
         task.name = "CleanPackageCacheTimer"
         task.start()
@@ -794,7 +793,7 @@ class RigoDaemonService(dbus.service.Object):
         Start timer thread that handles automatic repositories
         update.
         """
-        task = Timer(
+        task = threading.Timer(
             random.randint(3600 * 1, 3600 * 18),
             self._auto_repositories_update)
         task.daemon = True
@@ -1127,11 +1126,11 @@ class RigoDaemonService(dbus.service.Object):
         Execute a function inside the MainLoop and return
         the result to the caller.
         """
-        if current_thread().name == "MainThread":
+        if threading.current_thread().name == "MainThread":
             return function(*args, **kwargs)
 
         sem_data = {
-            'sem': Semaphore(0),
+            'sem': threading.Semaphore(0),
             'res': None,
             'exc': None,
         }
@@ -1158,7 +1157,7 @@ class RigoDaemonService(dbus.service.Object):
         """
         write_output("_authorize: enter", debug=True)
         auth_res = {
-            'sem': Semaphore(0),
+            'sem': threading.Semaphore(0),
             'result': None,
             }
 
@@ -1204,7 +1203,7 @@ class RigoDaemonService(dbus.service.Object):
 
             entropy.tools.kill_threads()
 
-            sem = Semaphore(0)
+            sem = threading.Semaphore(0)
             def _shutdown(_sem):
                 self.shutdown()
                 _sem.release()
@@ -4049,7 +4048,7 @@ class RigoDaemonService(dbus.service.Object):
         write_output("ping() issued", debug=True)
         with self._ping_timer_mutex:
             if self._ping_timer is None:
-                self._ping_timer = Timer(15.0, self.stop)
+                self._ping_timer = threading.Timer(15.0, self.stop)
                 self._ping_timer.daemon = True
                 self._ping_timer.start()
 
