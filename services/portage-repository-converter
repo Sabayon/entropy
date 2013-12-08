@@ -17,6 +17,7 @@ from entropy.spm.plugins.interfaces.portage_plugin import xpak
 from entropy.spm.plugins.factory import get_default_instance as \
     get_spm
 from entropy.const import const_convert_to_rawstring
+from entropy.locks import SimpleFileLock
 import entropy.dep
 import entropy.dump
 import entropy.tools
@@ -341,7 +342,7 @@ def _sync_tree(args):
     acquired = False
     try:
 
-        acquired = entropy.tools.acquire_lock(lock_file, lock_map)
+        acquired = SimpleFileLock.acquire_lock(lock_file, lock_map)
 
         if not acquired:
             print_error(brown(_("Another instance is running.")))
@@ -376,7 +377,7 @@ def _sync_tree(args):
 
     finally:
         if acquired:
-            entropy.tools.release_lock(lock_file, lock_map)
+            SimpleFileLock.release_lock(lock_file, lock_map)
 
 
 if __name__ == "__main__":
