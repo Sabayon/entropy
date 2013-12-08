@@ -28,7 +28,9 @@ import signal
 import shutil
 import subprocess
 import copy
-from threading import Lock, RLock, Timer, Semaphore, BoundedSemaphore
+import threading
+from threading import Lock, RLock, Timer, Semaphore, BoundedSemaphore, \
+    current_thread
 from collections import deque
 
 # this makes the daemon to not write the entropy pid file
@@ -1056,6 +1058,35 @@ class RigoDaemonService(dbus.service.Object):
         Convert dbus.String() to unicode object
         """
         return dbus_string.decode(etpConst['conf_encoding'])
+
+    def _execute_mainloop(self, function, *args, **kwargs):
+        """
+        Execute a function inside the MainLoop and return
+        the result to the caller.
+        """
+        if current_thread().name == "MainThread":
+            return function(*args, **kwargs)
+
+        sem_data = {
+            'sem': Semaphore(0),
+            'res': None,
+            'exc': None,
+        }
+
+        def _wrapper():
+            try:
+                sem_data['res'] = function(*args, **kwargs)
+            except Exception as exc:
+                sem_data['exc'] = exc
+            finally:
+                sem_data['sem'].release()
+
+        GLib.idle_add(_wrapper)
+        sem_data['sem'].acquire()
+
+        if sem_data['exc'] is not None:
+            raise sem_data['exc']
+        return sem_data['res']
 
     def _authorize(self, pid, action_id):
         """
