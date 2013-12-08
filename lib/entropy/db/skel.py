@@ -4902,14 +4902,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             cached = self.__atomMatchFetchCache(atom, matchSlot,
                 multiMatch, maskFilter, extendedResults)
             if cached is not None:
-
-                try:
-                    cached = self.__atomMatchValidateCache(cached,
-                        multiMatch, extendedResults)
-                except (TypeError, ValueError, IndexError, KeyError,):
-                    cached = None
-
-            if cached is not None:
                 return cached
 
         # "or" dependency support
@@ -5411,47 +5403,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             self._cacher.push("%s/%s/%s_%s" % (
                 self.__db_match_cache_key, self.name, ck_sum, hash_str,),
                 kwargs.get('result'), async = False)
-
-    def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
-        """
-        This method validates the cache in order to avoid cache keys collissions
-        or corruption that could lead to improper data returned.
-        """
-
-        # time wasted for a reason
-        data, rc = cached_obj
-
-        if multiMatch:
-            # data must be set !
-            if not isinstance(data, set):
-                return None
-        else:
-            # data must be int !
-            if not entropy.tools.isnumber(data):
-                return None
-
-        if rc != 0:
-            return cached_obj
-
-        if (not extendedResults) and (not multiMatch):
-            if not self.isPackageIdAvailable(data):
-                return None
-
-        elif extendedResults and (not multiMatch):
-            if not self.isPackageIdAvailable(data[0]):
-                return None
-
-        elif extendedResults and multiMatch:
-            package_ids = set([x[0] for x in data])
-            if not self.arePackageIdsAvailable(package_ids):
-                return None
-
-        elif (not extendedResults) and multiMatch:
-            # (set([x[0] for x in dbpkginfo]),0)
-            if not self.arePackageIdsAvailable(data):
-                return None
-
-        return cached_obj
 
     def __filterSlot(self, package_id, slot):
         if slot is None:
