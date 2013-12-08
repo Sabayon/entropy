@@ -16,6 +16,7 @@ import argparse
 from entropy.i18n import _
 from entropy.const import const_convert_to_unicode, \
     const_convert_to_rawstring
+from entropy.locks import EntropyResourcesLock
 from entropy.output import darkgreen, teal, purple, print_error, \
     print_generic, bold, brown
 from entropy.exceptions import PermissionDenied
@@ -374,6 +375,7 @@ class SoloCommand(object):
         client_class = None
         client = None
         acquired = False
+        lock = None
         try:
             try:
                 client_class = self._entropy_class()
@@ -386,8 +388,12 @@ class SoloCommand(object):
                         _("Acquiring Entropy Resources "
                           "Lock, please wait...")),
                               back=True)
-            acquired = entropy.tools.acquire_entropy_locks(
-                client_class, blocking=blocking, spinner=True)
+
+            lock = EntropyResourcesLock(output=client_class)
+            if blocking:
+                acquired = lock.lock_resources(blocking=True, shared=False)
+            else:
+                acquired = not lock.wait_resources(shared=False)
             if not acquired:
                 client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -401,7 +407,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(client_class)
+                lock.unlock_resources()
 
     def _call_unlocked(self, func):
         """
@@ -412,15 +418,17 @@ class SoloCommand(object):
         client_class = None
         client = None
         acquired = False
+        lock = None
         try:
             try:
                 client_class = self._entropy_class()
             except PermissionDenied as err:
                 print_error(err.value)
                 return 1
-            # use blocking mode to avoid tainting stdout
-            acquired = entropy.tools.acquire_entropy_locks(
-                client_class, blocking=True, shared=True)
+
+            lock = EntropyResourcesLock(output=client_class)
+            acquired = lock.lock_resources(blocking=True, shared=True)
+
             if not acquired:
                 client_class.output(
                     darkgreen(_("Another Entropy is currently running.")),
@@ -434,7 +442,7 @@ class SoloCommand(object):
             if client is not None:
                 client.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(client_class)
+                lock.unlock_resources()
 
     def _settings(self):
         """

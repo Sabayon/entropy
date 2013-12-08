@@ -343,12 +343,4 @@ class Repository:
             header = darkred(" @@ ")
         )
 
-        gave_up = self._entropy.wait_resources()
-        if gave_up:
-            return 3
-
-        # locked
-        try:
-            return self.unlocked_sync()
-        finally:
-            self._entropy.unlock_resources()
+        return self.unlocked_sync()

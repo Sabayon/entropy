@@ -34,6 +34,7 @@ sys.path.insert(0, "../lib")
 
 from entropy.exceptions import PermissionDenied, OnlineMirrorError
 from entropy.server.interfaces import Server
+from entropy.locks import EntropyResourcesLock
 
 import entropy.dep
 import entropy.tools
@@ -66,8 +67,11 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        acquired = entropy.tools.acquire_entropy_locks(Server,
-            blocking = self._blocking)
+        lock = EntropyResourcesLock(output=Server)
+        if self._blocking:
+            acquired = lock.lock_resources(shared=False)
+        else:
+            acquired = not lock.wait_resources(shared=False)
         if not acquired:
             raise EntropyResourceLock.NotAcquired(
                 "unable to acquire lock")
@@ -76,7 +80,8 @@ class EntropyResourceLock(BaseBinaryResourceLock):
         """
         Overridden from BaseBinaryResourceLock.
         """
-        entropy.tools.release_entropy_locks(Server)
+        lock = EntropyResourcesLock(output=Server)
+        lock.unlock_resources()
 
     def __enter__(self):
         """

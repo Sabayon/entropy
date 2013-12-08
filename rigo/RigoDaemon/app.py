@@ -65,6 +65,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.const import etpConst, const_convert_to_rawstring, \
     initconfig_entropy_constants, const_debug_write, dump_signal, \
     const_mkstemp
+from entropy.locks import EntropyResourcesLock
 from entropy.exceptions import DependenciesNotFound, \
     DependenciesCollision, DependenciesNotRemovable, SystemDatabaseError, \
     EntropyPackageException, InterruptError
@@ -702,6 +703,8 @@ class RigoDaemonService(dbus.service.Object):
         self._entropy = Entropy()
         # keep all the resources closed
         self._close_local_resources()
+
+        self._reslock = EntropyResourcesLock(output=self._entropy)
 
         self._fakeout = FakeOutFile(
             self._entropy,
@@ -2645,7 +2648,7 @@ class RigoDaemonService(dbus.service.Object):
                 "Activity mutex not acquired!")
         write_output("_acquire_shared: about to acquire lock",
                      debug=True)
-        self._entropy.lock_resources(
+        self._reslock.lock_resources(
             blocking=blocking, shared=True)
 
     def _acquire_exclusive_simple_nb(self):
@@ -2671,7 +2674,7 @@ class RigoDaemonService(dbus.service.Object):
         with self._acquired_exclusive_mutex:
             if not self._acquired_exclusive:
                 # now we got the exclusive lock
-                acquired = self._entropy.lock_resources(
+                acquired = self._reslock.lock_resources(
                     blocking=False, shared=False)
                 if acquired:
                     self._acquired_exclusive = True
@@ -2699,7 +2702,7 @@ class RigoDaemonService(dbus.service.Object):
 
         with self._acquired_exclusive_mutex:
             if self._acquired_exclusive:
-                self._entropy.unlock_resources()
+                self._reslock.unlock_resources()
                 self._acquired_exclusive = False
 
     def _release_shared(self):
@@ -2718,7 +2721,7 @@ class RigoDaemonService(dbus.service.Object):
             raise AttributeError(
                 "_acquire_shared: "
                 "Activity mutex not acquired!")
-        self._entropy.unlock_resources()
+        self._reslock.unlock_resources()
 
     def _acquire_exclusive(self, activity):
         """
@@ -2746,7 +2749,7 @@ class RigoDaemonService(dbus.service.Object):
         if acquire:
             write_output("_acquire_exclusive: about to acquire lock",
                          debug=True)
-            acquired = self._entropy.lock_resources(
+            acquired = self._reslock.lock_resources(
                 blocking=False,
                 shared=False)
             if not acquired:
@@ -2754,7 +2757,7 @@ class RigoDaemonService(dbus.service.Object):
                              debug=True)
                 GLib.idle_add(
                     self.resources_unlock_request, activity)
-                self._entropy.lock_resources(
+                self._reslock.lock_resources(
                     blocking=True,
                     shared=False)
 
@@ -2779,7 +2782,7 @@ class RigoDaemonService(dbus.service.Object):
             if self._acquired_exclusive:
                 GLib.idle_add(
                     self.resources_lock_request, activity)
-                self._entropy.unlock_resources()
+                self._reslock.unlock_resources()
                 # now we got the exclusive lock
                 self._acquired_exclusive = False
 

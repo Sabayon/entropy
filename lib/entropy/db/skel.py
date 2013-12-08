@@ -475,7 +475,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
         """
         opaque = None
         try:
@@ -518,7 +518,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
         """
         opaque = None
         try:
@@ -560,7 +560,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
 
         The only effect of not using these synchronization methods is that
         stale results, incomplete results, None (in case of using a no
@@ -581,7 +581,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
 
         The only effect of not using these synchronization methods is that
         stale results, incomplete results, None (in case of using a no
@@ -602,7 +602,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
 
         The only effect of not using these synchronization methods is that
         stale results, incomplete results, None (in case of using a no
@@ -624,7 +624,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         This locking infrastructure assumes that resources initialized during
         object instantiation are valid throughout the whole object lifecycle.
         If this is not the case, please synchronize using the Entropy Resources
-        General Lock (entropy.tools.acquire_entropy_locks()).
+        Lock.
 
         The only effect of not using these synchronization methods is that
         stale results, incomplete results, None (in case of using a no

@@ -50,6 +50,7 @@ from RigoDaemon.config import DbusConfig as DaemonDbusConfig
 
 from entropy.const import const_debug_write, \
     const_debug_enabled, etpConst
+from entropy.locks import EntropyResourcesLock
 from entropy.misc import ParallelTask
 from entropy.exceptions import EntropyPackageException
 
@@ -95,6 +96,7 @@ class RigoServiceController(GObject.Object):
 
         def __init__(self, entropy_client, locked):
             self._entropy = entropy_client
+            self._reslock = EntropyResourcesLock(output=self._entropy)
             self._locking_mutex = Lock()
             self._locked = locked
 
@@ -105,7 +107,7 @@ class RigoServiceController(GObject.Object):
                     lock = True
                     self._locked = True
             if lock:
-                self._entropy.lock_resources(
+                self._reslock.lock_resources(
                     blocking=True, shared=True)
 
         def unlock(self):
@@ -115,7 +117,7 @@ class RigoServiceController(GObject.Object):
                     unlock = True
                     self._locked = False
             if unlock:
-                self._entropy.unlock_resources()
+                self._reslock.unlock_resources()
 
     __gsignals__ = {
         # we request to lock the whole UI wrt repo

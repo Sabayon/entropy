@@ -31,6 +31,7 @@ from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.fetchers import UrlFetcher
+from entropy.locks import EntropyResourcesLock
 
 import entropy.tools
 
@@ -924,7 +925,8 @@ class System(object):
         @return: execution status (0 means all file)
         @rtype: int
         """
-        gave_up = self._entropy.wait_resources()
+        lock = EntropyResourcesLock(output = self._entropy)
+        gave_up = lock.wait_resources()
         if gave_up:
             return 7
 
@@ -935,7 +937,7 @@ class System(object):
             if rc_lock != 0:
                 return rc_lock
         finally:
-            self._entropy.unlock_resources()
+            lock.unlock_resources()
         return 0
 
     def _setup_paths(self):

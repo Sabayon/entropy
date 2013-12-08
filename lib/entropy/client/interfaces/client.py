@@ -14,6 +14,7 @@ import codecs
 import threading
 
 from entropy.core import Singleton
+from entropy.locks import EntropyResourcesLock
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
@@ -737,6 +738,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
             entropy.fetchers.MultipleUrlFetcher class usage. Provide your own
             implementation of MultipleUrlFetcher using this argument.
         """
+        self.__post_acquire_hook_idx = None
         self.__instance_destroyed = False
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
@@ -827,9 +829,29 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         # Make sure we connect Entropy Client plugin AFTER client db init
         self._settings.add_plugin(self.sys_settings_client_plugin)
 
+        # Add Entropy Resources Lock post-acquire hook that cleans
+        # repository caches.
+        hook_ref = EntropyResourcesLock.add_post_acquire_hook(
+            self._resources_post_hook)
+        self.__post_acquire_hook_idx = hook_ref
+
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
+
+    def _resources_post_hook(self):
+        """
+        Hook running after Entropy Resources Lock acquisition.
+        This method takes care of the repository memory caches, by
+        invalidating it.
+        """
+        with self._real_installed_repository_lock:
+            if self._real_installed_repository is not None:
+                self._real_installed_repository.clearCache()
+
+        with self._repodb_cache_mutex:
+            for repo in self._repodb_cache.values():
+                repo.clearCache()
 
     def destroy(self, _from_shutdown = False):
         """
@@ -838,6 +860,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin,
         This method should be always called when instance is not used anymore.
         """
         self.__instance_destroyed = True
+
+        if self.__post_acquire_hook_idx is not None:
+            EntropyResourcesLock.remove_post_acquire_hook(
+                self.__post_acquire_hook_idx)
+            self.__post_acquire_hook_idx = None
+
         if hasattr(self, '_installed_repository'):
             inst_repo = self.installed_repository()
             if inst_repo is not None:

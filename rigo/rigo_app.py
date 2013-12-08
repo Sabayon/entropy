@@ -84,6 +84,7 @@ from RigoDaemon.enums import ActivityStates as DaemonActivityStates
 from entropy.const import const_debug_write, dump_signal
 from entropy.misc import TimeScheduled, ParallelTask, ReadersWritersSemaphore
 from entropy.i18n import _
+from entropy.locks import EntropyResourcesLock
 
 import entropy.tools
 
@@ -802,9 +803,8 @@ class Rigo(Gtk.Application):
             Gtk.main_quit()
             return
 
-        acquired = not self._entropy.wait_resources(
-            max_lock_count=1,
-            shared=True)
+        lock = EntropyResourcesLock(output=self._entropy)
+        acquired = not lock.wait_resources(max_lock_count=1, shared=True)
         is_exclusive = False
         if not acquired:
             # check whether RigoDaemon is running in excluive mode

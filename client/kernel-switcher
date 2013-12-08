@@ -8,6 +8,7 @@ sys.path.insert(0, "../client")
 import os
 import argparse
 
+from entropy.locks import EntropyResourcesLock
 from entropy.output import brown, print_warning, print_error, teal
 from entropy.i18n import _
 from entropy.client.interfaces import Client
@@ -50,9 +51,9 @@ if __name__ == "__main__":
     def _wrap_locked_api(method, *args, **kwargs):
         etp_client = None
         acquired = False
+        lock = EntropyResourcesLock(output=Client)
         try:
-            acquired = entropy.tools.acquire_entropy_locks(
-                Client, blocking=True, shared=True)
+            acquired = lock.lock_resources(blocking=True, shared=True)
             if not acquired:
                 print_error(brown(_("Another Entropy is currently running.")))
                 return 1
@@ -64,7 +65,7 @@ if __name__ == "__main__":
             if etp_client is not None:
                 etp_client.shutdown()
             if acquired:
-                entropy.tools.release_entropy_locks(Client)
+                lock.unlock_resources()
 
     def _switch_kernel(f_nsargs):
 

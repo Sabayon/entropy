@@ -215,16 +215,7 @@ class PackageAction(object):
         Execute the action. Return an exit status.
         """
         acquired = False
-        exit_st = 1
-        try:
-            acquired = not self._entropy.wait_resources()
-            if not acquired:
-                return 20
-            exit_st = self._run()
-        finally:
-            if acquired:
-                self._entropy.unlock_resources()
-
+        exit_st = self._run()
         if exit_st != 0:
             self._entropy.output(
                 blue(_("An error occured. Action aborted.")),

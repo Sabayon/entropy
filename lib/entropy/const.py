@@ -212,7 +212,6 @@ def initconfig_entropy_constants(rootdir):
     const_read_entropy_release()
 
     const_create_working_dirs()
-    const_configure_lock_paths()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
@@ -922,18 +921,6 @@ def const_convert_log_level(entropy_log_level):
         2: logging.DEBUG
     }
     return log_map.get(entropy_log_level, logging.INFO)
-
-def const_configure_lock_paths():
-    """
-    Setup Entropy lock file paths.
-
-    @rtype: None
-    @return: None
-    """
-    etpConst['locks'] = {
-        'using_resources': os.path.join(etpConst['entropyworkdir'],
-            '.using_resources'),
-    }
 
 def const_setup_perms(mydir, gid, f_perms = None, recursion = True, uid = -1):
     """

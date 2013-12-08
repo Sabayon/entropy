@@ -16,6 +16,7 @@ import sys
 from entropy.i18n import _
 from entropy.const import const_convert_to_unicode
 from entropy.output import darkred, darkgreen, blue, bold, teal, purple
+from entropy.locks import EntropyResourcesLock
 
 import entropy.tools
 
@@ -387,7 +388,8 @@ Upgrade the system.
             os.environ['__EQUO_LOCKS_BLOCKING__'] = "1"
             # we will acquire them again in blocking mode, cross
             # fingers
-            entropy.tools.release_entropy_locks(entropy_client)
+            lock = EntropyResourcesLock(output=entropy_client)
+            lock.unlock_resources()
             os.execvp("equo", sys.argv)
 
 
