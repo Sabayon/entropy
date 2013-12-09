@@ -10,7 +10,7 @@ import unittest
 from entropy.locks import SimpleFileLock, EntropyResourcesLock
 
 
-class EntropyRepositoryTest(unittest.TestCase):
+class EntropyLocksTest(unittest.TestCase):
 
     def test_simple_lock(self):
         sfl = SimpleFileLock
