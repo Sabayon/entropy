@@ -5,12 +5,11 @@ sys.path.insert(0, '../')
 import unittest
 import os
 import time
-import tempfile
 import threading
 
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, const_convert_to_unicode, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_mkstemp
 from entropy.output import set_mute
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import ParallelTask
@@ -649,7 +648,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             _misc.clean_pkg_metadata(db_data)
             self.assertEqual(xdata, db_data)
             self.test_db.commit()
-            fd, buf_file = tempfile.mkstemp()
+            fd, buf_file = const_mkstemp()
             os.close(fd)
             buf = open(buf_file, "wb")
 
@@ -660,7 +659,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             buf.flush()
             buf.close()
 
-            fd, buf_file_db = tempfile.mkstemp()
+            fd, buf_file_db = const_mkstemp()
             os.close(fd)
             self.test_db.importRepository(buf_file, buf_file_db)
             os.remove(buf_file)
@@ -883,14 +882,14 @@ class EntropyRepositoryTest(unittest.TestCase):
         set_mute(True)
 
         # export
-        fd, buf_file = tempfile.mkstemp()
+        fd, buf_file = const_mkstemp()
         os.close(fd)
         buf = open(buf_file, "wb")
         self.test_db.exportRepository(buf)
         buf.flush()
         buf.close()
 
-        fd, new_db_path = tempfile.mkstemp()
+        fd, new_db_path = const_mkstemp()
         os.close(fd)
         self.test_db.importRepository(buf_file, new_db_path)
         new_db = self.Client.open_generic_repository(new_db_path)
@@ -1054,7 +1053,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_locking_file(self):
 
-        fd, db_file = tempfile.mkstemp()
+        fd, db_file = const_mkstemp()
         os.close(fd)
         test_db = None
 

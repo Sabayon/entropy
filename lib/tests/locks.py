@@ -4,9 +4,9 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 
 import os
-import tempfile
 import unittest
 
+from entropy.const import const_mkstemp
 from entropy.locks import SimpleFileLock, EntropyResourcesLock
 
 
@@ -17,7 +17,7 @@ class EntropyLocksTest(unittest.TestCase):
 
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix="test_simple_lock")
+            tmp_fd, tmp_path = const_mkstemp(prefix="test_simple_lock")
 
             lock_map = {}
             self.assertEquals(True, sfl.acquire_lock(tmp_path, lock_map))
@@ -59,7 +59,7 @@ class EntropyLocksTest(unittest.TestCase):
 
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="test_entropy_resources_lock")
 
             erl.path = lambda: tmp_path
@@ -129,7 +129,7 @@ class EntropyLocksTest(unittest.TestCase):
 
         tmp_fd, tmp_path = None, None
         try:
-            tmp_fd, tmp_path = tempfile.mkstemp(
+            tmp_fd, tmp_path = const_mkstemp(
                 prefix="test_entropy_resources_lock")
 
             erl.path = lambda: tmp_path

@@ -4,12 +4,12 @@ import os
 sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
-from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
+from entropy.const import const_convert_to_rawstring, \
+    const_convert_to_unicode, const_mkstemp, const_mkdtemp
 import entropy.tools as et
 from entropy.client.interfaces import Client
 from entropy.output import print_generic, set_mute
 import tests._misc as _misc
-import tempfile
 import subprocess
 import shutil
 import stat
@@ -26,7 +26,7 @@ class ToolsTest(unittest.TestCase):
 
         client = Client(installed_repo = -1, indexing = False, xcache = False,
             repo_validation = False)
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
 
         for test_pkg in self.test_pkgs:
             et.dump_entropy_metadata(test_pkg, tmp_path)
@@ -51,7 +51,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_remove_entropy_metadata(self):
 
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         os.close(fd)
 
         for test_pkg in self.test_pkgs:
@@ -74,7 +74,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_get_remote_data(self):
 
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         msg = const_convert_to_rawstring("helloàòè\n", 'utf-8')
         os.write(fd, msg)
         os.fsync(fd)
@@ -86,7 +86,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
 
     def test_supported_img_file(self):
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
 
         # create gif
         os.write(fd, const_convert_to_rawstring("GIF89xxx"))
@@ -123,7 +123,7 @@ class ToolsTest(unittest.TestCase):
         self.assertTrue(not et.islive())
 
     def test_get_file_size(self):
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         os.write(fd, const_convert_to_rawstring("ciao"))
         os.fsync(fd)
         self.assertEqual(et.get_file_size(tmp_path), 4)
@@ -131,8 +131,8 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
 
     def test_sum_file_sizes(self):
-        fd, tmp_path = tempfile.mkstemp()
-        fd2, tmp_path2 = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
+        fd2, tmp_path2 = const_mkstemp()
         os.write(fd, const_convert_to_rawstring("ciao"))
         os.write(fd2, const_convert_to_rawstring("ciao"))
 
@@ -154,7 +154,7 @@ class ToolsTest(unittest.TestCase):
     def test_movefile(self):
 
         # move file
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         os.close(fd)
 
         dest_path = tmp_path + "foo"
@@ -164,7 +164,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(dest_path)
 
         # move symlink
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         dst_link = tmp_path + "foo2"
         dst_final_link = dst_link + "foo3"
         os.symlink(tmp_path, dst_link)
@@ -191,7 +191,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_shaXXX(self):
 
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
 
         os.write(fd, const_convert_to_rawstring("this is the life"))
         os.fsync(fd)
@@ -211,7 +211,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
 
     def test_md5sum_directory(self):
-        tmp_dir = tempfile.mkdtemp()
+        tmp_dir = const_mkdtemp()
         f = open(os.path.join(tmp_dir, "foo"), "w")
         f.write("hello world")
         f.flush()
@@ -228,7 +228,7 @@ class ToolsTest(unittest.TestCase):
     def test_XXcompress_file(self):
 
         import bz2
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         os.write(fd, const_convert_to_rawstring("this is the life"))
         os.fsync(fd)
         orig_md5 = et.md5sum(tmp_path)
@@ -250,7 +250,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_unpack_gzip(self):
         import gzip
-        fd, tmp_path = tempfile.mkstemp(suffix = ".gz")
+        fd, tmp_path = const_mkstemp(suffix = ".gz")
 
         gz_f = gzip.GzipFile(tmp_path, "wb")
         gz_f.write(const_convert_to_rawstring("ciao ciao ciao"))
@@ -267,7 +267,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_unpack_bzip2(self):
         import bz2
-        fd, tmp_path = tempfile.mkstemp(suffix = ".bz2")
+        fd, tmp_path = const_mkstemp(suffix = ".bz2")
 
         gz_f = bz2.BZ2File(tmp_path, "wb")
         gz_f.write(const_convert_to_rawstring("ciao ciao ciao"))
@@ -283,7 +283,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(new_path)
 
     def test_remove_entropy_metadata2(self):
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
         os.close(fd)
 
         ext_rc = et.remove_entropy_metadata(
@@ -295,7 +295,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
 
     def test_create_md5_file(self):
-        fd, tmp_path = tempfile.mkstemp(
+        fd, tmp_path = const_mkstemp(
             suffix = const_convert_to_unicode("òèà", 'utf-8'))
 
         os.write(fd, const_convert_to_rawstring("hello"))
@@ -317,7 +317,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(md5_path)
 
     def test_create_sha1_file(self):
-        fd, tmp_path = tempfile.mkstemp(
+        fd, tmp_path = const_mkstemp(
             suffix = const_convert_to_unicode("òèà", 'utf-8'))
 
         os.write(fd, const_convert_to_rawstring("hello"))
@@ -339,7 +339,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(sha_path)
 
     def test_create_sha256_file(self):
-        fd, tmp_path = tempfile.mkstemp(
+        fd, tmp_path = const_mkstemp(
             suffix = const_convert_to_unicode("òèà", 'utf-8'))
 
         os.write(fd, const_convert_to_rawstring("hello"))
@@ -361,7 +361,7 @@ class ToolsTest(unittest.TestCase):
         os.remove(sha_path)
 
     def test_create_sha512_file(self):
-        fd, tmp_path = tempfile.mkstemp(
+        fd, tmp_path = const_mkstemp(
             suffix = const_convert_to_unicode("òèà", 'utf-8'))
 
         os.write(fd, const_convert_to_rawstring("hello"))
@@ -388,7 +388,7 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(out_str, "6e6bc4e49dd477ebc98ef4046c067b5f")
 
     def test_istextfile(self):
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = const_mkstemp()
 
         os.write(fd, const_convert_to_rawstring("this is new"))
         os.fsync(fd)
@@ -438,7 +438,7 @@ class ToolsTest(unittest.TestCase):
         delta_path = et.generate_entropy_delta(pkg_path_a, pkg_path_b,
             hash_tag, pkg_compression = "bz2")
         self.assertNotEqual(None, delta_path) # missing bsdiff?
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_fd, tmp_path = const_mkstemp()
         os.close(tmp_fd)
         try:
             et.apply_entropy_delta(pkg_path_a, delta_path, tmp_path)
@@ -596,8 +596,8 @@ class ToolsTest(unittest.TestCase):
 
     def _do_uncompress_tarball(self, pkg_path):
 
-        tmp_dir = tempfile.mkdtemp()
-        fd, tmp_file = tempfile.mkstemp()
+        tmp_dir = const_mkdtemp()
+        fd, tmp_file = const_mkstemp()
 
         path_perms = {}
 
