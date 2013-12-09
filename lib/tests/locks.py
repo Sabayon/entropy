@@ -97,7 +97,7 @@ class EntropyLocksTest(unittest.TestCase):
 
             erl.release()
 
-            self.assertEquals(False, erl.try_acquire_exclusive())
+            self.assertRaises(RuntimeError, erl.try_acquire_exclusive)
 
             erl.release()
 

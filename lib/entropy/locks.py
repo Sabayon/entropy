@@ -187,9 +187,6 @@ class _GenericResourceLock(object):
         lock_path = self.path()
         with self._lock_mutex:
 
-            # allow the same thread to acquire the lock again.
-            self._TLS.recursed = False
-
             mapped = self._file_lock_setup(lock_path)
 
             if mapped['count'] == 0:
@@ -209,6 +206,9 @@ class _GenericResourceLock(object):
                 ref_obj.release()
                 ref_obj.close()
                 mapped['ref'] = None
+
+            # allow the same thread to acquire the lock again.
+            self._TLS.recursed = False
 
     def _file_lock_create(self, lock_path, blocking=False, shared=False):
         """
