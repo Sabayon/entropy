@@ -93,6 +93,8 @@ class _GenericResourceLock(object):
     Generic Entropy Resource Lock abstract class.
     """
 
+    _TLS = threading.local()
+
     def __init__(self, lock_map, lock_mutex, output=None):
         """
         Object constructor.
@@ -138,22 +140,31 @@ class _GenericResourceLock(object):
 
         with self._lock_mutex:
             mapped = self._file_lock_setup(lock_path)
+
+            # I asked for an exclusive lock, but
+            # I am only holding a shared one, don't
+            # return True.
+            want_exclusive_when_shared = not shared and mapped['shared']
+
             if mapped['ref'] is not None:
-
-                # I asked for an exclusive lock, but
-                # I am only holding a shared one, don't
-                # return True.
-                want_exclusive_when_shared = (
-                    shared != mapped['shared']) and (
-                        not shared and mapped['shared'])
-
                 if not want_exclusive_when_shared:
                     # reentrant lock, already acquired
                     mapped['count'] += 1
                     return True
-                # fall through
+
             else:
                 mapped['shared'] = shared
+
+            # watch for deadlocks using TLS
+            recursed = getattr(self._TLS, "recursed", False)
+            if recursed and want_exclusive_when_shared:
+                # deadlock, raise exception
+                raise RuntimeError(
+                    "want exclusive lock when shared acquired")
+
+            # not the same thread requested an exclusive lock when shared
+            self._TLS.recursed = True
+            # fall through, we won't deadlock
 
             path = mapped['path']
 
@@ -175,7 +186,15 @@ class _GenericResourceLock(object):
         """
         lock_path = self.path()
         with self._lock_mutex:
+
+            # allow the same thread to acquire the lock again.
+            self._TLS.recursed = False
+
             mapped = self._file_lock_setup(lock_path)
+
+            if mapped['count'] == 0:
+                raise RuntimeError("releasing a non-acquired lock")
+
             # decrement lock counter
             if mapped['count'] > 0:
                 mapped['count'] -= 1

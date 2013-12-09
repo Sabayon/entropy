@@ -90,7 +90,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assertEquals(True, erl.try_acquire_shared())
             self.assertEquals(6, counter_l[0])
 
-            self.assertEquals(False, erl.try_acquire_exclusive())
+            self.assertRaises(RuntimeError, erl.try_acquire_exclusive)
 
             self.assertEquals(True, erl.try_acquire_shared())
             self.assertEquals(7, counter_l[0])
@@ -112,6 +112,56 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assertEquals(True, erl.wait_shared())
 
             erl.release()
+
+
+        finally:
+            if tmp_fd is not None:
+                os.close(tmp_fd)
+            if tmp_path is not None:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
+
+    def test_entropy_resources_lock_exception(self):
+
+        erl = EntropyResourcesLock()
+
+        tmp_fd, tmp_path = None, None
+        try:
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="test_entropy_resources_lock")
+
+            erl.path = lambda: tmp_path
+
+            get_count = lambda: erl._file_lock_setup(erl.path())['count']
+
+            self.assertEquals(True, erl.try_acquire_shared())
+            self.assertRaises(RuntimeError, erl.try_acquire_exclusive)
+
+            erl.release()
+
+            self.assertEquals(True, erl.try_acquire_exclusive())
+
+            self.assertEquals(True, erl.try_acquire_shared())
+            self.assertEquals(True, erl.try_acquire_shared())
+            self.assertEquals(True, erl.try_acquire_shared())
+
+            self.assertEquals(4, get_count())
+            erl.release()
+
+            self.assertEquals(3, get_count())
+            erl.release()
+
+            self.assertEquals(2, get_count())
+            erl.release()
+
+            self.assertEquals(1, get_count())
+            erl.release()
+
+            self.assertEquals(0, get_count())
+
+            self.assertRaises(RuntimeError, erl.release)
 
 
         finally:
