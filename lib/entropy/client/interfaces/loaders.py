@@ -50,14 +50,14 @@ class LoadersMixin:
         """
         return self.__sets_loader(self)
 
-    def Security(self):
+    def Security(self, *args, **kwargs):
         """
         Load Entropy Security Advisories interface object
 
         @return: Repository Security instance object
         @rtype: entropy.security.System
         """
-        return System(self)
+        return System(self, *args, **kwargs)
 
     def RepositorySecurity(self, keystore_dir = None):
         """
