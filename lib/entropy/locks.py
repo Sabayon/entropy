@@ -9,6 +9,7 @@
     B{Entropy resources lock functions module}.
 
 """
+import contextlib
 import errno
 import fcntl
 import threading
@@ -292,6 +293,17 @@ class ResourceLock(object):
             self.acquire_exclusive()
         return True
 
+    @contextlib.contextmanager
+    def exclusive(self):
+        """
+        Acquire an exclusive file lock for this repository (context manager).
+        """
+        self.wait_exclusive()
+        try:
+            yield
+        finally:
+            self.release()
+
     def acquire_exclusive(self):
         """
         Acquire the resource in exclusive blocking mode.
@@ -312,6 +324,17 @@ class ResourceLock(object):
         in blocking mode.
         """
         return self._wait_resource(False)
+
+    @contextlib.contextmanager
+    def shared(self):
+        """
+        Acquire a shared file lock for this repository (context manager).
+        """
+        self.wait_shared()
+        try:
+            yield
+        finally:
+            self.release()
 
     def acquire_shared(self):
         """
