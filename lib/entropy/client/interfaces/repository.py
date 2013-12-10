@@ -295,8 +295,8 @@ class Repository:
 
     def _update_security_advisories(self):
         try:
-            security_intf = self._entropy.Security()
-            security_intf.sync(do_cache = False)
+            sec = self._entropy.Security()
+            sec.update()
         except Exception as e:
             entropy.tools.print_traceback(f = self._entropy.logger)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)

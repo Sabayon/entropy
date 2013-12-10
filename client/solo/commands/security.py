@@ -19,7 +19,6 @@ from entropy.output import darkgreen, darkred, brown, blue, red, \
 
 import entropy.tools
 
-from solo.commands.command import sharedlock
 from solo.commands.descriptor import SoloCommandDescriptor
 from solo.commands.install import SoloInstall
 from solo.utils import print_table
@@ -517,12 +516,10 @@ System security tools.
         """
         Solo Security Update command.
         """
-        # sync() uses wait_resources(), so no locking needed here
         sec = entropy_client.Security()
-        return sec.sync(force=self._nsargs.force)
+        return sec.update(force=self._nsargs.force)
 
-    @sharedlock
-    def _list(self, entropy_client, _inst_repo):
+    def _list(self, entropy_client):
         """
         Solo Security List command.
         """
@@ -530,15 +527,14 @@ System security tools.
         unaffected = self._nsargs.unaffected
         sec = entropy_client.Security()
 
-        adv_metadata = None
         if not (affected or unaffected):
-            adv_metadata = sec.get_advisories_metadata()
+            advisory_ids = sec.list()
         elif affected:
-            adv_metadata = sec.get_vulnerabilities()
+            advisory_ids = sec.vulnerabilities()
         else:
-            adv_metadata = sec.get_fixed_vulnerabilities()
+            advisory_ids = sec.fixed_vulnerabilities()
 
-        if not adv_metadata:
+        if not advisory_ids:
             entropy_client.output(
                 "%s." % (
                     darkgreen(_("No advisories available or applicable")),
@@ -546,53 +542,62 @@ System security tools.
                 header=brown(" :: "))
             return 0
 
-        for key in sorted(adv_metadata.keys()):
-            is_affected = sec.is_affected(key)
-            if affected and not is_affected:
+        for advisory_id in sorted(advisory_ids):
+
+            affected_deps = sec.affected_id(advisory_id)
+            if affected and not affected_deps:
                 continue
-            if unaffected and is_affected:
+            if unaffected and affected_deps:
                 continue
-            if is_affected:
+
+            if affected_deps:
                 affection_string = darkred("A")
             else:
                 affection_string = darkgreen("N")
-            affected_data = adv_metadata[key]['affected']
-            if affected_data:
-                for a_key in list(affected_data.keys()):
-                    k_data = adv_metadata[key]['affected'][a_key]
-                    vulnerables = ', '.join(k_data[0]['vul_vers'])
-                    description = "[Id:%s:%s][%s] %s: %s" % (
-                        darkgreen(key),
-                        affection_string,
-                        brown(vulnerables),
-                        darkred(a_key),
-                        blue(adv_metadata[key]['title']))
-                    entropy_client.output(description)
+
+            advisory = sec.advisory(advisory_id)
+            if advisory is None:
+                continue
+
+            affected_data = advisory['affected']
+            if not affected_data:
+                continue
+
+            for a_key in list(affected_data.keys()):
+                k_data = advisory['affected'][a_key]
+                vulnerables = ', '.join(k_data[0]['vul_vers'])
+                description = "[Id:%s:%s][%s] %s: %s" % (
+                    darkgreen(advisory_id),
+                    affection_string,
+                    brown(vulnerables),
+                    darkred(a_key),
+                    blue(advisory['title']))
+                entropy_client.output(description)
+
         return 0
 
-    @sharedlock
-    def _info(self, entropy_client, _inst_repo):
+    def _info(self, entropy_client):
         """
         Solo Security Info command.
         """
-        advisories = self._nsargs.ids
+        advisory_ids = self._nsargs.ids
 
         sec = entropy_client.Security()
-        adv_metadata = sec.get_advisories_metadata()
-
         exit_st = 1
-        for advisory in advisories:
-            if advisory not in adv_metadata:
+
+        for advisory_id in advisory_ids:
+
+            advisory = sec.advisory(advisory_id)
+            if advisory is None:
                 entropy_client.output(
                     "%s: %s." % (
                         darkred(_("Advisory does not exist")),
-                        blue(advisory),),
+                        blue(advisory_id),),
                     header=brown(" :: "))
                 continue
+
             self._print_advisory_information(
-                entropy_client,
-                adv_metadata[advisory],
-                key=advisory)
+                entropy_client, advisory, key=advisory_id)
             exit_st = 0
 
         return exit_st
@@ -616,10 +621,12 @@ System security tools.
         inst_repo = entropy_client.installed_repository()
         with inst_repo.shared():
 
-            affected_atoms = sec.get_affected_packages()
+            affected_deps = set()
+            for advisory_id in sec.list():
+                affected_deps.update(sec.affected_id(advisory_id))
 
             valid_matches = set()
-            for atom in affected_atoms:
+            for atom in affected_deps:
                 inst_package_id, pkg_rc = inst_repo.atomMatch(atom)
                 if pkg_rc != 0:
                     continue

@@ -2935,35 +2935,22 @@ class CalculatorsMixin:
         if not update:
             return []
 
-        # do not match package repositories, never consider them in updates!
-        # that would be a nonsense, since package repos are temporary.
-        enabled_repos = self._filter_available_repositories()
-        match_repos = tuple([x for x in \
-            self._settings['repositories']['order'] if x in enabled_repos])
+        deps = set()
 
         security = self.Security()
-        security_meta = security.get_advisories_metadata(use_cache = use_cache)
-        vul_deps = set()
-        for key in security_meta:
-            affected = security.is_affected(key)
-            if not affected:
-                continue
-            if not security_meta[key]['affected']:
-                continue
-            affected_data = security_meta[key]['affected']
-            if not affected_data:
-                continue
-            for a_key, a_values in affected_data.items():
-                for a_value in a_values:
-                    vul_deps.update(a_value.get('vul_atoms', set()))
+        for advisory_id in security.list():
+            deps.update(security.affected_id(advisory_id))
 
         sec_updates = []
-        for vul_dep in vul_deps:
-            pkg_id, rc = self.installed_repository().atomMatch(vul_dep)
+        inst_repo = self.installed_repository()
+        for vul_dep in deps:
+            pkg_id, rc = inst_repo.atomMatch(vul_dep)
             if pkg_id == -1:
                 continue
+
             matches, rc = self.atom_match(vul_dep, multi_repo = True,
-                multi_match = True, match_repo = match_repos)
+                multi_match = True)
+
             # filter dups, keeping order
             matches = [x for x in matches if x not in sec_updates]
             sec_updates += [x for x in matches if x in update]

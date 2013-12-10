@@ -7,6 +7,8 @@ sys.path.insert(0, '../')
 import os
 import unittest
 import shutil
+
+from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_mkdtemp
 from entropy.output import set_mute
 from entropy.client.interfaces import Client
@@ -29,11 +31,11 @@ class SecurityTest(unittest.TestCase):
             dir=tmp_dir, prefix="entropy.SecurityTest")
         self._security_dir = const_mkdtemp(
             dir=tmp_dir, prefix="entropy.SecurityTest")
-        System.SECURITY_DIR = self._security_dir
-        System._CACHE_DIR = self._security_cache_dir
-        System.SECURITY_URL = "file://" + _misc.get_security_pkg()
-        self._system = System(self._entropy)
-        # set fake security url
+
+        self._system = System(
+            self._entropy, security_dir=self._security_dir,
+            url="file://" + _misc.get_security_pkg())
+        self._system._cache_dir = self._security_cache_dir
 
     def tearDown(self):
         """
@@ -52,37 +54,36 @@ class SecurityTest(unittest.TestCase):
         shutil.rmtree(self._security_dir, True)
         shutil.rmtree(self._security_cache_dir, True)
 
-    def test_security_get_advisories_cache(self):
-        self.assertEqual(self._system.get_advisories_cache(), None)
+    def test_security_cache(self):
 
-    def test_security_set_advisories_cache(self):
-
-        from entropy.cache import EntropyCacher
         cacher = EntropyCacher()
 
-        self.assertEqual(self._system.get_advisories_cache(), None)
-        self._system.set_advisories_cache({'zomg': True})
+        cache_key = "zomg"
+        data = {"1": 1, "2": 2}
+
+        self.assertEqual(self._system._get_cache(cache_key), None)
+
+        self._system._set_cache(cache_key, data)
 
         cacher.sync()
 
-        self.assertEqual(self._system.get_advisories_cache(), {'zomg': True})
-        self._system.set_advisories_cache({})
+        self.assertEqual(self._system._get_cache(cache_key), data)
+        self._system._set_cache(cache_key, {})
 
         cacher.sync()
 
-        self.assertEqual(self._system.get_advisories_cache(), {})
+        self.assertEqual(self._system._get_cache(cache_key), {})
 
-    def test_security_get_advisories_metadata(self):
-        meta = self._system.get_advisories_metadata()
-        # this should be empty
+    def test_security_get_empty_advisories(self):
+        meta = self._system.advisories()
         self.assertEqual(meta, {})
 
     def test_security_fetch_advisories(self):
         set_mute(True)
-        s_rc = self._system.sync()
+        s_rc = self._system.update()
         set_mute(False)
         self.assertEqual(s_rc, 0)
-        self.assertEqual(self._system.check_advisories_availability(), True)
+        self.assertEqual(self._system.available(), True)
 
     def test_gpg_handling(self):
 
