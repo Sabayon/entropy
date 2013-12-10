@@ -5,7 +5,6 @@ Short term:
 - wrap available repositories usage around a ResourceLock, this will
   decrease the need for an exclusively held Entropy Resources Lock.
 
-- eit cache clean
 - drop all the EntropyCacher.CACHE_IDS
 
 - conditional deps:
