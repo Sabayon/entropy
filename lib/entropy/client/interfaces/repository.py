@@ -15,12 +15,14 @@ import sys
 import subprocess
 import errno
 import time
+import threading
 
 from entropy.const import const_debug_write, etpConst, const_file_readable
 from entropy.i18n import _, ngettext
 from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
     brown
+from entropy.locks import ResourceLock
 
 from entropy.db.exceptions import Error
 from entropy.db.skel import EntropyRepositoryBase
@@ -28,7 +30,37 @@ from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
-class Repository:
+
+class RepositoriesUpdateResourcesLock(ResourceLock):
+    """
+    Repositories update resource lock that can be used to acquire exclusive
+    access to the repositories update process.
+    """
+
+    _FILE_LOCK_MUTEX = threading.Lock()
+    _FILE_LOCK_MAP = {}
+
+    def __init__(self, output=None):
+        """
+        Object constructor.
+
+        @keyword output: a TextInterface interface
+        @type output: entropy.output.TextInterface or None
+        """
+        super(RepositoriesUpdateResourcesLock, self).__init__(
+            RepositoriesUpdateResourcesLock._FILE_LOCK_MAP,
+            RepositoriesUpdateResourcesLock._FILE_LOCK_MUTEX,
+            output=output)
+
+    def path(self):
+        """
+        Return the path to the lock file.
+        """
+        return os.path.join(
+            etpConst['entropyrundir'], "." + __name__ + ".lock")
+
+
+class Repository(object):
 
     """
     Entropy Client Repositories management interface.
@@ -113,29 +145,30 @@ class Repository:
     def _run_sync(self):
 
         self.updated = False
+        sts = EntropyRepositoryBase
+
         for repo in self.repo_ids:
 
-            # handle
             try:
-                status = self._entropy.get_repository(repo).update(self._entropy,
-                    repo, self.force, self._gpg_feature)
+                status = self._entropy.get_repository(repo).update(
+                    self._entropy, repo, self.force, self._gpg_feature)
             except PermissionDenied:
-                status = EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR
+                status = sts.REPOSITORY_PERMISSION_DENIED_ERROR
 
-            if status == EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE:
+            if status == sts.REPOSITORY_ALREADY_UPTODATE:
                 self.already_updated = True
-            elif status == EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE:
+            elif status == sts.REPOSITORY_NOT_AVAILABLE:
                 self.not_available += 1
-            elif status == EntropyRepositoryBase.REPOSITORY_UPDATED_OK:
+            elif status == sts.REPOSITORY_UPDATED_OK:
                 self.updated = True
                 self.updated_repos.add(repo)
-            elif status == EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR:
+            elif status == sts.REPOSITORY_PERMISSION_DENIED_ERROR:
                 self.not_available += 1
                 self.sync_errors = True
             else: # fallback
                 self.not_available += 1
 
-            if status == EntropyRepositoryBase.REPOSITORY_UPDATED_OK:
+            if status == sts.REPOSITORY_UPDATED_OK:
                 # execute post update repo hook
                 self._run_post_update_repository_hook(repo)
 
@@ -314,24 +347,29 @@ class Repository:
         @return: sync status (0 means all good; != 0 means error).
         @rtype: int
         """
-        self._entropy.close_repositories()
-
-        mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
         self._entropy.output(
-            mytxt,
+            "%s ..." % (
+                darkgreen(_("Repositories synchronization")),
+            ),
             importance = 2,
             level = "info",
             header = darkred(" @@ ")
         )
 
-        rc = self._run_sync()
-        if rc:
-            return rc
+        lock = RepositoriesUpdateResourcesLock(output=self._entropy)
+        with lock.exclusive():
 
-        if self.not_available >= len(self.repo_ids):
-            return 2
-        elif self.not_available > 0:
-            return 1
+            self._entropy.close_repositories()
 
-        self._set_last_successful_sync_time()
+            rc = self._run_sync()
+            if rc:
+                return rc
+
+            if self.not_available >= len(self.repo_ids):
+                return 2
+            elif self.not_available > 0:
+                return 1
+
+            self._set_last_successful_sync_time()
+
         return 0
