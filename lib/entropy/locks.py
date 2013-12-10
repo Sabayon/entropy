@@ -88,7 +88,7 @@ class SimpleFileLock(object):
                 raise
 
 
-class _GenericResourceLock(object):
+class ResourceLock(object):
     """
     Generic Entropy Resource Lock abstract class.
     """
@@ -341,7 +341,7 @@ class _GenericResourceLock(object):
         self._unlock_resource()
 
 
-class EntropyResourcesLock(_GenericResourceLock):
+class EntropyResourcesLock(ResourceLock):
     """
     Entropy Resources Lock (or Big Entropy Lock, BEL) class.
 
@@ -432,7 +432,7 @@ class EntropyResourcesLock(_GenericResourceLock):
 
     def _lock_resource(self, blocking, shared):
         """
-        Overridden from _GenericResourceLock.
+        Overridden from ResourceLock.
         Add hooks support code.
         """
         acquired = super(EntropyResourcesLock, self)._lock_resource(
