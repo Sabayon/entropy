@@ -219,7 +219,35 @@ class EntropySQLiteRepository(EntropySQLRepository):
         except (OSError, IOError):
             self.__cur_mtime = None
 
-        self.__structure_update = False
+        self._schema_update_run = False
+        self._schema_update_lock = threading.Lock()
+
+        self._maybeDatabaseSchemaUpdates()
+
+    def lock_path(self):
+        """
+        Overridden from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            return os.path.join(
+                etpConst['entropyrundir'],
+                "repository",
+                "%s_%s_%s.lock" % (
+                    self.name,
+                    os.getpid(),
+                    id(self)
+                )
+            )
+        return super(EntropySQLiteRepository, self).lock_path()
+
+    def _maybeDatabaseSchemaUpdates(self):
+        """
+        Determine whether it is necessary to run a schema update.
+        """
+        if self._schema_update_run:
+            return
+
+        update = False
         if not self._skip_checks:
 
             if not entropy.tools.is_user_in_entropy_group():
@@ -240,32 +268,18 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
                     if entropy.tools.islive(): # this works
                         if etpConst['systemroot']:
-                            self.__structure_update = True
+                            update = True
                     else:
-                        self.__structure_update = True
+                        update = True
 
             except Error:
                 self._cleanup_all(_cleanup_main_thread=False)
                 raise
 
-        if self.__structure_update:
-            self._databaseStructureUpdates()
-
-    def lock_path(self):
-        """
-        Overridden from EntropyBaseRepository.
-        """
-        if self._is_memory():
-            return os.path.join(
-                etpConst['entropyrundir'],
-                "repository",
-                "%s_%s_%s.lock" % (
-                    self.name,
-                    os.getpid(),
-                    id(self)
-                )
-            )
-        return super(EntropySQLiteRepository, self).lock_path()
+        if update:
+            with self._schema_update_lock:
+                self._schema_update_run = True
+                self._databaseSchemaUpdates()
 
     def _concatOperator(self, fields):
         """
@@ -441,8 +455,8 @@ class EntropySQLiteRepository(EntropySQLRepository):
         second_part = ", ro: %s|%s, caching: %s, indexing: %s" % (
             self._readonly, self.readonly(), self.caching(),
             self._indexing,)
-        third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
-            self.name, self._skip_checks, self.__structure_update,)
+        third_part = ", name: %s, skip_upd: %s" % (
+            self.name, self._skip_checks,)
         fourth_part = ", conn_pool: %s, cursor_cache: %s>" % (
             self._connection_pool(), self._cursor_pool(),)
 
@@ -644,7 +658,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         # set cache size
         self._setCacheSize(self._CACHE_SIZE)
         self._setDefaultCacheSize(self._CACHE_SIZE)
-        self._databaseStructureUpdates()
+        self._databaseSchemaUpdates()
 
         self.commit()
         self._clearLiveCache("_doesTableExist")
@@ -1804,7 +1818,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self.commit()
         self._settings_cache.clear()
 
-    def _databaseStructureUpdates(self):
+    def _databaseSchemaUpdates(self):
         """
         Do not forget to bump _SCHEMA_REVISION whenever you add more tables
         """
