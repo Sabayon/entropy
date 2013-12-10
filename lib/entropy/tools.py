@@ -1731,14 +1731,11 @@ def get_hash_from_md5file(md5path):
     @raise ValueError: if md5path contains invalid data
     """
     enc = etpConst['conf_encoding']
-    try:
-        with codecs.open(md5path, "r", encoding=enc) as md5_f:
-            md5_str = md5_f.read(32)
-            if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
-                raise ValueError("invalid md5 file")
-            return md5_str
-    except (IOError, OSError) as err:
-        raise ValueError(repr(err))
+    with codecs.open(md5path, "r", encoding=enc) as md5_f:
+        md5_str = md5_f.read(32)
+        if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
+            raise ValueError("invalid md5 file")
+        return md5_str
 
 def compare_sha512(filepath, checksum):
     """
