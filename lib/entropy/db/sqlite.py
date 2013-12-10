@@ -28,7 +28,7 @@ from entropy.const import etpConst, const_convert_to_unicode, \
     const_setup_directory, const_setup_file
 from entropy.exceptions import SystemDatabaseError
 from entropy.output import bold, red, blue, purple
-from entropy.misc import FlockFile, ReadersWritersSemaphore
+from entropy.locks import ResourceLock
 
 from entropy.db.exceptions import Warning, Error, InterfaceError, \
     DatabaseError, DataError, OperationalError, IntegrityError, \
@@ -250,6 +250,22 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
         if self.__structure_update:
             self._databaseStructureUpdates()
+
+    def lock_path(self):
+        """
+        Overridden from EntropyBaseRepository.
+        """
+        if self._is_memory():
+            return os.path.join(
+                etpConst['entropyrundir'],
+                "repository",
+                "%s_%s_%s.lock" % (
+                    self.name,
+                    os.getpid(),
+                    id(self)
+                )
+            )
+        return super(EntropySQLiteRepository, self).lock_path()
 
     def _concatOperator(self, fields):
         """
@@ -478,191 +494,93 @@ class EntropySQLiteRepository(EntropySQLRepository):
             self._discardLiveCache()
         return self._live_cacher.get(self._getLiveCacheKey() + key)
 
-    def _get_flock(self, mode):
+    _FLOCK_LOCK_MAP = {}
+    _FLOCK_LOCK_MUTEX = threading.Lock()
+
+    def _get_reslock(self, mode):
         """
         Get the lock object used for locking.
         """
-        lock_path = self.lock_path()
-        lock_dir = os.path.dirname(lock_path)
 
-        try:
-            const_setup_directory(lock_dir)
-        except (OSError, IOError):
-            # best effort, hope not to fail
-            # on FlockFile()
-            pass
+        class RepositoryResourceLock(ResourceLock):
 
-        class RepositoryFlockFile(FlockFile):
-
-            def __init__(self, lock_path, mode):
-                fmode = 0o664
-                fd = None
-                try:
-                    if mode:
-                        fd = os.open(lock_path, os.O_CREAT | os.O_APPEND, fmode)
-                    else:
-                        fd = os.open(lock_path, os.O_CREAT | os.O_RDONLY, fmode)
-                    super(RepositoryFlockFile, self).__init__(
-                        lock_path, fd = fd)
-
-                except Exception:
-                    if fd is not None:
-                        try:
-                            os.close(fd)
-                        except OSError:
-                            pass
-                    raise
-
-                try:
-                    const_setup_file(lock_path, etpConst['entropygid'], fmode)
-                except OSError as err:
-                    if err.errno not in (errno.EPERM, errno.ENOENT):
-                        raise
+            def __init__(self, repo, mode, path):
+                super(RepositoryResourceLock, self).__init__(
+                    EntropySQLiteRepository._FLOCK_LOCK_MAP,
+                    EntropySQLiteRepository._FLOCK_LOCK_MUTEX,
+                    output = repo)
+                self._path = path
                 self._mode = mode
 
-        return RepositoryFlockFile(lock_path, mode)
+            def path(self):
+                """
+                Overridden from ResourceLock.
+                """
+                return self._path
 
-    def _get_rwsem(self, mode):
-        """
-        Get the lock object used for locking in-memory repositories.
-        """
-        with self._rwsem_lock:
-
-            if self._rwsem is None:
-                self._rwsem = ReadersWritersSemaphore()
-
-            class RepositoryRwSemWrapper(object):
-
-                def __init__(self, mode, rwsem):
-                    self._sem = rwsem
-                    self._mode = mode
-
-                def get(self):
-                    return self._sem
-
-            return RepositoryRwSemWrapper(mode, self._rwsem)
+        return RepositoryResourceLock(self, mode, self.lock_path())
 
     def acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem(False)
-            rwsem.get().reader_acquire()
-            return rwsem
+        lock = self._get_reslock(False)
+        lock.acquire_shared()
 
-        else:
-            flock = None
-            acquired = False
-            try:
-                flock = self._get_flock(False)
+        # in-RAM cached data may have become stale
+        if not self._is_memory():
+            self.clearCache()
 
-                flock.acquire_shared()
-                acquired = True
-
-                # in-RAM cached data may have become stale
-                self.clearCache()
-                return flock
-
-            finally:
-                if not acquired and flock is not None:
-                    flock.close()
+        return lock
 
     def try_acquire_shared(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem(False)
-            acquired = rwsem.get().try_reader_acquire()
-            if acquired:
-                return rwsem
+        lock = self._get_reslock(False)
 
-            return None
-
+        acquired = lock.try_acquire_shared()
+        if acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
+            return lock
         else:
-            acquired = False
-            flock = None
-            try:
-
-                flock = self._get_flock(False)
-                acquired = flock.try_acquire_shared()
-                if acquired:
-                    # in-RAM cached data may have become stale
-                    self.clearCache()
-                    return flock
-
-                else:
-                    return None
-
-            finally:
-                if not acquired and flock is not None:
-                    flock.close()
+            return None
 
     def acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem(True)
-            rwsem.get().writer_acquire()
-            return rwsem
+        lock = self._get_reslock(True)
+        lock.acquire_exclusive()
 
-        else:
-            flock = None
-            acquired = False
-            try:
-                flock = self._get_flock(True)
-                flock.acquire_exclusive()
-                acquired = True
-
-                # in-RAM cached data may have become stale
-                self.clearCache()
-                return flock
-
-            finally:
-                if not acquired and flock is not None:
-                    flock.close()
+        # in-RAM cached data may have become stale
+        if not self._is_memory():
+            self.clearCache()
+        return lock
 
     def try_acquire_exclusive(self):
         """
         Reimplemented from EntropyBaseRepository.
         """
-        if self._is_memory():
-            rwsem = self._get_rwsem(True)
-            acquired = rwsem.get().try_writer_acquire()
-            if acquired:
-                return rwsem
+        lock = self._get_reslock(True)
 
-            return None
-        else:
-            acquired = False
-            flock = None
-            try:
+        acquired = lock.try_acquire_exclusive()
+        if acquired:
+            # in-RAM cached data may have become stale
+            if not self._is_memory():
+                self.clearCache()
+            return lock
 
-                flock = self._get_flock(True)
-                acquired = flock.try_acquire_exclusive()
-                if acquired:
-                    # in-RAM cached data may have become stale
-                    self.clearCache()
-                    return flock
-
-                else:
-                    return None
-
-            finally:
-                if not acquired and flock is not None:
-                    flock.close()
-
-    def _release_flock(self, flock, mode):
+    def _release_reslock(self, lock, mode):
         """
-        Release the resource associated with the FlockFile object.
+        Release the resource associated with the RepositoryResourceLock object.
         """
-        if flock._mode != mode:
+        if lock._mode != mode:
             raise RuntimeError(
                 "Programming error: acquired lock in a different mode")
-        flock.release()
-        flock.close()
+        lock.release()
 
     def release_shared(self, opaque):
         """
@@ -670,14 +588,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self.commit()
 
-        if self._is_memory():
-            if opaque._mode != False:
-                raise RuntimeError(
-                    "Programming error: acquired lock in a different mode")
-            opaque.get().reader_release()
-
-        else:
-            self._release_flock(opaque, False)
+        self._release_reslock(opaque, False)
 
     def release_exclusive(self, opaque):
         """
@@ -685,14 +596,7 @@ class EntropySQLiteRepository(EntropySQLRepository):
         """
         self.commit()
 
-        if self._is_memory():
-            if opaque._mode != True:
-                raise RuntimeError(
-                    "Programming error: acquired lock in a different mode")
-            opaque.get().writer_release()
-
-        else:
-            self._release_flock(opaque, True)
+        self._release_reslock(opaque, True)
 
     def close(self, safe=False):
         """

@@ -1020,28 +1020,53 @@ class EntropyRepositoryTest(unittest.TestCase):
     def _test_repository_locking(self, test_db):
 
         with test_db.shared():
-            self.assertEqual(test_db.try_acquire_exclusive(),
-                             None)
+            self.assertRaises(RuntimeError, test_db.try_acquire_exclusive)
 
         with test_db.exclusive():
-            self.assertEqual(test_db.try_acquire_shared(),
-                             None)
+            opaque = test_db.try_acquire_shared()
+            self.assertNotEqual(opaque, None)
+            test_db.release_shared(opaque)
 
         opaque_shared = test_db.try_acquire_shared()
         self.assert_(opaque_shared is not None)
 
-        opaque_exclusive = test_db.try_acquire_exclusive()
-        self.assert_(opaque_exclusive is None)
+        self.assertRaises(RuntimeError, test_db.try_acquire_exclusive)
 
         test_db.release_shared(opaque_shared)
 
+        # test reentrancy
         opaque_exclusive = test_db.try_acquire_exclusive()
         self.assert_(opaque_exclusive is not None)
 
         opaque_exclusive2 = test_db.try_acquire_exclusive()
-        self.assert_(opaque_exclusive2 is None)
+        self.assert_(opaque_exclusive2 is not None)
+
+        self.assert_(opaque_exclusive._lock_map is opaque_exclusive2._lock_map)
+
+        # test reference counting
+        self.assertEquals(
+            2,
+            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
 
         test_db.release_exclusive(opaque_exclusive)
+
+        self.assertEquals(
+            1,
+            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+
+        test_db.release_exclusive(opaque_exclusive2)
+
+        self.assertEquals(
+            0,
+            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
+
+        # test that refcount doesn't go below zero
+        self.assertRaises(
+            RuntimeError, test_db.release_exclusive, opaque_exclusive)
+
+        self.assertEquals(
+            0,
+            opaque_exclusive._lock_map[test_db.lock_path()]['count'])
 
         opaque_exclusive = test_db.try_acquire_exclusive()
         self.assert_(opaque_exclusive is not None)
