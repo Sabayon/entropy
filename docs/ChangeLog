@@ -1,3 +1,42 @@
+commit af2ce34d576edcaa3c240d5e01c84c6a6ba5cefe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:44:44 2013 +0100
+
+    Release Entropy 249
+
+commit 856184b530c40f0f2a01c578013fa493543f6066
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:43:02 2013 +0100
+
+    [entropy.client.db] do not hide the exception traceback
+
+commit 0243ed70b14b73a34a47ed4bc5e468a596a54d4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:42:14 2013 +0100
+
+    [entropy.db.sql] rewrite type checking in insertDependencies()
+    
+    metadata could be of list type (and not just tuple) in case of
+    data coming from websrv.
+
+commit eada088f56a5f51092aeec0c82b6a6770e139697
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:19:40 2013 +0100
+
+    [entropy.client.db] do not catch KeyError for update() but just during object init
+
+commit 52f99ee60c87fd3b8a9560fafa1edc995bd1307a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 22:05:30 2013 +0100
+
+    [conf] add /run/entropy to tmpfiles.d
+
+commit 7589fbe6c0bd1903359d493220858198d21100be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 11 16:39:03 2013 +0100
+
+    Tagging Entropy version 248
+
 commit 43f4bd5ee3f18a3f2e462ae261cf33e426c3015d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 11 16:39:02 2013 +0100
