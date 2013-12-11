@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Entropy Client\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-27 18:27+0100\n"
-"PO-Revision-Date: 2013-11-27 17:27+0000\n"
+"POT-Creation-Date: 2013-12-11 15:11+0100\n"
+"PO-Revision-Date: 2013-12-11 14:15+0000\n"
 "Last-Translator: lxnay <lxnay@sabayon.org>\n"
 "Language-Team: Ukrainian (http://www.transifex.com/projects/p/sabayon-entropy/language/uk/)\n"
 "MIME-Version: 1.0\n"
@@ -17,87 +17,109 @@ msgstr ""
 "Language: uk\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: ../../lib/entropy/db/sqlite.py:1781
-msgid "Exporting database table"
-msgstr "Експорт таблиці бази даних"
-
-#: ../../lib/entropy/db/sqlite.py:1821
-msgid "Database Export complete."
-msgstr "Експорт бази даних завершено.  "
-
-#: ../../lib/entropy/db/sqlite.py:2189 ../../lib/entropy/db/sqlite.py:2293
-#: ../../lib/entropy/db/sqlite.py:2401 ../../lib/entropy/db/sqlite.py:2414
-#: ../../lib/entropy/db/sql.py:5472 ../../lib/entropy/db/sql.py:5485
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2632
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2769
-#: ../../lib/entropy/client/interfaces/client.py:949
-msgid "ATTENTION"
-msgstr "УВАГА"
-
-#: ../../lib/entropy/db/sqlite.py:2191 ../../lib/entropy/db/sqlite.py:2295
-msgid "updating repository metadata layout, please wait!"
+#: ../../lib/entropy/db/skel.py:488
+#: ../../lib/entropy/client/interfaces/package/actions/action.py:100
+#: ../../lib/entropy/locks.py:276
+msgid "Acquiring shared lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/sqlite.py:2402
-msgid "generating provided_libs metadata, please wait!"
-msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
-
-#: ../../lib/entropy/db/sql.py:5473
-msgid "Spm error occured"
+#: ../../lib/entropy/db/skel.py:499
+#: ../../lib/entropy/client/interfaces/package/actions/action.py:115
+msgid "Acquired shared lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/sql.py:5486
-msgid "Spm Unique Identifier not found for"
+#: ../../lib/entropy/db/skel.py:531
+#: ../../lib/entropy/client/interfaces/package/actions/action.py:98
+#: ../../lib/entropy/locks.py:280
+msgid "Acquiring exclusive lock on"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2160
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:957
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:983
+#: ../../lib/entropy/db/skel.py:542
+#: ../../lib/entropy/client/interfaces/package/actions/action.py:113
+msgid "Acquired exclusive lock on"
+msgstr ""
+
+#: ../../lib/entropy/db/skel.py:2404
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:964
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:990
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../lib/entropy/db/skel.py:2161
+#: ../../lib/entropy/db/skel.py:2405
 msgid "Running packages metadata update"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2162
+#: ../../lib/entropy/db/skel.py:2406
 msgid "it could take a while"
 msgstr "ця дія може тривати деякий час"
 
-#: ../../lib/entropy/db/skel.py:2181 ../../lib/entropy/db/skel.py:2206
-#: ../../lib/entropy/db/skel.py:2217
+#: ../../lib/entropy/db/skel.py:2425 ../../lib/entropy/db/skel.py:2450
+#: ../../lib/entropy/db/skel.py:2461
 msgid "Entropy"
 msgstr ""
 
-#: ../../lib/entropy/db/skel.py:2182
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:958
+#: ../../lib/entropy/db/skel.py:2426
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:965
 msgid "action"
 msgstr "дія"
 
-#: ../../lib/entropy/db/skel.py:2207
+#: ../../lib/entropy/db/skel.py:2451
 msgid "package move actions complete"
 msgstr "переміщення пакунку завершене"
 
-#: ../../lib/entropy/db/skel.py:2218
+#: ../../lib/entropy/db/skel.py:2462
 msgid "package moves completed successfully"
 msgstr "переміщення пакунку вдало завершені"
 
-#: ../../lib/entropy/db/skel.py:4240
+#: ../../lib/entropy/db/skel.py:4484
 msgid "Syncing current database"
 msgstr "Синхронізація поточної бази даних"
 
-#: ../../lib/entropy/db/skel.py:4241
+#: ../../lib/entropy/db/skel.py:4485
 #: ../../lib/entropy/client/interfaces/db.py:311
 msgid "please wait"
 msgstr "зачекайте, будь-ласка"
 
-#: ../../lib/entropy/db/skel.py:4256
+#: ../../lib/entropy/db/skel.py:4500
 msgid "Removing entry"
 msgstr "Видалення запису"
 
-#: ../../lib/entropy/db/skel.py:4275
+#: ../../lib/entropy/db/skel.py:4519
 msgid "Adding entry"
 msgstr "Додавання запису"
+
+#: ../../lib/entropy/db/sqlite.py:1965
+msgid "Exporting database table"
+msgstr "Експорт таблиці бази даних"
+
+#: ../../lib/entropy/db/sqlite.py:2005
+msgid "Database Export complete."
+msgstr "Експорт бази даних завершено.  "
+
+#: ../../lib/entropy/db/sqlite.py:2371 ../../lib/entropy/db/sqlite.py:2475
+#: ../../lib/entropy/db/sqlite.py:2583 ../../lib/entropy/db/sqlite.py:2596
+#: ../../lib/entropy/db/sql.py:5466 ../../lib/entropy/db/sql.py:5479
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2655
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2792
+#: ../../lib/entropy/client/interfaces/client.py:964
+msgid "ATTENTION"
+msgstr "УВАГА"
+
+#: ../../lib/entropy/db/sqlite.py:2373 ../../lib/entropy/db/sqlite.py:2477
+msgid "updating repository metadata layout, please wait!"
+msgstr ""
+
+#: ../../lib/entropy/db/sqlite.py:2584
+msgid "generating provided_libs metadata, please wait!"
+msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
+
+#: ../../lib/entropy/db/sql.py:5467
+msgid "Spm error occured"
+msgstr ""
+
+#: ../../lib/entropy/db/sql.py:5480
+msgid "Spm Unique Identifier not found for"
+msgstr ""
 
 #: ../../lib/entropy/core/settings/base.py:2086
 msgid "No description"
@@ -108,17 +130,17 @@ msgid "has been installed."
 msgstr ""
 
 #: ../../lib/kswitch/__init__.py:123
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3406
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3449
 #: ../../lib/entropy/client/interfaces/db.py:449
 #: ../../lib/entropy/client/interfaces/db.py:636
 #: ../../lib/entropy/client/interfaces/db.py:1999
-#: ../../lib/entropy/client/interfaces/db.py:2012 ../../lib/entropy/qa.py:843
-#: ../../client/solo/commands/install.py:489
-#: ../../client/solo/commands/install.py:492
-#: ../../client/solo/commands/install.py:499
-#: ../../client/solo/commands/install.py:502
+#: ../../lib/entropy/client/interfaces/db.py:2012 ../../lib/entropy/qa.py:832
 #: ../../client/solo/commands/rescue.py:311
 #: ../../client/solo/commands/rescue.py:322
+#: ../../client/solo/commands/install.py:491
+#: ../../client/solo/commands/install.py:494
+#: ../../client/solo/commands/install.py:501
+#: ../../client/solo/commands/install.py:504
 msgid "Attention"
 msgstr "Увага"
 
@@ -242,143 +264,143 @@ msgstr ""
 msgid "Applications and libraries for X11"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:616
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:623
 msgid "Reloading Portage modules"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:984
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:991
 msgid "updating metadata"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1150
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1157
 msgid "error"
 msgstr "помилка"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1152
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:1159
 msgid "not readable"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2591
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2614
 msgid "package not available on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2600
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2623
 msgid "repackaging"
 msgstr "перепакування"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2612
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2806
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2635
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2829
 msgid "WARNING"
 msgstr "ОБЕРЕЖНО"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2613
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2636
 msgid "Cannot complete quickpkg for atom"
 msgstr "Неможливо завершити quickpkg для атома"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2615
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2809
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2638
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2832
 msgid "do it manually"
 msgstr "виконайте це власноруч"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2633
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2656
 msgid "package files rebuild did not run properly"
 msgstr "Перезбірка файлів пакунку не виконана коректно"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2634
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2657
 msgid "Please update packages manually"
 msgstr "Будь-ласка оновіть пакунок власноруч"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2770
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2793
 msgid "forcing package updates"
 msgstr "примусове оновлення пакунків"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2771
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2794
 msgid "Syncing with"
 msgstr "Синхронізація з"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2807
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2830
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Неможливо завершити quickpkg для атомів"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3159
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4864
-#: ../../lib/entropy/client/interfaces/trigger.py:286
-#: ../../lib/entropy/client/interfaces/trigger.py:542
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3194
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4910
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:284
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:535
 msgid "QA"
 msgstr "QA"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3160
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3195
 msgid "Cannot update Portage package metadata"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3186
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3221
 msgid "SPM uid update error"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3254
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3288
 msgid "Cannot update SPM installed pkgs file"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3347
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3390
 msgid "Portage world file is corrupted"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3407
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3450
 msgid "preserved libraries have been found on system"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3552
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3700
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "does not exist"
 msgstr "не існує"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3552
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3595
 msgid "Overwriting"
 msgstr "Перезаписую"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3598
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
 msgid "variable differs"
 msgstr "різноманітні відмінності"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3598
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3685
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3641
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3728
 msgid "Updating"
 msgstr "Оновлюю"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3613
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3656
 msgid "updating critical variables"
 msgstr "оновлюю критичні змінні"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3685
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3728
 msgid "differs"
 msgstr "відмінності"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3700
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3743
 msgid "Reverting"
 msgstr "Повертаю"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3715
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3758
 msgid "Skipping configuration files update, you are not root."
 msgstr "Пропускаю оновлення файлів налаштувань, Ви не суперкористувач root"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3994
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4040
 msgid "Error calculating dependencies"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4553
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4599
 msgid "not supported"
 msgstr "не підтримується"
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4554
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4600
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4617
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4710
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4663
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4756
 msgid "IOError while reading"
 msgstr ""
 
-#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4865
+#: ../../lib/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4911
 msgid "illegal Entropy package tag in ebuild"
 msgstr ""
 
@@ -432,173 +454,103 @@ msgstr ""
 msgid "Icon"
 msgstr ""
 
-#: ../../lib/entropy/client/misc.py:209
+#: ../../lib/entropy/client/misc.py:216
 msgid "Automerging file"
 msgstr "Автооб'єднання файлу"
 
-#: ../../lib/entropy/client/misc.py:243
+#: ../../lib/entropy/client/misc.py:250
 msgid "Found update"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/client.py:950
-msgid "forcing packages metadata update"
-msgstr "примусове оновлення мета-інформації пакунків"
-
-#: ../../lib/entropy/client/interfaces/client.py:959
-msgid "Updating system database using repository"
-msgstr "Оновлення системної бази даних, використовуючи ID репозиторію"
-
-#: ../../lib/entropy/client/interfaces/cache.py:106
-#: ../../lib/entropy/client/interfaces/methods.py:100
-#: ../../lib/entropy/client/interfaces/methods.py:125
-#: ../../client/solo/commands/upgrade.py:297
+#: ../../lib/entropy/client/interfaces/cache.py:107
+#: ../../lib/entropy/client/interfaces/methods.py:104
+#: ../../lib/entropy/client/interfaces/methods.py:129
+#: ../../client/solo/commands/upgrade.py:305
 msgid "Repository"
 msgstr "Репозиторій"
 
-#: ../../lib/entropy/client/interfaces/cache.py:107
-#: ../../lib/entropy/client/interfaces/methods.py:126
+#: ../../lib/entropy/client/interfaces/cache.py:108
+#: ../../lib/entropy/client/interfaces/methods.py:130
 msgid "is corrupted"
 msgstr "зіпсований"
 
-#: ../../lib/entropy/client/interfaces/cache.py:108
+#: ../../lib/entropy/client/interfaces/cache.py:109
 msgid "Cannot calculate the checksum"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/trigger.py:72
-msgid "Source Package Manager interface can't be loaded"
-msgstr "Не можу завантажити Пакунковий Менеджер Джерела"
-
-#: ../../lib/entropy/client/interfaces/trigger.py:73
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:707
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:847
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:648
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:655
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1290
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:175
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:195
-#: ../../lib/entropy/security.py:499 ../../client/solo/commands/rescue.py:204
-msgid "Error"
-msgstr "Помилка"
-
-#: ../../lib/entropy/client/interfaces/trigger.py:75
-msgid "please fix"
-msgstr "будь-ласка, виправте (пофіксіть)"
-
-#: ../../lib/entropy/client/interfaces/trigger.py:287
-msgid "Cannot run External trigger for"
-msgstr "Неможливо виконати Зовнішній тригер для"
-
-#: ../../lib/entropy/client/interfaces/trigger.py:289
-#: ../../lib/entropy/client/interfaces/trigger.py:546
-msgid "Please report it"
-msgstr "Будь ласка, повідомте про це"
-
-#: ../../lib/entropy/client/interfaces/trigger.py:503
-msgid "Installing info"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/trigger.py:531
-msgid "Package phase"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/trigger.py:543
-msgid "Cannot run phase"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/trigger.py:557
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:128
-msgid "Source Package Manager is too old, please update it"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/trigger.py:570
-msgid "Source Package Manager phase error"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/methods.py:81
+#: ../../lib/entropy/client/interfaces/methods.py:85
 msgid "Please update your repositories now in order to remove this message!"
 msgstr "Будь-ласка, поновіть ваші репозиторії зараз, щоб прибрати це повідомлення!"
 
-#: ../../lib/entropy/client/interfaces/methods.py:101
-#: ../../client/solo/commands/pkg.py:203
+#: ../../lib/entropy/client/interfaces/methods.py:105
+#: ../../client/solo/commands/pkg.py:189
 #: ../../client/solo/commands/mask.py:101
 msgid "is not available"
 msgstr "недоступний"
 
-#: ../../lib/entropy/client/interfaces/methods.py:101
-#: ../../lib/entropy/client/interfaces/methods.py:126
+#: ../../lib/entropy/client/interfaces/methods.py:105
+#: ../../lib/entropy/client/interfaces/methods.py:130
 msgid "Cannot validate"
 msgstr "Неможливо підтвердити"
 
-#: ../../lib/entropy/client/interfaces/methods.py:274
+#: ../../lib/entropy/client/interfaces/methods.py:278
 msgid "bad repository id specified"
 msgstr "обраний хибний ID репозиторію"
 
-#: ../../lib/entropy/client/interfaces/methods.py:299
+#: ../../lib/entropy/client/interfaces/methods.py:303
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
 msgstr "Репозиторій %s ще не завантажено."
 
-#: ../../lib/entropy/client/interfaces/methods.py:995
+#: ../../lib/entropy/client/interfaces/methods.py:1011
 msgid "System database not found or corrupted"
 msgstr "База даних системи не знайдена або зіпсована"
 
-#: ../../lib/entropy/client/interfaces/methods.py:996
+#: ../../lib/entropy/client/interfaces/methods.py:1012
 msgid "running in safe mode using temporary, empty repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1178
+#: ../../lib/entropy/client/interfaces/methods.py:1194
 msgid "Backing up repository to"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1198
+#: ../../lib/entropy/client/interfaces/methods.py:1214
 msgid "Repository backed up successfully"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1207
-#: ../../lib/entropy/client/interfaces/methods.py:1265
-#: ../../lib/entropy/const.py:625
+#: ../../lib/entropy/client/interfaces/methods.py:1223
+#: ../../lib/entropy/client/interfaces/methods.py:1281
+#: ../../lib/entropy/const.py:629
 msgid "All fine"
 msgstr "Все чудово"
 
-#: ../../lib/entropy/client/interfaces/methods.py:1226
+#: ../../lib/entropy/client/interfaces/methods.py:1242
 msgid "Restoring backed up repository"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1244
+#: ../../lib/entropy/client/interfaces/methods.py:1260
 msgid "Unable to unpack"
 msgstr "Неможливо розпакувати"
 
-#: ../../lib/entropy/client/interfaces/methods.py:1254
+#: ../../lib/entropy/client/interfaces/methods.py:1270
 msgid "Repository restored successfully"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:1379
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:137
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:144
+#: ../../lib/entropy/client/interfaces/methods.py:1412
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:129
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:136
 msgid "Removing"
 msgstr "Видалення"
 
-#: ../../lib/entropy/client/interfaces/methods.py:1826
-msgid "Resources unlocked, let's go!"
-msgstr "Ресурси звільнені. Поїхали!"
-
-#: ../../lib/entropy/client/interfaces/methods.py:1842
-msgid "Resources still locked, giving up!"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/methods.py:1851
-msgid "Resources locked, sleeping..."
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/methods.py:2049
+#: ../../lib/entropy/client/interfaces/methods.py:1824
 msgid "Checking speed of"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:2080
+#: ../../lib/entropy/client/interfaces/methods.py:1855
 msgid "Mirror speed"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/methods.py:2604
+#: ../../lib/entropy/client/interfaces/methods.py:2380
 msgid "not a valid method"
 msgstr "хибний метод"
 
@@ -758,7 +710,7 @@ msgid "Giving up"
 msgstr "Здаюсь"
 
 #: ../../lib/entropy/client/interfaces/db.py:1316
-#: ../../lib/entropy/security.py:194
+#: ../../lib/entropy/security.py:402
 msgid ""
 "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
@@ -772,12 +724,12 @@ msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1378
-#: ../../lib/entropy/security.py:234
+#: ../../lib/entropy/security.py:442
 msgid "GPG key changed for"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1398
-#: ../../lib/entropy/security.py:253
+#: ../../lib/entropy/security.py:461
 msgid "GPG key already installed for"
 msgstr ""
 
@@ -791,7 +743,7 @@ msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1441
 #: ../../lib/entropy/client/interfaces/db.py:1474
-#: ../../lib/entropy/security.py:291
+#: ../../lib/entropy/security.py:498
 msgid "Error during GPG key installation"
 msgstr ""
 
@@ -804,7 +756,7 @@ msgid "Successfully installed GPG key for repository"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1495
-#: ../../lib/entropy/security.py:311
+#: ../../lib/entropy/security.py:518
 msgid "Fingerprint"
 msgstr ""
 
@@ -817,12 +769,12 @@ msgid "Verified GPG signature of"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1557
-#: ../../lib/entropy/security.py:339
+#: ../../lib/entropy/security.py:546
 msgid "Error during GPG verification of"
 msgstr ""
 
 #: ../../lib/entropy/client/interfaces/db.py:1566
-#: ../../lib/entropy/security.py:348
+#: ../../lib/entropy/security.py:555
 msgid "It could mean a potential security risk"
 msgstr ""
 
@@ -912,42 +864,49 @@ msgstr "Спробуйте знову через кілька хвилин"
 msgid "Configuration files update error, not critical, continuing"
 msgstr "Помилка під час оновлення файлів налаштувань, некритична, продовжую"
 
-#: ../../lib/entropy/client/interfaces/repository.py:172
+#: ../../lib/entropy/client/interfaces/client.py:965
+msgid "forcing packages metadata update"
+msgstr "примусове оновлення мета-інформації пакунків"
+
+#: ../../lib/entropy/client/interfaces/client.py:974
+msgid "Updating system database using repository"
+msgstr "Оновлення системної бази даних, використовуючи ID репозиторію"
+
+#: ../../lib/entropy/client/interfaces/repository.py:206
 msgid "Something bad happened. Please have a look."
 msgstr "Трапилось щось недобре. Будь-ласка, погляньте."
 
-#: ../../lib/entropy/client/interfaces/repository.py:194
+#: ../../lib/entropy/client/interfaces/repository.py:228
 msgid "there is"
 msgid_plural "there are"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../lib/entropy/client/interfaces/repository.py:196
+#: ../../lib/entropy/client/interfaces/repository.py:230
 msgid "package file that could be removed"
 msgid_plural "package files that could be removed"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../lib/entropy/client/interfaces/repository.py:209
+#: ../../lib/entropy/client/interfaces/repository.py:243
 msgid "Packages are stored in"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/repository.py:239
+#: ../../lib/entropy/client/interfaces/repository.py:273
 msgid "a new release is available"
 msgstr "наявна нова версія"
 
-#: ../../lib/entropy/client/interfaces/repository.py:240
+#: ../../lib/entropy/client/interfaces/repository.py:274
 msgid "Mind to install it before any other package"
 msgstr "Не забудьте встановити її раніше за ніж будь-які інші пакунки"
 
-#: ../../lib/entropy/client/interfaces/repository.py:305
+#: ../../lib/entropy/client/interfaces/repository.py:335
 msgid "Advisories fetch error"
 msgstr "Помилка при завантаженні повідомлень"
 
-#. let's dance!
-#: ../../lib/entropy/client/interfaces/repository.py:337
+#: ../../lib/entropy/client/interfaces/repository.py:352
 msgid "Repositories synchronization"
 msgstr "Синхронізація репозиторію"
 
@@ -988,242 +947,252 @@ msgstr "Сортування залежностей"
 msgid "Calculating inverse dependencies for"
 msgstr "Підрахунок протилежних залежностей для"
 
-#: ../../lib/entropy/client/interfaces/dep.py:3065
+#: ../../lib/entropy/client/interfaces/dep.py:3052
 msgid "Calculating updates"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:469
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:662
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:584
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:670
 msgid "Mirror"
 msgstr "Дзеркало"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:471
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:664
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:586
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:672
 msgid "maximum failure threshold reached"
 msgstr "Максимальний поріг помилок досягнутий"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:522
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:637
 msgid "success"
 msgstr "успіх"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:534
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:650
 msgid "Aggregated transfer rate"
 msgstr "сукупна швидкість обміну даними"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:537
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:721
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:196
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:653
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:733
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:176
 msgid "second"
 msgstr "сек."
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:553
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:738
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:217
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:669
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:750
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:197
 msgid "Error downloading from"
 msgstr "Помилка при завантаженні з"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:558
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:674
 msgid "data not available on this mirror"
 msgstr "інформація недоступна на цьому дзеркалі"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:561
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:749
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:677
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:761
 msgid "wrong checksum"
 msgstr "невірна контрольна сума"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:564
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:761
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:680
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:773
 msgid "not found"
 msgstr "не знайдено"
 
 #. timeout!
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:567
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:683
 msgid "timeout error"
 msgstr "помилка при перевищенні часу очікування"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:570
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:774
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:227
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:686
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:786
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:207
 msgid "discarded download"
 msgstr "скасоване завантаження"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:574
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:777
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:230
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:690
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:789
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:210
 msgid "unknown reason"
 msgstr "невідома причина"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:669
-msgid "Multi Fetching"
-msgstr "Мульти-завантаження"
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:798
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:806
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:823
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:844
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:151
+#: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:353
+msgid "Downloading"
+msgstr "Завантаження"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:671
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:737
-#: ../../client/solo/commands/query.py:1276
-#: ../../client/solo/commands/_manage.py:655
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:800
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:808
+#: ../../client/solo/commands/query.py:1284
+#: ../../client/solo/commands/_manage.py:558
 msgid "package"
 msgid_plural "packages"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:677
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:818
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:178
-#: ../../client/solo/utils.py:276 ../../client/solo/commands/command.py:316
-msgid "Downloading"
-msgstr "Завантаження"
-
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:679
-msgid "archive"
-msgid_plural "archives"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:693
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:822
 msgid "Some packages cannot be fetched"
 msgstr "Деякі пакунки не можливо завантажити"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:694
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:823
 msgid "Try to update your repositories and retry"
 msgstr "Спробуйте оновити репозиторії і повторіть спробу"
 
-#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:735
-msgid "Multi Verification"
-msgstr "Мульти-перевірка"
+#: ../../lib/entropy/client/interfaces/package/actions/multifetch.py:836
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:832
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:569
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1263
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:144
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:164
+#: ../../client/solo/commands/rescue.py:204
+msgid "Error"
+msgstr "Помилка"
 
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:112
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:750
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:285
+msgid "Cannot run External trigger for"
+msgstr "Неможливо виконати Зовнішній тригер для"
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:287
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:539
+msgid "Please report it"
+msgstr "Будь ласка, повідомте про це"
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:499
+msgid "Installing info"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:522
+msgid "Package phase"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:536
+msgid "Cannot run phase"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:550
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:112
+msgid "Source Package Manager is too old, please update it"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/_triggers.py:563
+msgid "Source Package Manager phase error"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:86
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:800
 msgid "Pre-remove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:159
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:115
+msgid "The requested package is no longer available"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:149
 msgid "Removing from Entropy"
 msgstr "Видалення з Entropy"
 
-#: ../../lib/entropy/client/interfaces/package/actions/remove.py:198
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:824
+#: ../../lib/entropy/client/interfaces/package/actions/remove.py:234
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:866
 msgid "Post-remove"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/action.py:102
+#: ../../lib/entropy/client/interfaces/package/actions/action.py:221
 msgid "An error occured. Action aborted."
 msgstr "Виникла помилка. Дію скасовано."
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:693
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:701
 msgid "Downloading from"
 msgstr "Звантаження з"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:715
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:192
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:727
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:172
 msgid "Successfully downloaded from"
 msgstr "Успішно завантажено з"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:720
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:194
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:732
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:174
 msgid "at"
 msgstr "на"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:745
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:222
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:757
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:202
 msgid "file not available on this mirror"
 msgstr "файл недоступний на цьому дзеркалі"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:755
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:767
 msgid "Disabling resume"
 msgstr "Відімкнення"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:767
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:779
 msgid "timeout, retrying on this mirror"
 msgstr "перевищено час очікування, повтор спроби на цьому дзеркалі"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:770
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:782
 msgid "timeout, giving up"
 msgstr "перевищено час очікування, здаюсь"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:811
-msgid "Fetching"
-msgstr "Завантаження"
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:830
+msgid "Package cannot be downloaded. Try to update repositories"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:846
-msgid "Package cannot be fetched. Try to update repositories"
-msgstr "Пакунок не можливо завантажити. Спробуйте оновити репозиторії."
-
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:936
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1017
 msgid "Package signature verification error for"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:969
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1050
 msgid "disabled"
 msgstr "Відімкнений"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:983
-msgid "Checking package signature"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:996
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1069
 msgid "Package signature verification"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:998
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1071
 msgid "temporarily unavailable"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1009
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1083
 msgid "Package signature"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1011
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1085
 msgid "does not match the recorded one"
 msgstr "не підходить записаний"
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1022
-msgid "matches"
-msgstr "підходящі"
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1097
+msgid "validated"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1038
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1107
 msgid "Checking package checksum..."
 msgstr "Обчислення контрольної суми пакунку..."
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1051
-msgid "Package checksum matches"
-msgstr "Контрольна сума пакунку співпадає"
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1125
+msgid "Checksum validation error"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1071
-#, python-format
-msgid "Checksum does not match. Download attempt #%s"
-msgstr "Контрольна сума пакунку не співпадає. Спроба завантаження №#%s"
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1139
+msgid "Invalid checksum"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1095
-msgid "Cannot properly fetch package! Quitting."
-msgstr "Неможливо коректно завантажити пакунок! Виходжу."
+#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1157
+msgid "Invalid signatures"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1107
-msgid "Cannot fetch package or checksum does not match"
-msgstr "Неможливо завантажити пакунок або контрольна сума не співпадає. "
-
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1108
-msgid "Try to download latest repositories"
-msgstr "Спробуйте завантажити останні репозиторії"
-
-#: ../../lib/entropy/client/interfaces/package/actions/fetch.py:1128
-msgid "Verifying"
-msgstr "Перевірка"
-
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:143
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:117
 msgid "Fetch path setup error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:165
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:138
 msgid "Source code not available."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:207
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:187
 msgid "Local path"
 msgstr "Локальний шлях"
 
-#: ../../lib/entropy/client/interfaces/package/actions/source.py:247
+#: ../../lib/entropy/client/interfaces/package/actions/source.py:227
 msgid "Fetching sources"
 msgstr "Завантаження джерел"
 
@@ -1247,380 +1216,375 @@ msgstr ""
 msgid "Failed to remove the library"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:326
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:346
 msgid "Cannot protect broken symlink"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:360
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:380
 msgid "Skipping file installation/removal"
 msgstr "Пропускаю встановлення/видалення файлу"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:404
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:520
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:424
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:542
 msgid "Protecting config file"
 msgstr "Захист файлу налаштуваннь"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:497
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:519
 msgid "Removing config file, never modified"
 msgstr "Видалення файлу налаштувань, що ніколи не змінювався"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:519
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:541
 msgid "remove"
 msgstr "видалити"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:539
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:561
 msgid "This package contains a badly encoded file !!!"
 msgstr "Цей пакунок містить файл із зіпсованим кодуванням!"
 
-#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:664
+#: ../../lib/entropy/client/interfaces/package/actions/_manage.py:690
 msgid "Collision found during removal of"
 msgstr "Помилка при видаленні"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:401
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:610
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:344
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:559
 msgid "Unpacking"
 msgstr "Розпакування"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:441
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:384
 msgid "Unpack error"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:470
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:416
 msgid "Unable to find Entropy metadata in package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:509
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:455
 msgid "Unable to unpack package"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:577
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:526
 msgid "Merging"
 msgstr "Об'єднання"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:583
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:532
 msgid "Merging package"
 msgstr "Об'єднання пакунку"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:646
-msgid "You are running out of disk space"
-msgstr "На вашому диску залишилося зовсім мало місця"
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:647
-msgid "I bet, you're probably Michele"
-msgstr "Б’юсь об заклад, що ти Михайло"
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:651
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:565
 msgid "An error occured while trying to unpack the package"
 msgstr "Трапилась помилка при спробі розпакувати пакунок"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:654
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1289
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:568
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1262
 msgid "Check if your system is healthy"
 msgstr "Перевірте, чи все гаразд з вашою системою"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:677
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:651
 msgid "Setup"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:706
-msgid "Error during package files permissions setup"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:724
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:681
 msgid "Pre-install"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:777
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:730
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:744
+msgid "Error during package files permissions setup"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:837
 msgid "Cleaning previously installed application data."
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:883
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:923
 msgid "Post-install"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:909
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:915
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:950
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:956
 #: ../../client/solo/utils.py:67
 msgid "Cleaning"
 msgstr "Очищення"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1224
-msgid "Updating installed packages repository"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1244
-msgid "Installing"
-msgstr "Встановлення"
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1250
-msgid "Installing package"
-msgstr "Встановлення пакунку"
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1272
-msgid "unsupported splitdebug usage (package files)"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1276
-msgid "<3 debug files installation enabled <3"
-msgstr ""
-
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1288
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1261
 msgid "An error occured while trying to install the package"
 msgstr "Трапилась помилка при спробі встановлення пакунку"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1310
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1275
+msgid "Updating installed packages repository"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1307
+msgid "Installing"
+msgstr "Встановлення"
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
+msgid "Installing package"
+msgstr "Встановлення пакунку"
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1335
+msgid "unsupported splitdebug usage (package files)"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1339
+msgid "<3 debug files installation enabled <3"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1437
 msgid "Collision found during install for"
 msgstr "Виявлено протиріччя під час встановлення"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1313
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1439
+msgid "QA:"
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1441
 msgid "cannot overwrite"
 msgstr "неможливо перезаписати"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1398
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1527
 #, python-format
-msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
+msgid "QA: %s is a file when it should be a directory"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1423
-msgid "directory expected, symlink found"
-msgstr "знайдено зкерування, хоча потрібна була тека"
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1552
+msgid "File moved"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1426
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1732
-msgid "Removing in 20 seconds !!"
-msgstr "Видалю через 20 секунд!!"
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1574
+msgid "QA: symlink expected, directory found"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1472
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1608
 msgid "Cannot remove symlink"
 msgstr ""
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1638
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1776
 msgid "Automerging config file, never modified"
 msgstr "Автооб'єднання файлу налаштувань, що ніколи не був змінений"
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1667
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1689
-msgid "Circular symlink issue"
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1805
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1827
+msgid "QA: circular symlink issue"
 msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1729
-msgid "file expected, directory found"
-msgstr "знайдена тека, хоча потрібен був файл"
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1867
+msgid "Fatal: file expected, directory found"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1782
-msgid "File move error"
-msgstr "Переміщення файлу закінчилось помилково"
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1907
+msgid "QA: file move error"
+msgstr ""
 
-#: ../../lib/entropy/client/interfaces/package/actions/install.py:1785
+#: ../../lib/entropy/client/interfaces/package/actions/install.py:1910
 msgid "please report"
 msgstr "будь-ласка, надішліть повідомлення"
 
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:101
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:85
 msgid "configuration phase"
 msgstr "Фаза налаштування"
 
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:154
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:160
-msgid "Configuring package"
-msgstr "Налаштування пакунку"
-
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:172
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:192
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:141
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:161
 msgid "An error occured while trying to configure the package"
 msgstr "Трапилася помилка при спробі налаштування пакунку"
 
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:174
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:143
 msgid "Make sure that your system is healthy"
 msgstr "Переконайтесь, що з Вашою системою все гаразд"
 
-#: ../../lib/entropy/client/interfaces/package/actions/config.py:194
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:163
 msgid "It seems that Source Package Manager entry is missing"
 msgstr "Схоже, неможливо знайти записи Менеджера пакунків"
 
-#: ../../lib/entropy/fetchers.py:808
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:190
+msgid "The requested package is no longer available."
+msgstr ""
+
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:212
+#: ../../lib/entropy/client/interfaces/package/actions/config.py:218
+msgid "Configuring package"
+msgstr "Налаштування пакунку"
+
+#: ../../lib/entropy/fetchers.py:854
 msgid "infinite"
 msgstr "безконечно"
 
-#: ../../lib/entropy/fetchers.py:880
+#: ../../lib/entropy/fetchers.py:926
 msgid "[F]"
 msgstr "[F]"
 
-#: ../../lib/entropy/fetchers.py:881 ../../lib/entropy/fetchers.py:1274
+#: ../../lib/entropy/fetchers.py:927 ../../lib/entropy/fetchers.py:1344
 msgid "ETA"
 msgstr "ЕТА"
 
-#: ../../lib/entropy/fetchers.py:882 ../../lib/entropy/fetchers.py:1275
+#: ../../lib/entropy/fetchers.py:928 ../../lib/entropy/fetchers.py:1345
 msgid "sec"
 msgstr "сек."
 
-#: ../../lib/entropy/fetchers.py:1136
+#: ../../lib/entropy/fetchers.py:1208
 msgid "Aggregated download"
 msgstr "Сукупне завантаження"
 
-#: ../../lib/entropy/fetchers.py:1138
+#: ../../lib/entropy/fetchers.py:1210
 msgid "item"
 msgid_plural "items"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../lib/entropy/fetchers.py:1239
-msgid "Infinity"
-msgstr ""
-
-#: ../../lib/entropy/security.py:266
+#: ../../lib/entropy/security.py:474
 msgid "GPG key EXPIRED for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:277
+#: ../../lib/entropy/security.py:484
 msgid "Installing GPG key for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:302
+#: ../../lib/entropy/security.py:509
 msgid "Successfully installed GPG key for URL"
 msgstr ""
 
-#: ../../lib/entropy/security.py:359 ../../lib/entropy/security.py:862
-#: ../../lib/entropy/security.py:898 ../../lib/entropy/security.py:905
-#: ../../lib/entropy/security.py:996 ../../lib/entropy/security.py:1016
-#: ../../lib/entropy/security.py:1028 ../../lib/entropy/security.py:1048
-#: ../../lib/entropy/security.py:1059 ../../lib/entropy/security.py:1084
-#: ../../lib/entropy/security.py:1111
+#: ../../lib/entropy/security.py:566 ../../lib/entropy/security.py:885
+#: ../../lib/entropy/security.py:921 ../../lib/entropy/security.py:926
+#: ../../lib/entropy/security.py:994 ../../lib/entropy/security.py:1023
+#: ../../lib/entropy/security.py:1035 ../../lib/entropy/security.py:1055
+#: ../../lib/entropy/security.py:1066 ../../lib/entropy/security.py:1091
+#: ../../lib/entropy/security.py:1126
 msgid "Security Advisories"
 msgstr "Застереження безпеки"
 
-#: ../../lib/entropy/security.py:360
+#: ../../lib/entropy/security.py:567
 msgid "GPG key verification successful"
 msgstr ""
 
-#: ../../lib/entropy/security.py:502 ../../client/solo/commands/pkg.py:201
-#: ../../client/solo/commands/_manage.py:494
-#: ../../client/solo/commands/_manage.py:527
-#: ../../client/solo/commands/mask.py:99
+#: ../../lib/entropy/security.py:727 ../../client/solo/commands/_manage.py:397
+#: ../../client/solo/commands/_manage.py:430
+#: ../../client/solo/commands/pkg.py:187 ../../client/solo/commands/mask.py:99
 #: ../../client/solo/commands/mask.py:172
 msgid "Warning"
 msgstr "Обережно"
 
-#: ../../lib/entropy/security.py:504
-msgid "advisory broken"
-msgstr "повідомлення зламане"
+#: ../../lib/entropy/security.py:729
+msgid "broken advisory"
+msgstr ""
 
-#: ../../lib/entropy/security.py:863
+#: ../../lib/entropy/security.py:886
 msgid "getting latest advisories"
 msgstr ""
 
-#: ../../lib/entropy/security.py:880
+#: ../../lib/entropy/security.py:903
 msgid "cannot create temporary directory"
 msgstr ""
 
-#: ../../lib/entropy/security.py:899
+#: ../../lib/entropy/security.py:922
 msgid "updated successfully"
 msgstr "вдало оновлено"
 
-#: ../../lib/entropy/security.py:906
+#: ../../lib/entropy/security.py:927
 msgid "already up to date"
 msgstr "вже оновлено до найновішої версії"
 
-#: ../../lib/entropy/security.py:997
+#: ../../lib/entropy/security.py:995
 msgid "cannot download checksum, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1017
+#: ../../lib/entropy/security.py:1024
 msgid "unable to download advisories, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1029
+#: ../../lib/entropy/security.py:1036
 msgid "Verifying checksum"
 msgstr "Перевірка контрольної суми"
 
-#: ../../lib/entropy/security.py:1049
+#: ../../lib/entropy/security.py:1056
 msgid "verification successful"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1060
+#: ../../lib/entropy/security.py:1067
 msgid "checksum verification failed, sorry"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1085
+#: ../../lib/entropy/security.py:1092
 msgid "GPG service not available"
 msgstr ""
 
-#: ../../lib/entropy/security.py:1112
+#: ../../lib/entropy/security.py:1127
 msgid "digest verification failed, try again later"
 msgstr "перевірка списків закінчилась невдачею, спробуйте згодом"
 
-#: ../../lib/entropy/const.py:603
+#: ../../lib/entropy/const.py:607
 msgid "Runtime dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:604
+#: ../../lib/entropy/const.py:608
 msgid "Post dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:605
+#: ../../lib/entropy/const.py:609
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:606
+#: ../../lib/entropy/const.py:610
 msgid "Build dependency"
 msgstr ""
 
-#: ../../lib/entropy/const.py:626
+#: ../../lib/entropy/const.py:630
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr "Зіпсований репозиторій користувача. Будь-ласка, відновіть з резервної копії."
 
-#: ../../lib/entropy/const.py:658
+#: ../../lib/entropy/const.py:662
 msgid "reason not available"
 msgstr "причина невідома"
 
-#: ../../lib/entropy/const.py:659
+#: ../../lib/entropy/const.py:663
 msgid "user package.mask"
 msgstr "package.mask користувача"
 
-#: ../../lib/entropy/const.py:660
+#: ../../lib/entropy/const.py:664
 msgid "system keywords"
 msgstr "системні ключові слова"
 
-#: ../../lib/entropy/const.py:661
+#: ../../lib/entropy/const.py:665
 msgid "user package.unmask"
 msgstr "package.unmask користувача"
 
-#: ../../lib/entropy/const.py:662
+#: ../../lib/entropy/const.py:666
 msgid "user repo package.keywords (all packages)"
 msgstr "репозитарії користувача package.keywords (усі пакунки)"
 
-#: ../../lib/entropy/const.py:663
+#: ../../lib/entropy/const.py:667
 msgid "user repo package.keywords"
 msgstr "репозитарій користувача package.keywords"
 
-#: ../../lib/entropy/const.py:664
+#: ../../lib/entropy/const.py:668
 msgid "user package.keywords"
 msgstr "package.keywords користувача"
 
-#: ../../lib/entropy/const.py:665
+#: ../../lib/entropy/const.py:669
 msgid "completely masked (by keyword?)"
 msgstr "повністю замасковано (за ключовим словом?)"
 
-#: ../../lib/entropy/const.py:666
+#: ../../lib/entropy/const.py:670
 msgid "repository general packages.db.mask"
 msgstr "загальний репозиторій packages.db.mask"
 
-#: ../../lib/entropy/const.py:667
+#: ../../lib/entropy/const.py:671
 msgid "repository general packages.db.keywords"
 msgstr "репозиторій гілки packages.db.mask"
 
-#: ../../lib/entropy/const.py:668
+#: ../../lib/entropy/const.py:672
 msgid "user license.mask"
 msgstr "користувацька license.mask"
 
-#: ../../lib/entropy/const.py:669
+#: ../../lib/entropy/const.py:673
 msgid "user live unmask"
 msgstr "поточне демаскування користувача"
 
-#: ../../lib/entropy/const.py:670
+#: ../../lib/entropy/const.py:674
 msgid "user live mask"
 msgstr "поточна маска користувача"
 
@@ -1628,220 +1592,216 @@ msgstr "поточна маска користувача"
 msgid "Entropy needs your attention"
 msgstr "Entropy вимагає Вашої уваги"
 
-#: ../../lib/entropy/output.py:766 ../../lib/entropy/output.py:1011
-#: ../../client/solo/utils.py:451 ../../client/solo/commands/ugc.py:656
+#: ../../lib/entropy/output.py:768 ../../lib/entropy/output.py:1014
+#: ../../client/solo/utils.py:487 ../../client/solo/commands/ugc.py:656
 #: ../../client/solo/commands/ugc.py:766 ../../client/solo/commands/ugc.py:789
 #: ../../client/solo/commands/ugc.py:970
-#: ../../client/solo/commands/upgrade.py:292
-#: ../../client/solo/commands/upgrade.py:320
 #: ../../client/solo/commands/rescue.py:670
 #: ../../client/solo/commands/rescue.py:675
 #: ../../client/solo/commands/rescue.py:715
+#: ../../client/solo/commands/upgrade.py:300
+#: ../../client/solo/commands/upgrade.py:336
 msgid "Yes"
 msgstr "Tak"
 
-#: ../../lib/entropy/output.py:766 ../../client/solo/utils.py:453
-#: ../../client/solo/main.py:168 ../../client/solo/commands/pkg.py:259
-#: ../../client/solo/commands/config.py:149
-#: ../../client/solo/commands/remove.py:406
-#: ../../client/solo/commands/remove.py:413
-#: ../../client/solo/commands/remove.py:457
-#: ../../client/solo/commands/deptest.py:182
-#: ../../client/solo/commands/libtest.py:223
-#: ../../client/solo/commands/_manage.py:245
+#: ../../lib/entropy/output.py:768 ../../client/solo/utils.py:489
+#: ../../client/solo/main.py:168 ../../client/solo/commands/config.py:152
 #: ../../client/solo/commands/conf.py:395
 #: ../../client/solo/commands/conf.py:450
-#: ../../client/solo/commands/install.py:556
-#: ../../client/solo/commands/upgrade.py:292
+#: ../../client/solo/commands/remove.py:368
+#: ../../client/solo/commands/deptest.py:198
+#: ../../client/solo/commands/libtest.py:226
 #: ../../client/solo/commands/rescue.py:332
 #: ../../client/solo/commands/rescue.py:336
 #: ../../client/solo/commands/rescue.py:343
+#: ../../client/solo/commands/install.py:554
+#: ../../client/solo/commands/upgrade.py:300
 #: ../../client/solo/commands/mask.py:161
 msgid "No"
 msgstr "Ni"
 
-#: ../../lib/entropy/output.py:781
+#: ../../lib/entropy/output.py:783
 msgid "Entropy got a question for you"
 msgstr "Entropy має до Вас запитання"
 
-#: ../../lib/entropy/output.py:795
+#: ../../lib/entropy/output.py:797
 msgid "Interrupted"
 msgstr "Скасовано"
 
-#: ../../lib/entropy/output.py:857 ../../lib/entropy/output.py:861
+#: ../../lib/entropy/output.py:860 ../../lib/entropy/output.py:864
 msgid "Selected number"
 msgstr "Обраний номер"
 
-#: ../../lib/entropy/output.py:878 ../../client/solo/commands/_manage.py:768
+#: ../../lib/entropy/output.py:881 ../../client/solo/commands/_manage.py:671
 msgid "Please select an option"
 msgstr "Будь-ласка, оберіть опцію"
 
-#: ../../lib/entropy/output.py:880
+#: ../../lib/entropy/output.py:883
 msgid "Discard all"
 msgstr "Скасувати все"
 
-#: ../../lib/entropy/output.py:881
+#: ../../lib/entropy/output.py:884
 msgid "Confirm"
 msgstr "Підтвердити"
 
-#: ../../lib/entropy/output.py:882
+#: ../../lib/entropy/output.py:885
 msgid "Add item"
 msgstr "Додати предмет"
 
-#: ../../lib/entropy/output.py:883
+#: ../../lib/entropy/output.py:886
 msgid "Edit item"
 msgstr ""
 
-#: ../../lib/entropy/output.py:884
+#: ../../lib/entropy/output.py:887
 msgid "Remove item"
 msgstr "Видалити предмет"
 
-#: ../../lib/entropy/output.py:885
+#: ../../lib/entropy/output.py:888
 msgid "Show current list"
 msgstr "Показати поточний перелік"
 
-#: ../../lib/entropy/output.py:889 ../../client/solo/commands/conf.py:251
+#: ../../lib/entropy/output.py:892 ../../client/solo/commands/conf.py:251
 #: ../../client/solo/commands/conf.py:294
 msgid "Your choice (type a number and press enter):"
 msgstr "Ваш вибір (введіть номер і натисніть Enter)"
 
-#: ../../lib/entropy/output.py:921
+#: ../../lib/entropy/output.py:924
 msgid "You don't have typed a number."
 msgstr "Ви не ввели номер."
 
-#: ../../lib/entropy/output.py:924
+#: ../../lib/entropy/output.py:927
 msgid "Invalid action."
 msgstr "Хибна дія."
 
-#: ../../lib/entropy/output.py:934
+#: ../../lib/entropy/output.py:937
 msgid "String to add (-1 to go back):"
 msgstr ""
 
-#: ../../lib/entropy/output.py:944
+#: ../../lib/entropy/output.py:947
 msgid "Invalid string."
 msgstr "Помилковий рядок."
 
-#: ../../lib/entropy/output.py:952
+#: ../../lib/entropy/output.py:955
 msgid "Element number to edit (-1 to go back):"
 msgstr ""
 
-#: ../../lib/entropy/output.py:963
+#: ../../lib/entropy/output.py:966
 msgid "old"
 msgstr ""
 
-#: ../../lib/entropy/output.py:963
+#: ../../lib/entropy/output.py:966
 msgid "new value:"
 msgstr ""
 
-#: ../../lib/entropy/output.py:971 ../../lib/entropy/output.py:989
+#: ../../lib/entropy/output.py:974 ../../lib/entropy/output.py:992
 msgid "Invalid element."
 msgstr "Хибний елемент."
 
-#: ../../lib/entropy/output.py:980
+#: ../../lib/entropy/output.py:983
 msgid "Element number to remove (-1 to go back):"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:162
+#: ../../lib/entropy/qa.py:163
 msgid "Searching for broken reverse dependencies"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:179
+#: ../../lib/entropy/qa.py:180
 msgid "scanning for broken reverse dependencies"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:220
+#: ../../lib/entropy/qa.py:221
 msgid "broken libraries detected"
 msgstr "зламані бібліотеки знайдені"
 
-#: ../../lib/entropy/qa.py:231
+#: ../../lib/entropy/qa.py:232
 msgid "needs"
 msgstr "вимагає"
 
-#: ../../lib/entropy/qa.py:270
+#: ../../lib/entropy/qa.py:271
 msgid "scanning"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:312
+#: ../../lib/entropy/qa.py:313
 msgid "blacklisted dependencies !!!"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:337
+#: ../../lib/entropy/qa.py:338
 msgid "requires libraries"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:355
+#: ../../lib/entropy/qa.py:356
 msgid "library provided by"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:401 ../../lib/entropy/qa.py:628
+#: ../../lib/entropy/qa.py:402 ../../lib/entropy/qa.py:629
 msgid "no packages"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:430
+#: ../../lib/entropy/qa.py:431
 msgid "is potentially missing these dependencies"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:567
+#: ../../lib/entropy/qa.py:568
 msgid "determining missing libraries"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:599
+#: ../../lib/entropy/qa.py:600
 msgid "requires"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:616 ../../lib/entropy/qa.py:627
+#: ../../lib/entropy/qa.py:617 ../../lib/entropy/qa.py:628
 msgid "provided by"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:640
+#: ../../lib/entropy/qa.py:641
 msgid "no missing runtime libraries found"
 msgstr ""
 
-#: ../../lib/entropy/qa.py:676
+#: ../../lib/entropy/qa.py:677
 msgid "Libraries test"
 msgstr "Тест бібліотек"
 
-#: ../../lib/entropy/qa.py:691
+#: ../../lib/entropy/qa.py:692
 msgid "Broken symbols packages list"
 msgstr "Список зламаних пакунків символів"
 
-#: ../../lib/entropy/qa.py:692
+#: ../../lib/entropy/qa.py:693
 msgid "Broken executables list"
 msgstr "Список зламаних виконуваних файлів"
 
-#: ../../lib/entropy/qa.py:694
+#: ../../lib/entropy/qa.py:695
 msgid "Dumping results into these files"
 msgstr "Запис результатів у ці файли"
 
-#: ../../lib/entropy/qa.py:774
+#: ../../lib/entropy/qa.py:775
 msgid "discarding directory"
 msgstr "тека забракованого"
 
-#: ../../lib/entropy/qa.py:776
+#: ../../lib/entropy/qa.py:777
 msgid "because it's symlinked on"
 msgstr "оскільки воно посилається на"
 
-#: ../../lib/entropy/qa.py:838
+#: ../../lib/entropy/qa.py:827
 msgid "Collecting broken executables"
 msgstr "Йде пошук зламаних виконуваних файлів"
 
-#: ../../lib/entropy/qa.py:844
+#: ../../lib/entropy/qa.py:833
 msgid "don't worry about libraries that are shown here but not later."
 msgstr "не турбуйтеся про бібліотеки, що показані тут, але не пізніше  ніж"
 
-#: ../../lib/entropy/qa.py:865
+#: ../../lib/entropy/qa.py:854
 msgid "Scanning libraries"
 msgstr "Сканування бібліотек"
 
-#: ../../lib/entropy/qa.py:975
+#: ../../lib/entropy/qa.py:964
 msgid "various broken symbols"
 msgstr "Різні зламані символи"
 
-#: ../../lib/entropy/qa.py:1014
+#: ../../lib/entropy/qa.py:1003
 msgid "Matching broken libraries/executables"
 msgstr "Порівняння зламаних бібліотек/виконуваних програм"
 
-#: ../../lib/entropy/qa.py:1737
+#: ../../lib/entropy/qa.py:1769
 msgid "Not prepared yet"
 msgstr "Ще не підготовано."
 
@@ -1857,186 +1817,185 @@ msgstr ""
 msgid "files and directories"
 msgstr ""
 
-#: ../../client/solo/utils.py:199 ../../client/solo/utils.py:346
-#: ../../client/solo/utils.py:347 ../../client/solo/utils.py:443
-#: ../../client/solo/utils.py:445 ../../client/solo/commands/repo.py:505
+#: ../../client/solo/utils.py:199 ../../client/solo/utils.py:479
+#: ../../client/solo/utils.py:481 ../../client/solo/commands/repo.py:505
 #: ../../client/solo/commands/repo.py:560
 msgid "N/A"
 msgstr "N/A"
 
-#: ../../client/solo/utils.py:278 ../../client/solo/commands/command.py:318
+#: ../../client/solo/utils.py:278 ../../client/solo/commands/command.py:355
 msgid "Uploading"
 msgstr ""
 
-#: ../../client/solo/utils.py:300 ../../client/solo/commands/rescue.py:239
-msgid "corrupted"
+#: ../../client/solo/utils.py:338 ../../client/solo/utils.py:374
+#: ../../client/solo/utils.py:375 ../../client/solo/utils.py:579
+msgid "n/a"
 msgstr ""
 
-#: ../../client/solo/utils.py:345 ../../client/solo/commands/_manage.py:153
-#: ../../client/solo/commands/_manage.py:197
+#: ../../client/solo/utils.py:373
 msgid "Not installed"
 msgstr "Не встановлено"
 
-#: ../../client/solo/utils.py:371 ../../client/solo/commands/query.py:464
-#: ../../client/solo/commands/query.py:707
-#: ../../client/solo/commands/query.py:1032
+#: ../../client/solo/utils.py:400 ../../client/solo/commands/query.py:467
+#: ../../client/solo/commands/query.py:716
+#: ../../client/solo/commands/query.py:1040
 msgid "Package"
 msgstr "Пакунок"
 
-#: ../../client/solo/utils.py:373 ../../client/solo/commands/hop.py:57
+#: ../../client/solo/utils.py:402 ../../client/solo/commands/hop.py:57
 msgid "branch"
 msgstr "гілка"
 
-#: ../../client/solo/utils.py:380
+#: ../../client/solo/utils.py:413
 msgid "Category"
 msgstr "Категорія"
 
-#: ../../client/solo/utils.py:382
+#: ../../client/solo/utils.py:415
 msgid "Name"
 msgstr "Ім'я"
 
-#: ../../client/solo/utils.py:398 ../../client/solo/commands/query.py:572
+#: ../../client/solo/utils.py:430 ../../client/solo/commands/query.py:581
 msgid "Masked"
 msgstr "Замасковано"
 
-#: ../../client/solo/utils.py:401
+#: ../../client/solo/utils.py:433
 msgid "Available"
 msgstr "Доступні"
 
-#: ../../client/solo/utils.py:403 ../../client/solo/utils.py:411
+#: ../../client/solo/utils.py:435 ../../client/solo/utils.py:443
 msgid "Installed"
 msgstr "Встановлено"
 
-#: ../../client/solo/utils.py:406 ../../client/solo/utils.py:412
+#: ../../client/solo/utils.py:438 ../../client/solo/utils.py:444
 msgid "version"
 msgstr "версія"
 
-#: ../../client/solo/utils.py:407 ../../client/solo/utils.py:414
+#: ../../client/solo/utils.py:439 ../../client/solo/utils.py:446
 msgid "revision"
 msgstr "перевірка"
 
-#: ../../client/solo/utils.py:417
+#: ../../client/solo/utils.py:449
 msgid "Slot"
 msgstr "Слот"
 
-#: ../../client/solo/utils.py:434
+#: ../../client/solo/utils.py:470
 msgid "Size"
 msgstr "Розмір"
 
-#: ../../client/solo/utils.py:436 ../../client/solo/commands/ugc.py:382
+#: ../../client/solo/utils.py:472 ../../client/solo/commands/ugc.py:382
 msgid "Download"
 msgstr "Завантаження"
 
-#: ../../client/solo/utils.py:438
+#: ../../client/solo/utils.py:474
 msgid "Checksum"
 msgstr "Контрольна сума"
 
-#: ../../client/solo/utils.py:446
+#: ../../client/solo/utils.py:482
 msgid "SHA1"
 msgstr ""
 
-#: ../../client/solo/utils.py:448
+#: ../../client/solo/utils.py:484
 msgid "SHA256"
 msgstr ""
 
-#: ../../client/solo/utils.py:454 ../../client/solo/commands/status.py:133
+#: ../../client/solo/utils.py:490 ../../client/solo/commands/status.py:133
 msgid "GPG"
 msgstr ""
 
-#: ../../client/solo/utils.py:459
+#: ../../client/solo/utils.py:495
 msgid "Dependencies"
 msgstr "Залежності"
 
-#: ../../client/solo/utils.py:468 ../../client/solo/utils.py:651
+#: ../../client/solo/utils.py:503 ../../client/solo/utils.py:682
 msgid "Legend"
 msgstr ""
 
-#: ../../client/solo/utils.py:476
+#: ../../client/solo/utils.py:510
 msgid "Conflicts"
 msgstr "Конфлікти"
 
-#: ../../client/solo/utils.py:481
+#: ../../client/solo/utils.py:515
 msgid "Homepage"
 msgstr "Домашня сторінка"
 
-#: ../../client/solo/utils.py:491 ../../client/solo/commands/security.py:228
+#: ../../client/solo/utils.py:525 ../../client/solo/commands/security.py:228
 #: ../../client/solo/commands/ugc.py:627
 msgid "Description"
 msgstr "Опис"
 
-#: ../../client/solo/utils.py:500
+#: ../../client/solo/utils.py:534
 msgid "USE flags"
 msgstr "USE-прапорці"
 
-#: ../../client/solo/utils.py:520
+#: ../../client/solo/utils.py:550
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/solo/utils.py:522
+#: ../../client/solo/utils.py:552
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/solo/utils.py:524
+#: ../../client/solo/utils.py:554
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
-#: ../../client/solo/utils.py:528
+#: ../../client/solo/utils.py:558
 msgid "Sources"
 msgstr "Джерела"
 
-#: ../../client/solo/utils.py:533
+#: ../../client/solo/utils.py:563
 msgid "Entry API"
 msgstr "Запис API"
 
-#: ../../client/solo/utils.py:535
+#: ../../client/solo/utils.py:565
 msgid "Compiled with"
 msgstr "Зкомпільовано з"
 
-#: ../../client/solo/utils.py:540 ../../client/solo/commands/search.py:178
+#: ../../client/solo/utils.py:570 ../../client/solo/commands/search.py:180
 #: ../../client/solo/commands/ugc.py:375 ../../client/solo/commands/ugc.py:634
-#: ../../client/solo/commands/match.py:225
+#: ../../client/solo/commands/match.py:236
 msgid "Keywords"
 msgstr "Ключові слова"
 
-#: ../../client/solo/utils.py:555
+#: ../../client/solo/utils.py:585
 msgid "Created"
 msgstr "Створено"
 
-#: ../../client/solo/utils.py:561 ../../client/solo/commands/_manage.py:827
+#: ../../client/solo/utils.py:592 ../../client/solo/commands/_manage.py:730
 msgid "License"
 msgstr "Ліцензія"
 
-#: ../../client/solo/utils.py:583
+#: ../../client/solo/utils.py:614
 msgid "Reverse graphing installed package"
 msgstr ""
 
-#: ../../client/solo/utils.py:595 ../../client/solo/utils.py:754
-#: ../../client/solo/commands/config.py:116
-#: ../../client/solo/commands/remove.py:387
-#: ../../client/solo/commands/source.py:161
-#: ../../client/solo/commands/install.py:526
-#: ../../client/solo/commands/download.py:161
+#: ../../client/solo/utils.py:626 ../../client/solo/utils.py:785
+#: ../../client/solo/commands/config.py:119
+#: ../../client/solo/commands/remove.py:323
+#: ../../client/solo/commands/source.py:164
+#: ../../client/solo/commands/install.py:530
+#: ../../client/solo/commands/download.py:164
 #: ../../client/solo/commands/mask.py:118
 msgid "No packages found"
 msgstr "Пакунків не знайдено"
 
-#: ../../client/solo/utils.py:654
+#: ../../client/solo/utils.py:685
 msgid "packages passed as arguments"
 msgstr ""
 
-#: ../../client/solo/utils.py:657
+#: ../../client/solo/utils.py:688
 msgid "packages with no further dependencies"
 msgstr ""
 
-#: ../../client/solo/utils.py:660
+#: ../../client/solo/utils.py:691
 msgid "packages with further dependencies (node)"
 msgstr ""
 
-#: ../../client/solo/utils.py:663
+#: ../../client/solo/utils.py:694
 msgid "packages already pulled in as dependency in upper levels (circularity)"
 msgstr ""
 
-#: ../../client/solo/utils.py:742
+#: ../../client/solo/utils.py:773
 msgid "Graphing"
 msgstr ""
 
@@ -2137,140 +2096,34 @@ msgstr ""
 msgid "Performance and stability could get severely compromised"
 msgstr ""
 
-#: ../../client/solo/main.py:347 ../kernel-switcher:114
+#: ../../client/solo/main.py:347 ../kernel-switcher:117
 msgid "superuser access required"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:71 ../../client/solo/commands/pkg.py:488
-#: ../../client/solo/commands/rescue.py:71
-msgid "execute advanced tasks on packages"
+#: ../../client/solo/commands/moo.py:113
+msgid "moo at user"
 msgstr ""
 
-#: ../../client/solo/commands/pkg.py:72 ../../client/solo/commands/query.py:73
-#: ../../client/solo/commands/query.py:154
-#: ../../client/solo/commands/security.py:69
-#: ../../client/solo/commands/cache.py:61 ../../client/solo/commands/ugc.py:72
-#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
-#: ../../client/solo/commands/repo.py:68 ../../client/solo/commands/conf.py:76
-#: ../../client/solo/commands/rescue.py:72
-#: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:48
-msgid "available commands"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:78
-#: ../../client/solo/commands/config.py:63
-#: ../../client/solo/commands/security.py:90
-#: ../../client/solo/commands/security.py:162
-#: ../../client/solo/commands/remove.py:67
-#: ../../client/solo/commands/deptest.py:61
-#: ../../client/solo/commands/libtest.py:61
-#: ../../client/solo/commands/source.py:62
-#: ../../client/solo/commands/install.py:70
-#: ../../client/solo/commands/upgrade.py:65
-#: ../../client/solo/commands/rescue.py:78
-#: ../../client/solo/commands/download.py:62
-#: ../../client/solo/commands/mask.py:49
-msgid "ask before making any changes"
-msgstr "питати перед будь-якими змінами"
-
-#: ../../client/solo/commands/pkg.py:85
-#: ../../client/solo/commands/command.py:111
-msgid "not a valid Entropy package file"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:92
-msgid "generate packages from the installed system"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:96
-msgid "installed package name"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:101 ../../client/solo/commands/pkg.py:118
-#: ../../client/solo/commands/pkg.py:135 ../../client/solo/commands/pkg.py:152
-msgid "destination directory where to save generated packages"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:108
-msgid "transform SPM package files into Entropy ones"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:113
-msgid "SPM package file path"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:125
-msgid "transform Entropy package files into SPM ones"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:130 ../../client/solo/commands/pkg.py:147
-msgid "Entropy package file path"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:142
-msgid "extract Entropy metadata from Entropy packages"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:229 ../../client/solo/commands/pkg.py:307
-#: ../../client/solo/commands/pkg.py:403 ../../client/solo/commands/pkg.py:450
-msgid "broken directory path"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:242
-msgid "This is the list of packages that would be considered"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:258
-#: ../../client/solo/commands/config.py:148
-#: ../../client/solo/commands/_manage.py:244
-#: ../../client/solo/commands/install.py:555
-msgid "Would you like to continue ?"
-msgstr "Бажаєте продовжити?"
-
-#: ../../client/solo/commands/pkg.py:269
-msgid "generating package"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:279
-msgid "package file creation error"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:287
-msgid "package generated"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:316 ../../client/solo/commands/pkg.py:410
-#: ../../client/solo/commands/pkg.py:457
-msgid "working on package file"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:329
-msgid "package file extraction complete"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:372
-msgid "package metadata generation complete"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:383
-msgid "package file generated at"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:422 ../../client/solo/commands/pkg.py:470
-msgid "error during metadata extraction"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:430
-msgid "package file generated"
-msgstr ""
-
-#: ../../client/solo/commands/pkg.py:478
-msgid "metadata file generated"
+#: ../../client/solo/commands/moo.py:120
+msgid "bow to lxnay"
 msgstr ""
 
 #: ../../client/solo/commands/query.py:72
-#: ../../client/solo/commands/query.py:1589
+#: ../../client/solo/commands/query.py:1598
 msgid "repository query tools"
+msgstr ""
+
+#: ../../client/solo/commands/query.py:73
+#: ../../client/solo/commands/query.py:154
+#: ../../client/solo/commands/cache.py:61
+#: ../../client/solo/commands/security.py:69
+#: ../../client/solo/commands/conf.py:76 ../../client/solo/commands/ugc.py:72
+#: ../../client/solo/commands/ugc.py:105 ../../client/solo/commands/ugc.py:146
+#: ../../client/solo/commands/repo.py:68
+#: ../../client/solo/commands/rescue.py:72
+#: ../../client/solo/commands/pkg.py:72
+#: ../../client/solo/commands/preservedlibs.py:68 ../kernel-switcher:49
+msgid "available commands"
 msgstr ""
 
 #: ../../client/solo/commands/query.py:77
@@ -2294,7 +2147,7 @@ msgstr ""
 #: ../../client/solo/commands/query.py:282
 #: ../../client/solo/commands/query.py:299
 #: ../../client/solo/commands/config.py:57
-#: ../../client/solo/commands/remove.py:61
+#: ../../client/solo/commands/remove.py:62
 #: ../../client/solo/commands/source.py:56
 #: ../../client/solo/commands/install.py:64
 #: ../../client/solo/commands/download.py:56
@@ -2443,51 +2296,51 @@ msgstr ""
 msgid "Belong Search"
 msgstr "Пошук залежностей"
 
-#: ../../client/solo/commands/query.py:411
-#: ../../client/solo/commands/query.py:568
-#: ../../client/solo/commands/query.py:662
-#: ../../client/solo/commands/query.py:776
-#: ../../client/solo/commands/query.py:966
-#: ../../client/solo/commands/query.py:1335
-#: ../../client/solo/commands/query.py:1394
-#: ../../client/solo/commands/query.py:1457
-#: ../../client/solo/commands/query.py:1505
-msgid "Keyword"
-msgstr "Ключове слово"
-
-#: ../../client/solo/commands/query.py:414
-#: ../../client/solo/commands/query.py:583
-#: ../../client/solo/commands/query.py:663
-#: ../../client/solo/commands/query.py:708
-#: ../../client/solo/commands/query.py:779
-#: ../../client/solo/commands/query.py:968
-#: ../../client/solo/commands/query.py:1033
-#: ../../client/solo/commands/query.py:1282
-#: ../../client/solo/commands/query.py:1336
-#: ../../client/solo/commands/query.py:1397
-#: ../../client/solo/commands/query.py:1460
-#: ../../client/solo/commands/query.py:1508
-#: ../../client/solo/commands/search.py:180
-#: ../../client/solo/commands/match.py:227
-msgid "Found"
-msgstr "Знайдено"
-
-#: ../../client/solo/commands/query.py:416
-#: ../../client/solo/commands/query.py:581
-#: ../../client/solo/commands/query.py:665
-#: ../../client/solo/commands/query.py:773
-#: ../../client/solo/commands/query.py:963
-#: ../../client/solo/commands/query.py:1334
-#: ../../client/solo/commands/query.py:1392
-#: ../../client/solo/commands/query.py:1455
-#: ../../client/solo/commands/query.py:1503
-#: ../../client/solo/commands/search.py:182
-#: ../../client/solo/commands/match.py:229
+#: ../../client/solo/commands/query.py:408
+#: ../../client/solo/commands/query.py:590
+#: ../../client/solo/commands/query.py:674
+#: ../../client/solo/commands/query.py:782
+#: ../../client/solo/commands/query.py:971
+#: ../../client/solo/commands/query.py:1342
+#: ../../client/solo/commands/query.py:1400
+#: ../../client/solo/commands/query.py:1463
+#: ../../client/solo/commands/query.py:1511
+#: ../../client/solo/commands/search.py:184
+#: ../../client/solo/commands/match.py:240
 msgid "entry"
 msgid_plural "entries"
 msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
+
+#: ../../client/solo/commands/query.py:411
+#: ../../client/solo/commands/query.py:577
+#: ../../client/solo/commands/query.py:671
+#: ../../client/solo/commands/query.py:785
+#: ../../client/solo/commands/query.py:974
+#: ../../client/solo/commands/query.py:1343
+#: ../../client/solo/commands/query.py:1402
+#: ../../client/solo/commands/query.py:1465
+#: ../../client/solo/commands/query.py:1513
+msgid "Keyword"
+msgstr "Ключове слово"
+
+#: ../../client/solo/commands/query.py:415
+#: ../../client/solo/commands/query.py:592
+#: ../../client/solo/commands/query.py:672
+#: ../../client/solo/commands/query.py:717
+#: ../../client/solo/commands/query.py:788
+#: ../../client/solo/commands/query.py:976
+#: ../../client/solo/commands/query.py:1041
+#: ../../client/solo/commands/query.py:1290
+#: ../../client/solo/commands/query.py:1344
+#: ../../client/solo/commands/query.py:1405
+#: ../../client/solo/commands/query.py:1468
+#: ../../client/solo/commands/query.py:1516
+#: ../../client/solo/commands/search.py:182
+#: ../../client/solo/commands/match.py:238
+msgid "Found"
+msgstr "Знайдено"
 
 #: ../../client/solo/commands/query.py:433
 msgid "ChangeLog Search"
@@ -2495,229 +2348,244 @@ msgstr "Пошук логів змін"
 
 #: ../../client/solo/commands/query.py:443
 #: ../../client/solo/commands/query.py:451
-#: ../../client/solo/commands/_manage.py:389
+#: ../../client/solo/commands/_manage.py:292
 msgid "No match for"
 msgstr "Нічого не знайдено для"
 
-#: ../../client/solo/commands/query.py:475
+#: ../../client/solo/commands/query.py:479
 msgid "No ChangeLog available"
 msgstr "недоступно жодного логу змін"
 
-#: ../../client/solo/commands/query.py:490
+#: ../../client/solo/commands/query.py:494
 msgid "Attention: developer-repo option not enabled"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:510
+#: ../../client/solo/commands/query.py:514
 msgid "Reverse Dependencies Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:570
-#: ../../client/solo/commands/libtest.py:198
+#: ../../client/solo/commands/query.py:579
+#: ../../client/solo/commands/libtest.py:201
 msgid "Matched"
 msgstr "Співпало"
 
-#: ../../client/solo/commands/query.py:576
+#: ../../client/solo/commands/query.py:585
 #: ../../client/solo/commands/repo.py:120
 msgid "from repository"
 msgstr "з репозиторію"
 
-#: ../../client/solo/commands/query.py:578
+#: ../../client/solo/commands/query.py:587
 msgid "from the installed packages repository"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:606
+#: ../../client/solo/commands/query.py:615
 msgid "Description Search"
 msgstr "Пошук опису"
 
-#: ../../client/solo/commands/query.py:630
-#: ../../client/solo/commands/query.py:786
-#: ../../client/solo/commands/query.py:845
-#: ../../client/solo/commands/query.py:977
-#: ../../client/solo/commands/query.py:1342
-#: ../../client/solo/commands/query.py:1405
-#: ../../client/solo/commands/query.py:1468
-#: ../../client/solo/commands/query.py:1516
+#: ../../client/solo/commands/query.py:639
+#: ../../client/solo/commands/query.py:795
+#: ../../client/solo/commands/query.py:854
+#: ../../client/solo/commands/query.py:985
+#: ../../client/solo/commands/query.py:1350
+#: ../../client/solo/commands/query.py:1413
+#: ../../client/solo/commands/query.py:1476
+#: ../../client/solo/commands/query.py:1524
 msgid "No matches"
 msgstr "Нічого не знайдено"
 
-#: ../../client/solo/commands/query.py:681
+#: ../../client/solo/commands/query.py:690
 msgid "Files Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:709
+#: ../../client/solo/commands/query.py:718
 msgid "files"
 msgstr "файли"
 
-#: ../../client/solo/commands/query.py:737
+#: ../../client/solo/commands/query.py:746
 msgid "License Search"
 msgstr "Пошук ліцензії"
 
-#: ../../client/solo/commands/query.py:803
+#: ../../client/solo/commands/query.py:812
 msgid "Listing Packages"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:896
+#: ../../client/solo/commands/query.py:905
 msgid "Repository is not available"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:927
+#: ../../client/solo/commands/query.py:935
 msgid "Searching Mimetype"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1009
+#: ../../client/solo/commands/query.py:1017
 msgid "Needed Libraries Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1034
+#: ../../client/solo/commands/query.py:1042
 msgid "libraries"
 msgstr "бібліотеки"
 
-#: ../../client/solo/commands/query.py:1050
+#: ../../client/solo/commands/query.py:1058
 msgid "Orphans Search"
 msgstr "Пошук осиротілих файлів"
 
-#: ../../client/solo/commands/query.py:1118
+#: ../../client/solo/commands/query.py:1126
 msgid "Analyzing"
 msgstr "Аналіз"
 
-#: ../../client/solo/commands/query.py:1132
+#: ../../client/solo/commands/query.py:1140
 msgid "Analyzed directories"
 msgstr "Проаналізовані директорії"
 
-#: ../../client/solo/commands/query.py:1137
+#: ../../client/solo/commands/query.py:1145
 msgid "Masked directories"
 msgstr "Замасковані директорії"
 
-#: ../../client/solo/commands/query.py:1142
+#: ../../client/solo/commands/query.py:1150
 msgid "Number of files collected on the filesystem"
 msgstr "Кількість файлів, зібраних у файловій системі"
 
-#: ../../client/solo/commands/query.py:1147
+#: ../../client/solo/commands/query.py:1155
 msgid "Now searching among installed packages"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1178
+#: ../../client/solo/commands/query.py:1186
 msgid "Checking"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1193
+#: ../../client/solo/commands/query.py:1201
 msgid "Number of total files"
 msgstr "Всього файлів"
 
-#: ../../client/solo/commands/query.py:1199
+#: ../../client/solo/commands/query.py:1207
 msgid "Number of matching files"
 msgstr "Кількість підходящих файлів"
 
-#: ../../client/solo/commands/query.py:1206
+#: ../../client/solo/commands/query.py:1214
 msgid "Number of orphaned files"
 msgstr "Кількість осиротілих файлів"
 
-#: ../../client/solo/commands/query.py:1212
+#: ../../client/solo/commands/query.py:1220
 msgid "Writing file to disk"
 msgstr "Записую файл на диск"
 
-#: ../../client/solo/commands/query.py:1242
+#: ../../client/solo/commands/query.py:1250
 msgid "Total space wasted"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1260
+#: ../../client/solo/commands/query.py:1268
 msgid "Required Packages Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1278
+#: ../../client/solo/commands/query.py:1286
 msgid "Library"
 msgstr "Бібліотека"
 
-#: ../../client/solo/commands/query.py:1302
+#: ../../client/solo/commands/query.py:1310
 msgid "Package Set Search"
 msgstr "Пошук набору пакунків"
 
-#: ../../client/solo/commands/query.py:1358
+#: ../../client/solo/commands/query.py:1366
 msgid "Slot Search"
 msgstr "Пошук слота"
 
-#: ../../client/solo/commands/query.py:1421
+#: ../../client/solo/commands/query.py:1429
 msgid "Tag Search"
 msgstr "Пошук тега"
 
-#: ../../client/solo/commands/query.py:1484
+#: ../../client/solo/commands/query.py:1492
 msgid "Revision Search"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1553
+#: ../../client/solo/commands/query.py:1562
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:2
 msgid "Available Updates"
 msgstr "Доступні оновлення"
 
-#: ../../client/solo/commands/query.py:1568
+#: ../../client/solo/commands/query.py:1577
 msgid "Packages to update:"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1571
+#: ../../client/solo/commands/query.py:1580
 msgid "Packages to remove:"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1575
+#: ../../client/solo/commands/query.py:1584
 msgid "Packages already up-to-date:"
 msgstr ""
 
-#: ../../client/solo/commands/query.py:1578
+#: ../../client/solo/commands/query.py:1587
 msgid "Critical updates found:"
 msgstr ""
+
+#: ../../client/solo/commands/config.py:63
+#: ../../client/solo/commands/security.py:90
+#: ../../client/solo/commands/security.py:162
+#: ../../client/solo/commands/remove.py:68
+#: ../../client/solo/commands/deptest.py:61
+#: ../../client/solo/commands/source.py:62
+#: ../../client/solo/commands/libtest.py:61
+#: ../../client/solo/commands/rescue.py:78
+#: ../../client/solo/commands/install.py:70
+#: ../../client/solo/commands/upgrade.py:66
+#: ../../client/solo/commands/download.py:62
+#: ../../client/solo/commands/mask.py:49
+msgid "ask before making any changes"
+msgstr "питати перед будь-якими змінами"
 
 #: ../../client/solo/commands/config.py:69
 #: ../../client/solo/commands/security.py:93
 #: ../../client/solo/commands/security.py:165
-#: ../../client/solo/commands/remove.py:74
+#: ../../client/solo/commands/remove.py:75
 #: ../../client/solo/commands/source.py:69
-#: ../../client/solo/commands/install.py:77
-#: ../../client/solo/commands/upgrade.py:72
 #: ../../client/solo/commands/rescue.py:86
+#: ../../client/solo/commands/install.py:77
+#: ../../client/solo/commands/upgrade.py:73
 #: ../../client/solo/commands/download.py:69
 msgid "show what would be done"
 msgstr ""
 
 #: ../../client/solo/commands/config.py:76
-#: ../../client/solo/commands/remove.py:81
+#: ../../client/solo/commands/remove.py:82
 #: ../../client/solo/commands/search.py:76
-#: ../../client/solo/commands/command.py:120
+#: ../../client/solo/commands/command.py:151
 #: ../../client/solo/commands/source.py:76
 #: ../../client/solo/commands/match.py:91
 #: ../../client/solo/commands/install.py:84
-#: ../../client/solo/commands/upgrade.py:79
+#: ../../client/solo/commands/upgrade.py:80
 #: ../../client/solo/commands/download.py:76
 msgid "verbose output"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:126
+#: ../../client/solo/commands/config.py:129
 #: ../../client/solo/commands/status.py:130
 #: ../../client/solo/commands/status.py:137
 #: ../../client/solo/commands/status.py:144
-#: ../../client/solo/commands/remove.py:228
-#: ../../client/solo/commands/remove.py:292
-#: ../../client/solo/commands/_manage.py:156
-#: ../../client/solo/commands/_manage.py:167
-#: ../../client/solo/commands/install.py:271
-#: ../../client/solo/commands/install.py:297
-#: ../../client/solo/commands/install.py:383
+#: ../../client/solo/commands/remove.py:234
+#: ../../client/solo/commands/install.py:273
+#: ../../client/solo/commands/install.py:299
+#: ../../client/solo/commands/install.py:385
 msgid "Not available"
 msgstr "Недоступно"
 
-#: ../../client/solo/commands/config.py:130
+#: ../../client/solo/commands/config.py:133
 msgid "installed from"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:141
-#: ../../client/solo/commands/remove.py:315
-#: ../../client/solo/commands/_manage.py:233
+#: ../../client/solo/commands/config.py:144
 msgid "Packages involved"
 msgstr "Пов'язані пакунки"
 
-#: ../../client/solo/commands/config.py:168
+#: ../../client/solo/commands/config.py:151
+#: ../../client/solo/commands/install.py:553
+msgid "Would you like to continue ?"
+msgstr "Бажаєте продовжити?"
+
+#: ../../client/solo/commands/config.py:171
 msgid "configure"
 msgstr ""
 
-#: ../../client/solo/commands/config.py:191
+#: ../../client/solo/commands/config.py:194
 msgid "configure installed packages"
 msgstr ""
 
@@ -2747,6 +2615,34 @@ msgstr ""
 
 #: ../../client/solo/commands/status.py:175
 msgid "show Repositories status"
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:60
+msgid "manage cache"
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:64
+msgid "clean Entropy Library Cache"
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:67
+msgid "show more details"
+msgstr "відобразити більше деталей"
+
+#: ../../client/solo/commands/cache.py:70
+msgid "print results in a scriptable way"
+msgstr "відобразити результати за допомогою скриптів"
+
+#: ../../client/solo/commands/cache.py:127
+msgid "Cleaning Entropy cache, please wait ..."
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:134
+msgid "Entropy cache cleaned."
+msgstr ""
+
+#: ../../client/solo/commands/cache.py:145
+msgid "manage Entropy Library Cache"
 msgstr ""
 
 #: ../../client/solo/commands/update.py:64
@@ -2811,7 +2707,7 @@ msgid "update repositories"
 msgstr ""
 
 #: ../../client/solo/commands/security.py:68
-#: ../../client/solo/commands/security.py:636
+#: ../../client/solo/commands/security.py:660
 msgid "system security tools"
 msgstr ""
 
@@ -2834,7 +2730,7 @@ msgstr ""
 #: ../../client/solo/commands/security.py:96
 #: ../../client/solo/commands/security.py:168
 #: ../../client/solo/commands/install.py:98
-#: ../../client/solo/commands/upgrade.py:93
+#: ../../client/solo/commands/upgrade.py:94
 msgid "just download packages"
 msgstr "просто завантажити пакунки"
 
@@ -2930,60 +2826,229 @@ msgstr "Оптимізація"
 msgid "Resolution"
 msgstr "Дозвіл"
 
-#: ../../client/solo/commands/security.py:355
-msgid "Checking system files"
-msgstr ""
-
-#: ../../client/solo/commands/security.py:383
+#: ../../client/solo/commands/security.py:367
 msgid "no checksum information"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:432
+#: ../../client/solo/commands/security.py:416
 msgid "found altered files"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:451
+#: ../../client/solo/commands/security.py:435
 msgid "assimilated new hashes and mtime"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:462
+#: ../../client/solo/commands/security.py:446
 msgid "unavailable"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:469
+#: ../../client/solo/commands/security.py:468
+msgid "Checking system files"
+msgstr ""
+
+#: ../../client/solo/commands/security.py:479
 msgid "No altered files found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:495
+#: ../../client/solo/commands/security.py:505
 msgid "Altered files have been found"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:499
+#: ../../client/solo/commands/security.py:509
 msgid "Packages have been reinstalled successfully"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:531
+#: ../../client/solo/commands/security.py:540
 msgid "No advisories available or applicable"
 msgstr "Немає наявних або придатних повідомлень"
 
-#: ../../client/solo/commands/security.py:574
+#: ../../client/solo/commands/security.py:594
 msgid "Advisory does not exist"
 msgstr ""
 
-#: ../../client/solo/commands/security.py:600
+#: ../../client/solo/commands/security.py:618
 msgid "Calculating security updates"
 msgstr "Підрахунок оновлень безпеки"
 
-#: ../../client/solo/commands/security.py:619
+#: ../../client/solo/commands/security.py:643
 msgid "All the available updates have been already installed"
 msgstr "Всі можливі оновлення вже було встановлено"
 
-#: ../../client/solo/commands/moo.py:114
-msgid "moo at user"
+#: ../../client/solo/commands/conf.py:75
+msgid "manage configuration file updates"
 msgstr ""
 
-#: ../../client/solo/commands/moo.py:121
-msgid "bow to lxnay"
+#: ../../client/solo/commands/conf.py:79
+msgid "update configuration files"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:144
+msgid "Scanning filesystem"
+msgstr "Сканування файлової системи"
+
+#: ../../client/solo/commands/conf.py:150
+#: ../../client/solo/commands/conf.py:176
+msgid "All fine baby. Nothing to do!"
+msgstr "Усе тиць-гриць :) Більше нічого робити!"
+
+#: ../../client/solo/commands/conf.py:171
+msgid "file"
+msgstr "файл"
+
+#: ../../client/solo/commands/conf.py:187
+#: ../../client/solo/commands/conf.py:633
+msgid "Type a number"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:217
+msgid "Please choose a file to update by typing its identification number."
+msgstr "Оберіть файл, що потребує оновлення, ввівши його ідентифікаційний номер"
+
+#: ../../client/solo/commands/conf.py:221
+msgid "Other options are:"
+msgstr "Інші опції:"
+
+#: ../../client/solo/commands/conf.py:225
+#: ../../client/solo/commands/notice.py:153
+#: ../../magneto/src/magneto/core/interfaces.py:196
+msgid "Exit"
+msgstr "Вихід"
+
+#: ../../client/solo/commands/conf.py:230
+msgid "Automerge all the files asking you one by one"
+msgstr "Автоматично об'єднати файли, запитуючи Вас щодо кожного"
+
+#: ../../client/solo/commands/conf.py:235
+msgid "Automerge all the files without questioning"
+msgstr "Автоматично об'єднати всі файли без перепитувань"
+
+#: ../../client/solo/commands/conf.py:240
+msgid "Discard all the files asking you one by one"
+msgstr "Пропустити всі файли, запитуючи Вас щодо кожного"
+
+#: ../../client/solo/commands/conf.py:245
+msgid "Discard all the files without questioning"
+msgstr "Пропустити всі файли без перепитувань"
+
+#: ../../client/solo/commands/conf.py:258
+msgid "Please choose an action to take for the selected file."
+msgstr "Будь-ласка, оберіть, яку дію треба виконати з цим файлом"
+
+#: ../../client/solo/commands/conf.py:263
+msgid "Come back to the files list"
+msgstr "Повернутись до списку файлів"
+
+#: ../../client/solo/commands/conf.py:268
+msgid "Replace original with update"
+msgstr "Замінити оригінал оновленим файлом"
+
+#: ../../client/solo/commands/conf.py:273
+msgid "Delete update, keeping original as is"
+msgstr "Видалити оновлення і залишити оригінал, без змін"
+
+#: ../../client/solo/commands/conf.py:278
+msgid "Edit proposed file and show diffs again"
+msgstr "Редагувати запропонований файл і показати відмінності знову"
+
+#: ../../client/solo/commands/conf.py:283
+msgid "Interactively merge original with update"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:288
+msgid "Show differences again"
+msgstr "Показати відмінності знову"
+
+#: ../../client/solo/commands/conf.py:384
+#: ../../client/solo/commands/conf.py:439
+msgid "Source file"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:389
+#: ../../client/solo/commands/conf.py:444
+msgid "Destination file"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:394
+msgid "Overwrite ?"
+msgstr "Перезаписати?"
+
+#: ../../client/solo/commands/conf.py:403
+msgid "Cannot merge"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:449
+msgid "Discard ?"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:455
+#: ../../client/solo/commands/conf.py:590
+msgid "Discarding"
+msgstr "Скасовано"
+
+#: ../../client/solo/commands/conf.py:464
+msgid "Cannot remove"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:480
+msgid "Editing file"
+msgstr "Редагую файл"
+
+#: ../../client/solo/commands/conf.py:487
+msgid "Edited file"
+msgstr "Відредагований файл"
+
+#: ../../client/solo/commands/conf.py:489
+msgid "showing difference"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:497
+#: ../../client/solo/commands/conf.py:602
+#: ../../client/solo/commands/conf.py:613
+msgid "Automerging"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:538
+msgid "Interactive merge"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:554
+msgid "OSError during interactive merge"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:561
+msgid "IOError during interactive merge"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:571
+msgid "Unable to merge file"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:621
+msgid "Selected file"
+msgstr "Обраний файл"
+
+#: ../../client/solo/commands/conf.py:643
+#, python-format
+msgid "Replacing %s with %s"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:650
+#, python-format
+msgid "Cannot merge %s"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:658
+#, python-format
+msgid "Deleting %s"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:664
+#, python-format
+msgid "Cannot remove %s"
+msgstr ""
+
+#: ../../client/solo/commands/conf.py:702
+msgid "manage package file updates"
 msgstr ""
 
 #: ../../client/solo/commands/yell.py:34
@@ -3028,119 +3093,91 @@ msgstr ""
 msgid "yell at user"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:88
+#: ../../client/solo/commands/remove.py:89
 #: ../../client/solo/commands/source.py:90
 #: ../../client/solo/commands/install.py:110
-#: ../../client/solo/commands/upgrade.py:105
+#: ../../client/solo/commands/upgrade.py:106
 #: ../../client/solo/commands/download.py:89
 msgid "exclude package dependencies"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:94
+#: ../../client/solo/commands/remove.py:95
 #: ../../client/solo/commands/source.py:103
 #: ../../client/solo/commands/install.py:123
-#: ../../client/solo/commands/upgrade.py:111
+#: ../../client/solo/commands/upgrade.py:112
 #: ../../client/solo/commands/download.py:102
 msgid "do not calculate dependencies recursively"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:100
+#: ../../client/solo/commands/remove.py:101
 #: ../../client/solo/commands/source.py:109
 #: ../../client/solo/commands/install.py:129
-#: ../../client/solo/commands/upgrade.py:117
+#: ../../client/solo/commands/upgrade.py:118
 #: ../../client/solo/commands/download.py:108
 msgid "include dependencies no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:106
+#: ../../client/solo/commands/remove.py:107
 #: ../../client/solo/commands/install.py:135
-#: ../../client/solo/commands/upgrade.py:123
+#: ../../client/solo/commands/upgrade.py:124
 msgid "when used with --deep, include virtual packages"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:112
+#: ../../client/solo/commands/remove.py:113
 #: ../../client/solo/commands/install.py:141
-#: ../../client/solo/commands/upgrade.py:136
+#: ../../client/solo/commands/upgrade.py:137
 msgid "remove package configuration files no longer needed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:118
+#: ../../client/solo/commands/remove.py:119
 msgid "force system packages removal (dangerous!)"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:180
+#: ../../client/solo/commands/remove.py:187
 msgid "removal"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:197
-#: ../../client/solo/commands/source.py:185
-#: ../../client/solo/commands/download.py:185
+#: ../../client/solo/commands/remove.py:204
+#: ../../client/solo/commands/source.py:182
+#: ../../client/solo/commands/download.py:182
 msgid "All done"
 msgstr "Все зроблено"
 
-#: ../../client/solo/commands/remove.py:209
+#: ../../client/solo/commands/remove.py:216
 msgid "These are the packages that should be MANUALLY removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:215
-#: ../../client/solo/commands/install.py:363
+#: ../../client/solo/commands/remove.py:222
+#: ../../client/solo/commands/install.py:365
 msgid "These are the packages that would be removed"
 msgstr "Ось пакунки, що мають бути видалені"
 
-#: ../../client/solo/commands/remove.py:265
-msgid "These are the chosen packages"
-msgstr "Ось обрані пакунки"
-
-#: ../../client/solo/commands/remove.py:278
-msgid "vital package"
-msgstr "життєво важливий пакунок"
-
-#: ../../client/solo/commands/remove.py:279
-msgid "Removal forbidden"
-msgstr "Видалення заборонено"
-
-#: ../../client/solo/commands/remove.py:329
+#: ../../client/solo/commands/remove.py:263
 msgid "Packages that would be removed"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:359
-#: ../../client/solo/commands/install.py:454
+#: ../../client/solo/commands/remove.py:293
+#: ../../client/solo/commands/install.py:456
 msgid "Freed disk space"
 msgstr "Вільне місце на диску"
 
-#: ../../client/solo/commands/remove.py:366
+#: ../../client/solo/commands/remove.py:300
 msgid "Total bandwidth wasted"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:396
-#: ../../client/solo/commands/source.py:179
-#: ../../client/solo/commands/install.py:545
-#: ../../client/solo/commands/rescue.py:645
-#: ../../client/solo/commands/download.py:179
-msgid "Nothing to do"
-msgstr "Більше нічого робити"
-
-#: ../../client/solo/commands/remove.py:403
-msgid "Would you like to calculate dependencies ?"
-msgstr "Чи бажаєте підрахувати залежності?"
-
-#: ../../client/solo/commands/remove.py:410
-msgid "Would you like to remove them now ?"
-msgstr "Бажаєте видалити їх зараз ?"
-
-#: ../../client/solo/commands/remove.py:431
+#: ../../client/solo/commands/remove.py:342
 msgid "Ouch!"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:432
+#: ../../client/solo/commands/remove.py:343
 msgid "the following system packages were pulled in"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:455
+#: ../../client/solo/commands/remove.py:366
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/solo/commands/remove.py:470
+#: ../../client/solo/commands/remove.py:381
 msgid "remove packages from system"
 msgstr ""
 
@@ -3162,115 +3199,95 @@ msgstr ""
 msgid "search among available packages only"
 msgstr ""
 
-#: ../../client/solo/commands/search.py:167
+#: ../../client/solo/commands/search.py:169
 msgid "Searching"
 msgstr "Пошук"
 
-#: ../../client/solo/commands/search.py:214
+#: ../../client/solo/commands/search.py:213
 msgid "search packages in repositories"
 msgstr "знайти пакунки в репозиторіях"
 
 #: ../../client/solo/commands/deptest.py:64
 #: ../../client/solo/commands/libtest.py:67
-#: ../../client/solo/commands/unused.py:65
+#: ../../client/solo/commands/unused.py:66
 msgid "show less details (useful for scripting)"
 msgstr "відобразити менше деталей (корисно для скріптінгу)"
 
 #: ../../client/solo/commands/deptest.py:67
-#: ../../client/solo/commands/libtest.py:74 ../kernel-switcher:44
+#: ../../client/solo/commands/libtest.py:74 ../kernel-switcher:45
 msgid "just show what would be done"
 msgstr "відобразити лише те, що буде зроблено"
 
-#: ../../client/solo/commands/deptest.py:104
+#: ../../client/solo/commands/deptest.py:160
 msgid "Running dependency test"
 msgstr "Увімкнення тесту залежностей"
 
-#: ../../client/solo/commands/deptest.py:159
+#: ../../client/solo/commands/deptest.py:170
+msgid "No missing dependencies"
+msgstr ""
+
+#: ../../client/solo/commands/deptest.py:175
 msgid "These are the dependencies not found"
 msgstr "Є незнайдені залежності"
 
-#: ../../client/solo/commands/deptest.py:169
+#: ../../client/solo/commands/deptest.py:185
 msgid "Needed by"
 msgstr "Необхідно для"
 
-#: ../../client/solo/commands/deptest.py:180
+#: ../../client/solo/commands/deptest.py:196
 msgid "Would you like to install the packages ?"
 msgstr ""
 
-#: ../../client/solo/commands/deptest.py:187
-#: ../../client/solo/commands/libtest.py:227
+#: ../../client/solo/commands/deptest.py:203
+#: ../../client/solo/commands/libtest.py:230
 msgid "Installing available packages in"
 msgstr "Встановлення наявних пакунків у"
 
-#: ../../client/solo/commands/deptest.py:188
-#: ../../client/solo/commands/libtest.py:228
+#: ../../client/solo/commands/deptest.py:204
+#: ../../client/solo/commands/libtest.py:231
 msgid "10 seconds"
 msgstr "10 секунд"
 
-#: ../../client/solo/commands/deptest.py:207
+#: ../../client/solo/commands/deptest.py:223
 msgid "look for unsatisfied dependencies"
 msgstr "шукати незадоволені залежності"
 
-#: ../../client/solo/commands/command.py:96
+#: ../../client/solo/commands/command.py:127
 msgid "not a valid directory"
 msgstr ""
 
-#: ../../client/solo/commands/command.py:123
+#: ../../client/solo/commands/command.py:142
+#: ../../client/solo/commands/pkg.py:79
+msgid "not a valid Entropy package file"
+msgstr ""
+
+#: ../../client/solo/commands/command.py:154
 #: ../../client/solo/commands/source.py:83
 #: ../../client/solo/commands/install.py:91
-#: ../../client/solo/commands/upgrade.py:86
+#: ../../client/solo/commands/upgrade.py:87
 #: ../../client/solo/commands/download.py:83
 msgid "quiet output"
 msgstr ""
 
-#: ../../client/solo/commands/command.py:349
+#: ../../client/solo/commands/command.py:388
 msgid "Acquiring Entropy Resources Lock, please wait..."
 msgstr ""
 
-#: ../../client/solo/commands/command.py:356
-#: ../../client/solo/commands/command.py:386 ../kernel-switcher:57
+#: ../../client/solo/commands/command.py:400
 msgid "Another Entropy is currently running."
 msgstr ""
 
-#: ../../client/solo/commands/command.py:414
+#: ../../client/solo/commands/command.py:459
 msgid "When you wrote"
 msgstr "Як Ви написали"
 
-#: ../../client/solo/commands/command.py:416
+#: ../../client/solo/commands/command.py:461
 msgid "You Meant(tm)"
 msgstr "А ти думав (TM)"
 
-#: ../../client/solo/commands/command.py:417
+#: ../../client/solo/commands/command.py:462
 msgid "one of these below?"
 msgstr "один з нижчезазначених?"
-
-#: ../../client/solo/commands/cache.py:60
-msgid "manage cache"
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:64
-msgid "clean Entropy Library Cache"
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:67
-msgid "show more details"
-msgstr "відобразити більше деталей"
-
-#: ../../client/solo/commands/cache.py:70
-msgid "print results in a scriptable way"
-msgstr "відобразити результати за допомогою скриптів"
-
-#: ../../client/solo/commands/cache.py:126
-msgid "Cleaning Entropy cache, please wait ..."
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:133
-msgid "Entropy cache cleaned."
-msgstr ""
-
-#: ../../client/solo/commands/cache.py:144
-msgid "manage Entropy Library Cache"
-msgstr ""
 
 #: ../../client/solo/commands/ugc.py:71 ../../client/solo/commands/ugc.py:1011
 msgid "manage User Generated Content"
@@ -3575,18 +3592,6 @@ msgstr ""
 msgid "vote added, thank you!"
 msgstr ""
 
-#: ../../client/solo/commands/help.py:70
-msgid "Entropy Command Line Client, Equo"
-msgstr ""
-
-#: ../../client/solo/commands/help.py:77
-msgid "force colored output"
-msgstr ""
-
-#: ../../client/solo/commands/help.py:102 ../kernel-switcher:155
-msgid "this help"
-msgstr ""
-
 #: ../../client/solo/commands/repo.py:67
 #: ../../client/solo/commands/repo.py:737
 msgid "manage repositories"
@@ -3775,238 +3780,6 @@ msgstr ""
 msgid "done merging packages"
 msgstr ""
 
-#: ../../client/solo/commands/libtest.py:80
-msgid "print broken files to stdout"
-msgstr "записати пошкоджені файли в stdout"
-
-#: ../../client/solo/commands/libtest.py:85
-msgid "dump results to files"
-msgstr "записати результати у файли"
-
-#: ../../client/solo/commands/libtest.py:140
-#: ../../client/solo/commands/libtest.py:173
-msgid "System is healthy"
-msgstr "З системою все гаразд"
-
-#: ../../client/solo/commands/libtest.py:179
-msgid "Libraries/Executables statistics"
-msgstr "Статистика бібліотек/виконуваних файлів"
-
-#: ../../client/solo/commands/libtest.py:185
-msgid "Not matched"
-msgstr "Не співпадає"
-
-#: ../../client/solo/commands/libtest.py:221
-msgid "Would you like to install them ?"
-msgstr "Бажаєте їх інсталювати?"
-
-#: ../../client/solo/commands/libtest.py:249
-msgid "look for missing libraries"
-msgstr "шукати зіпсовані бібліотеки"
-
-#: ../../client/solo/commands/unused.py:71
-msgid "sort packages by size"
-msgstr ""
-
-#: ../../client/solo/commands/unused.py:76
-msgid "include packages installed by user"
-msgstr ""
-
-#: ../../client/solo/commands/unused.py:115
-msgid ""
-"Running unused packages test, pay attention, there can be false positives"
-msgstr ""
-
-#: ../../client/solo/commands/unused.py:163
-msgid "look for unused packages (pay attention)"
-msgstr "шукати пакунки, що не використовуються (зверніть увагу)"
-
-#: ../../client/solo/commands/_manage.py:93
-msgid "Scanning configuration files to update"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:102
-msgid "No configuration files to update."
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:107
-#, python-format
-msgid "There is %s configuration file needing update"
-msgid_plural "There are %s configuration files needing update"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-
-#: ../../client/solo/commands/_manage.py:115
-msgid "Please run"
-msgstr "Будь-ласка, виконайте"
-
-#: ../../client/solo/commands/_manage.py:131
-msgid "These are the selected packages"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:184
-msgid "Versions"
-msgstr "Версії"
-
-#: ../../client/solo/commands/_manage.py:208
-#: ../../client/solo/commands/_manage.py:214
-msgid "Reinstall"
-msgstr "Перевстаовити"
-
-#: ../../client/solo/commands/_manage.py:209
-msgid "Switch repo"
-msgstr "Перемкнути репозиторій"
-
-#: ../../client/solo/commands/_manage.py:216
-msgid "Install"
-msgstr "Інсталювати"
-
-#: ../../client/solo/commands/_manage.py:218
-msgid "Upgrade"
-msgstr "Оновити версію"
-
-#: ../../client/solo/commands/_manage.py:220
-msgid "Downgrade"
-msgstr "Оновити до старішої версії (Зістарити)"
-
-#: ../../client/solo/commands/_manage.py:228
-msgid "Action"
-msgstr "Дія"
-
-#: ../../client/solo/commands/_manage.py:240
-msgid "Would you like to continue with the dependencies calculation?"
-msgstr ""
-
-#. every package matching app-foo is masked
-#: ../../client/solo/commands/_manage.py:342
-msgid "Every package matching"
-msgstr "Порівняння кожного пакунку"
-
-#: ../../client/solo/commands/_manage.py:344
-msgid "is masked"
-msgstr "замаскований"
-
-#: ../../client/solo/commands/_manage.py:362
-msgid "Masking reason"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:374
-msgid "matching"
-msgstr "порівнюю"
-
-#: ../../client/solo/commands/_manage.py:376
-msgid "is broken"
-msgstr "зламаний"
-
-#: ../../client/solo/commands/_manage.py:380
-msgid "atom"
-msgstr "атом"
-
-#: ../../client/solo/commands/_manage.py:382
-msgid "in"
-msgstr "в"
-
-#: ../../client/solo/commands/_manage.py:391
-msgid "in repositories"
-msgstr "в репозиторіях"
-
-#: ../../client/solo/commands/_manage.py:404
-msgid "Not found"
-msgstr "Не знайдено"
-
-#: ../../client/solo/commands/_manage.py:413
-msgid "package needed by"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:419
-#: ../../client/solo/commands/_manage.py:837
-#: ../../client/solo/commands/install.py:388
-msgid "from"
-msgstr "з"
-
-#: ../../client/solo/commands/_manage.py:497
-msgid "Skipped"
-msgstr "Пропущено"
-
-#: ../../client/solo/commands/_manage.py:529
-msgid "is not installed"
-msgstr "не встановлено"
-
-#: ../../client/solo/commands/_manage.py:557
-msgid "Calculating dependencies"
-msgstr "Підрахунок залежностей"
-
-#: ../../client/solo/commands/_manage.py:569
-msgid "Dependencies not found"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:580
-msgid "Conflicting packages were pulled in"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:596
-msgid "Please mask conflicts using"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:648
-#: ../../client/solo/commands/_manage.py:691
-msgid "download"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:717
-msgid "Repositories are old, please run:"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:741
-msgid "Please update the following critical packages"
-msgstr "Будь ласка, оновіть наступні критичні пакунки"
-
-#: ../../client/solo/commands/_manage.py:752
-msgid "You should install them as soon as possible"
-msgstr "Вам слід встановити їх якомога раніше"
-
-#: ../../client/solo/commands/_manage.py:773
-msgid "Read the license"
-msgstr "Читати ліцензію"
-
-#: ../../client/solo/commands/_manage.py:778
-msgid "Accept the license (I've read it)"
-msgstr "Погодитися з ліцензією (Я її прочитав (прочитала))"
-
-#: ../../client/solo/commands/_manage.py:783
-msgid "Accept the license and don't ask anymore (I've read it)"
-msgstr "Погодитися з ліцензією і більше про це не запитувати (Я її прочитав (прочитала))"
-
-#: ../../client/solo/commands/_manage.py:787
-msgid "Quit"
-msgstr "Вийти"
-
-#: ../../client/solo/commands/_manage.py:794
-msgid "Your choice (type a number and press enter)"
-msgstr "Ваш вибір (введіть число і натисніть enter)"
-
-#: ../../client/solo/commands/_manage.py:821
-msgid "You need to accept the licenses below"
-msgstr "Вам слід погодитися з зазначених ліцензіями"
-
-#: ../../client/solo/commands/_manage.py:829
-#: ../../client/solo/commands/preservedlibs.py:142
-msgid "needed by"
-msgstr "необхідно для"
-
-#: ../../client/solo/commands/_manage.py:869
-msgid "No license data available"
-msgstr ""
-
-#: ../../client/solo/commands/_manage.py:880
-msgid "No file viewer"
-msgstr "Немає переглядача файлу"
-
-#: ../../client/solo/commands/_manage.py:881
-msgid "License saved into"
-msgstr "Ліцензія збережена у"
-
 #: ../../client/solo/commands/source.py:96
 #: ../../client/solo/commands/install.py:116
 #: ../../client/solo/commands/download.py:95
@@ -4020,7 +3793,7 @@ msgstr ""
 
 #: ../../client/solo/commands/source.py:121
 #: ../../client/solo/commands/install.py:104
-#: ../../client/solo/commands/upgrade.py:99
+#: ../../client/solo/commands/upgrade.py:100
 #: ../../client/solo/commands/download.py:120
 msgid "include build-time dependencies"
 msgstr ""
@@ -4029,386 +3802,226 @@ msgstr ""
 msgid "save files into the current working directory"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:165
-msgid "Source code download"
-msgstr "Завантажити код"
+#: ../../client/solo/commands/source.py:176
+#: ../../client/solo/commands/rescue.py:645
+#: ../../client/solo/commands/install.py:543
+#: ../../client/solo/commands/download.py:176
+msgid "Nothing to do"
+msgstr "Більше нічого робити"
 
-#: ../../client/solo/commands/source.py:210
+#: ../../client/solo/commands/source.py:207
 msgid "sources download"
 msgstr ""
 
-#: ../../client/solo/commands/source.py:233
+#: ../../client/solo/commands/source.py:230
 msgid "download packages source code"
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:75
-msgid "manage configuration file updates"
+#: ../../client/solo/commands/libtest.py:80
+msgid "print broken files to stdout"
+msgstr "записати пошкоджені файли в stdout"
+
+#: ../../client/solo/commands/libtest.py:85
+msgid "dump results to files"
+msgstr "записати результати у файли"
+
+#: ../../client/solo/commands/libtest.py:142
+#: ../../client/solo/commands/libtest.py:176
+msgid "System is healthy"
+msgstr "З системою все гаразд"
+
+#: ../../client/solo/commands/libtest.py:182
+msgid "Libraries/Executables statistics"
+msgstr "Статистика бібліотек/виконуваних файлів"
+
+#: ../../client/solo/commands/libtest.py:188
+msgid "Not matched"
+msgstr "Не співпадає"
+
+#: ../../client/solo/commands/libtest.py:224
+msgid "Would you like to install them ?"
+msgstr "Бажаєте їх інсталювати?"
+
+#: ../../client/solo/commands/libtest.py:252
+msgid "look for missing libraries"
+msgstr "шукати зіпсовані бібліотеки"
+
+#: ../../client/solo/commands/notice.py:162
+msgid "Choose one by typing its identifier"
+msgstr "оберіть один, набравши його назву"
+
+#: ../../client/solo/commands/notice.py:194
+msgid "Link"
+msgstr "Посилання"
+
+#: ../../client/solo/commands/notice.py:203
+msgid "Press Enter to continue"
+msgstr "Натисніть Enter, щоб продовжити"
+
+#: ../../client/solo/commands/notice.py:211
+msgid "repository notice board reader"
+msgstr "переглядач дошки повідомлень репозиторію"
+
+#: ../../client/solo/commands/_manage.py:94
+msgid "Scanning configuration files to update"
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:79
-msgid "update configuration files"
+#: ../../client/solo/commands/_manage.py:103
+msgid "No configuration files to update."
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:144
-msgid "Scanning filesystem"
-msgstr "Сканування файлової системи"
-
-#: ../../client/solo/commands/conf.py:150
-#: ../../client/solo/commands/conf.py:176
-msgid "All fine baby. Nothing to do!"
-msgstr "Усе тиць-гриць :) Більше нічого робити!"
-
-#: ../../client/solo/commands/conf.py:171
-msgid "file"
-msgstr "файл"
-
-#: ../../client/solo/commands/conf.py:187
-#: ../../client/solo/commands/conf.py:633
-msgid "Type a number"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:217
-msgid "Please choose a file to update by typing its identification number."
-msgstr "Оберіть файл, що потребує оновлення, ввівши його ідентифікаційний номер"
-
-#: ../../client/solo/commands/conf.py:221
-msgid "Other options are:"
-msgstr "Інші опції:"
-
-#: ../../client/solo/commands/conf.py:225
-#: ../../client/solo/commands/notice.py:153
-#: ../../magneto/src/magneto/core/interfaces.py:196
-msgid "Exit"
-msgstr "Вихід"
-
-#: ../../client/solo/commands/conf.py:230
-msgid "Automerge all the files asking you one by one"
-msgstr "Автоматично об'єднати файли, запитуючи Вас щодо кожного"
-
-#: ../../client/solo/commands/conf.py:235
-msgid "Automerge all the files without questioning"
-msgstr "Автоматично об'єднати всі файли без перепитувань"
-
-#: ../../client/solo/commands/conf.py:240
-msgid "Discard all the files asking you one by one"
-msgstr "Пропустити всі файли, запитуючи Вас щодо кожного"
-
-#: ../../client/solo/commands/conf.py:245
-msgid "Discard all the files without questioning"
-msgstr "Пропустити всі файли без перепитувань"
-
-#: ../../client/solo/commands/conf.py:258
-msgid "Please choose an action to take for the selected file."
-msgstr "Будь-ласка, оберіть, яку дію треба виконати з цим файлом"
-
-#: ../../client/solo/commands/conf.py:263
-msgid "Come back to the files list"
-msgstr "Повернутись до списку файлів"
-
-#: ../../client/solo/commands/conf.py:268
-msgid "Replace original with update"
-msgstr "Замінити оригінал оновленим файлом"
-
-#: ../../client/solo/commands/conf.py:273
-msgid "Delete update, keeping original as is"
-msgstr "Видалити оновлення і залишити оригінал, без змін"
-
-#: ../../client/solo/commands/conf.py:278
-msgid "Edit proposed file and show diffs again"
-msgstr "Редагувати запропонований файл і показати відмінності знову"
-
-#: ../../client/solo/commands/conf.py:283
-msgid "Interactively merge original with update"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:288
-msgid "Show differences again"
-msgstr "Показати відмінності знову"
-
-#: ../../client/solo/commands/conf.py:384
-#: ../../client/solo/commands/conf.py:439
-msgid "Source file"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:389
-#: ../../client/solo/commands/conf.py:444
-msgid "Destination file"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:394
-msgid "Overwrite ?"
-msgstr "Перезаписати?"
-
-#: ../../client/solo/commands/conf.py:403
-msgid "Cannot merge"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:449
-msgid "Discard ?"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:455
-#: ../../client/solo/commands/conf.py:590
-msgid "Discarding"
-msgstr "Скасовано"
-
-#: ../../client/solo/commands/conf.py:464
-msgid "Cannot remove"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:480
-msgid "Editing file"
-msgstr "Редагую файл"
-
-#: ../../client/solo/commands/conf.py:487
-msgid "Edited file"
-msgstr "Відредагований файл"
-
-#: ../../client/solo/commands/conf.py:489
-msgid "showing difference"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:497
-#: ../../client/solo/commands/conf.py:602
-#: ../../client/solo/commands/conf.py:613
-msgid "Automerging"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:538
-msgid "Interactive merge"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:554
-msgid "OSError during interactive merge"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:561
-msgid "IOError during interactive merge"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:571
-msgid "Unable to merge file"
-msgstr ""
-
-#: ../../client/solo/commands/conf.py:621
-msgid "Selected file"
-msgstr "Обраний файл"
-
-#: ../../client/solo/commands/conf.py:643
+#: ../../client/solo/commands/_manage.py:108
 #, python-format
-msgid "Replacing %s with %s"
-msgstr ""
+msgid "There is %s configuration file needing update"
+msgid_plural "There are %s configuration files needing update"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
-#: ../../client/solo/commands/conf.py:650
+#: ../../client/solo/commands/_manage.py:116
+msgid "Please run"
+msgstr "Будь-ласка, виконайте"
+
+#: ../../client/solo/commands/_manage.py:136
 #, python-format
-msgid "Cannot merge %s"
+msgid "There is %s preserved library on the system"
+msgid_plural "There are %s preserved libraries on the system"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#. every package matching app-foo is masked
+#: ../../client/solo/commands/_manage.py:245
+msgid "Every package matching"
+msgstr "Порівняння кожного пакунку"
+
+#: ../../client/solo/commands/_manage.py:247
+msgid "is masked"
+msgstr "замаскований"
+
+#: ../../client/solo/commands/_manage.py:265
+msgid "Masking reason"
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:658
-#, python-format
-msgid "Deleting %s"
+#: ../../client/solo/commands/_manage.py:277
+msgid "matching"
+msgstr "порівнюю"
+
+#: ../../client/solo/commands/_manage.py:279
+msgid "is broken"
+msgstr "зламаний"
+
+#: ../../client/solo/commands/_manage.py:283
+msgid "atom"
+msgstr "атом"
+
+#: ../../client/solo/commands/_manage.py:285
+msgid "in"
+msgstr "в"
+
+#: ../../client/solo/commands/_manage.py:294
+msgid "in repositories"
+msgstr "в репозиторіях"
+
+#: ../../client/solo/commands/_manage.py:307
+msgid "Not found"
+msgstr "Не знайдено"
+
+#: ../../client/solo/commands/_manage.py:316
+msgid "package needed by"
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:664
-#, python-format
-msgid "Cannot remove %s"
+#: ../../client/solo/commands/_manage.py:322
+#: ../../client/solo/commands/_manage.py:740
+#: ../../client/solo/commands/install.py:390
+msgid "from"
+msgstr "з"
+
+#: ../../client/solo/commands/_manage.py:400
+msgid "Skipped"
+msgstr "Пропущено"
+
+#: ../../client/solo/commands/_manage.py:432
+msgid "is not installed"
+msgstr "не встановлено"
+
+#: ../../client/solo/commands/_manage.py:460
+msgid "Calculating dependencies"
+msgstr "Підрахунок залежностей"
+
+#: ../../client/solo/commands/_manage.py:472
+msgid "Dependencies not found"
 msgstr ""
 
-#: ../../client/solo/commands/conf.py:702
-msgid "manage package file updates"
+#: ../../client/solo/commands/_manage.py:483
+msgid "Conflicting packages were pulled in"
 msgstr ""
 
-#: ../../client/solo/commands/match.py:83
-msgid "match keyword"
+#: ../../client/solo/commands/_manage.py:499
+msgid "Please mask conflicts using"
 msgstr ""
 
-#: ../../client/solo/commands/match.py:95
-msgid "return only injected packages "
+#: ../../client/solo/commands/_manage.py:551
+#: ../../client/solo/commands/_manage.py:594
+msgid "download"
 msgstr ""
 
-#: ../../client/solo/commands/match.py:100
-msgid "match among installed packages only"
+#: ../../client/solo/commands/_manage.py:620
+msgid "Repositories are old, please run:"
 msgstr ""
 
-#: ../../client/solo/commands/match.py:104
-msgid "match among available packages only"
+#: ../../client/solo/commands/_manage.py:644
+msgid "Please update the following critical packages"
+msgstr "Будь ласка, оновіть наступні критичні пакунки"
+
+#: ../../client/solo/commands/_manage.py:655
+msgid "You should install them as soon as possible"
+msgstr "Вам слід встановити їх якомога раніше"
+
+#: ../../client/solo/commands/_manage.py:676
+msgid "Read the license"
+msgstr "Читати ліцензію"
+
+#: ../../client/solo/commands/_manage.py:681
+msgid "Accept the license (I've read it)"
+msgstr "Погодитися з ліцензією (Я її прочитав (прочитала))"
+
+#: ../../client/solo/commands/_manage.py:686
+msgid "Accept the license and don't ask anymore (I've read it)"
+msgstr "Погодитися з ліцензією і більше про це не запитувати (Я її прочитав (прочитала))"
+
+#: ../../client/solo/commands/_manage.py:690
+msgid "Quit"
+msgstr "Вийти"
+
+#: ../../client/solo/commands/_manage.py:697
+msgid "Your choice (type a number and press enter)"
+msgstr "Ваш вибір (введіть число і натисніть enter)"
+
+#: ../../client/solo/commands/_manage.py:724
+msgid "You need to accept the licenses below"
+msgstr "Вам слід погодитися з зазначених ліцензіями"
+
+#: ../../client/solo/commands/_manage.py:732
+#: ../../client/solo/commands/preservedlibs.py:142
+msgid "needed by"
+msgstr "необхідно для"
+
+#: ../../client/solo/commands/_manage.py:772
+msgid "No license data available"
 msgstr ""
 
-#: ../../client/solo/commands/match.py:108
-msgid "return all the matches, not just the best"
-msgstr ""
+#: ../../client/solo/commands/_manage.py:783
+msgid "No file viewer"
+msgstr "Немає переглядача файлу"
 
-#: ../../client/solo/commands/match.py:113
-msgid "return matches found in every repository"
-msgstr ""
+#: ../../client/solo/commands/_manage.py:784
+msgid "License saved into"
+msgstr "Ліцензія збережена у"
 
-#: ../../client/solo/commands/match.py:119
-msgid "print download URIs (w/--quiet)"
-msgstr ""
-
-#: ../../client/solo/commands/match.py:123
-msgid "print repository information (w/--quiet)"
-msgstr "відображає інформацію репозиторію (з --quiet)"
-
-#: ../../client/solo/commands/match.py:127
-msgid "print description too (w/--quiet)"
-msgstr "відображає ще й опис (с --quiet)"
-
-#: ../../client/solo/commands/match.py:131
-msgid "print \":<slot>\" next to package names (w/--quiet)"
-msgstr ""
-
-#: ../../client/solo/commands/match.py:214
-msgid "Matching"
-msgstr "Порівняння"
-
-#: ../../client/solo/commands/match.py:265
-msgid "match packages in repositories"
-msgstr ""
-
-#: ../../client/solo/commands/install.py:147
-#: ../../client/solo/commands/upgrade.py:142
-msgid "relax dependencies constraints during calculation"
-msgstr ""
-
-#: ../../client/solo/commands/install.py:154
-#: ../../client/solo/commands/upgrade.py:149
-#: ../../client/solo/commands/download.py:127
-msgid "download multiple packages in parallel (max 10)"
-msgstr ""
-
-#: ../../client/solo/commands/install.py:216
-msgid "These are the packages that would be installed"
-msgstr "Ось пакунки, що повинні бути встановлені"
-
-#: ../../client/solo/commands/install.py:364
-msgid "conflicting/substituted"
-msgstr "конфліктують/взаємозамінюють"
-
-#: ../../client/solo/commands/install.py:399
-msgid "Packages needing to be installed/updated/downgraded"
-msgstr "Пакунки для встановлення/оновлення/оновлення до старішої версії"
-
-#: ../../client/solo/commands/install.py:404
-msgid "Packages needing to be removed"
-msgstr "Пакунки до видалення"
-
-#: ../../client/solo/commands/install.py:411
-msgid "Packages needing to be installed"
-msgstr "Пакунки до встановлення"
-
-#: ../../client/solo/commands/install.py:418
-msgid "Packages needing to be reinstalled"
-msgstr "Пакунки до перевстановлення"
-
-#: ../../client/solo/commands/install.py:425
-msgid "Packages needing to be updated"
-msgstr "Пакунки до оновлення"
-
-#: ../../client/solo/commands/install.py:432
-msgid "Packages needing to be downgraded"
-msgstr "Пакунки, що необхідно оновити до старішої версії"
-
-#: ../../client/solo/commands/install.py:445
-msgid "Download size"
-msgstr "Розмір завантаження"
-
-#: ../../client/solo/commands/install.py:452
-msgid "Used disk space"
-msgstr "Використане місце на диску"
-
-#: ../../client/solo/commands/install.py:468
-msgid "You need at least"
-msgstr "Вам потрібно зовсім небагато"
-
-#: ../../client/solo/commands/install.py:470
-msgid "of free space"
-msgstr "вільного місця"
-
-#: ../../client/solo/commands/install.py:484
-msgid "You don't have enough space for the installation. Free some space into"
-msgstr "У Вас недостатньо місця для встановлення. Звільніть трохи простору."
-
-#: ../../client/solo/commands/install.py:587
-msgid "Download complete"
-msgstr "Завантаження завершено"
-
-#: ../../client/solo/commands/install.py:620
-msgid "install"
-msgstr "встановити"
-
-#: ../../client/solo/commands/install.py:644
-msgid "Installation complete"
-msgstr "Встановлення завершене"
-
-#: ../../client/solo/commands/install.py:653
-msgid "install or update packages or package files"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:129
-msgid ""
-"remove unmaintained packages, if any. This will respect --ask, --pretend and"
-" other switches."
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:198
-msgid "Calculating System Updates"
-msgstr "Підрахунок системних оновлень"
-
-#: ../../client/solo/commands/upgrade.py:214
-msgid "Packages matching update"
-msgstr "Оновлення порівняння пакунків"
-
-#: ../../client/solo/commands/upgrade.py:220
-msgid "Packages matching not available"
-msgstr "порівняння пакунків недоступне"
-
-#: ../../client/solo/commands/upgrade.py:226
-msgid "Packages matching already up to date"
-msgstr "порівняння пакунків оновлене"
-
-#: ../../client/solo/commands/upgrade.py:250
-msgid "Nothing to update"
-msgstr "Нічого оновлювати"
-
-#: ../../client/solo/commands/upgrade.py:264
-msgid ""
-"On the system there are packages that are not available anymore in the "
-"online repositories"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:269
-msgid ""
-"Even if they are usually harmless, it is suggested (after proper "
-"verification) to remove them."
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:281
-msgid "To automatically remove them, please run equo with --purge."
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:292
-msgid "Selective"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:300
-msgid "Would you like to remove them?"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:319
-msgid "Remove this?"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:335
-msgid "Nothing to remove"
-msgstr "Нічого видаляти"
-
-#: ../../client/solo/commands/upgrade.py:363
-msgid "There are more updates to install, reloading Entropy"
-msgstr ""
-
-#: ../../client/solo/commands/upgrade.py:382
-msgid "upgrade the system"
+#: ../../client/solo/commands/rescue.py:71
+#: ../../client/solo/commands/pkg.py:71 ../../client/solo/commands/pkg.py:455
+msgid "execute advanced tasks on packages"
 msgstr ""
 
 #: ../../client/solo/commands/rescue.py:91
@@ -4463,6 +4076,10 @@ msgstr "Сканування..."
 
 #: ../../client/solo/commands/rescue.py:228
 msgid "Error checking package"
+msgstr ""
+
+#: ../../client/solo/commands/rescue.py:239
+msgid "corrupted"
 msgstr ""
 
 #: ../../client/solo/commands/rescue.py:248
@@ -4603,9 +4220,314 @@ msgstr ""
 msgid "tools to rescue the running system"
 msgstr ""
 
+#: ../../client/solo/commands/match.py:83
+msgid "match keyword"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:95
+msgid "return only injected packages "
+msgstr ""
+
+#: ../../client/solo/commands/match.py:100
+msgid "match among installed packages only"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:104
+msgid "match among available packages only"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:108
+msgid "return all the matches, not just the best"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:113
+msgid "return matches found in every repository"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:119
+msgid "print download URIs (w/--quiet)"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:123
+msgid "print repository information (w/--quiet)"
+msgstr "відображає інформацію репозиторію (з --quiet)"
+
+#: ../../client/solo/commands/match.py:127
+msgid "print description too (w/--quiet)"
+msgstr "відображає ще й опис (с --quiet)"
+
+#: ../../client/solo/commands/match.py:131
+msgid "print \":<slot>\" next to package names (w/--quiet)"
+msgstr ""
+
+#: ../../client/solo/commands/match.py:225
+msgid "Matching"
+msgstr "Порівняння"
+
+#: ../../client/solo/commands/match.py:273
+msgid "match packages in repositories"
+msgstr ""
+
+#: ../../client/solo/commands/install.py:147
+#: ../../client/solo/commands/upgrade.py:143
+msgid "relax dependencies constraints during calculation"
+msgstr ""
+
+#: ../../client/solo/commands/install.py:154
+#: ../../client/solo/commands/upgrade.py:150
+#: ../../client/solo/commands/download.py:127
+msgid "download multiple packages in parallel (max 10)"
+msgstr ""
+
+#: ../../client/solo/commands/install.py:218
+msgid "These are the packages that would be installed"
+msgstr "Ось пакунки, що повинні бути встановлені"
+
+#: ../../client/solo/commands/install.py:366
+msgid "conflicting/substituted"
+msgstr "конфліктують/взаємозамінюють"
+
+#: ../../client/solo/commands/install.py:401
+msgid "Packages needing to be installed/updated/downgraded"
+msgstr "Пакунки для встановлення/оновлення/оновлення до старішої версії"
+
+#: ../../client/solo/commands/install.py:406
+msgid "Packages needing to be removed"
+msgstr "Пакунки до видалення"
+
+#: ../../client/solo/commands/install.py:413
+msgid "Packages needing to be installed"
+msgstr "Пакунки до встановлення"
+
+#: ../../client/solo/commands/install.py:420
+msgid "Packages needing to be reinstalled"
+msgstr "Пакунки до перевстановлення"
+
+#: ../../client/solo/commands/install.py:427
+msgid "Packages needing to be updated"
+msgstr "Пакунки до оновлення"
+
+#: ../../client/solo/commands/install.py:434
+msgid "Packages needing to be downgraded"
+msgstr "Пакунки, що необхідно оновити до старішої версії"
+
+#: ../../client/solo/commands/install.py:447
+msgid "Download size"
+msgstr "Розмір завантаження"
+
+#: ../../client/solo/commands/install.py:454
+msgid "Used disk space"
+msgstr "Використане місце на диску"
+
+#: ../../client/solo/commands/install.py:470
+msgid "You need at least"
+msgstr "Вам потрібно зовсім небагато"
+
+#: ../../client/solo/commands/install.py:472
+msgid "of free space"
+msgstr "вільного місця"
+
+#: ../../client/solo/commands/install.py:486
+msgid "You don't have enough space for the installation. Free some space into"
+msgstr "У Вас недостатньо місця для встановлення. Звільніть трохи простору."
+
+#: ../../client/solo/commands/install.py:585
+msgid "Download complete"
+msgstr "Завантаження завершено"
+
+#: ../../client/solo/commands/install.py:618
+msgid "install"
+msgstr "встановити"
+
+#: ../../client/solo/commands/install.py:642
+msgid "Installation complete"
+msgstr "Встановлення завершене"
+
+#: ../../client/solo/commands/install.py:651
+msgid "install or update packages or package files"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:130
+msgid ""
+"remove unmaintained packages, if any. This will respect --ask, --pretend and"
+" other switches."
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:201
+msgid "Calculating System Updates"
+msgstr "Підрахунок системних оновлень"
+
+#: ../../client/solo/commands/upgrade.py:220
+msgid "Packages matching update"
+msgstr "Оновлення порівняння пакунків"
+
+#: ../../client/solo/commands/upgrade.py:226
+msgid "Packages matching not available"
+msgstr "порівняння пакунків недоступне"
+
+#: ../../client/solo/commands/upgrade.py:232
+msgid "Packages matching already up to date"
+msgstr "порівняння пакунків оновлене"
+
+#: ../../client/solo/commands/upgrade.py:256
+msgid "Nothing to update"
+msgstr "Нічого оновлювати"
+
+#: ../../client/solo/commands/upgrade.py:272
+msgid ""
+"On the system there are packages that are not available anymore in the "
+"online repositories"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:277
+msgid ""
+"Even if they are usually harmless, it is suggested (after proper "
+"verification) to remove them."
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:289
+msgid "To automatically remove them, please run: equo upgrade --purge."
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:300
+msgid "Selective"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:308
+msgid "Would you like to remove them?"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:335
+msgid "Remove this?"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:350
+msgid "Nothing to remove"
+msgstr "Нічого видаляти"
+
+#: ../../client/solo/commands/upgrade.py:380
+msgid "There are more updates to install, reloading Entropy"
+msgstr ""
+
+#: ../../client/solo/commands/upgrade.py:400
+msgid "upgrade the system"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:86
+msgid "generate packages from the installed system"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:90
+msgid "installed package name"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:95 ../../client/solo/commands/pkg.py:111
+#: ../../client/solo/commands/pkg.py:127 ../../client/solo/commands/pkg.py:143
+msgid "destination directory where to save generated packages"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:101
+msgid "transform SPM package files into Entropy ones"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:106
+msgid "SPM package file path"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:117
+msgid "transform Entropy package files into SPM ones"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:122 ../../client/solo/commands/pkg.py:138
+msgid "Entropy package file path"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:133
+msgid "extract Entropy metadata from Entropy packages"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:219 ../../client/solo/commands/pkg.py:271
+#: ../../client/solo/commands/pkg.py:369 ../../client/solo/commands/pkg.py:417
+msgid "broken directory path"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:232
+msgid "generating package"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:242
+msgid "package file creation error"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:250
+msgid "package generated"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:280 ../../client/solo/commands/pkg.py:376
+#: ../../client/solo/commands/pkg.py:424
+msgid "working on package file"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:293
+msgid "package file extraction complete"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:337
+msgid "package metadata generation complete"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:348
+msgid "package file generated at"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:388 ../../client/solo/commands/pkg.py:437
+msgid "error during metadata extraction"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:396
+msgid "package file generated"
+msgstr ""
+
+#: ../../client/solo/commands/pkg.py:445
+msgid "metadata file generated"
+msgstr ""
+
+#: ../../client/solo/commands/unused.py:72
+msgid "sort packages by size"
+msgstr ""
+
+#: ../../client/solo/commands/unused.py:77
+msgid "include packages installed by user"
+msgstr ""
+
+#: ../../client/solo/commands/unused.py:117
+msgid ""
+"Running unused packages test, pay attention, there can be false positives"
+msgstr ""
+
+#: ../../client/solo/commands/unused.py:164
+msgid "look for unused packages (pay attention)"
+msgstr "шукати пакунки, що не використовуються (зверніть увагу)"
+
 #: ../../client/solo/commands/cleanup.py:97
 msgid "remove downloaded packages and clean temp. directories"
 msgstr "видалити завантажені пакунки і очистити тимчасові директорії"
+
+#: ../../client/solo/commands/download.py:198
+msgid "download packages, essentially"
+msgstr ""
+
+#: ../../client/solo/commands/help.py:70
+msgid "Entropy Command Line Client, Equo"
+msgstr ""
+
+#: ../../client/solo/commands/help.py:77
+msgid "force colored output"
+msgstr ""
+
+#: ../../client/solo/commands/help.py:102 ../kernel-switcher:162
+msgid "this help"
+msgstr ""
 
 #: ../../client/solo/commands/hop.py:92
 msgid "Already on branch"
@@ -4625,14 +4547,6 @@ msgstr "Неможливо перемкнути гілку"
 
 #: ../../client/solo/commands/hop.py:160
 msgid "upgrade the System to a new branch"
-msgstr ""
-
-#: ../../client/solo/commands/download.py:165
-msgid "Package download"
-msgstr ""
-
-#: ../../client/solo/commands/download.py:201
-msgid "download packages, essentially"
 msgstr ""
 
 #: ../../client/solo/commands/version.py:59
@@ -4694,22 +4608,6 @@ msgstr ""
 #: ../../client/solo/commands/preservedlibs.py:219
 msgid "Tools to manage the preserved libraries on the system"
 msgstr ""
-
-#: ../../client/solo/commands/notice.py:162
-msgid "Choose one by typing its identifier"
-msgstr "оберіть один, набравши його назву"
-
-#: ../../client/solo/commands/notice.py:194
-msgid "Link"
-msgstr "Посилання"
-
-#: ../../client/solo/commands/notice.py:203
-msgid "Press Enter to continue"
-msgstr "Натисніть Enter, щоб продовжити"
-
-#: ../../client/solo/commands/notice.py:211
-msgid "repository notice board reader"
-msgstr "переглядач дошки повідомлень репозиторію"
 
 #: ../../magneto/src/magneto/kde/interfaces.py:74
 msgid "Magneto Entropy Updates Applet"
@@ -4817,27 +4715,27 @@ msgstr "Відкрити сайт Sabayon Linux"
 msgid "_Exit"
 msgstr "_Вихід"
 
-#: ../../magneto/src/magneto/core/interfaces.py:333
+#: ../../magneto/src/magneto/core/interfaces.py:335
 msgid "System restart needed"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:334
+#: ../../magneto/src/magneto/core/interfaces.py:336
 msgid "This system should be restarted at your earliest convenience"
 msgstr ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:341
+#: ../../magneto/src/magneto/core/interfaces.py:343
 msgid "Cannot monitor Sabayon updates"
 msgstr "Неможливо відобразити оновлення Sabayon"
 
-#: ../../magneto/src/magneto/core/interfaces.py:343
+#: ../../magneto/src/magneto/core/interfaces.py:345
 msgid "Entropy DBus service not available"
 msgstr "Служба DBus Entropy недоступна"
 
-#: ../../magneto/src/magneto/core/interfaces.py:344
+#: ../../magneto/src/magneto/core/interfaces.py:346
 msgid "unable to communicate with the updates service"
 msgstr "неможливо з'єднатися зі службою оновлень"
 
-#: ../../magneto/src/magneto/core/interfaces.py:362
+#: ../../magneto/src/magneto/core/interfaces.py:364
 #, python-format
 msgid "There is %s update available"
 msgid_plural "There are %s updates available"
@@ -4845,11 +4743,11 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:368
+#: ../../magneto/src/magneto/core/interfaces.py:370
 msgid "Sabayon updates available"
 msgstr "Оновлення Sabayon наявні"
 
-#: ../../magneto/src/magneto/core/interfaces.py:369
+#: ../../magneto/src/magneto/core/interfaces.py:371
 #, python-format
 msgid "There is <b>%s</b> update available"
 msgid_plural "There are <b>%s</b> updates available"
@@ -4857,90 +4755,100 @@ msgstr[0] ""
 msgstr[1] ""
 msgstr[2] ""
 
-#: ../../magneto/src/magneto/core/interfaces.py:374
+#: ../../magneto/src/magneto/core/interfaces.py:376
 msgid "Upgrade now"
 msgstr ""
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:378
 #: ../../magneto/src/magneto/core/interfaces.py:380
+#: ../../magneto/src/magneto/core/interfaces.py:382
 msgid "Your Sabayon is up-to-date"
 msgstr "Ваш Sabayon вже оновлений до найновішої версії"
 
-#: ../../magneto/src/magneto/core/interfaces.py:381
+#: ../../magneto/src/magneto/core/interfaces.py:383
 msgid "No updates available at this time, cool!"
 msgstr "В даний момент оновлень не виявлено, чудово!"
 
 #. all fine, no updates
-#: ../../magneto/src/magneto/core/interfaces.py:392
+#: ../../magneto/src/magneto/core/interfaces.py:394
 msgid "Repositories are being updated"
 msgstr "Репозиторії оновлюються"
 
-#: ../../magneto/src/magneto/core/interfaces.py:393
+#: ../../magneto/src/magneto/core/interfaces.py:395
 msgid "Sabayon repositories status"
 msgstr "Статус репозиторіїв Sabayon"
 
-#: ../../magneto/src/magneto/core/interfaces.py:394
+#: ../../magneto/src/magneto/core/interfaces.py:396
 msgid "Repositories are being updated automatically"
 msgstr "Репозиторії оновлюються автоматично"
 
-#: ../../magneto/src/magneto/core/interfaces.py:487
+#. all fine, no updates
+#: ../../magneto/src/magneto/core/interfaces.py:404
+#: ../../magneto/src/magneto/core/interfaces.py:405
+msgid "System upgrade started"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:406
+msgid "Do not shutdown nor reboot the computer!"
+msgstr ""
+
+#: ../../magneto/src/magneto/core/interfaces.py:499
 msgid "Updates Notification Applet Disabled"
 msgstr "Аплет повідомлення про оновлення відімкнений"
 
-#: ../../magneto/src/magneto/core/interfaces.py:497
+#: ../../magneto/src/magneto/core/interfaces.py:509
 msgid "Updates Notification Applet Enabled"
 msgstr "Аплет повідомлення про оновлення увімкнений"
 
-#: ../kernel-switcher:27
+#: ../kernel-switcher:28
 msgid "Sabayon Kernel Switcher"
 msgstr ""
 
-#: ../kernel-switcher:34
+#: ../kernel-switcher:35
 msgid "quiet mode"
 msgstr ""
 
-#: ../kernel-switcher:37
+#: ../kernel-switcher:38
 msgid "verbose mode"
 msgstr ""
 
-#: ../kernel-switcher:41
+#: ../kernel-switcher:42
 msgid "ask confirmation"
 msgstr ""
 
-#: ../kernel-switcher:89
+#: ../kernel-switcher:92
 msgid "Package does not exist"
 msgstr ""
 
-#: ../kernel-switcher:97
+#: ../kernel-switcher:100
 msgid "Not a kernel"
 msgstr ""
 
-#: ../kernel-switcher:107
+#: ../kernel-switcher:110
 msgid "Cannot find your currently running kernel."
 msgstr ""
 
-#: ../kernel-switcher:109
+#: ../kernel-switcher:112
 msgid "Try without --from-running."
 msgstr ""
 
-#: ../kernel-switcher:124
+#: ../kernel-switcher:127
 msgid "No kernel packages found"
 msgstr ""
 
-#: ../kernel-switcher:138
+#: ../kernel-switcher:145
 msgid "install a new or just another kernel"
 msgstr ""
 
-#: ../kernel-switcher:143
+#: ../kernel-switcher:150
 msgid "use 'uname -r' to determine the running kernel"
 msgstr ""
 
-#: ../kernel-switcher:146
+#: ../kernel-switcher:153
 msgid "the new kernel package dependency name"
 msgstr ""
 
-#: ../kernel-switcher:150
+#: ../kernel-switcher:157
 msgid "list kernels"
 msgstr ""
 
