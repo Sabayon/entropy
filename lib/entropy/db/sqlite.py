@@ -222,6 +222,15 @@ class EntropySQLiteRepository(EntropySQLRepository):
         self._schema_update_run = False
         self._schema_update_lock = threading.Lock()
 
+        if not self._skip_checks:
+
+            if not entropy.tools.is_user_in_entropy_group():
+                # forcing since we won't have write access to db
+                self._indexing = False
+            # live systems don't like wasting RAM
+            if entropy.tools.islive() and not etpConst['systemroot']:
+                self._indexing = False
+
         self._maybeDatabaseSchemaUpdates()
 
     def lock_path(self):
@@ -249,13 +258,6 @@ class EntropySQLiteRepository(EntropySQLRepository):
 
         update = False
         if not self._skip_checks:
-
-            if not entropy.tools.is_user_in_entropy_group():
-                # forcing since we won't have write access to db
-                self._indexing = False
-            # live systems don't like wasting RAM
-            if entropy.tools.islive() and not etpConst['systemroot']:
-                self._indexing = False
 
             def _is_avail():
                 if self._is_memory():
