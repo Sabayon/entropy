@@ -130,6 +130,7 @@ class NotificationBox(Gtk.HBox):
         hbox.pack_start(button_align, False, False, 2)
 
         content_area.set_property("expand", False)
+        content_area.set_property("hexpand", True)
         content_area.add(hbox)
 
         bar.show_all()
