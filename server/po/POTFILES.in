@@ -27,6 +27,7 @@
 ../lib/entropy/server/interfaces/db.py
 ../lib/entropy/fetchers.py
 ../lib/entropy/i18n.py
+../lib/entropy/locks.py
 ../lib/entropy/cache.py
 ../lib/entropy/security.py
 ../lib/entropy/__init__.py
@@ -45,6 +46,7 @@
 ../server/eit/__init__.py
 ../server/eit/colorful.py
 ../server/eit/main.py
+../matter/test.py
 ../matter/matter_app.py
 ../matter/antimatter.py
 ../matter/matter/utils.py
